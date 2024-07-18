@@ -1,0 +1,23 @@
+includes:
+  - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+parameters:
+    level: max
+    ignoreErrors:
+      - '#Function apply_filters invoked with \d+ parameters, \d+ required.#'
+    inferPrivatePropertyTypeFromConstructor: true
+    checkMissingIterableValueType: false
+    bootstrapFiles:
+      - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+      - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+      - vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+      - vendor/php-stubs/wp-cli-stubs/wp-cli-commands-stubs.php
+      - vendor/php-stubs/wp-cli-stubs/wp-cli-i18n-stubs.php
+    paths:
+      - inc/
+    excludePaths:
+      - vendor/
+      - node_modules/
+    scanFiles:
+      - wcf-addons.php
+    scanDirectories:
+      - ./

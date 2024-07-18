@@ -1,0 +1,88 @@
+@keyframes button-ripple {
+  70% {
+    box-shadow: 0 0 0 15px currentColor;
+    opacity: 0.25;
+  }
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0;
+  }
+}
+@keyframes spinner {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+.wcf-video-wrapper button.mfp-close {
+  position: fixed;
+  margin: 20px;
+  border: 1px solid #fff;
+  color: #fff;
+  text-align: center;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+}
+.wcf-video-wrapper .mfp-content {
+  max-width: 900px;
+}
+.wcf-video-wrapper .mejs-video {
+  margin: 0 auto;
+  line-height: 0;
+  width: 100%;
+}
+.wcf-video-wrapper video,
+.wcf-video-wrapper iframe {
+  max-width: 100%;
+}
+
+.wcf-popup-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+  height: 100px;
+  width: 100px;
+  border-radius: 100%;
+  text-align: center;
+  transition: all 0.3s;
+  z-index: 1;
+}
+.wcf-popup-btn .spinner_image {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  animation: spinner 4s infinite linear;
+}
+.wcf-popup-btn.ripple::after, .wcf-popup-btn.ripple::before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: dodgerblue;
+  border-radius: 100%;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: button-ripple 3s infinite ease-out;
+  opacity: 0.6;
+  z-index: -1;
+}
+.wcf-popup-btn.ripple::before {
+  animation-delay: 0.9s;
+}
+.wcf-popup-btn.ripple::after {
+  animation-delay: 0.3s;
+}
+.wcf-popup-btn svg {
+  width: 1em;
+  height: 1em;
+}
+/*# sourceMappingURL=video.css.map */

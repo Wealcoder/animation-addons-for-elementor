@@ -1,0 +1,51 @@
+{
+  "name": "plugin/wcf-addons",
+  "description": "Elementor WCF Addons",
+  "type": "project",
+  "license": "GPL-3",
+  "autoload": {
+    "psr-4": {
+      "WCF_ADDONS\\": "inc/"
+    }
+  },
+  "authors": [
+    {
+      "name": "wealcoder",
+      "email": "wealcoder@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require-dev": {
+    "php-stubs/wp-cli-stubs": "^2.7",
+    "php-stubs/wordpress-stubs": "^6.1",
+    "php-stubs/woocommerce-stubs": "^7.2",
+    "phpstan/phpstan": "^1.9",
+    "phpstan/extension-installer": "^1.2",
+    "szepeviktor/phpstan-wordpress": "^1.1",
+    "squizlabs/php_codesniffer": "^3.7",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+    "phpcompatibility/php-compatibility": "^9.3",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "wp-coding-standards/wpcs": "^2.3",
+    "automattic/vipwpcs": "^2.3"
+  },
+  "require": {
+    "ext-simplexml": "*",
+    "ext-json": "*",
+    "ext-dom": "*",
+    "ext-xmlreader": "*"
+  },
+  "scripts": {
+    "phpcs": "@php ./vendor/bin/phpcs --colors --extensions=php .",
+    "phpcs:log": "@php ./vendor/bin/phpcs --colors --extensions=php --report-file=./logs/phpcs.log .",
+    "phpcbf": "@php ./vendor/bin/phpcbf --colors --extensions=php .",
+    "analyze": "@php ./vendor/bin/phpstan analyze ./",
+    "build": "@composer install --no-dev"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
+  }
+}

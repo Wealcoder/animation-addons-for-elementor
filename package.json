@@ -1,0 +1,59 @@
+{
+  "name": "wcf-addons",
+  "version": "1.0.0",
+  "description": "Elementor WCF Addons",
+  "main": "echo \"Nothing much here.\" && exit 1",
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@mr-hope/gulp-sass": "^2.0.0",
+    "@wordpress/browserslist-config": "^2.7.0",
+    "@wordpress/stylelint-config": "^20.0.2",
+    "browserslist": "^4.13.0",
+    "cli": "^1.0.1",
+    "eslint": "^8.22.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-cli": "^2.3.0",
+    "gulp-eslint": "^6.0.0",
+    "gulp-js-prettify": "^0.1.0",
+    "gulp-mode": "^1.1.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-rtlcss": "^1.4.1",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-terser": "^1.2.0",
+    "po-csv": "github:marek-saji/po-csv",
+    "sass": "^1.36.0",
+    "shelljs": ">=0.8.5"
+  },
+  "scripts": {
+    "test-old": "eslint --quiet . && stylelint --syntax scss -q **/*.scss && composer run-script phpcs",
+    "test": "eslint --quiet .",
+    "test-js": "eslint --quiet .",
+    "test-scss": "stylelint --syntax scss -q **/*.scss",
+    "test-php": "composer run-script phpcs",
+    "style-fix": "stylelint --syntax scss **/*.scss --fix",
+    "js-fix": "eslint . --fix",
+    "build": "NODE_ENV=production gulp build",
+    "watch": "NODE_ENV=development gulp watch",
+    "build-win": "gulp build --production",
+    "watch-win": "gulp watch --development",
+    "i18n": "wp i18n make-pot ."
+  },
+  "author": "wealcoder",
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wealcoder/wcf-addons.git"
+  },
+  "keywords": [
+    "elementor",
+    "gutenber"
+  ],
+  "bugs": {
+    "url": "https://github.com/Wealcoder/wcf-addons/issues"
+  },
+  "homepage": "https://github.com/Wealcoder/wcf-addons#readme"
+}

@@ -1,0 +1,21 @@
+.wcf--social-icons {
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      list-style: none;
+      line-height: 1;
+
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--icon-size,20px);
+        line-height: var(--icon-size,20px);
+        width: calc(var(--icon-size, 20px) + (2 * var(--icon-padding, 1px)));
+        height: calc(var(--icon-size, 20px) + (2 * var(--icon-padding, 1px)));
+      }
+    }
+  }
+}

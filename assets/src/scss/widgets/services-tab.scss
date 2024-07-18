@@ -1,0 +1,85 @@
+.wcf--services-tab {
+  --image-width: 50%;
+
+  .number {
+    font-size: 20px;
+    vertical-align: top;
+    margin-right: 20px;
+  }
+
+  .tab-title {
+    cursor: pointer;
+    font-size: 30px;
+    margin-bottom: 30px;
+  }
+
+  .image {
+    order: 1;
+    line-height: 0;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wcf__btn {
+    margin-top: 20px;
+  }
+
+  &.style-2 {
+    .content {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .elementor-widget-wcf--services-tab {
+    &.wcf-tabs-mobile {
+      .wcf--services-tab.style-1 {
+          width: calc(100% - var(--image-width));
+
+        .image {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: var(--image-width);
+        }
+      }
+
+      .wcf--services-tab.style-2 {
+        display: flex;
+        align-items: flex-end;
+        .tabs-wrapper{
+          width: var(--image-width);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1025px) {
+  .elementor-widget-wcf--services-tab {
+    &.wcf-tabs-tablet {
+      .wcf--services-tab.style-1 {
+          width: calc(100% - var(--image-width));
+        .image {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: var(--image-width);
+        }
+      }
+
+      .wcf--services-tab.style-2 {
+        display: flex;
+        align-items: flex-end;
+        .tabs-wrapper{
+          width: var(--image-width);
+        }
+      }
+    }
+  }
+}

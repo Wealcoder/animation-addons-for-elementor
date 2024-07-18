@@ -1,0 +1,1 @@
+!function(e){var n=function(e,n){var t=n(".typed_list",e)[0],o=n(".typed",e)[0];t&&new Typed(o,{stringsElement:t,typeSpeed:50,backSpeed:50,cursorChar:"|",loop:!0})};e(window).on("elementor/frontend/init",(function(){elementorFrontend.hooks.addAction("frontend/element_ready/wcf--typewriter.default",n)}))}(jQuery);

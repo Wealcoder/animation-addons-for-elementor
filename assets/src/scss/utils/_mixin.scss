@@ -1,0 +1,37 @@
+/*----------------------------------------*/
+/*  01. MIXIN CSS START
+/*----------------------------------------*/
+
+// light 
+@mixin light {
+  .light & {
+    @content;
+  }
+}
+
+// Box Layout 
+@mixin boxLayout {
+  .box-layout & {
+    @content;
+  }
+}
+
+// RTL Language 
+@mixin rtl {
+  .dir-rtl & {
+    @content;
+  }
+}
+
+// heading
+@mixin heading($font_family) {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: $font_family;
+  }
+}

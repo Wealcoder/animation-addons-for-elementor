@@ -1,0 +1,379 @@
+
+//text-invert
+.wcf-t-animation-text_invert{
+  .elementor-widget-container {
+    --text-color: 0, 0%, 0%;
+    .invert-line {
+      background-image: linear-gradient(to right, hsla(var(--text-color), 1) 50%, hsla(var(--text-color), 0.3) 50%);
+      background-size: 200% 100%;
+      background-position-x: 100%;
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+  }
+}
+
+.anim-reveal-line {
+  overflow: hidden;
+}
+
+//form
+.wcf--form-wrapper {
+  input[type=date],
+  input[type=email],
+  input[type=number],
+  input[type=password],
+  input[type=search],
+  input[type=tel],
+  input[type=text],
+  input[type=url],
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid #666;
+    outline: none;
+  }
+  input[type=submit].wpcf7-submit{
+    outline: none;
+  }
+}
+
+//Tab widget css
+.wcf--tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  .tab-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    padding: 10px 20px;
+    background-color: #F1F2F3FF;
+    transition: 0.3s all;
+    &.active,
+    &:hover{
+      background-color: #b5c2cf;
+    }
+    i,
+    svg{
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+    }
+  }
+
+  .tab-content{
+    display: none;
+    padding: 20px;
+    border: 1px solid #d5d8dc;
+  }
+
+  .tabs-wrapper{
+    display: flex;
+    gap: 10px;
+  }
+}
+
+//slider
+.wcf__slider-wrapper {
+  position: relative;
+
+  .wcf__slider {
+    text-align: center;
+    margin: 0 auto;
+    --slides-to-show: 1;
+    --space-between: 20px;
+
+    &:not(.swiper-initialized) {
+      .swiper-wrapper {
+        gap: var(--space-between);
+      }
+
+      .swiper-slide {
+        width: calc((100% / var(--slides-to-show)) - (var(--space-between) * (var(--slides-to-show) - 1) / var(--slides-to-show)));
+      }
+    }
+  }
+
+  .wcf-arrow {
+    border-radius: 0;
+    font-size: 20px;
+    padding: 10px;
+    color: #666666;
+    position: absolute;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    border: 1px solid #EFEFEF;
+    transition: all 0.3s;
+    z-index: 9;
+
+    &-prev {
+      left: 0;
+    }
+
+    &-next {
+      right: 0;
+    }
+
+    svg,
+    i{
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  .mid-line {
+    width: 100px;
+    display: inline-block;
+    background-color: #384364;
+    height: 1px;
+    vertical-align: middle;
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+}
+
+//testimonial slider
+.wcf__t_slider-wrapper {
+  .wcf-arrow {
+    svg,
+    i {
+      width: 1em;
+      height: 1em;
+    }
+  }
+}
+
+//slider pagination position
+.wcf--slider-pagination{
+  &-top{
+    .swiper-pagination{
+      top: 0;
+      bottom: auto !important;
+    }
+  }
+  &-bottom{
+    .swiper-pagination{
+
+    }
+  }
+  &-left,
+  &-right{
+    .swiper-pagination{
+      width: auto !important;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: fit-content;
+      .mid-line {
+        width: 1px;
+        height: 100px;
+      }
+    }
+  }
+  &-left{
+    .swiper-pagination{
+      left: 0;
+      right: auto !important;
+    }
+  }
+  &-right{
+    .swiper-pagination{
+      left: auto !important;
+      right: 0;
+    }
+  }
+}
+
+
+//title widget
+.wcf--title {
+  &.prefix_on_hover,
+  &.prefix_on_normal {
+    transition: all 0.5s;
+    --prefix-width: 60px;
+    --prefix-gap: 10px;
+    &:before {
+      position: relative;
+      display: inline-block;
+      content: "";
+      height: 1px;
+      inset-inline-start: 0;
+      transition: all 0.5s;
+      background-color: #0a0a0a;
+    }
+  }
+
+  &.prefix_on_normal {
+
+    &:before {
+      width: var(--prefix-width);
+      margin-right: var( --prefix-gap)
+    }
+  }
+
+  &.prefix_on_hover {
+    transition: all 0.5s;
+    &:before {
+      width: 0;
+    }
+    &:hover {
+      &:before {
+        width: var(--prefix-width);
+        margin-right: var( --prefix-gap);
+      }
+    }
+  }
+}
+
+.elementor-widget .wcf--title>a{
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+  //floating elements
+.elementor-widget-wcf--floating-elements{
+  width: 100%;
+}
+.elementor-editor-preview {
+  .elementor-widget-wcf--floating-elements.elementor-widget-empty {
+    display: block;
+  }
+}
+.elementor-widget-wcf--floating-elements .elementor-widget-container{
+  display: flex;
+}
+.wcf--floating-elements {
+  margin: auto;
+  .floating-element {
+    position: absolute;
+    z-index: 1;
+    width: 100px;
+  }
+  img{
+    width: 100%;
+  }
+}
+
+//live animation
+.wcf-live-anim {
+
+  //floating
+  @keyframes wcf_animation_float {
+    0% {
+      transform: translatey(0px);
+    }
+    50% {
+      transform: translatey(-20px);
+    }
+    100% {
+      transform: translatey(0px);
+    }
+  }
+
+  //floating x
+  @keyframes wcf_animation_float_x {
+    0% {
+      transform: translatex(0px);
+    }
+    50% {
+      transform: translatex(-20px);
+    }
+    100% {
+      transform: translatex(0px);
+    }
+  }
+
+  //spin
+  @keyframes wcf_animation_spin {
+    from {
+      transform:rotate(0deg);
+    }
+    to {
+      transform:rotate(360deg);
+    }
+  }
+
+  //spin
+  @keyframes wcf_animation_scale {
+    from {
+      transform:scale(1);
+    }
+    to {
+      transform:scale(0.8);
+    }
+  }
+
+  //wiggle
+  @keyframes wcf_animation_wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
+
+  &-float > * {
+    animation: wcf_animation_float 6s ease-in-out infinite;
+  }
+
+  &-float-x > * {
+    animation: wcf_animation_float_x 6s ease-in-out infinite;
+  }
+
+  &-spin > *{
+    animation: wcf_animation_spin 6s linear infinite;
+  }
+
+  &-scale > *{
+    animation: wcf_animation_scale 3s linear infinite alternate;
+  }
+
+  &-wiggle > *{
+    animation: wcf_animation_wiggle 2s linear infinite;
+  }
+}
+
+//tab widget
+.elementor-widget-wcf--tabs{
+  &.wcf-tabs-direction-row-reverse,
+  &.wcf-tabs-direction-row {
+    .tabs-wrapper {
+      flex-direction: column;
+    }
+  }
+
+  &.tabs-alignment-stretch {
+    .tab-desktop-title {
+      flex: 1 1 auto;
+    }
+  }
+}

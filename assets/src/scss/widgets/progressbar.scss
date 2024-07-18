@@ -1,0 +1,30 @@
+@import "assets/src/scss/utils/variables";
+@import "assets/src/scss/utils/mixin";
+
+.wcf__progressbar {
+  &.style {
+
+    &-2{
+      height: 150px;
+      width: 150px;
+    }
+
+    &-3 {
+      .dots {
+        gap: 10px;
+        display: flex;
+      }
+
+      .dot {
+        border: 1px solid #F9B099;
+        display: inline-block;
+        border-radius: 50%;
+        height: 15px;
+        width: 15px;
+        &.active{
+          background-color:#7DDED8;
+        }
+      }
+    }
+  }
+}

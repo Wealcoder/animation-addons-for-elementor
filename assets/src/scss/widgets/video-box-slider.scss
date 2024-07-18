@@ -1,0 +1,99 @@
+.elementor-widget-wcf--video-box-slider{
+  .wcf-popup-btn{
+    display: inline-flex;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  .thumb img{
+    width: 100%;
+    object-fit: cover;
+  }
+  .content{
+    padding: 30px 0;
+  }
+
+  &.wcf-thumb-yes{
+    .thumb{
+      position: relative;
+    }
+
+    .thumb:after{
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      z-index: -1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: 0.3s ease-in;
+    }
+
+    &.thumb-after-hover-slide{
+      .thumb:after{
+        opacity: 0;
+        visibility: hidden;
+      }
+      .swiper-slide:hover{
+        .thumb:after{
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+
+    &.thumb-after-active-slide{
+      .thumb:after{
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .swiper-slide.swiper-slide-active{
+        .thumb:after{
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  &.popup-button-hover-slide {
+    .wcf-popup-btn {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .swiper-slide:hover {
+      .wcf-popup-btn {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  &.popup-button-active-slide{
+    .wcf-popup-btn {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .swiper-slide.swiper-slide-active{
+      .wcf-popup-btn{
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  .swiper-slide{
+    transition: all 0.3s ease;
+    transform: scale(var(--scale-x, 1), var(--scale-y, 1));
+    &.swiper-slide-active{
+      transform: scale(1) !important;
+    }
+  }
+}

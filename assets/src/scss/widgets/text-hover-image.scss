@@ -1,0 +1,28 @@
+.wcf--text-hover-image{
+  .title{
+    transition: 0.3s ease;
+  }
+  .hover_text {
+    position: relative;
+  }
+  .hover_text:hover .hover_img {
+    opacity: 1;
+  }
+  .hover_img {
+    width: 300px;
+    height: 400px;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0;
+    -webkit-transition: opacity 0.3s, -webkit-transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: opacity 0.3s, -webkit-transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: opacity 0.3s, transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: opacity 0.3s, transform 0.7s cubic-bezier(0.23, 1, 0.32, 1), -webkit-transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+}

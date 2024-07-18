@@ -1,0 +1,358 @@
+@import "assets/src/scss/utils/variables";
+
+// Icon Box CSS
+.wcf__iconbox {
+  opacity: 1;
+  display: block;
+
+  &.style {
+    &-1 {
+      padding: 35px;
+      border-radius: 30px;
+      background: #233259;
+      text-align: center;
+
+      .title {
+        color: #FCFAF5;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 1.3;
+        text-transform: capitalize;
+      }
+
+      .desc {
+        color: #A4ABBB;
+      }
+    }
+
+    &-2 {
+      padding: 40px 40px 40px;
+      background-color: #B1DED9;
+
+      @media #{$xl} {
+        padding: 30px 30px 30px;
+      }
+
+      &:hover {
+        .icon {
+
+          img,
+          svg,
+          i {
+            transform: rotate(40deg);
+          }
+
+          &:after {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      }
+
+      .icon {
+        position: relative;
+
+        img,
+        svg,
+        i {
+          transition: all 0.3s;
+        }
+
+        i {
+          font-size: 120px;
+        }
+
+        &:after {
+          position: absolute;
+          content: "";
+          width: 156px;
+          height: 15px;
+          flex-shrink: 0;
+          background: linear-gradient(90deg, rgba(42, 42, 90, 0.28) 0%, rgba(42, 42, 90, 0.00) 100%);
+          filter: blur(4px);
+          inset-inline-start: 0;
+          bottom: 8px;
+          opacity: 0;
+          transform: scale(0);
+          transition: all .3s;
+        }
+      }
+
+      .title {
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 1.17;
+        color: #143935;
+
+        @media #{$md} {
+          font-size: 24px;
+        }
+      }
+
+      .desc {
+        font-size: 18px;
+        color: #2E5853;
+      }
+    }
+
+    &-3 {
+      position: relative;
+      margin: 5px;
+      overflow: hidden;
+      transition: all 0.5s;
+      padding: 50px;
+      background-color: #F9F9F9;
+      z-index: 3;
+
+      &::before {
+        position: absolute;
+        content: "\f061";
+        font-weight: 700;
+        font-size: 20px;
+        font-family: "Font Awesome 5 Free";
+        inset-inline-end: 20px;
+        top: 0;
+        color: #1C1D20;
+        transform: rotate(-45deg) translate(-50px, 20px);
+        transition: all 0.3s;
+        opacity: 0;
+      }
+
+      &:hover {
+        background-color: transparent;
+
+        &::before {
+          opacity: 1;
+          transform: rotate(-45deg) translate(-30px, 10px);
+        }
+
+        .icon {
+            color: #1C1D20;
+            fill: #1C1D20;
+          img {
+            filter: brightness(0);
+          }
+        }
+
+        .title,
+        .desc {
+          color: #1C1D20;
+        }
+      }
+
+      .title {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 26px;
+        color: #999999;
+        transition: all 0.3s;
+      }
+
+      .desc {
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 1.2;
+        transition: all 0.3s;
+
+        @media #{$lg} {
+          font-size: 20px;
+        }
+      }
+    }
+
+    &-4 {
+      .title {
+        font-weight: 400;
+        font-size: 30px;
+        line-height: 1;
+        color: #1C1D20;
+        text-transform: uppercase;
+
+        @media #{$md} {
+          font-size: 24px;
+        }
+      }
+
+      .desc {
+        font-size: 18px;
+        color: #1C1D20;
+      }
+    }
+
+    &-5 {
+      padding: 40px;
+      border: 1px solid #121212;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+
+      &:hover {
+        &::after {
+          border-radius: 0;
+        }
+
+        .title,
+        .desc,
+        .icon {
+          color: #fff;
+        }
+
+        .icon {
+          fill: #fff;
+        }
+
+        .wcf__btn a {
+          color: #fff;
+          border-color: #fff;
+        }
+      }
+
+      &::after {
+        position: absolute;
+        content: "";
+        background-color: #121212;
+        transition: all 0.3s;
+      }
+
+      .icon {
+        z-index: 1;
+        position: relative;
+        color: #121212;
+      }
+
+      .title {
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 1.5;
+        text-transform: uppercase;
+        color: #121212;
+        transition: all 0.3s;
+        position: relative;
+        z-index: 1;
+      }
+
+      .desc {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #121212;
+        position: relative;
+        z-index: 1;
+        margin-left: 70px;
+        transition: all 0.3s;
+      }
+
+      .wcf__btn {
+        margin-left: 70px;
+
+        a {
+          z-index: 1;
+          position: relative;
+        }
+      }
+    }
+
+  }
+}
+
+.hover-start {
+  &-top {
+    .wcf__iconbox.style-5 {
+      &::after {
+        width: 76px;
+        height: 23px;
+        left: calc(50% - 38px);
+        top: 0;
+        border-radius: 0 0 15px 15px;
+      }
+
+      &:hover::after {
+        width: 100%;
+        height: 100%;
+        left: 0;
+      }
+    }
+  }
+
+  &-right {
+    .wcf__iconbox.style-5 {
+      &::after {
+        width: 23px;
+        height: 76px;
+        right: 0;
+        top: calc(50% - 38px);
+        border-radius: 15px 0 0 15px;
+      }
+
+      &:hover::after {
+        width: 100%;
+        height: 100%;
+        top: 0;
+      }
+    }
+  }
+
+  &-bottom {
+    .wcf__iconbox.style-5 {
+      &::after {
+        width: 76px;
+        height: 23px;
+        left: calc(50% - 38px);
+        bottom: 0;
+        border-radius: 15px 15px 0 0;
+      }
+
+      &:hover::after {
+        width: 100%;
+        height: 100%;
+        left: 0;
+      }
+    }
+  }
+
+  &-left {
+    .wcf__iconbox.style-5 {
+      &::after {
+        width: 23px;
+        height: 76px;
+        left: 0;
+        top: calc(50% - 38px);
+        border-radius: 0 15px 15px 0;
+      }
+
+      &:hover::after {
+        width: 100%;
+        height: 100%;
+        top: 0;
+      }
+    }
+  }
+}
+
+.service {
+  &-rollover {
+    &-left {
+      position: relative;
+      transition: all 0.5s;
+
+      &::after {
+        position: absolute;
+        content: "";
+        width: 0%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        background-color: #C9C6DE;
+        transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1);
+        z-index: -1;
+      }
+
+      &:hover::after {
+        width: 100%;
+        right: auto;
+        left: 0%;
+      }
+    }
+  }
+}

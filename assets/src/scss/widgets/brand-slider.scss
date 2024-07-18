@@ -1,0 +1,19 @@
+.wcf--brand-slider-wrapper {
+
+  .swiper-wrapper {
+    align-items: center;
+    transition-timing-function: linear;
+  }
+
+  .text-slide-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-between);
+  }
+
+  &.slide-width-auto{
+    .swiper-slide {
+      width: auto !important;
+    }
+  }
+}
