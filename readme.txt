@@ -88,7 +88,7 @@ Our plugin is designed with security in mind. That means we always ensure it’s
 #### Nonstop Updates:
 Stay calm, ahead, and informed with non-stop updates. Our team continuously works on adding new features and improvements. It implies that we’re prompt to ensure your site remains modern, functional, and in line with the latest web design trends.
 
-*To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.
+*To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.*
 
 
 == Addons List ==
