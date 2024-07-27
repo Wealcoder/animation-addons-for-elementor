@@ -25,7 +25,7 @@ It’s a perfect blend of Elementor addons and advanced animations. Users can ta
 So leverage the full potential of "Animation Addons for Elementor" to experience optimal professionalism and creativity. Take your web design journey to a new height with the features, widgets, and modules packed with this best Elementor plugin for WordPress.
 
 
-== == Key features == ==
+== Key features ==
 ### 40+ Elementor Widgets:
 Unlock the potential of your website with our extensive collection of over 40 Elementor widgets. These versatile and easy-to-use widgets allow you to add dynamic content and interactive elements to your site. They will make your website more engaging and functional.
 
@@ -88,7 +88,7 @@ Our plugin is designed with security in mind. That means we always ensure it’s
 ### Nonstop Updates:
 Stay calm, ahead, and informed with non-stop updates. Our team continuously works on adding new features and improvements. It implies that we’re prompt to ensure your site remains modern, functional, and in line with the latest web design trends.
 
-#### To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.
+* To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.*
 
 
 == Addons List ==
@@ -138,7 +138,7 @@ We have designed more than 35 of the most useful widgets to enhance your Element
 43. [Nav Menu] Presents a collection of links or buttons representing various destinations within the website, allowing users to easily navigate to specific areas.
 
 
-### » DOCUMENTATION AND SUPPORT
+== » DOCUMENTATION AND SUPPORT ==
  - 📞 [Contact Our Support](http://crowdyflow.tisky.com/)
  - 🙋🏼‍♂️ [Join Our Facebook Community](https://www.facebook.com/wealcoder)
  - 📜 [Check Documentation](https://support.crowdytheme.com/)
