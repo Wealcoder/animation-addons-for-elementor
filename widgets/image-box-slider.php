@@ -516,7 +516,7 @@ class Image_Box_Slider extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'box_padding',
 			[
 				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
