@@ -241,6 +241,20 @@ class Nav_Menu extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'mobile_close',
+			[
+				'label'       => esc_html__( 'Mobile Icon', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default'     => [
+					'value'   => 'fas fa-times',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+
 		$dropdown_options = [
 			'' => esc_html__( 'None', 'extension-for-animation-addons' ),
 			'all' => esc_html__( 'All', 'extension-for-animation-addons' ),
@@ -1432,7 +1446,7 @@ class Nav_Menu extends Widget_Base {
 			include_once WCF_ADDONS_PATH . 'widgets/nav-menu/walker-nav-menu.php';
 		}
 
-		$close_button = '<button class="wcf-menu-close" type="button">X</button>';
+		$close_button = '<button class="wcf-menu-close" type="button">' . Icons_Manager::try_get_icon_html( $settings['mobile_close'], [ 'aria-hidden' => 'true' ] ) . '</button>';
 
 		//nav menu arguments
 		$arg = [
