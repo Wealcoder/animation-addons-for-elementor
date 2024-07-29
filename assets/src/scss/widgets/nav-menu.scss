@@ -68,18 +68,18 @@
 
     .wcf-menu-close {
       align-self: flex-end;
-      margin-left: auto;
-      margin-top: 10px;
-      margin-right: 10px;
+      margin: 10px 10px 10px auto;
       padding: 8px 10px;
-      border: 1px solid #dee1e7;
+      border: 1px solid #555;
       outline: none;
       background: transparent;
+      font-size: 15px;
       line-height: 1;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      justify-content: center
+      justify-content: center;
+      border-radius: 50%;
     }
 
     //overlay
