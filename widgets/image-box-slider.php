@@ -1421,7 +1421,7 @@ class Image_Box_Slider extends Widget_Base {
                     </div>
                      <?php endif; ?>
 
-                    <?php if ( ! empty( $settings['description'] ) ) : ?>
+                    <?php if ( ! empty( $item['description'] ) ) : ?>
                         <div class="description"><?php echo esc_html( $item['description'] ); ?></div>
                     <?php endif; ?>
 
