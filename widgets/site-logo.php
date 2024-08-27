@@ -616,7 +616,7 @@ class Site_Logo extends Widget_Base {
         <figure class="wp-caption">
 	<?php endif; ?>
 		<?php if ( $link ) : ?>
-        <a <?php $this->print_render_attribute_string( 'link' ); ?>>
+        <a <?php $this->print_render_attribute_string( 'link' ); ?> aria-label="<?php echo esc_html__('Site Logo', 'animation-addons-for-elementor'); ?>">
 	<?php endif; ?>
 		<?php $this->get_site_logo( $settings ) ?>
 		<?php if ( $link ) : ?>

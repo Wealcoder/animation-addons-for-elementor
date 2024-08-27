@@ -1227,7 +1227,7 @@ class Team extends Widget_Base {
 		?>
 		<div class="thumb"><?php
 		if ( ! empty( $settings['details_link']['url'] ) ) { ?>
-				<a <?php $this->print_render_attribute_string( 'details_link' ); ?>>
+				<a <?php $this->print_render_attribute_string( 'details_link' ); ?> aria-label="<?php echo esc_html($settings['member_name']); ?>">
 					<?php
 					Group_Control_Image_Size::print_attachment_image_html(
 					$settings,
