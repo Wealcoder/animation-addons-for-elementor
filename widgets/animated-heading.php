@@ -272,7 +272,7 @@ class Animated_Heading extends Widget_Base {
 
 		$this->add_render_attribute( 'wrapper', array(
 			'class'          => 'animated--heading',
-			'data-colors'    => json_encode( $colors ),
+			'data-colors'    => wp_json_encode( $colors ),
 			'data-color-end' => $settings['heading_color_end'],
 		) );
 

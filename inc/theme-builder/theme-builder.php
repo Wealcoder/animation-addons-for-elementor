@@ -635,7 +635,7 @@ class WCF_Theme_Builder {
 	 */
 	public function manage_columns( $columns ) {
 
-		$column_date   = $columns['date'];
+		$column_date = $columns['date'];
 		unset( $columns['date'] );
 
 		$columns['type']   = esc_html__( 'Type', 'animation-addons-for-elementor' );
@@ -1124,7 +1124,8 @@ class WCF_Theme_Builder {
 				wp_send_json_error( $errormessage );
 			}
 
-			$nonce = $_POST['nonce'];
+			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
 			if ( ! wp_verify_nonce( $nonce, 'wcf_tmp_nonce' ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Faild !', 'animation-addons-for-elementor' )
@@ -1132,11 +1133,11 @@ class WCF_Theme_Builder {
 				wp_send_json_error( $errormessage );
 			}
 
-			$title            = ! empty( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
-			$tmpid            = ! empty( $_POST['tmpId'] ) ? sanitize_text_field( $_POST['tmpId'] ) : '';
-			$tmpType          = ! empty( $_POST['tmpType'] ) ? sanitize_text_field( $_POST['tmpType'] ) : 'single';
-			$tmplocation      = ! empty( $_POST['tmpDisplay'] ) ? sanitize_text_field( $_POST['tmpDisplay'] ) : '';
-			$specificsDisplay = ! empty( $_POST['specificsDisplay'] ) ? sanitize_text_field( $_POST['specificsDisplay'] ) : '';
+			$title            = ! empty( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+			$tmpid            = ! empty( $_POST['tmpId'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpId'] ) ) : '';
+			$tmpType          = ! empty( $_POST['tmpType'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpType'] ) ) : 'single';
+			$tmplocation      = ! empty( $_POST['tmpDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpDisplay'] ) ) : '';
+			$specificsDisplay = ! empty( $_POST['specificsDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['specificsDisplay'] ) ) : '';
 
 			$data = [
 				'title'         => $title,
@@ -1177,7 +1178,8 @@ class WCF_Theme_Builder {
 				wp_send_json_error( $errormessage );
 			}
 
-			$nonce = $_POST['nonce'];
+			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
 			if ( ! wp_verify_nonce( $nonce, 'wcf_tmp_nonce' ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Faild !', 'animation-addons-for-elementor' )
@@ -1185,7 +1187,7 @@ class WCF_Theme_Builder {
 				wp_send_json_error( $errormessage );
 			}
 
-			$tmpid            = ! empty( $_POST['tmpId'] ) ? sanitize_text_field( $_POST['tmpId'] ) : '';
+			$tmpid            = ! empty( $_POST['tmpId'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpId'] ) ) : '';
 			$postdata         = get_post( $tmpid );
 			$tmpType          = ! empty( get_post_meta( $tmpid, self::CPT_META . '_type', true ) ) ? get_post_meta( $tmpid, self::CPT_META . '_type', true ) : 'single';
 			$tmpLocation      = ! empty( get_post_meta( $tmpid, self::CPT_META . '_location', true ) ) ? get_post_meta( $tmpid, self::CPT_META . '_location', true ) : '';
@@ -1226,7 +1228,9 @@ class WCF_Theme_Builder {
 
 		if ( isset( $_POST ) ) {
 
-			$nonce = $_POST['nonce'];
+
+			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
 			if ( ! wp_verify_nonce( $nonce, 'wcf_tmp_nonce' ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Faild !', 'animation-addons-for-elementor' )
@@ -1234,7 +1238,7 @@ class WCF_Theme_Builder {
 				wp_send_json_error( $errormessage );
 			}
 
-			$search_string = isset( $_POST['q'] ) ? sanitize_text_field( $_POST['q'] ) : '';
+			$search_string = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
 			$data          = array();
 			$result        = array();
 
