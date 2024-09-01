@@ -117,13 +117,15 @@ class WCF_Setup_Wizard_Init {
 			wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
 		}
 
-		foreach ( $_POST['settings'] as $key => $setting ) {
+		$all_settings = array_map( 'sanitize_text_field', wp_unslash( $_POST['settings'] ) );
+
+		foreach ( $all_settings as $key => $setting ) {
 
 			$option_name = $key;
 
 			wp_parse_str( $setting, $settings );
 
-			$settings = array_map( 'sanitize_text_field', $settings );
+//			$settings = array_map( 'sanitize_text_field', $settings );
 
 			$settings = array_fill_keys( array_keys( $settings ), true );
 
@@ -155,13 +157,6 @@ class WCF_Setup_Wizard_Init {
                                         <path d="M10,16.49l.06,0h.52a17.45,17.45,0,0,0,2.64-.14,3.45,3.45,0,0,0,2-.9,3.67,3.67,0,0,0,.62-.78,3,3,0,0,0,.32-1,31.41,31.41,0,0,0,.1-3.72h0a1.16,1.16,0,0,0-2-.82l-2,2a.52.52,0,0,1-.73-.73l2-2a1.16,1.16,0,0,0-.82-2h0A31.5,31.5,0,0,0,9,6.4a3,3,0,0,0-1,.32,3.67,3.67,0,0,0-.78.62,3.51,3.51,0,0,0-.9,2A17.45,17.45,0,0,0,6.08,12c0,.21,0,.33,0,.42s0,.07,0,.08h0s0,0,0,.06l-.3.3L.82,17.75a2.78,2.78,0,0,0,3.93,3.93h0l-.35-.35-.71-.71a1.28,1.28,0,0,1-1.81-1.81l4.89-4.9a2.65,2.65,0,0,0,.68-.86A2.86,2.86,0,0,0,7.58,12a15.84,15.84,0,0,1,.12-2.4A1.88,1.88,0,0,1,8.62,8a1.66,1.66,0,0,1,.55-.16,23.42,23.42,0,0,1,2.68-.08L10.48,9.17A2,2,0,0,0,13.33,12l1.37-1.37a23.32,23.32,0,0,1-.08,2.68,1.66,1.66,0,0,1-.16.55,2.09,2.09,0,0,1-.36.44,2,2,0,0,1-1.17.48,15.84,15.84,0,0,1-2.4.12,2.69,2.69,0,0,0-1.08.14,2.5,2.5,0,0,0-.86.67l-4.9,4.89,1.06,1.06,4.9-4.89ZM12.67,7.8V7.05h0Z"/>
                                     </svg>',
 				'callback' => 'render_configure_tab',
-			],
-			'integration' => [
-				'title'    => esc_html__( 'Integration', 'animation-addons-for-elementor' ),
-				'icon'     => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.5 22.5">
-                                        <path d="M12.12,22.5a.76.76,0,0,1-.71-1,2.36,2.36,0,0,0,.14-.8,2.4,2.4,0,0,0-4.8,0,2.36,2.36,0,0,0,.14.8.76.76,0,0,1-.71,1h0c-2.43,0-4-.07-5-1.14S0,18.75,0,16.33a.75.75,0,0,1,.32-.62.78.78,0,0,1,.68-.1,2.21,2.21,0,0,0,.8.14,2.4,2.4,0,0,0,0-4.8,2.36,2.36,0,0,0-.8.14A.75.75,0,0,1,.32,11,.75.75,0,0,1,0,10.38c0-2.42.07-4,1.14-5,.93-.93,2.21-1.1,4.12-1.13,0-.1,0-.21,0-.31a3.9,3.9,0,0,1,7.8,0c0,.1,0,.21,0,.31,1.9,0,3.19.2,4.12,1.13s1.1,2.22,1.13,4.12h.31a3.9,3.9,0,0,1,0,7.8h-.31c0,1.91-.2,3.19-1.13,4.12s-2.61,1.13-5,1.14Zm-3-5.7a3.91,3.91,0,0,1,3.9,3.9A2.81,2.81,0,0,1,13,21c1.63,0,2.53-.16,3.06-.69s.69-1.75.7-4a.76.76,0,0,1,1-.71,2.21,2.21,0,0,0,.8.14,2.4,2.4,0,0,0,0-4.8,2.45,2.45,0,0,0-.8.14.75.75,0,0,1-.68-.1.74.74,0,0,1-.32-.61c0-2.23-.08-3.35-.7-4s-1.75-.69-4-.7a.74.74,0,0,1-.61-.32.75.75,0,0,1-.1-.68,2.45,2.45,0,0,0,.14-.8,2.4,2.4,0,0,0-4.8,0,2.36,2.36,0,0,0,.14.8.75.75,0,0,1-.1.68.74.74,0,0,1-.61.32c-2.23,0-3.36.08-4,.7s-.66,1.43-.69,3.06A3.93,3.93,0,0,1,5.7,13.35a3.91,3.91,0,0,1-3.9,3.9H1.51c0,1.64.16,2.53.69,3.06S3.62,21,5.26,21a2.81,2.81,0,0,1,0-.29A3.91,3.91,0,0,1,9.15,16.8Z" />
-                                    </svg>',
-				'callback' => 'render_integration_tab',
 			],
 			'widgets'     => [
 				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
@@ -365,58 +360,6 @@ class WCF_Setup_Wizard_Init {
             <div class="wizard-welcome">
                 <h2><?php echo esc_html__( 'Welcome to the Animation Addon for Elementor', 'animation-addons-for-elementor' ); ?></h2>
                 <div class="desc"> <?php echo esc_html__( "Elevate your website's visual appeal with seamless animations that bring your content to life. With easy integration into Elementor, designing dynamic and engaging web experiences seems simpler, smarter, and quicker. Get ready to mesmerize your audience and stand out from the crowd with the Animation Addon for Elementor", 'animation-addons-for-elementor' ); ?></div>
-            </div>
-        </div>
-		<?php
-	}
-
-	/**
-	 * Render Integration tab
-	 * @return [void]
-	 */
-	public function render_integration_tab() {
-		?>
-        <div class="wizard-content wizard-integration" data-form-tab>
-            <div class="settings-group">
-                <div class="title-area">
-                    <h4>Integrations</h4>
-                </div>
-                <div class="settings-wrapper">
-					<?php $integrations = $this->get_setup_config()['integrations']; ?>
-					<?php foreach ( $integrations as $key => $plugin ) { ?>
-                        <div class="item">
-                            <div class="title"><?php echo esc_html( $plugin['label'] ); ?></div>
-                            <div class="desc"><?php echo esc_html( $plugin['desc'] ); ?></div>
-                            <div class="actions">
-								<?php
-								$action    = '';
-								$data_base = '';
-								if ( wcf_addons_get_local_plugin_data( $plugin['basename'] ) === false ) {
-									$action    = 'Install';
-									$data_base = $key;
-								} else {
-									if ( is_plugin_active( $plugin['basename'] ) ) {
-										$action = 'Activated';
-									} else {
-										$action    = 'Active';
-										$data_base = $plugin['basename'];
-									}
-								}
-								printf( '<a class="wcf-plugin-installer %1s" data-base="%2s" data-file="%3s"  data-source="%4s" >%5s</a>',
-									esc_attr( strtolower( $action ) ),
-									esc_attr( $data_base ),
-									esc_attr( $plugin['basename'] ),
-									esc_attr( $plugin['source'] ),
-									esc_html( $action ),
-								)
-								?>
-                            </div>
-							<?php if ( $plugin['is_recommended'] ) { ?>
-                                <div class="ribbon"><?php echo esc_html__( 'Recommended', 'animation-addons-for-elementor' ); ?></div>
-							<?php } ?>
-                        </div>
-					<?php } ?>
-                </div>
             </div>
         </div>
 		<?php
@@ -885,4 +828,3 @@ class WCF_Setup_Wizard_Init {
 }
 
 WCF_Setup_Wizard_Init::instance();
-

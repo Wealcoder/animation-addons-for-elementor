@@ -65,7 +65,6 @@ class WCF_Admin_Init {
 	 */
 	public function include() {
 		require_once( 'template-functions.php' );
-		require_once( 'plugin-installer.php' );
 	}
 
 	/**
@@ -119,9 +118,9 @@ class WCF_Admin_Init {
 			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
-				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'wcf_admin_nonce' ),
-				'adminURL' => admin_url(),
+				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
+				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
@@ -138,21 +137,17 @@ class WCF_Admin_Init {
 	 */
 	protected function get_settings_tab() {
 		$settings_tab = [
-			'home'         => [
+			'home'       => [
 				'title'    => esc_html__( 'Home', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_home_tab',
 			],
-			'widgets'      => [
+			'widgets'    => [
 				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_widget_tab',
 			],
-			'extensions'   => [
+			'extensions' => [
 				'title'    => esc_html__( 'Extensions', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_extension_tab',
-			],
-			'integrations' => [
-				'title'    => esc_html__( 'Integrations', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_integrations_tab',
 			],
 		];
 
@@ -244,11 +239,9 @@ class WCF_Admin_Init {
 			return;
 		}
 
-		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( $_POST['settings'] ) : '';
+		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 
-		wp_parse_str( $_POST['fields'], $settings );
-
-		$settings = array_map( 'sanitize_text_field', $settings );
+		wp_parse_str( sanitize_text_field( wp_unslash( $_POST['fields'] ) ), $settings );
 
 		$settings = array_fill_keys( array_keys( $settings ), true );
 
@@ -281,14 +274,14 @@ class WCF_Admin_Init {
 		}
 
 		$settings = [
-			'smooth' => $_POST['smooth'],
+			'smooth' => sanitize_text_field( wp_unslash( $_POST['smooth'] ) ),
 		];
 
 		if ( isset( $_POST['mobile'] ) ) {
-			$settings['mobile'] = $_POST['mobile'];
+			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
 
-		$option = sanitize_text_field( wp_json_encode( $settings ) );
+		$option = wp_json_encode( $settings );
 
 		// update new settings
 		if ( ! empty( $_POST['smooth'] ) ) {
@@ -302,4 +295,3 @@ class WCF_Admin_Init {
 }
 
 WCF_Admin_Init::instance();
-
