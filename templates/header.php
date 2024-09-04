@@ -4,6 +4,10 @@
  *
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
