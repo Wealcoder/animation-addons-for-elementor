@@ -875,9 +875,9 @@ class WCF_Theme_Builder {
 
 		foreach ( $post_types as $post_type ) {
 			$selection_options[ $post_type->name ] = [
-				'label' => esc_html( $post_type->label, 'animation-addons-for-elementor' ),
+				'label' => esc_html( $post_type->label ),
 				'value' => array(
-					$post_type->name . '-singular' => esc_html( $post_type->label . ' Singular', 'animation-addons-for-elementor' ),
+					$post_type->name . '-singular' => esc_html( $post_type->label . ' Singular' ),
 				),
 			];
 		}

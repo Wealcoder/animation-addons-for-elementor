@@ -10,58 +10,58 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $sidebar_content = [
 	[
-		'label' => __( 'Latest Feature' ),
+		'label' => esc_html__( 'Latest Feature', 'animation-addons-for-elementor' ),
 		'posts' => [
 			[
-				'title'       => __( 'Text Animation' ),
-				'description' => __( 'The Animation Addons for Elementor makes it easy to animate text without the need for complicated CSS coding' ),
+				'title'       => esc_html__( 'Text Animation', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'The Animation Addons for Elementor makes it easy to animate text without the need for complicated CSS coding', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 			[
-				'title'       => __( 'Image Animation' ),
-				'description' => __( 'Make your website stand out by adding animation to images with a few clicks' ),
+				'title'       => esc_html__( 'Image Animation', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'Make your website stand out by adding animation to images with a few clicks', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 			[
-				'title'       => __( 'Pin Elements' ),
-				'description' => __( 'Master the art of pinning elements on a single page with the Animation Addons for Elementor' ),
+				'title'       => esc_html__( 'Pin Elements', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'Master the art of pinning elements on a single page with the Animation Addons for Elementor', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 		]
 
 	],
 	[
-		'label' => __( 'Latest News' ),
+		'label' => esc_html__( 'Latest News', 'animation-addons-for-elementor' ),
 		'posts' => [
 			[
-				'title'       => __( 'Elevate Your Website Design with the Animation Addons for Elementor Plugin' ),
-				'description' => __( 'Explore the latest update to the Animation Addons for Elementor plugin,' ),
+				'title'       => esc_html__( 'Elevate Your Website Design with the Animation Addons for Elementor Plugin', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'Explore the latest update to the Animation Addons for Elementor plugin,', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 			[
-				'title'       => __( 'Customize Your Elementor Designs with Precision and Enhanced Animation Controls' ),
-				'description' => __( 'Discover the upgraded Animation Addons for Elementor plugin that offers advanced controls' ),
+				'title'       => esc_html__( 'Customize Your Elementor Designs with Precision and Enhanced Animation Controls' , 'animation-addons-for-elementor'),
+				'description' => esc_html__( 'Discover the upgraded Animation Addons for Elementor plugin that offers advanced controls', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 			[
-				'title'       => __( 'Get a Seamless Integration with the Animation Addons for Elementor' ),
-				'description' => __( 'Unleash optimal creativity with Animation Addons for Elementor and learn how it seamlessly integrates with a broad range of animation elements,' ),
+				'title'       => esc_html__( 'Get a Seamless Integration with the Animation Addons for Elementor', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'Unleash optimal creativity with Animation Addons for Elementor and learn how it seamlessly integrates with a broad range of animation elements,', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 		]
 
 	],
 	[
-		'label' => __( 'Documentation' ),
+		'label' => esc_html__( 'Documentation', 'animation-addons-for-elementor' ),
 		'posts' => [
 			[
-				'title'       => __( 'WCF Posts' ),
-				'description' => __( 'In this documentation, you can explore the steps of how to use the WCF Posts widget to show a wide collection of posts on your website perfectly' ),
+				'title'       => esc_html__( 'WCF Posts', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'In this documentation, you can explore the steps of how to use the WCF Posts widget to show a wide collection of posts on your website perfectly', 'animation-addons-for-elementor' ),
 				'link'        => '#'
 			],
 			[
-				'title'       => __( 'WCF Image Gallery' ),
-				'description' => __( 'You can take a look at the following steps to create a beautiful image gallery for your webpage with the WCF Image Gallery widget:' ),
+				'title'       => esc_html__( 'WCF Image Gallery', 'animation-addons-for-elementor' ),
+				'description' => esc_html__( 'You can take a look at the following steps to create a beautiful image gallery for your webpage with the WCF Image Gallery widget:' , 'animation-addons-for-elementor'),
 				'link'        => '#'
 			],
 		]
@@ -76,7 +76,7 @@ $widget_statistic = [
 <path d="M23.78,16.89a.75.75,0,0,0-1,.4,11.14,11.14,0,0,1-8.16,6.49,11.07,11.07,0,0,1-9.95-2.89,11.17,11.17,0,0,1-3-10A11.09,11.09,0,0,1,8.07,2.7a.76.76,0,0,0,.39-1,.75.75,0,0,0-1-.38A12.55,12.55,0,0,0,.23,10.62,12.61,12.61,0,0,0,3.64,22a12.35,12.35,0,0,0,8.74,3.55,13,13,0,0,0,2.55-.25,12.62,12.62,0,0,0,9.25-7.37A.76.76,0,0,0,23.78,16.89Z" />
 <path d="M24.69,8.17A13.63,13.63,0,0,0,17.33.81C15.56.07,14.39-.41,13,.48l-.2.14c-1.38,1-1.38,2.48-1.38,5V8.24c0,2.54,0,3.95,1,4.92s2.38,1,4.92,1h2.67c2.47,0,4,0,4.95-1.38l.14-.2C25.91,11.11,25.43,9.94,24.69,8.17Zm-1,3.6-.07.11c-.52.71-1.37.75-3.74.75H17.26c-2.36,0-3.34,0-3.86-.53s-.53-1.5-.53-3.86V5.57c0-2.37,0-3.22.75-3.74l.11-.07a1.58,1.58,0,0,1,.83-.26,6.67,6.67,0,0,1,2.19.69,12.16,12.16,0,0,1,6.56,6.56C24,10.48,24.21,11,23.74,11.77Z" />
 </svg>',
-		'label' => __( 'Total <br> Widgets' ),
+		'label' => wp_kses_post( __( 'Total <br> Widgets', 'animation-addons-for-elementor' ) ),
 		'count' => wcf_addons_get_all_widgets_count(),
 	],
 	'active-item'   => [
@@ -87,7 +87,7 @@ $widget_statistic = [
 <path d="M18.35,7.9a.74.74,0,0,0,.92.52.76.76,0,0,0,.52-.93l-.4-1.4a6.66,6.66,0,0,0-.26-.79,1.53,1.53,0,0,0-.61-.69,1.64,1.64,0,0,0-.89-.19c-.25,0-.56.07-.87.12l-1.61.26a.76.76,0,0,0-.61.87.74.74,0,0,0,.86.61l1.33-.22c-2.41,3.65-6.35,5.31-11.56,5.31a.75.75,0,0,0,0,1.5c5.57,0,10.12-1.79,12.87-6Z" />
 <path d="M23.52,2c-2-2-4.91-2-10.77-2S4,0,2,2,0,6.89,0,12.75s0,8.8,2,10.77,4.91,2,10.77,2,8.8,0,10.77-2,2-4.91,2-10.77S25.5,4,23.52,2ZM22.46,22.46C20.92,24,18.19,24,12.75,24S4.58,24,3,22.46,1.5,18.19,1.5,12.75,1.5,4.58,3,3,7.31,1.5,12.75,1.5s8.17,0,9.71,1.54S24,7.31,24,12.75,24,20.92,22.46,22.46Z" />
 </svg>',
-		'label' => __( 'Active <br> Widgets' ),
+		'label' => wp_kses_post( __( 'Active <br> Widgets', 'animation-addons-for-elementor' ) ),
 		'count' => wcf_addons_get_active_widgets_count(),
 	],
 	'inactive-item' => [
@@ -98,7 +98,7 @@ $widget_statistic = [
     <path d="M20.36,8.9,17.74,7.62A.75.75,0,0,0,17.08,9l1.38.67A13,13,0,0,1,5.71,5.91.75.75,0,1,0,4.64,7a14.44,14.44,0,0,0,14.09,4.16l-.87,1.19a.75.75,0,0,0,.16,1,.76.76,0,0,0,.45.15.74.74,0,0,0,.6-.31l1.75-2.38a1.27,1.27,0,0,0-.46-1.91Z"/>
     <path d="M23.52,2c-2-2-4.91-2-10.77-2S4,0,2,2,0,6.89,0,12.75s0,8.8,2,10.77,4.91,2,10.77,2,8.8,0,10.77-2,2-4.91,2-10.77S25.5,4,23.52,2ZM22.46,22.46C20.92,24,18.19,24,12.75,24S4.58,24,3,22.46,1.5,18.19,1.5,12.75,1.5,4.58,3,3,7.31,1.5,12.75,1.5s8.17,0,9.71,1.54S24,7.31,24,12.75,24,20.92,22.46,22.46Z"/>
 </svg>',
-		'label' => __( 'InActive <br> Widgets' ),
+		'label' => wp_kses_post( __( 'InActive <br> Widgets', 'animation-addons-for-elementor' ) ),
 		'count' => wcf_addons_get_inactive_widgets_count(),
 	]
 ];

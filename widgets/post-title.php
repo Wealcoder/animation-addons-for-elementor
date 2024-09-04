@@ -45,7 +45,7 @@ class Post_Title extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Heading', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -117,7 +117,7 @@ class Post_Title extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => __( 'Style', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Style', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);

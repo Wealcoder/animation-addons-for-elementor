@@ -101,7 +101,7 @@ class Animated_Heading extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Heading', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 			]
 		);
 

@@ -45,7 +45,7 @@ class Post_Paginate extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Settings', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Settings', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -172,7 +172,7 @@ class Post_Paginate extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => __( 'Style', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Style', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -351,7 +351,7 @@ class Post_Paginate extends Widget_Base {
 		$this->add_control(
 			'prev_color',
 			[
-				'label'     => esc_html__( 'Color', 'wcf' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--post-paginate a *'     => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -418,7 +418,7 @@ class Post_Paginate extends Widget_Base {
 		$this->start_controls_section(
 			'section_title_style',
 			[
-				'label'     => __( 'Post Title', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Post Title', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'preset_style' => '',
@@ -477,7 +477,7 @@ class Post_Paginate extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__( 'Color', 'wcf' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--post-paginate a .title' => 'color: {{VALUE}};',
@@ -497,7 +497,7 @@ class Post_Paginate extends Widget_Base {
 		$this->add_control(
 			'title_hover_color',
 			[
-				'label'     => esc_html__( 'Color', 'wcf' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--post-paginate a:hover .title' => 'color: {{VALUE}};',

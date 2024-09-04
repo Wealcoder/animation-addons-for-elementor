@@ -232,7 +232,7 @@ class WCF_Admin_Init {
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['fields'] ) ) {
@@ -250,7 +250,7 @@ class WCF_Admin_Init {
 			$updated = update_option( $option_name, $settings );
 			wp_send_json( $updated );
 		}
-		wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
+		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
 	/**
@@ -266,7 +266,7 @@ class WCF_Admin_Init {
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['smooth'] ) ) {
@@ -289,7 +289,7 @@ class WCF_Admin_Init {
 			wp_send_json( $option );
 		}
 
-		wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
+		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
 }

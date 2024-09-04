@@ -1,9 +1,13 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 $config = [
 	'widgets'    => [
 		'general-elements' => [
-			'title'    => __( 'General Widgets', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'General Widgets', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'image-box'         => [
 					'label'        => esc_html__( 'Image Box', 'animation-addons-for-elementor' ),
@@ -260,7 +264,7 @@ $config = [
 			]
 		],
 		'hf-elements'      => [
-			'title'    => __( 'Header/Footer Widgets', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'Header/Footer Widgets', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'site-logo' => [
 					'label'        => esc_html__( 'Site Logo', 'animation-addons-for-elementor' ),
@@ -283,7 +287,7 @@ $config = [
 			]
 		],
 		'dynamic-elements' => [
-			'title'    => __( 'Dynamic Widgets', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'Dynamic Widgets', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'post-title'         => [
 					'label'        => esc_html__( 'Post Title', 'animation-addons-for-elementor' ),
@@ -376,7 +380,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'portfolio'          => [
-					'label'        => __( 'Portfolio', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Portfolio', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -385,7 +389,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'search-form'        => [
-					'label'        => __( 'Search Form', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Search Form', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -394,7 +398,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'search-query'       => [
-					'label'        => __( 'Search Query', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Search Query', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -403,7 +407,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'search-no-result'   => [
-					'label'        => __( 'Search No Result', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Search No Result', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -414,7 +418,7 @@ $config = [
 			]
 		],
 		'form-elements'    => [
-			'title'    => __( 'Form Widgets', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'Form Widgets', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'contact-form-7' => [
 					'label'        => esc_html__( 'Contact Form 7', 'animation-addons-for-elementor' ),
@@ -437,10 +441,10 @@ $config = [
 			]
 		],
 		'video-elements'   => [
-			'title'    => __( 'Video Widgets', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'Video Widgets', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'video-popup'      => [
-					'label'        => __( 'Video Popup', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Video Popup', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -449,7 +453,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'video-box'        => [
-					'label'        => __( 'Video Box', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Video Box', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -458,7 +462,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'video-box-slider' => [
-					'label'        => __( 'Video Box Slider', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Video Box Slider', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -467,7 +471,7 @@ $config = [
 					'youtube_url'  => '',
 				],
 				'video-mask'       => [
-					'label'        => __( 'Video Mask', 'animation-addons-for-elementor' ),
+					'label'        => esc_html__( 'Video Mask', 'animation-addons-for-elementor' ),
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -480,7 +484,7 @@ $config = [
 	],
 	'extensions' => [
 		'general-extensions' => [
-			'title'    => __( 'General Extension', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'General Extension', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'custom-css' => [
 					'label'        => esc_html__( 'Custom CSS', 'animation-addons-for-elementor' ),
@@ -503,7 +507,7 @@ $config = [
 			]
 		],
 		'gsap-extensions'    => [
-			'title'    => __( 'Gsap Extension', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__( 'Gsap Extension', 'animation-addons-for-elementor' ),
 			'elements' => [
 				'animation-effects'       => [
 					'label'        => esc_html__( 'Animation', 'animation-addons-for-elementor' ),

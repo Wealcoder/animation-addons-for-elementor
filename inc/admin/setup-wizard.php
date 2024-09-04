@@ -106,7 +106,7 @@ class WCF_Setup_Wizard_Init {
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['settings'] ) ) {
@@ -114,7 +114,7 @@ class WCF_Setup_Wizard_Init {
 		}
 
 		if ( empty( $_POST['settings'] ) ) {
-			wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
+			wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 		}
 
 		$all_settings = array_map( 'sanitize_text_field', wp_unslash( $_POST['settings'] ) );
@@ -195,7 +195,7 @@ class WCF_Setup_Wizard_Init {
 		$config = [
 			'widgets'      => [
 				'general-elements' => [
-					'title'    => __( 'General Widgets', 'animation-addons-for-elementor' ),
+					'title'    => esc_html__( 'General Widgets', 'animation-addons-for-elementor' ),
 					'elements' => [
 						'image-box'      => [
 							'label' => esc_html__( 'Image Box', 'animation-addons-for-elementor' ),

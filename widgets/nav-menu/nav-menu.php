@@ -256,8 +256,8 @@ class Nav_Menu extends Widget_Base {
 		);
 
 		$dropdown_options = [
-			'' => esc_html__( 'None', 'extension-for-animation-addons' ),
-			'all' => esc_html__( 'All', 'extension-for-animation-addons' ),
+			'' => esc_html__( 'None', 'animation-addons-for-elementor' ),
+			'all' => esc_html__( 'All', 'animation-addons-for-elementor' ),
 		];
 
 		$excluded_breakpoints = [

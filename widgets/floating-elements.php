@@ -372,7 +372,7 @@ class Floating_Elements extends Widget_Base {
 				'floating_el_hide_' . $breakpoint_key,
 				[
 					/* translators: %s: Device name. */
-					'label'        => sprintf( __( 'Hide On %s', 'animation-addons-for-elementor' ), $label ),
+					'label'        => sprintf( esc_html__( 'Hide On %s', 'animation-addons-for-elementor' ), $label ),
 					'type'         => Controls_Manager::SWITCHER,
 					'default'      => '',
 					'label_on'     => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
