@@ -5,6 +5,10 @@ namespace WCF_ADDONS;
 use Elementor\Controls_Manager;
 use WP_Query;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly
+
 trait WCF_Post_Query_Trait {
 
 	public static function get_public_post_types( $args = [] ) {

@@ -4,6 +4,10 @@ namespace WCF_ADDONS;
 
 use Elementor\Plugin as ElementorPlugin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly
+
 /**
  * Class Plugin
  *
