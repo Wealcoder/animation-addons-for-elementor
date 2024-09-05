@@ -114,7 +114,10 @@ class WCF_Admin_Init {
 			// JS
 			wp_enqueue_script( 'jquery-ui-accordion' );
 
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.min.js', array(
+				'jquery',
+				'wp-util'
+			), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
