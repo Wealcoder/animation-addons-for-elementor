@@ -57,6 +57,8 @@ class WCF_Admin_Init {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );
+
+		add_action( 'admin_footer', [ $this, 'render_popup' ] );
 	}
 
 	/**
@@ -107,13 +109,10 @@ class WCF_Admin_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 
 			// CSS
-			wp_enqueue_style( 'sweetalert2', WCF_ADDONS_URL . '/assets/css/sweetalert2.min.css' );
 			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
 
 			// JS
 			wp_enqueue_script( 'jquery-ui-accordion' );
-
-			wp_enqueue_script( 'sweetalert2', WCF_ADDONS_URL . '/assets/js/sweetalert2.all.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 
 			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 
@@ -290,6 +289,68 @@ class WCF_Admin_Init {
 		}
 
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
+	}
+
+	/**
+	 * Render PopupTemplate
+	 *
+	 * @access public
+	 * @return  void
+	 * @since 1.1.2
+	 */
+	public function render_popup() {
+		?>
+        <div class="wcf-addons-settings-popup">
+            <div class="wcf-addons-settings-popup-overlay"></div>
+            <div class="wcf-addons-settings-content">
+            </div>
+        </div>
+
+        <script type="text/template" id="tmpl-wcf-settings-save">
+            <div class="popup-status-wrapper">
+                <div class="icon">
+                    <# if( 'success' === data.icon) { #>
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    <# } #>
+
+                    <# if( 'error' === data.icon) { #>
+                    <div class="error-icon">
+                        <span class="icon-line line-tip"></span>
+                        <span class="icon-line line-long"></span>
+                        <div class="icon-circle"></div>
+                        <div class="icon-fix"></div>
+                    </div>
+                    <# } #>
+                </div>
+                <h2 class="title">{{{ data.title }}}</h2>
+                <div class="text">{{{ data.text }}}</div>
+            </div>
+        </script>
+
+        <script type="text/template" id="tmpl-wcf-settings-smooth-scroller">
+            <div class="popup-status-wrapper">
+                <h2 class="title">Smooth Scroller</h2>
+                <div class="smooth-scroller-settings">
+                    <div class="input-items">
+                        <label>Smooth</label>
+                        <input type="number" value="{{data.smooth_value}}" />
+                    </div>
+                    <div class="input-items">
+                        <label>Enable On Mobile</label>
+                        <input type="checkbox" data-checked="{{data.on_mobile}}"/>
+                    </div>
+                </div>
+                <div class="wcf-popup-actions">
+                    <button type="button" class="wcf-button-confirm popup-button">OK</button>
+                </div>
+            </div>
+        </script>
+		<?php
 	}
 
 }

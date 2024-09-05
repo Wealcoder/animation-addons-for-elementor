@@ -42,8 +42,8 @@
         saveData: function () {
 
             //global on off
-            $( document ).on( 'click', '.wcf-global-switch', function ( e ) {
-                let _this = $( this );
+            $(document).on('click', '.wcf-global-switch', function (e) {
+                let _this = $(this);
 
                 let status = $(this).prop("checked");
                 let classes = ".wcf-settings-item:enabled";
@@ -51,11 +51,11 @@
                 _this.closest('form.wcf-settings').find(classes).each(function () {
                     $(this).prop("checked", status).change();
                 });
-            } );
+            });
 
             //gsap on off
-            $( document ).on( 'click', '.wcf-gsap-switch', function ( e ) {
-                let _this = $( this );
+            $(document).on('click', '.wcf-gsap-switch', function (e) {
+                let _this = $(this);
 
                 let status = _this.prop("checked");
                 let classes = ".wcf-settings-item:enabled";
@@ -63,12 +63,12 @@
                 _this.closest('.settings-group').find(classes).each(function () {
                     $(this).prop("checked", status).change();
                 });
-            } );
+            });
 
             //gsap items
-            $( document ).on( 'click', '.wcf-settings-item', function ( e ) {
-                let _this = $( this );
-                let group_area  = _this.closest('.settings-group');
+            $(document).on('click', '.wcf-settings-item', function (e) {
+                let _this = $(this);
+                let group_area = _this.closest('.settings-group');
                 let gsap_switch = group_area.find('.wcf-gsap-switch');
 
                 if (!gsap_switch.length) {
@@ -78,7 +78,7 @@
                     _this.prop("checked", false).change();
                 }
 
-            } );
+            });
 
             //smooth scroller
             $(document).on('click', '.smooth-settings', function (e) {
@@ -88,20 +88,27 @@
                 let status = checkbox.prop("checked");
 
                 let smooth_value = 1.35;
-                let on_mobile  = '';
+                let on_mobile = '';
                 if (null !== WCF_ADDONS_ADMIN.smoothScroller) {
                     smooth_value = WCF_ADDONS_ADMIN.smoothScroller.smooth
-                    on_mobile = 'on' === WCF_ADDONS_ADMIN.smoothScroller.mobile ? 'checked' : '';
+                    on_mobile = 'on' === WCF_ADDONS_ADMIN.smoothScroller.mobile;
                 }
 
-                let html  = `<div class="smooth-scroller-settings">
-                    <div class="input-items"><label>Smooth</label><input type="number" value="${smooth_value}"></div>
-                    <div class="input-items"><label>Enable On Mobile</label><input type="checkbox" ${on_mobile}></div></div>`;
+                let popupTmp = wp.template('wcf-settings-smooth-scroller'),
+                    content = null;
+
+                content = popupTmp({
+                    smooth_value: smooth_value,
+                    on_mobile: on_mobile,
+                });
+                WCFAdmin.renderPopup(content);
+
                 if (status) {
-                    Swal.fire({
-                        title: "Smooth Scroller",
-                        html: html,
-                    }).then(function (){
+                    $('[data-checked="true"]').prop('checked', true);
+                    WCFAdmin.openPopup()
+
+                    $('.popup-button').on('click', function () {
+
                         $.ajax({
                             url: WCF_ADDONS_ADMIN.ajaxurl,
                             data: {
@@ -115,30 +122,31 @@
                             beforeSend: function () {
                             },
                             success: function (response) {
-                                const smoothScroller = JSON.parse( response );
+                                const smoothScroller = JSON.parse(response);
                                 WCF_ADDONS_ADMIN.smoothScroller.smooth = smoothScroller.smooth;
                                 WCF_ADDONS_ADMIN.smoothScroller.mobile = smoothScroller.mobile;
                             },
 
-                            complete:function( response ){
+                            complete: function (response) {
 
                             },
 
-                            error: function( errorThrown ){
+                            error: function (errorThrown) {
 
-                                console.log( errorThrown );
+                                console.log(errorThrown);
                             }
-
                         });
-                    });
+                    })
                 }
 
             });
 
-
             $(".wcf-settings-save").on("click", function (e) {
-                let _this = $( this );
+                let _this = $(this);
                 let forms = _this.closest('form.wcf-settings');
+
+                let popupTmp = wp.template('wcf-settings-save'),
+                    content = null;
 
                 //if this is wizard save button
                 if (_this.closest('.wizard-content').length) {
@@ -147,45 +155,57 @@
 
 
                 $.ajax({
-                        url: WCF_ADDONS_ADMIN.ajaxurl,
-                        data: {
-                            'action': 'save_settings_with_ajax',
-                            'nonce': WCF_ADDONS_ADMIN.nonce,
-                            'settings':forms.attr('name'),
-                            'fields': forms.serialize(),
-                        },
-                        type: 'POST',
+                    url: WCF_ADDONS_ADMIN.ajaxurl,
+                    data: {
+                        'action': 'save_settings_with_ajax',
+                        'nonce': WCF_ADDONS_ADMIN.nonce,
+                        'settings': forms.attr('name'),
+                        'fields': forms.serialize(),
+                    },
+                    type: 'POST',
 
-                        beforeSend: function () {
-                            _this.html("Saving Data...");
-                        },
-                        success: function (response) {
-                            setTimeout(function () {
-                                _this.html("Save Settings");
-                                Swal.fire({
-                                    timer: 2000,
-                                    title: "Good job!",
-                                    text: "Settings Saved!",
-                                    icon: "success",
-                                    showConfirmButton: false,
-                                });
-                            }, 500);
-                        },
+                    beforeSend: function () {
+                        _this.html("Saving Data...");
+                    },
+                    success: function (response) {
+                        content = popupTmp({
+                            title: "Good job!",
+                            text: "Settings Saved!",
+                            icon: "success",
+                        });
+                        WCFAdmin.renderPopup(content)
 
-                        complete:function( response ){
+                        setTimeout(function () {
+                            _this.html("Save Settings");
+                            WCFAdmin.openPopup();
+                        }, 500);
+                    },
 
-                        },
+                    complete: function (response) {
+                        setTimeout(() => {
+                            WCFAdmin.closePopup();
+                        }, 2000)
+                    },
 
-                        error: function( errorThrown ){
-                            Swal.fire({
-                                type: "error",
-                                title: "Oops...",
-                                text: "Something went wrong!",
-                            });
-                            console.log( errorThrown );
-                        }
+                    error: function (errorThrown) {
+                        content = popupTmp({
+                            title: "Oops...",
+                            text: "Something went wrong!",
+                            icon: "error",
+                        });
 
-                    });
+                        WCFAdmin.renderPopup(content)
+
+                        WCFAdmin.openPopup();
+
+                        setTimeout(() => {
+                            WCFAdmin.closePopup();
+                        }, 2000)
+
+                        console.log(errorThrown);
+                    }
+
+                });
             })
         },
 
@@ -356,6 +376,20 @@
 
             })
 
+        },
+
+        renderPopup: function (content) {
+            $('.wcf-addons-settings-content').html(content);
+        },
+
+        openPopup: function () {
+            $('.wcf-addons-settings-popup').addClass('open-popup');
+
+            $('.popup-button').on('click', WCFAdmin.closePopup)
+        },
+
+        closePopup: function () {
+            $('.wcf-addons-settings-popup').removeClass('open-popup');
         }
 
     };
