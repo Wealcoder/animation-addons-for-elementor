@@ -145,14 +145,13 @@
                 let _this = $(this);
                 let forms = _this.closest('form.wcf-settings');
 
-                let popupTmp = wp.template('wcf-settings-save'),
-                    content = null;
-
                 //if this is wizard save button
                 if (_this.closest('.wizard-content').length) {
                     return;
                 }
 
+                let popupTmp = wp.template('wcf-settings-save'),
+                    content = null;
 
                 $.ajax({
                     url: WCF_ADDONS_ADMIN.ajaxurl,

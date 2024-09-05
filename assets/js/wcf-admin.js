@@ -118,13 +118,13 @@
       $(".wcf-settings-save").on("click", function (e) {
         var _this = $(this);
         var forms = _this.closest('form.wcf-settings');
-        var popupTmp = wp.template('wcf-settings-save'),
-          content = null;
 
         //if this is wizard save button
         if (_this.closest('.wizard-content').length) {
           return;
         }
+        var popupTmp = wp.template('wcf-settings-save'),
+          content = null;
         $.ajax({
           url: WCF_ADDONS_ADMIN.ajaxurl,
           data: {
