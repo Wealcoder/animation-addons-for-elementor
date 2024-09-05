@@ -10,6 +10,9 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages
+ *
+ * Elementor tested up to: 3.23.4
+ * Elementor Pro tested up to: 3.19.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

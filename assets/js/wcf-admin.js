@@ -98,7 +98,7 @@
                 'action': 'save_smooth_scroller_settings',
                 'nonce': WCF_ADDONS_ADMIN.nonce,
                 'smooth': $(".input-items input[type='number']").val(),
-                'mobile': (_$$val = $(".input-items input[type='checkbox']:checked").val()) !== null && _$$val !== void 0 ? _$$val : null
+                'mobile': (_$$val = $(".input-items input[type='checkbox']:checked").val()) !== null && _$$val !== void 0 ? _$$val : ''
               },
               type: 'POST',
               beforeSend: function beforeSend() {},
