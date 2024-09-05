@@ -1,1 +1,76 @@
-!function(e){var t=function(e,t){var r=t(".wcf__progressbar ",e),n=r.find(".progressbar"),o=r.data("settings"),a=o.percentage/100;new Waypoint({element:r,handler:function(e){var r,i,s;"dot"===o["progress-type"]?(r=0,i=Math.floor(100*a/20),s=setInterval((function(){r>=i?clearInterval(s):(t(n.find(".dot")[r]).addClass("active"),r++)}),500)):function(){var e=null,t={strokeWidth:o["stroke-width"],trailWidth:o["trail-width"],color:o.color,trailColor:o["trail-color"],duration:1400};if("show"===o["display-percentage"]&&(t.text={value:o.percentage+"%"},"line"===o["progress-type"])){var r=100-o.percentage;t.text.style={position:"absolute",right:r+"%"}}return"line"===o["progress-type"]&&(e=new ProgressBar.Line(n[0],t)),"circle"===o["progress-type"]&&(e=new ProgressBar.Circle(n[0],t)),e}().animate(a),this.destroy()},offset:"75%"});r.removeAttr("data-settings")};e(window).on("elementor/frontend/init",(function(){elementorFrontend.hooks.addAction("frontend/element_ready/wcf--progressbar.default",t)}))}(jQuery);
+/* global WCF_ADDONS_JS */
+(function ($) {
+  /**
+   * @param $scope The Widget wrapper element as a jQuery element
+   * @param $ The jQuery alias
+   */
+  var WcfProgressbar = function WcfProgressbar($scope, $) {
+    var progressbarWrap = $('.wcf__progressbar ', $scope);
+    var progressbar = progressbarWrap.find('.progressbar');
+    var settings = progressbarWrap.data('settings');
+    var percent = settings['percentage'] / 100;
+    var dotAnimation = function dotAnimation() {
+      var count = 0;
+      var animationDots = Math.floor(percent * 100 / 20);
+      var animation = setInterval(function () {
+        if (count >= animationDots) {
+          clearInterval(animation);
+        } else {
+          $(progressbar.find('.dot')[count]).addClass('active');
+          count++;
+        }
+      }, 500);
+    };
+    var progressAnimation = function progressAnimation() {
+      var progressBar = null;
+      var progressbarOptions = {
+        strokeWidth: settings['stroke-width'],
+        trailWidth: settings['trail-width'],
+        color: settings['color'],
+        trailColor: settings['trail-color'],
+        duration: 1400
+      };
+
+      //show percentage
+      if ('show' === settings['display-percentage']) {
+        progressbarOptions['text'] = {
+          value: settings['percentage'] + '%'
+        };
+        if ('line' === settings['progress-type']) {
+          var rightValue = 100 - settings['percentage'];
+          progressbarOptions['text']['style'] = {
+            position: 'absolute',
+            right: rightValue + '%'
+          };
+        }
+      }
+      if ('line' === settings['progress-type']) {
+        progressBar = new ProgressBar.Line(progressbar[0], progressbarOptions);
+      }
+      if ('circle' === settings['progress-type']) {
+        progressBar = new ProgressBar.Circle(progressbar[0], progressbarOptions);
+      }
+      return progressBar;
+    };
+    var waypoint = new Waypoint({
+      element: progressbarWrap,
+      handler: function handler(direction) {
+        if ('dot' === settings['progress-type']) {
+          dotAnimation();
+        } else {
+          progressAnimation().animate(percent);
+        }
+        this.destroy();
+      },
+      offset: '75%'
+    });
+
+    //remove the attribute after getting the progressbar settings
+    progressbarWrap.removeAttr('data-settings');
+  };
+
+  // Make sure you run this code under Elementor.
+  $(window).on('elementor/frontend/init', function () {
+    elementorFrontend.hooks.addAction('frontend/element_ready/wcf--progressbar.default', WcfProgressbar);
+  });
+})(jQuery);

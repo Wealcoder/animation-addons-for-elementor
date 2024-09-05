@@ -28,7 +28,7 @@ gulp.task('compile:js', () => {
         .pipe(eslint())
         .pipe(mode.development(eslint.format()))
         .pipe(babel({ presets: [['@babel/preset-env', {modules: false}]] }))
-        .pipe(mode.production(terser()))
+        // .pipe(mode.production(terser()))
         .pipe(mode.development(prettify({"indent_with_tabs": true,})))
         .pipe(mode.development(sourcemaps.write('/.')))
         .pipe(gulp.dest('assets/js'));
@@ -72,8 +72,8 @@ gulp.task('minify:css', function () {
 });
 
 // Combined tasks.
-gulp.task('buildJs', gulp.series('compile:js'));
-gulp.task('buildCss', gulp.series('compile:scss'));
+gulp.task('buildJs', gulp.series('compile:js', 'minify:js'));
+gulp.task('buildCss', gulp.series('compile:scss', 'minify:css'));
 
 gulp.task('build', gulp.series('buildCss', 'buildJs'));
 

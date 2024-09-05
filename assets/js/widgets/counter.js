@@ -1,1 +1,29 @@
-!function(e){var n=function(e,n){var r=this,t=n(".wcf--counter-number",e);this.intersectionObserver=elementorModules.utils.Scroll.scrollObserver({callback:function(e){if(e.isInViewport){r.intersectionObserver.unobserve(t[0]);var n=t.data(),o=n.toValue.toString().match(/\.(.*)/);o&&(n.rounding=o[1].length),t.numerator(n)}}}),this.intersectionObserver.observe(t[0])};e(window).on("elementor/frontend/init",(function(){elementorFrontend.hooks.addAction("frontend/element_ready/wcf--counter.default",n)}))}(jQuery);
+(function ($) {
+  /**
+   * @param $scope The Widget wrapper element as a jQuery element
+   * @param $ The jQuery alias
+   */
+  var WcfCounter = function WcfCounter($scope, $) {
+    var _this = this;
+    var $counter = $('.wcf--counter-number', $scope);
+    this.intersectionObserver = elementorModules.utils.Scroll.scrollObserver({
+      callback: function callback(event) {
+        if (event.isInViewport) {
+          _this.intersectionObserver.unobserve($counter[0]);
+          var data = $counter.data(),
+            decimalDigits = data.toValue.toString().match(/\.(.*)/);
+          if (decimalDigits) {
+            data.rounding = decimalDigits[1].length;
+          }
+          $counter.numerator(data);
+        }
+      }
+    });
+    this.intersectionObserver.observe($counter[0]);
+  };
+
+  // Make sure you run this code under Elementor.
+  $(window).on('elementor/frontend/init', function () {
+    elementorFrontend.hooks.addAction('frontend/element_ready/wcf--counter.default', WcfCounter);
+  });
+})(jQuery);

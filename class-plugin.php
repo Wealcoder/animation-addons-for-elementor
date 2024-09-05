@@ -53,7 +53,7 @@ class Plugin {
 		$scripts = [
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
-				'src'     => 'wcf-addons.js',
+				'src'     => 'wcf-addons.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
@@ -100,7 +100,7 @@ class Plugin {
 		$styles = [
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
-				'src'     => 'wcf-addons.css',
+				'src'     => 'wcf-addons.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
@@ -128,7 +128,7 @@ class Plugin {
 	 * @access public
 	 */
 	public function editor_scripts() {
-		wp_enqueue_script( 'wcf-editor', plugins_url( '/assets/js/editor.js', __FILE__ ), [
+		wp_enqueue_script( 'wcf-editor', plugins_url( '/assets/js/editor.min.js', __FILE__ ), [
 			'elementor-editor',
 		], WCF_ADDONS_VERSION, true );
 
@@ -149,7 +149,7 @@ class Plugin {
 	 * @access public
 	 */
 	public function editor_styles() {
-		wp_enqueue_style( 'wcf--editor', plugins_url( '/assets/css/editor.css', __FILE__ ), [], WCF_ADDONS_VERSION, 'all' );
+		wp_enqueue_style( 'wcf--editor', plugins_url( '/assets/css/editor.min.css', __FILE__ ), [], WCF_ADDONS_VERSION, 'all' );
 	}
 
 	/**
@@ -164,7 +164,7 @@ class Plugin {
 		return [
 			'typed'            => [
 				'handler' => 'typed',
-				'src'     => 'typed.js',
+				'src'     => 'typed.min.js',
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
@@ -185,35 +185,35 @@ class Plugin {
 			],
 			'slider'           => [
 				'handler' => 'wcf--slider',
-				'src'     => 'widgets/slider.js',
+				'src'     => 'widgets/slider.min.js',
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
 			],
 			'typewriter'       => [
 				'handler' => 'wcf--typewriter',
-				'src'     => 'widgets/typewriter.js',
+				'src'     => 'widgets/typewriter.min.js',
 				'dep'     => [ 'typed', 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'text-hover-image' => [
 				'handler' => 'wcf--text-hover-image',
-				'src'     => 'widgets/text-hover-image.js',
+				'src'     => 'widgets/text-hover-image.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'counter'          => [
 				'handler' => 'wcf--counter',
-				'src'     => 'widgets/counter.js',
+				'src'     => 'widgets/counter.min.js',
 				'dep'     => [ 'jquery-numerator' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'progressbar'      => [
 				'handler' => 'wcf--progressbar',
-				'src'     => 'widgets/progressbar.js',
+				'src'     => 'widgets/progressbar.min.js',
 				'dep'     => [ 'progressbar' ],
 				'version' => false,
 				'arg'     => true,
@@ -227,21 +227,21 @@ class Plugin {
 			],
 			'image-compare'    => [
 				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.js',
+				'src'     => 'widgets/image-compare.min.js',
 				'dep'     => [ 'beforeAfter' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'tabs'             => [
 				'handler' => 'wcf--tabs',
-				'src'     => 'widgets/tabs.js',
+				'src'     => 'widgets/tabs.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'nav-menu'         => [
 				'handler' => 'wcf--nav-menu',
-				'src'     => 'widgets/nav-menu.js',
+				'src'     => 'widgets/nav-menu.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
@@ -255,7 +255,7 @@ class Plugin {
 			],
 			'animated-heading' => [
 				'handler' => 'wcf--animated-heading',
-				'src'     => 'widgets/animated-heading.js',
+				'src'     => 'widgets/animated-heading.min.js',
 				'dep'     => [ 'jquery', 'gsap', 'chroma' ],
 				'version' => false,
 				'arg'     => true,
@@ -275,77 +275,77 @@ class Plugin {
 		return [
 			'icon-box'         => [
 				'handler' => 'wcf--icon-box',
-				'src'     => 'widgets/icon-box.css',
+				'src'     => 'widgets/icon-box.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'testimonial'      => [
 				'handler' => 'wcf--testimonial',
-				'src'     => 'widgets/testimonial.css',
+				'src'     => 'widgets/testimonial.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'testimonial2'     => [
 				'handler' => 'wcf--testimonial2',
-				'src'     => 'widgets/testimonial2.css',
+				'src'     => 'widgets/testimonial2.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'testimonial3'     => [
 				'handler' => 'wcf--testimonial3',
-				'src'     => 'widgets/testimonial3.css',
+				'src'     => 'widgets/testimonial3.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'posts'            => [
 				'handler' => 'wcf--posts',
-				'src'     => 'widgets/posts.css',
+				'src'     => 'widgets/posts.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'button'           => [
 				'handler' => 'wcf--button',
-				'src'     => 'widgets/button.css',
+				'src'     => 'widgets/button.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'progressbar'      => [
 				'handler' => 'wcf--progressbar',
-				'src'     => 'widgets/progressbar.css',
+				'src'     => 'widgets/progressbar.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'counter'          => [
 				'handler' => 'wcf--counter',
-				'src'     => 'widgets/counter.css',
+				'src'     => 'widgets/counter.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'image-compare'    => [
 				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.css',
+				'src'     => 'widgets/image-compare.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'brand-slider'     => [
 				'handler' => 'wcf--brand-slider',
-				'src'     => 'widgets/brand-slider.css',
+				'src'     => 'widgets/brand-slider.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'text-hover-image' => [
 				'handler' => 'wcf--text-hover-image',
-				'src'     => 'widgets/text-hover-image.css',
+				'src'     => 'widgets/text-hover-image.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
@@ -359,63 +359,63 @@ class Plugin {
 			],
 			'social-icons'     => [
 				'handler' => 'wcf--social-icons',
-				'src'     => 'widgets/social-icons.css',
+				'src'     => 'widgets/social-icons.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'image-gallery'    => [
 				'handler' => 'wcf--image-gallery',
-				'src'     => 'widgets/image-gallery.css',
+				'src'     => 'widgets/image-gallery.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'team'             => [
 				'handler' => 'wcf--team',
-				'src'     => 'widgets/team.css',
+				'src'     => 'widgets/team.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'image-box'        => [
 				'handler' => 'wcf--image-box',
-				'src'     => 'widgets/image-box.css',
+				'src'     => 'widgets/image-box.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'timeline'         => [
 				'handler' => 'wcf--timeline',
-				'src'     => 'widgets/timeline.css',
+				'src'     => 'widgets/timeline.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'event-slider'     => [
 				'handler' => 'wcf--event-slider',
-				'src'     => 'widgets/event-slider.css',
+				'src'     => 'widgets/event-slider.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'services-tab'     => [
 				'handler' => 'wcf--services-tab',
-				'src'     => 'widgets/services-tab.css',
+				'src'     => 'widgets/services-tab.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'countdown'        => [
 				'handler' => 'wcf--countdown',
-				'src'     => 'widgets/countdown.css',
+				'src'     => 'widgets/countdown.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
 			'meta-info'        => [
 				'handler' => 'wcf--meta-info',
-				'src'     => 'widgets/meta-info.css',
+				'src'     => 'widgets/meta-info.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',

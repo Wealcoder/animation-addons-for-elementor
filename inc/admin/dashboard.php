@@ -109,12 +109,12 @@ class WCF_Admin_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 
 			// CSS
-			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
+			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.min.css' );
 
 			// JS
 			wp_enqueue_script( 'jquery-ui-accordion' );
 
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),

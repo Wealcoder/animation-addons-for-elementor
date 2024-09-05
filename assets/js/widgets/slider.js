@@ -1,1 +1,119 @@
-function _createForOfIteratorHelper(n,r){var t="undefined"!=typeof Symbol&&n[Symbol.iterator]||n["@@iterator"];if(!t){if(Array.isArray(n)||(t=_unsupportedIterableToArray(n))||r&&n&&"number"==typeof n.length){t&&(n=t);var e=0,o=function(){};return{s:o,n:function(){return e>=n.length?{done:!0}:{done:!1,value:n[e++]}},e:function(n){throw n},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var a,i=!0,l=!1;return{s:function(){t=t.call(n)},n:function(){var n=t.next();return i=n.done,n},e:function(n){l=!0,a=n},f:function(){try{i||null==t.return||t.return()}finally{if(l)throw a}}}}function _unsupportedIterableToArray(n,r){if(n){if("string"==typeof n)return _arrayLikeToArray(n,r);var t=Object.prototype.toString.call(n).slice(8,-1);return"Object"===t&&n.constructor&&(t=n.constructor.name),"Map"===t||"Set"===t?Array.from(n):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?_arrayLikeToArray(n,r):void 0}}function _arrayLikeToArray(n,r){(null==r||r>n.length)&&(r=n.length);for(var t=0,e=new Array(r);t<r;t++)e[t]=n[t];return e}!function(n){var r=function(r){var t=n(n(".wcf__slider",r)[0]),e=n(n(".wcf__slider-wrapper, .wcf__t_slider-wrapper",r)[0]).data("settings")||{};if(e.handleElementorBreakpoints=!0,e.hasOwnProperty("navigation")){var o=n(".wcf-arrow-next",r)[n(".wcf-arrow-next",r).length-1],a=n(".wcf-arrow-prev",r)[n(".wcf-arrow-prev",r).length-1];e.navigation.nextEl=o,e.navigation.prevEl=a}return e.hasOwnProperty("pagination")&&(e.pagination.el=n(".swiper-pagination",r)[n(".swiper-pagination",r).length-1],e.pagination.hasOwnProperty("type")&&"fraction"===e.pagination.type&&(e.pagination.formatFractionCurrent=function(n){return("0"+n).slice(-2)},e.pagination.formatFractionTotal=function(n){return("0"+n).slice(-2)},e.pagination.renderFraction=function(n,r){return'<span class="'+n+'"></span><span class="mid-line"></span><span class="'+r+'"></span>'})),n(n(".wcf__slider-wrapper",r)[0]).removeAttr("data-settings"),{slider:t,options:e}},t=function(r){var t=n(".wcf__thumb_slider",r),e=n(".wcf__thumb-slider-wrapper",r).data("settings")||{};return e.handleElementorBreakpoints=!0,n(".wcf__thumb-slider-wrapper",r).removeAttr("data-settings"),{thumbSlider:t,thumbOptions:e}},e=function(n,e){var o=t(n),a=o.thumbSlider,i=o.thumbOptions,l=r(n),s=l.slider,c=l.options;a.length?new elementorFrontend.utils.swiper(a,i).then((function(n){return n})).then((function(n){new elementorFrontend.utils.swiper(s,c).then((function(n){return n})).then((function(r){r.controller.control=n,n.controller.control=r}))})):new elementorFrontend.utils.swiper(s,c).then((function(n){return n}))};n(window).on("elementor/frontend/init",(function(){var r=elementorFrontend.hooks.applyFilters("wcf/widgets/slider",{testimonial:[],testimonial2:[],testimonial3:[],"event-slider":[],"image-box-slider":[],"video-box-slider":[],"brand-slider":[],"content-slider":[]});n.each(r,(function(n,r){if(elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(n,".default"),e),r.length){var t,o=_createForOfIteratorHelper(r);try{for(o.s();!(t=o.n()).done;){var a=t.value;elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(n,".").concat(a),e)}}catch(n){o.e(n)}finally{o.f()}}}))}))}(jQuery);
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+(function ($) {
+  /**
+   * @param $scope The Widget wrapper element as a jQuery element
+   * @param $ The jQuery alias
+   */
+
+  var getSliderOptions = function getSliderOptions($scope) {
+    var slider = $($('.wcf__slider', $scope)[0]);
+    // const sliderSettings = $('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope).data('settings') || {}; double slider not working
+    var sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
+    sliderSettings.handleElementorBreakpoints = true;
+
+    //navigation
+    if (sliderSettings.hasOwnProperty('navigation')) {
+      var next = $('.wcf-arrow-next', $scope)[$('.wcf-arrow-next', $scope).length - 1];
+      var prev = $('.wcf-arrow-prev', $scope)[$('.wcf-arrow-prev', $scope).length - 1];
+      sliderSettings.navigation.nextEl = next;
+      sliderSettings.navigation.prevEl = prev;
+    }
+
+    //pagination fractions
+    if (sliderSettings.hasOwnProperty('pagination')) {
+      sliderSettings.pagination.el = $('.swiper-pagination', $scope)[$('.swiper-pagination', $scope).length - 1];
+      if (sliderSettings.pagination.hasOwnProperty('type') && 'fraction' === sliderSettings.pagination.type) {
+        sliderSettings.pagination.formatFractionCurrent = function (number) {
+          return ('0' + number).slice(-2);
+        };
+        sliderSettings.pagination.formatFractionTotal = function (number) {
+          return ('0' + number).slice(-2);
+        };
+        sliderSettings.pagination.renderFraction = function (currentClass, totalClass) {
+          return '<span class="' + currentClass + '"></span>' + '<span class="mid-line"></span>' + '<span class="' + totalClass + '"></span>';
+        };
+      }
+    }
+
+    //remove the attribute after getting the slider settings
+    $($('.wcf__slider-wrapper', $scope)[0]).removeAttr('data-settings');
+    return {
+      slider: slider,
+      options: sliderSettings
+    };
+  };
+  var getThumbSliderOptions = function getThumbSliderOptions($scope) {
+    var slider = $('.wcf__thumb_slider', $scope);
+    var sliderSettings = $('.wcf__thumb-slider-wrapper', $scope).data('settings') || {};
+    sliderSettings.handleElementorBreakpoints = true;
+
+    //remove the attribute after getting the slider settings
+    $('.wcf__thumb-slider-wrapper', $scope).removeAttr('data-settings');
+    return {
+      thumbSlider: slider,
+      thumbOptions: sliderSettings
+    };
+  };
+  var Slider = function Slider($scope, $) {
+    var _getThumbSliderOption = getThumbSliderOptions($scope),
+      thumbSlider = _getThumbSliderOption.thumbSlider,
+      thumbOptions = _getThumbSliderOption.thumbOptions;
+    var _getSliderOptions = getSliderOptions($scope),
+      slider = _getSliderOptions.slider,
+      options = _getSliderOptions.options;
+
+    //if thumb slider enable
+    if (thumbSlider.length) {
+      new elementorFrontend.utils.swiper(thumbSlider, thumbOptions).then(function (newSwiperInstance) {
+        return newSwiperInstance;
+      }).then(function (thumbSliderInstance) {
+        new elementorFrontend.utils.swiper(slider, options).then(function (newSwiperInstance) {
+          return newSwiperInstance;
+        }).then(function (newSwiperInstance) {
+          newSwiperInstance.controller.control = thumbSliderInstance;
+          thumbSliderInstance.controller.control = newSwiperInstance;
+        });
+      });
+    } else {
+      new elementorFrontend.utils.swiper(slider, options).then(function (newSwiperInstance) {
+        return newSwiperInstance;
+      });
+    }
+  };
+
+  // Make sure you run this code under Elementor.
+  $(window).on('elementor/frontend/init', function () {
+    var WcfSliderWidgets = elementorFrontend.hooks.applyFilters('wcf/widgets/slider', {
+      // Add Widget name Here
+      'testimonial': [],
+      'testimonial2': [],
+      'testimonial3': [],
+      'event-slider': [],
+      'image-box-slider': [],
+      'video-box-slider': [],
+      'brand-slider': [],
+      'content-slider': []
+    });
+    $.each(WcfSliderWidgets, function (widget, $skins) {
+      elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(widget, ".default"), Slider);
+
+      //if widget has skin
+      if ($skins.length) {
+        var _iterator = _createForOfIteratorHelper($skins),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var $skin = _step.value;
+            elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(widget, ".").concat($skin), Slider);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+    });
+  });
+})(jQuery);
