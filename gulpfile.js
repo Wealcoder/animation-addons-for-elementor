@@ -54,7 +54,6 @@ gulp.task('compile:scss', () => {
         .pipe(mode.development(sourcemaps.init({largeFile: true})))
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer())
-        .pipe(mode.production(minifyCSS()))
         .pipe(mode.development(sourcemaps.write('/.')))
         .pipe(gulp.dest('assets/css'));
 });
