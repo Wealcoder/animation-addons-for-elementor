@@ -166,6 +166,10 @@ It's totally free now. But we're going to launch the premium version soon that y
 1.0.0 – 01/04/2024
 Initial release
 
+1.1.1 – 14/09/2024
+* Tweak: Replaced `waypoints.js` library with the native Intersection Observer API
+* Fix: Progress not working in Progressbar widget.
+
 - We used lots of third-party JS Plugins. Like:
 2. beforeafter JS
 3. progressbar JS
