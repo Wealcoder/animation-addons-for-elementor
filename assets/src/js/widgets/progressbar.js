@@ -63,18 +63,30 @@
             return progressBar;
         }
 
-        let waypoint = new Waypoint({
-            element: progressbarWrap,
-            handler: function (direction) {
-                if ('dot' === settings['progress-type']) {
-                    dotAnimation();
-                } else {
-                    progressAnimation().animate(percent);
-                }
-                this.destroy();
-            },
-            offset: '75%',
-        });
+        let createObserver = function () {
+            const options = {
+                root: null,
+                threshold: 0,
+                rootMargin: '0px'
+            };
+            return new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if ('dot' === settings['progress-type']) {
+                            dotAnimation();
+                        } else {
+                            progressAnimation().animate(percent);
+                        }
+
+                        observer.unobserve(entry.target)
+                    }
+                });
+            }, options);
+        }
+
+        const observer = createObserver();
+
+        observer.observe(progressbarWrap[0]);
 
         //remove the attribute after getting the progressbar settings
         progressbarWrap.removeAttr('data-settings');

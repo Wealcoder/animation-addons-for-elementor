@@ -52,18 +52,27 @@
       }
       return progressBar;
     };
-    var waypoint = new Waypoint({
-      element: progressbarWrap,
-      handler: function handler(direction) {
-        if ('dot' === settings['progress-type']) {
-          dotAnimation();
-        } else {
-          progressAnimation().animate(percent);
-        }
-        this.destroy();
-      },
-      offset: '75%'
-    });
+    var createObserver = function createObserver() {
+      var options = {
+        root: null,
+        threshold: 0,
+        rootMargin: '0px'
+      };
+      return new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            if ('dot' === settings['progress-type']) {
+              dotAnimation();
+            } else {
+              progressAnimation().animate(percent);
+            }
+            observer.unobserve(entry.target);
+          }
+        });
+      }, options);
+    };
+    var observer = createObserver();
+    observer.observe(progressbarWrap[0]);
 
     //remove the attribute after getting the progressbar settings
     progressbarWrap.removeAttr('data-settings');
