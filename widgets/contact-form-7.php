@@ -222,7 +222,7 @@ class Contact_Form_7 extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'contactform_input_box_height',
 			[
 				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
@@ -395,7 +395,7 @@ class Contact_Form_7 extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'contactform_textarea_box_height',
 			[
 				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
