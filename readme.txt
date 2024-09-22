@@ -170,6 +170,9 @@ Initial release
 * Tweak: Replaced `waypoints.js` library with the native Intersection Observer API
 * Fix: Progress not working in Progressbar widget.
 
+1.1.2 – 22/09/2024
+* Tweak: Input field height responsive control added to Contact form 7 widget
+
 - We used lots of third-party JS Plugins. Like:
 2. beforeafter JS
 3. progressbar JS
