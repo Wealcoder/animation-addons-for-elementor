@@ -91,7 +91,7 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Search Preset', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Search Preset', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -126,7 +126,7 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_search',
 			[
-				'label'     => __( 'Search', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Search', 'animation-addons-for-elementor' ),
 				'condition' => [ 'preset!' => 'default' ]
 			]
 		);
@@ -582,7 +582,7 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_search_toggle',
 			[
-				'label'     => __( 'Toggle', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Toggle', 'animation-addons-for-elementor' ),
 				'condition' => [
 					'preset' => [ 'style-dropdown', 'style-full-screen' ],
 				]
@@ -893,7 +893,7 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label'     => __( 'Input', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Input', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'preset' => 'default' ]
 			]
@@ -935,7 +935,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_height',
 			[
-				'label'   => __( 'Height', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__( 'Height', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SLIDER,
 				'range'   => [
 					'px' => [
@@ -955,7 +955,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_width',
 			[
-				'label'      => __( 'Width', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em' ],
 				'range'      => [
@@ -972,7 +972,7 @@ class Search_Form extends Widget_Base {
 		$this->add_control(
 			'contactform_input_box_background',
 			[
-				'label'     => __( 'Background Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} input' => 'background-color: {{VALUE}};',
@@ -984,7 +984,7 @@ class Search_Form extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name'     => 'contactform_input_box_border',
-				'label'    => __( 'Border', 'wcf' ),
+				'label'    => esc_html__( 'Border', 'animation-addons-for-elementor' ),
 				'selector' => '{{WRAPPER}} input',
 			]
 		);
@@ -992,7 +992,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_border_radius',
 			[
-				'label'     => __( 'Border Radius', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::DIMENSIONS,
 				'selectors' => [
 					'{{WRAPPER}} input' => 'border-radius: {{TOP}}px {{RIGHT}}px {{BOTTOM}}px {{LEFT}}px;',
@@ -1004,7 +1004,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_padding',
 			[
-				'label'      => __( 'Padding', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -1017,7 +1017,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_margin',
 			[
-				'label'      => __( 'Margin', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -1033,7 +1033,7 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_icon_style',
 			[
-				'label'     => __( 'Search Icon / Text', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Search Icon / Text', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'preset' => 'default' ]
 			]
@@ -1063,7 +1063,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_icon_box_padding',
 			[
-				'label'      => __( 'Padding', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -1077,7 +1077,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_icon_box_margin',
 			[
-				'label'      => __( 'Margin', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -1091,7 +1091,7 @@ class Search_Form extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name'     => 'contactform_text_box_border',
-				'label'    => __( 'Border', 'animation-addons-for-elementor' ),
+				'label'    => esc_html__( 'Border', 'animation-addons-for-elementor' ),
 				'selector' => '{{WRAPPER}} button',
 			]
 		);
@@ -1099,7 +1099,7 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_text_box_border_radius',
 			[
-				'label'     => __( 'Border Radius', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::DIMENSIONS,
 				'selectors' => [
 					'{{WRAPPER}} button' => 'border-radius: {{TOP}}px {{RIGHT}}px {{BOTTOM}}px {{LEFT}}px;',
@@ -1111,7 +1111,7 @@ class Search_Form extends Widget_Base {
 		$this->add_control(
 			'contactform_button_box_background',
 			[
-				'label'     => __( 'Background Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} button' => 'background-color: {{VALUE}};',

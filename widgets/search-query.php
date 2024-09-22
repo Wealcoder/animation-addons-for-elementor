@@ -39,7 +39,7 @@ class Search_Query extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -114,7 +114,7 @@ class Search_Query extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => __( 'Style', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Style', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -186,7 +186,7 @@ class Search_Query extends Widget_Base {
 		$this->start_controls_section(
 			'section_query_style',
 			[
-				'label' => __( 'Query Text Style', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Query Text Style', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);

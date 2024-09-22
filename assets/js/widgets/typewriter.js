@@ -1,1 +1,24 @@
-!function(e){var n=function(e,n){var t=n(".typed_list",e)[0],o=n(".typed",e)[0];t&&new Typed(o,{stringsElement:t,typeSpeed:50,backSpeed:50,cursorChar:"|",loop:!0})};e(window).on("elementor/frontend/init",(function(){elementorFrontend.hooks.addAction("frontend/element_ready/wcf--typewriter.default",n)}))}(jQuery);
+(function ($) {
+  /**
+   * @param $scope The Widget wrapper element as a jQuery element
+   * @param $ The jQuery alias
+   */
+  var WcfTypewriter = function WcfTypewriter($scope, $) {
+    var type_list = $('.typed_list', $scope)[0];
+    var typed = $('.typed', $scope)[0];
+    if (type_list) {
+      new Typed(typed, {
+        stringsElement: type_list,
+        typeSpeed: 50,
+        backSpeed: 50,
+        cursorChar: '|',
+        loop: true
+      });
+    }
+  };
+
+  // Make sure you run this code under Elementor.
+  $(window).on('elementor/frontend/init', function () {
+    elementorFrontend.hooks.addAction('frontend/element_ready/wcf--typewriter.default', WcfTypewriter);
+  });
+})(jQuery);

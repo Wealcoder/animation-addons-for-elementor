@@ -57,6 +57,8 @@ class WCF_Admin_Init {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );
+
+		add_action( 'admin_footer', [ $this, 'render_popup' ] );
 	}
 
 	/**
@@ -65,7 +67,6 @@ class WCF_Admin_Init {
 	 */
 	public function include() {
 		require_once( 'template-functions.php' );
-		require_once( 'plugin-installer.php' );
 	}
 
 	/**
@@ -108,20 +109,20 @@ class WCF_Admin_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 
 			// CSS
-			wp_enqueue_style( 'sweetalert2', WCF_ADDONS_URL . '/assets/css/sweetalert2.min.css' );
-			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
+			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.min.css' );
 
 			// JS
 			wp_enqueue_script( 'jquery-ui-accordion' );
 
-			wp_enqueue_script( 'sweetalert2', WCF_ADDONS_URL . '/assets/js/sweetalert2.all.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
-
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.min.js', array(
+				'jquery',
+				'wp-util'
+			), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
-				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'wcf_admin_nonce' ),
-				'adminURL' => admin_url(),
+				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
+				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
@@ -138,21 +139,17 @@ class WCF_Admin_Init {
 	 */
 	protected function get_settings_tab() {
 		$settings_tab = [
-			'home'         => [
+			'home'       => [
 				'title'    => esc_html__( 'Home', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_home_tab',
 			],
-			'widgets'      => [
+			'widgets'    => [
 				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_widget_tab',
 			],
-			'extensions'   => [
+			'extensions' => [
 				'title'    => esc_html__( 'Extensions', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_extension_tab',
-			],
-			'integrations' => [
-				'title'    => esc_html__( 'Integrations', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_integrations_tab',
 			],
 		];
 
@@ -237,18 +234,16 @@ class WCF_Admin_Init {
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['fields'] ) ) {
 			return;
 		}
 
-		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( $_POST['settings'] ) : '';
+		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 
-		wp_parse_str( $_POST['fields'], $settings );
-
-		$settings = array_map( 'sanitize_text_field', $settings );
+		wp_parse_str( sanitize_text_field( wp_unslash( $_POST['fields'] ) ), $settings );
 
 		$settings = array_fill_keys( array_keys( $settings ), true );
 
@@ -257,7 +252,7 @@ class WCF_Admin_Init {
 			$updated = update_option( $option_name, $settings );
 			wp_send_json( $updated );
 		}
-		wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
+		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
 	/**
@@ -273,7 +268,7 @@ class WCF_Admin_Init {
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['smooth'] ) ) {
@@ -281,14 +276,14 @@ class WCF_Admin_Init {
 		}
 
 		$settings = [
-			'smooth' => $_POST['smooth'],
+			'smooth' => sanitize_text_field( wp_unslash( $_POST['smooth'] ) ),
 		];
 
 		if ( isset( $_POST['mobile'] ) ) {
-			$settings['mobile'] = $_POST['mobile'];
+			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
 
-		$option = sanitize_text_field( wp_json_encode( $settings ) );
+		$option = wp_json_encode( $settings );
 
 		// update new settings
 		if ( ! empty( $_POST['smooth'] ) ) {
@@ -296,10 +291,71 @@ class WCF_Admin_Init {
 			wp_send_json( $option );
 		}
 
-		wp_send_json( __( 'Option name not found!', 'animation-addons-for-elementor' ) );
+		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
+	}
+
+	/**
+	 * Render PopupTemplate
+	 *
+	 * @access public
+	 * @return  void
+	 * @since 1.1.2
+	 */
+	public function render_popup() {
+		?>
+        <div class="wcf-addons-settings-popup">
+            <div class="wcf-addons-settings-popup-overlay"></div>
+            <div class="wcf-addons-settings-content">
+            </div>
+        </div>
+
+        <script type="text/template" id="tmpl-wcf-settings-save">
+            <div class="popup-status-wrapper">
+                <div class="icon">
+                    <# if( 'success' === data.icon) { #>
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    <# } #>
+
+                    <# if( 'error' === data.icon) { #>
+                    <div class="error-icon">
+                        <span class="icon-line line-tip"></span>
+                        <span class="icon-line line-long"></span>
+                        <div class="icon-circle"></div>
+                        <div class="icon-fix"></div>
+                    </div>
+                    <# } #>
+                </div>
+                <h2 class="title">{{{ data.title }}}</h2>
+                <div class="text">{{{ data.text }}}</div>
+            </div>
+        </script>
+
+        <script type="text/template" id="tmpl-wcf-settings-smooth-scroller">
+            <div class="popup-status-wrapper">
+                <h2 class="title">Smooth Scroller</h2>
+                <div class="smooth-scroller-settings">
+                    <div class="input-items">
+                        <label>Smooth</label>
+                        <input type="number" value="{{data.smooth_value}}" />
+                    </div>
+                    <div class="input-items">
+                        <label>Enable On Mobile</label>
+                        <input type="checkbox" data-checked="{{data.on_mobile}}"/>
+                    </div>
+                </div>
+                <div class="wcf-popup-actions">
+                    <button type="button" class="wcf-button-confirm popup-button">OK</button>
+                </div>
+            </div>
+        </script>
+		<?php
 	}
 
 }
 
 WCF_Admin_Init::instance();
-

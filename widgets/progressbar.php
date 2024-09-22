@@ -83,7 +83,7 @@ class Progressbar extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'elementor-waypoints', 'progressbar', 'wcf--progressbar' ];
+		return [ 'progressbar', 'wcf--progressbar' ];
 	}
 
 	/**

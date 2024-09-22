@@ -9,6 +9,10 @@ use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Typography;
 use Elementor\Icons_Manager;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly
+
 trait WCF_Button_Trait {
 	protected function register_button_content_controls( $default_value = [], $conditions = [] ) {
 		$default = [

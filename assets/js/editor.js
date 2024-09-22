@@ -1,1 +1,60 @@
-!function(e,t,n,i){elementor.hooks.addAction("panel/open_editor/widget/wcf--mailchimp",(function(e,t,n){var o=function(t){jQuery.ajax({type:"post",dataType:"json",url:i.ajaxUrl,data:{action:"mailchimp_api",nonce:i._wpnonce,api:t},success:function(t){var n=e.$el.find('[data-setting="mailchimp_lists"]');if(Object.keys(t).length){var i={id:Object.keys(t),text:Object.values(t)},o=new Option(i.text,i.id,!1,!1);n.append(o).trigger("change")}else n.empty()}})},a=e.$el.find('[data-setting="mailchimp_api"]');a.val()&&o(a.val()),a.on("keyup",(function(){o(a.val())}))})),elementor.hooks.addFilter("editor/style/styleText",(function(e,t){if(t){var n=t.model,i=n.get("settings").get("wcf_custom_css"),o=".elementor-element.elementor-element-"+n.get("id");return"document"===n.get("elType")&&(o=elementor.config.document.settings.cssWrapperSelector),i&&(e+=i.replace(/selector/g,o)),e}}))}(jQuery,window,document,WCF_Addons_Editor);
+/**
+ * WCF Addons Editor Core
+ * @version 1.0.0
+ */
+
+/* global jQuery, WCF_Addons_Editor*/
+
+(function ($, window, document, config) {
+  elementor.hooks.addAction('panel/open_editor/widget/wcf--mailchimp', function (panel, model, view) {
+    var ajax_request = function ajax_request($api) {
+      jQuery.ajax({
+        type: "post",
+        dataType: "json",
+        url: config.ajaxUrl,
+        data: {
+          action: "mailchimp_api",
+          nonce: config._wpnonce,
+          api: $api
+        },
+        success: function success(response) {
+          var audience = panel.$el.find('[data-setting="mailchimp_lists"]');
+          if (Object.keys(response).length) {
+            var data = {
+              id: Object.keys(response),
+              text: Object.values(response)
+            };
+            var newOption = new Option(data.text, data.id, false, false);
+            audience.append(newOption).trigger('change');
+          } else {
+            audience.empty();
+          }
+        }
+      });
+    };
+    var $element = panel.$el.find('[data-setting="mailchimp_api"]');
+    if ($element.val()) {
+      ajax_request($element.val());
+    }
+    $element.on('keyup', function () {
+      ajax_request($element.val());
+    });
+  });
+
+  // Custom Css
+  elementor.hooks.addFilter('editor/style/styleText', function (css, context) {
+    if (!context) {
+      return;
+    }
+    var model = context.model,
+      customCSS = model.get('settings').get('wcf_custom_css');
+    var selector = '.elementor-element.elementor-element-' + model.get('id');
+    if ('document' === model.get('elType')) {
+      selector = elementor.config.document.settings.cssWrapperSelector;
+    }
+    if (customCSS) {
+      css += customCSS.replace(/selector/g, selector);
+    }
+    return css;
+  });
+})(jQuery, window, document, WCF_Addons_Editor);

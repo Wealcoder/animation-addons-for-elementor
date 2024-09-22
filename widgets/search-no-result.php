@@ -40,7 +40,7 @@ class Search_No_Result extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -138,7 +138,7 @@ class Search_No_Result extends Widget_Base {
 		$this->start_controls_section(
 			'title_style',
 			[
-				'label' => __( 'Title', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -210,7 +210,7 @@ class Search_No_Result extends Widget_Base {
 		$this->start_controls_section(
 			'content_style',
 			[
-				'label' => __( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);

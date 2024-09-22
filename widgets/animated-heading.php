@@ -101,7 +101,7 @@ class Animated_Heading extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Heading', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -272,7 +272,7 @@ class Animated_Heading extends Widget_Base {
 
 		$this->add_render_attribute( 'wrapper', array(
 			'class'          => 'animated--heading',
-			'data-colors'    => json_encode( $colors ),
+			'data-colors'    => wp_json_encode( $colors ),
 			'data-color-end' => $settings['heading_color_end'],
 		) );
 

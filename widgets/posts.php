@@ -2047,7 +2047,7 @@ class Posts extends Widget_Base {
 		// PHPCS - `get_permalink` is safe.
 		?>
 		<div class="thumb">
-			<a href="<?php echo esc_url( get_permalink() ); ?>">
+			<a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
 			</a>
 		</div>
@@ -2250,8 +2250,9 @@ class Posts extends Widget_Base {
 		?>
 
 		<a class="link <?php echo esc_attr( $this->get_settings( 'icon_align' ) ); ?>"
-		   href="<?php echo esc_url( get_the_permalink() ); ?>" aria-label="<?php echo esc_attr( $aria_label_text ); ?>"
+		   href="<?php echo esc_url( get_the_permalink() ); ?>"
 		   tabindex="-1">
+            <span class="screen-reader-text"><?php echo esc_html( $aria_label_text ); ?></span>
 			<?php if ( $is_new || $migrated ) :
 				Icons_Manager::render_icon( $this->get_settings( 'selected_icon' ), [ 'aria-hidden' => 'true' ] );
 			else : ?>

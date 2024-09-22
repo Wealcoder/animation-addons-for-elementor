@@ -8,6 +8,10 @@ use Elementor\Group_Control_Border;
 use Elementor\Icons_Manager;
 use Elementor\Plugin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly
+
 trait WCF_Slider_Trait {
 
 	/**

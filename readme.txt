@@ -3,9 +3,9 @@ Contributors: wealcoder, nazmulhasanaail
 Donate link: https://wealcoder.com/donate
 Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.2
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,73 +26,73 @@ So leverage the full potential of "Animation Addons for Elementor" to experience
 
 
 == == Key features == ==
-### 40+ Elementor Widgets:
+#### 40+ Elementor Widgets:
 Unlock the potential of your website with our extensive collection of over 40 Elementor widgets. These versatile and easy-to-use widgets allow you to add dynamic content and interactive elements to your site. They will make your website more engaging and functional.
 
-### GSAP Animations:
+#### GSAP Animations:
 Our plugin is built to allow you to integrate with the robust GSAP animations. As a result, you can provide a refined, vibrant, and smooth user experience with high-performance animation with ease. The animations will make your website more appealing thanks to the versatility, speed, and ease of use they offer.
 
-### Header Footer Builder:
+#### Header Footer Builder:
 Design and customize your headers and footers with ease using our intuitive Header Footer Builder. The builder will allow you to create unique layouts. The layouts will enhance your site's navigation and overall appearance, giving it a professional touch.
 
-### Archive Page Builder:
+#### Archive Page Builder:
 Effortlessly craft stunning archive pages with our Archive Page Builder. With the builder, organize your content in a visually appealing manner. Ensure your visitors can easily find what they're looking for while enjoying a seamless browsing experience.
 
-### Custom Post Archive Builder:
+#### Custom Post Archive Builder:
 Create a custom, professional post archive with our innovative Custom Post Archive Builder. Save your valuable time by eliminating the need of using so many third-party plugins and add-ons as long as you have our plugin at your fingertips.
 
-### Custom Single Post Builder:
+#### Custom Single Post Builder:
 Elevate your web design process with our user-friendly Custom Single Post Builder. Experience seamless usability and unleash your creativity by building eye-catching and distinctive single posts like a breeze.
 
-### Single Page/Post Builder:
+#### Single Page/Post Builder:
 Use our Single Page/Post Builder to transform individual posts into visually compelling stories. Seamlessly customize every aspect of your posts, from layout to style, to ensure your content stands out and keeps readers engaged.
 
-### Custom CSS:
+#### Custom CSS:
 Want to add a personalized design to your website? Well, you can take full control of your site's appearance with custom CSS. The plugin will enable you to tailor every detail to your liking, from fonts and colors to layouts and animations. In a word, you can give your website a unique and personalized look with ease.
 
-### One Page Scroll:
+#### One Page Scroll:
 The plugin encompasses One Page Scroll feature to help you create sleek and modern one-page websites within minutes. You can enhance the user experience with smooth scrolling effects, making it easy for visitors to navigate through your content effortlessly.
 
-### Multi-Widget Area:
+#### Multi-Widget Area:
 Maximize your site's functionality with our Multi Widgets Area. Add multiple widgets to different areas of your site so that your visitors have access to all the information and tools they need at their fingertips.
 
-### Completely Customizable:
+#### Completely Customizable:
 Enjoy the freedom to fully customize every element of your site with our plugin. From layouts and colors to fonts and animations, tailor your website to reflect your brand's identity and style perfectly.
 
-### Cross-Browser Compatible:
+#### Cross-Browser Compatible:
 Our plugin is designed to be cross-browser compatible, providing a consistent and seamless experience for all your visitors. Regardless of their preferred browser, your website will look and perform flawlessly.
 
-### Fully Responsive:
+#### Fully Responsive:
 Deliver a superior user experience on any device with our fully responsive design. Whether your visitors are on desktops, tablets, or smartphones, your website will look stunning and function perfectly.
 
-### Build with Elementor:
+#### Build with Elementor:
 Leverage the power and flexibility of Elementor with our plugin. Seamlessly integrate with this popular page builder to create visually appealing and highly functional websites with ease, regardless of your technical expertise.
 
 
 == Why Use Animation Addons for Elementor? ==
-### Free and Premium Widgets:
+#### Free and Premium Widgets:
 Access a rich library of both free and premium widgets that cater to all your design needs. Whether you're just starting or looking to add advanced features, our widgets provide the flexibility and functionality to create stunning websites.
 
-### Lightweight and Fast:
+#### Lightweight and Fast:
 Enjoy a plugin that is meticulously optimized for performance. Our lightweight design ensures your site remains fast and responsive all along. It provides a smooth user experience without compromising on functionality.
 
-### Instant Loading:
+#### Instant Loading:
 Our plugin is built to minimize delays and let you experience immediate loading times. With a view to keeping visitors engaged and reducing bounce rates, the plugin will make your content appear quickly.
 
-### Dedicated Support:
+#### Dedicated Support:
 Our dedicated support team is ready to assist you with any queries or issues. You’ll have expert help at your fingertips whenever you need it, as we’re committed to providing optimal customer satisfaction.
 
-### Secure and Conflict-Free:
+#### Secure and Conflict-Free:
 Our plugin is designed with security in mind. That means we always ensure it’s conflict-free and regularly updated to protect your site from vulnerabilities. The optimal security will give you peace of mind all along.
 
-### Nonstop Updates:
+#### Nonstop Updates:
 Stay calm, ahead, and informed with non-stop updates. Our team continuously works on adding new features and improvements. It implies that we’re prompt to ensure your site remains modern, functional, and in line with the latest web design trends.
 
-#### To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.
+*To be specific, by choosing Animation Addons for Elementor, you're investing in a robust tool that enhances your website’s design, performance, and security. Keep in mind that all widgets and features are backed by exceptional support and regular updates.*
 
 
 == Addons List ==
-We have designed more than 35 of the most useful widgets to enhance your Elementor Page Building experience and allow you to climb the top of your design capabilities.
+We have designed more than 35 of the most useful widgets to enhance your Elementor Page Building experience and allow you to climb the top of your design capabilities.*
 1. [Post] Showcase your blog posts in multiple unique styles
 2. [Animated Tittle] Animate your title as you want, fade, animate by character, animate with word, animate with line, text reveal and more
 3. [Animated Text] Animate your text as you want, fade, animate by character, animate with word, animate with line, text reveal and more
@@ -165,6 +165,10 @@ It's totally free now. But we're going to launch the premium version soon that y
 
 1.0.0 – 01/04/2024
 Initial release
+
+1.1.1 – 14/09/2024
+* Tweak: Replaced `waypoints.js` library with the native Intersection Observer API
+* Fix: Progress not working in Progressbar widget.
 
 - We used lots of third-party JS Plugins. Like:
 2. beforeafter JS

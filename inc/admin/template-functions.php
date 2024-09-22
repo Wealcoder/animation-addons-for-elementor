@@ -37,13 +37,3 @@ if ( ! function_exists( 'wcf_admin_settings_extension_tab' ) ) {
 		include WCF_ADDONS_PATH . 'inc/admin/views/settings-extensions.php';
 	}
 }
-
-if ( ! function_exists( 'wcf_admin_settings_integrations_tab' ) ) {
-
-	/**
-	 * Output the module tab content.
-	 */
-	function wcf_admin_settings_integrations_tab( $key, $tab ) {
-		include WCF_ADDONS_PATH . 'inc/admin/views/settings-integrations.php';
-	}
-}

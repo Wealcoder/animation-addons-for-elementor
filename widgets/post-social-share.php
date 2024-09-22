@@ -52,7 +52,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -204,7 +204,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_layout',
 			[
-				'label' => __( 'Layout', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -390,7 +390,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => __( 'Item', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Item', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -788,7 +788,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_icon_layout',
 			[
-				'label'     => __( 'Icon Style', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Icon Style', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'social_icon_style!' => '' ]
 			]
@@ -881,7 +881,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_svg_style',
 			[
-				'label' => __( 'Svg', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Svg', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);

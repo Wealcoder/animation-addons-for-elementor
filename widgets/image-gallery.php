@@ -498,6 +498,7 @@ class Image_Gallery extends Widget_Base {
 				?>
 				<div <?php $this->print_render_attribute_string( 'item' ); ?> >
 					<a <?php $this->print_render_attribute_string( $link_key ); ?>>
+                        <span class="screen-reader-text"><?php echo esc_html__('Go for details', 'animation-addons-for-elementor'); ?></span>
 						<?php Utils::print_wp_kses_extended( $this::get_gallery_attachment_image_html( $settings, $item, $image_size_key = 'image', $image_key = null, 'image' ), [ 'image' ] ); ?>
 
 						<?php if ( $settings['show_icon'] ) : ?>
