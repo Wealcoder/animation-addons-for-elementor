@@ -221,19 +221,21 @@
                     return;
                 }
 
-                //install plugin
-                if (_this.hasClass('install') || _this.hasClass('active')){
-                    let action = 'install',
-                        before = 'Installing...',
-                        addClass = 'active',
-                        addHtml = 'Active';
-                    if (_this.hasClass('active')) {
-                        action_base = _this.data('file');
-                        action = 'active';
+                //download plugin
+                if (_this.hasClass('download')){
+                    window.open(action_base, '_blank')
+                    return;
+                }
+
+                //active plugin
+                if (_this.hasClass('active')){
+
+                    let action_base = _this.data('file'),
+                        action = 'active',
                         before = 'Activating...',
-                        addClass = 'activated';
+                        addClass = 'activated',
                         addHtml = 'Activated';
-                    }
+
                     $.ajax({
                         url: WCF_ADDONS_ADMIN.ajaxurl,
                         data: {
