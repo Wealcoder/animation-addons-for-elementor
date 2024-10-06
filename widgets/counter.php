@@ -458,7 +458,7 @@ class Counter extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'title_margin',
 			[
 				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
