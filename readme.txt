@@ -5,7 +5,7 @@ Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -172,6 +172,14 @@ Initial release
 
 1.1.2 – 22/09/2024
 * Tweak: Input field height responsive control added to Contact form 7 widget
+
+1.1.3 – 21/10/2024
+Tweak: Title margin responsive control added to Counter widget.
+Fix: Meta description duplicate
+Fix: Goodshare console error
+
+
+
 
 - We used lots of third-party JS Plugins. Like:
 2. beforeafter JS
