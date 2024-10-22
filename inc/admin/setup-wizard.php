@@ -272,7 +272,7 @@ class WCF_Setup_Wizard_Init {
 					'desc'           => esc_html__( 'Unlock the power of GSAp animation. We highly recommend installing the plugin.', 'animation-addons-for-elementor' ),
 					'basename'       => 'extension-for-animation-addons/extension-for-animation-addons.php',
 					'source'         => 'custom',
-					'download_url' => 'https://crowdytheme.com/',
+					'download_url' => 'https://animation-addons.com/',
 					'is_recommended' => true,
 				],
 			],
