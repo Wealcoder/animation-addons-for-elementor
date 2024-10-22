@@ -22,7 +22,7 @@ $plugins = [
 				'basename' => 'extension-for-animation-addons/extension-for-animation-addons.php',
 				'source'   => 'custom',
 				'is_pro'   => false,
-				'download_url' => 'https://crowdytheme.com/',
+				'download_url' => 'https://animation-addons.com/',
 			],
 		]
 	],
