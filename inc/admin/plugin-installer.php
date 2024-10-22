@@ -48,7 +48,7 @@ class WCF_Plugin_Installer {
 	 */
 	public function get_remote_plugin_data( $slug = '', $source = '' ) {
 		if ( empty( $slug ) || empty( $source ) ) {
-			return new WP_Error( 'empty_arg', __( 'Argument should not be empty.' ) );
+			return new WP_Error( 'empty_arg', esc_html__( 'Argument should not be empty.', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( 'wordpress' === $source ) {
@@ -89,7 +89,7 @@ class WCF_Plugin_Installer {
 	 */
 	public function install_plugin( $slug = '', $source = '', $active = false ) {
 		if ( empty( $slug ) || empty( $source ) ) {
-			return new WP_Error( 'empty_arg', __( 'Argument should not be empty.' ) );
+			return new WP_Error( 'empty_arg', esc_html__( 'Argument should not be empty.', 'animation-addons-for-elementor' ) );
 		}
 
 		include_once ABSPATH . 'wp-admin/includes/file.php';
