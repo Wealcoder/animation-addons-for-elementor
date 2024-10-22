@@ -158,6 +158,13 @@ class WCF_Setup_Wizard_Init {
                                     </svg>',
 				'callback' => 'render_configure_tab',
 			],
+			'integration' => [
+				'title'    => esc_html__( 'Integration', 'animation-addons-for-elementor' ),
+				'icon'     => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.5 22.5">
+                                        <path d="M12.12,22.5a.76.76,0,0,1-.71-1,2.36,2.36,0,0,0,.14-.8,2.4,2.4,0,0,0-4.8,0,2.36,2.36,0,0,0,.14.8.76.76,0,0,1-.71,1h0c-2.43,0-4-.07-5-1.14S0,18.75,0,16.33a.75.75,0,0,1,.32-.62.78.78,0,0,1,.68-.1,2.21,2.21,0,0,0,.8.14,2.4,2.4,0,0,0,0-4.8,2.36,2.36,0,0,0-.8.14A.75.75,0,0,1,.32,11,.75.75,0,0,1,0,10.38c0-2.42.07-4,1.14-5,.93-.93,2.21-1.1,4.12-1.13,0-.1,0-.21,0-.31a3.9,3.9,0,0,1,7.8,0c0,.1,0,.21,0,.31,1.9,0,3.19.2,4.12,1.13s1.1,2.22,1.13,4.12h.31a3.9,3.9,0,0,1,0,7.8h-.31c0,1.91-.2,3.19-1.13,4.12s-2.61,1.13-5,1.14Zm-3-5.7a3.91,3.91,0,0,1,3.9,3.9A2.81,2.81,0,0,1,13,21c1.63,0,2.53-.16,3.06-.69s.69-1.75.7-4a.76.76,0,0,1,1-.71,2.21,2.21,0,0,0,.8.14,2.4,2.4,0,0,0,0-4.8,2.45,2.45,0,0,0-.8.14.75.75,0,0,1-.68-.1.74.74,0,0,1-.32-.61c0-2.23-.08-3.35-.7-4s-1.75-.69-4-.7a.74.74,0,0,1-.61-.32.75.75,0,0,1-.1-.68,2.45,2.45,0,0,0,.14-.8,2.4,2.4,0,0,0-4.8,0,2.36,2.36,0,0,0,.14.8.75.75,0,0,1-.1.68.74.74,0,0,1-.61.32c-2.23,0-3.36.08-4,.7s-.66,1.43-.69,3.06A3.93,3.93,0,0,1,5.7,13.35a3.91,3.91,0,0,1-3.9,3.9H1.51c0,1.64.16,2.53.69,3.06S3.62,21,5.26,21a2.81,2.81,0,0,1,0-.29A3.91,3.91,0,0,1,9.15,16.8Z" />
+                                    </svg>',
+				'callback' => 'render_integration_tab',
+			],
 			'widgets'     => [
 				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
 				'icon'     => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.5 22.5">
@@ -265,6 +272,7 @@ class WCF_Setup_Wizard_Init {
 					'desc'           => esc_html__( 'Unlock the power of GSAp animation. We highly recommend installing the plugin.', 'animation-addons-for-elementor' ),
 					'basename'       => 'extension-for-animation-addons/extension-for-animation-addons.php',
 					'source'         => 'custom',
+					'download_url' => 'https://animation-addons.com/',
 					'is_recommended' => true,
 				],
 			],
@@ -360,6 +368,58 @@ class WCF_Setup_Wizard_Init {
             <div class="wizard-welcome">
                 <h2><?php echo esc_html__( 'Welcome to the Animation Addon for Elementor', 'animation-addons-for-elementor' ); ?></h2>
                 <div class="desc"> <?php echo esc_html__( "Elevate your website's visual appeal with seamless animations that bring your content to life. With easy integration into Elementor, designing dynamic and engaging web experiences seems simpler, smarter, and quicker. Get ready to mesmerize your audience and stand out from the crowd with the Animation Addon for Elementor", 'animation-addons-for-elementor' ); ?></div>
+            </div>
+        </div>
+		<?php
+	}
+
+	/**
+	 * Render Integration tab
+	 * @return [void]
+	 */
+	public function render_integration_tab() {
+		?>
+        <div class="wizard-content wizard-integration" data-form-tab>
+            <div class="settings-group">
+                <div class="title-area">
+                    <h4>Integrations</h4>
+                </div>
+                <div class="settings-wrapper">
+					<?php $integrations = $this->get_setup_config()['integrations']; ?>
+					<?php foreach ( $integrations as $key => $plugin ) { ?>
+                        <div class="item">
+                            <div class="title"><?php echo esc_html( $plugin['label'] ); ?></div>
+                            <div class="desc"><?php echo esc_html( $plugin['desc'] ); ?></div>
+                            <div class="actions">
+								<?php
+								$action    = '';
+								$data_base = '';
+								if ( wcf_addons_get_local_plugin_data( $plugin['basename'] ) === false ) {
+									$action    = 'Download';
+									$data_base = $plugin['download_url'];
+								} else {
+									if ( is_plugin_active( $plugin['basename'] ) ) {
+										$action = 'Activated';
+									} else {
+										$action    = 'Active';
+										$data_base = $plugin['basename'];
+									}
+								}
+								printf( '<a class="wcf-plugin-installer %1s" data-base="%2s" data-file="%3s"  data-source="%4s" >%5s</a>',
+									esc_attr( strtolower( $action ) ),
+									esc_attr( $data_base ),
+									esc_attr( $plugin['basename'] ),
+									esc_attr( $plugin['source'] ),
+									esc_html( $action ),
+								)
+								?>
+                            </div>
+							<?php if ( $plugin['is_recommended'] ) { ?>
+                                <div class="ribbon"><?php echo esc_html__( 'Recommended', 'animation-addons-for-elementor' ); ?></div>
+							<?php } ?>
+                        </div>
+					<?php } ?>
+                </div>
             </div>
         </div>
 		<?php

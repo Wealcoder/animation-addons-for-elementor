@@ -181,24 +181,25 @@
           return;
         }
 
-        //install plugin
-        if (_this.hasClass('install') || _this.hasClass('active')) {
-          var action = 'install',
-            before = 'Installing...',
-            addClass = 'active',
-            addHtml = 'Active';
-          if (_this.hasClass('active')) {
-            action_base = _this.data('file');
-            action = 'active';
-            before = 'Activating...', addClass = 'activated';
+        //download plugin
+        if (_this.hasClass('download')) {
+          window.open(action_base, '_blank');
+          return;
+        }
+
+        //active plugin
+        if (_this.hasClass('active')) {
+          var _action_base = _this.data('file'),
+            action = 'active',
+            before = 'Activating...',
+            addClass = 'activated',
             addHtml = 'Activated';
-          }
           $.ajax({
             url: WCF_ADDONS_ADMIN.ajaxurl,
             data: {
               'action': "wcf_".concat(action, "_plugin"),
               'nonce': WCF_ADDONS_ADMIN.nonce,
-              'action_base': action_base,
+              'action_base': _action_base,
               'plugin_source': plugin_source
             },
             type: 'POST',
