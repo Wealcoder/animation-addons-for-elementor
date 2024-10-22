@@ -67,6 +67,7 @@ class WCF_Admin_Init {
 	 */
 	public function include() {
 		require_once( 'template-functions.php' );
+		require_once( 'plugin-installer.php' );
 	}
 
 	/**
@@ -139,17 +140,21 @@ class WCF_Admin_Init {
 	 */
 	protected function get_settings_tab() {
 		$settings_tab = [
-			'home'       => [
+			'home'         => [
 				'title'    => esc_html__( 'Home', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_home_tab',
 			],
-			'widgets'    => [
+			'widgets'      => [
 				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_widget_tab',
 			],
-			'extensions' => [
+			'extensions'   => [
 				'title'    => esc_html__( 'Extensions', 'animation-addons-for-elementor' ),
 				'callback' => 'wcf_admin_settings_extension_tab',
+			],
+			'integrations' => [
+				'title'    => esc_html__( 'Integrations', 'animation-addons-for-elementor' ),
+				'callback' => 'wcf_admin_settings_integrations_tab',
 			],
 		];
 
