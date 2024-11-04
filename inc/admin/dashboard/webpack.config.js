@@ -11,10 +11,11 @@ module.exports = {
   },
   entry: {
     ...getWebpackEntryPoints(),
-    dashboard: "./src/dashboard.js", // Custom directory having JS to compile
-    widgets: "./src/widgets.js", // Custom directory having JS to compile
-    extension: "./src/extension.js", // Custom directory having JS to compile
-    features: "./src/features.js", // Custom directory having JS to compile  
+    index: "./src/main.js", // Custom directory having JS to compile
+    // dashboard: "./src/dashboard.js", // Custom directory having JS to compile
+    // widgets: "./src/widgets.js", // Custom directory having JS to compile
+    // extension: "./src/extension.js", // Custom directory having JS to compile
+    // features: "./src/features.js", // Custom directory having JS to compile  
   },
   module: {
     ...defaultConfig.module,
