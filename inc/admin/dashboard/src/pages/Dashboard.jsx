@@ -5,16 +5,13 @@ import LatestBlog from "@/components/dashboard/LatestBlog";
 import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
+import HeroBanner from "../../public/images/hero-banner.jpg";
 
 const Dashboard = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative">
-        <img
-          src="/images/hero-banner.jpg"
-          className="w-full h-full"
-          alt="Banner"
-        />
+        <img src={HeroBanner} className="w-full h-full" alt="Banner" />
         <Badge
           className="absolute bottom-[34px] right-[25px]"
           variant="version"

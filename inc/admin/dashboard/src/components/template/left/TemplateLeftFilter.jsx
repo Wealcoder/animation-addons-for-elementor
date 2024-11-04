@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import TemplateProBg from "../../../../public/images/template-pro-bg.png";
+import ProIcon1 from "../../../../public/images/pro-icon-1.png";
 
 const TemplateLeftFilter = () => {
   const allCategory = AllTemplateCategoryList;
@@ -111,12 +112,7 @@ const TemplateLeftFilter = () => {
         className="bg-cover rounded-[10px]"
         style={{ backgroundImage: `url(${TemplateProBg})` }}
       >
-        <img
-          src="/images/pro-icon-1.png"
-          width={105}
-          height={106}
-          alt="Pro icon"
-        />
+        <img src={ProIcon1} width={105} height={106} alt="Pro icon" />
         <div className="-mt-[25px] p-4 pt-0">
           <h3 className="text-lg font-medium">Get Pro Version</h3>
           <p className="text-sm text-text-secondary mt-2">

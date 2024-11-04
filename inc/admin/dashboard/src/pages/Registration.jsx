@@ -19,6 +19,7 @@ import {
   RiUser3Line,
 } from "react-icons/ri";
 import { cn } from "@/lib/utils";
+import SignUpBg from "../../public/images/signup-bg.png";
 
 const FormSchema = z
   .object({
@@ -55,7 +56,7 @@ const Registration = () => {
     <div className="bg-background w-[1200px] min-h-[664px] overflow-hidden rounded-2xl p-2 grid grid-cols-2 shadow-auth-card">
       <div>
         <img
-          src="/images/signup-bg.png"
+          src={SignUpBg}
           className="object-cover w-[592px] h-[722px] rounded-xl"
           alt="auth bg"
         />

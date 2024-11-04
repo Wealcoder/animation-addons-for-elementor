@@ -1,3 +1,13 @@
+.wcf-anim2024-wrapper * {
+  all: revert-layer;
+  box-sizing: border-box
+}
+
+.wcf-fr-popover * {
+  all: revert-layer;
+  box-sizing: border-box
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @tailwind base;

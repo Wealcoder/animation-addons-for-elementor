@@ -37,7 +37,7 @@ const MainLayout = ({ children }) => {
   // }, [location]);
 
   return (
-    <div className="bg-background-secondary py-8">
+    <div className="wcf-anim2024-wrapper bg-background-secondary py-8">
       <div className="container overflow-x-hidden bg-background rounded-[10px]">
         <MainHeader open={open} setOpen={setOpen} />
         <div className="px-24 py-8">{children}</div>

@@ -67,7 +67,7 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );
 
-		add_action( 'admin_footer', [ $this, 'render_popup' ] );
+		//add_action( 'admin_footer', [ $this, 'render_popup' ] );
 		add_filter( 'admin_body_class', [$this,'admin_classes'] ); 	
 		//add_filter('script_loader_tag', [$this,'add_type_to_script'], 10, 3);
 	}
@@ -123,23 +123,19 @@ class WCF_Admin_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 		
 			// CSS
-			//wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));			
-			// wp_enqueue_script( 'wcf-admin', plugins_url('dashboard/build/index.js', __FILE__), 
-			// array(	
-			// 	'react'
-			// ),
-			// time(),
-			// true 
-			// );
+			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
 			
 			wp_enqueue_script( 'wcf-admin' , plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js' , array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), time(), true );
 
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
+				'addons_config'  => $GLOBALS['wcf_addons_config'],
+				'addon_tabs'     => $this->get_settings_tab(),
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
 			];
+			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
 		}

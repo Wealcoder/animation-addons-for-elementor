@@ -3,6 +3,8 @@ import { RiPlayCircleLine } from "react-icons/ri";
 import { buttonVariants } from "../ui/button";
 import TutorialDialog from "./dialog/TutorialDialog";
 import { useState } from "react";
+import TutorialThumb from "../../../public/images/tutorial-thumb.png";
+import PlayButton from "../../../public/images/play-button.png";
 
 const Tutorial = () => {
   const [open, setOpen] = useState(false);
@@ -26,19 +28,14 @@ const Tutorial = () => {
         <div className="relative">
           <img
             className="w-full h-full object-cover"
-            src="/images/tutorial-thumb.png"
+            src={TutorialThumb}
             alt="thumbnail"
           />
           <div
             className="absolute top-[93px] left-0 right-0 mx-auto w-fit cursor-pointer"
             onClick={() => setOpen(true)}
           >
-            <img
-              width={50}
-              height={50}
-              src="/images/play-button.png"
-              alt="play"
-            />
+            <img width={50} height={50} src={PlayButton} alt="play" />
           </div>
         </div>
       </div>

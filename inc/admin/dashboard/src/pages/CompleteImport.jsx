@@ -2,6 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ConfettiAnimation } from "@/lib/confettiAnimation";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
+import CompleteBg from "../../public/images/complete-bg.png";
 
 const CompleteImport = () => {
   useEffect(() => {
@@ -18,7 +19,7 @@ const CompleteImport = () => {
         </div>
         <div className="mb-6">
           <img
-            src="/images/complete-bg.png"
+            src={CompleteBg}
             className="w-[616px] h-[258px]"
             alt="demo importing"
           />

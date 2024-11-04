@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { RiVipCrown2Line } from "react-icons/ri";
+import ProDialog from "../../../public/images/pro-dialog.png";
 
 const ProConfirmDialog = ({ open, setOpen }) => {
   return (
@@ -17,11 +18,7 @@ const ProConfirmDialog = ({ open, setOpen }) => {
           <DialogDescription className={"hidden"}></DialogDescription>
         </DialogHeader>
         <div>
-          <img
-            src="/images/pro-dialog.png"
-            className="w-full h-[174px]"
-            alt="pro dialog"
-          />
+          <img src={ProDialog} className="w-full h-[174px]" alt="pro dialog" />
           <div className="p-6 pt-2">
             <h2 className="text-xl text-center font-medium">
               Upgrade to premium plan and unlock every features!

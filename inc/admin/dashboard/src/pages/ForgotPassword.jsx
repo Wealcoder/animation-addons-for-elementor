@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RiArrowLeftLine, RiMailLine } from "react-icons/ri";
 import { cn } from "@/lib/utils";
+import LoginBg from "../../public/images/login-bg.png";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -35,7 +36,7 @@ const ForgotPassword = () => {
     <div className="bg-background w-[1200px] h-[664px] overflow-hidden rounded-2xl p-2 grid grid-cols-2 shadow-auth-card">
       <div>
         <img
-          src="/images/login-bg.png"
+          src={LoginBg}
           className="object-cover w-[592px] h-[648px] rounded-xl"
           alt="auth bg"
         />

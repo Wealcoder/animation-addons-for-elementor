@@ -1,7 +1,7 @@
 export const FeaturedWidgetProList = [
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: true,
     docLink: "#",
@@ -9,7 +9,7 @@ export const FeaturedWidgetProList = [
   },
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: false,
     docLink: "#",
@@ -17,7 +17,7 @@ export const FeaturedWidgetProList = [
   },
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: false,
     docLink: "#",
@@ -25,7 +25,7 @@ export const FeaturedWidgetProList = [
   },
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: false,
     docLink: "#",
@@ -33,7 +33,7 @@ export const FeaturedWidgetProList = [
   },
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: false,
     docLink: "#",
@@ -41,7 +41,7 @@ export const FeaturedWidgetProList = [
   },
   {
     title: "Animated Heading",
-    logo: "/images/pro-widget/animation-heading.svg",
+    logo: "../../../public/images/pro-widget/animation-heading.svg",
     isPro: true,
     isActive: false,
     docLink: "#",

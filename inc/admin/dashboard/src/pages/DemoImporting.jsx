@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Progress } from "@/components/ui/progress";
+import DemoImportingBg from "../../public/images/demo-importing-bg.png";
 
 const DemoImporting = () => {
   return (
@@ -13,7 +14,7 @@ const DemoImporting = () => {
         </div>
         <div className="mb-8">
           <img
-            src="/images/demo-importing-bg.png"
+            src={DemoImportingBg}
             className="w-[616px] h-[258px]"
             alt="demo importing"
           />
