@@ -1,12 +1,4 @@
+import Dashboard from "./pages/Dashboard";
+import "./index.css";
 
-function GetStarted(){
-    
-    return <>
-        <h2>Hi</h2>
-    </>
-}
-
-wp.element.render(
-    <GetStarted />,
-    document.getElementById("wcf-admin-ds-cr-js")
-  );
+wp.element.render(<Dashboard />, document.getElementById("wcf-admin-ds-cr-js"));
