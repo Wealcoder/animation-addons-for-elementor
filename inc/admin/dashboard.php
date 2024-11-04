@@ -59,7 +59,11 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );
 
 		add_action( 'admin_footer', [ $this, 'render_popup' ] );
+		
+		add_filter('script_loader_tag', [$this,'add_type_to_script'], 10, 3);
 	}
+	
+	
 
 	/**
 	 * [include] Load Necessary file
@@ -91,7 +95,7 @@ class WCF_Admin_Init {
 			esc_html__( 'Settings', 'animation-addons-for-elementor' ),
 			'manage_options',
 			'wcf_addons_settings',
-			[ $this, 'plugin_page' ]
+			[ $this, 'plugin_dashboard_entry_page' ]
 		);
 
 		// Remove Parent Submenu
@@ -108,16 +112,17 @@ class WCF_Admin_Init {
 	 */
 	public function enqueue_scripts( $hook ) {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
+		
+			$registered_scripts = wp_scripts()->registered;
+			foreach ($registered_scripts as $handle => $script) {
+				wp_deregister_script($handle); // Remove each script
+				wp_dequeue_script($handle);
+			}
 
 			// CSS
-			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.min.css' );
-
-			// JS
-			wp_enqueue_script( 'jquery-ui-accordion' );
-
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.min.js', array(
-				'jquery',
-				'wp-util'
+			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/dist/assets/index.css', __FILE__));			
+			wp_enqueue_script( 'wcf-admin', plugins_url('dashboard/dist/assets/index.js', __FILE__), array(
+				
 			), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
@@ -129,6 +134,13 @@ class WCF_Admin_Init {
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
 		}
+	}
+	
+	function add_type_to_script($tag, $handle, $source){
+		// if ('wcf-admin' === $handle) {
+		// 	$tag = '<script type="text/javascript" src="'. $source .'" type="module"></script>';
+		// } 
+		return $tag;
 	}
 
 	/**
@@ -210,6 +222,13 @@ class WCF_Admin_Init {
                 </div>
             </div>
         </div>
+		<?php
+	}
+	
+	public function plugin_dashboard_entry_page(){
+		?>
+		<div class="wrap wcf-admin-wrapper" id="wcfadmindscrjs">			
+		</div>
 		<?php
 	}
 

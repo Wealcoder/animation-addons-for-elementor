@@ -1,0 +1,58 @@
+import { RiApps2AddLine } from "react-icons/ri";
+import { Dot } from "lucide-react";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
+  return (
+    <div className="grid grid-cols-2 gap-11 justify-between items-center">
+      <div className="flex items-center gap-3">
+        <div className="border border-solid border-border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
+          <RiApps2AddLine size={24} color="#FC6848" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="text-[18px] font-medium flex items-center">
+            <h2>Extensions</h2>
+          </div>
+          <div className="text-sm text-label flex items-center">
+            <p>6 Total Extensions</p>
+            <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
+            <p>6 Active Extensions</p>
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end items-center gap-5">
+        <div className="flex items-center space-x-2">
+          <Switch id="global-enable-all" />
+          <Label htmlFor="global-enable-all">Enable All</Label>
+        </div>
+
+        <div>
+          <Select value={filterKey} onValueChange={setFilterKey}>
+            <SelectTrigger className="w-[119px] rounded-[10px]">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent className="w-[119px] rounded-[10px]" align="end">
+              <SelectGroup>
+                <SelectItem value="free-pro">Free + Pro</SelectItem>
+                <SelectItem value="free">Free</SelectItem>
+                <SelectItem value="pro">Pro</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ExtensionTopBar;
