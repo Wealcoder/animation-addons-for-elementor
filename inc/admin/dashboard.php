@@ -60,7 +60,7 @@ class WCF_Admin_Init {
 
 		add_action( 'admin_footer', [ $this, 'render_popup' ] );
 		
-		add_filter('script_loader_tag', [$this,'add_type_to_script'], 10, 3);
+		//add_filter('script_loader_tag', [$this,'add_type_to_script'], 10, 3);
 	}
 	
 	
@@ -113,17 +113,24 @@ class WCF_Admin_Init {
 	public function enqueue_scripts( $hook ) {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 		
+		    $depsSkip = ['react', 'react-dom'];
 			$registered_scripts = wp_scripts()->registered;
+			
 			foreach ($registered_scripts as $handle => $script) {
-				wp_deregister_script($handle); // Remove each script
-				wp_dequeue_script($handle);
+				//if( !in_array($handle , $depsSkip)) {
+					wp_deregister_script($handle); // Remove each script
+					wp_dequeue_script($handle);
+				//}				
 			}
 
 			// CSS
 			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/dist/assets/index.css', __FILE__));			
-			wp_enqueue_script( 'wcf-admin', plugins_url('dashboard/dist/assets/index.js', __FILE__), array(
-				
-			), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', plugins_url('dashboard/dist/assets/index.js', __FILE__), 
+			array(				
+			),
+			time(),
+			true 
+			);
 
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
@@ -137,9 +144,9 @@ class WCF_Admin_Init {
 	}
 	
 	function add_type_to_script($tag, $handle, $source){
-		// if ('wcf-admin' === $handle) {
-		// 	$tag = '<script type="text/javascript" src="'. $source .'" type="module"></script>';
-		// } 
+		if ('wcf-admin' === $handle) {
+			$tag = '<script type="text/javascript" src="'. $source .'" type="module"></script>';
+		} 
 		return $tag;
 	}
 
@@ -227,7 +234,7 @@ class WCF_Admin_Init {
 	
 	public function plugin_dashboard_entry_page(){
 		?>
-		<div class="wrap wcf-admin-wrapper" id="wcfadmindscrjs">			
+		<div class="wrap wcf-admin-wrapper" id="wcf-admin-ds-cr-js">			
 		</div>
 		<?php
 	}
