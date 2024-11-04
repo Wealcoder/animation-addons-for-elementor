@@ -114,20 +114,15 @@ class WCF_Admin_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 		
 			// CSS
-			//wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));			
-			// wp_enqueue_script( 'wcf-admin', plugins_url('dashboard/build/index.js', __FILE__), 
-			// array(	
-			// 	'react'
-			// ),
-			// time(),
-			// true 
-			// );
+			//wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
 			
 			wp_enqueue_script( 'wcf-admin' , plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js' , array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), time(), true );
 
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
+				'extensions' => $GLOBALS['wcf_addons_config']['extensions'],
+				'widgets' => $GLOBALS['wcf_addons_config']['widgets'],
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
 			];
