@@ -11,7 +11,7 @@ import GlobalSearch from "../shared/GlobalSearch";
 
 const MainHeader = ({ open, setOpen }) => {
   return (
-    <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-solid border-border-secondary">
+    <div className="flex justify-between items-center gap-6 py-5 px-8 border-0 border-b border-solid border-border-secondary">
       <div>
         <ShortLogo />
       </div>

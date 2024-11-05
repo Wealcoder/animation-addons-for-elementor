@@ -37,7 +37,7 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName;
 const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 const navigationMenuTriggerStyle = cva(
-  "group/item inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-background-secondary hover:text-text-secondary-hover focus:bg-background-secondary focus:text-text-secondary-hover focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-background-secondary data-[active]:text-text-secondary-hover data-[state=open]:bg-background-secondary"
+  "group/item inline-flex h-9 w-max items-center justify-center rounded-md bg-background ps-2.5 pe-3 py-2 text-sm font-medium transition-colors hover:bg-background-secondary hover:text-text-secondary-hover focus:bg-background-secondary focus:text-text-secondary-hover focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-background-secondary data-[active]:text-text-secondary-hover data-[state=open]:bg-background-secondary"
 );
 
 const NavigationMenuTrigger = React.forwardRef(

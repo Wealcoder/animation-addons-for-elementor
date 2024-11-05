@@ -14,7 +14,6 @@ module.exports = {
   important: ".wcf-anim2024",
   corePlugins: {
     preflight: false,
-    container: false,
   },
   theme: {
     container: {

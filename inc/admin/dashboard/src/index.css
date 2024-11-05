@@ -1,6 +1,8 @@
 .wcf-anim2024-wrapper * {
   all: revert-layer;
-  box-sizing: border-box
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .wcf-fr-popover * {
@@ -40,19 +42,29 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
 
   /* body {
     @apply bg-background-secondary text-text font-inter py-8 overflow-x-hidden;
   } */
 
-  #root {
-    @apply text-text font-inter overflow-x-hidden
+  .wcf-anim2024-wrapper {
+    @apply font-inter overflow-x-hidden border-border border-solid;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply text-text font-inter overflow-x-hidden
+    }
+
+    a {
+      @apply no-underline
+    }
   }
 
-  #root {
+  .wcf-anim2024-wrapper {
 
     /* width */
     ::-webkit-scrollbar {

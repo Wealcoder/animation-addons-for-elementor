@@ -8,13 +8,14 @@ import {
 import { MainNavData } from "@/config/nav/main-nav";
 import { cn } from "@/lib/utils";
 
-const MainNav = () => {
+const MainNavOld = () => {
+  // const location = useLocation();
   const navItems = MainNavData;
+
+  // const currentPath = location.pathname.split("/").pop();
   const currentPath = "";
 
   if (!(navItems && navItems.length)) return;
-
-  console.log(navItems);
 
   return (
     <NavigationMenu>
@@ -26,34 +27,37 @@ const MainNav = () => {
                 asChild
                 active={currentPath === item.path.split("/").pop()}
               >
-                <div
+                <a
+                  href={item.path}
                   className={cn(
                     navigationMenuTriggerStyle(),
                     "rounded-lg gap-2 text-base text-text-secondary"
                   )}
+                  target="_blank"
                 >
                   {item.name}
-                  <span className="group-hover/item:text-text-hover flex group-data-[active]/item:text-text-hover">
+                  <span className="group-hover/item:text-text-hover group-data-[active]/item:text-text-hover">
                     {item.icon}
                   </span>
-                </div>
+                </a>
               </NavigationMenuLink>
             ) : (
               <NavigationMenuLink
                 asChild
                 active={currentPath === item.path.split("/").pop()}
               >
-                <div
+                <a
+                  href={item.path}
                   className={cn(
                     navigationMenuTriggerStyle(),
                     "rounded-lg gap-2 text-base text-text-secondary"
                   )}
                 >
-                  <span className="group-hover/item:text-text-hover flex group-data-[active]/item:text-text-hover">
+                  <span className="group-hover/item:text-text-hover group-data-[active]/item:text-text-hover">
                     {item.icon}
                   </span>
                   {item.name}
-                </div>
+                </a>
               </NavigationMenuLink>
             )}
           </NavigationMenuItem>
@@ -63,4 +67,4 @@ const MainNav = () => {
   );
 };
 
-export default MainNav;
+export default MainNavOld;
