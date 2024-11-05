@@ -9,38 +9,38 @@ const Widgets = lazy(() => import("@/pages/Widgets"));
 const MainLayout = () => {
   const [open, setOpen] = useState(false);
   const [tabKey, setTabKey] = useState("");
-  // const location = useLocation();
+  const hash = window.location.hash;
 
-  // useEffect(() => {
-  //   if (location.hash) {
-  //     setTimeout(() => {
-  //       const element = document.getElementById(location.hash.substring(1));
-  //       if (element) {
-  //         element.scrollIntoView({
-  //           behavior: "smooth",
-  //           block: "center",
-  //         });
+  useEffect(() => {
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
 
-  //         const observer = new IntersectionObserver(
-  //           (entries, observerInstance) => {
-  //             entries.forEach((entry) => {
-  //               if (entry.isIntersecting) {
-  //                 setOpen(false);
-  //                 observerInstance.unobserve(entry.target);
-  //               }
-  //             });
-  //           },
-  //           {
-  //             root: null,
-  //             threshold: 0.5,
-  //           }
-  //         );
+          const observer = new IntersectionObserver(
+            (entries, observerInstance) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  setOpen(false);
+                  observerInstance.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              root: null,
+              threshold: 0.5,
+            }
+          );
 
-  //         observer.observe(element);
-  //       }
-  //     }, 100);
-  //   }
-  // }, [location]);
+          observer.observe(element);
+        }
+      }, 100);
+    }
+  }, [hash]);
 
   const urlParams = new URLSearchParams(window.location.search);
 

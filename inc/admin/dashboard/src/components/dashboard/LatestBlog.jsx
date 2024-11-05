@@ -15,11 +15,11 @@ const LatestBlog = () => {
     <div
       className={cn(
         "border rounded-2xl p-5 shadow-common",
-        hashValue === "blog"
+        hashValue === "wcf-blog"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
           : ""
       )}
-      id="blog"
+      id="wcf-blog"
     >
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">

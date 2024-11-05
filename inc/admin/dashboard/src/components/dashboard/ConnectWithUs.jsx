@@ -11,18 +11,20 @@ const ConnectWithUs = () => {
   // const location = useLocation();
 
   // const hashValue = location.hash.replace("#", "");
-  const hashValue = "";
+  const hash = window.location.hash;
+  const hashValue = hash?.replace("#", "");
+  console.log(hashValue);
 
   return (
     <div className="grid grid-cols-3 gap-6 h-full">
       <div
         className={cn(
           "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
-          hashValue === "help-and-support"
+          hashValue === "wcf-help-and-support"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
         )}
-        id="help-and-support"
+        id="wcf-help-and-support"
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiCustomerServiceLine size={20} color="#1FC16B" />
@@ -61,11 +63,11 @@ const ConnectWithUs = () => {
       <div
         className={cn(
           "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
-          hashValue === "feedback"
+          hashValue === "wcf-feedback"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
         )}
-        id="feedback"
+        id="wcf-feedback"
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiStarLine size={20} color="#FFA132" />
@@ -96,11 +98,11 @@ const ConnectWithUs = () => {
       <div
         className={cn(
           "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
-          hashValue === "community"
+          hashValue === "wcf-community"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
         )}
-        id="community"
+        id="wcf-community"
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiGroup3Line size={20} color="#7D52F4" />

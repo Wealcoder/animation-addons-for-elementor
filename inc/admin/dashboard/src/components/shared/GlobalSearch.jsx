@@ -24,8 +24,6 @@ const GlobalSearch = ({ open, setOpen }) => {
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);
-  // const router = useNavigate();
-  const router = '';
 
   const [inputValue, setInputValue] = useState("");
 
@@ -88,6 +86,22 @@ const GlobalSearch = ({ open, setOpen }) => {
     setAllSearchContent(result);
   };
 
+  const changeRoute = (value, path, cTab) => {
+    const url = new URL(window.location.href);
+    if (path) {
+      console.log(path);
+      url.searchParams.set("tab", path);
+    } else {
+      url.searchParams.set("tab", "dashboard");
+    }
+    if (cTab) {
+      url.searchParams.set("cTab", cTab);
+    }
+    url.hash = value;
+    window.history.replaceState({}, "", url);
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen} className={"bg-transparent"}>
       <DialogContent
@@ -124,9 +138,7 @@ const GlobalSearch = ({ open, setOpen }) => {
                           <div
                             key={`dashboard_item-default-${item.slug}`}
                             className="search-item"
-                            onClick={() =>
-                              router(`${item?.path || ""}/#${item.slug}`)
-                            }
+                            onClick={() => changeRoute(item.slug, item?.path)}
                           >
                             {item.icon ? (
                               item.icon
@@ -170,7 +182,7 @@ const GlobalSearch = ({ open, setOpen }) => {
                         <div
                           key={`category_item-${item.slug}`}
                           className="search-item"
-                          onClick={() => router(`/#${item.slug}`)}
+                          onClick={() => changeRoute(item.slug)}
                         >
                           {item.icon} {item.name}
                         </div>
@@ -186,7 +198,7 @@ const GlobalSearch = ({ open, setOpen }) => {
                           key={`dashboard_item-default-${item.slug}`}
                           className="search-item"
                           onClick={() =>
-                            router(`/widgets?tab=all/#${item.slug}`)
+                            changeRoute(item.slug, "widgets", "all")
                           }
                         >
                           <div>

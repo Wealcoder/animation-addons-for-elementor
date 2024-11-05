@@ -47,6 +47,10 @@
   @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border
 }
 
+.wcf-dialog-content * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border
+}
+
 .wcf-anim2024-style {
   @apply overflow-x-hidden;
 

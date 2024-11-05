@@ -19,13 +19,13 @@ const Documentation = () => {
     <div
       className={cn(
         "border rounded-2xl p-5 shadow-common",
-        hashValue === "wcfDocumentation"
+        hashValue === "wcf-documentation"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
           : ""
       )}
     >
       <div className="flex justify-between gap-11">
-        <div className="flex gap-2 items-center" id="wcfDocumentation">
+        <div className="flex gap-2 items-center" id="wcf-documentation">
           <RiFileTextLine size={20} color="#4870FF" />
           <p className="font-medium">Documentation</p>
         </div>
