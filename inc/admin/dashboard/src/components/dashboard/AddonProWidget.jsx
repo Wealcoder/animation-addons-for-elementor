@@ -8,19 +8,19 @@ import WidgetCard from "../shared/WidgetCard";
 const AddonProWidget = () => {
   const widgets = FeaturedWidgetProList;
   return (
-    <div className="col-span-2 border border-solid border-border rounded-2xl p-5 shadow-common">
+    <div className="col-span-2 border rounded-2xl p-5 shadow-common">
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">
           <RiVipCrown2Line size={20} color="#FFA132" />
           <p className="font-medium">WCF Addons Pro Widgets</p>
         </div>
         <div>
-          <div
-            to={"#"}
+          <a
+            href={"#"}
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             All Pro Widgets <RiArrowRightUpLine size={18} className="ml-1" />
-          </div>
+          </a>
         </div>
       </div>
       <Separator className="mt-4 mb-5" />

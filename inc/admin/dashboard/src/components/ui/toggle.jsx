@@ -13,7 +13,7 @@ const toggleVariants = cva(
           "bg-transparent data-[state=on]:bg-accent data-[state=on]:text-accent-foreground",
         icon: "bg-transparent",
         outline:
-          "bg-background text-text-primary rounded-lg border border-solid border-border hover:bg-background-secondary gap-1.5 data-[state=on]:bg-[#FFF3F0] data-[state=on]:text-[#ED745A] data-[state=on]:border-[#FFE5DF] [&[data-state=on]>svg]:text-[#ED745A]",
+          "bg-background text-text-primary rounded-lg border hover:bg-background-secondary gap-1.5 data-[state=on]:bg-[#FFF3F0] data-[state=on]:text-[#ED745A] data-[state=on]:border-[#FFE5DF] [&[data-state=on]>svg]:text-[#ED745A]",
       },
       size: {
         default: "h-9 px-3",

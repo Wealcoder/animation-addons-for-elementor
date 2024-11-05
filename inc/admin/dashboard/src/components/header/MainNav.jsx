@@ -7,14 +7,37 @@ import {
 } from "@/components/ui/navigation-menu";
 import { MainNavData } from "@/config/nav/main-nav";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+// import queryString from "query-string";
 
-const MainNav = () => {
+const MainNav = ({ NavigateComponent }) => {
+  const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
-  const currentPath = "";
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setCurrentPath(tabValue);
+    }
+  }, [urlParams]);
 
   if (!(navItems && navItems.length)) return;
 
-  console.log(navItems);
+  const changeRoute = (value) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    NavigateComponent(value);
+    setCurrentPath(value);
+    // window.location.href = url;
+  };
+  // const changeRoute = (value) => {
+  //   const nav = queryString.parse(location.search);
+  //   nav.tab = value;
+  //   location.search = queryString.stringify(nav);
+  // };
 
   return (
     <NavigationMenu>
@@ -26,17 +49,19 @@ const MainNav = () => {
                 asChild
                 active={currentPath === item.path.split("/").pop()}
               >
-                <div
+                <a
+                  href={item.path}
+                  target="_blank"
                   className={cn(
                     navigationMenuTriggerStyle(),
                     "rounded-lg gap-2 text-base text-text-secondary"
                   )}
                 >
                   {item.name}
-                  <span className="group-hover/item:text-text-hover flex group-data-[active]/item:text-text-hover">
+                  <span className="group-data-[active]/item:text-text-hover">
                     {item.icon}
                   </span>
-                </div>
+                </a>
               </NavigationMenuLink>
             ) : (
               <NavigationMenuLink
@@ -48,8 +73,9 @@ const MainNav = () => {
                     navigationMenuTriggerStyle(),
                     "rounded-lg gap-2 text-base text-text-secondary"
                   )}
+                  onClick={() => changeRoute(item.path)}
                 >
-                  <span className="group-hover/item:text-text-hover flex group-data-[active]/item:text-text-hover">
+                  <span className="group-data-[active]/item:text-text-hover">
                     {item.icon}
                   </span>
                   {item.name}

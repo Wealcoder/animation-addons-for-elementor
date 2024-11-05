@@ -12,8 +12,8 @@ import ProDialog from "../../../public/images/pro-dialog.png";
 const ProConfirmDialog = ({ open, setOpen }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="w-[380px] bg-background pr-0 gap-0 !rounded-2xl [&>.dialog-close-button]:right-4 [&>.dialog-close-button]:top-4">
-        <DialogHeader>
+      <DialogContent className="w-[380px] bg-background pr-0 gap-0 !rounded-2xl [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4">
+        <DialogHeader className={"hidden"}>
           <DialogTitle className={"hidden"}></DialogTitle>
           <DialogDescription className={"hidden"}></DialogDescription>
         </DialogHeader>

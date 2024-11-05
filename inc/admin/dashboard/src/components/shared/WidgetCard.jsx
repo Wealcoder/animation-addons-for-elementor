@@ -13,7 +13,7 @@ const WidgetCard = ({ widget, className }) => {
   // const location = useLocation();
 
   // const hashValue = location.hash.replace("#", "");
-  const hashValue = '';
+  const hashValue = "";
 
   const setCheck = (value) => {
     if (value && widget?.isPro) {
@@ -39,7 +39,7 @@ const WidgetCard = ({ widget, className }) => {
           <>
             <div className="flex items-center gap-3">
               <div>
-                <Avatar className="border border-solid border-border rounded-full h-11 w-11 flex justify-center items-center shadow-common">
+                <Avatar className="border rounded-full h-11 w-11 flex justify-center items-center shadow-common">
                   <AvatarImage
                     className="w-5 h-5"
                     src={widget?.logo}
@@ -51,8 +51,10 @@ const WidgetCard = ({ widget, className }) => {
                 </Avatar>
               </div>
               <div className="flex flex-col gap-1">
-                <div className="text-[15px] leading-6 font-medium flex items-center">
-                  <h2>{widget?.title}</h2>
+                <div className="flex items-center">
+                  <h2 className="text-[15px] leading-6 font-medium">
+                    {widget?.title}
+                  </h2>
                   {widget?.isPro ? (
                     <>
                       <Dot
@@ -65,15 +67,21 @@ const WidgetCard = ({ widget, className }) => {
                     ""
                   )}
                 </div>
-                <div className="text-sm text-label flex items-center">
-                  <a href={widget?.docLink} className="hover:text-text">
+                <div className="flex items-center">
+                  <a
+                    href={widget?.docLink}
+                    className="text-sm text-label hover:text-text"
+                  >
                     Documentation
                   </a>
                   <Dot
                     className="w-3.5 h-3.5 text-icon-secondary"
                     strokeWidth={2}
                   />
-                  <a href={widget?.previewLink} className="hover:text-text">
+                  <a
+                    href={widget?.previewLink}
+                    className="text-sm text-label hover:text-text"
+                  >
                     Preview
                   </a>
                 </div>

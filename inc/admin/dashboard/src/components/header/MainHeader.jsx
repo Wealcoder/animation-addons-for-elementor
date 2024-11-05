@@ -9,14 +9,14 @@ import ShortLogo from "./ShortLogo";
 import { Badge } from "../ui/badge";
 import GlobalSearch from "../shared/GlobalSearch";
 
-const MainHeader = ({ open, setOpen }) => {
+const MainHeader = ({ open, setOpen, NavigateComponent }) => {
   return (
-    <div className="flex justify-between items-center gap-6 py-5 px-8 border-0 border-b border-solid border-border-secondary">
+    <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
       <div>
         <ShortLogo />
       </div>
       <div className="flex-1">
-        <MainNav />
+        <MainNav NavigateComponent={NavigateComponent} />
       </div>
       <div className="flex gap-2.5 max-w-[400px]">
         <Button variant="secondary" size="icon" onClick={() => setOpen(true)}>

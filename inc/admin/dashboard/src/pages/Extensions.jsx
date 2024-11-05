@@ -14,8 +14,8 @@ const Extensions = () => {
   const [filterKey, setFilterKey] = useState("free-pro");
 
   return (
-    <div className="min-h-screen px-8 py-6 border border-solid border-border rounded-2xl">
-      <div className="pb-6 border-b border-solid border-border">
+    <div className="min-h-screen px-8 py-6 border rounded-2xl">
+      <div className="pb-6 border-b">
         <ExtensionTopBar setFilterKey={setFilterKey} filterKey={filterKey} />
       </div>
       <div className="mt-4">

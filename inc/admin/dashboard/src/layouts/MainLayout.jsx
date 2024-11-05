@@ -1,8 +1,14 @@
 import MainHeader from "@/components/header/MainHeader";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 
-const MainLayout = ({ children }) => {
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Extensions = lazy(() => import("@/pages/Extensions"));
+const FreePro = lazy(() => import("@/pages/FreePro"));
+const Widgets = lazy(() => import("@/pages/Widgets"));
+
+const MainLayout = () => {
   const [open, setOpen] = useState(false);
+  const [tabKey, setTabKey] = useState("");
   // const location = useLocation();
 
   // useEffect(() => {
@@ -36,11 +42,49 @@ const MainLayout = ({ children }) => {
   //   }
   // }, [location]);
 
+  const urlParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setTabKey(tabValue);
+    }
+  }, [urlParams]);
+
+  const showContent = (tabKey) => {
+    switch (tabKey) {
+      case "dashboard":
+        return <Dashboard />;
+      case "widgets":
+        return <Widgets />;
+      case "extensions":
+        return <Extensions />;
+      case "free-pro":
+        return <FreePro />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
+  const NavigateComponent = (value) => {
+    if (value) {
+      setTabKey(value);
+    }
+  };
+
   return (
     <div className="wcf-anim2024-wrapper">
-      <div className="container overflow-x-hidden bg-background rounded-[10px]">
-        <MainHeader open={open} setOpen={setOpen} />
-        <div className="px-24 py-8">{children}</div>
+      <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
+        <MainHeader
+          open={open}
+          setOpen={setOpen}
+          NavigateComponent={NavigateComponent}
+        />
+        <div className="px-24 py-8">
+          <Suspense fallback={<p>Loading...</p>}>
+            {showContent(tabKey)}
+          </Suspense>
+        </div>
       </div>
     </div>
   );

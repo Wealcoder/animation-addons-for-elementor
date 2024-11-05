@@ -14,9 +14,9 @@ const buttonVariants = cva(
         general:
           "bg-white text-[#2B303B] hover:text-button-text-secondary-hover hover:shadow-general-btn",
         secondary:
-          "bg-button-secondary text-button-text-secondary hover:bg-button-secondary-hover hover:text-button-text-secondary-hover border border-solid border-border hover:border-button-secondary-hover hover:shadow-none",
+          "bg-button-secondary text-button-text-secondary hover:bg-button-secondary-hover hover:text-button-text-secondary-hover border hover:border-button-secondary-hover hover:shadow-none",
         pgActive:
-          "bg-button-secondary-hover text-button-text-secondary-hover border border-solid border-border border-button-secondary-hover shadow-none",
+          "bg-button-secondary-hover text-button-text-secondary-hover border border-button-secondary-hover shadow-none",
         link: "text-text hover:text-text-hover shadow-none",
         pro: "bg-[linear-gradient(45deg,#FF7A00_0%,#FFD439_100%)] text-button-text hover:bg-[linear-gradient(45deg,#FFD439_0%,#FF7A00_100%)] hover:text-button-text-hover hover:shadow-pro",
       },

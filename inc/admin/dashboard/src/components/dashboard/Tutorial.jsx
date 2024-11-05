@@ -9,7 +9,7 @@ import PlayButton from "../../../public/images/play-button.png";
 const Tutorial = () => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="col-span-2 border border-solid border-border rounded-2xl p-5 ps-6 flex justify-between items-center gap-6 shadow-common">
+    <div className="col-span-2 border rounded-2xl p-5 ps-6 flex justify-between items-center gap-6 shadow-common">
       <div className="w-[362px]">
         <h2 className="text-xl font-medium ">{`Watch The Beginner's Guide on how to use Animation Addon.`}</h2>
         <p className="text-sm mt-[10px] text-text-secondary">{`Get started with ease by watching our step-by-step beginner's tutorial on the Elementor.`}</p>

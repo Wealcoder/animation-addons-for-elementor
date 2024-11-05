@@ -17,17 +17,17 @@ const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
-        <div className="border border-solid border-border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
+        <div className="border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
           <RiCommandLine size={24} color="#FC6848" />
         </div>
         <div className="flex flex-col gap-1">
-          <div className="text-[18px] font-medium flex items-center">
-            <h2>Widgets</h2>
+          <div className="flex items-center">
+            <h2 className="text-[18px] font-medium ">Widgets</h2>
           </div>
-          <div className="text-sm text-label flex items-center">
-            <p>100 Total Widgets</p>
+          <div className="flex items-center">
+            <p className="text-sm text-label ">100 Total Widgets</p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
-            <p>80 Active Widgets</p>
+            <p className="text-sm text-label ">80 Active Widgets</p>
           </div>
         </div>
       </div>

@@ -3,11 +3,13 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  line-height: 0;
 }
 
-.wcf-fr-popover * {
+.wcf-select-content * {
   all: revert-layer;
-  box-sizing: border-box
+  box-sizing: border-box;
+
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -41,61 +43,72 @@
   }
 }
 
-@layer base {
+.wcf-anim2024-style * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border
+}
 
-  /* body {
-    @apply bg-background-secondary text-text font-inter py-8 overflow-x-hidden;
+.wcf-anim2024-style {
+  @apply overflow-x-hidden;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-text font-inter overflow-x-hidden
+  }
+
+  a {
+    @apply no-underline text-text
+  }
+
+  a:focus {
+    @apply shadow-none outline-0
+  }
+
+  p {
+    @apply text-base
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+}
+
+.wcf-anim2024-style {
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #E1E4EA;
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  /* ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   } */
 
-  .wcf-anim2024-wrapper {
-    @apply font-inter overflow-x-hidden border-border border-solid;
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      @apply text-text font-inter overflow-x-hidden
-    }
-
-    a {
-      @apply no-underline
-    }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 50000000s ease-in-out 0s !important;
   }
+}
 
-  .wcf-anim2024-wrapper {
-
-    /* width */
-    ::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-      background: #E1E4EA;
-      border-radius: 10px;
-    }
-
-    /* Handle on hover */
-    /* ::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    } */
-
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus,
-    input:-webkit-autofill:active {
-      transition: background-color 50000000s ease-in-out 0s !important;
-    }
-  }
-
-  .search-item {
-    @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px]
-  }
+.search-item {
+  @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px]
 }

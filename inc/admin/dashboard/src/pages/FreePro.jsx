@@ -8,15 +8,17 @@ const FreePro = () => {
     <div className="min-h-screen py-6">
       <div className="flex justify-between gap-11 items-end">
         <div className="flex items-center gap-3">
-          <div className="border border-solid border-border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
+          <div className="border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
             <RiVipCrown2Line size={24} color="#FC6848" />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-[18px] font-medium flex items-center">
-              <h2>Free vs Pro </h2>
+            <div className="flex items-center">
+              <h2 className="text-[18px] font-medium">Free vs Pro </h2>
             </div>
-            <div className="text-sm text-label">
-              <p>Compare our free vs pro features</p>
+            <div>
+              <p className="text-sm text-label">
+                Compare our free vs pro features
+              </p>
             </div>
           </div>
         </div>

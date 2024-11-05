@@ -17,7 +17,7 @@ const ConnectWithUs = () => {
     <div className="grid grid-cols-3 gap-6 h-full">
       <div
         className={cn(
-          "border border-solid border-border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
           hashValue === "help-and-support"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
@@ -34,19 +34,19 @@ const ConnectWithUs = () => {
             Feel like you want to consult with an expert? Take live chat support
             immediately from our{" "}
             {
-              <div
-                to="https://wealcoder.com/"
+              <a
+                href="https://wealcoder.com/"
                 className="text-[#2587EC] underline underline-offset-2"
               >
                 Website
-              </div>
+              </a>
             }
             .
           </p>
         </div>
         <div>
           <div
-            to="#"
+            href="#"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Create a ticket{" "}
@@ -60,7 +60,7 @@ const ConnectWithUs = () => {
       </div>
       <div
         className={cn(
-          "border border-solid border-border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
           hashValue === "feedback"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
@@ -81,7 +81,7 @@ const ConnectWithUs = () => {
         </div>
         <div>
           <div
-            to="#"
+            href="#"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Give your feedback{" "}
@@ -95,7 +95,7 @@ const ConnectWithUs = () => {
       </div>
       <div
         className={cn(
-          "border border-solid border-border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
           hashValue === "community"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : ""
@@ -115,7 +115,7 @@ const ConnectWithUs = () => {
         </div>
         <div>
           <div
-            to="#"
+            href="#"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Join Our Community{" "}

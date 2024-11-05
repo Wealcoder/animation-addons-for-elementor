@@ -11,7 +11,7 @@ const TutorialDialog = ({ open, setOpen }) => {
     <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
       <DialogContent className={"max-w-[1000px]"}>
         <DialogHeader>
-          <DialogTitle></DialogTitle>
+          <DialogTitle className="hidden"></DialogTitle>
           <DialogDescription>
             <iframe
               width="100%"

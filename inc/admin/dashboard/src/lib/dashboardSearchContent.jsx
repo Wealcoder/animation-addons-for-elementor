@@ -10,7 +10,7 @@ import {
 export const DashboardSearchContent = [
   {
     name: "Documentation",
-    slug: "documentation",
+    slug: "wcfDocumentation",
     icon: <RiFileTextLine size={20} color="#4870FF" />,
   },
   {

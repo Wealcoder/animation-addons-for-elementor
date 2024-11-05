@@ -22,7 +22,7 @@ const AccordionTrigger = React.forwardRef(
         )}
         {...props}
       >
-        <div className="accordion-arrow-up border border-solid border-border rounded-full h-[28px] w-[28px] flex justify-center items-center shadow-common">
+        <div className="accordion-arrow-up border rounded-full h-[28px] w-[28px] flex justify-center items-center shadow-common">
           <RiArrowDownSLine className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
         </div>
         {children}
