@@ -8,21 +8,17 @@ import { buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
 
 const ConnectWithUs = () => {
-  // const location = useLocation();
-
-  // const hashValue = location.hash.replace("#", "");
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
-  console.log(hashValue);
 
   return (
     <div className="grid grid-cols-3 gap-6 h-full">
       <div
         className={cn(
-          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-help-and-support"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : ""
+            : "shadow-common"
         )}
         id="wcf-help-and-support"
       >
@@ -62,10 +58,10 @@ const ConnectWithUs = () => {
       </div>
       <div
         className={cn(
-          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-feedback"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : ""
+            : "shadow-common"
         )}
         id="wcf-feedback"
       >
@@ -97,10 +93,10 @@ const ConnectWithUs = () => {
       </div>
       <div
         className={cn(
-          "border rounded-2xl p-5 shadow-common flex flex-col gap-[18px]",
+          "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-community"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : ""
+            : "shadow-common"
         )}
         id="wcf-community"
       >

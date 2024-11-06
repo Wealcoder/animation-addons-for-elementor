@@ -1,4 +1,4 @@
-import SampleImage from "../../../public/images/pro-widget/animation-heading.svg"
+import SampleImage from "../../../public/images/pro-widget/animation-heading.svg";
 
 export const AllGSAPExtensionList = [
   {
@@ -11,7 +11,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 1",
         slug: "smooth-scroller-animated-heading1",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -21,7 +25,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 2",
         slug: "smooth-scroller-animated-heading2",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -31,7 +39,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 3",
         slug: "smooth-scroller-animated-heading3",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -41,7 +53,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 4",
         slug: "smooth-scroller-animated-heading4",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -51,7 +67,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 5",
         slug: "smooth-scroller-animated-heading5",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -61,7 +81,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 6",
         slug: "smooth-scroller-animated-heading6",
-        path: "/extensions?tab=gsap&pluginId=1",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "1",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -80,7 +104,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 7",
         slug: "scroll-trigger-animated-heading7",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -90,7 +118,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 8",
         slug: "scroll-trigger-animated-heading8",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -100,7 +132,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 9",
         slug: "scroll-trigger-animated-heading9",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -110,7 +146,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 10",
         slug: "scroll-trigger-animated-heading10",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -120,7 +160,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 11",
         slug: "scroll-trigger-animated-heading11",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -130,7 +174,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 12",
         slug: "scroll-trigger-animated-heading12",
-        path: "/extensions?tab=gsap&pluginId=2",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "2",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -149,7 +197,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 13",
         slug: "draw-svg-animated-heading13",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -159,7 +211,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 14",
         slug: "draw-svg-animated-heading14",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -169,7 +225,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 15",
         slug: "draw-svg-animated-heading15",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -179,7 +239,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 16",
         slug: "draw-svg-animated-heading16",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -189,7 +253,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 17",
         slug: "draw-svg-animated-heading17",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -199,7 +267,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 18",
         slug: "draw-svg-animated-heading18",
-        path: "/extensions?tab=gsap&pluginId=3",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "3",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -218,7 +290,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 19",
         slug: "flip-animated-heading19",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -228,7 +304,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 20",
         slug: "flip-animated-heading20",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: false,
@@ -238,7 +318,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 21",
         slug: "flip-animated-heading21",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -248,7 +332,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 22",
         slug: "flip-animated-heading22",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: true,
         isActive: true,
@@ -258,7 +346,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 23",
         slug: "flip-animated-heading23",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: true,
@@ -268,7 +360,11 @@ export const AllGSAPExtensionList = [
       {
         title: "Animated Heading 24",
         slug: "flip-animated-heading24",
-        path: "/extensions?tab=gsap&pluginId=4",
+        path: "extensions",
+        location: {
+          cTab: "gsap",
+          pluginId: "4",
+        },
         logo: SampleImage,
         isPro: false,
         isActive: false,
@@ -283,7 +379,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 1",
     slug: "animated-general1",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: true,
@@ -293,7 +392,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 2",
     slug: "animated-general2",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -303,7 +405,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 3",
     slug: "animated-general3",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,
@@ -313,7 +418,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 4",
     slug: "animated-general4",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: true,
@@ -323,7 +431,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 5",
     slug: "animated-general5",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: true,
@@ -333,7 +444,10 @@ export const ALLGeneralExtensionList = [
   {
     title: "Animated General 6",
     slug: "animated-general6",
-    path: "/extensions?tab=general",
+    path: "extensions",
+    location: {
+      cTab: "general",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,

@@ -5,7 +5,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 1",
     slug: "animated-heading-1",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: true,
@@ -16,7 +19,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 2",
     slug: "animated-heading-2",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -27,7 +33,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 3",
     slug: "animated-heading-3",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,
@@ -38,7 +47,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 4",
     slug: "animated-heading-4",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -49,7 +61,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 5",
     slug: "animated-heading-5",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -60,7 +75,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 6",
     slug: "animated-heading-6",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,
@@ -71,7 +89,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 7",
     slug: "animated-heading-7",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: true,
@@ -82,7 +103,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 8",
     slug: "animated-heading-8",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -93,7 +117,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 9",
     slug: "animated-heading-9",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,
@@ -104,7 +131,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 10",
     slug: "animated-heading-10",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -115,7 +145,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 11",
     slug: "animated-heading-11",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: true,
     isActive: false,
@@ -126,7 +159,10 @@ export const AllWidgetList = [
   {
     title: "Animated Heading 12",
     slug: "animated-heading-12",
-    path: "/widgets?tab=all",
+    path: "widgets",
+    location: {
+      cTab: "all",
+    },
     logo: SampleImage,
     isPro: false,
     isActive: false,

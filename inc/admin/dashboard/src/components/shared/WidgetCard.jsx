@@ -10,10 +10,9 @@ import ProConfirmDialog from "./ProConfirmDialog";
 const WidgetCard = ({ widget, className }) => {
   const [isChecked, setIsChecked] = useState(widget?.isActive);
   const [open, setOpen] = useState(false);
-  // const location = useLocation();
 
-  // const hashValue = location.hash.replace("#", "");
-  const hashValue = "";
+  const hash = window.location.hash;
+  const hashValue = hash?.replace("#", "");
 
   const setCheck = (value) => {
     if (value && widget?.isPro) {
@@ -27,10 +26,10 @@ const WidgetCard = ({ widget, className }) => {
     <>
       <div
         className={cn(
-          "flex items-center justify-between gap-3 px-4 py-[15px] bg-background rounded-lg shadow-common-2 box-border",
+          "flex items-center justify-between gap-3 px-4 py-[15px] bg-background rounded-lg  box-border",
           hashValue === widget?.slug
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : "",
+            : "shadow-common-2",
           className
         )}
         id={widget?.slug || ""}

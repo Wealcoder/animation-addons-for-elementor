@@ -6,18 +6,16 @@ import { Separator } from "../ui/separator";
 
 const RecoPlugins = () => {
   const plugins = RecommendedPluginsList;
-  // const location = useLocation();
-
-  // const hashValue = location.hash.replace("#", "");
-  const hashValue = "";
+  const hash = window.location.hash;
+  const hashValue = hash?.replace("#", "");
 
   return (
     <div
       className={cn(
-        "border rounded-2xl p-5 shadow-common",
+        "border rounded-2xl p-5",
         hashValue === "wcf-recommended-plugins"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-          : ""
+          : "shadow-common"
       )}
       id="wcf-recommended-plugins"
     >

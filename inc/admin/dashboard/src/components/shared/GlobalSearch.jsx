@@ -86,16 +86,18 @@ const GlobalSearch = ({ open, setOpen }) => {
     setAllSearchContent(result);
   };
 
-  const changeRoute = (value, path, cTab) => {
+  const changeRoute = (value, path, cTab, pluginId) => {
     const url = new URL(window.location.href);
     if (path) {
-      console.log(path);
       url.searchParams.set("tab", path);
     } else {
       url.searchParams.set("tab", "dashboard");
     }
     if (cTab) {
       url.searchParams.set("cTab", cTab);
+    }
+    if (pluginId) {
+      url.searchParams.set("pluginId", pluginId);
     }
     url.hash = value;
     window.history.replaceState({}, "", url);
@@ -138,7 +140,15 @@ const GlobalSearch = ({ open, setOpen }) => {
                           <div
                             key={`dashboard_item-default-${item.slug}`}
                             className="search-item"
-                            onClick={() => changeRoute(item.slug, item?.path)}
+                            onClick={() => {
+                              changeRoute(
+                                item.slug,
+                                item?.path,
+                                item?.location?.cTab,
+                                item?.location?.pluginId
+                              );
+                              console.log(item?.path);
+                            }}
                           >
                             {item.icon ? (
                               item.icon
