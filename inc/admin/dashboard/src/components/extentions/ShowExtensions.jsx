@@ -27,6 +27,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const [openAccordion, setOpenAccordion] = useState("");
   const [tabValue, setTabValue] = useState("gsap");
 
+  const fetchWidgets = WCF_ADDONS_ADMIN?.addons_config?.extensions;
+
+  console.log(fetchWidgets);
+
   useEffect(() => {
     const allGsapExtensions = AllGSAPExtensionList;
     const allGeneralExtensions = ALLGeneralExtensionList;
