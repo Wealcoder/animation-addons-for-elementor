@@ -80,7 +80,7 @@ const MainLayout = () => {
           setOpen={setOpen}
           NavigateComponent={NavigateComponent}
         />
-        <div className="px-24 py-8">
+        <div className="px-5 2xl:px-24 py-8">
           <Suspense fallback={<p>Loading...</p>}>
             {showContent(tabKey)}
           </Suspense>
