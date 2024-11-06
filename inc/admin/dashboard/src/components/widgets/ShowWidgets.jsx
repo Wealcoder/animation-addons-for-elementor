@@ -41,7 +41,6 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
         setCatWidgets(searchResult);
       } else {
         setNoResult(false);
-        console.log(fetchWidgets);
         setCatWidgets(fetchWidgets);
       }
     }
@@ -49,7 +48,6 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
 
   useEffect(() => {
     if (searchKey) {
-      console.log("hi");
       setTabValue("all");
     }
   }, [searchKey]);
