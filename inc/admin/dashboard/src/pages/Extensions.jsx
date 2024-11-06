@@ -3,13 +3,10 @@ import ShowExtensions from "@/components/extentions/ShowExtensions";
 import { useState } from "react";
 
 const Extensions = () => {
-  // let [searchParams] = useSearchParams();
+  const urlParams = new URLSearchParams(window.location.search);
 
-  // const searchParamTab = searchParams.get("tab")?.replace("/", "");
-  // const searchParamPluginId = searchParams.get("pluginId")?.replace("/", "");
-
-  const searchParamTab = "";
-  const searchParamPluginId = "";
+  const searchParamTab = urlParams.get("cTab");
+  const searchParamPluginId = urlParams.get("pluginId");
 
   const [filterKey, setFilterKey] = useState("free-pro");
 

@@ -38,7 +38,7 @@ const WidgetTabList = [
   },
 ];
 
-const ShowWidgets = ({ searchKey, filterKey, searchParam }) => {
+const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const allWidgets = AllWidgetList;
 
   const [tabValue, setTabValue] = useState(WidgetTabList[0]?.value);
@@ -74,7 +74,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam }) => {
     if (searchParam) {
       setTabValue(searchParam);
     }
-  }, [searchParam]);
+  }, [searchParam, urlParams]);
 
   const findSearchResult = () => {
     const result = allWidgets.filter(

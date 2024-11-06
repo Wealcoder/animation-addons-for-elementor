@@ -8,7 +8,6 @@ import {
 import { MainNavData } from "@/config/nav/main-nav";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-// import queryString from "query-string";
 
 const MainNav = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
@@ -27,17 +26,19 @@ const MainNav = ({ NavigateComponent }) => {
 
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
+    const paramsToKeep = ["page"];
+
+    url.searchParams.forEach((value, key) => {
+      if (!paramsToKeep.includes(key)) {
+        url.searchParams.delete(key);
+      }
+    });
+
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
     NavigateComponent(value);
     setCurrentPath(value);
-    // window.location.href = url;
   };
-  // const changeRoute = (value) => {
-  //   const nav = queryString.parse(location.search);
-  //   nav.tab = value;
-  //   location.search = queryString.stringify(nav);
-  // };
 
   return (
     <NavigationMenu>

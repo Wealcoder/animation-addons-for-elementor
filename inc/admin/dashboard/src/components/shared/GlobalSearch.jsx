@@ -140,15 +140,14 @@ const GlobalSearch = ({ open, setOpen }) => {
                           <div
                             key={`dashboard_item-default-${item.slug}`}
                             className="search-item"
-                            onClick={() => {
+                            onClick={() =>
                               changeRoute(
                                 item.slug,
                                 item?.path,
                                 item?.location?.cTab,
                                 item?.location?.pluginId
-                              );
-                              console.log(item?.path);
-                            }}
+                              )
+                            }
                           >
                             {item.icon ? (
                               item.icon

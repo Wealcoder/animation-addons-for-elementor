@@ -1,12 +1,20 @@
 import ShowWidgets from "@/components/widgets/ShowWidgets";
 import WidgetTopBar from "@/components/widgets/WidgetTopBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Widgets = () => {
-  // let [searchParams] = useSearchParams();
-
   const [searchKey, setSearchKey] = useState("");
+  const [searchParam, setSearchParam] = useState("");
   const [filterKey, setFilterKey] = useState("free-pro");
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const tabValue = urlParams.get("cTab");
+    if (tabValue) {
+      setSearchParam(tabValue);
+    }
+  }, [urlParams]);
 
   return (
     <div className="min-h-screen px-8 py-6 border rounded-2xl">
@@ -22,8 +30,8 @@ const Widgets = () => {
         <ShowWidgets
           filterKey={filterKey}
           searchKey={searchKey}
-          // searchParam={searchParams.get("tab")?.replace("/", "")}
-          searchParam={""}
+          searchParam={searchParam}
+          urlParams={urlParams}
         />
       </div>
     </div>
