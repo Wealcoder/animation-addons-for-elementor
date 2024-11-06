@@ -11,6 +11,10 @@ $config = [
 			'elements' => [
 				'image-box'         => [
 					'label'        => esc_html__( 'Image Box', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -20,6 +24,10 @@ $config = [
 				],
 				'image-box-slider'  => [
 					'label'        => esc_html__( 'Image Box Slider', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -29,6 +37,10 @@ $config = [
 				],
 				'typewriter'        => [
 					'label'        => esc_html__( 'Typewriter', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -38,6 +50,10 @@ $config = [
 				],
 				'animated-title'    => [
 					'label'        => esc_html__( 'Animated Title', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -47,6 +63,10 @@ $config = [
 				],
 				'animated-text'     => [
 					'label'        => esc_html__( 'Animated Text', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -56,6 +76,10 @@ $config = [
 				],
 				'social-icons'      => [
 					'label'        => esc_html__( 'Social Icons', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -65,6 +89,10 @@ $config = [
 				],
 				'image'             => [
 					'label'        => esc_html__( 'Image', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -74,6 +102,10 @@ $config = [
 				],
 				'image-gallery'     => [
 					'label'        => esc_html__( 'Image Gallery', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -83,6 +115,10 @@ $config = [
 				],
 				'text-hover-image'  => [
 					'label'        => esc_html__( 'Text Hover Image', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -92,6 +128,10 @@ $config = [
 				],
 				'brand-slider'      => [
 					'label'        => esc_html__( 'Brand Slider', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -101,6 +141,10 @@ $config = [
 				],
 				'counter'           => [
 					'label'        => esc_html__( 'Counter', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -110,6 +154,10 @@ $config = [
 				],
 				'icon-box'          => [
 					'label'        => esc_html__( 'Icon Box', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -119,6 +167,10 @@ $config = [
 				],
 				'testimonial'       => [
 					'label'        => esc_html__( 'Testimonial', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -128,6 +180,10 @@ $config = [
 				],
 				'testimonial2'      => [
 					'label'        => esc_html__( 'Testimonial 2', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -137,6 +193,10 @@ $config = [
 				],
 				'testimonial3'      => [
 					'label'        => esc_html__( 'Testimonial 3', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -146,6 +206,10 @@ $config = [
 				],
 				'button'            => [
 					'label'        => esc_html__( 'Button', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -155,6 +219,10 @@ $config = [
 				],
 				'image-compare'     => [
 					'label'        => esc_html__( 'Image Compare', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -164,6 +232,10 @@ $config = [
 				],
 				'progressbar'       => [
 					'label'        => esc_html__( 'Progressbar', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -173,6 +245,10 @@ $config = [
 				],
 				'team'              => [
 					'label'        => esc_html__( 'Team', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -182,6 +258,10 @@ $config = [
 				],
 				'one-page-nav'      => [
 					'label'        => esc_html__( 'One Page Nav', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -191,6 +271,10 @@ $config = [
 				],
 				'timeline'          => [
 					'label'        => esc_html__( 'Timeline', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -200,6 +284,10 @@ $config = [
 				],
 				'tabs'              => [
 					'label'        => esc_html__( 'Tabs', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -209,6 +297,10 @@ $config = [
 				],
 				'services-tab'      => [
 					'label'        => esc_html__( 'Services Tabs', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -218,6 +310,10 @@ $config = [
 				],
 				'floating-elements' => [
 					'label'        => esc_html__( 'Floating Elements', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -227,6 +323,10 @@ $config = [
 				],
 				'event-slider'      => [
 					'label'        => esc_html__( 'Event Slider', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -236,6 +336,10 @@ $config = [
 				],
 				'content-slider'    => [
 					'label'        => esc_html__( 'Content Slider', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -245,6 +349,10 @@ $config = [
 				],
 				'countdown'         => [
 					'label'        => esc_html__( 'Countdown', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -254,6 +362,10 @@ $config = [
 				],
 				'animated-heading'  => [
 					'label'       => esc_html__( 'Animated Heading', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -268,6 +380,10 @@ $config = [
 			'elements' => [
 				'site-logo' => [
 					'label'        => esc_html__( 'Site Logo', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -277,6 +393,10 @@ $config = [
 				],
 				'nav-menu'  => [
 					'label'        => esc_html__( 'Nav Menu', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -291,6 +411,10 @@ $config = [
 			'elements' => [
 				'post-title'         => [
 					'label'        => esc_html__( 'Post Title', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -300,6 +424,10 @@ $config = [
 				],
 				'post-feature-image' => [
 					'label'        => esc_html__( 'Post Feature Image', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -309,6 +437,10 @@ $config = [
 				],
 				'post-excerpt'       => [
 					'label'        => esc_html__( 'Post Excerpt', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -318,6 +450,10 @@ $config = [
 				],
 				'post-content'       => [
 					'label'        => esc_html__( 'Post Content', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -327,6 +463,10 @@ $config = [
 				],
 				'post-comment'       => [
 					'label'        => esc_html__( 'Post Comment', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -336,6 +476,10 @@ $config = [
 				],
 				'post-meta-info'     => [
 					'label'        => esc_html__( 'Post Meta Info', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -345,6 +489,10 @@ $config = [
 				],
 				'post-paginate'      => [
 					'label'        => esc_html__( 'Post Paginate', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -354,6 +502,10 @@ $config = [
 				],
 				'post-social-share'  => [
 					'label'        => esc_html__( 'Post Social Share', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -363,6 +515,10 @@ $config = [
 				],
 				'posts'              => [
 					'label'        => esc_html__( 'Posts', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -372,6 +528,10 @@ $config = [
 				],
 				'archive-title'      => [
 					'label'        => esc_html__( 'Archive Title', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -381,6 +541,10 @@ $config = [
 				],
 				'portfolio'          => [
 					'label'        => esc_html__( 'Portfolio', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -390,6 +554,10 @@ $config = [
 				],
 				'search-form'        => [
 					'label'        => esc_html__( 'Search Form', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -399,6 +567,10 @@ $config = [
 				],
 				'search-query'       => [
 					'label'        => esc_html__( 'Search Query', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -408,6 +580,10 @@ $config = [
 				],
 				'search-no-result'   => [
 					'label'        => esc_html__( 'Search No Result', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -422,6 +598,10 @@ $config = [
 			'elements' => [
 				'contact-form-7' => [
 					'label'        => esc_html__( 'Contact Form 7', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => false,
 					'is_upcoming'  => false,
@@ -431,6 +611,10 @@ $config = [
 				],
 				'mailchimp'      => [
 					'label'        => esc_html__( 'Mailchimp', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -445,6 +629,10 @@ $config = [
 			'elements' => [
 				'video-popup'      => [
 					'label'        => esc_html__( 'Video Popup', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -454,6 +642,10 @@ $config = [
 				],
 				'video-box'        => [
 					'label'        => esc_html__( 'Video Box', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -463,6 +655,10 @@ $config = [
 				],
 				'video-box-slider' => [
 					'label'        => esc_html__( 'Video Box Slider', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,
@@ -472,6 +668,10 @@ $config = [
 				],
 				'video-mask'       => [
 					'label'        => esc_html__( 'Video Mask', 'animation-addons-for-elementor' ),
+					'location' => [
+						'cTab' => 'all'
+					],
+					'is_active'       => false,
 					'is_pro'       => false,
 					'is_extension' => true,
 					'is_upcoming'  => false,

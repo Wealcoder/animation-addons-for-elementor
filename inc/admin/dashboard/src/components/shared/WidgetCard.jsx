@@ -7,15 +7,15 @@ import { RiLandscapeFill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
 
-const WidgetCard = ({ widget, className }) => {
-  const [isChecked, setIsChecked] = useState(widget?.isActive);
+const WidgetCard = ({ widget, slug, className }) => {
+  const [isChecked, setIsChecked] = useState(widget?.is_active);
   const [open, setOpen] = useState(false);
 
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
   const setCheck = (value) => {
-    if (value && widget?.isPro) {
+    if (value && widget?.is_pro) {
       setOpen(value);
     } else {
       setIsChecked(value);
@@ -27,12 +27,12 @@ const WidgetCard = ({ widget, className }) => {
       <div
         className={cn(
           "flex items-center justify-between gap-3 px-4 py-[15px] bg-background rounded-lg  box-border",
-          hashValue === widget?.slug
+          hashValue === slug
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
             : "shadow-common-2",
           className
         )}
-        id={widget?.slug || ""}
+        id={slug || ""}
       >
         {widget ? (
           <>
@@ -52,9 +52,9 @@ const WidgetCard = ({ widget, className }) => {
               <div className="flex flex-col gap-1">
                 <div className="flex items-center">
                   <h2 className="text-[15px] leading-6 font-medium">
-                    {widget?.title}
+                    {widget?.label}
                   </h2>
-                  {widget?.isPro ? (
+                  {widget?.is_pro ? (
                     <>
                       <Dot
                         className="w-3.5 h-3.5 text-icon-secondary"
@@ -68,7 +68,7 @@ const WidgetCard = ({ widget, className }) => {
                 </div>
                 <div className="flex items-center">
                   <a
-                    href={widget?.docLink}
+                    href={widget?.doc_url}
                     className="text-sm text-label hover:text-text"
                   >
                     Documentation
@@ -78,7 +78,7 @@ const WidgetCard = ({ widget, className }) => {
                     strokeWidth={2}
                   />
                   <a
-                    href={widget?.previewLink}
+                    href={widget?.demo_url}
                     className="text-sm text-label hover:text-text"
                   >
                     Preview
