@@ -13,7 +13,7 @@ import {
 import { RiSettings2Line } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
+import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const fetExtensions = WCF_ADDONS_ADMIN?.addons_config?.extensions;
@@ -136,9 +136,28 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                           </Badge>
                         </>
                       )}
-                      <Button variant="link" className="text-icon group">
+                      <Button
+                        variant="link"
+                        className={cn(
+                          "group",
+                          Object.keys(
+                            filteredGsapExtensions?.elements[extension]
+                              ?.elements
+                          )?.length
+                            ? "text-icon"
+                            : "text-[#CACFD8] hover:text-[#CACFD8]"
+                        )}
+                      >
                         <RiSettings2Line
-                          className="me-1.5 text-icon group-hover:text-brand"
+                          className={cn(
+                            "me-1.5",
+                            Object.keys(
+                              filteredGsapExtensions?.elements[extension]
+                                ?.elements
+                            )?.length
+                              ? "text-icon group-hover:text-brand"
+                              : "text-[#CACFD8] group-hover:text-[#CACFD8]"
+                          )}
                           size={20}
                         />
                         Settings
@@ -151,7 +170,12 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                 prev?.filter((el) => el !== extension)
                               )
                         }
-                        disable
+                        disabled={
+                          !Object.keys(
+                            filteredGsapExtensions?.elements[extension]
+                              ?.elements
+                          )?.length
+                        }
                       />
                     </div>
                   </div>
