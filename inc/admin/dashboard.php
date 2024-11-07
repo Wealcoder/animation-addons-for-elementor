@@ -131,7 +131,7 @@ class WCF_Admin_Init {
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'  => $GLOBALS['wcf_addons_config'],
-				'wcf_save_widgets'  => get_option('wcf_save_widgets'),
+				'active_widgets'  => get_option('wcf_save_widgets'),
 				'addon_tabs'     => $this->get_settings_tab(),
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )

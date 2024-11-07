@@ -14,31 +14,29 @@ import { RiSettings2Line } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
+import { useExtensions } from "@/hooks/app.hooks";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
-  const fetExtensions = WCF_ADDONS_ADMIN?.addons_config?.extensions;
+  const { allExtensions } = useExtensions();
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
-    fetExtensions["gsap-extensions"]
+    allExtensions["gsap-extensions"]
   );
   const [filteredGeneralExtensions, setFilteredGeneralExtensions] = useState(
-    fetExtensions["general-extensions"]
+    allExtensions["general-extensions"]
   );
   const [openAccordion, setOpenAccordion] = useState("");
   const [tabValue, setTabValue] = useState("gsap");
 
-  console.log(fetExtensions);
-
   useEffect(() => {
     if (filterKey) {
       const gsapResult = filterGsapExtension(
-        fetExtensions["gsap-extensions"],
+        allExtensions["gsap-extensions"],
         filterKey
       );
-      // setFilteredGsapExtensions(gsapResult);
-      setFilteredGsapExtensions(fetExtensions["gsap-extensions"]);
+      setFilteredGsapExtensions(gsapResult);
       const generalResult = filterGeneralExtension(
-        fetExtensions["general-extensions"],
+        allExtensions["general-extensions"],
         filterKey
       );
       setFilteredGeneralExtensions(generalResult);
@@ -197,6 +195,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                               }
                               slug={content}
                               className="rounded p-5"
+                              setSection={"setAllExtensions"}
                             />
                           </React.Fragment>
                         ))}
@@ -255,6 +254,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                   <WidgetCard
                     widget={filteredGeneralExtensions?.elements[content]}
                     slug={content}
+                    setSection={"setAllExtensions"}
                     className="rounded p-5"
                   />
                 </React.Fragment>

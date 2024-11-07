@@ -40,7 +40,7 @@ const DialogContent = React.forwardRef(
         {hideClose ? (
           ""
         ) : (
-          <DialogPrimitive.Close className="absolute wcf-dialog-close-button right-0 top-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none border-0 p-0 bg-transparent">
+          <DialogPrimitive.Close className="absolute wcf-dialog-close-button cursor-pointer right-0 top-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none border-0 p-0 bg-transparent">
             <Cross2Icon className="h-5 w-5 text-white" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>

@@ -5,9 +5,10 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
+import { useWidgets } from "@/hooks/app.hooks";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
-  const fetchWidgets = WCF_ADDONS_ADMIN?.addons_config?.widgets;
+  const { allWidgets } = useWidgets();
 
   const [tabValue, setTabValue] = useState("all");
   const [catWidgets, setCatWidgets] = useState({});
@@ -16,11 +17,11 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const [widgetTabList, setWidgetTabList] = useState([]);
 
   useEffect(() => {
-    if (fetchWidgets) {
+    if (allWidgets) {
       const result = [];
-      for (let el in fetchWidgets) {
+      for (let el in allWidgets) {
         let data = {
-          title: fetchWidgets[el].title?.replace("Widgets", ""),
+          title: allWidgets[el].title?.replace("Widgets", ""),
           value: el,
         };
         result.push(data);
@@ -28,10 +29,10 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
 
       setWidgetTabList(result);
     }
-  }, [fetchWidgets]);
+  }, [allWidgets]);
 
   useEffect(() => {
-    if (fetchWidgets) {
+    if (allWidgets) {
       if (searchKey) {
         const searchResult = findSearchResult();
         if (!(searchResult && Object.keys(searchResult).length)) {
@@ -43,11 +44,11 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
         setCatWidgets(result);
       } else {
         setNoResult(false);
-        const result = filterWidgets(fetchWidgets, filterKey);
+        const result = filterWidgets(allWidgets, filterKey);
         setCatWidgets(result);
       }
     }
-  }, [fetchWidgets, filterKey, searchKey]);
+  }, [allWidgets, filterKey, searchKey]);
 
   useEffect(() => {
     if (searchKey) {
@@ -63,7 +64,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
 
   const findSearchResult = () => {
     const result = Object.fromEntries(
-      Object.entries(fetchWidgets)
+      Object.entries(allWidgets)
         .map(([key, value]) => {
           const filteredElements = Object.fromEntries(
             Object.entries(value.elements || {}).filter(([key2, value2]) =>
@@ -125,6 +126,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
                     <WidgetCard
                       widget={catWidgets[tab].elements[content]}
                       slug={content}
+                      setSection={"setAllWidgets"}
                       className="rounded p-5"
                     />
                   </React.Fragment>
@@ -166,6 +168,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
                   <WidgetCard
                     widget={catWidgets[tab].elements[content]}
                     slug={content}
+                    setSection={"setAllWidgets"}
                     className="rounded p-5"
                   />
                 </React.Fragment>

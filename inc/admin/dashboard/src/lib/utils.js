@@ -113,25 +113,23 @@ export const generateSearchContent = (
 
 export const filterWidgets = (mainContent, filterKey) => {
   const result = Object.fromEntries(
-    Object.entries(mainContent)
-      .map(([key, value]) => {
-        const filteredElements = Object.fromEntries(
-          Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (filterKey && (filterKey === "free" || filterKey === "pro")) {
-              if (filterKey === "free" && !value2.is_pro) {
-                return [key2, value2];
-              } else if (filterKey === "pro" && value2.is_pro) {
-                return [key2, value2];
-              }
-            } else {
+    Object.entries(mainContent).map(([key, value]) => {
+      const filteredElements = Object.fromEntries(
+        Object.entries(value.elements || {}).filter(([key2, value2]) => {
+          if (filterKey && (filterKey === "free" || filterKey === "pro")) {
+            if (filterKey === "free" && !value2.is_pro) {
+              return [key2, value2];
+            } else if (filterKey === "pro" && value2.is_pro) {
               return [key2, value2];
             }
-          })
-        );
+          } else {
+            return [key2, value2];
+          }
+        })
+      );
 
-        return [key, { ...value, elements: filteredElements }];
-      })
-      .filter(([key, value]) => Object.keys(value.elements).length > 0)
+      return [key, { ...value, elements: filteredElements }];
+    })
   );
 
   return result;
@@ -159,25 +157,23 @@ export const filterGeneralExtension = (mainContent, filterKey) => {
 
 export const filterGsapExtension = (mainContent, filterKey) => {
   const result = Object.fromEntries(
-    Object.entries(mainContent.elements)
-      .map(([key, value]) => {
-        const filteredElements = Object.fromEntries(
-          Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (filterKey && (filterKey === "free" || filterKey === "pro")) {
-              if (filterKey === "free" && !value2.is_pro) {
-                return [key2, value2];
-              } else if (filterKey === "pro" && value2.is_pro) {
-                return [key2, value2];
-              }
-            } else {
+    Object.entries(mainContent.elements).map(([key, value]) => {
+      const filteredElements = Object.fromEntries(
+        Object.entries(value.elements || {}).filter(([key2, value2]) => {
+          if (filterKey && (filterKey === "free" || filterKey === "pro")) {
+            if (filterKey === "free" && !value2.is_pro) {
+              return [key2, value2];
+            } else if (filterKey === "pro" && value2.is_pro) {
               return [key2, value2];
             }
-          })
-        );
+          } else {
+            return [key2, value2];
+          }
+        })
+      );
 
-        return [key, { ...value, elements: filteredElements }];
-      })
-      .filter(([key, value]) => Object.keys(value.elements).length > 0)
+      return [key, { ...value, elements: filteredElements }];
+    })
   );
 
   return {
