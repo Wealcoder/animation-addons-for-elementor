@@ -18,7 +18,7 @@ const Tutorial = () => {
           className={cn(buttonVariants({ variant: "secondary" }), "mt-7")}
           target="_blank"
         >
-          <span className="me-1.5">
+          <span className="me-1.5 flex">
             <RiPlayCircleLine size={20} />
           </span>
           Watch Tutorials

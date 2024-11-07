@@ -8,6 +8,7 @@ $config = [
 	'widgets'    => [
 		'general-elements' => [
 			'title'    => esc_html__('General Widgets', 'animation-addons-for-elementor'),
+			'is_active'       => false,
 			'elements' => [
 				'image-box'         => [
 					'label'        => esc_html__('Image Box', 'animation-addons-for-elementor'),
@@ -377,6 +378,7 @@ $config = [
 		],
 		'hf-elements'      => [
 			'title'    => esc_html__('Header/Footer Widgets', 'animation-addons-for-elementor'),
+			'is_active'       => false,
 			'elements' => [
 				'site-logo' => [
 					'label'        => esc_html__('Site Logo', 'animation-addons-for-elementor'),
@@ -408,6 +410,7 @@ $config = [
 		],
 		'dynamic-elements' => [
 			'title'    => esc_html__('Dynamic Widgets', 'animation-addons-for-elementor'),
+			'is_active'       => false,
 			'elements' => [
 				'post-title'         => [
 					'label'        => esc_html__('Post Title', 'animation-addons-for-elementor'),
@@ -595,6 +598,7 @@ $config = [
 		],
 		'form-elements'    => [
 			'title'    => esc_html__('Form Widgets', 'animation-addons-for-elementor'),
+			'is_active'       => false,
 			'elements' => [
 				'contact-form-7' => [
 					'label'        => esc_html__('Contact Form 7', 'animation-addons-for-elementor'),
@@ -626,6 +630,7 @@ $config = [
 		],
 		'video-elements'   => [
 			'title'    => esc_html__('Video Widgets', 'animation-addons-for-elementor'),
+			'is_active'       => false,
 			'elements' => [
 				'video-popup'      => [
 					'label'        => esc_html__('Video Popup', 'animation-addons-for-elementor'),

@@ -59,7 +59,7 @@ const MainNav = ({ NavigateComponent }) => {
                   )}
                 >
                   {item.name}
-                  <span className="group-data-[active]/item:text-text-hover">
+                  <span className="group-data-[active]/item:text-text-hover flex">
                     {item.icon}
                   </span>
                 </a>
@@ -76,7 +76,7 @@ const MainNav = ({ NavigateComponent }) => {
                   )}
                   onClick={() => changeRoute(item.path)}
                 >
-                  <span className="group-data-[active]/item:text-text-hover">
+                  <span className="group-data-[active]/item:text-text-hover flex">
                     {item.icon}
                   </span>
                   {item.name}

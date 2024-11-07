@@ -56,11 +56,43 @@ const useMainContext = (state) => {
     });
   }, []);
 
+  const updateActiveGroupWidget = useCallback((data) => {
+    console.log(data);
+    const result = Object.fromEntries(
+      Object.entries(mainState.allWidgets).map(([key, value]) => {
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).filter(([key2, value2]) => {
+            if (key === data.slug) {
+              if (value2.is_pro) {
+                return [key2, value2];
+              } else {
+                value2.is_active = data.value;
+                return [key2, value2];
+              }
+            } else {
+              return [key2, value2];
+            }
+          })
+        );
+        if (key === data.slug) {
+          value.is_active = data.value;
+        }
+        return [key, { ...value, elements: filteredElements }];
+      })
+    );
+
+    dispatch({
+      type: "setAllWidgets",
+      value: result,
+    });
+  }, []);
+
   return {
     mainState,
     setAllWidgets,
     setAllExtensions,
     updateActiveWidget,
+    updateActiveGroupWidget,
   };
 };
 

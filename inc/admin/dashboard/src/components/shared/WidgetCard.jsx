@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
 
 const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
-  const [isChecked, setIsChecked] = useState(widget?.is_active);
   const [open, setOpen] = useState(false);
 
   const hash = window.location.hash;
@@ -21,7 +20,6 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
       if (updateActiveItem) {
         updateActiveItem({ value, slug });
       }
-      setIsChecked(value);
     }
   };
 
@@ -91,7 +89,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
             </div>
             <div>
               <Switch
-                checked={isChecked}
+                checked={widget?.is_active}
                 onCheckedChange={(value) => setCheck(value, slug)}
               />
             </div>

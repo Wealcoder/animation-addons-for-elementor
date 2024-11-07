@@ -21,3 +21,8 @@ export const useActiveItem = () => {
   const { updateActiveWidget } = useContext(AppContext);
   return { updateActiveWidget };
 };
+
+export const useActiveGroupWidget = () => {
+  const { updateActiveGroupWidget } = useContext(AppContext);
+  return { updateActiveGroupWidget };
+};

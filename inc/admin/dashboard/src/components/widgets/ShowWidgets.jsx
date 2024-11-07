@@ -5,11 +5,16 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
-import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import {
+  useActiveGroupWidget,
+  useActiveItem,
+  useWidgets,
+} from "@/hooks/app.hooks";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const { allWidgets } = useWidgets();
   const { updateActiveWidget } = useActiveItem();
+  const { updateActiveGroupWidget } = useActiveGroupWidget();
 
   const [tabValue, setTabValue] = useState("all");
   const [catWidgets, setCatWidgets] = useState({});
@@ -81,6 +86,10 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
     return result;
   };
 
+  const setCheck = (data) => {
+    updateActiveGroupWidget(data);
+  };
+
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
@@ -117,7 +126,11 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
                   {catWidgets[tab].title}
                 </h3>
                 <div className="flex items-center space-x-2">
-                  <Switch id={tab} />
+                  <Switch
+                    id={tab}
+                    checked={catWidgets[tab].is_active}
+                    onCheckedChange={(value) => setCheck({ value, slug: tab })}
+                  />
                   <Label htmlFor={tab}>Enable All</Label>
                 </div>
               </div>
@@ -159,7 +172,11 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
             <div className="bg-background flex justify-between items-center p-5 rounded">
               <h3 className="text-base font-medium">{catWidgets[tab].title}</h3>
               <div className="flex items-center space-x-2">
-                <Switch id={tab} />
+                <Switch
+                  id={tab}
+                  checked={catWidgets[tab].is_active}
+                  onCheckedChange={(value) => setCheck({ value, slug: tab })}
+                />
                 <Label htmlFor={tab}>Enable All</Label>
               </div>
             </div>

@@ -27,7 +27,7 @@ const ProConfirmDialog = ({ open, setOpen }) => {
               Upgrade and get access to every feature.
             </p>
             <Button variant="pro" className="w-full mt-6">
-              <span className="me-2">
+              <span className="me-2 flex">
                 <RiVipCrown2Line size={20} />
               </span>{" "}
               Get Pro Version

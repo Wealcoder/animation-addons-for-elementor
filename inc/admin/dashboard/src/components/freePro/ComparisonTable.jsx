@@ -108,7 +108,7 @@ const ComparisonTable = () => {
         <div className="w-[392px] px-6 py-4 border-r border-border"></div>
         <div className="w-[392px] px-6 py-4">
           <Button variant="pro" className="w-full">
-            <span className="me-2">
+            <span className="me-2 flex">
               <RiVipCrown2Line size={20} />
             </span>{" "}
             Get Pro Version

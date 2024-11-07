@@ -27,7 +27,7 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
           <RiNotificationLine size={20} />
         </Button>
         <Button variant="pro">
-          <span className="me-2">
+          <span className="me-2 flex">
             <RiVipCrown2Line size={20} />
           </span>
           Get Pro Version
