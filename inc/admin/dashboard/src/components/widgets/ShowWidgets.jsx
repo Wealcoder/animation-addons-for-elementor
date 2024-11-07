@@ -20,9 +20,9 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   useEffect(() => {
     if (allWidgets) {
       const result = [];
-      for (let el in allWidgets) {
+      for (let el in allWidgets.elements) {
         let data = {
-          title: allWidgets[el].title?.replace("Widgets", ""),
+          title: allWidgets.elements[el].title?.replace("Widgets", ""),
           value: el,
         };
         result.push(data);
@@ -45,7 +45,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
         setCatWidgets(result);
       } else {
         setNoResult(false);
-        const result = filterWidgets(allWidgets, filterKey);
+        const result = filterWidgets(allWidgets.elements, filterKey);
         setCatWidgets(result);
       }
     }
@@ -65,7 +65,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
 
   const findSearchResult = () => {
     const result = Object.fromEntries(
-      Object.entries(allWidgets)
+      Object.entries(allWidgets.elements)
         .map(([key, value]) => {
           const filteredElements = Object.fromEntries(
             Object.entries(value.elements || {}).filter(([key2, value2]) =>

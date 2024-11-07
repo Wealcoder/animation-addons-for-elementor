@@ -12,10 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
-import { useActiveItem } from "@/hooks/app.hooks";
+import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 
 const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
+  const { allWidgets } = useWidgets();
   const { updateActiveFullWidget } = useActiveItem();
+
+  const setCheck = (data) => {
+    updateActiveFullWidget(data);
+  };
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
@@ -35,7 +40,11 @@ const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
       </div>
       <div className="flex justify-end items-center">
         <div className="flex items-center space-x-2">
-          <Switch id="global-enable-all" />
+          <Switch
+            id="global-enable-all"
+            checked={allWidgets.is_active}
+            onCheckedChange={(value) => setCheck({ value })}
+          />
           <Label htmlFor="global-enable-all">Enable All</Label>
         </div>
         <div className="ml-6 mr-2">

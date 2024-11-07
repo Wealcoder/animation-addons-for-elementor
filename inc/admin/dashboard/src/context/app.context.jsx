@@ -34,7 +34,7 @@ const useMainContext = (state) => {
 
   const updateActiveWidget = useCallback((data) => {
     const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets).map(([key, value]) => {
+      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).filter(([key2, value2]) => {
             if (key2 === data.slug) {
@@ -52,13 +52,16 @@ const useMainContext = (state) => {
 
     dispatch({
       type: "setAllWidgets",
-      value: result,
+      value: {
+        is_active: mainState.allWidgets.is_active,
+        elements: result,
+      },
     });
   }, []);
 
   const updateActiveGroupWidget = useCallback((data) => {
     const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets).map(([key, value]) => {
+      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).filter(([key2, value2]) => {
             if (key === data.slug) {
@@ -82,37 +85,37 @@ const useMainContext = (state) => {
 
     dispatch({
       type: "setAllWidgets",
-      value: result,
+      value: {
+        is_active: mainState.allWidgets.is_active,
+        elements: result,
+      },
     });
   }, []);
 
   const updateActiveFullWidget = useCallback((data) => {
     const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets).map(([key, value]) => {
+      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (key === data.slug) {
-              if (value2.is_pro) {
-                return [key2, value2];
-              } else {
-                value2.is_active = data.value;
-                return [key2, value2];
-              }
+            if (value2.is_pro) {
+              return [key2, value2];
             } else {
+              value2.is_active = data.value;
               return [key2, value2];
             }
           })
         );
-        if (key === data.slug) {
-          value.is_active = data.value;
-        }
+        value.is_active = data.value;
         return [key, { ...value, elements: filteredElements }];
       })
     );
 
     dispatch({
       type: "setAllWidgets",
-      value: result,
+      value: {
+        is_active: data.value,
+        elements: result,
+      },
     });
   }, []);
 
