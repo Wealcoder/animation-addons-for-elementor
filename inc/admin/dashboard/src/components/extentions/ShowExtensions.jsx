@@ -10,37 +10,33 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion2";
-import {
-  ALLGeneralExtensionList,
-  AllGSAPExtensionList,
-} from "@/config/data/allExtensionList";
 import { RiSettings2Line } from "react-icons/ri";
-import { generateGeneralExtension, generateGsapExtension } from "@/lib/utils";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
+import { filterGeneralItem } from "@/lib/utils";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
-  const [filteredGsapExtensions, setFilteredGsapExtensions] = useState([]);
+  const fetExtensions = WCF_ADDONS_ADMIN?.addons_config?.extensions;
+
+  const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
+    fetExtensions["gsap-extensions"]
+  );
   const [filteredGeneralExtensions, setFilteredGeneralExtensions] = useState(
-    []
+    fetExtensions["general-extensions"]
   );
   const [openAccordion, setOpenAccordion] = useState("");
   const [tabValue, setTabValue] = useState("gsap");
 
-  const fetchWidgets = WCF_ADDONS_ADMIN?.addons_config?.extensions;
-
-  console.log(fetchWidgets);
+  console.log(fetExtensions);
 
   useEffect(() => {
-    const allGsapExtensions = AllGSAPExtensionList;
-    const allGeneralExtensions = ALLGeneralExtensionList;
-    if (allGsapExtensions && filterKey) {
-      const result = generateGsapExtension(allGsapExtensions, filterKey);
-      setFilteredGsapExtensions(result);
-    }
-    if (allGeneralExtensions && filterKey) {
-      const result = generateGeneralExtension(allGeneralExtensions, filterKey);
-      setFilteredGeneralExtensions(result);
+    if (filterKey) {
+      setFilteredGsapExtensions(fetExtensions["gsap-extensions"]);
+      const generalResult = filterGeneralItem(
+        fetExtensions["general-extensions"],
+        filterKey
+      );
+      setFilteredGeneralExtensions(generalResult);
     }
   }, [filterKey]);
 
@@ -74,7 +70,9 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       >
         <div>
           <div className="bg-background flex justify-between items-center p-5 rounded">
-            <h3 className="text-base font-medium">GSAP Extensions</h3>
+            <h3 className="text-base font-medium">
+              {filteredGsapExtensions?.title}
+            </h3>
             <div className="flex items-center space-x-2">
               <Switch id={`enable-gsap`} />
               <Label htmlFor={`enable-gsap`}>Enable All</Label>
@@ -87,15 +85,16 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
             onValueChange={(value) => setOpenAccordion(value)}
             className="w-full mt-2 space-y-1.5"
           >
-            {filteredGsapExtensions?.map((extension) => (
-              <AccordionItem key={extension.id} value={extension.id}>
+            {Object.keys(filteredGsapExtensions?.elements)?.map((extension) => (
+              <AccordionItem key={extension} value={extension}>
                 <div className="p-[2px]">
                   <div className="flex items-center bg-background justify-between gap-3 py-3 px-4">
                     <AccordionTrigger className="rounded">
                       <div className="flex flex-col gap-1">
                         <div className="text-[15px] leading-6 font-medium flex items-center">
-                          {extension.pluginName}
-                          {extension?.isPro ? (
+                          {filteredGsapExtensions?.elements[extension].title}
+                          {filteredGsapExtensions?.elements[extension]
+                            ?.is_pro ? (
                             <>
                               <Dot
                                 className="w-3.5 h-3.5 text-icon-secondary"
@@ -108,7 +107,9 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                           )}
                         </div>
                         <a
-                          href={extension?.docLink}
+                          href={
+                            filteredGsapExtensions?.elements[extension]?.doc_url
+                          }
                           className="text-sm text-text-secondary"
                         >
                           Documentation
@@ -116,6 +117,15 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                       </div>
                     </AccordionTrigger>
                     <div className="flex gap-4 items-center">
+                      {Object.keys(
+                        filteredGsapExtensions?.elements[extension]?.elements
+                      )?.length ? (
+                        ""
+                      ) : (
+                        <>
+                          <Badge variant="pro">Coming soon..</Badge>
+                        </>
+                      )}
                       <Button variant="link" className="text-icon group">
                         <RiSettings2Line
                           className="me-1.5 text-icon group-hover:text-brand"
@@ -126,12 +136,9 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                       <Switch
                         onCheckedChange={(value) =>
                           value
-                            ? setOpenAccordion((prev) => [
-                                ...prev,
-                                extension.id,
-                              ])
+                            ? setOpenAccordion((prev) => [...prev, extension])
                             : setOpenAccordion((prev) =>
-                                prev?.filter((el) => el !== extension.id)
+                                prev?.filter((el) => el !== extension)
                               )
                         }
                       />
@@ -140,23 +147,50 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                 </div>
                 <AccordionContent>
                   <div className="grid grid-cols-3 gap-1 mt-1 p-[2px]">
-                    {extension?.extensions?.map((content, i) => (
-                      <React.Fragment key={`tab_content-${i}`}>
-                        <WidgetCard widget={content} className="rounded p-5" />
-                      </React.Fragment>
-                    ))}
-                    {Array.from({
-                      length:
-                        3 -
-                        (extension?.extensions?.length % 3 === 0
-                          ? 3
-                          : extension?.extensions?.length % 3),
-                    }).map((_, index) => (
-                      <WidgetCard
-                        key={`tab_content_empty-${index}`}
-                        className="rounded"
-                      />
-                    ))}
+                    {Object.keys(
+                      filteredGsapExtensions?.elements[extension]?.elements
+                    )?.length ? (
+                      <>
+                        {Object.keys(
+                          filteredGsapExtensions?.elements[extension]?.elements
+                        )?.map((content, i) => (
+                          <React.Fragment key={`tab_content-${i}`}>
+                            <WidgetCard
+                              widget={
+                                filteredGsapExtensions?.elements[extension]
+                                  ?.elements[content]
+                              }
+                              slug={content}
+                              className="rounded p-5"
+                            />
+                          </React.Fragment>
+                        ))}
+                        {Array.from({
+                          length:
+                            3 -
+                            (Object.keys(
+                              filteredGsapExtensions?.elements[extension]
+                                ?.elements
+                            )?.length %
+                              3 ===
+                            0
+                              ? 3
+                              : Object.keys(
+                                  filteredGsapExtensions?.elements[extension]
+                                    ?.elements
+                                )?.length % 3),
+                        }).map((_, index) => (
+                          <WidgetCard
+                            key={`tab_content_empty-${index}`}
+                            className="rounded"
+                          />
+                        ))}
+                      </>
+                    ) : (
+                      <div className="col-span-3 px-4 py-[15px] bg-background rounded-lg  box-border">
+                        <p className="text-center">Coming soon...</p>
+                      </div>
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -170,7 +204,9 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       >
         <div>
           <div className="bg-background flex justify-between items-center p-5 rounded">
-            <h3 className="text-base font-medium">General Extensions</h3>
+            <h3 className="text-base font-medium">
+              {filteredGeneralExtensions?.title}
+            </h3>
             <div className="flex items-center space-x-2">
               <Switch id={`enable-general`} />
               <Label htmlFor={`enable-general`}>Enable All</Label>
@@ -178,17 +214,26 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
           </div>
 
           <div className="grid grid-cols-3 gap-1 mt-1">
-            {filteredGeneralExtensions?.map((content, i) => (
-              <React.Fragment key={`tab_content-${i}`}>
-                <WidgetCard widget={content} className="rounded p-5" />
-              </React.Fragment>
-            ))}
+            {Object.keys(filteredGeneralExtensions?.elements)?.map(
+              (content, i) => (
+                <React.Fragment key={`tab_content-${i}`}>
+                  <WidgetCard
+                    widget={filteredGeneralExtensions?.elements[content]}
+                    slug={content}
+                    className="rounded p-5"
+                  />
+                </React.Fragment>
+              )
+            )}
             {Array.from({
               length:
                 3 -
-                (filteredGeneralExtensions?.length % 3 === 0
+                (Object.keys(filteredGeneralExtensions?.elements)?.length %
+                  3 ===
+                0
                   ? 3
-                  : filteredGeneralExtensions?.length % 3),
+                  : Object.keys(filteredGeneralExtensions?.elements)?.length %
+                    3),
             }).map((_, index) => (
               <WidgetCard
                 key={`tab_content_empty-${index}`}

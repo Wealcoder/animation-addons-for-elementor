@@ -15,7 +15,7 @@ $config = [
 						'cTab' => 'all'
 					],
 					'is_active'       => false,
-					'is_pro'       => false,
+					'is_pro'       => true,
 					'is_extension' => false,
 					'is_upcoming'  => false,
 					'demo_url'     => '',
@@ -697,7 +697,7 @@ $config = [
 				],
 				'popup'      => [
 					'label'        => esc_html__('Popup', 'animation-addons-for-elementor'),
-					'is_pro'       => false,
+					'is_pro'       => true,
 					'is_extension' => true,
 					'is_upcoming'  => false,
 					'demo_url'     => '',
@@ -711,7 +711,8 @@ $config = [
 			'elements' => [
 				'smooth-scroller'    => [
 					'title'    => esc_html__('Smooth Scroller', 'animation-addons-for-elementor'),
-					'priority' => 1,
+					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+					'is_pro'       => false,
 					'elements' => [
 						'animation-effects'       => [
 							'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
@@ -753,17 +754,20 @@ $config = [
 				],
 				'scroll-trigger'    => [
 					'title'    => esc_html__('ScrollTrigger', 'animation-addons-for-elementor'),
-					'priority' => 2,
+					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+					'is_pro'       => false,
 					'elements' => []
 				],
 				'draw-svg'    => [
 					'title'    => esc_html__('DrawSVG', 'animation-addons-for-elementor'),
-					'priority' => 3,
+					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+					'is_pro'       => true,
 					'elements' => []
 				],
 				'flip'    => [
 					'title'    => esc_html__('Flip', 'animation-addons-for-elementor'),
-					'priority' => 4,
+					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+					'is_pro'       => false,
 					'elements' => []
 				],
 			]
