@@ -32,7 +32,7 @@ const useMainContext = (state) => {
     });
   }, []);
 
-  const updateActiveItem = useCallback((data) => {
+  const updateActiveWidget = useCallback((data) => {
     const result = Object.fromEntries(
       Object.entries(mainState.allWidgets).map(([key, value]) => {
         const filteredElements = Object.fromEntries(
@@ -49,8 +49,9 @@ const useMainContext = (state) => {
         return [key, { ...value, elements: filteredElements }];
       })
     );
+
     dispatch({
-      type: data.setSection,
+      type: "setAllWidgets",
       value: result,
     });
   }, []);
@@ -59,7 +60,7 @@ const useMainContext = (state) => {
     mainState,
     setAllWidgets,
     setAllExtensions,
-    updateActiveItem,
+    updateActiveWidget,
   };
 };
 
@@ -67,7 +68,7 @@ export const AppContext = createContext({
   mainState: initialState,
   setAllWidgets: () => {},
   setAllExtensions: () => {},
-  updateActiveItem: () => {},
+  updateActiveWidget: () => {},
 });
 
 export const AppContextProvider = ({ children }) => {

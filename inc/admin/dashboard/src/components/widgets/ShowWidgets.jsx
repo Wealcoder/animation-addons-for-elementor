@@ -5,10 +5,11 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
-import { useWidgets } from "@/hooks/app.hooks";
+import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const { allWidgets } = useWidgets();
+  const { updateActiveWidget } = useActiveItem();
 
   const [tabValue, setTabValue] = useState("all");
   const [catWidgets, setCatWidgets] = useState({});
@@ -126,7 +127,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
                     <WidgetCard
                       widget={catWidgets[tab].elements[content]}
                       slug={content}
-                      setSection={"setAllWidgets"}
+                      updateActiveItem={updateActiveWidget}
                       className="rounded p-5"
                     />
                   </React.Fragment>
@@ -168,7 +169,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
                   <WidgetCard
                     widget={catWidgets[tab].elements[content]}
                     slug={content}
-                    setSection={"setAllWidgets"}
+                    updateActiveItem={updateActiveWidget}
                     className="rounded p-5"
                   />
                 </React.Fragment>

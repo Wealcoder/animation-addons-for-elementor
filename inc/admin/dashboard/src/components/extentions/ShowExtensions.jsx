@@ -195,7 +195,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                               }
                               slug={content}
                               className="rounded p-5"
-                              setSection={"setAllExtensions"}
                             />
                           </React.Fragment>
                         ))}
@@ -254,7 +253,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                   <WidgetCard
                     widget={filteredGeneralExtensions?.elements[content]}
                     slug={content}
-                    setSection={"setAllExtensions"}
                     className="rounded p-5"
                   />
                 </React.Fragment>

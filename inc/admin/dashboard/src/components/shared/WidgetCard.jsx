@@ -6,13 +6,10 @@ import { useState } from "react";
 import { RiLandscapeFill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
-import { useActiveItem } from "@/hooks/app.hooks";
 
-const WidgetCard = ({ widget, slug, className, setSection }) => {
+const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
   const [isChecked, setIsChecked] = useState(widget?.is_active);
   const [open, setOpen] = useState(false);
-
-  const { updateActiveItem } = useActiveItem();
 
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
@@ -21,7 +18,9 @@ const WidgetCard = ({ widget, slug, className, setSection }) => {
     if (value && widget?.is_pro) {
       setOpen(value);
     } else {
-      updateActiveItem({ value, slug, setSection });
+      if (updateActiveItem) {
+        updateActiveItem({ value, slug });
+      }
       setIsChecked(value);
     }
   };
