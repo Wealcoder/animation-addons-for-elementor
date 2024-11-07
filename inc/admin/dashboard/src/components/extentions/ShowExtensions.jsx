@@ -13,7 +13,7 @@ import {
 import { RiSettings2Line } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { filterGeneralItem } from "@/lib/utils";
+import { filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const fetExtensions = WCF_ADDONS_ADMIN?.addons_config?.extensions;
@@ -31,8 +31,13 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
 
   useEffect(() => {
     if (filterKey) {
+      const gsapResult = filterGsapExtension(
+        fetExtensions["gsap-extensions"],
+        filterKey
+      );
+      // setFilteredGsapExtensions(gsapResult);
       setFilteredGsapExtensions(fetExtensions["gsap-extensions"]);
-      const generalResult = filterGeneralItem(
+      const generalResult = filterGeneralExtension(
         fetExtensions["general-extensions"],
         filterKey
       );
@@ -116,14 +121,19 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                         </a>
                       </div>
                     </AccordionTrigger>
-                    <div className="flex gap-4 items-center">
+                    <div className="flex gap-1 items-center">
                       {Object.keys(
                         filteredGsapExtensions?.elements[extension]?.elements
                       )?.length ? (
                         ""
                       ) : (
                         <>
-                          <Badge variant="pro">Coming soon..</Badge>
+                          <Badge
+                            variant="pro"
+                            className="px-2.5 py-1.5 bg-[linear-gradient(0deg,#6A85B6_0%,#BAC8E0_100%)] mr-1"
+                          >
+                            COMING SOON!
+                          </Badge>
                         </>
                       )}
                       <Button variant="link" className="text-icon group">
@@ -141,6 +151,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                 prev?.filter((el) => el !== extension)
                               )
                         }
+                        disable
                       />
                     </div>
                   </div>

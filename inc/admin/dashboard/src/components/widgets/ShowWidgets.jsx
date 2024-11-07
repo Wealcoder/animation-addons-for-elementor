@@ -4,7 +4,7 @@ import WidgetCard from "../shared/WidgetCard";
 import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { filterGeneralItem, filterWidgets } from "@/lib/utils";
+import { filterWidgets } from "@/lib/utils";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const fetchWidgets = WCF_ADDONS_ADMIN?.addons_config?.widgets;
