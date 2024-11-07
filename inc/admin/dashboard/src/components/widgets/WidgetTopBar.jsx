@@ -12,8 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
+import { useActiveItem } from "@/hooks/app.hooks";
 
 const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
+  const { updateActiveFullWidget } = useActiveItem();
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">

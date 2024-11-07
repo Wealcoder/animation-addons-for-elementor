@@ -5,16 +5,11 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
-import {
-  useActiveGroupWidget,
-  useActiveItem,
-  useWidgets,
-} from "@/hooks/app.hooks";
+import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const { allWidgets } = useWidgets();
-  const { updateActiveWidget } = useActiveItem();
-  const { updateActiveGroupWidget } = useActiveGroupWidget();
+  const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
 
   const [tabValue, setTabValue] = useState("all");
   const [catWidgets, setCatWidgets] = useState({});
