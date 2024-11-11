@@ -49,7 +49,7 @@ class WCF_Admin_Init {
 	}
 
 	function admin_classes( $classes ) {
-		
+
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 			$classes .= ' wcf-anim2024';
 		}
@@ -65,11 +65,9 @@ class WCF_Admin_Init {
 		add_action( 'admin_menu', [ $this, 'add_menu' ], 25 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
-		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );
-
-		//add_action( 'admin_footer', [ $this, 'render_popup' ] );
-		add_filter( 'admin_body_class', [$this,'admin_classes'] ); 	
-		//add_filter('script_loader_tag', [$this,'add_type_to_script'], 10, 3);
+		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
+		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
+		
 	}
 	
 	
