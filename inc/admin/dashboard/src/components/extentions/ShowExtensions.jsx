@@ -73,7 +73,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
         fields: allExtensions,
-        wcf_nonce: wcf_script_vars.nonce,
+        nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_extensions",
       }),
     })
@@ -84,6 +84,8 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         console.log(return_content);
       });
   };
+
+  console.log(allExtensions);
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>

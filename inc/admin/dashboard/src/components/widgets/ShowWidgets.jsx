@@ -96,7 +96,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
         fields: allWidgets,
-        wcf_nonce: wcf_script_vars.nonce,
+        nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_widgets",
       }),
     })

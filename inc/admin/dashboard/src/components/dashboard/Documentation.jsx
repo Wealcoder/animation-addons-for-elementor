@@ -42,7 +42,7 @@ const Documentation = () => {
           <div key={`document_list-${i}`}>
             <div className="flex flex-col gap-2">
               <a
-                href={"#"}
+                href={el.link}
                 className={cn(
                   "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand"
                 )}

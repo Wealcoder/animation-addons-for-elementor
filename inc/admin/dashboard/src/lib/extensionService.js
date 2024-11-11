@@ -141,6 +141,8 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
 };
 
 export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
+  console.log(data);
+  console.log(mainContent);
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["gsap-extensions"].elements).map(
       ([key, value]) => {
