@@ -18,6 +18,6 @@ export const useExtensions = () => {
 };
 
 export const useActiveItem = () => {
-  const { updateActiveWidget, updateActiveGroupWidget, updateActiveFullWidget } = useContext(AppContext);
-  return { updateActiveWidget, updateActiveGroupWidget, updateActiveFullWidget };
+  const { updateActiveWidget, updateActiveGroupWidget, updateActiveFullWidget, updateActiveExtension } = useContext(AppContext);
+  return { updateActiveWidget, updateActiveGroupWidget, updateActiveFullWidget, updateActiveExtension };
 };

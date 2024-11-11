@@ -128,6 +128,38 @@ const useMainContext = (state) => {
     [mainState.allWidgets]
   );
 
+  const updateActiveExtension = useCallback(
+    (data) => {
+      console.log(mainState.allExtensions);
+      console.log(data);
+      // const result = Object.fromEntries(
+      //   Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
+      //     const filteredElements = Object.fromEntries(
+      //       Object.entries(value.elements || {}).filter(([key2, value2]) => {
+      //         if (key2 === data.slug) {
+      //           value2.is_active = data.value;
+      //           return [key2, value2];
+      //         } else {
+      //           return [key2, value2];
+      //         }
+      //       })
+      //     );
+
+      //     return [key, { ...value, elements: filteredElements }];
+      //   })
+      // );
+
+      // dispatch({
+      //   type: "setAllWidgets",
+      //   value: {
+      //     ...mainState.allWidgets,
+      //     elements: result,
+      //   },
+      // });
+    },
+    [mainState.allExtensions]
+  );
+
   return {
     mainState,
     setAllWidgets,
@@ -135,6 +167,7 @@ const useMainContext = (state) => {
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
+    updateActiveExtension,
   };
 };
 

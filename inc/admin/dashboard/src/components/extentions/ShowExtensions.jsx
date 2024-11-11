@@ -14,16 +14,17 @@ import { RiSettings2Line } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
-import { useExtensions } from "@/hooks/app.hooks";
+import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const { allExtensions } = useExtensions();
+  const { updateActiveExtension } = useActiveItem();
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
-    allExtensions["gsap-extensions"]
+    allExtensions.elements["gsap-extensions"]
   );
   const [filteredGeneralExtensions, setFilteredGeneralExtensions] = useState(
-    allExtensions["general-extensions"]
+    allExtensions.elements["general-extensions"]
   );
   const [openAccordion, setOpenAccordion] = useState("");
   const [tabValue, setTabValue] = useState("gsap");
@@ -31,12 +32,12 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   useEffect(() => {
     if (filterKey) {
       const gsapResult = filterGsapExtension(
-        allExtensions["gsap-extensions"],
+        allExtensions.elements["gsap-extensions"],
         filterKey
       );
       setFilteredGsapExtensions(gsapResult);
       const generalResult = filterGeneralExtension(
-        allExtensions["general-extensions"],
+        allExtensions.elements["general-extensions"],
         filterKey
       );
       setFilteredGeneralExtensions(generalResult);
@@ -54,6 +55,8 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       setOpenAccordion(pluginIdParam);
     }
   }, [pluginIdParam]);
+
+  console.log(filteredGeneralExtensions);
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -194,6 +197,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                   ?.elements[content]
                               }
                               slug={content}
+                              updateActiveItem={updateActiveExtension}
                               className="rounded p-5"
                             />
                           </React.Fragment>
@@ -253,6 +257,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                   <WidgetCard
                     widget={filteredGeneralExtensions?.elements[content]}
                     slug={content}
+                    updateActiveItem={updateActiveExtension}
                     className="rounded p-5"
                   />
                 </React.Fragment>

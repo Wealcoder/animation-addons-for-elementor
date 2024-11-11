@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 $config = [
 	'widgets'    => [
 		'is_active'       => false,
-		"elements" => [
+		'elements' => [
 			'general-elements' => [
 				'title'    => esc_html__('General Widgets', 'animation-addons-for-elementor'),
 				'is_active'       => false,
@@ -691,95 +691,110 @@ $config = [
 		]
 	],
 	'extensions' => [
-		'general-extensions' => [
-			'title'    => esc_html__('General Extension', 'animation-addons-for-elementor'),
-			'elements' => [
-				'custom-css' => [
-					'label'        => esc_html__('Custom CSS', 'animation-addons-for-elementor'),
-					'is_pro'       => false,
-					'is_extension' => false,
-					'is_upcoming'  => false,
-					'demo_url'     => '',
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-					'youtube_url'  => '',
-				],
-				'popup'      => [
-					'label'        => esc_html__('Popup', 'animation-addons-for-elementor'),
-					'is_pro'       => true,
-					'is_extension' => true,
-					'is_upcoming'  => false,
-					'demo_url'     => '',
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-popup/',
-					'youtube_url'  => '',
-				],
-			]
-		],
-		'gsap-extensions'    => [
-			'title'    => esc_html__('Gsap Extension', 'animation-addons-for-elementor'),
-			'elements' => [
-				'smooth-scroller'    => [
-					'title'    => esc_html__('Smooth Scroller', 'animation-addons-for-elementor'),
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-					'is_pro'       => false,
-					'elements' => [
-						'animation-effects'       => [
-							'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
-							'is_pro'       => false,
-							'is_extension' => true,
-							'is_upcoming'  => false,
-							'demo_url'     => '',
-							'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-animation/',
-							'youtube_url'  => '',
-						],
-						'pin-element'             => [
-							'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
-							'is_pro'       => true,
-							'is_extension' => true,
-							'is_upcoming'  => false,
-							'demo_url'     => '',
-							'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/pin-element/',
-							'youtube_url'  => '',
-						],
-						'text-animation-effects'  => [
-							'label'        => esc_html__('Text Animation', 'animation-addons-for-elementor'),
-							'is_pro'       => false,
-							'is_extension' => true,
-							'is_upcoming'  => false,
-							'demo_url'     => '',
-							'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/text-animation/',
-							'youtube_url'  => '',
-						],
-						'image-animation-effects' => [
-							'label'        => esc_html__('Image Animation', 'animation-addons-for-elementor'),
-							'is_pro'       => false,
-							'is_extension' => true,
-							'is_upcoming'  => false,
-							'demo_url'     => '',
-							'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/image-animation/',
-							'youtube_url'  => '',
-						],
-					]
-				],
-				'scroll-trigger'    => [
-					'title'    => esc_html__('ScrollTrigger', 'animation-addons-for-elementor'),
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-					'is_pro'       => false,
-					'elements' => []
-				],
-				'draw-svg'    => [
-					'title'    => esc_html__('DrawSVG', 'animation-addons-for-elementor'),
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-					'is_pro'       => true,
-					'elements' => []
-				],
-				'flip'    => [
-					'title'    => esc_html__('Flip', 'animation-addons-for-elementor'),
-					'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-					'is_pro'       => false,
-					'elements' => []
-				],
-			]
-		],
+		'is_active' => false,
+		'elements' => [
+			'general-extensions' => [
+				'title'    => esc_html__('General Extension', 'animation-addons-for-elementor'),
+				'is_active' => false,
+				'elements' => [
+					'custom-css' => [
+						'label'        => esc_html__('Custom CSS', 'animation-addons-for-elementor'),
+						'is_pro'       => false,
+						'is_active' => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+						'youtube_url'  => '',
+					],
+					'popup'      => [
+						'label'        => esc_html__('Popup', 'animation-addons-for-elementor'),
+						'is_pro'       => true,
+						'is_active' => false,
+						'is_extension' => true,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-popup/',
+						'youtube_url'  => '',
+					],
+				]
+			],
+			'gsap-extensions'    => [
+				'title'    => esc_html__('Gsap Extension', 'animation-addons-for-elementor'),
+				'is_active' => false,
+				'elements' => [
+					'smooth-scroller'    => [
+						'title'    => esc_html__('Smooth Scroller', 'animation-addons-for-elementor'),
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+						'is_pro'       => false,
+						'is_active' => false,
+						'elements' => [
+							'animation-effects'       => [
+								'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
+								'is_pro'       => false,
+								'is_active' => false,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-animation/',
+								'youtube_url'  => '',
+							],
+							'pin-element'             => [
+								'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active' => false,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/pin-element/',
+								'youtube_url'  => '',
+							],
+							'text-animation-effects'  => [
+								'label'        => esc_html__('Text Animation', 'animation-addons-for-elementor'),
+								'is_pro'       => false,
+								'is_active' => false,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/text-animation/',
+								'youtube_url'  => '',
+							],
+							'image-animation-effects' => [
+								'label'        => esc_html__('Image Animation', 'animation-addons-for-elementor'),
+								'is_pro'       => false,
+								'is_active' => false,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/image-animation/',
+								'youtube_url'  => '',
+							],
+						]
+					],
+					'scroll-trigger'    => [
+						'title'    => esc_html__('ScrollTrigger', 'animation-addons-for-elementor'),
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+						'is_pro'       => false,
+						'is_active' => false,
+						'elements' => []
+					],
+					'draw-svg'    => [
+						'title'    => esc_html__('DrawSVG', 'animation-addons-for-elementor'),
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+						'is_pro'       => true,
+						'is_active' => false,
+						'elements' => []
+					],
+					'flip'    => [
+						'title'    => esc_html__('Flip', 'animation-addons-for-elementor'),
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
+						'is_pro'       => false,
+						'is_active' => false,
+						'elements' => []
+					],
+				]
+			],
+		]
 	],
 ];
 

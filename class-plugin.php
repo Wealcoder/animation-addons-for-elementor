@@ -517,7 +517,7 @@ class Plugin {
 	 */
 	public static function get_extensions() {
 
-		$allextensions = [];
+		return $allextensions = [];
 		foreach ( $GLOBALS['wcf_addons_config']['extensions'] as $extension ) {
 			$allextensions = array_merge( $allextensions, $extension['elements'] );
 		}
