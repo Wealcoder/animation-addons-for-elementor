@@ -132,7 +132,7 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
           ...mainContent.elements["gsap-extensions"],
           elements: {
             ...mainContent.elements["gsap-extensions"].elements,
-            result,
+            ...result,
           },
         },
       },
@@ -141,8 +141,6 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
 };
 
 export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
-  console.log(data);
-  console.log(mainContent);
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["gsap-extensions"].elements).map(
       ([key, value]) => {
@@ -175,7 +173,7 @@ export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
           is_active: data.value,
           elements: {
             ...mainContent.elements["gsap-extensions"].elements,
-            result,
+            ...result,
           },
         },
       },

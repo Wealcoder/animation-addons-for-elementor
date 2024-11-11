@@ -41,6 +41,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         allExtensions.elements["gsap-extensions"],
         filterKey
       );
+
       setFilteredGsapExtensions(gsapResult);
       const generalResult = filterGeneralExtension(
         allExtensions.elements["general-extensions"],
@@ -84,8 +85,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         console.log(return_content);
       });
   };
-
-  console.log(allExtensions);
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
