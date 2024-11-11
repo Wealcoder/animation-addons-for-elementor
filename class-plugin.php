@@ -436,6 +436,7 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_widgets() {
+		
 		foreach ( self::get_widgets() as $slug => $data ) {
 
 			// If upcoming don't register.
@@ -489,25 +490,9 @@ class Plugin {
 	 * @return array
 	 */
 	public static function get_widgets() {
-
-		$allwidgets = [];
-		foreach ( $GLOBALS['wcf_addons_config']['widgets'] as $widget ) {
-			$allwidgets = array_merge( $allwidgets, $widget['elements'] );
-		}
-
-		$saved_widgets = get_option( 'wcf_save_widgets' );
-
-		$active_widgets = [];
-
-		if ( empty( $saved_widgets ) ) {
-			return $active_widgets;
-		}
-
-		foreach ( $saved_widgets as $key => $item ) {
-			$active_widgets[ $key ] = $allwidgets[ $key ];
-		}
-
-		return $active_widgets;
+		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );	  
+		self::searchKeys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
+		return $awidgets;
 	}
 
 	/**
@@ -517,28 +502,28 @@ class Plugin {
 	 */
 	public static function get_extensions() {
 
-		$saved_extensions = get_option( 'wcf_save_extensions' );
-        
-        $tets = self::addIdsToElements($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions);
-	
-        var_dump($tets);
-		return [];
+		$saved_extensions = array_keys( get_option( 'wcf_save_extensions' ) );
+		  
+        self::searchKeys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundKeys, $active);
+	   
+		return $active;
 	}
 	
-	public static function addIdsToElements($elements, $saved_extensions=[]) {
-		$active_extensions = [];
-		foreach ($elements as $key => $element) {			
-
-			if (isset($element['elements']) && is_array($element['elements'])) {			
-				self::addIdsToElements($element['elements'], $saved_extensions);
-			}
-			
-			if (  array_key_exists( $key, $saved_extensions )) {
-				$active_extensions[$key] = $element;
+	static function searchKeys($array, $keysToFind, &$foundKeys, &$active) {
+		foreach ($array as $key => $value) {
+			// Check if the current key is one we're looking for
+			if (in_array($key, $keysToFind)) {
+				// Add to found keys list
+				$foundKeys[] = $key;
+				// Store the entire element in $active
+				$active[$key] = $value;
 			}
 	
+			// If value is an array, recurse into it
+			if (is_array($value)) {
+				self::searchKeys($value, $keysToFind, $foundKeys, $active);
+			}
 		}
-		return $active_extensions;
 	}
 
 	/**
@@ -632,7 +617,7 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', [ $this, 'widget_styles' ] );
 
 		// Register widgets
-		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );	
 
 		// Register editor scripts
 		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'editor_scripts' ] );
