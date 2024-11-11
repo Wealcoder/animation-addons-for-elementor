@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useReducer } from "react";
+import { createContext, useCallback, useReducer } from "react";
 
 const initialState = {
   allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
@@ -32,92 +32,101 @@ const useMainContext = (state) => {
     });
   }, []);
 
-  const updateActiveWidget = useCallback((data) => {
-    const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-        const filteredElements = Object.fromEntries(
-          Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (key2 === data.slug) {
-              value2.is_active = data.value;
-              return [key2, value2];
-            } else {
-              return [key2, value2];
-            }
-          })
-        );
+  const updateActiveWidget = useCallback(
+    (data) => {
+      const result = Object.fromEntries(
+        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
+          const filteredElements = Object.fromEntries(
+            Object.entries(value.elements || {}).filter(([key2, value2]) => {
+              if (key2 === data.slug) {
+                value2.is_active = data.value;
+                return [key2, value2];
+              } else {
+                return [key2, value2];
+              }
+            })
+          );
 
-        return [key, { ...value, elements: filteredElements }];
-      })
-    );
+          return [key, { ...value, elements: filteredElements }];
+        })
+      );
 
-    dispatch({
-      type: "setAllWidgets",
-      value: {
-        is_active: mainState.allWidgets.is_active,
-        elements: result,
-      },
-    });
-  }, []);
+      dispatch({
+        type: "setAllWidgets",
+        value: {
+          ...mainState.allWidgets,
+          elements: result,
+        },
+      });
+    },
+    [mainState.allWidgets]
+  );
 
-  const updateActiveGroupWidget = useCallback((data) => {
-    const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-        const filteredElements = Object.fromEntries(
-          Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (key === data.slug) {
+  const updateActiveGroupWidget = useCallback(
+    (data) => {
+      const result = Object.fromEntries(
+        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
+          const filteredElements = Object.fromEntries(
+            Object.entries(value.elements || {}).filter(([key2, value2]) => {
+              if (key === data.slug) {
+                if (value2.is_pro) {
+                  return [key2, value2];
+                } else {
+                  value2.is_active = data.value;
+                  return [key2, value2];
+                }
+              } else {
+                return [key2, value2];
+              }
+            })
+          );
+          if (key === data.slug) {
+            value.is_active = data.value;
+          }
+          return [key, { ...value, elements: filteredElements }];
+        })
+      );
+
+      dispatch({
+        type: "setAllWidgets",
+        value: {
+          ...mainState.allWidgets,
+          elements: result,
+        },
+      });
+    },
+    [mainState.allWidgets]
+  );
+
+  const updateActiveFullWidget = useCallback(
+    (data) => {
+      const result = Object.fromEntries(
+        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
+          const filteredElements = Object.fromEntries(
+            Object.entries(value.elements || {}).filter(([key2, value2]) => {
               if (value2.is_pro) {
                 return [key2, value2];
               } else {
                 value2.is_active = data.value;
                 return [key2, value2];
               }
-            } else {
-              return [key2, value2];
-            }
-          })
-        );
-        if (key === data.slug) {
+            })
+          );
           value.is_active = data.value;
-        }
-        return [key, { ...value, elements: filteredElements }];
-      })
-    );
+          return [key, { ...value, elements: filteredElements }];
+        })
+      );
 
-    dispatch({
-      type: "setAllWidgets",
-      value: {
-        is_active: mainState.allWidgets.is_active,
-        elements: result,
-      },
-    });
-  }, []);
-
-  const updateActiveFullWidget = useCallback((data) => {
-    const result = Object.fromEntries(
-      Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-        const filteredElements = Object.fromEntries(
-          Object.entries(value.elements || {}).filter(([key2, value2]) => {
-            if (value2.is_pro) {
-              return [key2, value2];
-            } else {
-              value2.is_active = data.value;
-              return [key2, value2];
-            }
-          })
-        );
-        value.is_active = data.value;
-        return [key, { ...value, elements: filteredElements }];
-      })
-    );
-
-    dispatch({
-      type: "setAllWidgets",
-      value: {
-        is_active: data.value,
-        elements: result,
-      },
-    });
-  }, []);
+      dispatch({
+        type: "setAllWidgets",
+        value: {
+          is_active: data.value,
+          elements: result,
+        },
+      });
+    },
+    [mainState.allWidgets]
+  );
 
   return {
     mainState,
