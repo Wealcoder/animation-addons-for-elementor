@@ -517,26 +517,27 @@ class Plugin {
 	 */
 	public static function get_extensions() {
 
-		return $allextensions = [];
-		foreach ( $GLOBALS['wcf_addons_config']['extensions'] as $extension ) {
-			$allextensions = array_merge( $allextensions, $extension['elements'] );
-		}
-
 		$saved_extensions = get_option( 'wcf_save_extensions' );
-
+        
+        $tets = self::addIdsToElements($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions);
+	
+        var_dump($tets);
+		return [];
+	}
+	
+	public static function addIdsToElements($elements, $saved_extensions=[]) {
 		$active_extensions = [];
+		foreach ($elements as $key => $element) {			
 
-		if ( ! empty( $saved_extensions ) ) {
-			foreach ( $saved_extensions as $key => $item ) {
-
-				if ( ! array_key_exists( $key, $allextensions ) ) {
-					continue;
-				}
-
-				$active_extensions[ $key ] = $allextensions[ $key ];
+			if (isset($element['elements']) && is_array($element['elements'])) {			
+				self::addIdsToElements($element['elements'], $saved_extensions);
 			}
+			
+			if (  array_key_exists( $key, $saved_extensions )) {
+				$active_extensions[$key] = $element;
+			}
+	
 		}
-
 		return $active_extensions;
 	}
 
