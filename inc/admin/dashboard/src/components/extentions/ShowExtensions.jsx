@@ -63,7 +63,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   }, [pluginIdParam]);
 
   const saveExtension = async () => {
-    await fetch(wcf_script_vars.ajax_url, {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -72,7 +72,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
 
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
-        fields: allExtensions,
+        fields: JSON.stringify( allExtensions ),
         nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_extensions",
       }),
