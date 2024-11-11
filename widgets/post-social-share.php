@@ -30,19 +30,6 @@ class Post_Social_Share extends Widget_Base {
 		return [ 'wcf-single-addon' ];
 	}
 
-	/**
-	 * Retrieve the list of scripts the widget depended on.
-	 *
-	 * Used to set scripts dependencies required to run the widget.
-	 *
-	 * @return array Widget scripts dependencies.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
-	public function get_script_depends() {
-		return [ ];
-	}
 
 	public function get_keywords() {
 		return [ 'social share', 'post share' ];
@@ -144,34 +131,14 @@ class Post_Social_Share extends Widget_Base {
 				'type'        => \Elementor\Controls_Manager::SELECT,
 				'default'     => '',
 				'options'     => [
-					''              => '---',
-					'facebook'      => esc_html__( 'Facebook', 'animation-addons-for-elementor' ),
-					'twitter'       => esc_html__( 'twitter', 'animation-addons-for-elementor' ),
-					'linkedin'      => esc_html__( 'linkedin', 'animation-addons-for-elementor' ),
-					'pinterest'     => esc_html__( 'pinterest ', 'animation-addons-for-elementor' ),
-					'digg'          => esc_html__( 'digg', 'animation-addons-for-elementor' ),
-					'tumblr'        => esc_html__( 'tumblr', 'animation-addons-for-elementor' ),
-					'blogger'       => esc_html__( 'blogger', 'animation-addons-for-elementor' ),
-					'reddit'        => esc_html__( 'reddit', 'animation-addons-for-elementor' ),
-					'delicious'     => esc_html__( 'delicious', 'animation-addons-for-elementor' ),
-					'flipboard'     => esc_html__( 'flipboard', 'animation-addons-for-elementor' ),
-					'vkontakte'     => esc_html__( 'vkontakte', 'animation-addons-for-elementor' ),
-					'odnoklassniki' => esc_html__( 'odnoklassniki', 'animation-addons-for-elementor' ),
-					'moimir'        => esc_html__( 'moimir', 'animation-addons-for-elementor' ),
-					'livejournal'   => esc_html__( 'livejournal', 'animation-addons-for-elementor' ),
-					'evernote'      => esc_html__( 'evernote', 'animation-addons-for-elementor' ),
-					'mix'           => esc_html__( 'mix', 'animation-addons-for-elementor' ),
-					'meneame'       => esc_html__( 'meneame ', 'animation-addons-for-elementor' ),
-					'pocket'        => esc_html__( 'pocket ', 'animation-addons-for-elementor' ),
-					'surfingbird'   => esc_html__( 'surfingbird ', 'animation-addons-for-elementor' ),
-					'liveinternet'  => esc_html__( 'liveinternet ', 'animation-addons-for-elementor' ),
-					'buffer'        => esc_html__( 'buffer ', 'animation-addons-for-elementor' ),
-					'instapaper'    => esc_html__( 'instapaper ', 'animation-addons-for-elementor' ),
-					'xing'          => esc_html__( 'xing ', 'animation-addons-for-elementor' ),
-					'wordpres'      => esc_html__( 'wordpres ', 'animation-addons-for-elementor' ),
-					'baidu'         => esc_html__( 'baidu ', 'animation-addons-for-elementor' ),
-					'renren'        => esc_html__( 'renren ', 'animation-addons-for-elementor' ),
-					'weibo'         => esc_html__( 'weibo ', 'animation-addons-for-elementor' ),
+					''          => '---',
+					'facebook'  => esc_html__( 'Facebook', 'animation-addons-for-elementor' ),
+					'twitter'   => esc_html__( 'Twitter', 'animation-addons-for-elementor' ),
+					'linkedin'  => esc_html__( 'Linkedin', 'animation-addons-for-elementor' ),
+					'pinterest' => esc_html__( 'Pinterest ', 'animation-addons-for-elementor' ),
+					'tumblr'    => esc_html__( 'Tumblr ', 'animation-addons-for-elementor' ),
+					'blogger'   => esc_html__( 'Blogger ', 'animation-addons-for-elementor' ),
+					'reddit'    => esc_html__( 'Reddit ', 'animation-addons-for-elementor' ),
 				],
 				'label_block' => true,
 			]
@@ -932,6 +899,65 @@ class Post_Social_Share extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	public function get_generated_link( $vendor ) {
+		$url = '#';
+
+		if ( $vendor == 'facebook' ) {
+			$url = add_query_arg( array(
+				'u' => get_the_permalink(),
+			), 'https://www.facebook.com/sharer/sharer.php' );
+		}
+
+		if ( $vendor == 'twitter' ) {
+			$url = add_query_arg( array(
+				'url'  => get_the_permalink(),
+				'text' => get_the_title()
+			), 'https://twitter.com/intent/tweet' );
+		}
+
+		if ( $vendor == 'linkedin' ) {
+
+			$url = add_query_arg( array(
+				'url'     => get_the_permalink(),
+				'mini'    => true,
+				'title'   => get_the_title(),
+				'summary' => get_the_title(),
+				'source'  => get_the_permalink(),
+			), 'https://www.linkedin.com/shareArticle' );
+		}
+
+		if ( $vendor == 'pinterest' ) {
+			$url = add_query_arg( array(
+				'media'       => get_the_post_thumbnail_url( get_the_ID(), 'full' ),
+				'url'         => get_the_permalink(),
+				'description' => get_the_title(),
+			), 'https://pinterest.com/pin/create/button/' );
+		}
+
+		if ( $vendor == 'reddit' ) {
+			$url = add_query_arg( array(
+				'url'   => get_the_permalink(),
+				'title' => get_the_title(),
+			), 'https://www.reddit.com/submit' );
+		}
+
+		if ( $vendor == 'tumblr' ) {
+			$url = add_query_arg( array(
+				'url'         => get_the_permalink(),
+				'name' => get_the_title(),
+			), 'https://www.tumblr.com/share/link' );
+		}
+
+		if ( $vendor == 'blogger' ) {
+			$url = add_query_arg( array(
+				'u'         => get_the_permalink(),
+				'n' => get_the_title(),
+			), 'https://www.blogger.com/blog-this.g' );
+		}
+
+		return $url;
+	}
+
 	protected function render() {
 
 		$settings = $this->get_settings_for_display();
@@ -953,22 +979,21 @@ class Post_Social_Share extends Widget_Base {
         <ul class="default-details-social-media">
 			<?php foreach ( $socials as $share ) { ?>
                 <li>
-                    <a href="<?php echo esc_url( get_the_permalink() ); ?>"
-                       data-social="<?php echo esc_attr( $share['list_vendor'] ); ?>">
-                        <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
-								'aria-hidden' => 'true',
-								'class'       => 'share-ico'
-							] ); ?></span>
-                        <span class="info-s-title"> <?php echo esc_html( $share['list_title'] ); ?> </span>
-						<?php if ( $settings['share_icon'] == 'yes' ) { ?>
-                            <span>
+                    <a href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
+                    <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
+							'aria-hidden' => 'true',
+							'class'       => 'share-ico'
+						] ); ?></span>
+                    <span class="info-s-title"> <?php echo esc_html( $share['list_title'] ); ?> </span>
+					<?php if ( $settings['share_icon'] == 'yes' ) { ?>
+                        <span>
                                 <?php \Elementor\Icons_Manager::render_icon( $settings['share_icons'], [
-									'aria-hidden' => 'true',
-									'class'       => 'share-ico'
-								] ); ?>
+	                                'aria-hidden' => 'true',
+	                                'class'       => 'share-ico'
+                                ] ); ?>
                                 <?php echo esc_html( $settings['share_text'] ); ?>
                             </span>
-						<?php } ?>
+					<?php } ?>
                     </a>
                 </li>
 			<?php } ?>
