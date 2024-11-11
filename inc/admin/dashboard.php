@@ -270,14 +270,12 @@ class WCF_Admin_Init {
 		}
 
 		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
-
-		wp_parse_str( sanitize_text_field( wp_unslash( $_POST['fields'] ) ), $settings );
-
-		$settings = array_fill_keys( array_keys( $settings ), true );
-
+		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
+	    $settings  =  json_decode( $sanitize_data , true );	
+	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
 		// update new settings
 		if ( ! empty( $option_name ) ) {
-			$updated = update_option( $option_name, $settings );
+			$updated = update_option( $option_name, $actives );
 			wp_send_json( $updated );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );

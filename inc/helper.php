@@ -245,3 +245,22 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	}
 }
 
+if( !function_exists('wcf_get_nested_config_keys') ) {
+	function wcf_get_nested_config_keys($array, &$foundKeys, &$active) {
+		foreach ($array as $key => $value) {
+			// Check if the current key is one we're looking for
+			if (isset($value['is_active']) && $value['is_active'] == true) {
+				// Add to found keys list
+				$foundKeys[] = $key;
+				// Store the entire element in $active
+				$active[$key] = true;
+			}
+	
+			// If value is an array, recurse into it
+			if (is_array($value)) {
+				wcf_get_nested_config_keys($value,$foundKeys, $active);
+			}
+		}
+	}
+}
+
