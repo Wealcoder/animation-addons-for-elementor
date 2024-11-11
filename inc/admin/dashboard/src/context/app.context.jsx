@@ -128,34 +128,34 @@ const useMainContext = (state) => {
     [mainState.allWidgets]
   );
 
-  const updateActiveExtension = useCallback(
+  const updateActiveGeneralExtension = useCallback(
     (data) => {
-      console.log(mainState.allExtensions);
-      console.log(data);
-      // const result = Object.fromEntries(
-      //   Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-      //     const filteredElements = Object.fromEntries(
-      //       Object.entries(value.elements || {}).filter(([key2, value2]) => {
-      //         if (key2 === data.slug) {
-      //           value2.is_active = data.value;
-      //           return [key2, value2];
-      //         } else {
-      //           return [key2, value2];
-      //         }
-      //       })
-      //     );
+      const result = Object.fromEntries(
+        Object.entries(
+          mainState.allExtensions.elements["general-extensions"].elements
+        ).map(([key, value]) => {
+          if (key === data.slug) {
+            value.is_active = data.value;
+            return [key, value];
+          } else {
+            return [key, value];
+          }
+        })
+      );
 
-      //     return [key, { ...value, elements: filteredElements }];
-      //   })
-      // );
-
-      // dispatch({
-      //   type: "setAllWidgets",
-      //   value: {
-      //     ...mainState.allWidgets,
-      //     elements: result,
-      //   },
-      // });
+      dispatch({
+        type: "setAllExtensions",
+        value: {
+          ...mainState.allExtensions,
+          elements: {
+            ...mainState.allExtensions.elements,
+            "general-extensions": {
+              ...mainState.allExtensions.elements["general-extensions"],
+              elements: result,
+            },
+          },
+        },
+      });
     },
     [mainState.allExtensions]
   );
@@ -167,7 +167,7 @@ const useMainContext = (state) => {
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
-    updateActiveExtension,
+    updateActiveGeneralExtension,
   };
 };
 
