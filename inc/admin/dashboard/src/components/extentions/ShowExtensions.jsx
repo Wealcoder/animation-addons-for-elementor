@@ -18,10 +18,15 @@ import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const { allExtensions } = useExtensions();
-  const { updateActiveGeneralExtension, updateActiveGeneralGroupExtension } =
-    useActiveItem();
+  const {
+    updateActiveGeneralExtension,
+    updateActiveGeneralGroupExtension,
+    updateActiveGsapExtension,
+    updateActiveGsapGroupExtension,
+    updateActiveGsapAllExtension,
+  } = useActiveItem();
 
-  console.log(allExtensions);
+  // console.log(allExtensions);
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
     allExtensions.elements["gsap-extensions"]
@@ -29,7 +34,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const [filteredGeneralExtensions, setFilteredGeneralExtensions] = useState(
     allExtensions.elements["general-extensions"]
   );
-  const [openAccordion, setOpenAccordion] = useState("");
+  const [openAccordion, setOpenAccordion] = useState([]);
   const [tabValue, setTabValue] = useState("gsap");
 
   useEffect(() => {
@@ -45,7 +50,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       );
       setFilteredGeneralExtensions(generalResult);
     }
-  }, [filterKey]);
+  }, [filterKey, allExtensions]);
 
   useEffect(() => {
     if (tabParam) {
@@ -58,10 +63,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       setOpenAccordion(pluginIdParam);
     }
   }, [pluginIdParam]);
-
-  const setGeneralCheck = (data) => {
-    updateActiveGeneralGroupExtension(data);
-  };
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -85,7 +86,13 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
               {filteredGsapExtensions?.title}
             </h3>
             <div className="flex items-center space-x-2">
-              <Switch id={`enable-gsap`} />
+              <Switch
+                id={`enable-gsap`}
+                checked={filteredGsapExtensions?.is_active}
+                onCheckedChange={(value) =>
+                  updateActiveGsapAllExtension({ value })
+                }
+              />
               <Label htmlFor={`enable-gsap`}>Enable All</Label>
             </div>
           </div>
@@ -168,14 +175,22 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                         />
                         Settings
                       </Button>
+
                       <Switch
-                        onCheckedChange={(value) =>
+                        checked={
+                          filteredGsapExtensions?.elements[extension]?.is_active
+                        }
+                        onCheckedChange={(value) => {
                           value
                             ? setOpenAccordion((prev) => [...prev, extension])
                             : setOpenAccordion((prev) =>
                                 prev?.filter((el) => el !== extension)
-                              )
-                        }
+                              );
+                          updateActiveGsapGroupExtension({
+                            value,
+                            slug: extension,
+                          });
+                        }}
                         disabled={
                           !Object.keys(
                             filteredGsapExtensions?.elements[extension]
@@ -202,7 +217,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                   ?.elements[content]
                               }
                               slug={content}
-                              // updateActiveItem={updateActiveExtension}
+                              updateActiveItem={updateActiveGsapExtension}
                               className="rounded p-5"
                             />
                           </React.Fragment>
@@ -252,8 +267,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
             <div className="flex items-center space-x-2">
               <Switch
                 id={`enable-general`}
-                checked={filteredGeneralExtensions.is_active}
-                onCheckedChange={(value) => setGeneralCheck({ value })}
+                checked={filteredGeneralExtensions?.is_active}
+                onCheckedChange={(value) =>
+                  updateActiveGeneralGroupExtension({ value })
+                }
               />
               <Label htmlFor={`enable-general`}>Enable All</Label>
             </div>

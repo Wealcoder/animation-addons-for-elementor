@@ -28,7 +28,6 @@ export const generalExtensionFn = (mainContent, data, dispatch) => {
 };
 
 export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
-  console.log(data);
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
@@ -52,6 +51,130 @@ export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
           ...mainContent.elements["general-extensions"],
           is_active: data.value,
           elements: result,
+        },
+      },
+    },
+  });
+};
+
+export const gsapExtensionFn = (mainContent, data, dispatch) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements["gsap-extensions"].elements).map(
+      ([key, value]) => {
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).map(([key2, value2]) => {
+            if (key2 === data.slug) {
+              if (value2.is_pro) {
+                return [key2, value2];
+              } else {
+                value2.is_active = data.value;
+                return [key2, value2];
+              }
+            } else {
+              return [key2, value2];
+            }
+          })
+        );
+        return [key, { ...value, elements: filteredElements }];
+      }
+    )
+  );
+
+  dispatch({
+    type: "setAllExtensions",
+    value: {
+      ...mainContent,
+      elements: {
+        ...mainContent.elements,
+        "gsap-extensions": {
+          ...mainContent.elements["gsap-extensions"],
+          elements: result,
+        },
+      },
+    },
+  });
+};
+
+export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements["gsap-extensions"].elements).map(
+      ([key, value]) => {
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).map(([key2, value2]) => {
+            if (key === data.slug) {
+              if (value2.is_pro) {
+                return [key2, value2];
+              } else {
+                value2.is_active = data.value;
+                return [key2, value2];
+              }
+            } else {
+              return [key2, value2];
+            }
+          })
+        );
+
+        if (key === data.slug) {
+          value.is_active = data.value;
+        }
+        return [key, { ...value, elements: filteredElements }];
+      }
+    )
+  );
+
+  dispatch({
+    type: "setAllExtensions",
+    value: {
+      ...mainContent,
+      elements: {
+        ...mainContent.elements,
+        "gsap-extensions": {
+          ...mainContent.elements["gsap-extensions"],
+          elements: {
+            ...mainContent.elements["gsap-extensions"].elements,
+            result,
+          },
+        },
+      },
+    },
+  });
+};
+
+export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements["gsap-extensions"].elements).map(
+      ([key, value]) => {
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).map(([key2, value2]) => {
+            if (value2.is_pro) {
+              return [key2, value2];
+            } else {
+              value2.is_active = data.value;
+              return [key2, value2];
+            }
+          })
+        );
+        if (value?.elements && Object.keys(value.elements).length) {
+          value.is_active = data.value;
+        }
+        return [key, { ...value, elements: filteredElements }];
+      }
+    )
+  );
+
+  dispatch({
+    type: "setAllExtensions",
+    value: {
+      ...mainContent,
+      elements: {
+        ...mainContent.elements,
+        "gsap-extensions": {
+          ...mainContent.elements["gsap-extensions"],
+          is_active: data.value,
+          elements: {
+            ...mainContent.elements["gsap-extensions"].elements,
+            result,
+          },
         },
       },
     },
