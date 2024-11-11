@@ -18,7 +18,8 @@ import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const { allExtensions } = useExtensions();
-  const { updateActiveGeneralExtension } = useActiveItem();
+  const { updateActiveGeneralExtension, updateActiveGeneralGroupExtension } =
+    useActiveItem();
 
   console.log(allExtensions);
 
@@ -57,6 +58,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       setOpenAccordion(pluginIdParam);
     }
   }, [pluginIdParam]);
+
+  const setGeneralCheck = (data) => {
+    updateActiveGeneralGroupExtension(data);
+  };
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -245,7 +250,11 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
               {filteredGeneralExtensions?.title}
             </h3>
             <div className="flex items-center space-x-2">
-              <Switch id={`enable-general`} />
+              <Switch
+                id={`enable-general`}
+                checked={filteredGeneralExtensions.is_active}
+                onCheckedChange={(value) => setGeneralCheck({ value })}
+              />
               <Label htmlFor={`enable-general`}>Enable All</Label>
             </div>
           </div>
