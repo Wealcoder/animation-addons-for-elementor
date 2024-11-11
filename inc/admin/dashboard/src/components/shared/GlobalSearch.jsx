@@ -1,4 +1,4 @@
-import { DashboardSearchContent } from "@/lib/dashboardSearchContent";
+import { DashboardSearchContent } from "@/config/dashboardSearchContent";
 import {
   Dialog,
   DialogContent,

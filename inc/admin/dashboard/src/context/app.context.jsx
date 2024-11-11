@@ -1,3 +1,9 @@
+import { generalExtensionFn } from "@/lib/extensionService";
+import {
+  activeFullWidgetFn,
+  activeGroupWidgetFn,
+  activeWidgetFn,
+} from "@/lib/widgetService";
 import { createContext, useCallback, useReducer } from "react";
 
 const initialState = {
@@ -34,128 +40,28 @@ const useMainContext = (state) => {
 
   const updateActiveWidget = useCallback(
     (data) => {
-      const result = Object.fromEntries(
-        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-          const filteredElements = Object.fromEntries(
-            Object.entries(value.elements || {}).filter(([key2, value2]) => {
-              if (key2 === data.slug) {
-                value2.is_active = data.value;
-                return [key2, value2];
-              } else {
-                return [key2, value2];
-              }
-            })
-          );
-
-          return [key, { ...value, elements: filteredElements }];
-        })
-      );
-
-      dispatch({
-        type: "setAllWidgets",
-        value: {
-          ...mainState.allWidgets,
-          elements: result,
-        },
-      });
+      activeWidgetFn(mainState.allWidgets, data, dispatch);
     },
     [mainState.allWidgets]
   );
 
   const updateActiveGroupWidget = useCallback(
     (data) => {
-      const result = Object.fromEntries(
-        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-          const filteredElements = Object.fromEntries(
-            Object.entries(value.elements || {}).filter(([key2, value2]) => {
-              if (key === data.slug) {
-                if (value2.is_pro) {
-                  return [key2, value2];
-                } else {
-                  value2.is_active = data.value;
-                  return [key2, value2];
-                }
-              } else {
-                return [key2, value2];
-              }
-            })
-          );
-          if (key === data.slug) {
-            value.is_active = data.value;
-          }
-          return [key, { ...value, elements: filteredElements }];
-        })
-      );
-
-      dispatch({
-        type: "setAllWidgets",
-        value: {
-          ...mainState.allWidgets,
-          elements: result,
-        },
-      });
+      activeGroupWidgetFn(mainState.allWidgets, data, dispatch);
     },
     [mainState.allWidgets]
   );
 
   const updateActiveFullWidget = useCallback(
     (data) => {
-      const result = Object.fromEntries(
-        Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-          const filteredElements = Object.fromEntries(
-            Object.entries(value.elements || {}).filter(([key2, value2]) => {
-              if (value2.is_pro) {
-                return [key2, value2];
-              } else {
-                value2.is_active = data.value;
-                return [key2, value2];
-              }
-            })
-          );
-          value.is_active = data.value;
-          return [key, { ...value, elements: filteredElements }];
-        })
-      );
-
-      dispatch({
-        type: "setAllWidgets",
-        value: {
-          is_active: data.value,
-          elements: result,
-        },
-      });
+      activeFullWidgetFn(mainState.allWidgets, data, dispatch);
     },
     [mainState.allWidgets]
   );
 
-  const updateActiveExtension = useCallback(
+  const updateActiveGeneralExtension = useCallback(
     (data) => {
-      console.log(mainState.allExtensions);
-      console.log(data);
-      // const result = Object.fromEntries(
-      //   Object.entries(mainState.allWidgets.elements).map(([key, value]) => {
-      //     const filteredElements = Object.fromEntries(
-      //       Object.entries(value.elements || {}).filter(([key2, value2]) => {
-      //         if (key2 === data.slug) {
-      //           value2.is_active = data.value;
-      //           return [key2, value2];
-      //         } else {
-      //           return [key2, value2];
-      //         }
-      //       })
-      //     );
-
-      //     return [key, { ...value, elements: filteredElements }];
-      //   })
-      // );
-
-      // dispatch({
-      //   type: "setAllWidgets",
-      //   value: {
-      //     ...mainState.allWidgets,
-      //     elements: result,
-      //   },
-      // });
+      generalExtensionFn(mainState.allExtensions, data, dispatch);
     },
     [mainState.allExtensions]
   );
@@ -167,7 +73,7 @@ const useMainContext = (state) => {
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
-    updateActiveExtension,
+    updateActiveGeneralExtension,
   };
 };
 

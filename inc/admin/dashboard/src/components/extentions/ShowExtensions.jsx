@@ -18,7 +18,9 @@ import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const { allExtensions } = useExtensions();
-  const { updateActiveExtension } = useActiveItem();
+  const { updateActiveGeneralExtension } = useActiveItem();
+
+  console.log(allExtensions);
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
     allExtensions.elements["gsap-extensions"]
@@ -55,8 +57,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       setOpenAccordion(pluginIdParam);
     }
   }, [pluginIdParam]);
-
-  console.log(filteredGeneralExtensions);
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -131,7 +131,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                         <>
                           <Badge
                             variant="pro"
-                            className="px-2.5 py-1.5 bg-[linear-gradient(0deg,#6A85B6_0%,#BAC8E0_100%)] mr-1"
+                            className="px-2.5 py-1.5 h-7 bg-[linear-gradient(0deg,#6A85B6_0%,#BAC8E0_100%)] mr-1"
                           >
                             COMING SOON!
                           </Badge>
@@ -197,7 +197,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                   ?.elements[content]
                               }
                               slug={content}
-                              updateActiveItem={updateActiveExtension}
+                              // updateActiveItem={updateActiveExtension}
                               className="rounded p-5"
                             />
                           </React.Fragment>
@@ -257,7 +257,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                   <WidgetCard
                     widget={filteredGeneralExtensions?.elements[content]}
                     slug={content}
-                    updateActiveItem={updateActiveExtension}
+                    updateActiveItem={updateActiveGeneralExtension}
                     className="rounded p-5"
                   />
                 </React.Fragment>

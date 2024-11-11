@@ -1,4 +1,4 @@
-import { DashboardSearchContent } from "@/lib/dashboardSearchContent";
+import { DashboardSearchContent } from "@/config/dashboardSearchContent";
 import {
   CommandDialog,
   CommandEmpty,
@@ -20,7 +20,7 @@ const GlobalSearchOld = ({ open, setOpen }) => {
 
   const [gsapExtensionContent, setGsapExtensionContent] = useState([]);
   // const router = useNavigate();
-  const router = '';
+  const router = "";
 
   const [inputValue, setInputValue] = useState("");
 
