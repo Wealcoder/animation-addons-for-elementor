@@ -1,4 +1,7 @@
-import { generalExtensionFn } from "@/lib/extensionService";
+import {
+  generalExtensionFn,
+  generalGroupExtensionFn,
+} from "@/lib/extensionService";
 import {
   activeFullWidgetFn,
   activeGroupWidgetFn,
@@ -66,6 +69,13 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateActiveGeneralGroupExtension = useCallback(
+    (data) => {
+      generalGroupExtensionFn(mainState.allExtensions, data, dispatch);
+    },
+    [mainState.allExtensions]
+  );
+
   return {
     mainState,
     setAllWidgets,
@@ -74,6 +84,7 @@ const useMainContext = (state) => {
     updateActiveGroupWidget,
     updateActiveFullWidget,
     updateActiveGeneralExtension,
+    updateActiveGeneralGroupExtension,
   };
 };
 
