@@ -100,6 +100,22 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateActiveFullExtension = useCallback(
+    (data) => {
+      gsapAllExtensionFn(mainState.allExtensions, data, dispatch);
+      generalGroupExtensionFn(mainState.allExtensions, data, dispatch);
+
+      dispatch({
+        type: "setAllExtensions",
+        value: {
+          ...mainState.allExtensions,
+          is_active: data.value,
+        },
+      });
+    },
+    [mainState.allExtensions]
+  );
+
   return {
     mainState,
     setAllWidgets,
@@ -112,6 +128,7 @@ const useMainContext = (state) => {
     updateActiveGsapExtension,
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
+    updateActiveFullExtension,
   };
 };
 

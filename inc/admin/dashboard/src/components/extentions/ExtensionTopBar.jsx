@@ -11,8 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useActiveItem, useExtensions, useWidgets } from "@/hooks/app.hooks";
 
 const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
+  const { allExtensions } = useExtensions();
+  const { updateActiveFullExtension } = useActiveItem();
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
@@ -32,7 +35,11 @@ const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
       </div>
       <div className="flex justify-end items-center gap-5">
         <div className="flex items-center space-x-2">
-          <Switch id="global-enable-all" />
+          <Switch
+            id="global-enable-all"
+            checked={allExtensions.is_active}
+            onCheckedChange={(value) => updateActiveFullExtension({ value })}
+          />
           <Label htmlFor="global-enable-all">Enable All</Label>
         </div>
 
