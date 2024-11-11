@@ -85,6 +85,29 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
     updateActiveGroupWidget(data);
   };
 
+  const saveWidget = async () => {
+    await fetch(wcf_script_vars.ajax_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: allWidgets,
+        wcf_nonce: wcf_script_vars.nonce,
+        settings: "wcf_save_widgets",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        console.log(return_content);
+      });
+  };
+
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
@@ -101,7 +124,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
           <Button variant="secondary">Reset</Button>
-          <Button>Save Settings</Button>
+          <Button onClick={() => saveWidget()}>Save Settings</Button>
         </div>
       </div>
       <TabsContent

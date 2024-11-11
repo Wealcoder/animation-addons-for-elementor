@@ -26,8 +26,6 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
     updateActiveGsapAllExtension,
   } = useActiveItem();
 
-  // console.log(allExtensions);
-
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
     allExtensions.elements["gsap-extensions"]
   );
@@ -64,6 +62,29 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
     }
   }, [pluginIdParam]);
 
+  const saveExtension = async () => {
+    await fetch(wcf_script_vars.ajax_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: allExtensions,
+        wcf_nonce: wcf_script_vars.nonce,
+        settings: "wcf_save_extensions",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        console.log(return_content);
+      });
+  };
+
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
@@ -73,7 +94,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
           <Button variant="secondary">Reset</Button>
-          <Button>Save Settings</Button>
+          <Button onClick={() => saveExtension()}>Save Settings</Button>
         </div>
       </div>
       <TabsContent
