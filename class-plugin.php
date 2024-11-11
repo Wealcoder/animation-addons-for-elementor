@@ -172,14 +172,7 @@ class Plugin {
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
-			],
-			'goodshare'        => [
-				'handler' => 'goodshare',
-				'src'     => 'goodshare.min.js',
-				'dep'     => [],
-				'version' => false,
-				'arg'     => true,
-			],
+			],			
 			'ProgressBar'      => [
 				'handler' => 'progressbar',
 				'src'     => 'progressbar.min.js',

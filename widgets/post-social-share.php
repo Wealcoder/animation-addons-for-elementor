@@ -41,7 +41,7 @@ class Post_Social_Share extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'goodshare' ];
+		return [ ];
 	}
 
 	public function get_keywords() {
