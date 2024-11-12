@@ -264,3 +264,28 @@ if( !function_exists('wcf_get_nested_config_keys') ) {
 	}
 }
 
+if( !function_exists('wcf_get_db_updated_config') ) {	
+
+	
+	function wcf_get_db_updated_config(array &$configs, array $dbActiveElements) {
+		// Loop through each item in the configs array
+		foreach ($configs as $key => &$element) {
+			
+			// Check if the current element is an array and has an 'is_active' field
+			if (is_array($element) && isset($element['is_active'])) {
+				// If the current key is in the dbActiveElements array, update is_active to true
+				if (in_array($key, $dbActiveElements)) {
+					$element['is_active'] = true;
+					
+				}
+			}
+	
+			// Recursively call the function for any nested elements
+			if (is_array($element) ) {
+				wcf_get_db_updated_config($element, $dbActiveElements);
+			}
+		}
+	}
+	
+}
+
