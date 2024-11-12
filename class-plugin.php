@@ -463,14 +463,15 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_extensions() {
+		
 		foreach ( self::get_extensions() as $slug => $data ) {
 
 			// If upcoming don't register.
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
-
-			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
+			
+			if (! $data['is_pro'] && ! $data['is_extension'] ) {
 
 				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 			}
@@ -485,6 +486,7 @@ class Plugin {
 	public static function get_widgets() {
 		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );	  
 		self::searchKeys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
+	
 		return $awidgets;
 	}
 
@@ -505,7 +507,7 @@ class Plugin {
 	static function searchKeys($array, $keysToFind, &$foundKeys, &$active) {
 		foreach ($array as $key => $value) {
 			// Check if the current key is one we're looking for
-			if (in_array($key, $keysToFind)) {
+			if (in_array($key, $keysToFind) && array_key_exists('is_extension', $value)) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active

@@ -67,10 +67,35 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
-		
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );
+	}
+	/**
+	 * merge database saved data with dasboard widgets config
+	 * @return [void]
+	 */
+	public function dashboard_db_widgets_config($configs)
+	{
+		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );
+	
+		$widgets = $configs['widgets'];
+		wcf_get_db_updated_config($widgets,$saved_widgets);	
+		$configs['widgets'] = $widgets;
+		return $configs;
 	}
 	
+	/**
+	 * merge database saved data with dasboard ext config
+	 * @return [void]
+	 */
+	public function dashboard_db_extnsions_config($configs){
 	
+		$saved_ext = array_keys( get_option( 'wcf_save_extensions' ) );	
+		$extensions = $configs['extensions'];
+		wcf_get_db_updated_config($extensions,$saved_ext);	
+		$configs['extensions'] = $extensions;
+		return $configs;
+	}
 
 	/**
 	 * [include] Load Necessary file
@@ -87,8 +112,8 @@ class WCF_Admin_Init {
 	public function add_menu() {
 
 		self::$parent_menu_hook = add_menu_page(
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
+			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),
+			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			'',
@@ -118,6 +143,7 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
+	
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 		
 			// CSS
@@ -128,9 +154,7 @@ class WCF_Admin_Init {
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
-				'addons_config'  => $GLOBALS['wcf_addons_config'],
-				'active_widgets'  => get_option('wcf_save_widgets'),
-				'addon_tabs'     => $this->get_settings_tab(),
+				'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),			
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
 			];
@@ -220,8 +244,7 @@ class WCF_Admin_Init {
 			}
 			?>
             <div class="wcf-settings-footer">
-                <a href="https://support.crowdytheme.com/" class="wcf-admin-btn">View Documentation</a>
-
+                <a href="https://support.crowdytheme.com/" class="wcf-admin-btn"><?php echo esc_html__('View Documentation', 'animation-addons-for-elementor') ?></a>
                 <div class="footer-right">
                 </div>
             </div>
@@ -268,7 +291,7 @@ class WCF_Admin_Init {
 		if ( ! isset( $_POST['fields'] ) ) {
 			return;
 		}
-
+        $actives = $foundkeys = [];
 		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
 	    $settings  =  json_decode( $sanitize_data , true );	
@@ -320,67 +343,6 @@ class WCF_Admin_Init {
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
-	/**
-	 * Render PopupTemplate
-	 *
-	 * @access public
-	 * @return  void
-	 * @since 1.1.2
-	 */
-	public function render_popup() {
-		?>
-        <div class="wcf-addons-settings-popup">
-            <div class="wcf-addons-settings-popup-overlay"></div>
-            <div class="wcf-addons-settings-content">
-            </div>
-        </div>
-
-        <script type="text/template" id="tmpl-wcf-settings-save">
-            <div class="popup-status-wrapper">
-                <div class="icon">
-                    <# if( 'success' === data.icon) { #>
-                        <div class="check-icon">
-                            <span class="icon-line line-tip"></span>
-                            <span class="icon-line line-long"></span>
-                            <div class="icon-circle"></div>
-                            <div class="icon-fix"></div>
-                        </div>
-                    <# } #>
-
-                    <# if( 'error' === data.icon) { #>
-                    <div class="error-icon">
-                        <span class="icon-line line-tip"></span>
-                        <span class="icon-line line-long"></span>
-                        <div class="icon-circle"></div>
-                        <div class="icon-fix"></div>
-                    </div>
-                    <# } #>
-                </div>
-                <h2 class="title">{{{ data.title }}}</h2>
-                <div class="text">{{{ data.text }}}</div>
-            </div>
-        </script>
-
-        <script type="text/template" id="tmpl-wcf-settings-smooth-scroller">
-            <div class="popup-status-wrapper">
-                <h2 class="title">Smooth Scroller</h2>
-                <div class="smooth-scroller-settings">
-                    <div class="input-items">
-                        <label>Smooth</label>
-                        <input type="number" value="{{data.smooth_value}}" />
-                    </div>
-                    <div class="input-items">
-                        <label>Enable On Mobile</label>
-                        <input type="checkbox" data-checked="{{data.on_mobile}}"/>
-                    </div>
-                </div>
-                <div class="wcf-popup-actions">
-                    <button type="button" class="wcf-button-confirm popup-button">OK</button>
-                </div>
-            </div>
-        </script>
-		<?php
-	}
 
 }
 
