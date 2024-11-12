@@ -132,7 +132,7 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
           ...mainContent.elements["gsap-extensions"],
           elements: {
             ...mainContent.elements["gsap-extensions"].elements,
-            result,
+            ...result,
           },
         },
       },
@@ -141,8 +141,6 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
 };
 
 export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
-  console.log(data);
-  console.log(mainContent);
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["gsap-extensions"].elements).map(
       ([key, value]) => {
@@ -175,8 +173,68 @@ export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
           is_active: data.value,
           elements: {
             ...mainContent.elements["gsap-extensions"].elements,
-            result,
+            ...result,
           },
+        },
+      },
+    },
+  });
+};
+
+export const allExtensionFn = (mainContent, data, dispatch) => {
+  const gsapResult = Object.fromEntries(
+    Object.entries(mainContent.elements["gsap-extensions"].elements).map(
+      ([key, value]) => {
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).map(([key2, value2]) => {
+            if (value2.is_pro) {
+              return [key2, value2];
+            } else {
+              value2.is_active = data.value;
+              return [key2, value2];
+            }
+          })
+        );
+        if (value?.elements && Object.keys(value.elements).length) {
+          value.is_active = data.value;
+        }
+        return [key, { ...value, elements: filteredElements }];
+      }
+    )
+  );
+
+  const generalResult = Object.fromEntries(
+    Object.entries(mainContent.elements["general-extensions"].elements).map(
+      ([key, value]) => {
+        if (value.is_pro) {
+          return [key, value];
+        } else {
+          value.is_active = data.value;
+          return [key, value];
+        }
+      }
+    )
+  );
+
+  dispatch({
+    type: "setAllExtensions",
+    value: {
+      ...mainContent,
+      is_active: data.value,
+      elements: {
+        ...mainContent.elements,
+        "gsap-extensions": {
+          ...mainContent.elements["gsap-extensions"],
+          is_active: data.value,
+          elements: {
+            ...mainContent.elements["gsap-extensions"].elements,
+            ...gsapResult,
+          },
+        },
+        "general-extensions": {
+          ...mainContent.elements["general-extensions"],
+          is_active: data.value,
+          elements: generalResult,
         },
       },
     },

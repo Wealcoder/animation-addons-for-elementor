@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useActiveItem, useExtensions, useWidgets } from "@/hooks/app.hooks";
+import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
 const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
   const { allExtensions } = useExtensions();

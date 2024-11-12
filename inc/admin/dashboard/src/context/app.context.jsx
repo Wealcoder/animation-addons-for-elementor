@@ -1,4 +1,5 @@
 import {
+  allExtensionFn,
   generalExtensionFn,
   generalGroupExtensionFn,
   gsapAllExtensionFn,
@@ -102,16 +103,7 @@ const useMainContext = (state) => {
 
   const updateActiveFullExtension = useCallback(
     (data) => {
-      gsapAllExtensionFn(mainState.allExtensions, data, dispatch);
-      generalGroupExtensionFn(mainState.allExtensions, data, dispatch);
-
-      dispatch({
-        type: "setAllExtensions",
-        value: {
-          ...mainState.allExtensions,
-          is_active: data.value,
-        },
-      });
+      allExtensionFn(mainState.allExtensions, data, dispatch);
     },
     [mainState.allExtensions]
   );
