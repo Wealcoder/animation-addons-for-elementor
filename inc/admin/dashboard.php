@@ -143,6 +143,7 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
+	
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 		
 			// CSS
