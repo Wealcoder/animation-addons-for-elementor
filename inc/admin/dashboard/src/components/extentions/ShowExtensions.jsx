@@ -15,8 +15,12 @@ import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import ExtensionGsapSettings from "./ExtensionGsapSettings";
+import ScrollSmootherSettings from "./settings/scrollSmootherSettings";
+import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
+  const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
   const {
     updateActiveGeneralExtension,
@@ -85,6 +89,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         console.log(return_content);
       });
   };
+
+  // const generateSettingCom = (id) => {
+
+  // }
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -171,32 +179,15 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                           </Badge>
                         </>
                       )}
-                      <Button
-                        variant="link"
-                        className={cn(
-                          "group",
-                          Object.keys(
-                            filteredGsapExtensions?.elements[extension]
-                              ?.elements
-                          )?.length
-                            ? "text-icon"
-                            : "text-[#CACFD8] hover:text-[#CACFD8]"
-                        )}
+
+                      <ExtensionGsapSettings
+                        extension={filteredGsapExtensions?.elements[extension]}
                       >
-                        <RiSettings2Line
-                          className={cn(
-                            "me-1.5",
-                            Object.keys(
-                              filteredGsapExtensions?.elements[extension]
-                                ?.elements
-                            )?.length
-                              ? "text-icon group-hover:text-brand"
-                              : "text-[#CACFD8] group-hover:text-[#CACFD8]"
-                          )}
-                          size={20}
-                        />
-                        Settings
-                      </Button>
+                        {
+                          exSettings?.find((item) => item.key === extension)
+                            ?.component
+                        }
+                      </ExtensionGsapSettings>
 
                       <Switch
                         checked={
