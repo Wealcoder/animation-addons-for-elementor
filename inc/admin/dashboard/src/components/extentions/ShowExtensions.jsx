@@ -73,7 +73,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
 
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
-        fields: JSON.stringify( allExtensions ),
+        fields: JSON.stringify(allExtensions),
         nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_extensions",
       }),
