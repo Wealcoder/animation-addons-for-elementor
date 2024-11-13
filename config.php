@@ -1,5 +1,7 @@
 <?php
 
+use function PHPUnit\Framework\assertFalse;
+
 if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
@@ -18,7 +20,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'demo_url'     => '',
@@ -688,6 +690,143 @@ $config = [
 					],
 				]
 			],
+			'advanced-elements' => [
+				'title'     => esc_html__('Advanced', 'animation-addons-for-elementor'),
+				'is_active' => false,
+				'elements'  => [
+				
+					'toggle-switcher'       => [
+						'label'       => __( 'Toggle Switcher', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,		
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'advance-pricing-table' => [
+						'label'       => __( 'Advance Pricing Table', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'scroll-elements'       => [
+						'label'       => __( 'Scroll Elements', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'advance-portfolio'     => [
+						'label'       => __( 'Advance Portfolio', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'filterable-gallery'    => [
+						'label'       => __( 'Filterable Gallery', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'breadcrumbs'           => [
+						'label'       => __( 'Breadcrumbs', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'table-of-contents'     => [
+						'label'       => __( 'Table Of Content', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,					
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'image-accordion'       => [
+						'label'       => __( 'Image Accordion', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'demo_url'    => '',
+						'is_pro'       => true,
+						'is_extension' => false,
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'author-box'            => [
+						'label'       => __( 'Author Box', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'demo_url'    => '',
+						'is_pro'       => true,
+						'is_extension' => false,
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'flip-box'              => [
+						'label'       => __( 'Flip Box', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'demo_url'    => '',
+						'is_pro'       => true,
+						'is_extension' => false,
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'advance-slider'        => [
+						'label'       => __( 'Advance Slider', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => true,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'filterable-slider'     => [
+						'label'       => __( 'Filterable Slider', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'demo_url'    => '',
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+					'advance-accordion'     => [
+						'label'       => __( 'Advance Accordion', 'wcf-addons-pro' ),
+						'is_active'   => true,
+						'is_upcoming' => false,
+						'demo_url'    => '',
+						'is_pro'       => true,
+						'is_extension' => false,
+						'doc_url'     => '',
+						'youtube_url' => '',
+					],
+				]
+			]
 		]
 	],
 	'extensions' => [
@@ -707,6 +846,16 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'youtube_url'  => '',
 					],
+					'wrapper-link'     => [
+						'label'        => esc_html__( 'Wrapper Link', 'wcf-addons-pro' ),
+						'is_pro'       => true,
+						'is_active'    => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
 					'popup'      => [
 						'label'        => esc_html__('Popup', 'animation-addons-for-elementor'),
 						'is_pro'       => true,
@@ -715,6 +864,26 @@ $config = [
 						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-popup/',
+						'youtube_url'  => '',
+					],
+					'tilt-effect'      => [
+						'label'        => esc_html__( 'Tilt Effect', 'wcf-addons-pro' ),
+						'is_pro'       => true,
+						'is_active'    => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
+					'advanced-tooltip' => [
+						'label'        => esc_html__( 'Advanced Tooltip', 'wcf-addons-pro' ),
+						'is_pro'       => true,
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
 				]
@@ -771,12 +940,61 @@ $config = [
 							],
 						]
 					],
+					'effect' => [
+						'title'     => esc_html__('Effect', 'animation-addons-for-elementor'),
+						'doc_url'   => '#',
+						'is_pro'    => true,
+						'is_active' => false,
+						'elements' => [
+							'cursor-hover-effect' => [
+								'label'        => esc_html__( 'Cursor Hover Effect', 'wcf-addons-pro' ),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'is_extension' => false,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],						
+							'hover-effect-image'  => [
+								'label'        => esc_html__( 'Hover Effect Image', 'wcf-addons-pro' ),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'is_extension' => false,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
+							'cursor-move-effect' => [
+								'label'        => esc_html__( 'Cursor Move Effect', 'wcf-addons-pro' ),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'is_extension' => false,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
+						]
+					],
 					'scroll-trigger'    => [
 						'title'     => esc_html__('ScrollTrigger', 'animation-addons-for-elementor'),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => false,
+						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => []
+						'elements'  => [
+							'horizontal-scroll'   => [
+								'label'        => esc_html__( 'Horizontal', 'wcf-addons-pro' ),
+								'is_pro'       => true,
+								'is_active'    => true,
+								'is_extension' => false,
+								'is_upcoming'  => false,
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
+						]
 					],
 					'draw-svg'    => [
 						'title'     => esc_html__('DrawSVG', 'animation-addons-for-elementor'),
