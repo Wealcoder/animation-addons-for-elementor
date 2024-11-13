@@ -16,6 +16,9 @@ import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
   const { allExtensions } = useExtensions();
   const { updateActiveFullExtension } = useActiveItem();
+
+  const extensionCount = WCF_ADDONS_ADMIN.extensions;
+
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
@@ -27,9 +30,13 @@ const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
             <h2 className="text-[18px] font-medium ">Extensions</h2>
           </div>
           <div className="flex items-center">
-            <p className="text-sm text-label">6 Total Extensions</p>
+            <p className="text-sm text-label">
+              {extensionCount?.total} Total Extensions
+            </p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
-            <p className="text-sm text-label ">6 Active Extensions</p>
+            <p className="text-sm text-label ">
+              {Object.keys(extensionCount?.active).length} Active Extensions
+            </p>
           </div>
         </div>
       </div>
