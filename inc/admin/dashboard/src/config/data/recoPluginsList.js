@@ -1,24 +1,31 @@
-import SampleImage from "../../../public/images/recommended-plugins/animation-addons.png";
+import Arolax from "../../../public/images/theme/arolex.png";
+import Sassly from "../../../public/images/theme/sassly.png";
+import Binox from "../../../public/images/theme/binox.png";
+import Builder from "../../../public/images/theme/builder.png";
 
 export const RecommendedPluginsList = [
   {
-    title: "Animation Addons",
-    subTitle: "Animation based plugin for Elementor",
-    logo: SampleImage,
+    title: "Arolax",
+    subTitle: "Creative Digital Agency Theme",
+    url: "https://crowdytheme.com/wp/arolax-preview",
+    logo: Arolax,
   },
   {
-    title: "Product Builder for WooCommerce",
-    subTitle: "Product Builder plugin for Commerce",
-    logo: SampleImage,
+    title: "Sassly",
+    subTitle: "SaaS, AI & Tech Startup Theme",
+    url: "https://crowdytheme.com/wp/sassly-preview",
+    logo: Sassly,
   },
   {
-    title: "Animation Addons",
-    subTitle: "Animation based plugin for Elementor",
-    logo: SampleImage,
+    title: "Binox",
+    subTitle: "Business Consulting Theme",
+    url: "https://crowdytheme.com/wp/binox-preview",
+    logo: Binox,
   },
   {
-    title: "Product Builder for WooCommerce",
-    subTitle: "Product Builder plugin for Commerce",
-    logo: SampleImage,
+    title: "Builder",
+    subTitle: "Architecture Construction WordPress Theme",
+    url: "https://crowdytheme.com/wp/bilder-preview",
+    logo: Builder,
   },
 ];
