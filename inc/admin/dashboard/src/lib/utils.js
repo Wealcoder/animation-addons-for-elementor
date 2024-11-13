@@ -187,7 +187,7 @@ export const generateWidgetSearchContent = (mainContent) => {
   Object.entries(mainContent).map(([key, val]) => {
     Object.entries(val.elements).map(([key2, val2]) => {
       const sampleData = {
-        icon: val2?.icon || "icon-Team",
+        icon: val2?.icon || "wcf-icon-Team",
         path: "widgets",
         slug: key2,
         title: val2.label,

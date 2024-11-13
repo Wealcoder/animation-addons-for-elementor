@@ -30,6 +30,7 @@ const GlobalSearch = ({ open, setOpen }) => {
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);
+  const [popularWidgets, setPopularWidgets] = useState([]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -39,6 +40,7 @@ const GlobalSearch = ({ open, setOpen }) => {
       "Dashboard"
     );
     const widgets = generateWidgetSearchContent(allWidgets?.elements);
+    setPopularWidgets(widgets?.items?.slice(0, 3));
     const gsapExtensions = generateSearchContent(
       AllGSAPExtensionList,
       "GSAP Extension",
@@ -201,25 +203,25 @@ const GlobalSearch = ({ open, setOpen }) => {
                       <h4 className="text-xs text-text-secondary px-2.5 mb-2">
                         Widgets
                       </h4>
-                      {widgetContent?.slice(0, 3)?.map((item) => (
+                      {popularWidgets?.map((item) => (
                         <div
                           key={`dashboard_item-default-${item.slug}`}
                           className="search-item"
                           onClick={() =>
-                            changeRoute(item.slug, "widgets", "all")
+                            changeRoute(
+                              item.slug,
+                              item.path,
+                              item?.location?.cTab
+                            )
                           }
                         >
                           <div>
-                            <Avatar className="rounded-full h-5 w-5 flex justify-center items-center">
-                              <AvatarImage
-                                className="w-5 h-5"
-                                src={item?.logo}
-                                alt="Widget Logo"
-                              />
-                              <AvatarFallback>
-                                <RiLandscapeFill size={20} color="#CACFD8" />
-                              </AvatarFallback>
-                            </Avatar>
+                            <div
+                              className={cn(
+                                "rounded-full h-5 w-5 flex justify-center items-center text-[20px]",
+                                item.icon
+                              )}
+                            />
                           </div>{" "}
                           {item.title}
                         </div>

@@ -36,7 +36,12 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
         {widget ? (
           <>
             <div className="flex items-center gap-3">
-              <div className="border rounded-full h-11 w-11 flex justify-center items-center shadow-common icon-Team text-[20px]" />
+              <div
+                className={cn(
+                  "border rounded-full h-11 w-11 flex justify-center items-center shadow-common text-[20px]",
+                  widget?.icon
+                )}
+              />
 
               <div className="flex flex-col gap-1">
                 <div className="flex items-center">
