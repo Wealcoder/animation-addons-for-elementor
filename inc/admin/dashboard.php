@@ -68,7 +68,37 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
-		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
+		
+	}
+	/**
+	 * Summary of elementor_disabled_elements
+	 * @return void
+	 */
+	public function disable_widgets_by_element_manager(){
+	
+		$disable_widgets = get_option('elementor_disabled_elements');
+		$saved_widgets   = get_option( 'wcf_save_widgets' );
+		$pattern         = '/^wcf--\w+/';
+		
+		if(is_array($disable_widgets) && is_array($saved_widgets)){	
+		
+			foreach($disable_widgets as $item)
+			{					
+				if (preg_match($pattern, $item)) 
+				{
+					
+				    $toberemove  = trim($item,'wcf--');
+				    if(isset($saved_widgets[$toberemove]))
+				    {
+						unset($saved_widgets[$toberemove]);
+				    }					
+				} 
+			}
+			
+			update_option('wcf_save_widgets',$saved_widgets);
+		}
+		
 	}
 	/**
 	 * merge database saved data with dasboard widgets config
@@ -145,7 +175,8 @@ class WCF_Admin_Init {
 	public function enqueue_scripts( $hook ) {
 	
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
-		
+			//sync element manager
+		    $this->disable_widgets_by_element_manager();
 			// CSS
 			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
 			

@@ -741,7 +741,7 @@ $config = [
 							],
 							'pin-element'             => [
 								'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
-								'is_pro'       => true,
+								'is_pro'       => false,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
