@@ -77,8 +77,8 @@
         // Slide Handle Function
         function slideHandleTo(position) {
             const posX = ($comparisonSliderWidth / 100) * position;
-            gsap.to($sliderLeft, {duration: 0.7, width: posX, ease: "power2.out"});
-            gsap.to($handle, {duration: 0.7, x: posX, ease: "power2.out"});
+            gsap.to($sliderLeft, {duration: 0.5, width: posX, ease: "power2.out"});
+            gsap.to($handle, {duration: 0.5, x: posX, ease: "power2.out"});
         }
 
         // Click Handlers

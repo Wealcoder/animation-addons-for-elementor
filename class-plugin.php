@@ -224,7 +224,7 @@ class Plugin {
 			],
 			'image-compare'    => [
 				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.js',
+				'src'     => 'widgets/image-compare.min.js',
 				'dep'     => [ 'draggable' ],
 				'version' => false,
 				'arg'     => true,
@@ -328,7 +328,7 @@ class Plugin {
 			],
 			'image-compare'    => [
 				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.css',
+				'src'     => 'widgets/image-compare.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',

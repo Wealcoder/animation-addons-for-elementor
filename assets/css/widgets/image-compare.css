@@ -13,6 +13,11 @@
   position: absolute;
 }
 
+.wcf--image-compare .slider-left {
+  left: 0;
+  width: 0;
+}
+
 .wcf--image-compare .slider-img {
   background-position: center center;
   background-size: cover;
@@ -30,6 +35,7 @@
   position: absolute;
   cursor: col-resize !important;
   opacity: 0.6;
+  content: "";
 }
 
 .wcf--image-compare:hover .wcf--image-compare-handle {
@@ -97,3 +103,4 @@
 .cmp--align-right .wcf--image-compare {
   margin-left: auto;
 }
+/*# sourceMappingURL=image-compare.css.map */
