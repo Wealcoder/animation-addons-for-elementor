@@ -16,10 +16,16 @@ import {
 } from "@/config/data/allExtensionList";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { generateSearchContent } from "@/lib/utils";
+import {
+  cn,
+  generateSearchContent,
+  generateWidgetSearchContent,
+} from "@/lib/utils";
+import { useWidgets } from "@/hooks/app.hooks";
 
 const GlobalSearch = ({ open, setOpen }) => {
   const dashboardContent = DashboardSearchContent;
+  const { allWidgets } = useWidgets();
   const widgetContent = AllWidgetList;
 
   const [storeAllContent, setStoreAllContent] = useState([]);
@@ -32,7 +38,7 @@ const GlobalSearch = ({ open, setOpen }) => {
       DashboardSearchContent,
       "Dashboard"
     );
-    const widgets = generateSearchContent(AllWidgetList, "Widgets");
+    const widgets = generateWidgetSearchContent(allWidgets?.elements);
     const gsapExtensions = generateSearchContent(
       AllGSAPExtensionList,
       "GSAP Extension",
@@ -149,23 +155,16 @@ const GlobalSearch = ({ open, setOpen }) => {
                               )
                             }
                           >
-                            {item.icon ? (
-                              item.icon
-                            ) : item.logo ? (
+                            {item.dIcon ? (
+                              item.dIcon
+                            ) : item.icon ? (
                               <div>
-                                <Avatar className="rounded-full h-5 w-5 flex justify-center items-center">
-                                  <AvatarImage
-                                    className="w-5 h-5"
-                                    src={item?.logo}
-                                    alt="Widget Logo"
-                                  />
-                                  <AvatarFallback>
-                                    <RiLandscapeFill
-                                      size={20}
-                                      color="#CACFD8"
-                                    />
-                                  </AvatarFallback>
-                                </Avatar>
+                                <div
+                                  className={cn(
+                                    "rounded-full h-5 w-5 flex justify-center items-center text-[20px]",
+                                    item.icon
+                                  )}
+                                />
                               </div>
                             ) : (
                               ""
@@ -193,7 +192,7 @@ const GlobalSearch = ({ open, setOpen }) => {
                           className="search-item"
                           onClick={() => changeRoute(item.slug)}
                         >
-                          {item.icon} {item.name}
+                          {item.dIcon} {item.name}
                         </div>
                       ))}
                     </div>

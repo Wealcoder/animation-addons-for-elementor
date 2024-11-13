@@ -422,9 +422,13 @@ class Plugin {
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
+			
+			if($data['is_pro']){
+				continue;
+			}
 
 			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
-				if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {
+				if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
 					require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
 				} else {
 					require_once( __DIR__ . '/widgets/' . $slug . '.php' );

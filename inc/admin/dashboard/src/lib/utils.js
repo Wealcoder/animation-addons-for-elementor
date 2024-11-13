@@ -181,3 +181,25 @@ export const filterGsapExtension = (mainContent, filterKey) => {
     elements: result,
   };
 };
+
+export const generateWidgetSearchContent = (mainContent) => {
+  let storeData = [];
+  Object.entries(mainContent).map(([key, val]) => {
+    Object.entries(val.elements).map(([key2, val2]) => {
+      const sampleData = {
+        icon: val2?.icon || "icon-Team",
+        path: "widgets",
+        slug: key2,
+        title: val2.label,
+        location: val2.location,
+      };
+
+      storeData.push(sampleData);
+    });
+  });
+
+  return {
+    category: "Widgets",
+    items: storeData,
+  };
+};

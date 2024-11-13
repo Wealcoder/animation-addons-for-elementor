@@ -1,7 +1,7 @@
 <?php
 
 namespace WCF_ADDONS\Admin;
-
+use Elementor\Modules\ElementManager\Options;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
@@ -69,6 +69,8 @@ class WCF_Admin_Init {
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
+		//add_action( 'init', [ $this, 'sync_widgets_by_element_manager'], 10 );		
+		
 		
 	}
 	/**
@@ -77,14 +79,15 @@ class WCF_Admin_Init {
 	 */
 	public function disable_widgets_by_element_manager(){
 	
-		$disable_widgets = get_option('elementor_disabled_elements');
+		$disable_widgets = Options::get_disabled_elements();
 		$saved_widgets   = get_option( 'wcf_save_widgets' );
 		$pattern         = '/^wcf--\w+/';
 		
 		if(is_array($disable_widgets) && is_array($saved_widgets)){	
 		
 			foreach($disable_widgets as $item)
-			{					
+			{
+				
 				if (preg_match($pattern, $item)) 
 				{
 					
@@ -97,6 +100,58 @@ class WCF_Admin_Init {
 			}
 			
 			update_option('wcf_save_widgets',$saved_widgets);
+		}
+		
+	}
+	
+	public function sync_widgets_by_element_manager(){
+	    $namefixs = [
+					'post-paginate'      => 'wcf--blog--post--paginate',
+					'post-social-share'  => 'wcf--blog--post--social-share',
+					'post-title'         => 'wcf--blog--post--title',
+					'search-form'        => 'wcf--blog--search--form',
+					'search-query'       => 'wcf--blog--search--query',
+					'text-hover-image'   => 'wcf--t-h-image',
+					'post-meta-info'     => 'wcf--blog--post--meta-info',
+					'post-excerpt'       => 'wcf--blog--post--excerpt',
+					'post-feature-image' => 'wcf--theme-post-image',
+					'social-icons'       => 'social-icons',
+	    ];
+		$disable_widgets = Options::get_disabled_elements();
+		$saved_widgets   = get_option( 'wcf_save_widgets' );
+		
+		if(is_array($disable_widgets) && is_array($saved_widgets))
+		{	
+		
+			foreach($saved_widgets as $key => $state)
+			{					
+			
+				$index = false;
+				$index = array_search('wcf--'.$key, $disable_widgets); // Find the index of the element
+				if ($index !== false) {
+					unset($disable_widgets[$index]); // Remove element if found
+				}
+				
+				$index = array_search('wcf--blog--'.$key, $disable_widgets); // Find the index of the element
+				if ($index !== false) {
+					unset($disable_widgets[$index]); // Remove element if found
+				}
+				
+				if(array_key_exists($key,$namefixs)){
+				
+					$slug = $namefixs[$key];					
+					$index = array_search($slug, $disable_widgets); // Find the index of the element
+					if ($index !== false) {
+						unset($disable_widgets[$index]); // Remove element if found
+					}
+				}
+				 
+			}
+		
+			array_unshift($disable_widgets);
+		
+			Options::update_disabled_elements( $disable_widgets );		
+			
 		}
 		
 	}
@@ -191,15 +246,17 @@ class WCF_Admin_Init {
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
             wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
-		
+		    $active_widgets = self::get_widgets(); 
+		    $active_ext = self::get_extensions(); 
+		    
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),			
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
-				'extensions' => ['total' => $total_extensions,'active' => self::get_extensions()],
-				'widgets'    => ['total' =>$total_widgets,'active' => self::get_widgets()],
+				'extensions' => ['total' => $total_extensions,'active' => is_array($active_widgets) ? count($active_ext): 0],
+				'widgets'    => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				
 			];
 			
@@ -342,7 +399,13 @@ class WCF_Admin_Init {
 	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
 		// update new settings
 		if ( ! empty( $option_name ) ) {
+		
 			$updated = update_option( $option_name, $actives );
+			
+			if($option_name == 'wcf_save_widgets'){
+				$this->sync_widgets_by_element_manager();
+			}
+			
 			wp_send_json( $updated );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );

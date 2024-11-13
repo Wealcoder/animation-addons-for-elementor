@@ -17,6 +17,7 @@ import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
   const { allWidgets } = useWidgets();
   const { updateActiveFullWidget } = useActiveItem();
+  const widgetCount = WCF_ADDONS_ADMIN.widgets;
 
   const setCheck = (data) => {
     updateActiveFullWidget(data);
@@ -32,9 +33,13 @@ const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
             <h2 className="text-[18px] font-medium ">Widgets</h2>
           </div>
           <div className="flex items-center">
-            <p className="text-sm text-label ">100 Total Widgets</p>
+            <p className="text-sm text-label ">
+              {widgetCount?.total} Total Widgets
+            </p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
-            <p className="text-sm text-label ">80 Active Widgets</p>
+            <p className="text-sm text-label ">
+              {Object.keys(widgetCount?.active).length} Active Widgets
+            </p>
           </div>
         </div>
       </div>
