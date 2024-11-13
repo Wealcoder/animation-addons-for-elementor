@@ -358,7 +358,7 @@ class WCF_Admin_Init {
 		$settings = [
 			'smooth' => sanitize_text_field( wp_unslash( $_POST['smooth'] ) ),
 		];
-
+		
 		if ( isset( $_POST['mobile'] ) ) {
 			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
@@ -367,6 +367,7 @@ class WCF_Admin_Init {
 
 		// update new settings
 		if ( ! empty( $_POST['smooth'] ) ) {
+		
 			update_option( 'wcf_smooth_scroller', $option );
 			wp_send_json( $option );
 		}
