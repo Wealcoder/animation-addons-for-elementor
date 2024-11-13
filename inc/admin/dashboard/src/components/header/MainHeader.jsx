@@ -26,11 +26,12 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
           <Badge className="absolute top-[9px] right-2" variant="solid" />
           <RiNotificationLine size={20} />
         </Button>
-        <Button variant="pro">
+        <Button variant="pro" disabled>
           <span className="me-2 flex">
             <RiVipCrown2Line size={20} />
           </span>
-          Get Pro Version
+          {/* Get Pro Version */}
+          Coming Soon
         </Button>
       </div>
       <GlobalSearch open={open} setOpen={setOpen} />

@@ -15,13 +15,20 @@ import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import ExtensionGsapSettings from "./ExtensionGsapSettings";
+import ScrollSmootherSettings from "./settings/scrollSmootherSettings";
+import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
+  const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
-  const { updateActiveGeneralExtension, updateActiveGeneralGroupExtension } =
-    useActiveItem();
-
-  console.log(allExtensions);
+  const {
+    updateActiveGeneralExtension,
+    updateActiveGeneralGroupExtension,
+    updateActiveGsapExtension,
+    updateActiveGsapGroupExtension,
+    updateActiveGsapAllExtension,
+  } = useActiveItem();
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
     allExtensions.elements["gsap-extensions"]
@@ -29,7 +36,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const [filteredGeneralExtensions, setFilteredGeneralExtensions] = useState(
     allExtensions.elements["general-extensions"]
   );
-  const [openAccordion, setOpenAccordion] = useState("");
+  const [openAccordion, setOpenAccordion] = useState([]);
   const [tabValue, setTabValue] = useState("gsap");
 
   useEffect(() => {
@@ -38,6 +45,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         allExtensions.elements["gsap-extensions"],
         filterKey
       );
+
       setFilteredGsapExtensions(gsapResult);
       const generalResult = filterGeneralExtension(
         allExtensions.elements["general-extensions"],
@@ -45,7 +53,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
       );
       setFilteredGeneralExtensions(generalResult);
     }
-  }, [filterKey]);
+  }, [filterKey, allExtensions]);
 
   useEffect(() => {
     if (tabParam) {
@@ -59,9 +67,32 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
     }
   }, [pluginIdParam]);
 
-  const setGeneralCheck = (data) => {
-    updateActiveGeneralGroupExtension(data);
+  const saveExtension = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: JSON.stringify(allExtensions),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_extensions",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        console.log(return_content);
+      });
   };
+
+  // const generateSettingCom = (id) => {
+
+  // }
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>
@@ -72,7 +103,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
           <Button variant="secondary">Reset</Button>
-          <Button>Save Settings</Button>
+          <Button onClick={() => saveExtension()}>Save Settings</Button>
         </div>
       </div>
       <TabsContent
@@ -85,7 +116,13 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
               {filteredGsapExtensions?.title}
             </h3>
             <div className="flex items-center space-x-2">
-              <Switch id={`enable-gsap`} />
+              <Switch
+                id={`enable-gsap`}
+                checked={filteredGsapExtensions?.is_active}
+                onCheckedChange={(value) =>
+                  updateActiveGsapAllExtension({ value })
+                }
+              />
               <Label htmlFor={`enable-gsap`}>Enable All</Label>
             </div>
           </div>
@@ -142,40 +179,31 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                           </Badge>
                         </>
                       )}
-                      <Button
-                        variant="link"
-                        className={cn(
-                          "group",
-                          Object.keys(
-                            filteredGsapExtensions?.elements[extension]
-                              ?.elements
-                          )?.length
-                            ? "text-icon"
-                            : "text-[#CACFD8] hover:text-[#CACFD8]"
-                        )}
+
+                      <ExtensionGsapSettings
+                        extension={filteredGsapExtensions?.elements[extension]}
                       >
-                        <RiSettings2Line
-                          className={cn(
-                            "me-1.5",
-                            Object.keys(
-                              filteredGsapExtensions?.elements[extension]
-                                ?.elements
-                            )?.length
-                              ? "text-icon group-hover:text-brand"
-                              : "text-[#CACFD8] group-hover:text-[#CACFD8]"
-                          )}
-                          size={20}
-                        />
-                        Settings
-                      </Button>
+                        {
+                          exSettings?.find((item) => item.key === extension)
+                            ?.component
+                        }
+                      </ExtensionGsapSettings>
+
                       <Switch
-                        onCheckedChange={(value) =>
+                        checked={
+                          filteredGsapExtensions?.elements[extension]?.is_active
+                        }
+                        onCheckedChange={(value) => {
                           value
                             ? setOpenAccordion((prev) => [...prev, extension])
                             : setOpenAccordion((prev) =>
                                 prev?.filter((el) => el !== extension)
-                              )
-                        }
+                              );
+                          updateActiveGsapGroupExtension({
+                            value,
+                            slug: extension,
+                          });
+                        }}
                         disabled={
                           !Object.keys(
                             filteredGsapExtensions?.elements[extension]
@@ -202,7 +230,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                                   ?.elements[content]
                               }
                               slug={content}
-                              // updateActiveItem={updateActiveExtension}
+                              updateActiveItem={updateActiveGsapExtension}
                               className="rounded p-5"
                             />
                           </React.Fragment>
@@ -252,8 +280,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
             <div className="flex items-center space-x-2">
               <Switch
                 id={`enable-general`}
-                checked={filteredGeneralExtensions.is_active}
-                onCheckedChange={(value) => setGeneralCheck({ value })}
+                checked={filteredGeneralExtensions?.is_active}
+                onCheckedChange={(value) =>
+                  updateActiveGeneralGroupExtension({ value })
+                }
               />
               <Label htmlFor={`enable-general`}>Enable All</Label>
             </div>

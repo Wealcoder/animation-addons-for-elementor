@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class WCF_Admin_Init {
-
+	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
 	 */
@@ -67,10 +67,65 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
 		
 	}
+	/**
+	 * Summary of elementor_disabled_elements
+	 * @return void
+	 */
+	public function disable_widgets_by_element_manager(){
 	
+		$disable_widgets = get_option('elementor_disabled_elements');
+		$saved_widgets   = get_option( 'wcf_save_widgets' );
+		$pattern         = '/^wcf--\w+/';
+		
+		if(is_array($disable_widgets) && is_array($saved_widgets)){	
+		
+			foreach($disable_widgets as $item)
+			{					
+				if (preg_match($pattern, $item)) 
+				{
+					
+				    $toberemove  = trim($item,'wcf--');
+				    if(isset($saved_widgets[$toberemove]))
+				    {
+						unset($saved_widgets[$toberemove]);
+				    }					
+				} 
+			}
+			
+			update_option('wcf_save_widgets',$saved_widgets);
+		}
+		
+	}
+	/**
+	 * merge database saved data with dasboard widgets config
+	 * @return [void]
+	 */
+	public function dashboard_db_widgets_config($configs)
+	{
+		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );
 	
+		$widgets = $configs['widgets'];
+		wcf_get_db_updated_config($widgets,$saved_widgets);	
+		$configs['widgets'] = $widgets;
+		return $configs;
+	}
+	
+	/**
+	 * merge database saved data with dasboard ext config
+	 * @return [void]
+	 */
+	public function dashboard_db_extnsions_config($configs){
+	
+		$saved_ext = array_keys( get_option( 'wcf_save_extensions' ) );	
+		$extensions = $configs['extensions'];
+		wcf_get_db_updated_config($extensions,$saved_ext);	
+		$configs['extensions'] = $extensions;
+		return $configs;
+	}
 
 	/**
 	 * [include] Load Necessary file
@@ -87,8 +142,8 @@ class WCF_Admin_Init {
 	public function add_menu() {
 
 		self::$parent_menu_hook = add_menu_page(
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
+			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),
+			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			'',
@@ -118,21 +173,34 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
+		$total_extensions = $total_widgets = 0;
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
-		
+			//sync element manager
+		    $this->disable_widgets_by_element_manager();
 			// CSS
 			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
 			
 			wp_enqueue_script( 'wcf-admin' , plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js' , array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), time(), true );
-
+			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
+			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['widgets'], $total_widgets);
+			
+			$widgets       = get_option( 'wcf_save_widgets' );
+			$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : [];
+			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);
+			
+			$extensions = get_option( 'wcf_save_extensions' );
+			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
+            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+		
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
-				'addons_config'  => $GLOBALS['wcf_addons_config'],
-				'active_widgets'  => get_option('wcf_save_widgets'),
-				'addon_tabs'     => $this->get_settings_tab(),
+				'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),			
 				'adminURL'       => admin_url(),
-				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
+				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+				'extensions' => ['total' => $total_extensions,'active' => self::get_extensions()],
+				'widgets'    => ['total' =>$total_widgets,'active' => self::get_widgets()],
+				
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
@@ -220,8 +288,7 @@ class WCF_Admin_Init {
 			}
 			?>
             <div class="wcf-settings-footer">
-                <a href="https://support.crowdytheme.com/" class="wcf-admin-btn">View Documentation</a>
-
+                <a href="https://support.crowdytheme.com/" class="wcf-admin-btn"><?php echo esc_html__('View Documentation', 'animation-addons-for-elementor') ?></a>
                 <div class="footer-right">
                 </div>
             </div>
@@ -268,16 +335,14 @@ class WCF_Admin_Init {
 		if ( ! isset( $_POST['fields'] ) ) {
 			return;
 		}
-
+        $actives = $foundkeys = [];
 		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
-
-		wp_parse_str( sanitize_text_field( wp_unslash( $_POST['fields'] ) ), $settings );
-
-		$settings = array_fill_keys( array_keys( $settings ), true );
-
+		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
+	    $settings  =  json_decode( $sanitize_data , true );	
+	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
 		// update new settings
 		if ( ! empty( $option_name ) ) {
-			$updated = update_option( $option_name, $settings );
+			$updated = update_option( $option_name, $actives );
 			wp_send_json( $updated );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
@@ -306,7 +371,7 @@ class WCF_Admin_Init {
 		$settings = [
 			'smooth' => sanitize_text_field( wp_unslash( $_POST['smooth'] ) ),
 		];
-
+		
 		if ( isset( $_POST['mobile'] ) ) {
 			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
@@ -315,6 +380,7 @@ class WCF_Admin_Init {
 
 		// update new settings
 		if ( ! empty( $_POST['smooth'] ) ) {
+		
 			update_option( 'wcf_smooth_scroller', $option );
 			wp_send_json( $option );
 		}
@@ -322,67 +388,6 @@ class WCF_Admin_Init {
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
-	/**
-	 * Render PopupTemplate
-	 *
-	 * @access public
-	 * @return  void
-	 * @since 1.1.2
-	 */
-	public function render_popup() {
-		?>
-        <div class="wcf-addons-settings-popup">
-            <div class="wcf-addons-settings-popup-overlay"></div>
-            <div class="wcf-addons-settings-content">
-            </div>
-        </div>
-
-        <script type="text/template" id="tmpl-wcf-settings-save">
-            <div class="popup-status-wrapper">
-                <div class="icon">
-                    <# if( 'success' === data.icon) { #>
-                        <div class="check-icon">
-                            <span class="icon-line line-tip"></span>
-                            <span class="icon-line line-long"></span>
-                            <div class="icon-circle"></div>
-                            <div class="icon-fix"></div>
-                        </div>
-                    <# } #>
-
-                    <# if( 'error' === data.icon) { #>
-                    <div class="error-icon">
-                        <span class="icon-line line-tip"></span>
-                        <span class="icon-line line-long"></span>
-                        <div class="icon-circle"></div>
-                        <div class="icon-fix"></div>
-                    </div>
-                    <# } #>
-                </div>
-                <h2 class="title">{{{ data.title }}}</h2>
-                <div class="text">{{{ data.text }}}</div>
-            </div>
-        </script>
-
-        <script type="text/template" id="tmpl-wcf-settings-smooth-scroller">
-            <div class="popup-status-wrapper">
-                <h2 class="title">Smooth Scroller</h2>
-                <div class="smooth-scroller-settings">
-                    <div class="input-items">
-                        <label>Smooth</label>
-                        <input type="number" value="{{data.smooth_value}}" />
-                    </div>
-                    <div class="input-items">
-                        <label>Enable On Mobile</label>
-                        <input type="checkbox" data-checked="{{data.on_mobile}}"/>
-                    </div>
-                </div>
-                <div class="wcf-popup-actions">
-                    <button type="button" class="wcf-button-confirm popup-button">OK</button>
-                </div>
-            </div>
-        </script>
-		<?php
-	}
 
 }
 

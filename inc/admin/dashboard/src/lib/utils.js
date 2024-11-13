@@ -150,7 +150,7 @@ export const filterGeneralExtension = (mainContent, filterKey) => {
     })
   );
   return {
-    title: mainContent.title,
+    ...mainContent,
     elements: result,
   };
 };
@@ -177,7 +177,7 @@ export const filterGsapExtension = (mainContent, filterKey) => {
   );
 
   return {
-    title: mainContent.title,
+    ...mainContent,
     elements: result,
   };
 };

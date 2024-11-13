@@ -1,6 +1,10 @@
 import {
+  allExtensionFn,
   generalExtensionFn,
   generalGroupExtensionFn,
+  gsapAllExtensionFn,
+  gsapExtensionFn,
+  gsapGroupExtensionFn,
 } from "@/lib/extensionService";
 import {
   activeFullWidgetFn,
@@ -76,6 +80,34 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateActiveGsapExtension = useCallback(
+    (data) => {
+      gsapExtensionFn(mainState.allExtensions, data, dispatch);
+    },
+    [mainState.allExtensions]
+  );
+
+  const updateActiveGsapGroupExtension = useCallback(
+    (data) => {
+      gsapGroupExtensionFn(mainState.allExtensions, data, dispatch);
+    },
+    [mainState.allExtensions]
+  );
+
+  const updateActiveGsapAllExtension = useCallback(
+    (data) => {
+      gsapAllExtensionFn(mainState.allExtensions, data, dispatch);
+    },
+    [mainState.allExtensions]
+  );
+
+  const updateActiveFullExtension = useCallback(
+    (data) => {
+      allExtensionFn(mainState.allExtensions, data, dispatch);
+    },
+    [mainState.allExtensions]
+  );
+
   return {
     mainState,
     setAllWidgets,
@@ -85,6 +117,10 @@ const useMainContext = (state) => {
     updateActiveFullWidget,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
+    updateActiveGsapExtension,
+    updateActiveGsapGroupExtension,
+    updateActiveGsapAllExtension,
+    updateActiveFullExtension,
   };
 };
 
