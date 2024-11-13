@@ -243,20 +243,6 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
-			'chroma'           => [
-				'handler' => 'chroma',
-				'src'     => 'chroma.min.js',
-				'dep'     => [ 'jquery', 'gsap' ],
-				'version' => false,
-				'arg'     => true,
-			],
-			'animated-heading' => [
-				'handler' => 'wcf--animated-heading',
-				'src'     => 'widgets/animated-heading.min.js',
-				'dep'     => [ 'jquery', 'gsap', 'chroma' ],
-				'version' => false,
-				'arg'     => true,
-			],
 		];
 	}
 
