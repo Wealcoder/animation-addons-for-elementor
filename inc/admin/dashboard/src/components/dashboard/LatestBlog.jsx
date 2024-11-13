@@ -3,6 +3,7 @@ import { Separator } from "../ui/separator";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
 import { LatestBlogList } from "@/config/data/latestBlogList";
+import SampleImage from "../../../public/images/latest-blog/b1.png";
 
 const LatestBlog = () => {
   const blogs = LatestBlogList;
@@ -26,7 +27,8 @@ const LatestBlog = () => {
         </div>
         <div>
           <a
-            href={"#"}
+            href={"https://crowdytheme.com/blog"}
+            target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             View all <RiArrowRightUpLine size={18} className="ml-1" />
@@ -37,15 +39,18 @@ const LatestBlog = () => {
       <div className="grid grid-cols-4 gap-5">
         {blogs?.map((blog, i) => (
           <div key={`latest_blog-${i}`} className="group">
-            <div className="overflow-hidden">
+            <div className="overflow-hidden h-[170px] rounded-lg">
               <img
-                className="transition-all group-hover:scale-110"
+                className="transition-all group-hover:scale-110 h-[170px] object-cover"
                 src={blog.thumbnail}
+                onError={(e) => {
+                  e.currentTarget.src = SampleImage;
+                }}
                 alt="Thumbnail"
               />
             </div>
             <div className="mt-3">
-              <a href="#">
+              <a href={blog.url} target="_blank">
                 <h3 className="text-sm font-medium group-hover:text-brand">
                   {blog.title}
                 </h3>

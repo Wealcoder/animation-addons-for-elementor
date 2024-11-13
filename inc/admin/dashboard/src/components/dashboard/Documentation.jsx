@@ -29,7 +29,8 @@ const Documentation = () => {
         </div>
         <div>
           <a
-            href={"#"}
+            href={"https://support.crowdytheme.com/docs/widgets/wcf-widgets"}
+            target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             View all <RiArrowRightUpLine size={18} className="ml-1" />
@@ -42,7 +43,8 @@ const Documentation = () => {
           <div key={`document_list-${i}`}>
             <div className="flex flex-col gap-2">
               <a
-                href={el.link}
+                href={el.url}
+                target="_blank"
                 className={cn(
                   "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand"
                 )}

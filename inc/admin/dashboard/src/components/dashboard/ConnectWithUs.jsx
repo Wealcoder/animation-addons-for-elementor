@@ -43,8 +43,8 @@ const ConnectWithUs = () => {
           </p>
         </div>
         <div>
-          <div
-            href="#"
+          <a
+            href="https://wordpress.org/support/plugin/animation-addons-for-elementor"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Create a ticket{" "}
@@ -53,7 +53,7 @@ const ConnectWithUs = () => {
               className="ml-[6px]"
               color="#525866"
             />
-          </div>
+          </a>
         </div>
       </div>
       <div
@@ -78,8 +78,8 @@ const ConnectWithUs = () => {
           </p>
         </div>
         <div>
-          <div
-            href="#"
+          <a
+            href="https://wordpress.org/plugins/animation-addons-for-elementor/#reviews"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Give your feedback{" "}
@@ -88,7 +88,7 @@ const ConnectWithUs = () => {
               className="ml-[6px]"
               color="#525866"
             />
-          </div>
+          </a>
         </div>
       </div>
       <div
@@ -112,9 +112,13 @@ const ConnectWithUs = () => {
           </p>
         </div>
         <div>
-          <div
+          <a
             href="#"
-            className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
+            aria-disabled="true"
+            className={cn(
+              buttonVariants({ variant: "secondary" }),
+              "w-full pointer-events-none opacity-50"
+            )}
           >
             Join Our Community{" "}
             <RiArrowRightUpLine
@@ -122,7 +126,7 @@ const ConnectWithUs = () => {
               className="ml-[6px]"
               color="#525866"
             />
-          </div>
+          </a>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ const FreePro = () => {
             </div>
           </div>
         </div>
-        <div>
+        {/* <div>
           <a
             href={"#"}
             className={cn(buttonVariants({ variant: "secondary" }))}
@@ -30,7 +30,7 @@ const FreePro = () => {
             Learn more details{" "}
             <RiArrowRightUpLine size={18} className="ml-1.5" />
           </a>
-        </div>
+        </div> */}
       </div>
       <div className="mt-8">
         <ComparisonTable />

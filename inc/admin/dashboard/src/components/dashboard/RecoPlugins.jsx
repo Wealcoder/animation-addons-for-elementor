@@ -22,11 +22,12 @@ const RecoPlugins = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">
           <RiPuzzle2Line size={20} color="#7D52F4" />
-          <p className="font-medium">Recommended Plugins</p>
+          <p className="font-medium">Recommended Themes</p>
         </div>
         <div>
           <a
-            href={"#"}
+            href={"https://crowdytheme.com/wordpress-portfolio"}
+            target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             View all <RiArrowRightUpLine size={18} className="ml-1" />
@@ -41,15 +42,15 @@ const RecoPlugins = () => {
               <div className="flex items-center gap-3">
                 <div>
                   <img
-                    width={40}
-                    height={40}
                     src={el.logo}
                     alt="Plugins logo"
+                    style={{ width: "40px", height: "40px" }}
                   />
                 </div>
                 <div>
                   <a
-                    href={"#"}
+                    href={el.url}
+                    target="_blank"
                     className={cn("text-sm font-medium group-hover:text-brand")}
                   >
                     {el.title}

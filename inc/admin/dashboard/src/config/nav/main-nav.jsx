@@ -27,10 +27,10 @@ export const MainNavData = [
     path: "free-pro",
     icon: <RiVipCrown2Line size={20} />,
   },
-  {
-    name: "Starter Template",
-    path: "stater-template",
-    icon: <RiShareBoxLine size={20} />,
-    targetBlank: true,
-  },
+  // {
+  //   name: "Starter Template",
+  //   path: "stater-template",
+  //   icon: <RiShareBoxLine size={20} />,
+  //   targetBlank: true,
+  // },
 ];
