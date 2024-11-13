@@ -265,7 +265,6 @@ if( !function_exists('wcf_get_nested_config_keys') ) {
 }
 
 if( !function_exists('wcf_get_db_updated_config') ) {	
-
 	
 	function wcf_get_db_updated_config(array &$configs, array $dbActiveElements) {
 		// Loop through each item in the configs array
@@ -288,4 +287,41 @@ if( !function_exists('wcf_get_db_updated_config') ) {
 	}
 	
 }
+
+
+if( !function_exists('wcf_get_total_config_elements_by_key') ) {
+	function wcf_get_total_config_elements_by_key($array, &$foundKeys=0) {
+		foreach ($array as $key => $value) {
+			// Check if the current key is one we're looking for
+			if (isset($value['is_active']) && isset($value['is_extension']) && isset($value['is_pro'])) {				
+				++$foundKeys;	
+			}
+	
+			// If value is an array, recurse into it
+			if (is_array($value)) {
+				wcf_get_total_config_elements_by_key($value,$foundKeys);
+			}
+		}
+	}
+}
+
+if( !function_exists('wcf_get_search_active_keys') ) {
+	function wcf_get_search_active_keys($array, $keysToFind, &$foundKeys, &$active) {
+		foreach ($array as $key => $value) {
+			// Check if the current key is one we're looking for
+			if (in_array($key, $keysToFind) && array_key_exists('is_extension', $value)) {
+				// Add to found keys list
+				$foundKeys[] = $key;
+				// Store the entire element in $active
+				$active[$key] = $value;
+			}
+	
+			// If value is an array, recurse into it
+			if (is_array($value)) {
+				wcf_get_search_active_keys($value, $keysToFind, $foundKeys, $active);
+			}
+		}
+	}
+}
+
 

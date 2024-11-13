@@ -173,7 +173,7 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
-	
+		$total_extensions = $total_widgets = 0;
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
 			//sync element manager
 		    $this->disable_widgets_by_element_manager();
@@ -181,13 +181,20 @@ class WCF_Admin_Init {
 			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
 			
 			wp_enqueue_script( 'wcf-admin' , plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js' , array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), time(), true );
-
+			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
+			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['widgets'], $total_widgets);
+			$widgets       = get_option( 'wcf_save_widgets' );
+			$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : [];
+			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),			
 				'adminURL'       => admin_url(),
-				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
+				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+				'extensions' => ['total' => $total_extensions],
+				'widgets'    => ['total' =>$total_widgets,'active' => $foundKeys],
+				
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );

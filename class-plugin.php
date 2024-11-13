@@ -484,8 +484,11 @@ class Plugin {
 	 * @return array
 	 */
 	public static function get_widgets() {
-		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );	  
-		self::searchKeys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
+	
+		$widgets = get_option( 'wcf_save_widgets' );		
+		$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : []; 
+		
+		wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
 	
 		return $awidgets;
 	}
@@ -496,29 +499,13 @@ class Plugin {
 	 * @return array
 	 */
 	public static function get_extensions() {
-
-		$saved_extensions = array_keys( get_option( 'wcf_save_extensions' ) );
+	
+		$extensions = get_option( 'wcf_save_extensions' );
+		$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];
 		  
-        self::searchKeys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundKeys, $active);
+        wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundKeys, $active);
 	   
 		return $active;
-	}
-	
-	static function searchKeys($array, $keysToFind, &$foundKeys, &$active) {
-		foreach ($array as $key => $value) {
-			// Check if the current key is one we're looking for
-			if (in_array($key, $keysToFind) && array_key_exists('is_extension', $value)) {
-				// Add to found keys list
-				$foundKeys[] = $key;
-				// Store the entire element in $active
-				$active[$key] = $value;
-			}
-	
-			// If value is an array, recurse into it
-			if (is_array($value)) {
-				self::searchKeys($value, $keysToFind, $foundKeys, $active);
-			}
-		}
 	}
 
 	/**
