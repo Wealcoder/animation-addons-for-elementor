@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class WCF_Admin_Init {
-
+	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
 	 */
@@ -191,15 +191,15 @@ class WCF_Admin_Init {
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
             wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
-	   	
+		
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),			
 				'adminURL'       => admin_url(),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
-				'extensions' => ['total' => $total_extensions,'active' =>$foundext],
-				'widgets'    => ['total' =>$total_widgets,'active' => $foundKeys],
+				'extensions' => ['total' => $total_extensions,'active' => self::get_extensions()],
+				'widgets'    => ['total' =>$total_widgets,'active' => self::get_widgets()],
 				
 			];
 			
