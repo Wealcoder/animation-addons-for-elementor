@@ -426,20 +426,24 @@ class Plugin {
 			if($data['is_pro']){
 				continue;
 			}
-
-			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
-				if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
-					require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
-				} else {
-					require_once( __DIR__ . '/widgets/' . $slug . '.php' );
+			
+			if(file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php'))
+			{
+				if ( ! $data['is_pro'] && ! $data['is_extension'] )
+				{
+					if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
+						require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
+					} else {
+						require_once( __DIR__ . '/widgets/' . $slug . '.php' );
+					}
+	
+	
+					$class = explode( '-', $slug );
+					$class = array_map( 'ucfirst', $class );
+					$class = implode( '_', $class );
+					$class = 'WCF_ADDONS\\Widgets\\' . $class;
+					ElementorPlugin::instance()->widgets_manager->register( new $class() );
 				}
-
-
-				$class = explode( '-', $slug );
-				$class = array_map( 'ucfirst', $class );
-				$class = implode( '_', $class );
-				$class = 'WCF_ADDONS\\Widgets\\' . $class;
-				ElementorPlugin::instance()->widgets_manager->register( new $class() );
 			}
 		}
 	}
