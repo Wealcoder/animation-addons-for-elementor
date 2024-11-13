@@ -38,8 +38,8 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
         {widget ? (
           <>
             <div className="flex items-center gap-3">
-              <div>
-                <Avatar className="border rounded-full h-11 w-11 flex justify-center items-center shadow-common">
+              <div className="border rounded-full h-11 w-11 flex justify-center items-center shadow-common icon-Team text-[20px]">
+                {/* <Avatar className="border rounded-full h-11 w-11 flex justify-center items-center shadow-common">
                   <AvatarImage
                     className="w-5 h-5"
                     src={widget?.logo}
@@ -48,7 +48,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
                   <AvatarFallback>
                     <RiLandscapeFill size={20} color="#CACFD8" />
                   </AvatarFallback>
-                </Avatar>
+                </Avatar> */}
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center">
