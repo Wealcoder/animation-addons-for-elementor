@@ -9,7 +9,6 @@
 .wcf-select-content * {
   all: revert-layer;
   box-sizing: border-box;
-
 }
 
 .wcf-dialog-content * {
@@ -20,16 +19,13 @@
   line-height: 0;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
-
   :root {
     --gray-00: 0 0% 100%;
     --gray-50: 216 33% 97%;
@@ -47,16 +43,15 @@
     /* brand  */
     --brand-500: 11 97% 64%;
     --brand-600: 11 92% 57%;
-
   }
 }
 
 .wcf-anim2024-style * {
-  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
 .wcf-dialog-content * {
-  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
 .wcf-anim2024-style {
@@ -68,30 +63,28 @@
   h4,
   h5,
   h6 {
-    @apply text-text font-inter overflow-x-hidden
+    @apply text-text font-inter overflow-x-hidden;
   }
 
   a {
-    @apply no-underline text-text
+    @apply no-underline text-text;
   }
 
   a:focus {
-    @apply shadow-none outline-0
+    @apply shadow-none outline-0;
   }
 
   p {
-    @apply text-base
+    @apply text-base;
   }
 
   img {
     width: 100%;
     height: 100%;
   }
-
 }
 
 .wcf-anim2024-style {
-
   /* width */
   ::-webkit-scrollbar {
     width: 5px;
@@ -104,7 +97,7 @@
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #E1E4EA;
+    background: #e1e4ea;
     border-radius: 10px;
   }
 
@@ -122,5 +115,281 @@
 }
 
 .search-item {
-  @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px]
+  @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px];
+}
+
+@font-face {
+  font-family: "icomoon";
+  src: url("../public/fonts/icomoon.eot?em1mj9");
+  src:
+    url("../public/fonts/icomoon.eot?em1mj9#iefix") format("embedded-opentype"),
+    url("../public/fonts/icomoon.ttf?em1mj9") format("truetype"),
+    url("../public/fonts/icomoon.woff?em1mj9") format("woff"),
+    url("../public/fonts/icomoon.svg?em1mj9#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "icomoon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-Team:before {
+  content: "\e943";
+}
+.icon-Image-Gallery:before {
+  content: "\e900";
+}
+.icon-Advance-Accordion:before {
+  content: "\e901";
+}
+.icon-Advance-Pricing-Table:before {
+  content: "\e902";
+}
+.icon-Builder-Work-Process:before {
+  content: "\e903";
+}
+.icon-Line:before {
+  content: "\e904";
+}
+.icon-Lottie:before {
+  content: "\e905";
+}
+.icon-Post-Tags:before {
+  content: "\e906";
+}
+.icon-Filterable-Slider:before {
+  content: "\e907";
+}
+.icon-Flip-Box:before {
+  content: "\e908";
+}
+.icon-Banner-Breadcrumb:before {
+  content: "\e909";
+}
+.icon-Breadcrumbs:before {
+  content: "\e90a";
+}
+.icon-Toggle-Switch:before {
+  content: "\e90b";
+}
+.icon-Video-Box:before {
+  content: "\e90c";
+}
+.icon-Video-Popup:before {
+  content: "\e90d";
+}
+.icon-Search-No-Result:before {
+  content: "\e90e";
+}
+.icon-Search-Form:before {
+  content: "\e90f";
+}
+.icon-Post-Meta-Info:before {
+  content: "\e910";
+}
+.icon-Nav-Menu:before {
+  content: "\e911";
+}
+.icon-Floating-Elements:before {
+  content: "\e912";
+}
+.icon-Event-Slider:before {
+  content: "\e913";
+}
+.icon-Services-Tabs:before {
+  content: "\e914";
+}
+.icon-Testimonial-3:before {
+  content: "\e915";
+}
+.icon-Animated-Title:before {
+  content: "\e916";
+}
+.icon-Image-Box-Slider:before {
+  content: "\e917";
+}
+.icon-Filterable-Gallery:before {
+  content: "\e918";
+}
+.icon-Advance-Slider:before {
+  content: "\e919";
+}
+.icon-Contact-Form-7:before {
+  content: "\e91a";
+}
+.icon-Footer-Nav:before {
+  content: "\e91b";
+}
+.icon-Builder-Hero-Accordion:before {
+  content: "\e91c";
+}
+.icon-Builder-Image-Accordion:before {
+  content: "\e91d";
+}
+.icon-Image-Accordion:before {
+  content: "\e91e";
+}
+.icon-Builder-Posts:before {
+  content: "\e91f";
+}
+.icon-Builder-Accordion:before {
+  content: "\e920";
+}
+.icon-Builder-Project-Accordion:before {
+  content: "\e921";
+}
+.icon-Builder-Service-Accordion:before {
+  content: "\e922";
+}
+.icon-Builder-Tabs:before {
+  content: "\e923";
+}
+.icon-Builder-Testimonial:before {
+  content: "\e924";
+}
+.icon-Builder-Button:before {
+  content: "\e925";
+}
+.icon-Side-Header:before {
+  content: "\e926";
+}
+.icon-Animated-Offcanvas:before {
+  content: "\e927";
+}
+.icon-Cart-Count:before {
+  content: "\e928";
+}
+.icon-Dropdown-or-Language:before {
+  content: "\e929";
+}
+.icon-Author-Box:before {
+  content: "\e92a";
+}
+.icon-Table-of-Contents:before {
+  content: "\e92b";
+}
+.icon-Scroll-Elements:before {
+  content: "\e92c";
+}
+.icon-Video-Mask:before {
+  content: "\e92d";
+}
+.icon-Video-Box-Slider:before {
+  content: "\e92e";
+}
+.icon-Mailchimp:before {
+  content: "\e92f";
+}
+.icon-Search-Query:before {
+  content: "\e930";
+}
+.icon-Advanced-Portfolio:before {
+  content: "\e931";
+}
+.icon-Portfolio:before {
+  content: "\e932";
+}
+.icon-Archive-Title:before {
+  content: "\e933";
+}
+.icon-Posts:before {
+  content: "\e934";
+}
+.icon-Post-Social-Share:before {
+  content: "\e935";
+}
+.icon-Post-Paginate:before {
+  content: "\e936";
+}
+.icon-Post-Comment:before {
+  content: "\e937";
+}
+.icon-Post-Content:before {
+  content: "\e938";
+}
+.icon-Post-Excerpt:before {
+  content: "\e939";
+}
+.icon-Post-Feature-Image:before {
+  content: "\e93a";
+}
+.icon-Post-Title:before {
+  content: "\e93b";
+}
+.icon-Site-Logo:before {
+  content: "\e93c";
+}
+.icon-Animated-Heading:before {
+  content: "\e93d";
+}
+.icon-Countdown:before {
+  content: "\e93e";
+}
+.icon-Content-Slider:before {
+  content: "\e93f";
+}
+.icon-Tabs:before {
+  content: "\e940";
+}
+.icon-Timeline:before {
+  content: "\e941";
+}
+.icon-One-Page-Nav:before {
+  content: "\e942";
+}
+.icon-Progressbar:before {
+  content: "\e944";
+}
+.icon-Image-Compare:before {
+  content: "\e945";
+}
+.icon-Button:before {
+  content: "\e946";
+}
+.icon-Testimonial-2:before {
+  content: "\e947";
+}
+.icon-Testimonial:before {
+  content: "\e948";
+}
+.icon-Icon-Box:before {
+  content: "\e949";
+}
+.icon-Counter:before {
+  content: "\e94a";
+}
+.icon-Brand-Slider:before {
+  content: "\e94b";
+}
+.icon-Text-Hover-Image:before {
+  content: "\e94c";
+}
+.icon-Image:before {
+  content: "\e94d";
+}
+.icon-Social-Icons:before {
+  content: "\e94e";
+}
+.icon-Animated-Text:before {
+  content: "\e94f";
+}
+.icon-Typewriter:before {
+  content: "\e950";
+}
+.icon-Image-Box:before {
+  content: "\e951";
 }

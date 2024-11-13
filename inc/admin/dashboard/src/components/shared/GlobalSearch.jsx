@@ -17,10 +17,14 @@ import {
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { generateSearchContent } from "@/lib/utils";
+import { useWidgets } from "@/hooks/app.hooks";
 
 const GlobalSearch = ({ open, setOpen }) => {
   const dashboardContent = DashboardSearchContent;
+  const { allWidgets } = useWidgets();
   const widgetContent = AllWidgetList;
+
+  // console.log(allWidgets);
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);

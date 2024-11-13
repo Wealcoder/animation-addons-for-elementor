@@ -9,12 +9,12 @@ export const LatestBlogList = [
   },
   {
     title:
-      "How to Create a Local WordPress Site Using XAMPP? Practical Guidelines",
+      "What are the Common Issues of WordPress Themes and How to Fix Them?",
     thumbnail:
-      "https://crowdytheme.com/wp-content/uploads/2024/10/How-to-Create-a-Local-WordPress-Site-Using-XAMPP.webp",
+      "https://crowdytheme.com/wp-content/uploads/2024/09/What-are-the-Common-Issues-of-WordPress-Themes-and-How-to-Fix-Them.webp",
     createAt: "October 16, 2024",
     readingTime: "10 min read",
-    url: "https://crowdytheme.com/how-to-create-a-local-wordpress-site-using-xampp",
+    url: "https://crowdytheme.com/what-are-the-common-issues-of-wordpress-themes",
   },
   {
     title: "Best AI Startup and Agency WordPress Themes",
