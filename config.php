@@ -938,6 +938,9 @@ $config = [
 				'elements'  => [
 					'custom-css' => [
 						'label'        => esc_html__('Custom CSS', 'animation-addons-for-elementor'),
+						'location' => [
+							'cTab' => 'general'
+						],
 						'is_pro'       => false,
 						'is_active'    => false,
 						'is_extension' => false,
@@ -949,6 +952,9 @@ $config = [
 					],
 					'wrapper-link'     => [
 						'label'        => esc_html__( 'Wrapper Link', 'wcf-addons-pro' ),
+						'location' => [
+							'cTab' => 'general'
+						],
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
@@ -960,6 +966,9 @@ $config = [
 					],
 					'popup'      => [
 						'label'        => esc_html__('Popup', 'animation-addons-for-elementor'),
+						'location' => [
+							'cTab' => 'general'
+						],
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => true,
@@ -971,6 +980,9 @@ $config = [
 					],
 					'tilt-effect'      => [
 						'label'        => esc_html__( 'Tilt Effect', 'wcf-addons-pro' ),
+						'location' => [
+							'cTab' => 'general'
+						],
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
@@ -982,6 +994,9 @@ $config = [
 					],
 					'advanced-tooltip' => [
 						'label'        => esc_html__( 'Advanced Tooltip', 'wcf-addons-pro' ),
+						'location' => [
+							'cTab' => 'general'
+						],
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
@@ -1005,6 +1020,10 @@ $config = [
 						'elements'  => [
 							'animation-effects'       => [
 								'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'smooth-scroller'
+								],
 								'is_pro'       => false,
 								'is_active'    => false,
 								'is_extension' => true,
@@ -1016,6 +1035,10 @@ $config = [
 							],
 							'pin-element'             => [
 								'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'smooth-scroller'
+								],
 								'is_pro'       => false,
 								'is_active'    => false,
 								'is_extension' => true,
@@ -1027,6 +1050,10 @@ $config = [
 							],
 							'text-animation-effects'  => [
 								'label'        => esc_html__('Text Animation', 'animation-addons-for-elementor'),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'smooth-scroller'
+								],
 								'is_pro'       => false,
 								'is_active'    => false,
 								'is_extension' => true,
@@ -1038,6 +1065,10 @@ $config = [
 							],
 							'image-animation-effects' => [
 								'label'        => esc_html__('Image Animation', 'animation-addons-for-elementor'),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'smooth-scroller'
+								],
 								'is_pro'       => false,
 								'is_active'    => false,
 								'is_extension' => true,
@@ -1057,6 +1088,10 @@ $config = [
 						'elements' => [
 							'cursor-hover-effect' => [
 								'label'        => esc_html__( 'Cursor Hover Effect', 'wcf-addons-pro' ),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'effect'
+								],
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
@@ -1068,6 +1103,10 @@ $config = [
 							],						
 							'hover-effect-image'  => [
 								'label'        => esc_html__( 'Hover Effect Image', 'wcf-addons-pro' ),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'effect'
+								],
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
@@ -1079,6 +1118,10 @@ $config = [
 							],
 							'cursor-move-effect' => [
 								'label'        => esc_html__( 'Cursor Move Effect', 'wcf-addons-pro' ),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'effect'
+								],
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
@@ -1098,6 +1141,10 @@ $config = [
 						'elements'  => [
 							'horizontal-scroll'   => [
 								'label'        => esc_html__( 'Horizontal', 'wcf-addons-pro' ),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'scroll-trigger'
+								],
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,

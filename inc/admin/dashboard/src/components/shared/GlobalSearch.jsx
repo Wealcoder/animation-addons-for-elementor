@@ -7,14 +7,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import {
-  ALLGeneralExtensionList,
-  AllGSAPExtensionList,
-} from "@/config/data/allExtensionList";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import {
   cn,
+  generateGenExtSearchContent,
+  generateGsapExtSearchContent,
   generateSearchContent,
   generateWidgetSearchContent,
 } from "@/lib/utils";
@@ -38,15 +36,13 @@ const GlobalSearch = ({ open, setOpen }) => {
     );
     const widgets = generateWidgetSearchContent(allWidgets?.elements);
     setPopularWidgets(widgets?.items?.slice(0, 3));
-    const gsapExtensions = generateSearchContent(
-      AllGSAPExtensionList,
-      "GSAP Extension",
-      "extensions"
+
+    const gsapExtensions = generateGsapExtSearchContent(
+      allExtensions.elements["gsap-extensions"].elements
     );
 
-    const generalExtensions = generateSearchContent(
-      ALLGeneralExtensionList,
-      "General Extension"
+    const generalExtensions = generateGenExtSearchContent(
+      allExtensions.elements["general-extensions"].elements
     );
 
     const templates = {
