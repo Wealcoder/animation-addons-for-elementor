@@ -18,7 +18,7 @@ import ExtensionGsapSettings from "./ExtensionGsapSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import { toast } from "sonner";
 
-const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
+const ShowExtensions = ({ filterKey, tabParam, pluginIdParam, setExtensionCount }) => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
   const {
@@ -85,6 +85,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         return response.json();
       })
       .then((return_content) => {
+        setExtensionCount((prev) => ({...prev, active: return_content.total}))
         toast.success("Save Successful", {
           position: "top-right",
         });

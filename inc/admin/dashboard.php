@@ -434,8 +434,12 @@ class WCF_Admin_Init {
 			if($option_name == 'wcf_save_widgets'){
 				$this->sync_widgets_by_element_manager();
 			}
-			
-			wp_send_json( $updated );
+			$elements = get_option($option_name);
+			$return_message = [
+				'status'  => $updated,
+				'total' => is_array($elements) ? count($elements) : 0
+		  ];
+			wp_send_json( $return_message );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}

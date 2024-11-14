@@ -13,11 +13,9 @@ import {
 } from "@/components/ui/select";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 
-const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
+const ExtensionTopBar = ({ filterKey, setFilterKey, extensionCount }) => {
   const { allExtensions } = useExtensions();
   const { updateActiveFullExtension } = useActiveItem();
-
-  const extensionCount = WCF_ADDONS_ADMIN.extensions;
 
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">

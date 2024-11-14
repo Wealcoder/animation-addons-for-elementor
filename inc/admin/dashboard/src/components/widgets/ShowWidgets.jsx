@@ -8,7 +8,13 @@ import { filterWidgets } from "@/lib/utils";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 
-const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
+const ShowWidgets = ({
+  searchKey,
+  filterKey,
+  searchParam,
+  urlParams,
+  setWidgetCount,
+}) => {
   const { allWidgets } = useWidgets();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
 
@@ -105,6 +111,7 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
         return response.json();
       })
       .then((return_content) => {
+        setWidgetCount((prev) => ({ ...prev, active: return_content.total }));
         toast.success("Save Successful", {
           position: "top-right",
         });

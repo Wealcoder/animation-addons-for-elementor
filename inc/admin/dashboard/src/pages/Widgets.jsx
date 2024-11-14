@@ -7,6 +7,8 @@ const Widgets = () => {
   const [searchParam, setSearchParam] = useState("");
   const [filterKey, setFilterKey] = useState("free-pro");
 
+  const [widgetCount, setWidgetCount] = useState(WCF_ADDONS_ADMIN.widgets);
+
   const urlParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
@@ -24,6 +26,7 @@ const Widgets = () => {
           setFilterKey={setFilterKey}
           searchKey={searchKey}
           setSearchKey={setSearchKey}
+          widgetCount={widgetCount}
         />
       </div>
       <div className="mt-4">
@@ -32,6 +35,7 @@ const Widgets = () => {
           searchKey={searchKey}
           searchParam={searchParam}
           urlParams={urlParams}
+          setWidgetCount={setWidgetCount}
         />
       </div>
     </div>

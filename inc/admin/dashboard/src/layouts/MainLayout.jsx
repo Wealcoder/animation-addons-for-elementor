@@ -5,6 +5,7 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Extensions = lazy(() => import("@/pages/Extensions"));
 const FreePro = lazy(() => import("@/pages/FreePro"));
 const Widgets = lazy(() => import("@/pages/Widgets"));
+const Integrations = lazy(() => import("@/pages/Integrations"));
 
 const MainLayout = () => {
   const [open, setOpen] = useState(false);
@@ -61,6 +62,8 @@ const MainLayout = () => {
         return <Extensions />;
       case "free-pro":
         return <FreePro />;
+      case "integrations":
+        return <Integrations />;
       default:
         return <Dashboard />;
     }
