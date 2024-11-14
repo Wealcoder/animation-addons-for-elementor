@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { AllWidgetList } from "@/config/data/allWidgetList";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { RiLandscapeFill } from "react-icons/ri";
 import {
   ALLGeneralExtensionList,
   AllGSAPExtensionList,

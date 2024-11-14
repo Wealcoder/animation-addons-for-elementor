@@ -125,8 +125,8 @@
   src:
     url("../public/fonts/icomoon.eot?em1mj9#iefix") format("embedded-opentype"),
     url("../public/fonts/icomoon.ttf?em1mj9") format("truetype"),
-    url("../public/fonts/icomoon.woff?em1mj9") format("woff"),
-    url("../public/fonts/icomoon.svg?em1mj9#icomoon") format("svg");
+    url("../public/fonts/icomoon.woff?em1mj9") format("woff");
+  
   font-weight: normal;
   font-style: normal;
   font-display: block;
