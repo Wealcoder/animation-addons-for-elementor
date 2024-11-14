@@ -2,11 +2,13 @@
 
 namespace WCF_ADDONS\Widgets;
 
+use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Image_Size;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -139,12 +141,49 @@ class Image_Compare extends Widget_Base {
 			]
 		);
 
-		$this->add_group_control(
-			Group_Control_Image_Size::get_type(),
+		$this->add_control(
+			'show_caption',
 			[
-				'name'      => 'image', // Usage: `{name}_size` and `{name}_custom_dimension`, in this case `image_size` and `image_custom_dimension`.
-				'default'   => 'large',
-				'separator' => 'none',
+				'label'        => esc_html__( 'Show Caption', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'separator'    => 'before',
+			]
+		);
+
+		$this->add_control(
+			'before_caption',
+			[
+				'label'       => esc_html__( 'Before Caption', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Before Caption', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your caption here', 'animation-addons-for-elementor' ),
+				'condition'   => [ 'show_caption' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'after_caption',
+			[
+				'label'       => esc_html__( 'After Caption', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'After Caption', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your caption here', 'animation-addons-for-elementor' ),
+				'condition'   => [ 'show_caption' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'show_btn',
+			[
+				'label'        => esc_html__( 'Show Button', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'separator'    => 'before',
 			]
 		);
 
@@ -153,6 +192,7 @@ class Image_Compare extends Widget_Base {
 			[
 				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
+				'prefix_class' => 'cmp--align-',
 				'options'   => [
 					'left'   => [
 						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
@@ -167,17 +207,14 @@ class Image_Compare extends Widget_Base {
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
-				'default'   => '',
+				'default'   => 'left',
 				'separator' => 'before',
-				'selectors' => [
-					'{{WRAPPER}}' => 'text-align: {{VALUE}};',
-				],
 			]
 		);
 
 		$this->end_controls_section();
 
-		//style control
+		// Image Style
 		$this->start_controls_section(
 			'section_style_image',
 			[
@@ -216,7 +253,7 @@ class Image_Compare extends Widget_Base {
 					],
 				],
 				'selectors'      => [
-					'{{WRAPPER}} img' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--image-compare, {{WRAPPER}} .slider-img' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -251,7 +288,7 @@ class Image_Compare extends Widget_Base {
 					],
 				],
 				'selectors'      => [
-					'{{WRAPPER}} img' => 'max-width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--image-compare, {{WRAPPER}} .slider-img' => 'max-width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -273,63 +310,8 @@ class Image_Compare extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} img' => 'height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--image-compare' => 'height: {{SIZE}}{{UNIT}};',
 				],
-			]
-		);
-
-		$this->add_responsive_control(
-			'object-fit',
-			[
-				'label'     => esc_html__( 'Object Fit', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'condition' => [
-					'height[size]!' => '',
-				],
-				'options'   => [
-					''        => esc_html__( 'Default', 'animation-addons-for-elementor' ),
-					'fill'    => esc_html__( 'Fill', 'animation-addons-for-elementor' ),
-					'cover'   => esc_html__( 'Cover', 'animation-addons-for-elementor' ),
-					'contain' => esc_html__( 'Contain', 'animation-addons-for-elementor' ),
-				],
-				'default'   => '',
-				'selectors' => [
-					'{{WRAPPER}} img' => 'object-fit: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_responsive_control(
-			'object-position',
-			[
-				'label'     => esc_html__( 'Object Position', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'options'   => [
-					'center center' => esc_html__( 'Center Center', 'animation-addons-for-elementor' ),
-					'center left'   => esc_html__( 'Center Left', 'animation-addons-for-elementor' ),
-					'center right'  => esc_html__( 'Center Right', 'animation-addons-for-elementor' ),
-					'top center'    => esc_html__( 'Top Center', 'animation-addons-for-elementor' ),
-					'top left'      => esc_html__( 'Top Left', 'animation-addons-for-elementor' ),
-					'top right'     => esc_html__( 'Top Right', 'animation-addons-for-elementor' ),
-					'bottom center' => esc_html__( 'Bottom Center', 'animation-addons-for-elementor' ),
-					'bottom left'   => esc_html__( 'Bottom Left', 'animation-addons-for-elementor' ),
-					'bottom right'  => esc_html__( 'Bottom Right', 'animation-addons-for-elementor' ),
-				],
-				'default'   => 'center center',
-				'selectors' => [
-					'{{WRAPPER}} img' => 'object-position: {{VALUE}};',
-				],
-				'condition' => [
-					'object-fit' => 'cover',
-				],
-			]
-		);
-
-		$this->add_control(
-			'separator_panel_style',
-			[
-				'type'  => Controls_Manager::DIVIDER,
-				'style' => 'thick',
 			]
 		);
 
@@ -337,7 +319,7 @@ class Image_Compare extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name'      => 'image_border',
-				'selector'  => '{{WRAPPER}} img',
+				'selector'  => '{{WRAPPER}} .wcf--image-compare',
 				'separator' => 'before',
 			]
 		);
@@ -349,7 +331,7 @@ class Image_Compare extends Widget_Base {
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
-					'{{WRAPPER}} img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--image-compare' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -362,6 +344,198 @@ class Image_Compare extends Widget_Base {
 					'box_shadow_position',
 				],
 				'selector' => '{{WRAPPER}} .wcf--image-compare',
+			]
+		);
+
+		$this->end_controls_section();
+
+
+		// Handle Style
+		$this->start_controls_section(
+			'style_handle',
+			[
+				'label' => esc_html__( 'Handler', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'line_color',
+			[
+				'label' => esc_html__( 'Line Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--image-compare-handle' => 'background-color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_control(
+			'circle_heading',
+			[
+				'label' => esc_html__( 'Circle', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'circle_bg',
+				'types' => [ 'classic', 'gradient' ],
+				'exclude' => ['image'],
+				'selector' => '{{WRAPPER}} .wcf--image-compare-handle:after',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'circle_border',
+				'selector' => '{{WRAPPER}} .wcf--image-compare-handle:after',
+			]
+		);
+
+		$this->add_responsive_control(
+			'circle_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--image-compare-handle:after' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+
+		// Caption Style
+		$this->start_controls_section(
+			'style_caption',
+			[
+				'label' => esc_html__( 'Caption', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+                'condition' => ['show_caption' => 'yes'],
+			]
+		);
+
+		$this->add_control(
+			'caption_color',
+			[
+				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .slider-caption' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'content_typography',
+				'selector' => '{{WRAPPER}} .slider-caption',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'caption_bg',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .slider-caption',
+			]
+		);
+
+		$this->add_responsive_control(
+			'caption_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .slider-caption' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'caption_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .slider-caption' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+
+		// Button Style
+		$this->start_controls_section(
+			'style_button',
+			[
+				'label' => esc_html__( 'Button', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => ['show_btn' => 'yes'],
+			]
+		);
+
+		$this->add_control(
+			'btn_color',
+			[
+				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .cmp-btn' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'btn_typo',
+				'selector' => '{{WRAPPER}} .cmp-btn',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'btn_bg',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .cmp-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'btn_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .cmp-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'btn_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .cmp-btn-wrapper' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -379,16 +553,45 @@ class Image_Compare extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'wrapper', 'class', 'wcf--image-compare');
+		$this->add_render_attribute( 'wrapper', 'class', 'wcf--image-compare' );
 		?>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
-			<div>
-				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'image', 'before_image' ); ?>
-			</div>
-			<div>
-				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'image', 'after_image' ); ?>
-			</div>
-		</div>
+
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+
+            <!-- After Image -->
+            <div class="slider-right">
+                <div class="slider-img img-right"
+                     style="background-image: url('<?php echo $settings['after_image']['url']; ?>')">
+					<?php if ( 'yes' === $settings['show_caption'] ) { ?>
+                        <p class="slider-caption slider-caption-right"><?php echo esc_html($settings['after_caption']); ?></p>
+					<?php } ?>
+                </div>
+            </div>
+
+            <!-- Before Image -->
+            <div class="slider-left">
+                <div class="slider-img img-left"
+                     style="background-image: url('<?php echo $settings['before_image']['url']; ?>')">
+					<?php if ( 'yes' === $settings['show_caption'] ) { ?>
+                        <p class="slider-caption slider-caption-left"><?php echo esc_html($settings['before_caption']); ?></p>
+					<?php } ?>
+                </div>
+            </div>
+
+            <!-- DRAG HANDLE -->
+            <div class="wcf--image-compare-handle"></div>
+
+            <!-- Control Buttons -->
+			<?php if ( 'yes' === $settings['show_btn'] ) { ?>
+                <div class="cmp-btn-wrapper">
+                    <button class="cmp-btn btn-expand-left"><?php echo esc_html__('Expand left', 'animation-addons-for-elementor'); ?></button>
+                    <button class="cmp-btn btn-expand-center"><?php echo esc_html__('50/50', 'animation-addons-for-elementor'); ?></button>
+                    <button class="cmp-btn btn-expand-right"><?php echo esc_html__('Expand right', 'animation-addons-for-elementor'); ?></button>
+                </div>
+			<?php } ?>
+        </div>
+
+
 		<?php
 	}
 }
