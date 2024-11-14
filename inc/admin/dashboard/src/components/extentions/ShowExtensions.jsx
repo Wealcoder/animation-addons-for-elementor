@@ -10,14 +10,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion2";
-import { RiSettings2Line } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { cn, filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
+import { filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 import ExtensionGsapSettings from "./ExtensionGsapSettings";
-import ScrollSmootherSettings from "./settings/scrollSmootherSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
+import { toast } from "sonner";
 
 const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
   const exSettings = ExtensionSettingConfig;
@@ -86,13 +85,11 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         return response.json();
       })
       .then((return_content) => {
-        console.log(return_content);
+        toast.success("Save Successful", {
+          position: "top-right",
+        });
       });
   };
-
-  // const generateSettingCom = (id) => {
-
-  // }
 
   return (
     <Tabs value={tabValue} onValueChange={setTabValue}>

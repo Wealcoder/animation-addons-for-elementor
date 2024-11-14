@@ -6,6 +6,7 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import { toast } from "sonner";
 
 const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   const { allWidgets } = useWidgets();
@@ -86,7 +87,6 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
   };
 
   const saveWidget = async () => {
-
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -96,17 +96,18 @@ const ShowWidgets = ({ searchKey, filterKey, searchParam, urlParams }) => {
 
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
-        fields: JSON.stringify( allWidgets ),
+        fields: JSON.stringify(allWidgets),
         nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_widgets",
       }),
     })
       .then((response) => {
-        console.log(response);
         return response.json();
       })
       .then((return_content) => {
-        console.log(return_content);
+        toast.success("Save Successful", {
+          position: "top-right",
+        });
       });
   };
 

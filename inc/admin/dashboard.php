@@ -70,7 +70,7 @@ class WCF_Admin_Init {
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
 		//add_action( 'init', [ $this, 'sync_widgets_by_element_manager'], 10 );		
-		
+		add_action( 'admin_footer', [ $this, 'admin_footer' ] );
 		
 	}
 	/**
@@ -352,6 +352,15 @@ class WCF_Admin_Init {
         </div>
 		<?php
 	}
+
+	public function admin_footer()
+    {
+        if (is_admin()) {
+					if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
+             echo '<div id="wcf-admin-toast"></div>';
+    			}
+        }
+    }
 	
 	public function plugin_dashboard_entry_page(){
 		?>
