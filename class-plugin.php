@@ -243,6 +243,14 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'animated-heading' => [
+				'handler' => 'wcf--animated-heading',
+				'src'     => 'widgets/animated-heading.min.js',
+				'dep'     => [ 'jquery', 'gsap' ],
+				'version' => false,
+				'arg'     => true,
+			],
+
 		];
 	}
 

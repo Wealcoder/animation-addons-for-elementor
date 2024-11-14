@@ -392,20 +392,20 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-countdown/',
 						'youtube_url'  => '',
 					],
-					// 'animated-heading'  => [
-					// 	'label'    => esc_html__('Animated Heading', 'animation-addons-for-elementor'),
-					// 	'location' => [
-					// 		'cTab' => 'all'
-					// 	],
-					// 	'is_active'    => false,
-					// 	'is_pro'       => false,
-					// 	'is_extension' => false,
-					// 	'is_upcoming'  => false,
-					// 	'icon' => "wcf-icon-Image-Box",
-					// 	'demo_url'     => '',
-					// 	'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
-					// 	'youtube_url'  => '',
-					// ],
+					'animated-heading'  => [
+						'label'    => esc_html__('Animated Heading', 'animation-addons-for-elementor'),
+						'location' => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon' => "wcf-icon-Image-Box",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
+						'youtube_url'  => '',
+					],
 				]
 			],
 			'hf-elements'      => [
