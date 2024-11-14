@@ -17,71 +17,6 @@ export const debounceFn = (mainFunction, delay = 300) => {
   };
 };
 
-export const generateWidget = (tabContent, tabItems, filterKey) => {
-  let allContent = {};
-  tabItems.forEach((el) => {
-    if (el.value !== "all") {
-      allContent[el.value] = tabContent?.filter((tab) => {
-        if (filterKey && (filterKey === "free" || filterKey === "pro")) {
-          if (filterKey === "free" && tab.category === el.value && !tab.isPro) {
-            return tab;
-          } else if (
-            filterKey === "pro" &&
-            tab.category === el.value &&
-            tab.isPro
-          ) {
-            return tab;
-          }
-        } else {
-          if (tab.category === el.value) {
-            return tab;
-          }
-        }
-      });
-    }
-  });
-
-  return allContent;
-};
-
-export const generateGsapExtension = (tabContent, filterKey) => {
-  const allData = [];
-  tabContent?.map((el) => {
-    const value = el?.extensions?.filter((item) => {
-      if (filterKey && (filterKey === "free" || filterKey === "pro")) {
-        if (filterKey === "free" && !item.isPro) {
-          return item;
-        } else if (filterKey === "pro" && item.isPro) {
-          return item;
-        }
-      } else {
-        return item;
-      }
-    });
-    if (value && value.length) {
-      const updateData = { ...el };
-      updateData.extensions = value;
-
-      allData.push(updateData);
-    }
-  });
-  return allData;
-};
-export const generateGeneralExtension = (tabContent, filterKey) => {
-  const allData = tabContent?.filter((el) => {
-    if (filterKey && (filterKey === "free" || filterKey === "pro")) {
-      if (filterKey === "free" && !el.isPro) {
-        return el;
-      } else if (filterKey === "pro" && el.isPro) {
-        return el;
-      }
-    } else {
-      return el;
-    }
-  });
-  return allData;
-};
-
 export const generateSearchContent = (
   fullContent = [],
   categoryKey,
@@ -150,7 +85,7 @@ export const filterGeneralExtension = (mainContent, filterKey) => {
     })
   );
   return {
-    title: mainContent.title,
+    ...mainContent,
     elements: result,
   };
 };
@@ -177,7 +112,71 @@ export const filterGsapExtension = (mainContent, filterKey) => {
   );
 
   return {
-    title: mainContent.title,
+    ...mainContent,
     elements: result,
+  };
+};
+
+export const generateWidgetSearchContent = (mainContent) => {
+  let storeData = [];
+  Object.entries(mainContent).map(([key, val]) => {
+    Object.entries(val.elements).map(([key2, val2]) => {
+      const sampleData = {
+        icon: val2?.icon || "wcf-icon-Team",
+        path: "widgets",
+        slug: key2,
+        title: val2.label,
+        location: val2.location,
+      };
+
+      storeData.push(sampleData);
+    });
+  });
+
+  return {
+    category: "Widgets",
+    items: storeData,
+  };
+};
+
+export const generateGsapExtSearchContent = (mainContent) => {
+  let storeData = [];
+  Object.entries(mainContent).map(([key, val]) => {
+    Object.entries(val.elements).map(([key2, val2]) => {
+      const sampleData = {
+        icon: val2?.icon || "wcf-icon-Floating-Elements",
+        path: "extensions",
+        slug: key2,
+        title: val2.label,
+        location: val2.location,
+      };
+
+      storeData.push(sampleData);
+    });
+  });
+
+  return {
+    category: "GSAP Extension",
+    items: storeData,
+  };
+};
+
+export const generateGenExtSearchContent = (mainContent) => {
+  let storeData = [];
+  Object.entries(mainContent).map(([key, val]) => {
+    const sampleData = {
+      icon: val?.icon || "wcf-icon-Floating-Elements",
+      path: "extensions",
+      slug: key,
+      title: val.label,
+      location: val.location,
+    };
+
+    storeData.push(sampleData);
+  });
+
+  return {
+    category: "General Extension",
+    items: storeData,
   };
 };

@@ -24,6 +24,10 @@ export const useActiveItem = () => {
     updateActiveFullWidget,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
+    updateActiveGsapExtension,
+    updateActiveGsapGroupExtension,
+    updateActiveGsapAllExtension,
+    updateActiveFullExtension
   } = useContext(AppContext);
   return {
     updateActiveWidget,
@@ -31,5 +35,9 @@ export const useActiveItem = () => {
     updateActiveFullWidget,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
+    updateActiveGsapExtension,
+    updateActiveGsapGroupExtension,
+    updateActiveGsapAllExtension,
+    updateActiveFullExtension
   };
 };

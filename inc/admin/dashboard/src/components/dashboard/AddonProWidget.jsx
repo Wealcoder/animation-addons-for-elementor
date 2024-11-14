@@ -17,9 +17,15 @@ const AddonProWidget = () => {
         <div>
           <a
             href={"#"}
-            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+            aria-disabled="true"
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "pointer-events-none opacity-50"
+            )}
           >
-            All Pro Widgets <RiArrowRightUpLine size={18} className="ml-1" />
+            {/* All Pro Widgets  */}
+            Coming Soon
+            <RiArrowRightUpLine size={18} className="ml-1" />
           </a>
         </div>
       </div>

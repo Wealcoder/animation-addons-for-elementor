@@ -7,23 +7,25 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { AllWidgetList } from "@/config/data/allWidgetList";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { RiLandscapeFill } from "react-icons/ri";
-import {
-  ALLGeneralExtensionList,
-  AllGSAPExtensionList,
-} from "@/config/data/allExtensionList";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { generateSearchContent } from "@/lib/utils";
+import {
+  cn,
+  generateGenExtSearchContent,
+  generateGsapExtSearchContent,
+  generateSearchContent,
+  generateWidgetSearchContent,
+} from "@/lib/utils";
+import { useExtensions, useWidgets } from "@/hooks/app.hooks";
 
 const GlobalSearch = ({ open, setOpen }) => {
   const dashboardContent = DashboardSearchContent;
-  const widgetContent = AllWidgetList;
+  const { allWidgets } = useWidgets();
+  const { allExtensions } = useExtensions();
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);
+  const [popularWidgets, setPopularWidgets] = useState([]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -32,16 +34,15 @@ const GlobalSearch = ({ open, setOpen }) => {
       DashboardSearchContent,
       "Dashboard"
     );
-    const widgets = generateSearchContent(AllWidgetList, "Widgets");
-    const gsapExtensions = generateSearchContent(
-      AllGSAPExtensionList,
-      "GSAP Extension",
-      "extensions"
+    const widgets = generateWidgetSearchContent(allWidgets?.elements);
+    setPopularWidgets(widgets?.items?.slice(0, 3));
+
+    const gsapExtensions = generateGsapExtSearchContent(
+      allExtensions.elements["gsap-extensions"].elements
     );
 
-    const generalExtensions = generateSearchContent(
-      ALLGeneralExtensionList,
-      "General Extension"
+    const generalExtensions = generateGenExtSearchContent(
+      allExtensions.elements["general-extensions"].elements
     );
 
     const templates = {
@@ -149,23 +150,16 @@ const GlobalSearch = ({ open, setOpen }) => {
                               )
                             }
                           >
-                            {item.icon ? (
-                              item.icon
-                            ) : item.logo ? (
+                            {item.dIcon ? (
+                              item.dIcon
+                            ) : item.icon ? (
                               <div>
-                                <Avatar className="rounded-full h-5 w-5 flex justify-center items-center">
-                                  <AvatarImage
-                                    className="w-5 h-5"
-                                    src={item?.logo}
-                                    alt="Widget Logo"
-                                  />
-                                  <AvatarFallback>
-                                    <RiLandscapeFill
-                                      size={20}
-                                      color="#CACFD8"
-                                    />
-                                  </AvatarFallback>
-                                </Avatar>
+                                <div
+                                  className={cn(
+                                    "rounded-full h-5 w-5 flex justify-center items-center text-[20px]",
+                                    item.icon
+                                  )}
+                                />
                               </div>
                             ) : (
                               ""
@@ -193,7 +187,7 @@ const GlobalSearch = ({ open, setOpen }) => {
                           className="search-item"
                           onClick={() => changeRoute(item.slug)}
                         >
-                          {item.icon} {item.name}
+                          {item.dIcon} {item.name}
                         </div>
                       ))}
                     </div>
@@ -202,25 +196,25 @@ const GlobalSearch = ({ open, setOpen }) => {
                       <h4 className="text-xs text-text-secondary px-2.5 mb-2">
                         Widgets
                       </h4>
-                      {widgetContent?.slice(0, 3)?.map((item) => (
+                      {popularWidgets?.map((item) => (
                         <div
                           key={`dashboard_item-default-${item.slug}`}
                           className="search-item"
                           onClick={() =>
-                            changeRoute(item.slug, "widgets", "all")
+                            changeRoute(
+                              item.slug,
+                              item.path,
+                              item?.location?.cTab
+                            )
                           }
                         >
                           <div>
-                            <Avatar className="rounded-full h-5 w-5 flex justify-center items-center">
-                              <AvatarImage
-                                className="w-5 h-5"
-                                src={item?.logo}
-                                alt="Widget Logo"
-                              />
-                              <AvatarFallback>
-                                <RiLandscapeFill size={20} color="#CACFD8" />
-                              </AvatarFallback>
-                            </Avatar>
+                            <div
+                              className={cn(
+                                "rounded-full h-5 w-5 flex justify-center items-center text-[20px]",
+                                item.icon
+                              )}
+                            />
                           </div>{" "}
                           {item.title}
                         </div>

@@ -26,11 +26,12 @@ const ProConfirmDialog = ({ open, setOpen }) => {
             <p className="mt-2.5 text-sm text-text-secondary text-center">
               Upgrade and get access to every feature.
             </p>
-            <Button variant="pro" className="w-full mt-6">
+            <Button variant="pro" className="w-full mt-6" disabled>
               <span className="me-2 flex">
                 <RiVipCrown2Line size={20} />
               </span>{" "}
-              Get Pro Version
+              {/* Get Pro Version */}
+              Coming Soon
             </Button>
           </div>
         </div>

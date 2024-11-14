@@ -23,7 +23,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '1.1.4' );
+	define( 'WCF_ADDONS_VERSION', '1.1.5' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -182,7 +182,7 @@ final class WCF_ADDONS_Plugin {
 				wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
 			}
 		} );
-
+		include_once WCF_ADDONS_PATH . 'inc/trait-extension-widgets.php';
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once( 'class-plugin.php' );
 

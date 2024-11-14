@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.2.0
  */
 class Plugin {
-
+	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Instance
 	 *
@@ -216,16 +216,16 @@ class Plugin {
 				'arg'     => true,
 			],
 			'before-after'     => [
-				'handler' => 'beforeAfter',
-				'src'     => 'beforeafter.jquery-1.0.0.min.js',
-				'dep'     => [ 'jquery' ],
+				'handler' => 'draggable',
+				'src'     => 'Draggable.min.js',
+				'dep'     => [ 'gsap' ],
 				'version' => false,
 				'arg'     => true,
 			],
 			'image-compare'    => [
 				'handler' => 'wcf--image-compare',
 				'src'     => 'widgets/image-compare.min.js',
-				'dep'     => [ 'beforeAfter' ],
+				'dep'     => [ 'draggable' ],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -240,20 +240,6 @@ class Plugin {
 				'handler' => 'wcf--nav-menu',
 				'src'     => 'widgets/nav-menu.min.js',
 				'dep'     => [ 'jquery' ],
-				'version' => false,
-				'arg'     => true,
-			],
-			'chroma'           => [
-				'handler' => 'chroma',
-				'src'     => 'chroma.min.js',
-				'dep'     => [ 'jquery', 'gsap' ],
-				'version' => false,
-				'arg'     => true,
-			],
-			'animated-heading' => [
-				'handler' => 'wcf--animated-heading',
-				'src'     => 'widgets/animated-heading.min.js',
-				'dep'     => [ 'jquery', 'gsap', 'chroma' ],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -436,20 +422,28 @@ class Plugin {
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
-
-			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
-				if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {
-					require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
-				} else {
-					require_once( __DIR__ . '/widgets/' . $slug . '.php' );
+			
+			if($data['is_pro']){
+				continue;
+			}
+			
+			if(file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php'))
+			{
+				if ( ! $data['is_pro'] && ! $data['is_extension'] )
+				{
+					if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
+						require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
+					} else {
+						require_once( __DIR__ . '/widgets/' . $slug . '.php' );
+					}
+	
+	
+					$class = explode( '-', $slug );
+					$class = array_map( 'ucfirst', $class );
+					$class = implode( '_', $class );
+					$class = 'WCF_ADDONS\\Widgets\\' . $class;
+					ElementorPlugin::instance()->widgets_manager->register( new $class() );
 				}
-
-
-				$class = explode( '-', $slug );
-				$class = array_map( 'ucfirst', $class );
-				$class = implode( '_', $class );
-				$class = 'WCF_ADDONS\\Widgets\\' . $class;
-				ElementorPlugin::instance()->widgets_manager->register( new $class() );
 			}
 		}
 	}
@@ -463,61 +457,21 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_extensions() {
+		
 		foreach ( self::get_extensions() as $slug => $data ) {
 
 			// If upcoming don't register.
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
-
-			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
+			
+			if (! $data['is_pro'] && ! $data['is_extension'] ) {
 
 				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 			}
 		}
 	}
 
-	/**
-	 * Get Widgets List.
-	 *
-	 * @return array
-	 */
-	public static function get_widgets() {
-		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );	  
-		self::searchKeys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);	
-		return $awidgets;
-	}
-
-	/**
-	 * Get Extension List.
-	 *
-	 * @return array
-	 */
-	public static function get_extensions() {
-
-		$saved_extensions = array_keys( get_option( 'wcf_save_extensions' ) );
-		  
-        self::searchKeys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundKeys, $active);
-	   
-		return $active;
-	}
-	
-	static function searchKeys($array, $keysToFind, &$foundKeys, &$active) {
-		foreach ($array as $key => $value) {
-			// Check if the current key is one we're looking for
-			if (in_array($key, $keysToFind)) {
-				// Add to found keys list
-				$foundKeys[] = $key;
-				// Store the entire element in $active
-				$active[$key] = $value;
-			}
-	
-			// If value is an array, recurse into it
-			if (is_array($value)) {
-				self::searchKeys($value, $keysToFind, $foundKeys, $active);
-			}
-		}
-	}
 
 	/**
 	 * Widget Category
