@@ -323,4 +323,28 @@ if( !function_exists('wcf_get_search_active_keys') ) {
 	}
 }
 
+if(!function_exists('wcf_get_addon_active_extension_by_key')) {
+	
+	function wcf_get_addon_active_extension_by_key($search){
+	
+		$ext = get_option( 'wcf_save_extensions' );
+		if(is_array($ext)){
+		
+			$saved_ext  = array_keys( $ext );	
+			$found_key = array_search($search, $saved_ext);			
+			if($found_key !==false){
+				return true;
+			}
+			
+		}else{
+			return true;
+		}	
+		
+		return false;
+	}	
+
+}
+
+
+
 
