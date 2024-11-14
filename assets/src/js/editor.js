@@ -31,8 +31,8 @@
                         audience.empty();
                     }
                 }
-            })
-        }
+            });
+        };
 
         const $element = panel.$el.find('[data-setting="mailchimp_api"]');
 
@@ -45,7 +45,7 @@
         });
 
     });
-
+    
     // Custom Css
     elementor.hooks.addFilter('editor/style/styleText', function (css, context) {
         if (!context) {
