@@ -1,7 +1,5 @@
 <?php
 
-use function PHPUnit\Framework\assertFalse;
-
 if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
@@ -1129,6 +1127,27 @@ $config = [
 			],
 		]
 	],
+	'integrations' => [
+		'pro_plugin'  => [
+			'title'    => esc_html__( 'Premium Plugins', 'animation-addons-for-elementor' ),
+			'elements' => [
+				
+			]
+		],
+		'free_plugin' => [
+			'title'    => esc_html__( 'Free Plugins', 'animation-addons-for-elementor' ),
+			'elements' => [
+				'extension-for-animation-addons' => [
+					'label'        => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
+					'basename'     => 'extension-for-animation-addons/extension-for-animation-addons.php',
+					'source'       => 'custom',
+					'is_pro'       => false,
+					'is_activated' => false,
+					'download_url' => 'https://animation-addons.com/',
+				],
+			]
+		],
+	]
 ];
 
 $GLOBALS['wcf_addons_config'] = $config;
