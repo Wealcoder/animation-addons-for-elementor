@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { AllWidgetList } from "@/config/data/allWidgetList";
 import {
   ALLGeneralExtensionList,
   AllGSAPExtensionList,
@@ -19,12 +18,12 @@ import {
   generateSearchContent,
   generateWidgetSearchContent,
 } from "@/lib/utils";
-import { useWidgets } from "@/hooks/app.hooks";
+import { useExtensions, useWidgets } from "@/hooks/app.hooks";
 
 const GlobalSearch = ({ open, setOpen }) => {
   const dashboardContent = DashboardSearchContent;
   const { allWidgets } = useWidgets();
-  const widgetContent = AllWidgetList;
+  const { allExtensions } = useExtensions();
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);

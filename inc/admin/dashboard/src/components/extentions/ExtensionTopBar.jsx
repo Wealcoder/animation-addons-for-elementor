@@ -35,7 +35,7 @@ const ExtensionTopBar = ({ filterKey, setFilterKey }) => {
             </p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
             <p className="text-sm text-label ">
-              {Object.keys(extensionCount?.active).length} Active Extensions
+              {extensionCount?.active} Active Extensions
             </p>
           </div>
         </div>

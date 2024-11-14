@@ -38,7 +38,7 @@ const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
             </p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
             <p className="text-sm text-label ">
-              {Object.keys(widgetCount?.active).length} Active Widgets
+              {widgetCount?.active} Active Widgets
             </p>
           </div>
         </div>
