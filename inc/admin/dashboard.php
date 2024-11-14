@@ -249,7 +249,7 @@ class WCF_Admin_Init {
             wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
 		    $active_widgets = self::get_widgets(); 
 		    $active_ext = self::get_extensions(); 
-		    $document = Plugin::$instance->documents->get( 3304 );
+	
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
@@ -258,7 +258,7 @@ class WCF_Admin_Init {
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
 				'extensions' => ['total' => $total_extensions,'active' => is_array($active_widgets) ? count($active_ext): 0],
 				'widgets'    => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
-				'global_settings' => $document->get_edit_url()
+				'global_settings_url' => $this->get_elementor_active_edit_url()
 				
 			];
 			
@@ -302,6 +302,24 @@ class WCF_Admin_Init {
 		];
 
 		return apply_filters( 'wcf_settings_tabs', $settings_tab );
+	}
+	
+	public function get_elementor_active_edit_url(){
+	
+		if (defined('ELEMENTOR_VERSION') && class_exists('\Elementor\Plugin')) {
+			// Fetch the active kit ID from Elementor settings
+			$active_kit_id = \Elementor\Plugin::$instance->kits_manager->get_active_id();
+			
+			$elementor_edit_url = add_query_arg([
+				'post'            =>  $active_kit_id,
+				'action'          => 'elementor',
+				'active-document' => $active_kit_id,
+			], admin_url('post.php'));
+			
+			return $elementor_edit_url;
+		}
+		
+		return false;
 	}
 
 	/**
