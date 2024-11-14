@@ -971,7 +971,7 @@ $config = [
 						'location' => [
 							'cTab' => 'general'
 						],
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_active'    => false,
 						'is_extension' => true,
 						'is_upcoming'  => false,
@@ -1004,6 +1004,20 @@ $config = [
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon' => "wcf-icon-Floating-Elements",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
+					'mega-menu' => [
+						'label'        => esc_html__( 'Mega Menu', 'wcf-addons-pro' ),
+						'is_pro'       => true,
+						'location' => [
+							'cTab' => 'general'
+						],
+						'icon' => "wcf-icon-Floating-Elements",
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
@@ -1176,6 +1190,26 @@ $config = [
 			],
 		]
 	],
+	'integrations' => [
+		'pro-plugin'  => [
+			'title'    => esc_html__( 'Premium Plugins', 'animation-addons-for-elementor' ),
+			'elements' => [
+	
+			]
+		],
+		'free-plugin' => [
+			'title'    => esc_html__( 'Free Plugins', 'animation-addons-for-elementor' ),
+			'elements' => [
+				'extension-for-animation-addons' => [
+					'label'    => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
+					'basename' => 'extension-for-animation-addons/extension-for-animation-addons.php',
+					'source'   => 'custom',
+					'is_pro'   => false,
+					'download_url' => 'https://animation-addons.com/',
+				],
+			]
+		],
+	]
 ];
 
 $GLOBALS['wcf_addons_config'] = $config;

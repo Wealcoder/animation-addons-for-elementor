@@ -162,9 +162,9 @@ class WCF_Admin_Init {
 	 */
 	public function dashboard_db_widgets_config($configs)
 	{
-		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );
-	
-		$widgets = $configs['widgets'];
+		$wgt           = get_option( 'wcf_save_widgets' );
+		$saved_widgets = is_array($wgt) ? array_keys( $wgt ) : [];
+		$widgets       = $configs['widgets'];
 		wcf_get_db_updated_config($widgets,$saved_widgets);	
 		$configs['widgets'] = $widgets;
 		return $configs;
@@ -175,8 +175,8 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function dashboard_db_extnsions_config($configs){
-	
-		$saved_ext = array_keys( get_option( 'wcf_save_extensions' ) );	
+		$ext        = get_option( 'wcf_save_extensions' );
+		$saved_ext  = is_array($ext) ? array_keys( $ext ) : [];
 		$extensions = $configs['extensions'];
 		wcf_get_db_updated_config($extensions,$saved_ext);	
 		$configs['extensions'] = $extensions;
