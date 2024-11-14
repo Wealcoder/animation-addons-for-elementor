@@ -991,6 +991,16 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
+					'mega-menu' => [
+						'label'        => esc_html__( 'Mega Menu', 'wcf-addons-pro' ),
+						'is_pro'       => true,
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
 				]
 			],
 			'gsap-extensions'    => [

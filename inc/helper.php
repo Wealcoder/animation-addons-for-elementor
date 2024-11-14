@@ -275,7 +275,6 @@ if( !function_exists('wcf_get_db_updated_config') ) {
 				// If the current key is in the dbActiveElements array, update is_active to true
 				if (in_array($key, $dbActiveElements)) {
 					$element['is_active'] = true;
-					
 				}
 			}
 	
