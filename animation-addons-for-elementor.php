@@ -23,7 +23,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '1.1.5' );
+	define( 'WCF_ADDONS_VERSION', '1.1.7' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
