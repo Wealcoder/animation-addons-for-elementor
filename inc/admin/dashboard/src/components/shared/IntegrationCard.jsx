@@ -2,8 +2,10 @@ import { cn } from "@/lib/utils";
 import { Dot } from "lucide-react";
 import { Button, buttonVariants } from "../ui/button";
 import { RiDownloadLine } from "react-icons/ri";
+import { Badge } from "../ui/badge";
 
 const IntegrationCard = ({ item, className }) => {
+  console.log(item);
   return (
     <div
       className={cn(
@@ -51,17 +53,25 @@ const IntegrationCard = ({ item, className }) => {
             </div>
           </div>
           <div>
-            <a
-              href={item.download_url}
-              target="_blank"
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "h-9 py-2 ps-[10px] pe-3"
-              )}
-            >
-              <RiDownloadLine size={18} className="mr-1.5" />
-              Download
-            </a>
+            {item?.is_pro ? (
+              <Button className="h-9 py-2 ps-[10px] pe-3">
+                <RiDownloadLine size={18} className="mr-1.5" />
+                Activated
+              </Button>
+            ) : (
+              <a
+                href={item.download_url}
+                target="_blank"
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "h-9 py-2 ps-[10px] pe-3"
+                )}
+              >
+                <RiDownloadLine size={18} className="mr-1.5" />
+                Download
+              </a>
+            )}
+
             {/* <Button className="h-9 py-2 ps-[10px] pe-3">
               <RiDownloadLine size={18} className="mr-1.5" />
               Activated

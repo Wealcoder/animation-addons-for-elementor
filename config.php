@@ -1208,7 +1208,7 @@ $config = [
 					'source'   => 'custom',
 					'is_pro'   => true,					
 					'slug'   => '',
-					'download_url' => false,
+					'download_url' => "",
 				],
 			]
 		],
