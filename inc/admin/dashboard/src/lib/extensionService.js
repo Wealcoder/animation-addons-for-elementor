@@ -1,3 +1,5 @@
+const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+
 export const generalExtensionFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
@@ -31,7 +33,7 @@ export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro) {
+        if (value.is_pro && !isValid) {
           return [key, value];
         } else {
           value.is_active = data.value;
@@ -64,7 +66,7 @@ export const gsapExtensionFn = (mainContent, data, dispatch) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
             if (key2 === data.slug) {
-              if (value2.is_pro) {
+              if (value2.is_pro && !isValid) {
                 return [key2, value2];
               } else {
                 value2.is_active = data.value;
@@ -102,7 +104,7 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
             if (key === data.slug) {
-              if (value2.is_pro) {
+              if (value2.is_pro && !isValid) {
                 return [key2, value2];
               } else {
                 value2.is_active = data.value;
@@ -146,7 +148,7 @@ export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
       ([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
-            if (value2.is_pro) {
+            if (value2.is_pro && !isValid) {
               return [key2, value2];
             } else {
               value2.is_active = data.value;
@@ -187,7 +189,7 @@ export const allExtensionFn = (mainContent, data, dispatch) => {
       ([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
-            if (value2.is_pro) {
+            if (value2.is_pro && !isValid) {
               return [key2, value2];
             } else {
               value2.is_active = data.value;
@@ -206,7 +208,7 @@ export const allExtensionFn = (mainContent, data, dispatch) => {
   const generalResult = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro) {
+        if (value.is_pro && !isValid) {
           return [key, value];
         } else {
           value.is_active = data.value;
