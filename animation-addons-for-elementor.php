@@ -23,7 +23,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '1.1.5' );
+	define( 'WCF_ADDONS_VERSION', '1.1.7' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -54,6 +54,10 @@ if ( ! defined( 'WCF_ADDONS_WIDGETS_PATH' ) ) {
 	 * Widgets Dir Ref.
 	 */
 	define( 'WCF_ADDONS_WIDGETS_PATH', WCF_ADDONS_PATH . 'widgets/' );
+}
+
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+	require __DIR__ . '/vendor/autoload.php';
 }
 
 /**
@@ -182,7 +186,7 @@ final class WCF_ADDONS_Plugin {
 				wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
 			}
 		} );
-		include_once WCF_ADDONS_PATH . 'inc/trait-extension-widgets.php';
+		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once( 'class-plugin.php' );
 

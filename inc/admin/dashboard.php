@@ -70,6 +70,7 @@ class WCF_Admin_Init {
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_integrations_config'], 10 );		
 		//add_action( 'init', [ $this, 'sync_widgets_by_element_manager'], 10 );		
 		add_action( 'admin_footer', [ $this, 'admin_footer' ] );
 		
@@ -246,7 +247,7 @@ class WCF_Admin_Init {
 			
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
-      wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
 		  $active_widgets = self::get_widgets(); 
 		  $active_ext = self::get_extensions(); 
 	
@@ -265,6 +266,34 @@ class WCF_Admin_Init {
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
 		}
+	}
+	
+	function dashboard_integrations_config( $configs ){
+	
+		if(!isset($configs['integrations']['plugins']['elements'])){
+			return $configs;
+		}
+		
+		$action = '';
+		$data_base = '';
+		foreach($configs['integrations']['plugins']['elements'] as &$plugin){
+		
+			if ( wcf_addons_get_local_plugin_data( $plugin['basename'] ) === false ) {
+				$action = 'Download';
+				$data_base = $plugin['download_url'];
+			} else {
+				if ( is_plugin_active( $plugin['basename'] ) ) {
+					$action = 'Activated';
+				} else {
+					$action = 'Active';
+					$data_base = $plugin['basename'];
+				}
+			}
+			$plugin['action'] = $action;
+			$plugin['data_base'] = $data_base;
+		}
+		
+		return $configs;
 	}
 	
 	function add_type_to_script($tag, $handle, $source){

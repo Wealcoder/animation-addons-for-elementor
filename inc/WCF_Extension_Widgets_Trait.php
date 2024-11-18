@@ -19,7 +19,7 @@ trait WCF_Extension_Widgets_Trait {
 		$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : []; 
 		
 		wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);
-		return $awidgets;
+		return is_array($awidgets) ? $awidgets : [];
 	}
 
 	/**
@@ -34,7 +34,7 @@ trait WCF_Extension_Widgets_Trait {
 		  
         wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundKeys, $active);
 	   
-		return $active;
+		return is_array($active) ? $active : [];
 	}
 
 
