@@ -14,7 +14,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
   const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
 
   const setCheck = (value, slug) => {
-    if (value && widget?.is_pro) {
+    if (widget?.is_pro) {
       if (isValid) {
         if (updateActiveItem) {
           updateActiveItem({ value, slug });
