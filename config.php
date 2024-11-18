@@ -746,7 +746,7 @@ $config = [
 				'elements'  => [
 				
 					'toggle-switcher'       => [
-						'label'       => __( 'Toggle Switcher', 'wcf-addons-pro' ),
+						'label'       => __( 'Toggle Switcher', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -760,7 +760,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-pricing-table' => [
-						'label'       => __( 'Advance Pricing Table', 'wcf-addons-pro' ),
+						'label'       => __( 'Advance Pricing Table', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -774,7 +774,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'scroll-elements'       => [
-						'label'       => __( 'Scroll Elements', 'wcf-addons-pro' ),
+						'label'       => __( 'Scroll Elements', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -788,7 +788,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-portfolio'     => [
-						'label'       => __( 'Advance Portfolio', 'wcf-addons-pro' ),
+						'label'       => __( 'Advance Portfolio', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -802,7 +802,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'filterable-gallery'    => [
-						'label'       => __( 'Filterable Gallery', 'wcf-addons-pro' ),
+						'label'       => __( 'Filterable Gallery', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -816,7 +816,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'breadcrumbs'           => [
-						'label'       => __( 'Breadcrumbs', 'wcf-addons-pro' ),
+						'label'       => __( 'Breadcrumbs', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -830,7 +830,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'table-of-contents'     => [
-						'label'       => __( 'Table Of Content', 'wcf-addons-pro' ),
+						'label'       => __( 'Table Of Content', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -844,7 +844,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'image-accordion'       => [
-						'label'       => __( 'Image Accordion', 'wcf-addons-pro' ),
+						'label'       => __( 'Image Accordion', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -858,7 +858,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'author-box'            => [
-						'label'       => __( 'Author Box', 'wcf-addons-pro' ),
+						'label'       => __( 'Author Box', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -872,7 +872,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'flip-box'              => [
-						'label'       => __( 'Flip Box', 'wcf-addons-pro' ),
+						'label'       => __( 'Flip Box', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -886,7 +886,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-slider'        => [
-						'label'       => __( 'Advance Slider', 'wcf-addons-pro' ),
+						'label'       => __( 'Advance Slider', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -900,7 +900,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'filterable-slider'     => [
-						'label'       => __( 'Filterable Slider', 'wcf-addons-pro' ),
+						'label'       => __( 'Filterable Slider', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -914,7 +914,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-accordion'     => [
-						'label'       => __( 'Advance Accordion', 'wcf-addons-pro' ),
+						'label'       => __( 'Advance Accordion', 'animation-addons-for-elementor' ),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -953,7 +953,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'wrapper-link'     => [
-						'label'        => esc_html__( 'Wrapper Link', 'wcf-addons-pro' ),
+						'label'        => esc_html__( 'Wrapper Link', 'animation-addons-for-elementor' ),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -981,7 +981,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'tilt-effect'      => [
-						'label'        => esc_html__( 'Tilt Effect', 'wcf-addons-pro' ),
+						'label'        => esc_html__( 'Tilt Effect', 'animation-addons-for-elementor' ),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -995,7 +995,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advanced-tooltip' => [
-						'label'        => esc_html__( 'Advanced Tooltip', 'wcf-addons-pro' ),
+						'label'        => esc_html__( 'Advanced Tooltip', 'animation-addons-for-elementor' ),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -1009,7 +1009,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'mega-menu' => [
-						'label'        => esc_html__( 'Mega Menu', 'wcf-addons-pro' ),
+						'label'        => esc_html__( 'Mega Menu', 'animation-addons-for-elementor' ),
 						'is_pro'       => true,
 						'location' => [
 							'cTab' => 'general'
@@ -1103,7 +1103,7 @@ $config = [
 						'is_active' => false,
 						'elements' => [
 							'cursor-hover-effect' => [
-								'label'        => esc_html__( 'Cursor Hover Effect', 'wcf-addons-pro' ),
+								'label'        => esc_html__( 'Cursor Hover Effect', 'animation-addons-for-elementor' ),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1118,7 +1118,7 @@ $config = [
 								'youtube_url'  => '',
 							],						
 							'hover-effect-image'  => [
-								'label'        => esc_html__( 'Hover Effect Image', 'wcf-addons-pro' ),
+								'label'        => esc_html__( 'Hover Effect Image', 'animation-addons-for-elementor' ),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1133,7 +1133,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'cursor-move-effect' => [
-								'label'        => esc_html__( 'Cursor Move Effect', 'wcf-addons-pro' ),
+								'label'        => esc_html__( 'Cursor Move Effect', 'animation-addons-for-elementor' ),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1156,7 +1156,7 @@ $config = [
 						'is_active' => false,
 						'elements'  => [
 							'horizontal-scroll'   => [
-								'label'        => esc_html__( 'Horizontal', 'wcf-addons-pro' ),
+								'label'        => esc_html__( 'Horizontal', 'animation-addons-for-elementor' ),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'scroll-trigger'

@@ -13,11 +13,8 @@ defined( 'ABSPATH' ) || die();
 class WCF_Custom_CSS {
 
 	public static function init() {
-		
-		if(wcf_get_addon_active_extension_by_key('custom-css')){
-			add_action( 'elementor/element/after_section_end', [ __CLASS__, 'register_controls' ], 10, 2 );
-			add_action( 'elementor/element/parse_css', [ __CLASS__, 'add_post_css' ], 10, 2 );
-		}
+		add_action( 'elementor/element/after_section_end', [ __CLASS__, 'register_controls' ], 10, 2 );
+		add_action( 'elementor/element/parse_css', [ __CLASS__, 'add_post_css' ], 10, 2 );
 		
 	}
 
