@@ -8,6 +8,7 @@
       this.saveData();
       this.installPlugin();
       this.setupWizard();
+      this.add_tab_args();
 
       //accordion
       if ($("#wcf-accordion").length) {
@@ -318,6 +319,10 @@
     },
     closePopup: function closePopup() {
       $('.wcf-addons-settings-popup').removeClass('open-popup');
+    },
+    add_tab_args: function add_tab_args() {
+      var url = $('#toplevel_page_wcf_addons_page > a').attr('href');
+      console.log(url);
     }
   };
   WCFAdmin.init();

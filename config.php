@@ -1202,6 +1202,14 @@ $config = [
 					'slug'   => '',
 					'download_url' => 'https://animation-addons.com/',
 				],
+				'animation-addon-for-elementorpro' => [
+					'label'    => esc_html__( 'Animation Addon Pro', 'animation-addons-for-elementor' ),
+					'basename' => 'wcf-addons-pro/wcf-addons-pro.php',
+					'source'   => 'custom',
+					'is_pro'   => true,					
+					'slug'   => '',
+					'download_url' => false,
+				],
 			]
 		],
 	]
