@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Plugin {
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+
 	/**
 	 * Instance
 	 *
@@ -166,13 +167,13 @@ class Plugin {
 	 */
 	public static function get_widget_scripts() {
 		return [
-			'typed'            => [
-				'handler' => 'typed',
-				'src'     => 'typed.min.js',
-				'dep'     => [],
-				'version' => false,
-				'arg'     => true,
-			],			
+//			'typed'            => [
+//				'handler' => 'typed',
+//				'src'     => 'typed.min.js',
+//				'dep'     => [],
+//				'version' => false,
+//				'arg'     => true,
+//			],
 			'ProgressBar'      => [
 				'handler' => 'progressbar',
 				'src'     => 'progressbar.min.js',
@@ -190,7 +191,7 @@ class Plugin {
 			'typewriter'       => [
 				'handler' => 'wcf--typewriter',
 				'src'     => 'widgets/typewriter.min.js',
-				'dep'     => [ 'typed', 'jquery' ],
+				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -423,29 +424,27 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_widgets() {
-		
+
 		foreach ( self::get_widgets() as $slug => $data ) {
 
 			// If upcoming don't register.
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
-			
-			if($data['is_pro']){
+
+			if ( $data['is_pro'] ) {
 				continue;
 			}
-			
-			if(file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php'))
-			{
-				if ( ! $data['is_pro'] && ! $data['is_extension'] )
-				{
-					if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
+
+			if ( file_exists( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' ) || file_exists( __DIR__ . '/widgets/' . $slug . '.php' ) ) {
+				if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
+					if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {
 						require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
 					} else {
 						require_once( __DIR__ . '/widgets/' . $slug . '.php' );
 					}
-	
-	
+
+
 					$class = explode( '-', $slug );
 					$class = array_map( 'ucfirst', $class );
 					$class = implode( '_', $class );
@@ -465,15 +464,15 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_extensions() {
-		
+
 		foreach ( self::get_extensions() as $slug => $data ) {
 
 			// If upcoming don't register.
 			if ( $data['is_upcoming'] ) {
 				continue;
 			}
-			
-			if (! $data['is_pro'] && ! $data['is_extension'] ) {
+
+			if ( ! $data['is_pro'] && ! $data['is_extension'] ) {
 
 				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 			}
@@ -572,7 +571,7 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', [ $this, 'widget_styles' ] );
 
 		// Register widgets
-		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );	
+		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
 
 		// Register editor scripts
 		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'editor_scripts' ] );
