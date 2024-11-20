@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -45,8 +46,32 @@ const LicenseDialog = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
+
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "wcf_addon_pro_sl_activate",
+        wcf_addon_sl_license_key: data.license,
+        email: data.email,
+        nonce: WCF_ADDONS_ADMIN.nonce,
+       
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        toast.success("Save Successful", {
+          position: "top-right",
+        });
+      });
   };
 
   return (
