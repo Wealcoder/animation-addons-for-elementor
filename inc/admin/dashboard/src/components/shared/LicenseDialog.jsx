@@ -41,12 +41,25 @@ const LicenseDialog = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: "",
-      license: "",
+      email: WCF_ADDONS_ADMIN.addons_config.sl_lic_email || "",
+      license: WCF_ADDONS_ADMIN.addons_config.sl_lic || "",
     },
   });
 
   const onSubmit = async (data) => {
+    const body_args = {
+      action: activated
+        ? "wcf_addon_pro_sl_deactivate"
+        : "wcf_addon_pro_sl_activate",
+      wcf_addon_sl_license_key: data.license,
+      email: data.email,
+      nonce: WCF_ADDONS_ADMIN.nonce,
+    };
+
+    if (activated) {
+      body_args["edd_license_deactivate"] = true;
+    }
+
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -54,20 +67,23 @@ const LicenseDialog = () => {
         Accept: "application/json",
       },
 
-      body: new URLSearchParams({
-        action: "wcf_addon_pro_sl_activate",
-        wcf_addon_sl_license_key: data.license,
-        email: data.email,
-        nonce: WCF_ADDONS_ADMIN.nonce,
-      }),
+      body: new URLSearchParams(body_args),
     })
       .then((response) => {
         return response.json();
       })
       .then((return_content) => {
-        toast.success("Save Successful", {
-          position: "top-right",
-        });
+        if (return_content?.license === "valid") {
+          WCF_ADDONS_ADMIN.addons_config.wcf_valid = true;
+          toast.success("Activate Successful", {
+            position: "top-right",
+          });
+        } else {
+          WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
+          toast.success("Deactivate Successful", {
+            position: "top-right",
+          });
+        }
       });
   };
 
