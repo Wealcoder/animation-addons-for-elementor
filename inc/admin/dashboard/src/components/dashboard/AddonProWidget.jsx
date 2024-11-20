@@ -5,11 +5,13 @@ import { Separator } from "../ui/separator";
 import WidgetCard from "../shared/WidgetCard";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useWidgets } from "@/hooks/app.hooks";
 
 const AddonProWidget = () => {
   const [widgets, setWidgets] = useState(
     WCF_ADDONS_ADMIN.addons_config.dashboardProWidget
   );
+
 
   const updateActiveWidget = async (data) => {
     const result = Object.fromEntries(
@@ -23,6 +25,8 @@ const AddonProWidget = () => {
       })
     );
     setWidgets(result);
+    console.log(result);
+   
 
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -32,7 +36,7 @@ const AddonProWidget = () => {
       },
 
       body: new URLSearchParams({
-        action: "save_settings_with_ajax",
+        action: "save_settings_with_ajax_dashboard",
         fields: JSON.stringify(result),
         nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_widgets",
