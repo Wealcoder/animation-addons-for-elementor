@@ -5,7 +5,6 @@ import { RiCheckLine, RiDownloadLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
 
 const IntegrationCard = ({ item, className }) => {
-  console.log(item);
   return (
     <div
       className={cn(

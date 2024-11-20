@@ -38,8 +38,6 @@ const FormSchema = z.object({
 });
 
 const LicenseDialog = () => {
-  const [showPassword, setShowPassword] = useState(false)
-
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
