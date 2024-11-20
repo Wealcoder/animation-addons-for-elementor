@@ -28,6 +28,8 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -38,6 +40,9 @@ const FormSchema = z.object({
 
 const LicenseDialog = () => {
   const activated = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -47,6 +52,8 @@ const LicenseDialog = () => {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
     const body_args = {
       action: activated
         ? "wcf_addon_pro_sl_deactivate"
@@ -73,17 +80,22 @@ const LicenseDialog = () => {
         return response.json();
       })
       .then((return_content) => {
-        if (return_content?.license === "valid") {
-          WCF_ADDONS_ADMIN.addons_config.wcf_valid = true;
-          toast.success("Activate Successful", {
-            position: "top-right",
-          });
+        if (return_content.success) {
+          if (return_content?.license === "valid") {
+            WCF_ADDONS_ADMIN.addons_config.wcf_valid = true;
+            toast.success("Activate Successful", {
+              position: "top-right",
+            });
+          } else {
+            WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
+            toast.success("Deactivate Successful", {
+              position: "top-right",
+            });
+          }
         } else {
-          WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
-          toast.success("Deactivate Successful", {
-            position: "top-right",
-          });
+          setErrorMessage(return_content.message);
         }
+        setLoading(false);
       });
   };
 
@@ -179,8 +191,19 @@ const LicenseDialog = () => {
               )}
             />
 
+            {errorMessage ? (
+              <div className="mt-4">
+                <p className="text-[0.8rem] font-medium text-[#FF5733] leading-4">
+                  {errorMessage}
+                </p>
+              </div>
+            ) : (
+              ""
+            )}
+
             <Separator className="my-6 bg-[#EAECF0]" />
-            <Button type="submit" variant="pro" className="w-full">
+            <Button type="submit" variant="pro" className="w-full gap-2">
+              {loading ? <Loader2 className="animate-spin" /> : ""}
               {activated ? "Deactivate your license" : "Activate your license"}
             </Button>
           </form>
