@@ -228,9 +228,10 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	 *
 	 */
 	function wcf_set_postview( $template ) {
-		$postID = get_the_ID();
-		$count_key = 'wcf_post_views_count';
-		$count     = get_post_meta( $postID, $count_key, true );
+	
+		$postID     = get_the_ID();
+		$count_key  = 'wcf_post_views_count';
+		$count      = get_post_meta( $postID, $count_key, true );
 
 		if ( $count == '' ) {
 			$count = 0;
@@ -304,6 +305,7 @@ if( !function_exists('wcf_get_total_config_elements_by_key') ) {
 	}
 }
 
+
 if( !function_exists('wcf_get_search_active_keys') ) {
 	function wcf_get_search_active_keys($array, $keysToFind, &$foundKeys, &$active) {
 		foreach ($array as $key => $value) {
@@ -312,6 +314,7 @@ if( !function_exists('wcf_get_search_active_keys') ) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active
+				$value['is_active'] = 1;
 				$active[$key] = $value;
 			}
 	
