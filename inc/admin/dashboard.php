@@ -67,6 +67,7 @@ class WCF_Admin_Init {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax_dashboard', [ $this, 'save_settings_dashboard' ] );
+		
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
@@ -457,6 +458,7 @@ class WCF_Admin_Init {
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
 	    $settings  =  json_decode( $sanitize_data , true );	
 	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
+	    
 		// update new settings
 		if ( ! empty( $option_name ) ) {
 		
@@ -469,6 +471,7 @@ class WCF_Admin_Init {
 			$return_message = [
 				'status'  => $updated,
 				'total' => is_array($elements) ? count($elements) : 0
+				
 		  ];
 			wp_send_json( $return_message );
 		}
@@ -476,6 +479,8 @@ class WCF_Admin_Init {
 	}
 
 	public function save_settings_dashboard() {
+		
+		
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -486,11 +491,26 @@ class WCF_Admin_Init {
 			return;
 		}
 		
-    $actives = $foundkeys = [];
-		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
+		$actives       = [];
+		$option_name   = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
-	    $settings  =  json_decode( $sanitize_data , true );	
-	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
+		$settings      = json_decode( $sanitize_data , true );
+		$actives    = get_option('wcf_save_widgets');
+	    
+	    if(is_array($actives)){
+	        foreach($settings as $slug => $item ){
+	     		
+	            if(array_key_exists($slug, $actives) && !$item['is_active']){
+	                unset($actives[$slug]);
+	            }
+	          
+	            if( !array_key_exists($slug, $actives) && $item['is_active']){
+					$actives[$slug] = true;
+					error_log($slug);
+	            }
+	          
+	        }
+	    }
 		// update new settings
 		if ( ! empty( $option_name ) ) {
 		

@@ -1,7 +1,5 @@
 <?php
 
-use function PHPUnit\Framework\assertFalse;
-
 if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
