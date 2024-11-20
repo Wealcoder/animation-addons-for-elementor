@@ -1,13 +1,10 @@
-import {
-  RiNotificationLine,
-  RiSearchLine,
-  RiVipCrown2Line,
-} from "react-icons/ri";
+import { RiNotificationLine, RiSearchLine } from "react-icons/ri";
 import { Button } from "../ui/button";
 import MainNav from "./MainNav";
 import ShortLogo from "./ShortLogo";
 import { Badge } from "../ui/badge";
 import GlobalSearch from "../shared/GlobalSearch";
+import LicenseDialog from "../shared/LicenseDialog";
 
 const MainHeader = ({ open, setOpen, NavigateComponent }) => {
   return (
@@ -26,13 +23,13 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
           <Badge className="absolute top-[9px] right-2" variant="solid" />
           <RiNotificationLine size={20} />
         </Button>
-        <Button variant="pro" disabled>
+        <LicenseDialog />
+        {/* <Button variant="pro" disabled>
           <span className="me-2 flex">
             <RiVipCrown2Line size={20} />
           </span>
-          {/* Get Pro Version */}
           Coming Soon
-        </Button>
+        </Button> */}
       </div>
       <GlobalSearch open={open} setOpen={setOpen} />
     </div>

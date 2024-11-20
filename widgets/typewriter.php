@@ -221,6 +221,7 @@ class Typewriter extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .typed_title' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .typed_list' => '--line-color: {{VALUE}};',
 				],
 			]
 		);
@@ -246,6 +247,18 @@ class Typewriter extends Widget_Base {
 			[
 				'name'     => 'text_shadow',
 				'selector' => '{{WRAPPER}} .typed_title',
+			]
+		);
+
+		$this->add_control(
+			'line_color',
+			[
+				'label'     => esc_html__( 'Line Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .typed_list' => '--line-color: {{VALUE}};',
+				],
+                'separator' => 'before',
 			]
 		);
 
@@ -277,23 +290,39 @@ class Typewriter extends Widget_Base {
 			$typewriter_text = $settings['typewriter_normal_text'];
 		}
 
-		$typewriter_animated_text = '';
+		$typewriter_animated_text = array();
 		if ( ! empty( $settings['typewriter_animated_text'] ) ) {
 			foreach ( $settings['typewriter_animated_text'] as $animated_text ) {
-				$typewriter_animated_text .= ' <span>' . $animated_text['list_text'] . '</span>';
+				$typewriter_animated_text[] = $animated_text['list_text']; // Add each list_text to the array
 			}
 		}
 
 		?>
-		<div <?php $this->print_render_attribute_string( 'typewriter-attr' ); ?>>
+
+        <style>
+            @keyframes typeWriterLine {
+                from {
+                    border-color: var(--line-color, #000);
+                }
+                to {
+                    border-color: transparent;
+                }
+            }
+
+            .wcf--typewriter .typed_list {
+                display: inline-block;
+                border-right: 3px solid var(--line-color, #000);
+                animation: typeWriterLine 1s infinite;
+            }
+        </style>
+
+        <div <?php $this->print_render_attribute_string( 'typewriter-attr' ); ?>>
             <<?php Utils::print_validated_html_tag( $settings['html_tag'] ); ?> class="typed_title">
-			<?php echo wp_kses_post( $typewriter_text ); ?>
-			<span class="typed_list">
-				<?php echo wp_kses_post( $typewriter_animated_text ); ?>
-			</span>
-			<span class="typed"></span>
+                <?php echo wp_kses_post( $typewriter_text ); ?>
+                <span class="typed_list" data-text='<?php echo json_encode($typewriter_animated_text); ?>'></span>
             </<?php Utils::print_validated_html_tag( $settings['html_tag'] ); ?>>
-		</div>
+        </div>
+
 		<?php
 	}
 }

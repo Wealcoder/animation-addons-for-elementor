@@ -742,14 +742,14 @@ $config = [
 				'title'     => esc_html__('Advanced', 'animation-addons-for-elementor'),
 				'is_active' => false,
 				'elements'  => [
-				
+
 					'toggle-switcher'       => [
-						'label'       => __( 'Toggle Switcher', 'animation-addons-for-elementor' ),
+						'label'       => __('Toggle Switcher', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
 						],
-						'is_upcoming' => false,		
+						'is_upcoming' => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'icon' => "wcf-icon-Toggle-Switch",
@@ -758,7 +758,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-pricing-table' => [
-						'label'       => __( 'Advance Pricing Table', 'animation-addons-for-elementor' ),
+						'label'       => __('Advance Pricing Table', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -772,7 +772,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'scroll-elements'       => [
-						'label'       => __( 'Scroll Elements', 'animation-addons-for-elementor' ),
+						'label'       => __('Scroll Elements', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -786,7 +786,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-portfolio'     => [
-						'label'       => __( 'Advance Portfolio', 'animation-addons-for-elementor' ),
+						'label'       => __('Advance Portfolio', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -800,7 +800,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'filterable-gallery'    => [
-						'label'       => __( 'Filterable Gallery', 'animation-addons-for-elementor' ),
+						'label'       => __('Filterable Gallery', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -814,7 +814,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'breadcrumbs'           => [
-						'label'       => __( 'Breadcrumbs', 'animation-addons-for-elementor' ),
+						'label'       => __('Breadcrumbs', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -828,12 +828,12 @@ $config = [
 						'youtube_url' => '',
 					],
 					'table-of-contents'     => [
-						'label'       => __( 'Table Of Content', 'animation-addons-for-elementor' ),
+						'label'       => __('Table Of Content', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
 						],
-						'is_upcoming' => false,					
+						'is_upcoming' => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'icon' => "wcf-icon-Table-of-Contents",
@@ -842,7 +842,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'image-accordion'       => [
-						'label'       => __( 'Image Accordion', 'animation-addons-for-elementor' ),
+						'label'       => __('Image Accordion', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -856,7 +856,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'author-box'            => [
-						'label'       => __( 'Author Box', 'animation-addons-for-elementor' ),
+						'label'       => __('Author Box', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -870,7 +870,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'flip-box'              => [
-						'label'       => __( 'Flip Box', 'animation-addons-for-elementor' ),
+						'label'       => __('Flip Box', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -884,7 +884,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-slider'        => [
-						'label'       => __( 'Advance Slider', 'animation-addons-for-elementor' ),
+						'label'       => __('Advance Slider', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -898,7 +898,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'filterable-slider'     => [
-						'label'       => __( 'Filterable Slider', 'animation-addons-for-elementor' ),
+						'label'       => __('Filterable Slider', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -912,7 +912,7 @@ $config = [
 						'youtube_url' => '',
 					],
 					'advance-accordion'     => [
-						'label'       => __( 'Advance Accordion', 'animation-addons-for-elementor' ),
+						'label'       => __('Advance Accordion', 'animation-addons-for-elementor'),
 						'is_active'   => false,
 						'location' => [
 							'cTab' => 'all'
@@ -951,7 +951,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'wrapper-link'     => [
-						'label'        => esc_html__( 'Wrapper Link', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__('Wrapper Link', 'animation-addons-for-elementor'),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -979,7 +979,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'tilt-effect'      => [
-						'label'        => esc_html__( 'Tilt Effect', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__('Tilt Effect', 'animation-addons-for-elementor'),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -993,7 +993,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advanced-tooltip' => [
-						'label'        => esc_html__( 'Advanced Tooltip', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__('Advanced Tooltip', 'animation-addons-for-elementor'),
 						'location' => [
 							'cTab' => 'general'
 						],
@@ -1007,7 +1007,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'mega-menu' => [
-						'label'        => esc_html__( 'Mega Menu', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__('Mega Menu', 'animation-addons-for-elementor'),
 						'is_pro'       => true,
 						'location' => [
 							'cTab' => 'general'
@@ -1101,7 +1101,7 @@ $config = [
 						'is_active' => false,
 						'elements' => [
 							'cursor-hover-effect' => [
-								'label'        => esc_html__( 'Cursor Hover Effect', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__('Cursor Hover Effect', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1114,9 +1114,9 @@ $config = [
 								'demo_url'     => '',
 								'doc_url'      => '',
 								'youtube_url'  => '',
-							],						
+							],
 							'hover-effect-image'  => [
-								'label'        => esc_html__( 'Hover Effect Image', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__('Hover Effect Image', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1131,7 +1131,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'cursor-move-effect' => [
-								'label'        => esc_html__( 'Cursor Move Effect', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__('Cursor Move Effect', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'effect'
@@ -1154,7 +1154,7 @@ $config = [
 						'is_active' => false,
 						'elements'  => [
 							'horizontal-scroll'   => [
-								'label'        => esc_html__( 'Horizontal', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__('Horizontal', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
 									'pluginId' => 'scroll-trigger'
@@ -1188,27 +1188,113 @@ $config = [
 			],
 		]
 	],
-	'integrations' => [		
+	'integrations' => [
 		'plugins' => [
-			'title'    => esc_html__( 'Plugins', 'animation-addons-for-elementor' ),
+			'title'    => esc_html__('Plugins', 'animation-addons-for-elementor'),
 			'elements' => [
 				'extension-for-animation-addons' => [
-					'label'    => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
+					'label'    => esc_html__('Extension For Animation Addon', 'animation-addons-for-elementor'),
 					'basename' => 'extension-for-animation-addons/extension-for-animation-addons.php',
 					'source'   => 'custom',
-					'is_pro'   => false,					
+					'is_pro'   => false,
 					'slug'   => '',
 					'download_url' => 'https://animation-addons.com/',
 				],
 				'animation-addon-for-elementorpro' => [
-					'label'    => esc_html__( 'Animation Addon Pro', 'animation-addons-for-elementor' ),
+					'label'    => esc_html__('Animation Addon Pro', 'animation-addons-for-elementor'),
 					'basename' => 'wcf-addons-pro/wcf-addons-pro.php',
 					'source'   => 'custom',
-					'is_pro'   => true,					
+					'is_pro'   => true,
 					'slug'   => '',
 					'download_url' => "",
 				],
 			]
+		],
+	],
+	'dashboardProWidget' => [
+		'advance-portfolio'     => [
+			'label'       => __('Advance Portfolio', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Advanced-Portfolio",
+			'demo_url'    => '',
+			'doc_url'     => '',
+			'youtube_url' => '',
+		],
+		'filterable-gallery'    => [
+			'label'       => __('Filterable Gallery', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Filterable-Gallery",
+			'demo_url'    => '',
+			'doc_url'     => '',
+			'youtube_url' => '',
+		],
+		'breadcrumbs'           => [
+			'label'       => __('Breadcrumbs', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Breadcrumbs",
+			'demo_url'    => '',
+			'doc_url'     => '',
+			'youtube_url' => '',
+		],
+		'table-of-contents'     => [
+			'label'       => __('Table Of Content', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Table-of-Contents",
+			'demo_url'    => '',
+			'doc_url'     => '',
+			'youtube_url' => '',
+		],
+		'image-accordion'       => [
+			'label'       => __('Image Accordion', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'demo_url'    => '',
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Image-Accordion",
+			'doc_url'     => '',
+			'youtube_url' => '',
+		],
+		'author-box'            => [
+			'label'       => __('Author Box', 'animation-addons-for-elementor'),
+			'is_active'   => false,
+			'location' => [
+				'cTab' => 'all'
+			],
+			'is_upcoming' => false,
+			'demo_url'    => '',
+			'is_pro'       => true,
+			'is_extension' => false,
+			'icon' => "wcf-icon-Author-Box",
+			'doc_url'     => '',
+			'youtube_url' => '',
 		],
 	]
 ];

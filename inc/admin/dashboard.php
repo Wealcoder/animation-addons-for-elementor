@@ -66,6 +66,7 @@ class WCF_Admin_Init {
 		add_action( 'admin_menu', [ $this, 'add_menu' ], 25 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
+		add_action( 'wp_ajax_save_settings_with_ajax_dashboard', [ $this, 'save_settings_dashboard' ] );
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
@@ -452,6 +453,40 @@ class WCF_Admin_Init {
 			return;
 		}
         $actives = $foundkeys = [];
+		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
+		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
+	    $settings  =  json_decode( $sanitize_data , true );	
+	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
+		// update new settings
+		if ( ! empty( $option_name ) ) {
+		
+			$updated = update_option( $option_name, $actives );
+			
+			if($option_name == 'wcf_save_widgets'){
+				$this->sync_widgets_by_element_manager();
+			}
+			$elements = get_option($option_name);
+			$return_message = [
+				'status'  => $updated,
+				'total' => is_array($elements) ? count($elements) : 0
+		  ];
+			wp_send_json( $return_message );
+		}
+		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
+	}
+
+	public function save_settings_dashboard() {
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		if ( ! isset( $_POST['fields'] ) ) {
+			return;
+		}
+		
+    $actives = $foundkeys = [];
 		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
 	    $settings  =  json_decode( $sanitize_data , true );	
