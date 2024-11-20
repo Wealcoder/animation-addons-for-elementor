@@ -47,8 +47,6 @@ const LicenseDialog = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
-
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -61,7 +59,6 @@ const LicenseDialog = () => {
         wcf_addon_sl_license_key: data.license,
         email: data.email,
         nonce: WCF_ADDONS_ADMIN.nonce,
-       
       }),
     })
       .then((response) => {
@@ -81,7 +78,8 @@ const LicenseDialog = () => {
           <span className="me-1.5 flex">
             <RiKey2Line size={20} />
           </span>
-          Activate License
+
+          {activated ? "Deactivate License" : "Activate License"}
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -167,7 +165,7 @@ const LicenseDialog = () => {
 
             <Separator className="my-6 bg-[#EAECF0]" />
             <Button type="submit" variant="pro" className="w-full">
-              Activate your licence
+              {activated ? "Deactivate your license" : "Activate your license"}
             </Button>
           </form>
         </Form>
