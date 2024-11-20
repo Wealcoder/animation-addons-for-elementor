@@ -75,7 +75,7 @@ const ComparisonTable = () => {
             {item?.helpText ? (
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger className="bg-transparent">
                     <RiInformation2Fill color="#CACFD8" size={20} />
                   </TooltipTrigger>
                   <TooltipContent>

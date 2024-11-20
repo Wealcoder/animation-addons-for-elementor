@@ -5,13 +5,11 @@ import { Separator } from "../ui/separator";
 import WidgetCard from "../shared/WidgetCard";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useWidgets } from "@/hooks/app.hooks";
 
 const AddonProWidget = () => {
   const [widgets, setWidgets] = useState(
     WCF_ADDONS_ADMIN.addons_config.dashboardProWidget
   );
-
 
   const updateActiveWidget = async (data) => {
     const result = Object.fromEntries(
@@ -25,8 +23,6 @@ const AddonProWidget = () => {
       })
     );
     setWidgets(result);
-    console.log(result);
-   
 
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -59,7 +55,7 @@ const AddonProWidget = () => {
           <RiVipCrown2Line size={20} color="#FFA132" />
           <p className="font-medium">WCF Addons Pro Widgets</p>
         </div>
-        <div>
+        {/* <div>
           <a
             href={"#"}
             aria-disabled="true"
@@ -68,11 +64,10 @@ const AddonProWidget = () => {
               "pointer-events-none opacity-50"
             )}
           >
-            {/* All Pro Widgets  */}
             Coming Soon
             <RiArrowRightUpLine size={18} className="ml-1" />
           </a>
-        </div>
+        </div> */}
       </div>
       <Separator className="mt-4 mb-5" />
       <div className="grid grid-cols-2 justify-between gap-2.5 p-3 bg-background-secondary rounded-lg">
