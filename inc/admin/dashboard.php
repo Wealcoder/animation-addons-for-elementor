@@ -63,6 +63,7 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function init() {
+	
 		add_action( 'admin_menu', [ $this, 'add_menu' ], 25 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
