@@ -249,7 +249,7 @@ class WCF_Admin_Init {
 			
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
-            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+      wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
 		    $active_widgets = self::get_widgets(); 
 		    $active_ext = self::get_extensions(); 
 	
@@ -520,10 +520,11 @@ class WCF_Admin_Init {
 				$this->sync_widgets_by_element_manager();
 			}
 			$elements = get_option($option_name);
+		
 			$return_message = [
 				'status'  => $updated,
 				'total' => is_array($elements) ? count($elements) : 0
-		  ];
+			];	
 			wp_send_json( $return_message );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );

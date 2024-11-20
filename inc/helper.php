@@ -310,7 +310,7 @@ if( !function_exists('wcf_get_search_active_keys') ) {
 	function wcf_get_search_active_keys($array, $keysToFind, &$foundKeys, &$active) {
 		foreach ($array as $key => $value) {
 			// Check if the current key is one we're looking for
-			if (in_array($key, $keysToFind) && array_key_exists('is_extension', $value)) {
+			if (in_array($key, $keysToFind) && is_array($value) && array_key_exists('is_extension', $value)) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active

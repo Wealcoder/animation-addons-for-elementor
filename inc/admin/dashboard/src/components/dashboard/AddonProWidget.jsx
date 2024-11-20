@@ -5,11 +5,14 @@ import { Separator } from "../ui/separator";
 import WidgetCard from "../shared/WidgetCard";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useActiveItem } from "@/hooks/app.hooks";
 
 const AddonProWidget = () => {
   const [widgets, setWidgets] = useState(
     WCF_ADDONS_ADMIN.addons_config.dashboardProWidget
   );
+
+  const { updateActiveWidget: proWidget } = useActiveItem();
 
   const updateActiveWidget = async (data) => {
     const result = Object.fromEntries(
@@ -42,6 +45,7 @@ const AddonProWidget = () => {
         return response.json();
       })
       .then((return_content) => {
+        proWidget(data);
         toast.success("Save Successful", {
           position: "top-right",
         });
