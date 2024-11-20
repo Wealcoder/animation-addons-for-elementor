@@ -12,7 +12,15 @@ const IntegrationTopBar = () => {
             <h2 className="text-[18px] font-medium ">Integrations</h2>
           </div>
           <div className="flex items-center">
-            <p className="text-sm text-label">10 Total Integrations</p>
+            <p className="text-sm text-label">
+              {
+                Object.keys(
+                  WCF_ADDONS_ADMIN.addons_config?.integrations?.plugins
+                    ?.elements
+                ).length
+              }{" "}
+              Total Integrations
+            </p>
           </div>
         </div>
       </div>
