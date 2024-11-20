@@ -14,10 +14,15 @@ import {
 import { Input } from "../ui/input";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 
-const WidgetTopBar = ({ filterKey, setFilterKey, searchKey, setSearchKey }) => {
+const WidgetTopBar = ({
+  filterKey,
+  setFilterKey,
+  searchKey,
+  setSearchKey,
+  widgetCount,
+}) => {
   const { allWidgets } = useWidgets();
   const { updateActiveFullWidget } = useActiveItem();
-  const widgetCount = WCF_ADDONS_ADMIN.widgets;
 
   const setCheck = (data) => {
     updateActiveFullWidget(data);

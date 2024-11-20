@@ -70,6 +70,7 @@ class WCF_Admin_Init {
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
+		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_integrations_config'], 10 );		
 		//add_action( 'init', [ $this, 'sync_widgets_by_element_manager'], 10 );		
 		add_action( 'admin_footer', [ $this, 'admin_footer' ] );
 		
@@ -162,9 +163,9 @@ class WCF_Admin_Init {
 	 */
 	public function dashboard_db_widgets_config($configs)
 	{
-		$saved_widgets = array_keys( get_option( 'wcf_save_widgets' ) );
-	
-		$widgets = $configs['widgets'];
+		$wgt           = get_option( 'wcf_save_widgets' );
+		$saved_widgets = is_array($wgt) ? array_keys( $wgt ) : [];
+		$widgets       = $configs['widgets'];
 		wcf_get_db_updated_config($widgets,$saved_widgets);	
 		$configs['widgets'] = $widgets;
 		return $configs;
@@ -175,8 +176,8 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function dashboard_db_extnsions_config($configs){
-	
-		$saved_ext = array_keys( get_option( 'wcf_save_extensions' ) );	
+		$ext        = get_option( 'wcf_save_extensions' );
+		$saved_ext  = is_array($ext) ? array_keys( $ext ) : [];
 		$extensions = $configs['extensions'];
 		wcf_get_db_updated_config($extensions,$saved_ext);	
 		$configs['extensions'] = $extensions;
@@ -246,9 +247,9 @@ class WCF_Admin_Init {
 			
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
-      wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
-		  $active_widgets = self::get_widgets(); 
-		  $active_ext = self::get_extensions(); 
+            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+		    $active_widgets = self::get_widgets(); 
+		    $active_ext = self::get_extensions(); 
 	
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
@@ -258,13 +259,42 @@ class WCF_Admin_Init {
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
 				'extensions' => ['total' => $total_extensions,'active' => is_array($active_widgets) ? count($active_ext): 0],
 				'widgets'    => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
-				'global_settings_url' => $this->get_elementor_active_edit_url()
+				'global_settings_url' => $this->get_elementor_active_edit_url(),
+				'theme_builder_url' => admin_url('edit.php?post_type=wcf-addons-template'),
 				
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
 		}
+	}
+	
+	function dashboard_integrations_config( $configs ){
+	
+		if(!isset($configs['integrations']['plugins']['elements'])){
+			return $configs;
+		}
+		
+		$action = '';
+		$data_base = '';
+		foreach($configs['integrations']['plugins']['elements'] as &$plugin){
+		
+			if ( wcf_addons_get_local_plugin_data( $plugin['basename'] ) === false ) {
+				$action = 'Download';
+				$data_base = $plugin['download_url'];
+			} else {
+				if ( is_plugin_active( $plugin['basename'] ) ) {
+					$action = 'Activated';
+				} else {
+					$action = 'Active';
+					$data_base = $plugin['basename'];
+				}
+			}
+			$plugin['action'] = $action;
+			$plugin['data_base'] = $data_base;
+		}
+		
+		return $configs;
 	}
 	
 	function add_type_to_script($tag, $handle, $source){
@@ -434,8 +464,12 @@ class WCF_Admin_Init {
 			if($option_name == 'wcf_save_widgets'){
 				$this->sync_widgets_by_element_manager();
 			}
-			
-			wp_send_json( $updated );
+			$elements = get_option($option_name);
+			$return_message = [
+				'status'  => $updated,
+				'total' => is_array($elements) ? count($elements) : 0
+		  ];
+			wp_send_json( $return_message );
 		}
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}

@@ -11,9 +11,17 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
+  const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+
   const setCheck = (value, slug) => {
-    if (value && widget?.is_pro) {
-      setOpen(value);
+    if (widget?.is_pro) {
+      if (isValid) {
+        if (updateActiveItem) {
+          updateActiveItem({ value, slug });
+        }
+      } else {
+        setOpen(value);
+      }
     } else {
       if (updateActiveItem) {
         updateActiveItem({ value, slug });

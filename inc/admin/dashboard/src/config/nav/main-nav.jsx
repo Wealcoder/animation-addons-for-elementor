@@ -2,6 +2,7 @@ import {
   RiApps2AddLine,
   RiCommandLine,
   RiLayoutGridLine,
+  RiPuzzle2Line,
   RiShareBoxLine,
   RiVipCrown2Line,
 } from "react-icons/ri";
@@ -26,6 +27,11 @@ export const MainNavData = [
     name: "Free vs Pro",
     path: "free-pro",
     icon: <RiVipCrown2Line size={20} />,
+  },
+  {
+    name: "Integrations",
+    path: "integrations",
+    icon: <RiPuzzle2Line size={20} />,
   },
   // {
   //   name: "Starter Template",

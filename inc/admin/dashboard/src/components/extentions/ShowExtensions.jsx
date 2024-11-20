@@ -18,7 +18,12 @@ import ExtensionGsapSettings from "./ExtensionGsapSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import { toast } from "sonner";
 
-const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
+const ShowExtensions = ({
+  filterKey,
+  tabParam,
+  pluginIdParam,
+  setExtensionCount,
+}) => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
   const {
@@ -85,6 +90,10 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
         return response.json();
       })
       .then((return_content) => {
+        setExtensionCount((prev) => ({
+          ...prev,
+          active: return_content.total,
+        }));
         toast.success("Save Successful", {
           position: "top-right",
         });
@@ -170,7 +179,7 @@ const ShowExtensions = ({ filterKey, tabParam, pluginIdParam }) => {
                         <>
                           <Badge
                             variant="pro"
-                            className="px-2.5 py-1.5 h-7 bg-[linear-gradient(0deg,#6A85B6_0%,#BAC8E0_100%)] mr-1"
+                            className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] mr-1"
                           >
                             COMING SOON!
                           </Badge>

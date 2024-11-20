@@ -15,6 +15,7 @@ class WCF_Custom_CSS {
 	public static function init() {
 		add_action( 'elementor/element/after_section_end', [ __CLASS__, 'register_controls' ], 10, 2 );
 		add_action( 'elementor/element/parse_css', [ __CLASS__, 'add_post_css' ], 10, 2 );
+		
 	}
 
 	/**

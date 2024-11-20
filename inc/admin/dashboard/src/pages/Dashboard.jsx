@@ -6,6 +6,7 @@ import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
 import HeroBanner from "../../public/images/hero-banner.jpg";
+import QuickAccess from "@/components/dashboard/QuickAccess";
 
 const Dashboard = () => {
   return (
@@ -19,7 +20,10 @@ const Dashboard = () => {
           Ver. 1.1
         </Badge>
       </div>
-      <div className="mt-2 grid grid-cols-3 gap-6 h-full">
+      <div className="mt-2">
+        <QuickAccess />
+      </div>
+      <div className="grid grid-cols-3 gap-6 h-full">
         <Tutorial />
         <Documentation />
       </div>
