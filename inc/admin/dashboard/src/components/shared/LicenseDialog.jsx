@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -28,7 +27,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useState } from "react";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -38,6 +36,7 @@ const FormSchema = z.object({
 });
 
 const LicenseDialog = () => {
+  const activated = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {

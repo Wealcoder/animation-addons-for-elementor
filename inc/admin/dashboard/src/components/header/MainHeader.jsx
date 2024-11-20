@@ -7,6 +7,8 @@ import GlobalSearch from "../shared/GlobalSearch";
 import LicenseDialog from "../shared/LicenseDialog";
 
 const MainHeader = ({ open, setOpen, NavigateComponent }) => {
+  // console.log(WCF_ADDONS_ADMIN.addons_config);
+  console.log(WCF_ADDONS_ADMIN.addons_config.wcf_valid);
   return (
     <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
       <div>
