@@ -71,6 +71,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
                 <div className="flex items-center">
                   <a
                     href={widget?.doc_url}
+                    target="_blank"
                     className="text-sm text-label hover:text-text"
                   >
                     Documentation
@@ -81,6 +82,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
                   />
                   <a
                     href={widget?.demo_url}
+                    target="_blank"
                     className="text-sm text-label hover:text-text"
                   >
                     Preview
