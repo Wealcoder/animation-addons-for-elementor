@@ -17,13 +17,16 @@ const ComparisonTable = () => {
         <div className="w-[464px] p-6 border-r border-border">
           <h3 className="text-lg font-medium">Features</h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Take our generous demo for a spin with up to 12 people in a group.
+            Our plugin is designed to elevate your e-commerce capabilities by
+            offering intuitive, flexible, and feature-rich tools to enhance
+            customer satisfaction and boost sales.
           </p>
         </div>
         <div className="w-[392px] p-6 border-r border-border">
           <h3 className="text-lg font-medium">Free Version</h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Take our generous demo for a spin with up to 12 people in a group.
+            Explore the core features of our plugin at no charge, and see how it
+            can help you improve your online store with ease.
           </p>
         </div>
         <div className="w-[392px] p-6">
@@ -56,7 +59,9 @@ const ComparisonTable = () => {
             Pro Version
           </h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Take our generous demo for a spin with up to 12 people in a group.
+            Unlock the full potential of our plugin with the paid version,
+            offering exclusive tools, priority updates, and dedicated customer
+            support.
           </p>
         </div>
       </div>

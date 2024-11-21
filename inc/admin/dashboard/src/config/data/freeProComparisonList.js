@@ -5,11 +5,11 @@ export const freeProComparisonList = [
     name: "Number of Widgets",
     helpText: "",
     free: {
-      text: "10+ Basic Widgets",
+      text: "40+ Widgets",
       icon: "",
     },
     pro: {
-      text: "40+ Advanced Widgets",
+      text: "62+ Widgets",
       icon: "",
     },
   },
@@ -17,7 +17,7 @@ export const freeProComparisonList = [
     name: "Template Library	",
     helpText: "",
     free: {
-      text: "Limited Templates",
+      text: "Coming Soon",
       icon: "",
     },
     pro: {
@@ -26,8 +26,20 @@ export const freeProComparisonList = [
     },
   },
   {
+    name: "Live Copy",
+    helpText: "",
+    free: {
+      text: "Coming Soon",
+      icon: "",
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
     name: "Widget Customization Options",
-    helpText: "this is help text",
+    helpText: "Customize widget as your need",
     free: {
       text: "Basic Customization",
       icon: "",
@@ -54,10 +66,10 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CrossIcon,
+      icon: CheckIcon,
     },
     pro: {
-      text: "Included with Customizations",
+      text: "",
       icon: CheckIcon,
     },
   },
@@ -65,11 +77,11 @@ export const freeProComparisonList = [
     name: "Theme Builder Compatibility	",
     helpText: "",
     free: {
-      text: "Limited Compatibility	",
+      text: "Limited Compatibility",
       icon: "",
     },
     pro: {
-      text: "Full Compatibility with Popular Themes",
+      text: "Full Compatibility with Popular Themes and Woocommerce",
       icon: "",
     },
   },
@@ -78,7 +90,7 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CrossIcon,
+      icon: CheckIcon,
     },
     pro: {
       text: "",
@@ -122,15 +134,15 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Mobile Responsiveness Options	",
+    name: "Animation Builder",
     helpText: "",
     free: {
-      text: "Basic Responsive Controls	",
-      icon: "",
+      text: "",
+      icon: CrossIcon,
     },
     pro: {
-      text: "Advanced Responsive Controls",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
   },
 ];

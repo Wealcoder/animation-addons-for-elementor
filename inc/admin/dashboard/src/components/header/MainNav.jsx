@@ -26,13 +26,11 @@ const MainNav = ({ NavigateComponent }) => {
 
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
-    const paramsToKeep = ["page"];
+    const pageQuery = url.searchParams.get("page");
 
-    url.searchParams.forEach((value, key) => {
-      if (!paramsToKeep.includes(key)) {
-        url.searchParams.delete(key);
-      }
-    });
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
