@@ -1006,6 +1006,20 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
+					'custom-fonts' => [
+							'label'        => esc_html__( 'Custom Fonts', 'animation-addons-for-elementor' ),
+							'is_pro'       => true,
+							'location' => [
+								'cTab' => 'general'
+							],
+							'is_extension' => false,
+							'is_active'    => false,
+							'is_upcoming'  => false,
+							'demo_url'     => '',
+							'icon' => "wcf-icon-Floating-Elements",
+							'doc_url'      => '',
+							'youtube_url'  => '',
+					],
 					'mega-menu' => [
 						'label'        => esc_html__('Mega Menu', 'animation-addons-for-elementor'),
 						'is_pro'       => true,
