@@ -108,7 +108,7 @@ const ShowExtensions = ({
           <TabsTrigger value={"general"}>General Extensions</TabsTrigger>
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
-          <Button variant="secondary">Reset</Button>
+          {/* <Button variant="secondary">Reset</Button> */}
           <Button onClick={() => saveExtension()}>Save Settings</Button>
         </div>
       </div>

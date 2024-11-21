@@ -25,7 +25,7 @@ const AccessData = [
   {
     title: "Pro Widget",
     subTitle: "Customize pro widgets",
-    url: "",
+    url: `${window.location.origin}/wp-admin/admin.php?page=wcf_addons_settings&tab=widgets&filter=pro`,
     icon: <RiVipCrown2Line size={22} className="text-[#FFA132]" />,
   },
   {
@@ -49,6 +49,7 @@ const AccessData = [
 ];
 
 const QuickAccess = () => {
+  console.log(window.location.origin);
   return (
     <div className="border rounded-2xl p-5">
       <div className="grid grid-cols-3">

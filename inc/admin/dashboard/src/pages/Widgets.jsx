@@ -16,6 +16,10 @@ const Widgets = () => {
     if (tabValue) {
       setSearchParam(tabValue);
     }
+    const filterValue = urlParams.get("filter");
+    if (filterValue) {
+      setFilterKey(filterValue);
+    }
   }, [urlParams]);
 
   return (

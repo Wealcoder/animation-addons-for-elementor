@@ -133,7 +133,7 @@ const ShowWidgets = ({
           ))}
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
-          <Button variant="secondary">Reset</Button>
+          {/* <Button variant="secondary">Reset</Button> */}
           <Button onClick={() => saveWidget()}>Save Settings</Button>
         </div>
       </div>
