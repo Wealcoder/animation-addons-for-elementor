@@ -111,6 +111,11 @@ final class WCF_ADDONS_Plugin {
 
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
+		add_action( 'init', array( $this, 'text_domain_init' ) );
+	}
+
+	public function text_domain_init() {
+		load_plugin_textdomain( 'animation-addons-for-elementor', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
@@ -150,7 +155,7 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function init() {
 
-		load_plugin_textdomain( 'animation-addons-for-elementor', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		
 
 		// Check if Elementor installed and activated
 		if ( ! did_action( 'elementor/loaded' ) ) {
