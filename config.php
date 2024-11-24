@@ -1040,7 +1040,7 @@ $config = [
 				'title'     => esc_html__('Gsap Extension', 'animation-addons-for-elementor'),
 				'is_active' => false,
 				'elements'  => [
-					'smooth-scroller'    => [
+					'wcf-smooth-scroller'    => [
 						'title'     => esc_html__('Smooth Scroller', 'animation-addons-for-elementor'),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => false,
@@ -1050,7 +1050,7 @@ $config = [
 								'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1065,7 +1065,7 @@ $config = [
 								'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1080,7 +1080,7 @@ $config = [
 								'label'        => esc_html__('Text Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1095,7 +1095,7 @@ $config = [
 								'label'        => esc_html__('Image Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
