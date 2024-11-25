@@ -52,12 +52,12 @@ const QuickAccess = () => {
   console.log(window.location.origin);
   return (
     <div className="border rounded-2xl p-5">
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {AccessData.map((item, i) => (
           <div
             key={`quick_access-${i}`}
             className={cn(
-              "px-4 border-r [&:nth-child(3n)]:border-r-0 border-border-secondary [&>div]:border-t [&>div]:pb-4 [&:nth-child(-n+3)>div]:pt-1 [&:nth-child(-n+3)>div]:border-t-0"
+              "px-4 border-0 md:border-r md:[&:nth-child(2n)]:border-r-0 xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0 border-border-secondary [&>div]:border-t [&>div]:pb-4 md:[&:nth-child(-n+2)>div]:pt-1 xl:[&:nth-child(-n+3)>div]:pt-1 md:[&:nth-child(-n+2)>div]:border-t-0 xl:[&:nth-child(-n+3)>div]:border-t-0"
             )}
           >
             <QuickAccessCard

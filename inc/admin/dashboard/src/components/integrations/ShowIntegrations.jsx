@@ -7,7 +7,7 @@ const ShowIntegrations = () => {
     <div>
       {Object.keys(allIntegration)?.map((plugins) => (
         <div className="bg-background-secondary p-3 rounded-lg">
-          <div className="grid grid-cols-2 gap-1 mt-1">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-1 mt-1">
             {Object.keys(allIntegration[plugins].elements)?.map(
               (content, i) => (
                 <React.Fragment key={`plugin_content-${i}`}>

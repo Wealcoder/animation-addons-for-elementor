@@ -7,6 +7,7 @@ import { Label } from "../ui/label";
 import { filterWidgets } from "@/lib/utils";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 const ShowWidgets = ({
   searchKey,
@@ -121,17 +122,21 @@ const ShowWidgets = ({
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
-        <TabsList className="gap-1 h-11">
-          <TabsTrigger key={"all-widgets_tab"} value={"all"}>
-            All Widgets
-          </TabsTrigger>
-
-          {widgetTabList?.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.title}
+        <ScrollArea className="max-w-[465px] xl:max-w-[750px] rounded-lg bg-background-secondary">
+          <TabsList className="gap-1 h-11">
+            <TabsTrigger key={"all-widgets_tab"} value={"all"}>
+              All Widgets
             </TabsTrigger>
-          ))}
-        </TabsList>
+
+            {widgetTabList?.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value}>
+                {tab.title}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
         <div className="flex gap-2.5 items-center justify-end">
           {/* <Button variant="secondary">Reset</Button> */}
           <Button onClick={() => saveWidget()}>Save Settings</Button>
@@ -162,7 +167,7 @@ const ShowWidgets = ({
                   <Label htmlFor={tab}>Enable All</Label>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-1 mt-1">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
                 {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
                   <React.Fragment key={`tab_content-${i}`}>
                     <WidgetCard
@@ -208,7 +213,7 @@ const ShowWidgets = ({
                 <Label htmlFor={tab}>Enable All</Label>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-1 mt-1">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
               {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
                 <React.Fragment key={`tab_content-${i}`}>
                   <WidgetCard
