@@ -18,16 +18,16 @@ const ExtensionGsapSettings = ({ extension, children }) => {
           variant="link"
           className={cn(
             "group disabled:opacity-100",
-            Object.keys(extension?.elements)?.length
+            Object.keys(extension?.elements)?.length && children
               ? "text-icon"
               : "text-[#CACFD8] hover:text-[#CACFD8]"
           )}
-          disabled={!Object.keys(extension?.elements)?.length}
+          disabled={!(Object.keys(extension?.elements)?.length && children)}
         >
           <RiSettings2Line
             className={cn(
               "me-1.5",
-              Object.keys(extension?.elements)?.length
+              Object.keys(extension?.elements)?.length && children
                 ? "text-icon group-hover:text-brand"
                 : "text-[#CACFD8] group-hover:text-[#CACFD8]"
             )}

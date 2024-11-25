@@ -2,19 +2,19 @@ import ScrollSmootherSettings from "@/components/extentions/settings/scrollSmoot
 
 export const ExtensionSettingConfig = [
   {
-    key: "smooth-scroller",
+    key: "wcf-smooth-scroller",
     component: <ScrollSmootherSettings />,
   },
-  {
-    key: "scroll-trigger",
-    component: <></>,
-  },
-  {
-    key: "draw-svg",
-    component: <></>,
-  },
-  {
-    key: "flip",
-    component: <></>,
-  },
+  // {
+  //   key: "scroll-trigger",
+  //   component: <></>,
+  // },
+  // {
+  //   key: "draw-svg",
+  //   component: <></>,
+  // },
+  // {
+  //   key: "flip",
+  //   component: <></>,
+  // },
 ];

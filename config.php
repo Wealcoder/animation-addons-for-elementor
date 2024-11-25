@@ -1050,7 +1050,7 @@ $config = [
 								'label'        => esc_html__('Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1065,7 +1065,7 @@ $config = [
 								'label'        => esc_html__('Pin Element', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1080,7 +1080,7 @@ $config = [
 								'label'        => esc_html__('Text Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
@@ -1095,7 +1095,7 @@ $config = [
 								'label'        => esc_html__('Image Animation', 'animation-addons-for-elementor'),
 								'location' => [
 									'cTab' => 'gsap',
-									'pluginId' => 'smooth-scroller'
+									'pluginId' => 'wcf-smooth-scroller'
 								],
 								'is_pro'       => false,
 								'is_active'    => false,
