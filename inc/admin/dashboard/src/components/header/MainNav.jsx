@@ -19,6 +19,8 @@ const MainNav = ({ NavigateComponent }) => {
     const tabValue = urlParams.get("tab");
     if (tabValue) {
       setCurrentPath(tabValue);
+    } else {
+      setCurrentPath("dashboard");
     }
   }, [urlParams]);
 

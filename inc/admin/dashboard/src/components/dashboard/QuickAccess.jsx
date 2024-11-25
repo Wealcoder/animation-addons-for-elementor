@@ -29,6 +29,12 @@ const AccessData = [
     icon: <RiVipCrown2Line size={22} className="text-[#FFA132]" />,
   },
   {
+    title: "Custom Fonts",
+    subTitle: "Customize custom fonts",
+    url: `${window.location.origin}/wp-admin/edit.php?post_type=wcf-custom-fonts`,
+    icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
+  },
+  {
     title: "Popup",
     subTitle: "Customize popups",
     url: "",
@@ -39,12 +45,6 @@ const AccessData = [
     subTitle: "Customize custom icons",
     url: "",
     icon: <RiImageCircleLine size={22} />,
-  },
-  {
-    title: "Custom Fonts",
-    subTitle: "Customize custom fonts",
-    url: "",
-    icon: <RiTextSnippet size={22} />,
   },
 ];
 
