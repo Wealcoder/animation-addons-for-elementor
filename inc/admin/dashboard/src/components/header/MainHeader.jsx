@@ -1,4 +1,5 @@
 import {
+  RiKey2Line,
   RiNotificationLine,
   RiSearchLine,
   RiVipCrown2Line,
@@ -11,9 +12,12 @@ import GlobalSearch from "../shared/GlobalSearch";
 import LicenseDialog from "../shared/LicenseDialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useActivate } from "@/hooks/app.hooks";
 
 const MainHeader = ({ open, setOpen, NavigateComponent }) => {
-  const activated = WCF_ADDONS_ADMIN.addons_config;
+  const { activated } = useActivate();
+  const [openLicense, setOpenLicense] = useState(false);
 
   const activePlugin = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
@@ -44,55 +48,69 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
       });
   };
   return (
-    <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
-      <div>
-        <ShortLogo />
-      </div>
-      <div className="flex-1">
-        <MainNav NavigateComponent={NavigateComponent} />
-      </div>
-      <div className="flex gap-2.5 max-w-[400px]">
-        <Button variant="secondary" size="icon" onClick={() => setOpen(true)}>
-          <RiSearchLine size={20} />
-        </Button>
-        <Button variant="secondary" size="icon" className="relative">
-          <Badge className="absolute top-[9px] right-2" variant="solid" />
-          <RiNotificationLine size={20} />
-        </Button>
-        {activated.integrations.plugins.elements[
-          "animation-addon-for-elementorpro"
-        ].action === "Active" ? (
-          <Button variant="pro" onClick={() => activePlugin()}>
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>
-            Active Plugin
+    <>
+      <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
+        <div>
+          <ShortLogo />
+        </div>
+        <div className="flex-1">
+          <MainNav NavigateComponent={NavigateComponent} />
+        </div>
+        <div className="flex gap-2.5 max-w-[400px]">
+          <Button variant="secondary" size="icon" onClick={() => setOpen(true)}>
+            <RiSearchLine size={20} />
           </Button>
-        ) : activated.integrations.plugins.elements[
+          <Button variant="secondary" size="icon" className="relative">
+            <Badge className="absolute top-[9px] right-2" variant="solid" />
+            <RiNotificationLine size={20} />
+          </Button>
+          {activated.integrations.plugins.elements[
             "animation-addon-for-elementorpro"
-          ].action === "Download" ? (
-          <a
-            href="https://animation-addons.com/"
-            className={cn(buttonVariants({ variant: "pro" }))}
-          >
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>
-            Get Pro Version
-          </a>
-        ) : (
-          <LicenseDialog />
-        )}
+          ].action === "Active" ? (
+            <Button variant="pro" onClick={() => activePlugin()}>
+              <span className="me-2 flex">
+                <RiVipCrown2Line size={20} />
+              </span>
+              Active Plugin
+            </Button>
+          ) : activated.integrations.plugins.elements[
+              "animation-addon-for-elementorpro"
+            ].action === "Download" ? (
+            <a
+              href="https://animation-addons.com/"
+              className={cn(buttonVariants({ variant: "pro" }))}
+            >
+              <span className="me-2 flex">
+                <RiVipCrown2Line size={20} />
+              </span>
+              Get Pro Version
+            </a>
+          ) : (
+            <Button
+              variant="pro"
+              onClick={() => {
+                setOpenLicense(true);
+              }}
+            >
+              <span className="me-1.5 flex">
+                <RiKey2Line size={20} />
+              </span>
 
-        {/* <Button variant="pro" disabled>
+              {activated?.wcf_valid ? "Deactivate License" : "Activate License"}
+            </Button>
+          )}
+
+          {/* <Button variant="pro" disabled>
           <span className="me-2 flex">
             <RiVipCrown2Line size={20} />
           </span>
           Coming Soon
         </Button> */}
+        </div>
+        <GlobalSearch open={open} setOpen={setOpen} />
       </div>
-      <GlobalSearch open={open} setOpen={setOpen} />
-    </div>
+      <LicenseDialog open={openLicense} setOpen={setOpenLicense} />
+    </>
   );
 };
 
