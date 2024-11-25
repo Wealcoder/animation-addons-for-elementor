@@ -27,7 +27,7 @@ export const useActiveItem = () => {
     updateActiveGsapExtension,
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
-    updateActiveFullExtension
+    updateActiveFullExtension,
   } = useContext(AppContext);
   return {
     updateActiveWidget,
@@ -38,6 +38,14 @@ export const useActiveItem = () => {
     updateActiveGsapExtension,
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
-    updateActiveFullExtension
+    updateActiveFullExtension,
   };
+};
+
+export const useActivate = () => {
+  const {
+    mainState: { activated },
+    setActivated,
+  } = useContext(AppContext);
+  return { activated, setActivated };
 };

@@ -16,6 +16,7 @@ import { createContext, useCallback, useReducer } from "react";
 const initialState = {
   allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
   allExtensions: WCF_ADDONS_ADMIN?.addons_config?.extensions || {},
+  activated: WCF_ADDONS_ADMIN?.addons_config || {},
 };
 
 const reducer = (state, action) => {
@@ -24,6 +25,8 @@ const reducer = (state, action) => {
       return { ...state, allWidgets: action.value };
     case "setAllExtensions":
       return { ...state, allExtensions: action.value };
+    case "setActivated":
+      return { ...state, activated: action.value };
     default:
       throw new Error();
   }
@@ -41,6 +44,13 @@ const useMainContext = (state) => {
   const setAllExtensions = useCallback((data) => {
     dispatch({
       type: "setAllExtensions",
+      value: data,
+    });
+  }, []);
+
+  const setActivated = useCallback((data) => {
+    dispatch({
+      type: "setActivated",
       value: data,
     });
   }, []);
@@ -112,6 +122,7 @@ const useMainContext = (state) => {
     mainState,
     setAllWidgets,
     setAllExtensions,
+    setActivated,
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
@@ -128,6 +139,7 @@ export const AppContext = createContext({
   mainState: initialState,
   setAllWidgets: () => {},
   setAllExtensions: () => {},
+  setActivated: () => {},
   updateActiveWidget: () => {},
 });
 

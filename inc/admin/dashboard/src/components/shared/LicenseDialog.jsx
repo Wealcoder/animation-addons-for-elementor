@@ -30,6 +30,7 @@ import {
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useActivate } from "@/hooks/app.hooks";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -38,8 +39,8 @@ const FormSchema = z.object({
   }),
 });
 
-const LicenseDialog = () => {
-  const activated = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+const LicenseDialog = ({ open, setOpen }) => {
+  const { activated, setActivated } = useActivate();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +56,7 @@ const LicenseDialog = () => {
     setLoading(true);
     setErrorMessage("");
     const body_args = {
-      action: activated
+      action: activated?.wcf_valid
         ? "wcf_addon_pro_sl_deactivate"
         : "wcf_addon_pro_sl_activate",
       wcf_addon_sl_license_key: data.license,
@@ -63,7 +64,7 @@ const LicenseDialog = () => {
       nonce: WCF_ADDONS_ADMIN.nonce,
     };
 
-    if (activated) {
+    if (activated?.wcf_valid) {
       body_args["edd_license_deactivate"] = true;
     }
 
@@ -83,11 +84,13 @@ const LicenseDialog = () => {
         if (return_content.success) {
           if (return_content?.license === "valid") {
             WCF_ADDONS_ADMIN.addons_config.wcf_valid = true;
+            setActivated(WCF_ADDONS_ADMIN.addons_config);
             toast.success("Activate Successful", {
               position: "top-right",
             });
           } else {
             WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
+            setActivated(WCF_ADDONS_ADMIN.addons_config);
             toast.success("Deactivate Successful", {
               position: "top-right",
             });
@@ -100,16 +103,7 @@ const LicenseDialog = () => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="pro">
-          <span className="me-1.5 flex">
-            <RiKey2Line size={20} />
-          </span>
-
-          {activated ? "Deactivate License" : "Activate License"}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
         className="w-[498px] max-w-[498px] rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4 p-6 gap-0"
@@ -204,7 +198,9 @@ const LicenseDialog = () => {
             <Separator className="my-6 bg-[#EAECF0]" />
             <Button type="submit" variant="pro" className="w-full gap-2">
               {loading ? <Loader2 className="animate-spin" /> : ""}
-              {activated ? "Deactivate your license" : "Activate your license"}
+              {activated?.wcf_valid
+                ? "Deactivate your license"
+                : "Activate your license"}
             </Button>
           </form>
         </Form>
