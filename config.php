@@ -1196,7 +1196,25 @@ $config = [
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => false,
 						'is_active' => false,
-						'elements'  => []
+						'elements'  => [
+							'portfolio-filter' => [
+								'label'        => esc_html__('Portfolio Filter', 'animation-addons-for-elementor'),
+								'location' => [
+									'cTab' => 'gsap',
+									'pluginId' => 'flip'
+								],
+								'is_pro'       => false,
+								'is_active'    => false,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'icon' => "wcf-icon-Floating-Elements",
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
+
+
+						]
 					],
 					'gsap-builder'    => [
 						'title'     => esc_html__('Builder', 'animation-addons-for-elementor'),
