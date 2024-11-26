@@ -1204,7 +1204,7 @@ $config = [
 									'pluginId' => 'flip'
 								],
 								'is_pro'       => false,
-								'is_active'    => false,
+								'is_active'    => true,
 								'is_extension' => true,
 								'is_upcoming'  => false,
 								'icon' => "wcf-icon-Floating-Elements",
