@@ -221,7 +221,7 @@ const ShowExtensions = ({
                   </div>
                 </div>
                 <AccordionContent>
-                  <div className="grid grid-cols-3 gap-1 mt-1 p-[2px]">
+                  <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1 p-[2px]">
                     {Object.keys(
                       filteredGsapExtensions?.elements[extension]?.elements
                     )?.length ? (
@@ -295,7 +295,7 @@ const ShowExtensions = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-1 mt-1">
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
             {Object.keys(filteredGeneralExtensions?.elements)?.map(
               (content, i) => (
                 <React.Fragment key={`tab_content-${i}`}>

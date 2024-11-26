@@ -28,7 +28,7 @@ const WidgetTopBar = ({
     updateActiveFullWidget(data);
   };
   return (
-    <div className="grid grid-cols-2 gap-11 justify-between items-center">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
         <div className="border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
           <RiCommandLine size={24} color="#FC6848" />
@@ -48,7 +48,7 @@ const WidgetTopBar = ({
           </div>
         </div>
       </div>
-      <div className="flex justify-end items-center">
+      <div className="flex justify-between xl:justify-end items-center">
         <div className="flex items-center space-x-2">
           <Switch
             id="global-enable-all"

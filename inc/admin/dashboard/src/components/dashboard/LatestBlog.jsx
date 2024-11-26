@@ -36,7 +36,7 @@ const LatestBlog = () => {
         </div>
       </div>
       <Separator className="mt-4 mb-5" />
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         {blogs?.map((blog, i) => (
           <div key={`latest_blog-${i}`} className="group">
             <div className="overflow-hidden h-[170px] rounded-lg">

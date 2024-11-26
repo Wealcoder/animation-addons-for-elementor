@@ -23,11 +23,11 @@ const Dashboard = () => {
       <div className="mt-2">
         <QuickAccess />
       </div>
-      <div className="grid grid-cols-3 gap-6 h-full">
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 h-full">
         <Tutorial />
         <Documentation />
       </div>
-      <div className="grid grid-cols-3 gap-6 h-full">
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 h-full">
         <AddonProWidget />
         <RecoPlugins />
       </div>
