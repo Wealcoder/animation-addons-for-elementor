@@ -1203,9 +1203,9 @@ $config = [
 									'cTab' => 'gsap',
 									'pluginId' => 'flip'
 								],
-								'is_pro'       => true,
+								'is_pro'       => false,
 								'is_active'    => false,
-								'is_extension' => false,
+								'is_extension' => true,
 								'is_upcoming'  => false,
 								'icon' => "wcf-icon-Floating-Elements",
 								'demo_url'     => '',
