@@ -13,6 +13,7 @@
  *
  * Elementor tested up to: 3.24.7
  * Elementor Pro tested up to: 3.19.0
+ * Requires Plugins:  elementor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
