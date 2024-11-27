@@ -17,6 +17,14 @@ export const debounceFn = (mainFunction, delay = 300) => {
   };
 };
 
+export const deviceMediaMatch = () => {
+  if (window.matchMedia("(min-width: 1440px)").matches) {
+    return 3;
+  } else {
+    return 2;
+  }
+};
+
 export const generateSearchContent = (
   fullContent = [],
   categoryKey,

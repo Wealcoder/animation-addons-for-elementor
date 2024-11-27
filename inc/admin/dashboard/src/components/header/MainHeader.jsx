@@ -64,7 +64,9 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
           <Badge className="absolute top-[9px] right-2" variant="solid" />
           <RiNotificationLine size={20} />
         </Button>
-        <MobileNav NavigateComponent={NavigateComponent} />
+        <div className="block xl:hidden">
+          <MobileNav NavigateComponent={NavigateComponent} />
+        </div>
         {activated.integrations.plugins.elements[
           "animation-addon-for-elementorpro"
         ].action === "Active" ? (
