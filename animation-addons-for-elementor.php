@@ -19,6 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
+if ( ! defined( 'WCF_ADDONS_DASHBOARD_V2' ) ) {
+	define( 'WCF_ADDONS_DASHBOARD_V2', true);
+}
+
 if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.

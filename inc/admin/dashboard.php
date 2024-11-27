@@ -74,7 +74,7 @@ class WCF_Admin_Init {
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_integrations_config'], 10 );		
-		//add_action( 'init', [ $this, 'sync_widgets_by_element_manager'], 10 );		
+		
 		add_action( 'admin_footer', [ $this, 'admin_footer' ] );
 		
 	}
@@ -454,19 +454,24 @@ class WCF_Admin_Init {
 		if ( ! isset( $_POST['fields'] ) ) {
 			return;
 		}
-        $actives = $foundkeys = [];
-		$option_name = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
+		
+		$actives       = $foundkeys = [];
+		$option_name   = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
-	    $settings  =  json_decode( $sanitize_data , true );	
+		$settings      = json_decode( $sanitize_data , true );
 	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
 	    
 		// update new settings
-		if ( ! empty( $option_name ) ) {
+		if ( ! empty( $option_name ) )
+		{
 		
 			$updated = update_option( $option_name, $actives );
 			
 			if($option_name == 'wcf_save_widgets'){
 				$this->sync_widgets_by_element_manager();
+				update_option('wcf_widget_dashboardv2', true);
+			}else{
+				update_option('wcf_extension_dashboardv2', true);
 			}
 			$elements = get_option($option_name);
 			$return_message = [
@@ -476,6 +481,7 @@ class WCF_Admin_Init {
 		  ];
 			wp_send_json( $return_message );
 		}
+		
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 
