@@ -3,11 +3,29 @@ import { RiArrowRightLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
 
 const QuickAccessCard = ({ item, className }) => {
+  const generalExtension =
+    WCF_ADDONS_ADMIN.addons_config.extensions.elements["general-extensions"]
+      .elements;
   if (!item) return;
+
+  const checkUrl = (item) => {
+    if (item?.slug && generalExtension[item.slug]) {
+      if (
+        item?.slug === "custom-fonts" &&
+        !generalExtension[item.slug].is_active
+      ) {
+        return `${window.location.origin}/wp-admin/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-fonts`;
+      } else {
+        return item.url;
+      }
+    } else {
+      return item.url;
+    }
+  };
   return (
     <div className={cn("group bg-background box-border", className)}>
       <a
-        href={item.url}
+        href={checkUrl(item)}
         aria-disabled={item.url ? false : true}
         className={cn(item.url ? "" : "pointer-events-none")}
       >
