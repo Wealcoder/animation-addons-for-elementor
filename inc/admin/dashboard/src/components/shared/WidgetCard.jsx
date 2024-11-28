@@ -4,14 +4,20 @@ import { Switch } from "../ui/switch";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
+import ExtensionMissingDialog from "./ExtensionMissingDialog";
 
 const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
   const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+  const extensionAction =
+    WCF_ADDONS_ADMIN?.addons_config?.integrations?.plugins?.elements[
+      "extension-for-animation-addons"
+    ]?.action;
 
   const setCheck = (value, slug) => {
     if (widget?.is_pro) {
@@ -21,6 +27,14 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
         }
       } else {
         setOpen(value);
+      }
+    } else if (widget?.is_extension) {
+      if (extensionAction === "Activated") {
+        if (updateActiveItem) {
+          updateActiveItem({ value, slug });
+        }
+      } else {
+        setOpen2(true);
       }
     } else {
       if (updateActiveItem) {
@@ -102,6 +116,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
         )}
       </div>
       <ProConfirmDialog open={open} setOpen={setOpen} />
+      <ExtensionMissingDialog open={open2} setOpen={setOpen2} />
     </>
   );
 };

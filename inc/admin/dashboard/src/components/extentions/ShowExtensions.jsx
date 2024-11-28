@@ -12,7 +12,11 @@ import {
 } from "@/components/ui/accordion2";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { filterGeneralExtension, filterGsapExtension } from "@/lib/utils";
+import {
+  deviceMediaMatch,
+  filterGeneralExtension,
+  filterGsapExtension,
+} from "@/lib/utils";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 import ExtensionGsapSettings from "./ExtensionGsapSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
@@ -243,18 +247,18 @@ const ShowExtensions = ({
                         ))}
                         {Array.from({
                           length:
-                            3 -
+                            deviceMediaMatch() -
                             (Object.keys(
                               filteredGsapExtensions?.elements[extension]
                                 ?.elements
                             )?.length %
-                              3 ===
+                              deviceMediaMatch() ===
                             0
-                              ? 3
+                              ? deviceMediaMatch()
                               : Object.keys(
                                   filteredGsapExtensions?.elements[extension]
                                     ?.elements
-                                )?.length % 3),
+                                )?.length % deviceMediaMatch()),
                         }).map((_, index) => (
                           <WidgetCard
                             key={`tab_content_empty-${index}`}
@@ -310,13 +314,13 @@ const ShowExtensions = ({
             )}
             {Array.from({
               length:
-                3 -
+                deviceMediaMatch() -
                 (Object.keys(filteredGeneralExtensions?.elements)?.length %
-                  3 ===
+                  deviceMediaMatch() ===
                 0
-                  ? 3
+                  ? deviceMediaMatch()
                   : Object.keys(filteredGeneralExtensions?.elements)?.length %
-                    3),
+                    deviceMediaMatch()),
             }).map((_, index) => (
               <WidgetCard
                 key={`tab_content_empty-${index}`}

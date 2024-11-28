@@ -4,7 +4,7 @@ import WidgetCard from "../shared/WidgetCard";
 import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { filterWidgets } from "@/lib/utils";
+import { deviceMediaMatch, filterWidgets } from "@/lib/utils";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
@@ -119,6 +119,8 @@ const ShowWidgets = ({
       });
   };
 
+  
+
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
@@ -180,10 +182,13 @@ const ShowWidgets = ({
                 ))}
                 {Array.from({
                   length:
-                    3 -
-                    (Object.keys(catWidgets[tab].elements)?.length % 3 === 0
-                      ? 3
-                      : Object.keys(catWidgets[tab].elements)?.length % 3),
+                    deviceMediaMatch() -
+                    (Object.keys(catWidgets[tab].elements)?.length %
+                      deviceMediaMatch() ===
+                    0
+                      ? deviceMediaMatch()
+                      : Object.keys(catWidgets[tab].elements)?.length %
+                        deviceMediaMatch()),
                 }).map((_, index) => (
                   <WidgetCard
                     key={`tab_content_empty-${index}`}
@@ -226,10 +231,13 @@ const ShowWidgets = ({
               ))}
               {Array.from({
                 length:
-                  3 -
-                  (Object.keys(catWidgets[tab].elements)?.length % 3 === 0
-                    ? 3
-                    : Object.keys(catWidgets[tab].elements)?.length % 3),
+                  deviceMediaMatch() -
+                  (Object.keys(catWidgets[tab].elements)?.length %
+                    deviceMediaMatch() ===
+                  0
+                    ? deviceMediaMatch()
+                    : Object.keys(catWidgets[tab].elements)?.length %
+                      deviceMediaMatch()),
               }).map((_, index) => (
                 <WidgetCard
                   key={`tab_content_empty-${index}`}

@@ -30,6 +30,7 @@ const AccessData = [
   },
   {
     title: "Custom Fonts",
+    slug: "custom-fonts",
     subTitle: "Customize custom fonts",
     url: `${window.location.origin}/wp-admin/edit.php?post_type=wcf-custom-fonts`,
     icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
@@ -49,7 +50,6 @@ const AccessData = [
 ];
 
 const QuickAccess = () => {
-  console.log(window.location.origin);
   return (
     <div className="border rounded-2xl p-5">
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">

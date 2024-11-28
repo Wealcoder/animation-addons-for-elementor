@@ -13,11 +13,16 @@
  *
  * Elementor tested up to: 3.24.7
  * Elementor Pro tested up to: 3.19.0
+ * Requires Plugins:  elementor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
+
+if ( ! defined( 'WCF_ADDONS_DASHBOARD_V2' ) ) {
+	define( 'WCF_ADDONS_DASHBOARD_V2', true);
+}
 
 if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
