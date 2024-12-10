@@ -22,20 +22,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 	function wcf_addons_get_saved_template_list( $args = null ) {
-		$post_list = [];
-
-		$defaults = array(
-			'post_type'   => 'elementor_library',
-			'post_status' => 'publish',
-			'numberposts' => - 1,
-		);
-
-		$parsed_args              = wp_parse_args( $args, $defaults );
-		$parsed_args['post_type'] = 'elementor_library'; //don't overwrite post type
-		$posts                    = get_posts( $parsed_args );
-		if ( $posts ) {
-			foreach ( $posts as $post ) {
-				$post_list[ $post->ID ] = esc_html( $post->post_title );
+	
+		$post_list = [];		
+		$user = wp_get_current_user();
+		$allowed_roles = array( 'editor', 'administrator', 'author' );
+		
+		if ( array_intersect( $allowed_roles, $user->roles ) ) {
+		
+			$defaults = array(
+				'post_type'   => 'elementor_library',
+				'post_status' => 'publish',
+				'numberposts' => - 1,
+			);
+	
+			$parsed_args              = wp_parse_args( $args, $defaults );
+			$parsed_args['post_type'] = 'elementor_library'; //don't overwrite post type
+			$posts                    = get_posts( $parsed_args );
+			if ( $posts ) {
+				foreach ( $posts as $post ) {
+					$post_list[ $post->ID ] = esc_html( $post->post_title );
+				}
 			}
 		}
 

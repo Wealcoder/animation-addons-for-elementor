@@ -761,8 +761,10 @@ class Tabs extends Widget_Base {
 							if ( 'content' === $item['tabs_content_type'] ) {
 								$this->print_text_editor( $item['tab_content'] );
 							} else {
-								if ( ! empty( $item['elementor_templates'] ) ) {
-									echo Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								if ( ! empty( $item['elementor_templates'] )) {									
+									if('publish' === get_post_status( $item['elementor_templates'] )){
+										echo Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									}
 								}
 							}
 							?>

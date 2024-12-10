@@ -507,7 +507,9 @@ class Content_Slider extends Widget_Base {
 		        $this->print_text_editor( $item['slide_content'] );
 	        } else {
 		        if ( ! empty( $item['elementor_templates'] ) ) {
-			        echo Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					if('publish' === get_post_status( $item['elementor_templates'] )){
+			            echo Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		            }
 		        }
 	        }
 	        ?>
