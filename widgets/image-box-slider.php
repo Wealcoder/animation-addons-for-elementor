@@ -104,7 +104,7 @@ class Image_Box_Slider extends Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return [ 'wcf--image-box', 'wcf--button', ];
+		return ['swiper', 'wcf--image-box', 'wcf--button', ];
 	}
 
 	/**
