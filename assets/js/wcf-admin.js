@@ -322,7 +322,6 @@
     },
     add_tab_args: function add_tab_args() {
       var url = $('#toplevel_page_wcf_addons_page > a').attr('href');
-      console.log(url);
     }
   };
   WCFAdmin.init();
