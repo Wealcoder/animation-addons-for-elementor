@@ -105,7 +105,7 @@ class Brand_Slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_style_depends() {
-		return [ 'wcf--brand-slider' ];
+		return [ 'swiper', 'wcf--brand-slider' ];
 	}
 
 	/**

@@ -102,6 +102,7 @@ class Testimonial extends Widget_Base {
 	 */
 	public function get_style_depends() {
 		return array(
+			'swiper',
 			'wcf--testimonial',
 		);
 	}
@@ -1150,12 +1151,10 @@ class Testimonial extends Widget_Base {
 			]
 		);
 
-		$swiper_class = Plugin::$instance->experiments->is_feature_active( 'e_swiper_latest' ) ? 'swiper' : 'swiper-container';
-
 		$this->add_render_attribute(
 			'carousel-wrapper',
 			[
-				'class' => 'wcf__slider ' . $swiper_class,
+				'class' => 'wcf__slider swiper',
 				'dir'   => $settings['direction'],
 				'style' => 'position: static',
 			]
