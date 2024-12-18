@@ -22,7 +22,9 @@ Class WCfAddon_Extension_Free{
 		$this->version       = 1.2;
 		$this->cache_key     = 'wcf_addon_free_ma_upd';
 		$this->cache_allowed = true;		
-	
+		if(defined('WCF_ADDONS_EX_VERSION')){
+			$this->version = WCF_ADDONS_EX_VERSION; 
+	    }
         add_filter( 'plugins_api', [ $this, 'info' ], 20, 3 );
         add_filter( 'site_transient_update_plugins', [ $this, 'update' ] );
         add_action( 'upgrader_process_complete', [ $this, 'purge' ], 10, 2 );	
@@ -172,7 +174,11 @@ Class WCfAddon_Extension_Pro{
 		$this->version       = 1.2;
 		$this->cache_key     = 'wcf_addon_pro_ma_upd';
 		$this->cache_allowed = true;		
-	
+	    
+	    if(defined('WCF_ADDONS_PRO_VERSION')){
+			$this->version = WCF_ADDONS_PRO_VERSION; 
+	    }
+        
         add_filter( 'plugins_api', [ $this, 'info' ], 20, 3 );
         add_filter( 'site_transient_update_plugins', [ $this, 'update' ] );
         add_action( 'upgrader_process_complete', [ $this, 'purge' ], 10, 2 );	
