@@ -11,9 +11,8 @@
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages
  *
- * Elementor tested up to: 3.24.7
+ * Elementor tested up to: 3.26.0
  * Elementor Pro tested up to: 3.19.0
- * Requires Plugins:  elementor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -85,7 +84,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '2.0.0';
 
 	/**
 	 * Minimum Elementor Version
@@ -113,10 +112,12 @@ final class WCF_ADDONS_Plugin {
 
 		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
 		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
-
+		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
+		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
 		add_action( 'init', array( $this, 'text_domain_init' ) );
+		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );
 	}
 
 	public function text_domain_init() {
@@ -160,12 +161,8 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function init() {
 
-		
-
 		// Check if Elementor installed and activated
-		if ( ! did_action( 'elementor/loaded' ) ) {
-			add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );
-
+		if ( ! did_action( 'elementor/loaded' ) ) {			
 			return;
 		}
 
@@ -213,19 +210,102 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_missing_main_plugin() {
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
+	     
+		if ( !is_plugin_active('elementor/elementor.php') ) {
+			echo '<div class="notice notice-error" id="elementor-install-notice">';
+			echo '<p><strong>Animation Addons for Elementor</strong> requires Elementor plugin to be installed and activated.</p>';
+			echo '<p><button id="wcf-install-elementor" class="button button-primary">Install and Activate Elementor</button></p>';
+			echo '</div>';
 		}
-
-		$message = sprintf(
-		/* translators: 1: Plugin name 2: Elementor */
-			esc_html__( '"%1$s" requires "%2$s" to be installed and activated.', 'animation-addons-for-elementor' ),
-			'<strong>' . esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
-			'<strong>' . esc_html__( 'Elementor', 'animation-addons-for-elementor' ) . '</strong>'
-		);
-
-		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
 	}
+	
+	function enqueue_elementor_install_script() {
+		// Check if the plugin is not active
+		if ( !is_plugin_active('elementor/elementor.php') ) {
+			wp_enqueue_script(
+				'wcf-install-elementor-script',
+				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js', // Replace with your JS file path
+				['jquery'], // Dependencies
+				'1.0', // Version
+				true // Load in footer
+			);
+	
+			// Localize script to pass AJAX data
+			wp_localize_script('wcf-install-elementor-script', 'wcfelementorAjax', [
+				'ajax_url'    => admin_url('admin-ajax.php'),
+				'nonce'       => wp_create_nonce('wcfinstall_elementor_nonce'),
+			]);
+		}
+	}
+	
+	function install_elementor_plugin_handler() {
+		// Verify the AJAX nonce for security
+		check_ajax_referer('wcfinstall_elementor_nonce', '_ajax_nonce');
+	
+		// Include required WordPress files
+		if (!class_exists('Plugin_Upgrader')) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		}
+		if (!class_exists('WP_Ajax_Upgrader_Skin')) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-ajax-upgrader-skin.php';
+		}
+		if (!function_exists('plugins_api')) {
+			require_once ABSPATH . 'wp-admin/includes/plugin-install.php'; // Include the plugins_api function
+		}
+	
+		$plugin_slug = 'elementor';
+		$plugin_file = 'elementor/elementor.php';
+	
+		// Check if the plugin is already active
+		if (is_plugin_active($plugin_file)) {
+			wp_send_json_success(['message' => esc_html__('Plugin is already active.', 'animation-addons-for-elementor')]);
+		}
+	
+		// Fetch plugin information dynamically using the WordPress Plugin API
+		$api = plugins_api('plugin_information', [
+			'slug'   => $plugin_slug,
+			'fields' => [
+				'sections' => false,
+			],
+		]);
+	
+		if (is_wp_error($api)) {
+			wp_send_json_error(['message' => esc_html__('Failed to retrieve plugin information.', 'animation-addons-for-elementor')]);
+		}
+	
+		// Get the download URL for the plugin
+		$download_url = $api->download_link;
+	
+		if (empty($download_url)) {
+			wp_send_json_error(['message' => esc_html__('Failed to retrieve plugin download URL.', 'animation-addons-for-elementor')]);
+		}
+	
+		// Install the plugin using the retrieved download URL
+		$upgrader = new Plugin_Upgrader(new WP_Ajax_Upgrader_Skin());
+		$installed = $upgrader->install($download_url);
+	
+		if (is_wp_error($installed)) {
+			error_log('Plugin installation error: ' . $installed->get_error_message());
+			wp_send_json_error(['message' => $installed->get_error_message()]);
+		}
+	
+		// Activate the plugin if installed successfully
+		if (file_exists(WP_PLUGIN_DIR . '/' . $plugin_file)) {
+			$activated = activate_plugin($plugin_file);
+	
+			if (is_wp_error($activated)) {
+				error_log('Plugin activation error: ' . $activated->get_error_message());
+				wp_send_json_error(['message' => $activated->get_error_message()]);
+			}
+	
+			wp_send_json_success(['message' => esc_html__('Elementor has been successfully installed and activated.', 'animation-addons-for-elementor')]);
+		}
+	
+		// If the plugin file is not found, send an error
+		wp_send_json_error(['message' => esc_html__('Plugin installation failed.', 'animation-addons-for-elementor')]);
+	}
+	
+	
 
 	/**
 	 * Admin notice
