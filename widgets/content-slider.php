@@ -95,6 +95,10 @@ class Content_Slider extends Widget_Base {
 	public function get_script_depends() {
 		return [ 'swiper', 'wcf--slider'];
 	}
+	
+	public function get_style_depends() {
+		return [ 'swiper'];
+	}
 
 	/**
 	 * Register tabs widget controls.

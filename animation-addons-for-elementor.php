@@ -92,7 +92,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string Minimum Elementor version required to run the plugin.
 	 */
-	const MINIMUM_ELEMENTOR_VERSION = '3.0.0';
+	const MINIMUM_ELEMENTOR_VERSION = '3.25.0';
 
 	/**
 	 * Minimum PHP Version
@@ -186,7 +186,7 @@ final class WCF_ADDONS_Plugin {
 				// update plugin version
 				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
 			}
-
+		
 			//redirect addons setup page
 			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) ) {
 				update_option( 'wcf_addons_setup_wizard', 'init' );
