@@ -17,11 +17,14 @@ const ScrollSmootherSettings = () => {
   const form = useForm({
     defaultValues: {
       smooth: WCF_ADDONS_ADMIN?.smoothScroller?.smooth || 1.35,
-      mobile: WCF_ADDONS_ADMIN?.smoothScroller?.mobile || false,
+      mobile:
+        (WCF_ADDONS_ADMIN?.smoothScroller?.mobile === "true" ? true : false) ||
+        false,
     },
   });
 
   async function onSubmit(data) {
+    console.log(data);
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
