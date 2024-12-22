@@ -16,14 +16,12 @@ import { DialogClose } from "@/components/ui/dialog";
 const ScrollSmootherSettings = () => {
   const form = useForm({
     defaultValues: {
-      smooth: WCF_ADDONS_ADMIN.smoothScroller.smooth || 1.35,
-      mobile: WCF_ADDONS_ADMIN.smoothScroller.mobile || false,
+      smooth: WCF_ADDONS_ADMIN?.smoothScroller?.smooth || 1.35,
+      mobile: WCF_ADDONS_ADMIN?.smoothScroller?.mobile || false,
     },
   });
-  console.log(WCF_ADDONS_ADMIN.smoothScroller);
 
   async function onSubmit(data) {
-    console.log(data);
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -43,7 +41,6 @@ const ScrollSmootherSettings = () => {
       })
       .then((return_content) => {
         WCF_ADDONS_ADMIN.smoothScroller = JSON.parse(return_content);
-        console.log(return_content);
       });
   }
 
