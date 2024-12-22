@@ -24,7 +24,6 @@ const ScrollSmootherSettings = () => {
   });
 
   async function onSubmit(data) {
-    console.log(data);
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
