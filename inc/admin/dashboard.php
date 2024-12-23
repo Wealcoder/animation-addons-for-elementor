@@ -264,6 +264,7 @@ class WCF_Admin_Init {
 				'widgets'    => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'global_settings_url' => $this->get_elementor_active_edit_url(),
 				'theme_builder_url' => admin_url('edit.php?post_type=wcf-addons-template'),
+				'version' => WCF_ADDONS_VERSION
 				
 			];
 			

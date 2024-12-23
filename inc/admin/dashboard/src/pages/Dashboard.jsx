@@ -17,7 +17,7 @@ const Dashboard = () => {
           className="absolute bottom-[34px] right-[25px]"
           variant="version"
         >
-          Ver. 1.1
+          Ver. {WCF_ADDONS_ADMIN?.version}
         </Badge>
       </div>
       <div className="mt-2">
