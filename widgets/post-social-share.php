@@ -848,16 +848,16 @@ class Post_Social_Share extends Widget_Base {
 		$this->start_controls_section(
 			'section_svg_style',
 			[
-				'label' => esc_html__( 'Svg', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'icon_svg_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
-				'type'       => \Elementor\Controls_Manager::SLIDER,
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'range'      => [
 					'px' => [
@@ -867,31 +867,11 @@ class Post_Social_Share extends Widget_Base {
 					]
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .wcf-social-icn svg' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf-social-icn' => 'font-size: {{SIZE}}{{UNIT}};',
 				],
 				'default'    => [
 					'unit' => 'px',
-					'size' => 14,
-				],
-			]
-		);
-
-		$this->add_control(
-			'icon_svg_height',
-			[
-				'label'      => esc_html__( 'height', 'animation-addons-for-elementor' ),
-				'type'       => \Elementor\Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem' ],
-				'range'      => [
-					'px' => [
-						'min'  => 0,
-						'max'  => 200,
-						'step' => 5,
-					]
-				],
-
-				'selectors' => [
-					'{{WRAPPER}} .wcf-social-icn svg' => 'height: {{SIZE}}{{UNIT}};',
+					'size' => 16,
 				],
 			]
 		);
