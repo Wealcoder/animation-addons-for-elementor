@@ -30,8 +30,6 @@ const WizardLayout = () => {
     }
   };
 
-  console.log("first");
-
   return (
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
