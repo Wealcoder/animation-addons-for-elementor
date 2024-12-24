@@ -47,7 +47,7 @@ class WCF_Setup_Wizard_Init {
 	 * @return [void]
 	 */
 	public function init() {
-		add_action( 'admin_menu', [ $this, 'add_menu' ], 25 );
+		add_action( 'admin_menu', [ $this, 'add_menu' ], 60 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_setup_wizard_settings', [ $this, 'save_settings' ] );
 	}
@@ -57,14 +57,13 @@ class WCF_Setup_Wizard_Init {
 	 */
 	public function add_menu() {
 		add_submenu_page(
-			self::MENU_PAGE_SLUG,
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
-			esc_html__( 'WCF Addons', 'animation-addons-for-elementor' ),
+			'wcf_addons_settings',
+			esc_html__( 'Wizard', 'animation-addons-for-elementor' ),
+			esc_html__( 'Wizard', 'animation-addons-for-elementor' ),
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			[ $this, 'render_wizard' ]
 		);
-
 	}
 
 	/**
@@ -78,10 +77,12 @@ class WCF_Setup_Wizard_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_setup_page' ) {
 
 			// CSS
-			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
+			//  wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
+			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.css' );
 
 			// JS
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			//  wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.js', array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), WCF_ADDONS_VERSION, true );
 
 			$localize_data = [
 				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
@@ -287,73 +288,8 @@ class WCF_Setup_Wizard_Init {
 	 */
 	public function render_wizard() {
 		?>
-        <div class="wrap wcf-admin-wrapper">
-            <div class="wizard-form">
-				<?php
-				$tabs = $this->get_settings_tab();
-				//svg allowed
-				$kses_defaults = wp_kses_allowed_html( 'post' );
-				$svg_args      = array(
-					'svg'   => array(
-						'class'           => true,
-						'aria-hidden'     => true,
-						'aria-labelledby' => true,
-						'role'            => true,
-						'xmlns'           => true,
-						'width'           => true,
-						'height'          => true,
-						'viewbox'         => true // <= Must be lower case!
-					),
-					'g'     => array( 'fill' => true ),
-					'title' => array( 'title' => true ),
-					'path'  => array(
-						'd'    => true,
-						'fill' => true
-					)
-				);
-				$allowed_svg   = array_merge( $kses_defaults, $svg_args );
-
-				if ( ! empty( $tabs ) ) {
-					?>
-                    <div class="wizard-wrap">
-                        <div class="wizard">
-                            <div class="wizard-bar" style="--width: 0;" data-wizard-bar></div>
-                            <ul class="wizard-list">
-								<?php
-								foreach ( $tabs as $key => $el ) {
-									?>
-                                    <li class="wizard-item" data-wizard-item>
-                                        <div class="icon"><?php echo wp_kses( $el['icon'], $allowed_svg ); ?></div>
-                                        <div class="title"><?php echo esc_html( $el['title'] ); ?></div>
-                                        <div class="step-circle"></div>
-                                    </li>
-									<?php
-								}
-								?>
-                            </ul>
-                        </div>
-                    </div>
-					<?php
-					//tab content
-					foreach ( $tabs as $key => $el ) {
-						if ( isset( $el['callback'] ) ) {
-							call_user_func( [ $this, $el['callback'] ], $key, $el );
-						}
-					}
-				}
-				?>
-                <div class="wizard-buttons">
-                    <button class="wcf-admin-btn" type="button" data-btn-previous="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16.29 12">
-                            <path d="M0,6a2,2,0,0,1,.59-1.4L4.9.29A1,1,0,0,1,5.61,0a1.05,1.05,0,0,1,.71.29,1.12,1.12,0,0,1,.22.33A1,1,0,0,1,6.61,1a1.07,1.07,0,0,1-.07.39,1.21,1.21,0,0,1-.22.32L3,5H15.28a1,1,0,0,1,1,1,1,1,0,0,1-.3.71,1,1,0,0,1-.71.3H3l3.31,3.29a1,1,0,0,1,.29.7,1,1,0,0,1-.29.71,1,1,0,0,1-1.42,0L.59,7.41A2,2,0,0,1,0,6Z"/>
-                        </svg>
-						<?php esc_html_e( 'Back', 'animation-addons-for-elementor' ); ?>
-                    </button>
-                    <button type="button" class="wcf-admin-btn wcf-settings-next" data-btn-next="true">
-						<?php esc_html_e( 'Next Step', 'animation-addons-for-elementor' ); ?>
-                    </button>
-                </div>
-            </div>
+        <div class="wrap wcf-admin-wrapper" id="wcf-animation-addon-wizard">
+          
         </div>
 		<?php
 	}

@@ -534,11 +534,11 @@ class Plugin {
 
 		if ( is_admin() ) {
 
-			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || 'init' === get_option( 'wcf_addons_setup_wizard' ) ) {
-				require_once( WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php' );
-			}
+			// if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || 'init' === get_option( 'wcf_addons_setup_wizard' ) ) {
+				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
+			// }
 
-			require_once( WCF_ADDONS_PATH . 'inc/admin/dashboard.php' );
+			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
 
 		require_once( WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php' );
