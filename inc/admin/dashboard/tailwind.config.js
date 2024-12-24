@@ -66,6 +66,7 @@ module.exports = {
         border: {
           DEFAULT: "hsl(var(--gray-200))",
           secondary: "hsl(var(--gray-100))",
+          tertiary: "hsl(var(--gray-400))",
         },
       },
       boxShadow: {
