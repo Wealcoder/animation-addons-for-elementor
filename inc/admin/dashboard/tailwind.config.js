@@ -40,6 +40,7 @@ module.exports = {
           hover: "hsl(var(--brand-500))",
           secondary: "hsl(var(--gray-600))",
           "secondary-hover": "hsl(var(--gray-900))",
+          tertiary: "hsl(var(--gray-700))",
         },
         label: {
           DEFAULT: "hsl(var(--gray-500))",

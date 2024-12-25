@@ -1,4 +1,8 @@
 import GettingStartImage from "../../../public/images/wizard/getting-start-bg.png";
+import MessagesIcon from "../../../public/images/wizard/messages-icon.png";
+import SecurityIcon from "../../../public/images/wizard/security-icon.png";
+import PictureIcon from "../../../public/images/wizard/picture-icon.png";
+import CameraIcon from "../../../public/images/wizard/camera-icon.png";
 
 const WizardStart = () => {
   return (
@@ -38,8 +42,47 @@ const WizardStart = () => {
           <p className="text-lg text-text-secondary">
             Bring Your Website to Life with Powerful Animations and Effects.
           </p>
-          <div className="mt-[48px]">
-            <div></div>
+          <div className="mt-[48px] flex justify-center items-center gap-5">
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+              <img
+                src={MessagesIcon}
+                alt="Messages Icon"
+                width={54}
+                height={54}
+                className="w-[54px] h-[54px]"
+              />
+              <p className="text-text-tertiary">100+ Widgets</p>
+            </div>
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+              <img
+                src={SecurityIcon}
+                alt="Security Icon"
+                width={54}
+                height={54}
+                className="w-[54px] h-[54px]"
+              />
+              <p className="text-text-tertiary">50+ Templates</p>
+            </div>
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+              <img
+                src={PictureIcon}
+                alt="Picture Icon"
+                width={54}
+                height={54}
+                className="w-[54px] h-[54px]"
+              />
+              <p className="text-text-tertiary">30+ Extensions</p>
+            </div>
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+              <img
+                src={CameraIcon}
+                alt="Camera Icon"
+                width={54}
+                height={54}
+                className="w-[54px] h-[54px]"
+              />
+              <p className="text-text-tertiary">5K+ Installations</p>
+            </div>
           </div>
         </div>
       </div>
