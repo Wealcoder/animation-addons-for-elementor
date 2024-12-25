@@ -16,11 +16,11 @@ const WizardStart = () => {
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div
-        className="min-h-screen bg-no-repeat bg-cover "
+        className="min-h-[71vh] bg-no-repeat bg-cover "
         style={{ backgroundImage: `url(${GettingStartImage})` }}
       >
         <div className="pt-[100px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
-          <div className="bg-white rounded-full border border-border py-[5px] ps-2 pe-2.5 mx-auto max-w-[120px] flex justify-center items-center gap-1.5">
+          <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[120px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
             <span className="flex justify-center items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +51,7 @@ const WizardStart = () => {
             Bring Your Website to Life with Powerful Animations and Effects.
           </p>
           <div className="mt-[48px] flex justify-center items-center gap-5">
-            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
               <img
                 src={MessagesIcon}
                 alt="Messages Icon"
@@ -61,7 +61,7 @@ const WizardStart = () => {
               />
               <p className="text-text-tertiary">100+ Widgets</p>
             </div>
-            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
               <img
                 src={SecurityIcon}
                 alt="Security Icon"
@@ -71,7 +71,7 @@ const WizardStart = () => {
               />
               <p className="text-text-tertiary">50+ Templates</p>
             </div>
-            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
               <img
                 src={PictureIcon}
                 alt="Picture Icon"
@@ -81,7 +81,7 @@ const WizardStart = () => {
               />
               <p className="text-text-tertiary">30+ Extensions</p>
             </div>
-            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px-10px-0px-rgba(0,0,0,0.04)]">
+            <div className="bg-white rounded-xl w-[142px] pb-4 pt-1.5 flex flex-col justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
               <img
                 src={CameraIcon}
                 alt="Camera Icon"

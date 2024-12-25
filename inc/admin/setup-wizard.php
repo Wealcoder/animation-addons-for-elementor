@@ -77,16 +77,23 @@ class WCF_Setup_Wizard_Init {
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_setup_page' ) {
 
 			// CSS
-			//  wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . '/assets/css/wcf-admin.css' );
 			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.css' );
 
 			// JS
-			//  wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . '/assets/js/wcf-admin.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.js', array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), WCF_ADDONS_VERSION, true );
+
+            $widgets       = get_option( 'wcf_save_widgets' );
+			$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : [];
+			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);
+			
+			$extensions = get_option( 'wcf_save_extensions' );
+			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
+            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
 
 			$localize_data = [
 				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( 'wcf_admin_nonce' ),
+                'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL' => admin_url(),
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );

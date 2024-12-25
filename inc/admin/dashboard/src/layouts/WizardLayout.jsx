@@ -1,4 +1,7 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+import WizFooter from "@/components/wizards/WizFooter";
 import { WizHeader } from "@/components/wizards/WizHeader";
+import WizWidget from "@/pages/wizards/WizWidget";
 import { useEffect, useState, lazy, Suspense } from "react";
 
 const WizardStart = lazy(() => import("@/pages/wizards/WizardStart"));
@@ -19,6 +22,8 @@ const WizardLayout = () => {
     switch (tabKey) {
       case "getting-started":
         return <WizardStart />;
+      case "widgets":
+        return <WizWidget />;
       default:
         return <></>;
     }
@@ -34,11 +39,14 @@ const WizardLayout = () => {
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
         <WizHeader NavigateComponent={NavigateComponent} />
-        <div>
-          <Suspense fallback={<p>Loading...</p>}>
-            {showContent(tabKey)}
-          </Suspense>
+        <div className="z-10 relative">
+          <ScrollArea className="h-[69vh] w-full">
+            <Suspense fallback={<p>Loading...</p>}>
+              {showContent(tabKey)}
+            </Suspense>
+          </ScrollArea>
         </div>
+        <WizFooter />
       </div>
     </div>
   );
