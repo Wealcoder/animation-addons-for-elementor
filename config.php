@@ -425,6 +425,20 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
 					],
+					'draw-svg'  => [
+						'label'        => esc_html__( 'DrawSvg', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Animated-Text",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/draw-svg/',
+						'youtube_url'  => '',
+					],
 				]
 			],
 			'hf-elements'        => [
