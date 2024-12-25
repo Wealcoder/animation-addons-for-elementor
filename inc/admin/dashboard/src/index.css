@@ -75,7 +75,7 @@
   }
 
   p {
-    @apply text-base;
+    @apply text-sm;
   }
 
   img {
@@ -85,7 +85,6 @@
 }
 
 .wcf-anim2024-style {
-
   /* width */
   ::-webkit-scrollbar {
     width: 5px;
@@ -126,7 +125,7 @@
     url("../public/fonts/icomoon.eot?em1mj9#iefix") format("embedded-opentype"),
     url("../public/fonts/icomoon.ttf?em1mj9") format("truetype"),
     url("../public/fonts/icomoon.woff?em1mj9") format("woff");
-  
+
   font-weight: normal;
   font-style: normal;
   font-display: block;

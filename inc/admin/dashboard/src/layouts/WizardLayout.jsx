@@ -17,10 +17,10 @@ const WizardLayout = () => {
 
   const showContent = (tabKey) => {
     switch (tabKey) {
-      case "get-started":
+      case "getting-started":
         return <WizardStart />;
       default:
-        return <WizardStart />;
+        return <></>;
     }
   };
 
@@ -29,8 +29,6 @@ const WizardLayout = () => {
       setTabKey(value);
     }
   };
-
-  console.log("first");
 
   return (
     <div className="wcf-anim2024-wrapper">
