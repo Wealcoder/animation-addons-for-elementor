@@ -79,7 +79,7 @@ class Post_Social_Share extends Widget_Base {
 			'share_icon',
 			[
 				'label'   => esc_html__( 'Share Icon', 'animation-addons-for-elementor' ),
-				'type'    => \Elementor\Controls_Manager::SELECT,
+				'type'    => Controls_Manager::SELECT,
 				'default' => '',
 				'options' => [
 					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
@@ -93,7 +93,7 @@ class Post_Social_Share extends Widget_Base {
 			'share_text',
 			[
 				'label'       => esc_html__( 'Share Text', 'animation-addons-for-elementor' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
+				'type'        => Controls_Manager::TEXT,
 				'default'     => esc_html__( 'Share', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your title here', 'animation-addons-for-elementor' ),
 				'condition'   => [ 'share_icon' => [ 'yes' ] ]
@@ -104,7 +104,7 @@ class Post_Social_Share extends Widget_Base {
 			'share_icons',
 			[
 				'label'   => esc_html__( 'Share Icon', 'animation-addons-for-elementor' ),
-				'type'    => \Elementor\Controls_Manager::ICONS,
+				'type'    => Controls_Manager::ICONS,
 				'default' => [
 					'value'   => 'fa-solid fa-share-nodes',
 					'library' => 'fa-solid',
@@ -118,7 +118,7 @@ class Post_Social_Share extends Widget_Base {
 			'list_title',
 			[
 				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
+				'type'        => Controls_Manager::TEXT,
 				'default'     => esc_html__( 'Vendor Title', 'animation-addons-for-elementor' ),
 				'label_block' => true,
 			]
@@ -128,7 +128,7 @@ class Post_Social_Share extends Widget_Base {
 			'list_vendor',
 			[
 				'label'       => esc_html__( 'Vendor', 'animation-addons-for-elementor' ),
-				'type'        => \Elementor\Controls_Manager::SELECT,
+				'type'        => Controls_Manager::SELECT,
 				'default'     => '',
 				'options'     => [
 					''          => '---',
@@ -148,7 +148,7 @@ class Post_Social_Share extends Widget_Base {
 			'icon',
 			[
 				'label'   => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
-				'type'    => \Elementor\Controls_Manager::ICONS,
+				'type'    => Controls_Manager::ICONS,
 				'default' => [
 
 				]
@@ -160,7 +160,7 @@ class Post_Social_Share extends Widget_Base {
 			'list',
 			[
 				'label'       => esc_html__( 'Social Share', 'animation-addons-for-elementor' ),
-				'type'        => \Elementor\Controls_Manager::REPEATER,
+				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
 				'title_field' => '{{{ list_title }}}',
 			]
@@ -953,7 +953,8 @@ class Post_Social_Share extends Widget_Base {
             }
 
             .default-details-social-media svg {
-                min-width: 7px;
+                width: 1em;
+                height: 1em;
             }
         </style>
         <ul class="default-details-social-media">
