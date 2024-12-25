@@ -3,8 +3,16 @@ import MessagesIcon from "../../../public/images/wizard/messages-icon.png";
 import SecurityIcon from "../../../public/images/wizard/security-icon.png";
 import PictureIcon from "../../../public/images/wizard/picture-icon.png";
 import CameraIcon from "../../../public/images/wizard/camera-icon.png";
+import BasicSetting from "../../../public/images/wizard/basic-setting.png";
+import AdvanceSetting from "../../../public/images/wizard/advance-setting.png";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const WizardStart = () => {
+  const [selected, setSelected] = useState("basic");
+
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div
@@ -83,6 +91,106 @@ const WizardStart = () => {
               />
               <p className="text-text-tertiary">5K+ Installations</p>
             </div>
+          </div>
+        </div>
+        <div className="mt-[110px] rounded-3xl w-[892px] mx-auto border-[10px] border-white overflow-hidden">
+          <div className="bg-[linear-gradient(180deg,#F0F4F8_0%,#FEF3EC_100%)] p-6">
+            <h2 className="text-sm text-text-secondary text-center mt-[7px] mb-6">
+              Choose your preferred configuration
+            </h2>
+            <RadioGroup
+              value={selected}
+              onValueChange={(value) => setSelected(value)}
+              className="grid grid-cols-2 justify-between items-center gap-6"
+            >
+              <div
+                className={cn(
+                  "w-full h-full border border-border shadow-[0px_6px_13px_0px_rgba(0,0,0,0.04)] rounded-[10px]",
+                  selected === "basic" && "border-brand"
+                )}
+              >
+                <div
+                  className={cn(
+                    "h-full p-[14px] border-[6px] border-white rounded-[10px] bg-[linear-gradient(180deg,#FDF7F4_0%,#FFF_100%)] relative"
+                  )}
+                >
+                  <Label
+                    className="cursor-pointer w-full"
+                    htmlFor="wcf-basic-setting"
+                  >
+                    <div>
+                      <img
+                        src={BasicSetting}
+                        alt="Basic Setting"
+                        width={36}
+                        height={36}
+                        className="w-[36px] h-[36px] shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)] rounded-lg"
+                      />
+                      <div className="mt-4 w-[95%]">
+                        <h2 className="text-base font-medium">
+                          Basic Configuration{" "}
+                          <span className="text-label">(Recommended)</span>
+                        </h2>
+                        <p className="mt-2.5 text-text-secondary">
+                          We'll take care of the entire the configuration
+                          process for you ensuring that everything.
+                        </p>
+                      </div>
+                    </div>
+                  </Label>
+                  <div className="absolute top-[10px] right-[10px]">
+                    <RadioGroupItem
+                      value="basic"
+                      id="wcf-basic-setting"
+                      className="w-[18px] h-[18px] border-[1.8px] shadow-[0px_1.2px_2.4px_0px_rgba(10,13,20,0.03)]"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                className={cn(
+                  "w-full h-full border border-border shadow-[0px_6px_13px_0px_rgba(0,0,0,0.04)] rounded-[10px]",
+                  selected === "advance" && "border-brand"
+                )}
+              >
+                <div
+                  className={cn(
+                    "h-full p-[14px] border-[6px] border-white rounded-[10px] w-full bg-[linear-gradient(180deg,#F5F7FD_0%,#FFF_100%)] relative"
+                  )}
+                >
+                  <Label
+                    className="cursor-pointer w-full"
+                    htmlFor="wcf-advance-setting"
+                  >
+                    <div>
+                      <img
+                        src={AdvanceSetting}
+                        alt="Advance Setting"
+                        width={36}
+                        height={36}
+                        className="w-[36px] h-[36px] shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)] rounded-lg"
+                      />
+                      <div className="mt-4 w-[95%]">
+                        <h2 className="text-base font-medium">
+                          Advanced Configuration
+                        </h2>
+                        <p className="mt-2.5 text-text-secondary">
+                          We'll take care of the entire the configuration
+                          process for you ensuring that everything.
+                        </p>
+                      </div>
+                    </div>
+                  </Label>
+                  <div className="absolute top-[10px] right-[10px]">
+                    <RadioGroupItem
+                      value="advance"
+                      id="wcf-advance-setting"
+                      className="w-[18px] h-[18px] border-[1.8px] shadow-[0px_1.2px_2.4px_0px_rgba(10,13,20,0.03)]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </RadioGroup>
           </div>
         </div>
       </div>
