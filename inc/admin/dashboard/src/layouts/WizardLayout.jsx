@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import WizFooter from "@/components/wizards/WizFooter";
 import { WizHeader } from "@/components/wizards/WizHeader";
 import WizExtension from "@/pages/wizards/WizExtension";
+import WizTemplate from "@/pages/wizards/WizTemplate";
 import WizWidget from "@/pages/wizards/WizWidget";
 import { useEffect, useState, lazy, Suspense } from "react";
 
@@ -27,6 +28,8 @@ const WizardLayout = () => {
         return <WizWidget />;
       case "extensions":
         return <WizExtension />;
+      case "templates":
+        return <WizTemplate />;
       default:
         return <></>;
     }
