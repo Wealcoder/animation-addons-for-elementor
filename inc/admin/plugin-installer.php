@@ -188,9 +188,9 @@ class WCF_Plugin_Installer {
 		}
 
 		if ( $result === false ) {
-			wp_send_json_error( __( 'Plugin couldn\'t be activated.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( __( 'Plugin couldn\'t be deactivated.', 'animation-addons-for-elementor' ) );
 		}
-		wp_send_json_success( __( 'Plugin is activated successfully!', 'animation-addons-for-elementor' ) );
+		wp_send_json_success( __( 'Plugin is deactivated successfully!', 'animation-addons-for-elementor' ) );
 	}
 }
 
