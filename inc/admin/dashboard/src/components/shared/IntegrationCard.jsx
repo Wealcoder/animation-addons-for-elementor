@@ -3,6 +3,7 @@ import { Dot } from "lucide-react";
 import { Button, buttonVariants } from "../ui/button";
 import { RiCheckLine, RiDownloadLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
+import { toast } from "sonner";
 
 const IntegrationCard = ({ item, className }) => {
   const deactivate = async (item) => {
@@ -14,7 +15,7 @@ const IntegrationCard = ({ item, className }) => {
       },
 
       body: new URLSearchParams({
-        action: "ajax_deactivate_plugin",
+        action: "wcf_deactive_plugin",
         action_base: item.basename,
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
@@ -24,7 +25,7 @@ const IntegrationCard = ({ item, className }) => {
       })
       .then((return_content) => {
         if (return_content?.success) {
-          toast.success(return_content?.message, {
+          toast.success(return_content?.data, {
             position: "top-right",
           });
         }

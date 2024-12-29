@@ -181,7 +181,8 @@ class WCF_Plugin_Installer {
 		}
 
 		$basename = isset( $_POST['action_base'] ) ? sanitize_text_field( $_POST['action_base'] ) : '';
-		$result   = deactivate_plugins( $basename, true , true );
+		error_log( $basename );
+		$result   = deactivate_plugins( 'animation-addon-for-elementorpro' );
 
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( $result->get_error_message() );
