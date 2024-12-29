@@ -354,6 +354,27 @@ if(!function_exists('wcf_get_addon_active_extension_by_key')) {
 
 }
 
+if(!function_exists('wcfaddon_get_current_user_roles')) {
+	function wcfaddon_get_current_user_roles() {
+	
+		if( is_user_logged_in() ) {
+	  
+		  $user = wp_get_current_user();
+	  
+		  $roles = ( array ) $user->roles;
+	  
+		  return $roles; // This will returns an array
+	  
+		} else {
+	  
+		  return [];
+	  
+		}
+	  
+	}
+	
+}
+
 
 
 
