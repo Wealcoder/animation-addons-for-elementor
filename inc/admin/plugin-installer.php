@@ -12,6 +12,7 @@ class WCF_Plugin_Installer {
 	public function __construct() {
 		add_action( 'wp_ajax_wcf_install_plugin', [ $this, 'ajax_install_plugin' ] );
 		add_action( 'wp_ajax_wcf_active_plugin', [ $this, 'ajax_activate_plugin' ] );
+		add_action( 'wp_ajax_wcf_deactive_plugin', [ $this, 'ajax_deactivate_plugin' ] );
 	}
 
 	/**
@@ -161,6 +162,26 @@ class WCF_Plugin_Installer {
 
 		$basename = isset( $_POST['action_base'] ) ? sanitize_text_field( $_POST['action_base'] ) : '';
 		$result   = activate_plugin( $basename, '', false, true );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( $result->get_error_message() );
+		}
+
+		if ( $result === false ) {
+			wp_send_json_error( __( 'Plugin couldn\'t be activated.', 'animation-addons-for-elementor' ) );
+		}
+		wp_send_json_success( __( 'Plugin is activated successfully!', 'animation-addons-for-elementor' ) );
+	}
+	public function ajax_deactivate_plugin() {
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		//check user capabilities
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		$basename = isset( $_POST['action_base'] ) ? sanitize_text_field( $_POST['action_base'] ) : '';
+		$result   = deactivate_plugins( $basename, true , true );
 
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( $result->get_error_message() );
