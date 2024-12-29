@@ -13,6 +13,7 @@ import { MainNavData } from "@/config/nav/main-nav";
 const MobileNav = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
+  const role = WCF_ADDONS_ADMIN.user_role;
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -41,6 +42,10 @@ const MobileNav = ({ NavigateComponent }) => {
     setCurrentPath(value);
   };
 
+  function hasCommonElement(array1, array2) {
+    return array1.some((item) => array2.includes(item));
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -50,7 +55,10 @@ const MobileNav = ({ NavigateComponent }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48" align={"end"}>
         {navItems.map((item) => (
-          <DropdownMenuItem key={item.path}>
+          <DropdownMenuItem
+            key={item.path}
+            className={cn(hasCommonElement(item?.role, role) ? "" : "hidden")}
+          >
             {item.targetBlank ? (
               <a
                 href={item.path}
