@@ -6,7 +6,7 @@ const WizWidget = () => {
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
         <div
-          className="min-h-[65vh] bg-no-repeat pb-6"
+          className="min-h-[65vh] bg-no-repeat bg-contain pb-6"
           style={{ backgroundImage: `url(${WidgetTopBg})` }}
         >
           <div className="pt-[120px] max-w-[730px] mx-auto text-center flex flex-col gap-3">

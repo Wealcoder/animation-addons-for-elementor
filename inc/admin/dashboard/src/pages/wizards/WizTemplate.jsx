@@ -11,12 +11,12 @@ const WizTemplate = () => {
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
         <div
-          className="min-h-[65vh] bg-no-repeat pb-6"
+          className="min-h-[65vh] bg-no-repeat bg-contain pb-6"
           style={{ backgroundImage: `url(${TemplateTopBg})` }}
         >
-          <div className="pt-[50px] px-[60px] w-[1268px] mx-auto space-y-[22px]">
+          <div className="pt-[50px] max-w-[1268px] mx-auto space-y-[22px]">
             <div
-              className="border-[10px] border-white rounded-lg bg-no-repeat px-[80px] pt-[64px] pb-[74px]"
+              className="border-[10px] border-white rounded-lg bg-no-repeat px-[80px] mx-5 pt-[64px] pb-[74px]"
               style={{ backgroundImage: `url(${TemplateBg1})` }}
             >
               <div className="max-w-[470px] space-y-6">
@@ -127,26 +127,36 @@ const WizTemplate = () => {
               </div>
             </div>
             <div
-              className="border-[10px] border-white rounded-lg bg-no-repeat pt-[55px] pb-[50px] overflow-hidden"
-              style={{ backgroundImage: `url(${TemplateBg2})` }}
+              className="border-[10px] border-white rounded-lg bg-[#F7F9FC] overflow-hidden"
+              // style={{ backgroundImage: `url(${TemplateBg2})` }}
             >
-              <div className="grid grid-cols-2 gap-4">
-                <div className="-ml-[69px]">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-[50px] xl:px-0">
+                <div
+                  className="-ml-[69px] order-1 hidden xl:flex justify-start bg-no-repeat pt-[55px] pb-[50px] "
+                  style={{ backgroundImage: `url(${TemplateBg2})` }}
+                >
                   <img
                     src={TempImg1}
                     alt="Template"
-                    className="w-[599px] object-cover"
+                    className="w-[677px] xl:w-[599px] object-cover"
                   />
                 </div>
-                <div className="flex justify-end items-center pe-[80px]">
-                  <div className="max-w-[431px] space-y-6">
+                <div className="-mb-4  order-2 flex xl:hidden justify-center bg-no-repeat pt-[55px]">
+                  <img
+                    src={TempImg1}
+                    alt="Template"
+                    className="w-[677px] xl:w-[599px] object-cover"
+                  />
+                </div>
+                <div className="flex justify-start xl:justify-end items-center pe-[80px] order-1 xl:order-2 pt-[55px] xl:pb-[50px]">
+                  <div className="xl:max-w-[431px] space-y-6">
                     <img
                       src={TLogo2}
                       alt="TLogo"
                       className="w-[60px] h-[60px]"
                     />
-                    <h2 className="text-[40px] font-medium">
-                      Hello Animation <br /> Starter Theme.
+                    <h2 className="text-[40px] font-medium xl:max-w-[380px]">
+                      Hello Animation Starter Theme.
                     </h2>
                     <p className="text-base text-text-secondary !mt-5">
                       Hello Animation Starter Theme is a lightweight, responsive

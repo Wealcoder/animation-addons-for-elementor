@@ -6,7 +6,6 @@ import { Badge } from "../ui/badge";
 import { toast } from "sonner";
 
 const IntegrationCard = ({ item, className }) => {
-  console.log(WCF_ADDONS_ADMIN);
   const deactivate = async (item) => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -117,11 +116,11 @@ const IntegrationCard = ({ item, className }) => {
                 </Button>
               ) : (
                 <Button
-                  className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]"
+                  className="h-9 py-2 ps-[10px] pe-3 "
                   onClick={() => activePlugin()}
                 >
                   <RiCheckLine size={18} className="mr-1.5" />
-                  Deactivate
+                  Deactivated
                 </Button>
               )
             ) : item.action === "Activated" ? (
