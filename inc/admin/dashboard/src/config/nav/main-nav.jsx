@@ -11,26 +11,31 @@ export const MainNavData = [
   {
     name: "Dashboard",
     path: "dashboard",
+    role: ["administrator", "editor"],
     icon: <RiLayoutGridLine size={20} />,
   },
   {
     name: "Widgets",
     path: "widgets",
+    role: ["administrator", "editor"],
     icon: <RiCommandLine size={20} />,
   },
   {
     name: "Extensions",
     path: "extensions",
+    role: ["administrator", "editor"],
     icon: <RiApps2AddLine size={20} />,
   },
   {
     name: "Free vs Pro",
     path: "free-pro",
+    role: ["administrator"],
     icon: <RiVipCrown2Line size={20} />,
   },
   {
     name: "Integrations",
     path: "integrations",
+    role: ["administrator"],
     icon: <RiPuzzle2Line size={20} />,
   },
   // {

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 const MainNav = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
+  const role = WCF_ADDONS_ADMIN.user_role;
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -40,6 +41,10 @@ const MainNav = ({ NavigateComponent }) => {
     setCurrentPath(value);
   };
 
+  function hasCommonElement(array1, array2) {
+    return array1.some((item) => array2.includes(item));
+  }
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -49,6 +54,9 @@ const MainNav = ({ NavigateComponent }) => {
               <NavigationMenuLink
                 asChild
                 active={currentPath === item.path.split("/").pop()}
+                className={cn(
+                  hasCommonElement(item?.role, role) ? "" : "hidden"
+                )}
               >
                 <a
                   href={item.path}
@@ -68,6 +76,9 @@ const MainNav = ({ NavigateComponent }) => {
               <NavigationMenuLink
                 asChild
                 active={currentPath === item.path.split("/").pop()}
+                className={cn(
+                  hasCommonElement(item?.role, role) ? "" : "hidden"
+                )}
               >
                 <div
                   className={cn(

@@ -20,6 +20,8 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
   const { activated } = useActivate();
   const [openLicense, setOpenLicense] = useState(false);
 
+  const role = WCF_ADDONS_ADMIN.user_role;
+
   const activePlugin = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -38,7 +40,6 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
         return response.json();
       })
       .then((return_content) => {
-        console.log(return_content);
         if (return_content?.success) {
           toast.success(return_content?.message, {
             position: "top-right",
@@ -67,41 +68,42 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
         <div className="block xl:hidden">
           <MobileNav NavigateComponent={NavigateComponent} />
         </div>
-        {activated.integrations.plugins.elements[
-          "animation-addon-for-elementorpro"
-        ].action === "Active" ? (
-          <Button variant="pro" onClick={() => activePlugin()}>
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>
-            Active Plugin
-          </Button>
-        ) : activated.integrations.plugins.elements[
+        {role.includes("administrator") &&
+          (activated.integrations.plugins.elements[
             "animation-addon-for-elementorpro"
-          ].action === "Download" ? (
-          <a
-            href="https://animation-addons.com/"
-            className={cn(buttonVariants({ variant: "pro" }))}
-          >
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>
-            Get Pro Version
-          </a>
-        ) : (
-          <Button
-            variant="pro"
-            onClick={() => {
-              setOpenLicense(true);
-            }}
-          >
-            <span className="me-1.5 flex">
-              <RiKey2Line size={20} />
-            </span>
+          ].action === "Active" ? (
+            <Button variant="pro" onClick={() => activePlugin()}>
+              <span className="me-2 flex">
+                <RiVipCrown2Line size={20} />
+              </span>
+              Active Plugin
+            </Button>
+          ) : activated.integrations.plugins.elements[
+              "animation-addon-for-elementorpro"
+            ].action === "Download" ? (
+            <a
+              href="https://animation-addons.com/"
+              className={cn(buttonVariants({ variant: "pro" }))}
+            >
+              <span className="me-2 flex">
+                <RiVipCrown2Line size={20} />
+              </span>
+              Get Pro Version
+            </a>
+          ) : (
+            <Button
+              variant="pro"
+              onClick={() => {
+                setOpenLicense(true);
+              }}
+            >
+              <span className="me-1.5 flex">
+                <RiKey2Line size={20} />
+              </span>
 
-            {activated?.wcf_valid ? "Deactivate License" : "Activate License"}
-          </Button>
-        )}
+              {activated?.wcf_valid ? "Deactivate License" : "Activate License"}
+            </Button>
+          ))}
       </div>
       <GlobalSearch open={open} setOpen={setOpen} />
       <LicenseDialog open={openLicense} setOpen={setOpenLicense} />

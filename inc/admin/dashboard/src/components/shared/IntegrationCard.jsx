@@ -5,6 +5,31 @@ import { RiCheckLine, RiDownloadLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
 
 const IntegrationCard = ({ item, className }) => {
+  const deactivate = async (item) => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "ajax_deactivate_plugin",
+        action_base: item.basename,
+        nonce: WCF_ADDONS_ADMIN.nonce,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        if (return_content?.success) {
+          toast.success(return_content?.message, {
+            position: "top-right",
+          });
+        }
+      });
+  };
   return (
     <div
       className={cn(
@@ -52,7 +77,10 @@ const IntegrationCard = ({ item, className }) => {
           <div>
             {item?.is_pro ? (
               item.action === "Activated" ? (
-                <Button className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]">
+                <Button
+                  className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]"
+                  onClick={() => deactivate(item)}
+                >
                   <RiCheckLine size={18} className="mr-1.5" />
                   Activated
                 </Button>
@@ -60,7 +88,10 @@ const IntegrationCard = ({ item, className }) => {
                 ""
               )
             ) : item.action === "Activated" ? (
-              <Button className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]">
+              <Button
+                className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]"
+                onClick={() => deactivate(item)}
+              >
                 <RiCheckLine size={18} className="mr-1.5" />
                 Activated
               </Button>
