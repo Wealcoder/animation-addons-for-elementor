@@ -6,6 +6,7 @@ import { Badge } from "../ui/badge";
 import { toast } from "sonner";
 
 const IntegrationCard = ({ item, className }) => {
+  console.log(WCF_ADDONS_ADMIN);
   const deactivate = async (item) => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -28,6 +29,35 @@ const IntegrationCard = ({ item, className }) => {
           toast.success(return_content?.data, {
             position: "top-right",
           });
+          window.location.reload();
+        }
+      });
+  };
+
+  const activePlugin = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "wcf_active_plugin",
+        action_base: "wcf-addons-pro/wcf-addons-pro.php",
+        nonce: WCF_ADDONS_ADMIN.nonce,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        if (return_content?.success) {
+          toast.success(return_content?.message, {
+            position: "top-right",
+          });
+
+          window.location.reload();
         }
       });
   };
@@ -86,7 +116,13 @@ const IntegrationCard = ({ item, className }) => {
                   Activated
                 </Button>
               ) : (
-                ""
+                <Button
+                  className="h-9 py-2 ps-[10px] pe-3 bg-[#CFFFE6] text-[#108D4B] hover:bg-[#CFFFE6] hover:text-[#108D4B]"
+                  onClick={() => activePlugin()}
+                >
+                  <RiCheckLine size={18} className="mr-1.5" />
+                  Deactivate
+                </Button>
               )
             ) : item.action === "Activated" ? (
               <Button
