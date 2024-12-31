@@ -81,31 +81,36 @@ const WizFooter = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="px-6 py-[18px] bg-white flex justify-between items-center gap-3 shadow-[0px_-2px_8px_0px_rgba(10,13,20,0.06)] z-20 relative">
-      <div className="flex items-center gap-2.5 bg-[#F5F7FA] ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-        >
-          <g clip-path="url(#clip0_4477_529)">
-            <path
-              d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
-              fill="#717784"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_4477_529">
-              <rect width="20" height="20" fill="white" />
-            </clipPath>
-          </defs>
-        </svg>
-        <p>By continuing, you allow this plugin to collect your data.</p>
-        <CredentialAlert />
-      </div>
+    <div className="px-6 py-[18px] bg-white flex justify-between items-center gap-11 shadow-[0px_-2px_8px_0px_rgba(10,13,20,0.06)] z-20 relative">
       <div>
+        {getSerial(currentPath) === 1 && (
+          <div className="flex items-center gap-2.5 bg-[#F5F7FA] ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+            >
+              <g clip-path="url(#clip0_4477_529)">
+                <path
+                  d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
+                  fill="#717784"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_4477_529">
+                  <rect width="20" height="20" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            <p>By continuing, you allow this plugin to collect your data.</p>
+            <CredentialAlert />
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3">
         {getSerial(currentPath) > 1 && (
           <Button
             variant="secondary"
