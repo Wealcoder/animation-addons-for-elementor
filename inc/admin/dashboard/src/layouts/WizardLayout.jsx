@@ -34,7 +34,7 @@ const WizardLayout = () => {
       case "go-pro":
         return <WizPro />;
       default:
-        return <></>;
+        return <WizardStart />;
     }
   };
 
@@ -55,7 +55,7 @@ const WizardLayout = () => {
             </Suspense>
           </ScrollArea>
         </div>
-        <WizFooter />
+        <WizFooter NavigateComponent={NavigateComponent} />
       </div>
     </div>
   );

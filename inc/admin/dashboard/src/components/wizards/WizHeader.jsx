@@ -40,7 +40,7 @@ export const WizHeader = ({ NavigateComponent }) => {
     if (tabValue) {
       setCurrentPath(tabValue);
     } else {
-      setCurrentPath("dashboard");
+      setCurrentPath("getting-started");
     }
   }, [urlParams]);
 
