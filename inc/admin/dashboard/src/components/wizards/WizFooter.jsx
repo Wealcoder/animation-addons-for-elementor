@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import CredentialAlert from "./CredentialAlert";
+import { useExtensions, useWidgets } from "@/hooks/app.hooks";
 
 const NavList = [
   {
@@ -31,6 +32,9 @@ const NavList = [
 ];
 
 const WizFooter = ({ NavigateComponent }) => {
+  const { allExtensions } = useExtensions();
+  const { allWidgets } = useWidgets();
+
   const [currentPath, setCurrentPath] = useState("");
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -51,6 +55,48 @@ const WizFooter = ({ NavigateComponent }) => {
     return result ? result.serial : 1;
   };
 
+  const saveWidget = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: JSON.stringify(allWidgets),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_widgets",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {});
+  };
+
+  const saveExtension = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: JSON.stringify(allExtensions),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_extensions",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {});
+  };
+
   const goToContinue = (currentPath) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
@@ -58,12 +104,25 @@ const WizFooter = ({ NavigateComponent }) => {
     url.search = "";
     url.hash = "";
     url.search = `page=${pageQuery}`;
+    if (NavList.length === getSerial(currentPath)) {
+      try {
+        saveWidget();
+        saveExtension();
+        const baseUrl = window.location.origin;
 
-    const value = NavList[getSerial(currentPath)].path;
-    url.searchParams.set("tab", value);
-    window.history.replaceState({}, "", url);
-    NavigateComponent(value);
-    setCurrentPath(value);
+        setTimeout(() => {
+          window.location.href = `${baseUrl}/wp-admin/admin.php?page=wcf_addons_settings&tab=dashboard`;
+        }, 100);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      const value = NavList[getSerial(currentPath)].path;
+      url.searchParams.set("tab", value);
+      window.history.replaceState({}, "", url);
+      NavigateComponent(value);
+      setCurrentPath(value);
+    }
   };
   const goToBack = (currentPath) => {
     const url = new URL(window.location.href);

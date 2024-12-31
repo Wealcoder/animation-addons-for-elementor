@@ -10,11 +10,7 @@ import {
 } from "@/components/ui/accordion2";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
-import {
-  deviceMediaMatch,
-  filterGeneralExtension,
-  filterGsapExtension,
-} from "@/lib/utils";
+import { deviceMediaMatch } from "@/lib/utils";
 import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import ExtensionGsapSettings from "../extentions/ExtensionGsapSettings";
@@ -22,7 +18,6 @@ import ExtensionGsapSettings from "../extentions/ExtensionGsapSettings";
 const ShowWizExtensions = () => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
-  const { setupType } = useSetup();
   const {
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
@@ -40,15 +35,12 @@ const ShowWizExtensions = () => {
   const [openAccordion, setOpenAccordion] = useState([]);
 
   useEffect(() => {
-    const gsapResult = filterGsapExtension(
-      allExtensions.elements["gsap-extensions"]
-    );
-    setFilteredGsapExtensions(gsapResult);
-
-    const generalResult = filterGeneralExtension(
-      allExtensions.elements["general-extensions"]
-    );
-    setFilteredGeneralExtensions(generalResult);
+    if (allExtensions) {
+      setFilteredGsapExtensions(allExtensions?.elements["gsap-extensions"]);
+      setFilteredGeneralExtensions(
+        allExtensions?.elements["general-extensions"]
+      );
+    }
   }, [allExtensions]);
 
   return (

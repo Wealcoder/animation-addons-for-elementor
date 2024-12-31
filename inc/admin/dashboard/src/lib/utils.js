@@ -75,6 +75,39 @@ export const disableAllWidget = (mainContent) => {
   return result;
 };
 
+export const disableGsapExtension = (mainContent) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements || {}).map(([key, value]) => {
+      const filteredElements = Object.fromEntries(
+        Object.entries(value.elements || {}).map(([key2, value2]) => {
+          return [key2, { ...value2, is_active: false }];
+        })
+      );
+
+      return [key, { ...value, is_active: false, elements: filteredElements }];
+    })
+  );
+
+  return {
+    ...mainContent,
+    is_active: false,
+    elements: result,
+  };
+};
+
+export const disableGeneralExtension = (mainContent) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements || {}).map(([key2, value2]) => {
+      return [key2, { ...value2, is_active: false }];
+    })
+  );
+  return {
+    ...mainContent,
+    is_active: false,
+    elements: result,
+  };
+};
+
 export const filterWidgets = (mainContent, filterKey) => {
   const result = Object.fromEntries(
     Object.entries(mainContent)

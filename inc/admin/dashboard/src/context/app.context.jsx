@@ -7,6 +7,11 @@ import {
   gsapGroupExtensionFn,
 } from "@/lib/extensionService";
 import {
+  disableAllWidget,
+  disableGeneralExtension,
+  disableGsapExtension,
+} from "@/lib/utils";
+import {
   activeFullWidgetFn,
   activeGroupWidgetFn,
   activeWidgetFn,
@@ -59,6 +64,34 @@ const useMainContext = (state) => {
   }, []);
 
   const setSetupType = useCallback((data) => {
+    console.log(mainState.allExtensions);
+    if (data && data === "advance") {
+      // update widget state
+      const widgetResult = disableAllWidget(mainState.allWidgets.elements);
+      setAllWidgets({ ...mainState.allWidgets, elements: widgetResult });
+
+      // update extension state
+      const gsapResult = disableGsapExtension(
+        mainState.allExtensions.elements["gsap-extensions"]
+      );
+      const generalResult = disableGeneralExtension(
+        mainState.allExtensions.elements["general-extensions"]
+      );
+
+      setAllExtensions({
+        ...mainState.allExtensions,
+        elements: {
+          "general-extensions": generalResult,
+          "gsap-extensions": gsapResult,
+        },
+      });
+    } else {
+      // update widget state to default
+      setAllWidgets(WCF_ADDONS_ADMIN?.addons_config?.widgets || {});
+
+      // update extension state to default
+      setAllExtensions(WCF_ADDONS_ADMIN?.addons_config?.extensions || {});
+    }
     dispatch({
       type: "setSetupType",
       value: data,
