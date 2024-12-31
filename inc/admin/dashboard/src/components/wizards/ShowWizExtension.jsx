@@ -22,6 +22,7 @@ import ExtensionGsapSettings from "../extentions/ExtensionGsapSettings";
 const ShowWizExtensions = () => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
+  const { setupType } = useSetup();
   const {
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,

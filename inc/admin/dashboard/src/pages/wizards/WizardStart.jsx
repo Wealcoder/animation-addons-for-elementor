@@ -7,11 +7,11 @@ import BasicSetting from "../../../public/images/wizard/basic-setting.png";
 import AdvanceSetting from "../../../public/images/wizard/advance-setting.png";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useSetup } from "@/hooks/app.hooks";
 
 const WizardStart = () => {
-  const [selected, setSelected] = useState("basic");
+  const { setupType, setSetupType } = useSetup();
 
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
@@ -100,14 +100,14 @@ const WizardStart = () => {
                 Choose your preferred configuration
               </h2>
               <RadioGroup
-                value={selected}
-                onValueChange={(value) => setSelected(value)}
+                value={setupType}
+                onValueChange={(value) => setSetupType(value)}
                 className="grid grid-cols-2 justify-between items-center gap-6"
               >
                 <div
                   className={cn(
                     "w-full h-full border border-border shadow-[0px_6px_13px_0px_rgba(0,0,0,0.04)] rounded-[10px]",
-                    selected === "basic" && "border-brand"
+                    setupType === "basic" && "border-brand"
                   )}
                 >
                   <div
@@ -151,7 +151,7 @@ const WizardStart = () => {
                 <div
                   className={cn(
                     "w-full h-full border border-border shadow-[0px_6px_13px_0px_rgba(0,0,0,0.04)] rounded-[10px]",
-                    selected === "advance" && "border-brand"
+                    setupType === "advance" && "border-brand"
                   )}
                 >
                   <div

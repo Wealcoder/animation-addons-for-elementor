@@ -49,3 +49,11 @@ export const useActivate = () => {
   } = useContext(AppContext);
   return { activated, setActivated };
 };
+
+export const useSetup = () => {
+  const {
+    mainState: { setupType },
+    setSetupType,
+  } = useContext(AppContext);
+  return { setupType, setSetupType };
+};

@@ -66,7 +66,7 @@ export const WizHeader = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="px-4 xl:px-8 py-7 flex justify-center items-center">
+    <div className="px-4 xl:px-8 py-6 flex justify-center items-center">
       <div className="flex justify-center items-center gap-3 xl:gap-4">
         {NavList.map((item, i) => (
           <React.Fragment key={item.serial + i}>

@@ -49,7 +49,7 @@ const WizardLayout = () => {
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
         <WizHeader NavigateComponent={NavigateComponent} />
         <div className="z-10 relative">
-          <ScrollArea className="h-[69vh] w-full">
+          <ScrollArea className="h-[70vh] w-full">
             <Suspense fallback={<p>Loading...</p>}>
               {showContent(tabKey)}
             </Suspense>

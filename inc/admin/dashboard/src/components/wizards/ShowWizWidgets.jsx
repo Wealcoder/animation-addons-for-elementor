@@ -2,19 +2,24 @@ import WidgetCard from "../shared/WidgetCard";
 import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { deviceMediaMatch, filterWidgets } from "@/lib/utils";
-import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import { deviceMediaMatch, disableAllWidget } from "@/lib/utils";
+import { useActiveItem, useSetup, useWidgets } from "@/hooks/app.hooks";
 
 const ShowWizWidgets = () => {
   const { allWidgets } = useWidgets();
+  const { setupType } = useSetup();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
 
   const [catWidgets, setCatWidgets] = useState({});
 
   useEffect(() => {
     if (allWidgets) {
-      const result = filterWidgets(allWidgets.elements);
-      setCatWidgets(result);
+      if (setupType && setupType === "advance") {
+        const result = disableAllWidget(allWidgets.elements);
+        setCatWidgets(result);
+      } else {
+        setCatWidgets(allWidgets.elements);
+      }
     }
   }, [allWidgets]);
 

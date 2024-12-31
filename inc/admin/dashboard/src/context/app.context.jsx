@@ -17,6 +17,7 @@ const initialState = {
   allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
   allExtensions: WCF_ADDONS_ADMIN?.addons_config?.extensions || {},
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
+  setupType: "basic",
 };
 
 const reducer = (state, action) => {
@@ -27,6 +28,8 @@ const reducer = (state, action) => {
       return { ...state, allExtensions: action.value };
     case "setActivated":
       return { ...state, activated: action.value };
+    case "setSetupType":
+      return { ...state, setupType: action.value };
     default:
       throw new Error();
   }
@@ -51,6 +54,13 @@ const useMainContext = (state) => {
   const setActivated = useCallback((data) => {
     dispatch({
       type: "setActivated",
+      value: data,
+    });
+  }, []);
+
+  const setSetupType = useCallback((data) => {
+    dispatch({
+      type: "setSetupType",
       value: data,
     });
   }, []);
@@ -123,6 +133,7 @@ const useMainContext = (state) => {
     setAllWidgets,
     setAllExtensions,
     setActivated,
+    setSetupType,
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
@@ -140,6 +151,7 @@ export const AppContext = createContext({
   setAllWidgets: () => {},
   setAllExtensions: () => {},
   setActivated: () => {},
+  setSetupType: () => {},
   updateActiveWidget: () => {},
 });
 
