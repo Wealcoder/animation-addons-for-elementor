@@ -417,7 +417,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Animated-Text",
@@ -1371,14 +1371,14 @@ $config = [
 		'plugins' => [
 			'title'    => esc_html__( 'Plugins', 'animation-addons-for-elementor' ),
 			'elements' => [
-				'extension-for-animation-addons'   => [
-					'label'        => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
-					'basename'     => 'extension-for-animation-addons/extension-for-animation-addons.php',
-					'source'       => 'custom',
-					'is_pro'       => false,
-					'slug'         => '',
-					'download_url' => 'https://animation-addons.com/',
-				],
+//				'extension-for-animation-addons'   => [
+//					'label'        => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
+//					'basename'     => 'extension-for-animation-addons/extension-for-animation-addons.php',
+//					'source'       => 'custom',
+//					'is_pro'       => false,
+//					'slug'         => '',
+//					'download_url' => 'https://animation-addons.com/',
+//				],
 				'animation-addon-for-elementorpro' => [
 					'label'        => esc_html__( 'Animation Addon Pro', 'animation-addons-for-elementor' ),
 					'basename'     => 'wcf-addons-pro/wcf-addons-pro.php',
