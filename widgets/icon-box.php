@@ -47,7 +47,7 @@ class Icon_Box extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Icon Box', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Icon Box', 'animation-addons-for-elementor' );
 	}
 
 	/**

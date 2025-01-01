@@ -55,7 +55,7 @@ class Posts extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Posts', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Posts', 'animation-addons-for-elementor' );
 	}
 
 	/**
