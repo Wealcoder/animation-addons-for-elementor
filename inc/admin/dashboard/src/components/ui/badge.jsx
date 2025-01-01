@@ -19,6 +19,7 @@ const badgeVariants = cva(
           "bg-[#E0FAEC] border-0 rounded-md px-2 py-1 h-6 text-[#1A7544]",
         inProgress:
           "bg-[#EBF1FF] border-0 rounded-md px-2 py-1 h-6 text-[#335CFF]",
+        secondary: "bg-background-secondary text-text-tertiary h-7 px-3",
       },
     },
     defaultVariants: {
