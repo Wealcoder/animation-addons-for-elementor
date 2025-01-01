@@ -2,7 +2,7 @@ import WidgetCard from "../shared/WidgetCard";
 import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { deviceMediaMatch } from "@/lib/utils";
+import { deviceMediaMatch, filterWidgets } from "@/lib/utils";
 import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
 
 const ShowWizWidgets = () => {
@@ -13,7 +13,8 @@ const ShowWizWidgets = () => {
 
   useEffect(() => {
     if (allWidgets) {
-      setCatWidgets(allWidgets.elements);
+      const result = filterWidgets(allWidgets.elements);
+      setCatWidgets(result);
     }
   }, [allWidgets]);
 
