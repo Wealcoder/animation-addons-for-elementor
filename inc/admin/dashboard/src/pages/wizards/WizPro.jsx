@@ -60,7 +60,7 @@ const WizPro = () => {
                           fill="#FC6848"
                         />
                       </svg>
-                      70+ Pro Widgets
+                      60+ Pro Widgets
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
                       Unlock full potential of your website with 60+ Premium
@@ -93,7 +93,7 @@ const WizPro = () => {
                           fill="#FC6848"
                         />
                       </svg>
-                      20+ Pro GSAP Extensions
+                      30+ Pro GSAP Extensions
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
                       Unlock site’s advanced animation capabilities with 30+ Pro
