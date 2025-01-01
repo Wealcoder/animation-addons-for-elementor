@@ -47,7 +47,7 @@ class Team extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Team', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Team', 'animation-addons-for-elementor' );
 	}
 
 	/**

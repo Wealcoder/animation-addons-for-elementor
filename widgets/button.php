@@ -41,7 +41,7 @@ class Button extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Button', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Button', 'animation-addons-for-elementor' );
 	}
 
 	/**
