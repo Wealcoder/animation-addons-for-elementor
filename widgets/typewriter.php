@@ -44,7 +44,7 @@ class Typewriter extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Typewriter', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Typewriter', 'animation-addons-for-elementor' );
 	}
 
 	/**

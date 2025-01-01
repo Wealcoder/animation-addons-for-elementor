@@ -45,7 +45,9 @@ const WizardStart = () => {
                   </defs>
                 </svg>
               </span>
-              <p className="text-sm font-medium">Version 1.1</p>
+              <p className="text-sm font-medium">
+                Version {WCF_ADDONS_ADMIN?.version}
+              </p>
             </div>
             <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
               GSAP Animations at Your Fingertips with WCF Animation Addons

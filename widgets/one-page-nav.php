@@ -44,7 +44,7 @@ class One_page_Nav extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF One Page Nav', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE One Page Nav', 'animation-addons-for-elementor' );
 	}
 
 	/**

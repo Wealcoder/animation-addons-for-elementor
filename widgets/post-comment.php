@@ -21,7 +21,7 @@ class Post_Comment extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'WCF Post Comment', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Post Comment', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
