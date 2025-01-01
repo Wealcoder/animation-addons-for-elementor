@@ -250,9 +250,9 @@ class WCF_Admin_Init {
 			
 			$extensions = get_option( 'wcf_save_extensions' );
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
-            wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
-		    $active_widgets = self::get_widgets(); 
-		    $active_ext = self::get_extensions(); 
+       wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+		  $active_widgets = self::get_widgets(); 
+		  $active_ext = self::get_extensions(); 
 	
 			$localize_data = [
 				'ajaxurl'             => admin_url( 'admin-ajax.php' ),
@@ -260,7 +260,7 @@ class WCF_Admin_Init {
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
 				'smoothScroller'      => json_decode( get_option( 'wcf_smooth_scroller' ) ),
-				'extensions'          => ['total' => $total_extensions,'active' => is_array($active_widgets) ? count($active_ext): 0],
+				'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
 				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'global_settings_url' => $this->get_elementor_active_edit_url(),
 				'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),

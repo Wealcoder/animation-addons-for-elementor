@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class WCF_Setup_Wizard_Init {
-
+    use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
 	 */
@@ -75,6 +75,7 @@ class WCF_Setup_Wizard_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
+        $total_extensions = $total_widgets = 0;
 		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_setup_page' ) {
 
 			// CSS
@@ -82,6 +83,9 @@ class WCF_Setup_Wizard_Init {
 
 			// JS
 			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.js', array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), WCF_ADDONS_VERSION, true );
+
+            wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
+			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['widgets'], $total_widgets);
 
             $widgets       = get_option( 'wcf_save_widgets' );
 			$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : [];
@@ -91,10 +95,15 @@ class WCF_Setup_Wizard_Init {
 			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
             wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
 
+            $active_widgets = self::get_widgets(); 
+		    $active_ext = self::get_extensions(); 
+
 			$localize_data = [
 				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( 'wcf_admin_nonce' ),
                 'addons_config'  => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
+                'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
+				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'adminURL' => admin_url(),
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
