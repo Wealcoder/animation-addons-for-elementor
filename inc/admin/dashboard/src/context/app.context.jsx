@@ -7,11 +7,6 @@ import {
   gsapGroupExtensionFn,
 } from "@/lib/extensionService";
 import {
-  disableAllWidget,
-  disableGeneralExtension,
-  disableGsapExtension,
-} from "@/lib/utils";
-import {
   activeFullWidgetFn,
   activeGroupWidgetFn,
   activeWidgetFn,
@@ -22,7 +17,6 @@ const initialState = {
   allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
   allExtensions: WCF_ADDONS_ADMIN?.addons_config?.extensions || {},
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
-  setupType: "basic",
 };
 
 const reducer = (state, action) => {
@@ -33,8 +27,6 @@ const reducer = (state, action) => {
       return { ...state, allExtensions: action.value };
     case "setActivated":
       return { ...state, activated: action.value };
-    case "setSetupType":
-      return { ...state, setupType: action.value };
     default:
       throw new Error();
   }
@@ -59,41 +51,6 @@ const useMainContext = (state) => {
   const setActivated = useCallback((data) => {
     dispatch({
       type: "setActivated",
-      value: data,
-    });
-  }, []);
-
-  const setSetupType = useCallback((data) => {
-    console.log(mainState.allExtensions);
-    if (data && data === "advance") {
-      // update widget state
-      const widgetResult = disableAllWidget(mainState.allWidgets.elements);
-      setAllWidgets({ ...mainState.allWidgets, elements: widgetResult });
-
-      // update extension state
-      const gsapResult = disableGsapExtension(
-        mainState.allExtensions.elements["gsap-extensions"]
-      );
-      const generalResult = disableGeneralExtension(
-        mainState.allExtensions.elements["general-extensions"]
-      );
-
-      setAllExtensions({
-        ...mainState.allExtensions,
-        elements: {
-          "general-extensions": generalResult,
-          "gsap-extensions": gsapResult,
-        },
-      });
-    } else {
-      // update widget state to default
-      setAllWidgets(WCF_ADDONS_ADMIN?.addons_config?.widgets || {});
-
-      // update extension state to default
-      setAllExtensions(WCF_ADDONS_ADMIN?.addons_config?.extensions || {});
-    }
-    dispatch({
-      type: "setSetupType",
       value: data,
     });
   }, []);
@@ -166,7 +123,6 @@ const useMainContext = (state) => {
     setAllWidgets,
     setAllExtensions,
     setActivated,
-    setSetupType,
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
@@ -184,7 +140,6 @@ export const AppContext = createContext({
   setAllWidgets: () => {},
   setAllExtensions: () => {},
   setActivated: () => {},
-  setSetupType: () => {},
   updateActiveWidget: () => {},
 });
 

@@ -619,6 +619,67 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
 					],
+
+					'posts-pro'              => [
+						'label'        => esc_html__( 'Posts Pro', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-pro/',
+						'youtube_url'  => '',
+					],
+
+					'banner-posts'              => [
+						'label'        => esc_html__( 'Banner Posts', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
+						'youtube_url'  => '',
+					],
+
+					'current-date'              => [
+						'label'        => esc_html__( 'Current Date', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-current-date/',
+						'youtube_url'  => '',
+					],
+
+					'feature-posts'              => [
+						'label'        => esc_html__( 'Feature Posts', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-feature-posts/',
+						'youtube_url'  => '',
+					],
+
 					'archive-title'      => [
 						'label'        => esc_html__( 'Archive Title', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -1294,7 +1355,7 @@ $config = [
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
-								'is_upcoming'  => false,
+								'is_upcoming'  => true,
 								'icon'         => "wcf-icon-Floating-Elements",
 								'demo_url'     => '',
 								'doc_url'      => '',
