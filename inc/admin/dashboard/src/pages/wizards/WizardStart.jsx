@@ -81,7 +81,9 @@ const WizardStart = () => {
                     </linearGradient>
                   </defs>
                 </svg>
-                <p className="text-text-tertiary">100+ Widgets</p>
+                <p className="text-text-tertiary">
+                  {WCF_ADDONS_ADMIN?.widgets?.total}+ Widgets
+                </p>
               </div>
               <div className="bg-white rounded-xl w-[142px] pb-4 pt-[18px] flex flex-col gap-3 justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
                 <svg
@@ -165,7 +167,9 @@ const WizardStart = () => {
                     </linearGradient>
                   </defs>
                 </svg>
-                <p className="text-text-tertiary">30+ Extensions</p>
+                <p className="text-text-tertiary">
+                  {WCF_ADDONS_ADMIN?.extensions?.total}+ Extensions
+                </p>
               </div>
               <div className="bg-white rounded-xl w-[142px] pb-4 pt-[18px] flex flex-col gap-3 justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
                 <svg
