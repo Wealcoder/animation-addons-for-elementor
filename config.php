@@ -776,7 +776,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Mailchimp",
@@ -796,7 +796,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Popup",
@@ -810,7 +810,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box",
@@ -824,7 +824,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box-Slider",
@@ -838,7 +838,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Mask",

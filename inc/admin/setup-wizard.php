@@ -105,6 +105,7 @@ class WCF_Setup_Wizard_Init {
                 'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
 				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'adminURL' => admin_url(),
+                'version'             => WCF_ADDONS_VERSION
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
