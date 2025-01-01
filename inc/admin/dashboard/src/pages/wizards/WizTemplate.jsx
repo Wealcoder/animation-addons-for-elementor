@@ -7,6 +7,9 @@ import TempImg1 from "../../../public/images/wizard/temp-img-1.png";
 import { Button } from "@/components/ui/button";
 
 const WizTemplate = () => {
+  const installTheme = (slug) => {
+    console.log(slug);
+  };
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
@@ -126,10 +129,7 @@ const WizTemplate = () => {
                 </div>
               </div>
             </div>
-            <div
-              className="border-[10px] border-white rounded-lg bg-[#F7F9FC] overflow-hidden"
-              // style={{ backgroundImage: `url(${TemplateBg2})` }}
-            >
+            <div className="border-[10px] border-white rounded-lg bg-[#F7F9FC] overflow-hidden">
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-[50px] xl:px-0">
                 <div
                   className="-ml-[69px] order-1 hidden xl:flex justify-start bg-no-repeat pt-[55px] pb-[50px] "
@@ -166,6 +166,7 @@ const WizTemplate = () => {
                     <Button
                       variant="secondary"
                       className="rounded-lg text-text"
+                      onClick={() => installTheme("hello-animation")}
                     >
                       Install Theme{" "}
                       <svg
