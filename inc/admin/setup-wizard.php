@@ -47,7 +47,7 @@ class WCF_Setup_Wizard_Init {
 	 * @return [void]
 	 */
 	public function init() {
-        return;
+      
 		add_action( 'admin_menu', [ $this, 'add_menu' ], 60 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_setup_wizard_settings', [ $this, 'save_settings' ] );
