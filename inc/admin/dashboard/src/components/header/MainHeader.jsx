@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useActivate } from "@/hooks/app.hooks";
 import MobileNav from "./MobileNav";
+import Notification from "../notification";
 
 const MainHeader = ({ open, setOpen, NavigateComponent }) => {
   const { activated } = useActivate();
@@ -61,10 +62,11 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
         <Button variant="secondary" size="icon" onClick={() => setOpen(true)}>
           <RiSearchLine size={20} />
         </Button>
-        <Button variant="secondary" size="icon" className="relative">
+        {/* <Button variant="secondary" size="icon" className="relative">
           <Badge className="absolute top-[9px] right-2" variant="solid" />
           <RiNotificationLine size={20} />
-        </Button>
+        </Button> */}
+        <Notification />
         <div className="block xl:hidden">
           <MobileNav NavigateComponent={NavigateComponent} />
         </div>

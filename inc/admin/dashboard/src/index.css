@@ -19,6 +19,14 @@
   line-height: 0;
 }
 
+.wcf-animation-addon-sheet * {
+  all: revert-layer;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @tailwind base;
@@ -50,6 +58,10 @@
   @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
+.wcf-animation-addon-sheet * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+}
+
 .wcf-dialog-content * {
   @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
 }
@@ -76,6 +88,35 @@
 
   p {
     @apply text-sm;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.wcf-animation-addon-sheet {
+  @apply overflow-x-hidden;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-text font-inter overflow-x-hidden;
+  }
+
+  a {
+    @apply no-underline text-text;
+  }
+
+  a:focus {
+    @apply shadow-none outline-0;
+  }
+
+  p {
+    @apply text-sm text-text-secondary;
   }
 
   img {
