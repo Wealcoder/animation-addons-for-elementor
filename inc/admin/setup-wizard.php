@@ -114,21 +114,8 @@ class WCF_Setup_Wizard_Init {
         // Initialize Theme Upgrader
         $upgrader = new \Theme_Upgrader();
         $upgrader->init(); // Ensure upgrader is initialized properly
-        $result = $upgrader->install("https://downloads.wordpress.org/theme/{$theme_slug}.zip");
-    
-        // Clean captured output
-        ob_end_clean();
-    
-        if (is_wp_error($result)) {
-            wp_send_json_error(['message' => $result->get_error_message()]);
-        }
-    
-        if (!$result) {
-            wp_send_json_error(['message' => esc_html__('Theme installation failed.', 'animation-addons-for-elementor')]);
-        }
-    
-        // Success response
-        //wp_send_json_success(['message' => esc_html__('Theme installed successfully.', 'animation-addons-for-elementor')]);
+        $result = $upgrader->install("https://downloads.wordpress.org/theme/{$theme_slug}.zip");             
+        wp_die();
     }
     
 

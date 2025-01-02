@@ -9,6 +9,7 @@ import { useState } from "react";
 
 const WizTemplate = () => {
   const [themelabel , setThemelabel] =  useState('Install Theme');
+  const [installmsg , setInstallmsg] =  useState(false);
   const themeInstller = async (slug) => {
     setThemelabel('Installing .... ');
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
@@ -25,11 +26,16 @@ const WizTemplate = () => {
       }),
     })
       .then((response) => {
-        console.log(response);
+    
         return response.text();
       })
       .then((return_content) => {
-        setThemelabel('Theme Active');        
+        setInstallmsg(return_content);      
+        setThemelabel('Theme Active');   
+        
+        setTimeout(function(){
+          setInstallmsg(false);      
+        },5000);
         
       });
   };
@@ -211,8 +217,13 @@ const WizTemplate = () => {
                               fill="#181B25"
                             />
                           </svg>
-                        </Button>
+                        </Button>                       
+                        
                     }
+                    {
+                          installmsg && 
+                          <div>{installmsg}</div>
+                        }
                   </div>
                 </div>
               </div>
