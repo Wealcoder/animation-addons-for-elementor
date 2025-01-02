@@ -5,11 +5,22 @@ import TLogo from "../../../public/images/wizard/t-logo.png";
 import TLogo2 from "../../../public/images/wizard/t-logo-2.png";
 import TempImg1 from "../../../public/images/wizard/temp-img-1.png";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const WizTemplate = () => {
   const [themelabel , setThemelabel] =  useState('Install Theme');
   const [installmsg , setInstallmsg] =  useState(false);
+  useEffect(function(){
+
+    if(WCF_ADDONS_ADMIN.theme_status === 'activeted'){
+      setThemelabel('Activated');
+    }
+    
+    if(WCF_ADDONS_ADMIN.theme_status === 'installed'){
+      setThemelabel('Active Now');
+    }
+    
+  });
   const themeInstller = async (slug) => {
     setThemelabel('Installing .... ');
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
@@ -20,27 +31,43 @@ const WizTemplate = () => {
       },
 
       body: new URLSearchParams({
-        action    : "wcf_installer_theme",
+        action    : themelabel == 'Active Now' ? 'wcf_activate_theme' : "wcf_installer_theme",
         nonce     : WCF_ADDONS_ADMIN.nonce,
         theme_slug: slug
       }),
     })
-      .then((response) => {
-    
+      .then((response) => {    
         return response.text();
       })
       .then((return_content) => {
-        setInstallmsg(return_content);      
-        setThemelabel('Theme Active');   
         
-        setTimeout(function(){
-          setInstallmsg(false);      
-        },5000);
+        if (/^[\],:{}\s]*$/.test(return_content.replace(/\\["\\\/bfnrtu]/g, '@').
+        replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+        replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {        
+            const redata = JSON.parse( return_content );             
+            
+            if(redata.success == true){   
+              WCF_ADDONS_ADMIN.theme_status = 'Activated';             
+            }
+            if(redata.data?.message){
+              setInstallmsg(redata.data.message);
+            }            
         
+        }else{    
+          setInstallmsg(return_content);      
+          if(return_content.includes('200 ok')){  
+            WCF_ADDONS_ADMIN.theme_status = 'installed';
+            setThemelabel('Active Now');            
+          }         
+        } 
+       
       });
   };
   
   const installTheme = (slug) => {
+    if(themelabel == 'Activated'){
+      return;
+    }
     themeInstller(slug);
   };
   return (
@@ -197,7 +224,7 @@ const WizTemplate = () => {
                       dynamic animation features.
                     </p>
                     {
-                      WCF_ADDONS_ADMIN.theme_status && WCF_ADDONS_ADMIN.theme_status =='installnow' &&                     
+                      WCF_ADDONS_ADMIN.theme_status &&                     
                         <Button
                           variant="secondary"
                           className="rounded-lg text-text"
@@ -222,7 +249,7 @@ const WizTemplate = () => {
                     }
                     {
                           installmsg && 
-                          <div>{installmsg}</div>
+                          <div dangerouslySetInnerHTML={{ __html: installmsg }} />
                         }
                   </div>
                 </div>

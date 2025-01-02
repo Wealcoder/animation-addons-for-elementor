@@ -52,6 +52,7 @@ class WCF_Setup_Wizard_Init {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_setup_wizard_settings', [ $this, 'save_settings' ] );
 		add_action('wp_ajax_wcf_installer_theme', [ $this ,'ajax_install_theme' ]);
+		add_action('wp_ajax_wcf_activate_theme', [ $this ,'activate_theme' ]);
 		
 		if(isset( $_GET['page'] ) && $_GET[ 'page' ] == 'wcf_addons_setup_page')
 		{
@@ -76,6 +77,28 @@ class WCF_Setup_Wizard_Init {
         return 'installnow';
 	}
 	
+    function activate_theme() {
+        check_ajax_referer('wcf_admin_nonce', 'nonce');
+    
+        // Check user capability
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => esc_html__('You are not allowed to do this action', 'animation-addons-for-elementor')]);
+        }
+    
+        // Get the theme slug
+        $theme_slug = isset($_POST['theme_slug']) ? sanitize_text_field($_POST['theme_slug']) : '';
+        if (!$theme_slug) {
+            wp_send_json_error(['message' => esc_html__('Theme slug is missing.', 'animation-addons-for-elementor')]);
+        }
+        
+        $active_theme = wp_get_theme();
+        if ($active_theme->get_stylesheet() === $theme_slug) {
+            wp_send_json_error(['message' => esc_html__('The theme is already active.', 'animation-addons-for-elementor')]);
+        }       
+        switch_theme($theme_slug);
+        wp_send_json_success(['message' => esc_html__('The theme is active.', 'animation-addons-for-elementor')]);
+        wp_die();
+    }
     function ajax_install_theme() {
         // Verify nonce
         check_ajax_referer('wcf_admin_nonce', 'nonce');
@@ -114,7 +137,14 @@ class WCF_Setup_Wizard_Init {
         // Initialize Theme Upgrader
         $upgrader = new \Theme_Upgrader();
         $upgrader->init(); // Ensure upgrader is initialized properly
-        $result = $upgrader->install("https://downloads.wordpress.org/theme/{$theme_slug}.zip");             
+        $result = $upgrader->install("https://downloads.wordpress.org/theme/{$theme_slug}.zip");
+        if (is_wp_error($result)) {
+           echo "404 failed";
+        }    
+        if (!$result) {
+            echo "404 failed";
+        }    
+        echo "200 ok";
         wp_die();
     }
     
