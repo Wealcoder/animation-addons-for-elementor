@@ -5,10 +5,37 @@ import TLogo from "../../../public/images/wizard/t-logo.png";
 import TLogo2 from "../../../public/images/wizard/t-logo-2.png";
 import TempImg1 from "../../../public/images/wizard/temp-img-1.png";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const WizTemplate = () => {
+  const [themelabel , setThemelabel] =  useState('Install Theme');
+  const themeInstller = async (slug) => {
+    setThemelabel('Installing .... ');
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action    : "wcf_installer_theme",
+        nonce     : WCF_ADDONS_ADMIN.nonce,
+        theme_slug: slug
+      }),
+    })
+      .then((response) => {
+        console.log(response);
+        return response.text();
+      })
+      .then((return_content) => {
+        setThemelabel('Theme Active');        
+        
+      });
+  };
+  
   const installTheme = (slug) => {
-    console.log(slug);
+    themeInstller(slug);
   };
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
@@ -163,26 +190,29 @@ const WizTemplate = () => {
                       theme designed for seamless integration with perfect
                       dynamic animation features.
                     </p>
-                    <Button
-                      variant="secondary"
-                      className="rounded-lg text-text"
-                      onClick={() => installTheme("hello-animation")}
-                    >
-                      Install Theme{" "}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        className="ml-1.5"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                      >
-                        <path
-                          d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
-                          fill="#181B25"
-                        />
-                      </svg>
-                    </Button>
+                    {
+                      WCF_ADDONS_ADMIN.theme_status && WCF_ADDONS_ADMIN.theme_status =='installnow' &&                     
+                        <Button
+                          variant="secondary"
+                          className="rounded-lg text-text"
+                          onClick={() => installTheme("hello-animation")}
+                        >
+                          {themelabel}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            className="ml-1.5"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                          >
+                            <path
+                              d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
+                              fill="#181B25"
+                            />
+                          </svg>
+                        </Button>
+                    }
                   </div>
                 </div>
               </div>
