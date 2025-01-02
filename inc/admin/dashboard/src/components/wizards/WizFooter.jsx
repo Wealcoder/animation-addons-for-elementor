@@ -67,7 +67,7 @@ const WizFooter = ({ NavigateComponent }) => {
         action: "save_settings_with_ajax",
         fields: JSON.stringify(allWidgets),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_widgets",
+        settings: "wcf_save_widgets",       
       }),
     })
       .then((response) => {
@@ -96,6 +96,10 @@ const WizFooter = ({ NavigateComponent }) => {
       })
       .then((return_content) => {});
   };
+  
+  const sendUserAnalytics = () => {
+    alert();
+  }
 
   const goToContinue = (currentPath) => {
     const url = new URL(window.location.href);
@@ -108,6 +112,7 @@ const WizFooter = ({ NavigateComponent }) => {
       try {
         saveWidget();
         saveExtension();
+        sendUserAnalytics();
         const baseUrl = window.location.origin;
 
         setTimeout(() => {
