@@ -95,6 +95,7 @@
     height: 100%;
   }
 }
+
 .wcf-animation-addon-sheet {
   @apply overflow-x-hidden;
 
@@ -126,6 +127,7 @@
 }
 
 .wcf-anim2024-style {
+
   /* width */
   ::-webkit-scrollbar {
     width: 5px;
@@ -157,6 +159,12 @@
 
 .search-item {
   @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px];
+}
+
+.wcf-anim2024 {
+  #wpbody-content {
+    @apply !pb-2.5;
+  }
 }
 
 @font-face {
