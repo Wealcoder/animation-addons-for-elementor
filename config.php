@@ -1176,7 +1176,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1191,7 +1191,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1206,7 +1206,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1221,7 +1221,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1327,7 +1327,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'flip'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => true,
 								'is_extension' => true,
 								'is_upcoming'  => false,
