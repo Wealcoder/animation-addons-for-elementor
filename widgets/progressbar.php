@@ -40,7 +40,7 @@ class Progressbar extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'AAE Progressbar', 'animation-addons-for-elementor' );
+		return esc_html__( 'Progressbar', 'animation-addons-for-elementor' );
 	}
 
 	/**

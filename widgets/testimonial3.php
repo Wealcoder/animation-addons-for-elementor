@@ -46,7 +46,7 @@ class Testimonial3 extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return esc_html__( 'AAE Testimonial 3', 'animation-addons-for-elementor' );
+		return esc_html__( 'Testimonial 3', 'animation-addons-for-elementor' );
 	}
 
 	/**

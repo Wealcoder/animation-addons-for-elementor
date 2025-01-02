@@ -45,7 +45,7 @@ class Animated_Title extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'AAE Animated Title', 'animation-addons-for-elementor' );
+		return esc_html__( 'Animated Title', 'animation-addons-for-elementor' );
 	}
 
 	/**

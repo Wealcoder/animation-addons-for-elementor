@@ -42,7 +42,7 @@ class Animated_Heading extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'AAE Animated Heading', 'animation-addons-for-elementor' );
+		return esc_html__( 'Animated Heading', 'animation-addons-for-elementor' );
 	}
 
 	/**
