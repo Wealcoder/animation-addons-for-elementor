@@ -181,6 +181,21 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
 					],
+
+					'testimonial-pro'      => [
+						'label'        => esc_html__( 'Testimonial Pro', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Testimonial",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-pro/',
+						'youtube_url'  => '',
+					],
 					'button'            => [
 						'label'        => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -195,6 +210,22 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button/',
 						'youtube_url'  => '',
 					],
+
+					'button-pro'            => [
+						'label'        => esc_html__( 'Button Pro', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Button",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button-pro/',
+						'youtube_url'  => '',
+					],
+
 					'image-compare'     => [
 						'label'        => esc_html__( 'Image Compare', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -235,6 +266,34 @@ $config = [
 						'icon'         => "wcf-icon-Team",
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team/',
+						'youtube_url'  => '',
+					],
+					'team-slider'              => [
+						'label'        => esc_html__( 'Team Slider', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Team",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team-slider/',
+						'youtube_url'  => '',
+					],
+					'notification'     => [
+						'label'        => esc_html__( 'Notification', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Team",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-notification/',
 						'youtube_url'  => '',
 					],
 					'one-page-nav'      => [
