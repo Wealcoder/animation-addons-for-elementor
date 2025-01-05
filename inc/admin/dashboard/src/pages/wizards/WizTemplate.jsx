@@ -8,21 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 const WizTemplate = () => {
-  const [themelabel , setThemelabel] =  useState('Install Theme');
-  const [installmsg , setInstallmsg] =  useState(false);
-  useEffect(function(){
+  const [themelabel, setThemelabel] = useState("Install Theme");
+  const [installmsg, setInstallmsg] = useState(false);
+  useEffect(function () {
+    if (WCF_ADDONS_ADMIN.theme_status === "activeted") {
+      setThemelabel("Activated");
+    }
 
-    if(WCF_ADDONS_ADMIN.theme_status === 'activeted'){
-      setThemelabel('Activated');
+    if (WCF_ADDONS_ADMIN.theme_status === "installed") {
+      setThemelabel("Active Now");
     }
-    
-    if(WCF_ADDONS_ADMIN.theme_status === 'installed'){
-      setThemelabel('Active Now');
-    }
-    
   });
   const themeInstller = async (slug) => {
-    setThemelabel('Installing .... ');
+    setThemelabel("Installing .... ");
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -31,41 +29,49 @@ const WizTemplate = () => {
       },
 
       body: new URLSearchParams({
-        action    : themelabel == 'Active Now' ? 'wcf_activate_theme' : "wcf_installer_theme",
-        nonce     : WCF_ADDONS_ADMIN.nonce,
-        theme_slug: slug
+        action:
+          themelabel == "Active Now"
+            ? "wcf_activate_theme"
+            : "wcf_installer_theme",
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        theme_slug: slug,
       }),
     })
-      .then((response) => {    
+      .then((response) => {
         return response.text();
       })
       .then((return_content) => {
-        
-        if (/^[\],:{}\s]*$/.test(return_content.replace(/\\["\\\/bfnrtu]/g, '@').
-        replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-        replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {        
-            const redata = JSON.parse( return_content );             
-            
-            if(redata.success == true){   
-              WCF_ADDONS_ADMIN.theme_status = 'Activated';             
-            }
-            if(redata.data?.message){
-              setInstallmsg(redata.data.message);
-            }            
-        
-        }else{    
-          setInstallmsg(return_content);      
-          if(return_content.includes('200 ok')){  
-            WCF_ADDONS_ADMIN.theme_status = 'installed';
-            setThemelabel('Active Now');            
-          }         
-        } 
-       
+        if (
+          /^[\],:{}\s]*$/.test(
+            return_content
+              .replace(/\\["\\\/bfnrtu]/g, "@")
+              .replace(
+                /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+                "]"
+              )
+              .replace(/(?:^|:|,)(?:\s*\[)+/g, "")
+          )
+        ) {
+          const redata = JSON.parse(return_content);
+
+          if (redata.success == true) {
+            WCF_ADDONS_ADMIN.theme_status = "Activated";
+          }
+          if (redata.data?.message) {
+            setInstallmsg(redata.data.message);
+          }
+        } else {
+          setInstallmsg(return_content);
+          if (return_content.includes("200 ok")) {
+            WCF_ADDONS_ADMIN.theme_status = "installed";
+            setThemelabel("Active Now");
+          }
+        }
       });
   };
-  
+
   const installTheme = (slug) => {
-    if(themelabel == 'Activated'){
+    if (themelabel == "Activated") {
       return;
     }
     themeInstller(slug);
@@ -85,11 +91,11 @@ const WizTemplate = () => {
               <div className="max-w-[470px] space-y-6">
                 <img src={TLogo} alt="TLogo" className="w-[36px] h-[36px]" />
                 <h2 className="text-[40px] font-medium">
-                  Explore Over 40+ Stunning Templates.
+                  Explore 100+ Pre-built Websites.
                 </h2>
                 <p className="text-base text-text-secondary">
-                  Explore 40+ customizable templates of various niches designed
-                  to fit any website, helping you build.
+                  Discover a diverse collection of over 100 customizable
+                  websites designed to meet your complete website needs.
                 </p>
               </div>
               <div className="max-w-[470px] space-y-3 mt-7">
@@ -143,7 +149,7 @@ const WizTemplate = () => {
                     />
                   </svg>
                   <p className="text-base text-text">
-                    Templates includes Over 20+ Categories.
+                    Templates includes 15+ Categories.
                   </p>
                 </div>
                 <div className="flex gap-4 items-center bg-white px-5 py-4 rounded-xl">
@@ -223,34 +229,31 @@ const WizTemplate = () => {
                       theme designed for seamless integration with perfect
                       dynamic animation features.
                     </p>
-                    {
-                      WCF_ADDONS_ADMIN.theme_status &&                     
-                        <Button
-                          variant="secondary"
-                          className="rounded-lg text-text"
-                          onClick={() => installTheme("hello-animation")}
+                    {WCF_ADDONS_ADMIN.theme_status && (
+                      <Button
+                        variant="secondary"
+                        className="rounded-lg text-text"
+                        onClick={() => installTheme("hello-animation")}
+                      >
+                        {themelabel}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          className="ml-1.5"
+                          viewBox="0 0 18 18"
+                          fill="none"
                         >
-                          {themelabel}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            className="ml-1.5"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                          >
-                            <path
-                              d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
-                              fill="#181B25"
-                            />
-                          </svg>
-                        </Button>                       
-                        
-                    }
-                    {
-                          installmsg && 
-                          <div dangerouslySetInnerHTML={{ __html: installmsg }} />
-                        }
+                          <path
+                            d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
+                            fill="#181B25"
+                          />
+                        </svg>
+                      </Button>
+                    )}
+                    {installmsg && (
+                      <div dangerouslySetInnerHTML={{ __html: installmsg }} />
+                    )}
                   </div>
                 </div>
               </div>

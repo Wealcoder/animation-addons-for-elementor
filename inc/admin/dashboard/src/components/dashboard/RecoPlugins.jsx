@@ -38,7 +38,11 @@ const RecoPlugins = () => {
       <div>
         {plugins?.map((el, i) => (
           <div key={`reco_plugin_list-${i}`}>
-            <div className=" group flex items-center justify-between gap-3">
+            <a
+              href={el.url}
+              target="_blank"
+              className=" group flex items-center justify-between gap-3"
+            >
               <div className="flex items-center gap-3">
                 <div>
                   <img
@@ -48,13 +52,11 @@ const RecoPlugins = () => {
                   />
                 </div>
                 <div>
-                  <a
-                    href={el.url}
-                    target="_blank"
+                  <p
                     className={cn("text-sm font-medium group-hover:text-brand")}
                   >
                     {el.title}
-                  </a>
+                  </p>
                   <p className="text-sm text-text-secondary">{el.subTitle}</p>
                 </div>
               </div>
@@ -70,7 +72,7 @@ const RecoPlugins = () => {
                   className="absolute top-0 left-0 transition-all group-hover:!text-brand -translate-x-6 translate-y-6 group-hover:translate-x-0 group-hover:translate-y-0"
                 />
               </div>
-            </div>
+            </a>
             {i + 1 !== plugins.length ? (
               <Separator className="my-4 bg-border-secondary" />
             ) : (

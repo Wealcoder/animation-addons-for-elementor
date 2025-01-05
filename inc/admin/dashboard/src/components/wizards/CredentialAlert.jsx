@@ -23,13 +23,14 @@ const CredentialAlert = () => {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="p-6">
-          <h3 className="text-2xl font-medium">We collect your data</h3>
+          <h3 className="text-2xl font-medium">How we collect your data</h3>
           <p className="mt-3 text-base text-text-secondary">
-            We collect non-sensitive diagnostic data and plugin usage
-            information. Your site URL, WordPress & PHP version, plugins &
-            themes, and email address to send you the discount coupon. This data
-            lets us make sure this plugin always stays compatible with the most
-            popular plugins and themes. No spam, we promise.
+            We collect certain usage data to enhance your experience with our
+            plugin, including animation settings, performance metrics, feature
+            preferences, and other non-sensitive data. This data helps us
+            improve functionality, optimize performance, and ensure better
+            updates. We never collect any personal information and sensitive
+            data.
           </p>
           <div className="flex justify-end mt-6">
             <DialogClose asChild>
