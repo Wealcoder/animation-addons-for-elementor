@@ -29,6 +29,11 @@ const NavList = [
     title: "Go Pro",
     path: "go-pro",
   },
+  {
+    serial: 6,
+    title: "Congratulations",
+    path: "congratulations",
+  },
 ];
 
 const WizFooter = ({ NavigateComponent }) => {
@@ -67,7 +72,7 @@ const WizFooter = ({ NavigateComponent }) => {
         action: "save_settings_with_ajax",
         fields: JSON.stringify(allWidgets),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_widgets",       
+        settings: "wcf_save_widgets",
       }),
     })
       .then((response) => {
@@ -96,10 +101,10 @@ const WizFooter = ({ NavigateComponent }) => {
       })
       .then((return_content) => {});
   };
-  
+
   const sendUserAnalytics = () => {
     alert();
-  }
+  };
 
   const goToContinue = (currentPath) => {
     const url = new URL(window.location.href);
@@ -108,26 +113,22 @@ const WizFooter = ({ NavigateComponent }) => {
     url.search = "";
     url.hash = "";
     url.search = `page=${pageQuery}`;
-    if (NavList.length === getSerial(currentPath)) {
+    if (currentPath === "templates") {
       try {
         saveWidget();
         saveExtension();
         sendUserAnalytics();
-        const baseUrl = window.location.origin;
-
-        setTimeout(() => {
-          window.location.href = `${baseUrl}/wp-admin/admin.php?page=wcf_addons_settings&tab=dashboard`;
-        }, 100);
+        
       } catch (error) {
         console.log(error);
       }
-    } else {
-      const value = NavList[getSerial(currentPath)].path;
-      url.searchParams.set("tab", value);
-      window.history.replaceState({}, "", url);
-      NavigateComponent(value);
-      setCurrentPath(value);
     }
+
+    const value = NavList[getSerial(currentPath)].path;
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    NavigateComponent(value);
+    setCurrentPath(value);
   };
   const goToBack = (currentPath) => {
     const url = new URL(window.location.href);
