@@ -177,7 +177,7 @@ class WCF_Setup_Wizard_Init {
 			// CSS
 			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.css' );
 			// JS
-			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.js', array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.js', array('wp-data', 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), WCF_ADDONS_VERSION, true );
 
             wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
 			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['widgets'], $total_widgets);
@@ -192,7 +192,7 @@ class WCF_Setup_Wizard_Init {
 
             $active_widgets = self::get_widgets(); 
 		    $active_ext = self::get_extensions(); 
-
+            $current_user = wp_get_current_user();
 			$localize_data = [
                 'ajaxurl'       => admin_url( 'admin-ajax.php' ),
                 'nonce'         => wp_create_nonce( 'wcf_admin_nonce' ),
@@ -201,7 +201,13 @@ class WCF_Setup_Wizard_Init {
                 'widgets'       => [ 'total' =>$total_widgets , 'active' => is_array($active_widgets) ? count($active_widgets): 0],
                 'adminURL'      => admin_url(),
                 'version'       => WCF_ADDONS_VERSION,
-                'theme_status' => $this->theme_status('hello-animation')
+                'theme_status' => $this->theme_status('hello-animation'),
+                'user' => [
+                    'email'    => $current_user->user_email,
+                    'roles'    => $current_user->roles,
+                    'display_name' => $current_user->display_name,
+                    'f_name' => $current_user->first_name
+                ]
 			];
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
 
