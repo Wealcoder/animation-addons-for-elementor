@@ -39,7 +39,7 @@ class Animated_Text extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Animated Text', 'animation-addons-for-elementor' );
+		return esc_html__( 'Animated Text', 'animation-addons-for-elementor' );
 	}
 
 	/**

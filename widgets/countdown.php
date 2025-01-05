@@ -47,7 +47,7 @@ class Countdown extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Countdown', 'animation-addons-for-elementor' );
+		return esc_html__( 'Countdown', 'animation-addons-for-elementor' );
 	}
 
 	/**

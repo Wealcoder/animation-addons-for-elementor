@@ -17,7 +17,7 @@ const WizWidget = () => {
               Customize your site by activating widgets that enhance your needs.
             </p>
           </div>
-          <div className="mt-[56px] w-[1184px] mx-auto border-[10px] border-white rounded-lg">
+          <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
             <ShowWizWidgets />
           </div>
         </div>

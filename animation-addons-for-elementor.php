@@ -11,8 +11,8 @@
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages
  *
- * Elementor tested up to: 3.26.0
- * Elementor Pro tested up to: 3.19.0
+ * Elementor tested up to: 3.26.3
+ * Elementor Pro tested up to: 3.26.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

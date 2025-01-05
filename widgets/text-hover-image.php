@@ -43,7 +43,7 @@ class Text_Hover_Image extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Text Hover Image', 'animation-addons-for-elementor' );
+		return esc_html__( 'Text Hover Image', 'animation-addons-for-elementor' );
 	}
 
 	/**

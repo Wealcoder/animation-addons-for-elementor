@@ -50,7 +50,7 @@ class Testimonial2 extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Testimonial 2', 'animation-addons-for-elementor' );
+		return esc_html__( 'Testimonial 2', 'animation-addons-for-elementor' );
 	}
 
 	/**

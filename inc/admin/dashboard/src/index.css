@@ -19,6 +19,14 @@
   line-height: 0;
 }
 
+.wcf-animation-addon-sheet * {
+  all: revert-layer;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @tailwind base;
@@ -47,6 +55,10 @@
 }
 
 .wcf-anim2024-style * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+}
+
+.wcf-animation-addon-sheet * {
   @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
@@ -84,7 +96,38 @@
   }
 }
 
+.wcf-animation-addon-sheet {
+  @apply overflow-x-hidden;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-text font-inter overflow-x-hidden;
+  }
+
+  a {
+    @apply no-underline text-text;
+  }
+
+  a:focus {
+    @apply shadow-none outline-0;
+  }
+
+  p {
+    @apply text-sm text-text-secondary;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .wcf-anim2024-style {
+
   /* width */
   ::-webkit-scrollbar {
     width: 5px;
@@ -116,6 +159,12 @@
 
 .search-item {
   @apply relative flex gap-2 cursor-pointer select-none items-center rounded-sm px-2.5 py-2.5 text-text text-sm outline-none hover:bg-background-secondary hover:text-text hover:rounded-[10px] data-[selected=true]:bg-background-secondary data-[selected=true]:text-text data-[selected=true]:rounded-[10px];
+}
+
+.wcf-anim2024 {
+  #wpbody-content {
+    @apply !pb-2.5;
+  }
 }
 
 @font-face {

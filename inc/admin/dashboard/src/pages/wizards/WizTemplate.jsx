@@ -5,8 +5,71 @@ import TLogo from "../../../public/images/wizard/t-logo.png";
 import TLogo2 from "../../../public/images/wizard/t-logo-2.png";
 import TempImg1 from "../../../public/images/wizard/temp-img-1.png";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 const WizTemplate = () => {
+  const [themelabel , setThemelabel] =  useState('Install Theme');
+  const [installmsg , setInstallmsg] =  useState(false);
+  useEffect(function(){
+
+    if(WCF_ADDONS_ADMIN.theme_status === 'activeted'){
+      setThemelabel('Activated');
+    }
+    
+    if(WCF_ADDONS_ADMIN.theme_status === 'installed'){
+      setThemelabel('Active Now');
+    }
+    
+  });
+  const themeInstller = async (slug) => {
+    setThemelabel('Installing .... ');
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action    : themelabel == 'Active Now' ? 'wcf_activate_theme' : "wcf_installer_theme",
+        nonce     : WCF_ADDONS_ADMIN.nonce,
+        theme_slug: slug
+      }),
+    })
+      .then((response) => {    
+        return response.text();
+      })
+      .then((return_content) => {
+        
+        if (/^[\],:{}\s]*$/.test(return_content.replace(/\\["\\\/bfnrtu]/g, '@').
+        replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+        replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {        
+            const redata = JSON.parse( return_content );             
+            
+            if(redata.success == true){   
+              WCF_ADDONS_ADMIN.theme_status = 'Activated';             
+            }
+            if(redata.data?.message){
+              setInstallmsg(redata.data.message);
+            }            
+        
+        }else{    
+          setInstallmsg(return_content);      
+          if(return_content.includes('200 ok')){  
+            WCF_ADDONS_ADMIN.theme_status = 'installed';
+            setThemelabel('Active Now');            
+          }         
+        } 
+       
+      });
+  };
+  
+  const installTheme = (slug) => {
+    if(themelabel == 'Activated'){
+      return;
+    }
+    themeInstller(slug);
+  };
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
@@ -126,10 +189,7 @@ const WizTemplate = () => {
                 </div>
               </div>
             </div>
-            <div
-              className="border-[10px] border-white rounded-lg bg-[#F7F9FC] overflow-hidden"
-              // style={{ backgroundImage: `url(${TemplateBg2})` }}
-            >
+            <div className="border-[10px] border-white rounded-lg bg-[#F7F9FC] overflow-hidden">
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-[50px] xl:px-0">
                 <div
                   className="-ml-[69px] order-1 hidden xl:flex justify-start bg-no-repeat pt-[55px] pb-[50px] "
@@ -163,25 +223,34 @@ const WizTemplate = () => {
                       theme designed for seamless integration with perfect
                       dynamic animation features.
                     </p>
-                    <Button
-                      variant="secondary"
-                      className="rounded-lg text-text"
-                    >
-                      Install Theme{" "}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        className="ml-1.5"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                      >
-                        <path
-                          d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
-                          fill="#181B25"
-                        />
-                      </svg>
-                    </Button>
+                    {
+                      WCF_ADDONS_ADMIN.theme_status &&                     
+                        <Button
+                          variant="secondary"
+                          className="rounded-lg text-text"
+                          onClick={() => installTheme("hello-animation")}
+                        >
+                          {themelabel}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            className="ml-1.5"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                          >
+                            <path
+                              d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
+                              fill="#181B25"
+                            />
+                          </svg>
+                        </Button>                       
+                        
+                    }
+                    {
+                          installmsg && 
+                          <div dangerouslySetInnerHTML={{ __html: installmsg }} />
+                        }
                   </div>
                 </div>
               </div>

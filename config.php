@@ -417,7 +417,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Animated-Text",
@@ -619,6 +619,67 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
 					],
+
+					'posts-pro'              => [
+						'label'        => esc_html__( 'Posts Pro', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-pro/',
+						'youtube_url'  => '',
+					],
+
+					'banner-posts'              => [
+						'label'        => esc_html__( 'Banner Posts', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
+						'youtube_url'  => '',
+					],
+
+					'current-date'              => [
+						'label'        => esc_html__( 'Current Date', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-current-date/',
+						'youtube_url'  => '',
+					],
+
+					'feature-posts'              => [
+						'label'        => esc_html__( 'Feature Posts', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-feature-posts/',
+						'youtube_url'  => '',
+					],
+
 					'archive-title'      => [
 						'label'        => esc_html__( 'Archive Title', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -715,7 +776,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Mailchimp",
@@ -735,7 +796,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Popup",
@@ -749,7 +810,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box",
@@ -763,7 +824,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box-Slider",
@@ -777,7 +838,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Mask",
@@ -1115,7 +1176,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1130,7 +1191,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1145,7 +1206,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1160,7 +1221,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1266,7 +1327,7 @@ $config = [
 									'cTab'     => 'gsap',
 									'pluginId' => 'flip'
 								],
-								'is_pro'       => false,
+								'is_pro'       => true,
 								'is_active'    => true,
 								'is_extension' => true,
 								'is_upcoming'  => false,
@@ -1310,14 +1371,14 @@ $config = [
 		'plugins' => [
 			'title'    => esc_html__( 'Plugins', 'animation-addons-for-elementor' ),
 			'elements' => [
-				'extension-for-animation-addons'   => [
-					'label'        => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
-					'basename'     => 'extension-for-animation-addons/extension-for-animation-addons.php',
-					'source'       => 'custom',
-					'is_pro'       => false,
-					'slug'         => '',
-					'download_url' => 'https://animation-addons.com/',
-				],
+//				'extension-for-animation-addons'   => [
+//					'label'        => esc_html__( 'Extension For Animation Addon', 'animation-addons-for-elementor' ),
+//					'basename'     => 'extension-for-animation-addons/extension-for-animation-addons.php',
+//					'source'       => 'custom',
+//					'is_pro'       => false,
+//					'slug'         => '',
+//					'download_url' => 'https://animation-addons.com/',
+//				],
 				'animation-addon-for-elementorpro' => [
 					'label'        => esc_html__( 'Animation Addon Pro', 'animation-addons-for-elementor' ),
 					'basename'     => 'wcf-addons-pro/wcf-addons-pro.php',

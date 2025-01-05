@@ -42,7 +42,7 @@ class Counter extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Counter', 'animation-addons-for-elementor' );
+		return esc_html__( 'Counter', 'animation-addons-for-elementor' );
 	}
 
 	/**

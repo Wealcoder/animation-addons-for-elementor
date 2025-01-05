@@ -42,7 +42,7 @@ class Social_Icons extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Social Icons', 'animation-addons-for-elementor' );
+		return esc_html__( 'Social Icons', 'animation-addons-for-elementor' );
 	}
 
 	/**

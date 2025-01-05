@@ -47,7 +47,7 @@ class Floating_Elements extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Floating Elements', 'animation-addons-for-elementor' );
+		return esc_html__( 'Floating Elements', 'animation-addons-for-elementor' );
 	}
 
 	/**

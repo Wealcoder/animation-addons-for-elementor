@@ -46,7 +46,7 @@ class Nav_Menu extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Nav Menu', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Nav Menu', 'animation-addons-for-elementor' );
 	}
 
 	/**

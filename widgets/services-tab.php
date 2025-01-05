@@ -54,7 +54,7 @@ class Services_Tab extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Services Tab', 'animation-addons-for-elementor' );
+		return esc_html__( 'Services Tab', 'animation-addons-for-elementor' );
 	}
 
 	/**

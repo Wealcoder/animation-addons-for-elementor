@@ -48,7 +48,7 @@ class Brand_Slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Brand Slider', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Brand Slider', 'animation-addons-for-elementor' );
 	}
 
 	/**

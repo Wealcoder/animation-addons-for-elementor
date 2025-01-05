@@ -20,7 +20,7 @@ class Post_Feature_Image extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'WCF Feature Image', 'animation-addons-for-elementor' );
+		return esc_html__( 'Feature Image', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

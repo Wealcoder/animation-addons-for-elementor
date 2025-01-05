@@ -53,7 +53,7 @@ class Event_slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Event Slider', 'animation-addons-for-elementor' );
+		return esc_html__( 'Event Slider', 'animation-addons-for-elementor' );
 	}
 
 	/**

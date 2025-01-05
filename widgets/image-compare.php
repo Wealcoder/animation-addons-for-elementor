@@ -45,7 +45,7 @@ class Image_Compare extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Image Compare', 'animation-addons-for-elementor' );
+		return esc_html__( 'Image Compare', 'animation-addons-for-elementor' );
 	}
 
 	/**

@@ -23,7 +23,7 @@ class Post_Meta_Info extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'WCF Post Meta', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Meta', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

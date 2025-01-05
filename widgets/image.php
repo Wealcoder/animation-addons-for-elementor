@@ -44,7 +44,7 @@ class Image extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Image', 'animation-addons-for-elementor' );
+		return esc_html__( 'Image', 'animation-addons-for-elementor' );
 	}
 
 	/**

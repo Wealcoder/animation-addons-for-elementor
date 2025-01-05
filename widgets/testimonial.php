@@ -49,7 +49,7 @@ class Testimonial extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'WCF Testimonial', 'animation-addons-for-elementor' );
+		return esc_html__( 'Testimonial', 'animation-addons-for-elementor' );
 	}
 
 	/**
