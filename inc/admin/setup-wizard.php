@@ -48,11 +48,11 @@ class WCF_Setup_Wizard_Init {
 	 */
 	public function init() {
       
-		add_action( 'admin_menu', [ $this, 'add_menu' ], 60 );
+		add_action( 'admin_menu', [ $this, 'add_menu' ], 999 );		
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_setup_wizard_settings', [ $this, 'save_settings' ] );
-		add_action('wp_ajax_wcf_installer_theme', [ $this ,'ajax_install_theme' ]);
-		add_action('wp_ajax_wcf_activate_theme', [ $this ,'activate_theme' ]);
+		add_action( 'wp_ajax_wcf_installer_theme', [ $this ,'ajax_install_theme' ]);
+		add_action( 'wp_ajax_wcf_activate_theme', [ $this ,'activate_theme' ]);
 		
 		if(isset( $_GET['page'] ) && $_GET[ 'page' ] == 'wcf_addons_setup_page')
 		{
@@ -153,14 +153,16 @@ class WCF_Setup_Wizard_Init {
 	 * [add_menu] Admin Menu
 	 */
 	public function add_menu() {
+	   
 		add_submenu_page(
-			'wcf_addons_settings',
-			esc_html__( 'Wizard', 'animation-addons-for-elementor' ),
-			esc_html__( 'Wizard', 'animation-addons-for-elementor' ),
+			'wcf_addons_page',
+			esc_html__( 'Setup', 'animation-addons-for-elementor' ),
+			esc_html__( 'Setup', 'animation-addons-for-elementor' ),
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			[ $this, 'render_wizard' ]
 		);
+	
 	}
 
 	/**
@@ -246,13 +248,11 @@ class WCF_Setup_Wizard_Init {
 
 			wp_parse_str( $setting, $settings );
 
-//			$settings = array_map( 'sanitize_text_field', $settings );
-
 			$settings = array_fill_keys( array_keys( $settings ), true );
 
 			// update new settings
 			if ( ! empty( $option_name ) ) {
-				$updated = update_option( $option_name, $settings );
+				update_option( $option_name, $settings );
 			}
 		}
 

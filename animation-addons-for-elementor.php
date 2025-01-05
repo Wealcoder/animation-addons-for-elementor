@@ -188,7 +188,7 @@ final class WCF_ADDONS_Plugin {
 			}
 		
 			//redirect addons setup page
-			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) ) {
+			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || !get_option( 'wcf_addons_setup_wizard' ) ) {
 				update_option( 'wcf_addons_setup_wizard', 'init' );
 				wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
 			}
