@@ -45,6 +45,7 @@ const ConnectWithUs = () => {
         <div>
           <a
             href="https://wordpress.org/support/plugin/animation-addons-for-elementor"
+            target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Create a ticket{" "}
@@ -80,6 +81,7 @@ const ConnectWithUs = () => {
         <div>
           <a
             href="https://wordpress.org/plugins/animation-addons-for-elementor/#reviews"
+            target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Give your feedback{" "}

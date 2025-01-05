@@ -21,11 +21,11 @@ const WizPro = () => {
               <div className="flex justify-between items-center gap-20">
                 <div>
                   <h1 className="text-[40px] font-medium">
-                    Unlock Every Pro Features!
+                    Access All Pro Features!
                   </h1>
                   <p className="text-lg text-[#525866] mt-2">
-                    Gain full access to all widgets, extensions, templates and
-                    every features.
+                    Enjoy unlimited use of all the premium widgets, extensions,
+                    and templates.
                   </p>
                 </div>
                 <div>
@@ -63,11 +63,8 @@ const WizPro = () => {
                       70+ Pro Widgets
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
-                      Unlock full potential of your website with 60+ Premium
-                      Widgets{" "}
-                      <span className="text-label">
-                        by enhancing interactivity.
-                      </span>
+                      Achieve maximum functionality of your websites with 70+
+                      premium widgets.
                     </h2>
                   </div>
                   <div className="w-full">
@@ -96,8 +93,8 @@ const WizPro = () => {
                       20+ Pro GSAP Extensions
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
-                      Unlock site’s advanced animation capabilities with 30+ Pro
-                      GSAP Extensions.
+                      Boost your website's advanced animation capabilities with
+                      20+ Pro GSAP extensions.
                     </h2>
                   </div>
                   <div className="xl:px-[50px]">
@@ -112,18 +109,18 @@ const WizPro = () => {
                 >
                   <div className="max-w-[472px]">
                     <h2 className="text-[42px] font-medium">
-                      Explore Wide Collection of Stunning Templates.
+                      Explore Diverse Pre-built Websites.
                     </h2>
                     <p className="text-base text-text-secondary w-[436px] mt-4">
-                      Find the perfect design for your website with our diverse
-                      range of customizable, high-quality templates that fit any
-                      style or purpose.
+                      Find a wide collection of pre-designed websites that offer
+                      seamless functionality, modern designs, and full
+                      customization.
                     </p>
                     <div className="mt-10 flex items-center gap-9">
                       <div>
-                        <h3 className="text-[42px] text-text">30+</h3>
+                        <h3 className="text-[42px] text-text">100+</h3>
                         <p className="text-xs text-text-secondary uppercase mt-2.5">
-                          Premium Templates
+                          Pre-built Websites
                         </p>
                       </div>
                       <div>

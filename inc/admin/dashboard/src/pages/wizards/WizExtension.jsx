@@ -11,11 +11,11 @@ const WizExtension = () => {
         >
           <div className="pt-[120px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
             <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
-              Activate Extensions That Your Need
+              Activate Extensions You Want to Use
             </h1>
             <p className="text-lg text-text-secondary">
-              Customize your site by activating Extensions that enhance your
-              needs.
+              Customize your website experience by turning on extensions that
+              serve your goals.
             </p>
           </div>
           <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
