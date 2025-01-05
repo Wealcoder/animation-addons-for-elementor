@@ -533,10 +533,10 @@ class Plugin {
 		require_once WCF_ADDONS_PATH . 'config.php';
 
 		if ( is_admin() ) {
-
-			// if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || 'init' === get_option( 'wcf_addons_setup_wizard' ) ) {
+			
+			//if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || 'init' === get_option( 'wcf_addons_setup_wizard' ) ) {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-			// }
+			//}
 
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}

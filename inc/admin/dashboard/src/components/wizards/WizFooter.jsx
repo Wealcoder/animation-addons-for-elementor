@@ -102,10 +102,6 @@ const WizFooter = ({ NavigateComponent }) => {
       .then((return_content) => {});
   };
 
-  const sendUserAnalytics = () => {
-    alert();
-  };
-
   const goToContinue = (currentPath) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
@@ -117,7 +113,6 @@ const WizFooter = ({ NavigateComponent }) => {
       try {
         saveWidget();
         saveExtension();
-        sendUserAnalytics();
         
       } catch (error) {
         console.log(error);
