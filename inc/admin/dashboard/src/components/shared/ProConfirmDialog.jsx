@@ -86,6 +86,7 @@ const ProConfirmDialog = ({ open, setOpen }) => {
                 ].action === "Download" ? (
                 <a
                   href="https://animation-addons.com/"
+                  target="_blank"
                   className={cn(
                     buttonVariants({ variant: "pro" }),
                     "w-full mt-6"
