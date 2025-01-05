@@ -67,6 +67,9 @@ class WCF_Admin_Init {
 		add_action( 'admin_menu', [ $this, 'add_menu' ], 25 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax', [ $this, 'save_settings' ] );
+		add_action( 'wp_ajax_wcf_dashboard_notice_store', [ $this, 'notice_store' ] );
+		add_action( 'wp_ajax_wcf_get_changelog_data', [ $this, 'get_changelog' ] );
+		add_action( 'wp_ajax_wcf_get_notice_data', [ $this, 'get_notice' ] );
 		add_action( 'wp_ajax_save_settings_with_ajax_dashboard', [ $this, 'save_settings_dashboard' ] );
 		
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
@@ -485,6 +488,76 @@ class WCF_Admin_Init {
 		}
 		
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
+	}
+
+	public function notice_store() {
+
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		if ( ! isset( $_POST['notice'] ) ) {
+			return;
+		}
+		
+		$sanitize_data = wp_unslash( sanitize_text_field($_POST['notice']) );
+		update_option('wcf_notice_data', sanitize_data);
+			
+		$return_message = [
+				'message' => 'Notice Updated'
+		  ];
+		wp_send_json( $return_message );
+	}
+
+	public function get_changelog() {
+
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		$transient = get_transient( 'wcf_changelog_notice_cache1' );
+		$return_message = [
+			'notice' => ''
+		];
+			// Yep!  Just return it and we're done.
+		if( ! empty( $transient ) ) {			
+			$return_message['notice'] = $transient;				
+			} else {		
+				$url = 'https://store.wealcoder.com/wp-json/userdata/v1/changelog?p=768';						
+				$args = array(
+					'timeout' => 60,
+					'sslverify' => false,					
+					'headers' => array(
+						'Accept' => 'application/json'
+					));				
+				$out = wp_remote_get( $url, $args );
+				$body = wp_remote_retrieve_body($out);	
+				$decode_data = json_decode($body);			
+				set_transient( 'wcf_changelog_notice_cache1', $decode_data, DAY_IN_SECONDS ); 
+			}
+	
+		$return_message = [
+				'changelog' => $decode_data
+		];
+		wp_send_json( $return_message );
+	}
+
+	public function get_notice() {
+
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		$return_message = [
+				'notice' => get_option('wcf_notice_data')
+		  ];
+		wp_send_json( $return_message );
 	}
 
 	public function save_settings_dashboard() {
