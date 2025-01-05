@@ -1,6 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import WizFooter from "@/components/wizards/WizFooter";
 import { WizHeader } from "@/components/wizards/WizHeader";
+import WizCongratulation from "@/pages/wizards/WizCongratulation";
 import { useEffect, useState, lazy, Suspense } from "react";
 
 const WizardStart = lazy(() => import("@/pages/wizards/WizardStart"));
@@ -33,6 +34,8 @@ const WizardLayout = () => {
         return <WizTemplate />;
       case "go-pro":
         return <WizPro />;
+      case "congratulations":
+        return <WizCongratulation />;
       default:
         return <WizardStart />;
     }
@@ -55,7 +58,9 @@ const WizardLayout = () => {
             </Suspense>
           </ScrollArea>
         </div>
-        <WizFooter NavigateComponent={NavigateComponent} />
+        {tabKey !== "congratulations" && (
+          <WizFooter NavigateComponent={NavigateComponent} />
+        )}
       </div>
     </div>
   );

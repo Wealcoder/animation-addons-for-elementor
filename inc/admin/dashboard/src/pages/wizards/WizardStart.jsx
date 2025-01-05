@@ -50,7 +50,7 @@ const WizardStart = () => {
               </p>
             </div>
             <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
-              GSAP Animations at Your Fingertips with WCF Animation Addons
+              Create Stunning Animations with WCF Animation Addons
             </h1>
           </div>
           <div className="mt-[40px] rounded-3xl max-w-[892px] mx-auto border-[10px] border-white overflow-hidden">
@@ -92,8 +92,9 @@ const WizardStart = () => {
                             <span className="text-label">(Recommended)</span>
                           </h2>
                           <p className="mt-2.5 text-text-secondary">
-                            We'll take care of the entire the configuration
-                            process for you ensuring that everything.
+                            We provide all the essential settings for the basic
+                            plan to ensure a ready-to-use experience. This
+                            allows users a quick setup and seamless operation.
                           </p>
                         </div>
                       </div>
@@ -132,11 +133,13 @@ const WizardStart = () => {
                         />
                         <div className="mt-4 w-[95%]">
                           <h2 className="text-base font-medium">
-                            Advanced Configuration
+                            Custom Configuration
                           </h2>
                           <p className="mt-2.5 text-text-secondary">
-                            We'll take care of the entire the configuration
-                            process for you ensuring that everything.
+                            Users need to modify and personalize settings as per
+                            their unique requirements for the custom
+                            configuration. This offers optimal flexibility for
+                            users to apply their specific preferences.
                           </p>
                         </div>
                       </div>
@@ -155,7 +158,7 @@ const WizardStart = () => {
           </div>
           <div className="mt-[48px] max-w-[730px] mx-auto text-center">
             <p className="text-lg text-text-secondary">
-              Bring your website to life with amazing features.
+              Make your websites shine with innovative features.
             </p>
           </div>
           <div className="mt-6 flex justify-center items-center gap-5">

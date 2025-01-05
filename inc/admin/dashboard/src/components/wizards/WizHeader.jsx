@@ -28,6 +28,11 @@ const NavList = [
     title: "Go Pro",
     path: "go-pro",
   },
+  {
+    serial: 6,
+    title: "Congratulations",
+    path: "congratulations",
+  },
 ];
 
 export const WizHeader = ({ NavigateComponent }) => {
@@ -78,7 +83,7 @@ export const WizHeader = ({ NavigateComponent }) => {
             >
               <p
                 className={cn(
-                  "w-7 h-7 rounded-full border  flex justify-center items-center",
+                  "w-7 h-7 rounded-full border flex justify-center items-center",
                   getSerial(currentPath) >= item.serial
                     ? "text-button-secondary border-brand bg-brand"
                     : "text-text-secondary border-border"

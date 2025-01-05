@@ -85,6 +85,7 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
             ].action === "Download" ? (
             <a
               href="https://animation-addons.com/"
+              target="_blank"
               className={cn(buttonVariants({ variant: "pro" }))}
             >
               <span className="me-2 flex">

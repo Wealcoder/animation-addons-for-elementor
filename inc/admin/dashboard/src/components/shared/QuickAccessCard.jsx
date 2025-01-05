@@ -26,6 +26,7 @@ const QuickAccessCard = ({ item, className }) => {
     <div className={cn("group bg-background box-border", className)}>
       <a
         href={checkUrl(item)}
+        target="_blank"
         aria-disabled={item.url ? false : true}
         className={cn(item.url ? "" : "pointer-events-none")}
       >

@@ -11,8 +11,8 @@
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages
  *
- * Elementor tested up to: 3.26.0
- * Elementor Pro tested up to: 3.19.0
+ * Elementor tested up to: 3.26.3
+ * Elementor Pro tested up to: 3.26.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -188,7 +188,7 @@ final class WCF_ADDONS_Plugin {
 			}
 		
 			//redirect addons setup page
-			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) ) {
+			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || !get_option( 'wcf_addons_setup_wizard' ) ) {
 				update_option( 'wcf_addons_setup_wizard', 'init' );
 				wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
 			}
