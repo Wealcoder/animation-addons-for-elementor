@@ -62,7 +62,8 @@ export const useNotification = () => {
   const {
     mainState: { notice, changelog },
     setNotice,
+    updateNotice,
     setChangelog,
   } = useContext(AppContext);
-  return { notice, changelog, setNotice, setChangelog };
+  return { notice, changelog, setNotice, updateNotice, setChangelog };
 };

@@ -17,7 +17,7 @@ const ShowWidgets = ({
   setWidgetCount,
 }) => {
   const { allWidgets } = useWidgets();
-  const { notice, setNotice } = useNotification();
+  const { updateNotice } = useNotification();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
 
   const [tabValue, setTabValue] = useState("all");
@@ -108,36 +108,11 @@ const ShowWidgets = ({
         type: "notice",
         title: "Widgets Activity Log",
         description:
-          "Your widget settings have been successfully updated in the following time period. Please check the dashboard to see the latest changes.",
+          "Your widget settings have been successfully updated in the following time period.",
         date: utcDate,
       };
 
-      const result = notice;
-
-      if (result.length >= 10) {
-        result.pop();
-      }
-      result.unshift(sampleData);
-
-      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-        },
-
-        body: new URLSearchParams({
-          action: "wcf_dashboard_notice_store",
-          notice: JSON.stringify(result),
-          nonce: WCF_ADDONS_ADMIN.nonce,
-        }),
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((return_content) => {
-          setNotice(result);
-        });
+      updateNotice(sampleData);
     }
 
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {

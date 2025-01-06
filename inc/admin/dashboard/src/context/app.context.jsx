@@ -19,7 +19,8 @@ import {
 import { createContext, useCallback, useReducer } from "react";
 
 const initialState = {
-  allWidgets: JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {},
+  allWidgets:
+    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {},
   allExtensions:
     JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
     {},
@@ -181,6 +182,37 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateNotice = useCallback(
+    async (data) => {
+      const result = mainState.notice;
+      if (result.length >= 10) {
+        result.pop();
+      }
+      result.unshift(data);
+
+      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+
+        body: new URLSearchParams({
+          action: "wcf_dashboard_notice_store",
+          notice: JSON.stringify(result),
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((return_content) => {
+          setNotice(result);
+        });
+    },
+    [mainState.notice]
+  );
+
   return {
     mainState,
     setAllWidgets,
@@ -198,6 +230,7 @@ const useMainContext = (state) => {
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
     updateActiveFullExtension,
+    updateNotice,
   };
 };
 

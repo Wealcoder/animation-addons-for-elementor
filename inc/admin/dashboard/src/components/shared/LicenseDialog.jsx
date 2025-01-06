@@ -5,7 +5,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -16,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RiInformation2Fill, RiKey2Line } from "react-icons/ri";
+import { RiInformation2Fill } from "react-icons/ri";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,7 +29,7 @@ import {
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { useActivate } from "@/hooks/app.hooks";
+import { useActivate, useNotification } from "@/hooks/app.hooks";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -43,6 +42,7 @@ const LicenseDialog = ({ open, setOpen }) => {
   const { activated, setActivated } = useActivate();
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { updateNotice } = useNotification();
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -82,18 +82,41 @@ const LicenseDialog = ({ open, setOpen }) => {
       })
       .then((return_content) => {
         if (return_content.success) {
+          const date = new Date();
+          const utcDate = date.toISOString();
+
           if (return_content?.license === "valid") {
             WCF_ADDONS_ADMIN.addons_config.wcf_valid = true;
             setActivated(WCF_ADDONS_ADMIN.addons_config);
             toast.success("Activate Successful", {
               position: "top-right",
             });
+
+            const sampleData = {
+              type: "notice",
+              title: "License activation update",
+              description:
+                "Your license has been successfully activated. You can now enjoy all the features of the plugin. Thank you for choosing our plugin!",
+              date: utcDate,
+            };
+
+            updateNotice(sampleData);
           } else {
             WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
             setActivated(WCF_ADDONS_ADMIN.addons_config);
             toast.success("Deactivate Successful", {
               position: "top-right",
             });
+
+            const sampleData = {
+              type: "notice",
+              title: "License Deactivation update",
+              description:
+                "Your license has been successfully deactivated. Thank you for using our plugin!",
+              date: utcDate,
+            };
+
+            updateNotice(sampleData);
           }
         } else {
           setErrorMessage(return_content.message);

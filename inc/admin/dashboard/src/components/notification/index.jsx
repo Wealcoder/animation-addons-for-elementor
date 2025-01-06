@@ -60,16 +60,20 @@ const Notification = () => {
           <h2 className="text-lg font-medium">Updates</h2>
         </div>
         <ScrollArea className="h-[90vh] px-5 py-6">
-          {notice &&
-            notice?.length &&
+          {notice && notice.length ? (
             notice?.map((item, i) => (
               <>
                 {showContent(item)}{" "}
                 {notice.length - 1 !== i && <Separator className="my-6" />}
               </>
-            ))}
+            ))
+          ) : (
+            <div>
+              <p className="mt-2 text-sm">No Notification Found</p>
+            </div>
+          )}
 
-          {changelog && changelog.length && (
+          {changelog && (
             <>
               <Separator className="my-6" />
               {changelog?.map((log, i) => (
