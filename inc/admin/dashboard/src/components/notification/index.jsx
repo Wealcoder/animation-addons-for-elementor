@@ -4,8 +4,13 @@ import { RiNotificationLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
+import { useNotification } from "@/hooks/app.hooks";
+import React from "react";
 
 const Notification = () => {
+  const { notice, changelog } = useNotification();
+
+  console.log(notice);
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -41,82 +46,34 @@ const Notification = () => {
               Get Pro Version
             </Button>
           </div>
-          <Separator className="my-6" />
-          <div>
-            <Badge variant="secondary">Version 1.2</Badge>
-            <h3 className="text-lg font-medium mt-4">Oct 12, 2024</h3>
-            <p className="mt-1 text-sm">
-              Ui Components, and other stuff changes
-            </p>
-            <div className="mt-5">
-              <h4 className="text-sm font-medium">New Features :</h4>
-              <div className="ps-4">
-                <ul className="mt-2 list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
-                  <li>
-                    Added Advanced Timeline Controls for more precise animation
-                    sequencing.
-                  </li>
-                  <li>
-                    Introduced Parallax Scrolling Effects: Create depth in your
-                    site with smooth parallax animations.
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-3">
-              <h4 className="text-sm font-medium">New Features :</h4>
-              <div className="ps-4">
-                <ul className="mt-2 list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
-                  <li>
-                    Added Advanced Timeline Controls for more precise animation
-                    sequencing.
-                  </li>
-                  <li>
-                    Introduced Parallax Scrolling Effects: Create depth in your
-                    site with smooth parallax animations.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <Separator className="my-6" />
-          <div>
-            <Badge variant="secondary">Version 1.2</Badge>
-            <h3 className="text-lg font-medium mt-4">Oct 12, 2024</h3>
-            <p className="mt-1 text-sm">
-              Ui Components, and other stuff changes
-            </p>
-            <div className="mt-5">
-              <h4 className="text-sm font-medium">New Features :</h4>
-              <div className="ps-4">
-                <ul className="mt-2 list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
-                  <li>
-                    Added Advanced Timeline Controls for more precise animation
-                    sequencing.
-                  </li>
-                  <li>
-                    Introduced Parallax Scrolling Effects: Create depth in your
-                    site with smooth parallax animations.
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-3">
-              <h4 className="text-sm font-medium">New Features :</h4>
-              <div className="ps-4">
-                <ul className="mt-2 list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
-                  <li>
-                    Added Advanced Timeline Controls for more precise animation
-                    sequencing.
-                  </li>
-                  <li>
-                    Introduced Parallax Scrolling Effects: Create depth in your
-                    site with smooth parallax animations.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          {changelog && changelog.length && (
+            <>
+              <Separator className="my-6" />
+              {changelog?.map((log, i) => (
+                <React.Fragment key={`changelog-${log.version}-${i}`}>
+                  <div>
+                    <Badge variant="secondary">Version {log.version}</Badge>
+                    <h3 className="text-lg font-medium mt-4">{log.date}</h3>
+                    <p className="mt-1 text-sm">{log.summery}</p>
+                    <div className="mt-5 ps-4">
+                      {log?.data && log?.data?.length && (
+                        <ul className="list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
+                          {log?.data.map((feature, j) => (
+                            <li key={`feature-${i}-${j}`}>
+                              <span className="text-text">
+                                {feature.type}:{" "}
+                              </span>{" "}
+                              {feature.title}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </React.Fragment>
+              ))}
+            </>
+          )}
         </ScrollArea>
       </SheetContent>
     </Sheet>

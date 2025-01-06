@@ -518,13 +518,13 @@ class WCF_Admin_Init {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
-		$transient = get_transient( 'wcf_changelog_notice_cache1' );
+		$transient = get_transient( 'wcf_changelog_notice_cache3' );
 		$return_message = [
-			'notice' => ''
+			'changelog' => ''
 		];
 			// Yep!  Just return it and we're done.
-		if( ! empty( $transient ) ) {			
-			$return_message['notice'] = $transient;				
+		if( $transient !== false ) {			
+			$return_message['changelog'] = $transient;				
 			} else {		
 				$url = 'https://store.wealcoder.com/wp-json/userdata/v1/changelog?p=768';						
 				$args = array(
@@ -536,12 +536,10 @@ class WCF_Admin_Init {
 				$out = wp_remote_get( $url, $args );
 				$body = wp_remote_retrieve_body($out);	
 				$decode_data = json_decode($body);			
-				set_transient( 'wcf_changelog_notice_cache1', $decode_data, DAY_IN_SECONDS ); 
+				$return_message['changelog'] = $decode_data;				
+				set_transient( 'wcf_changelog_notice_cache3', $decode_data, 12 * HOUR_IN_SECONDS ); 
 			}
-	
-		$return_message = [
-				'changelog' => $decode_data
-		];
+			
 		wp_send_json( $return_message );
 	}
 

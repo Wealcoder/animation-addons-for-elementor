@@ -57,3 +57,12 @@ export const useSetup = () => {
   } = useContext(AppContext);
   return { setupType, setSetupType };
 };
+
+export const useNotification = () => {
+  const {
+    mainState: { notice, changelog },
+    setNotice,
+    setChangelog,
+  } = useContext(AppContext);
+  return { notice, changelog, setNotice, setChangelog };
+};
