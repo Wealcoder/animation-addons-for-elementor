@@ -16,8 +16,13 @@ import {
   deviceMediaMatch,
   filterGeneralExtension,
   filterGsapExtension,
+  isEqual,
 } from "@/lib/utils";
-import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import {
+  useActiveItem,
+  useExtensions,
+  useNotification,
+} from "@/hooks/app.hooks";
 import ExtensionGsapSettings from "./ExtensionGsapSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import { toast } from "sonner";
@@ -30,6 +35,7 @@ const ShowExtensions = ({
 }) => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
+  const { notice, setNotice } = useNotification();
   const {
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
@@ -76,6 +82,51 @@ const ShowExtensions = ({
   }, [pluginIdParam]);
 
   const saveExtension = async () => {
+    const isChanged = isEqual(
+      allExtensions,
+      JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
+        {}
+    );
+
+    if (isChanged && Object.keys(isChanged).length) {
+      const date = new Date();
+      const utcDate = date.toISOString();
+
+      const sampleData = {
+        type: "notice",
+        title: "Extensions Activity Log",
+        description:
+          "Your extension settings have been successfully updated in the following time period. Please check the dashboard to see the latest changes.",
+        date: utcDate,
+      };
+
+      const result = notice;
+      if (result.length >= 10) {
+        result.pop();
+      }
+      result.unshift(sampleData);
+
+      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+
+        body: new URLSearchParams({
+          action: "wcf_dashboard_notice_store",
+          notice: JSON.stringify(result),
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((return_content) => {
+          setNotice(result);
+        });
+    }
+
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {

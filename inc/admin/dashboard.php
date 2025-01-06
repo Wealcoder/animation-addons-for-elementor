@@ -502,7 +502,7 @@ class WCF_Admin_Init {
 		}
 		
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['notice']) );
-		update_option('wcf_notice_data', sanitize_data);
+		update_option('wcf_notice_data', $sanitize_data);
 			
 		$return_message = [
 				'message' => 'Notice Updated'
@@ -552,7 +552,7 @@ class WCF_Admin_Init {
 		}
 
 		$return_message = [
-				'notice' => get_option('wcf_notice_data')
+				'notice' => json_decode(get_option('wcf_notice_data'))
 		  ];
 		wp_send_json( $return_message );
 	}
