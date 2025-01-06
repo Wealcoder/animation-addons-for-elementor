@@ -490,27 +490,27 @@ class Plugin {
 		$categories = [];
 
 		$categories['weal-coder-addon'] = [
-			'title' => esc_html__( 'WCF', 'animation-addons-for-elementor' ),
+			'title' => esc_html__( 'AAE', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-hf-addon'] = [
-			'title' => esc_html__( 'WCF Header/Footer', 'animation-addons-for-elementor' ),
+			'title' => esc_html__( 'AAE Header/Footer', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-archive-addon'] = [
-			'title' => esc_html__( 'WCF Archive', 'animation-addons-for-elementor' ),
+			'title' => esc_html__( 'AAE Archive', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-search-addon'] = [
-			'title' => esc_html__( 'WCF Search', 'animation-addons-for-elementor' ),
+			'title' => esc_html__( 'AAE Search', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-single-addon'] = [
-			'title' => esc_html__( 'WCF Single', 'animation-addons-for-elementor' ),
+			'title' => esc_html__( 'AAE Single', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
