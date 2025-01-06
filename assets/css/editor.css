@@ -8,9 +8,8 @@
   background-image: url("../images/wcf.png");
   background-position: center center;
   background-size: cover;
-  filter: grayscale(1);
+  filter: grayscale(0);
   transition: 0.3s;
-  opacity: 0.4;
 }
 
 .elementor-panel .elementor-element:hover .icon .wcf::after {
