@@ -19,8 +19,10 @@ import {
 import { createContext, useCallback, useReducer } from "react";
 
 const initialState = {
-  allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
-  allExtensions: WCF_ADDONS_ADMIN?.addons_config?.extensions || {},
+  allWidgets: JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {},
+  allExtensions:
+    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
+    {},
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
   setupType: "basic",
   notice: [],
@@ -83,7 +85,6 @@ const useMainContext = (state) => {
   }, []);
 
   const setSetupType = useCallback((data) => {
-    console.log(mainState.allExtensions);
     if (data && data === "advance") {
       // update widget state
       const widgetResult = disableAllWidget(mainState.allWidgets.elements);
