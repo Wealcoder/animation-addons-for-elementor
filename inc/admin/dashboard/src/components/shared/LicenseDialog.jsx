@@ -180,36 +180,54 @@ const LicenseDialog = ({ open, setOpen }) => {
             <FormField
               control={form.control}
               name="license"
-              render={({ field }) => (
-                <FormItem className="mt-5">
-                  <div className="flex gap-1 items-center">
-                    <FormLabel className="font-normal text-text">
-                      License Key
-                    </FormLabel>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger className="bg-transparent flex items-center">
-                          <RiInformation2Fill color="#CACFD8" size={18} />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[200px]">
-                          <p>
-                            Copy the license key given in your downloaded file
-                            and paste in below
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <FormControl className="relative">
-                    <Input
-                      placeholder="Enter your license key here"
-                      {...field}
-                    />
-                  </FormControl>
+              render={({ field }) => {
+                const getMaskedValue = (fullValue) => {
+                  const visibleLength = 6; // Adjust to 8 if needed
+                  const maskedLength = Math.max(
+                    0,
+                    fullValue.length - visibleLength
+                  );
+                  const maskedPart = "*".repeat(maskedLength);
+                  const visiblePart = fullValue.slice(-visibleLength);
+                  return maskedPart + visiblePart;
+                };
 
-                  <FormMessage />
-                </FormItem>
-              )}
+                const handleChange = (e) => {
+                  const fullValue = e.target.value;
+                  field.onChange(fullValue); // Update form state with the full value
+                };
+
+                return (
+                  <FormItem className="mt-5">
+                    <div className="flex gap-1 items-center">
+                      <FormLabel className="font-normal text-text">
+                        License Key
+                      </FormLabel>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger className="bg-transparent flex items-center">
+                            <RiInformation2Fill color="#CACFD8" size={18} />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[200px]">
+                            <p>
+                              Copy the license key given in your downloaded file
+                              and paste it below.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <FormControl className="relative">
+                      <Input
+                        placeholder="Enter your license key here"
+                        value={getMaskedValue(field.value || "")}
+                        onChange={handleChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {errorMessage ? (
