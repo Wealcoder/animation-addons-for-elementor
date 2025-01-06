@@ -101,6 +101,8 @@ const LicenseDialog = ({ open, setOpen }) => {
             };
 
             updateNotice(sampleData);
+
+            window.location.reload();
           } else {
             WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
             setActivated(WCF_ADDONS_ADMIN.addons_config);
@@ -117,6 +119,8 @@ const LicenseDialog = ({ open, setOpen }) => {
             };
 
             updateNotice(sampleData);
+
+            window.location.reload();
           }
         } else {
           setErrorMessage(return_content.message);

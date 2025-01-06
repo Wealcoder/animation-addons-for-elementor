@@ -174,7 +174,7 @@ const ShowExtensions = ({
               <AccordionItem key={extension} value={extension}>
                 <div className="p-[2px]">
                   <div className="flex items-center bg-background justify-between gap-3 py-3 px-4">
-                    <AccordionTrigger className="rounded">
+                    <AccordionTrigger className="rounded cursor-pointer w-full">
                       <div className="flex flex-col gap-1">
                         <div className="text-[15px] leading-6 font-medium flex items-center">
                           {filteredGsapExtensions?.elements[extension].title}
@@ -191,14 +191,6 @@ const ShowExtensions = ({
                             ""
                           )}
                         </div>
-                        <a
-                          href={
-                            filteredGsapExtensions?.elements[extension]?.doc_url
-                          }
-                          className="text-sm text-text-secondary"
-                        >
-                          Documentation
-                        </a>
                       </div>
                     </AccordionTrigger>
                     <div className="flex gap-1 items-center">
@@ -268,6 +260,10 @@ const ShowExtensions = ({
                               }
                               slug={content}
                               updateActiveItem={updateActiveGsapExtension}
+                              isDisable={
+                                !filteredGsapExtensions?.elements[extension]
+                                  ?.is_active
+                              }
                               className="rounded p-5"
                             />
                           </React.Fragment>

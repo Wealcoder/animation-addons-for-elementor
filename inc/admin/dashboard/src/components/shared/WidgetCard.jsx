@@ -1,26 +1,27 @@
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
+import { useActivate } from "@/hooks/app.hooks";
 
-const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
+const WidgetCard = ({
+  widget,
+  slug,
+  className,
+  updateActiveItem,
+  isDisable = false,
+}) => {
+  const { activated } = useActivate();
+
   const [open, setOpen] = useState(false);
-
-
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
-  const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
-  const extensionAction =
-    WCF_ADDONS_ADMIN?.addons_config?.integrations?.plugins?.elements[
-      "extension-for-animation-addons"
-    ]?.action;
-
   const setCheck = (value, slug) => {
     if (widget?.is_pro) {
-      if (isValid) {
+      if (activated.wcf_valid) {
         if (updateActiveItem) {
           updateActiveItem({ value, slug });
         }
@@ -97,6 +98,7 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
             </div>
             <div>
               <Switch
+                disabled={isDisable}
                 checked={widget?.is_active}
                 onCheckedChange={(value) => setCheck(value, slug)}
               />
