@@ -14,7 +14,7 @@ const Integrations = () => {
         <ShowIntegrations />
 
         {/* promotion  */}
-        <div className="grid grid-cols-3 gap-3 mt-11">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-11">
           {PromotionList?.map((item, i) => (
             <div
               key={`promotion-${i}`}
