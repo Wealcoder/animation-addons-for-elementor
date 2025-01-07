@@ -32,7 +32,7 @@ import { Loader2 } from "lucide-react";
 import { useActivate, useNotification } from "@/hooks/app.hooks";
 
 const FormSchema = z.object({
-  email: z.string().email(),
+  // email: z.string().email(),
   license: z.string().min(1, {
     message: "Please enter your license",
   }),
@@ -47,7 +47,7 @@ const LicenseDialog = ({ open, setOpen }) => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: WCF_ADDONS_ADMIN.addons_config.sl_lic_email || "",
+      // email: WCF_ADDONS_ADMIN.addons_config.sl_lic_email || "",
       license: WCF_ADDONS_ADMIN.addons_config.sl_lic || "",
     },
   });
@@ -60,7 +60,7 @@ const LicenseDialog = ({ open, setOpen }) => {
         ? "wcf_addon_pro_sl_deactivate"
         : "wcf_addon_pro_sl_activate",
       wcf_addon_sl_license_key: data.license,
-      email: data.email,
+      email: "",
       nonce: WCF_ADDONS_ADMIN.nonce,
     };
 
@@ -147,7 +147,7 @@ const LicenseDialog = ({ open, setOpen }) => {
         <Separator className="my-6 bg-[#EAECF0]" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
+            {/* <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
@@ -176,7 +176,7 @@ const LicenseDialog = ({ open, setOpen }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="license"
@@ -198,7 +198,7 @@ const LicenseDialog = ({ open, setOpen }) => {
                 };
 
                 return (
-                  <FormItem className="mt-5">
+                  <FormItem>
                     <div className="flex gap-1 items-center">
                       <FormLabel className="font-normal text-text">
                         License Key
