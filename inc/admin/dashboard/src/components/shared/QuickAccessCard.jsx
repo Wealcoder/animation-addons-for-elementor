@@ -14,7 +14,7 @@ const QuickAccessCard = ({ item, className }) => {
         item?.slug === "custom-fonts" &&
         !generalExtension[item.slug].is_active
       ) {
-        return `${window.location.origin}/wp-admin/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-fonts`;
+        return `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-fonts`;
       } else {
         return item.url;
       }

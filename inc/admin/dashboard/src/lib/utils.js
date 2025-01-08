@@ -244,3 +244,38 @@ export const generateGenExtSearchContent = (mainContent) => {
     items: storeData,
   };
 };
+
+export const isEqual = (obj1, obj2) => {
+  const differences = {};
+
+  const compare = (o1, o2, path = "") => {
+    const keys = new Set([...Object.keys(o1 || {}), ...Object.keys(o2 || {})]);
+
+    keys.forEach((key) => {
+      const fullPath = path ? `${path}.${key}` : key;
+
+      if (!(key in (o1 || {}))) {
+        differences[fullPath] = { type: "added", value: o2[key] };
+      } else if (!(key in (o2 || {}))) {
+        differences[fullPath] = { type: "removed", value: o1[key] };
+      } else if (
+        typeof o1[key] === "object" &&
+        typeof o2[key] === "object" &&
+        o1[key] !== null &&
+        o2[key] !== null
+      ) {
+        // Recurse for nested objects but also handle direct changes
+        compare(o1[key], o2[key], fullPath);
+      } else if (o1[key] !== o2[key]) {
+        differences[fullPath] = {
+          type: "modified",
+          oldValue: o1[key],
+          newValue: o2[key],
+        };
+      }
+    });
+  };
+
+  compare(obj1, obj2);
+  return differences;
+};

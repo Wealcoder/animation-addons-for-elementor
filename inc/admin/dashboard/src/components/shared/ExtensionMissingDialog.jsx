@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button, buttonVariants } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import ProDialog from "../../../public/images/pro-dialog.png";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ const ExtensionMissingDialog = ({ open, setOpen }) => {
             </h2>
 
             <a
-              href={`${window.location.origin}/wp-admin/admin.php?page=wcf_addons_settings&tab=integrations`}
+              href={`${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=integrations`}
               className={cn(
                 buttonVariants({ variant: "pro" }),
                 "w-full mt-6 no-underline"

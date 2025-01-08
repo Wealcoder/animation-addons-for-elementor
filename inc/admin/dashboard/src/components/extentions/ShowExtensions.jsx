@@ -16,8 +16,13 @@ import {
   deviceMediaMatch,
   filterGeneralExtension,
   filterGsapExtension,
+  isEqual,
 } from "@/lib/utils";
-import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import {
+  useActiveItem,
+  useExtensions,
+  useNotification,
+} from "@/hooks/app.hooks";
 import ExtensionGsapSettings from "./ExtensionGsapSettings";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import { toast } from "sonner";
@@ -30,6 +35,7 @@ const ShowExtensions = ({
 }) => {
   const exSettings = ExtensionSettingConfig;
   const { allExtensions } = useExtensions();
+  const { updateNotice } = useNotification();
   const {
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
@@ -76,6 +82,27 @@ const ShowExtensions = ({
   }, [pluginIdParam]);
 
   const saveExtension = async () => {
+    const isChanged = isEqual(
+      allExtensions,
+      JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
+        {}
+    );
+
+    if (isChanged && Object.keys(isChanged).length) {
+      const date = new Date();
+      const utcDate = date.toISOString();
+
+      const sampleData = {
+        type: "notice",
+        title: "Extensions Activity Log",
+        description:
+          "Your extension settings have been successfully updated in the following time period.",
+        date: utcDate,
+      };
+
+      updateNotice(sampleData);
+    }
+
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -147,7 +174,7 @@ const ShowExtensions = ({
               <AccordionItem key={extension} value={extension}>
                 <div className="p-[2px]">
                   <div className="flex items-center bg-background justify-between gap-3 py-3 px-4">
-                    <AccordionTrigger className="rounded">
+                    <AccordionTrigger className="rounded cursor-pointer w-full">
                       <div className="flex flex-col gap-1">
                         <div className="text-[15px] leading-6 font-medium flex items-center">
                           {filteredGsapExtensions?.elements[extension].title}
@@ -164,14 +191,6 @@ const ShowExtensions = ({
                             ""
                           )}
                         </div>
-                        <a
-                          href={
-                            filteredGsapExtensions?.elements[extension]?.doc_url
-                          }
-                          className="text-sm text-text-secondary"
-                        >
-                          Documentation
-                        </a>
                       </div>
                     </AccordionTrigger>
                     <div className="flex gap-1 items-center">
@@ -241,6 +260,10 @@ const ShowExtensions = ({
                               }
                               slug={content}
                               updateActiveItem={updateActiveGsapExtension}
+                              isDisable={
+                                !filteredGsapExtensions?.elements[extension]
+                                  ?.is_active
+                              }
                               className="rounded p-5"
                             />
                           </React.Fragment>

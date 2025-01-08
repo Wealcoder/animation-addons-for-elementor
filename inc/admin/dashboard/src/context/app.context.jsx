@@ -19,10 +19,15 @@ import {
 import { createContext, useCallback, useReducer } from "react";
 
 const initialState = {
-  allWidgets: WCF_ADDONS_ADMIN?.addons_config?.widgets || {},
-  allExtensions: WCF_ADDONS_ADMIN?.addons_config?.extensions || {},
+  allWidgets:
+    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {},
+  allExtensions:
+    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
+    {},
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
   setupType: "basic",
+  notice: [],
+  changelog: [],
 };
 
 const reducer = (state, action) => {
@@ -35,6 +40,11 @@ const reducer = (state, action) => {
       return { ...state, activated: action.value };
     case "setSetupType":
       return { ...state, setupType: action.value };
+    case "setNotice":
+      return { ...state, notice: action.value };
+    case "setChangelog":
+      return { ...state, changelog: action.value };
+
     default:
       throw new Error();
   }
@@ -62,9 +72,20 @@ const useMainContext = (state) => {
       value: data,
     });
   }, []);
+  const setNotice = useCallback((data) => {
+    dispatch({
+      type: "setNotice",
+      value: data,
+    });
+  }, []);
+  const setChangelog = useCallback((data) => {
+    dispatch({
+      type: "setChangelog",
+      value: data,
+    });
+  }, []);
 
   const setSetupType = useCallback((data) => {
-    console.log(mainState.allExtensions);
     if (data && data === "advance") {
       // update widget state
       const widgetResult = disableAllWidget(mainState.allWidgets.elements);
@@ -161,11 +182,44 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateNotice = useCallback(
+    async (data) => {
+      const result = mainState.notice;
+      if (result.length >= 10) {
+        result.pop();
+      }
+      result.unshift(data);
+
+      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+
+        body: new URLSearchParams({
+          action: "wcf_dashboard_notice_store",
+          notice: JSON.stringify(result),
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((return_content) => {
+          setNotice(result);
+        });
+    },
+    [mainState.notice]
+  );
+
   return {
     mainState,
     setAllWidgets,
     setAllExtensions,
     setActivated,
+    setNotice,
+    setChangelog,
     setSetupType,
     updateActiveWidget,
     updateActiveGroupWidget,
@@ -176,6 +230,7 @@ const useMainContext = (state) => {
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
     updateActiveFullExtension,
+    updateNotice,
   };
 };
 
@@ -184,6 +239,8 @@ export const AppContext = createContext({
   setAllWidgets: () => {},
   setAllExtensions: () => {},
   setActivated: () => {},
+  setNotice: () => {},
+  setChangelog: () => {},
   setSetupType: () => {},
   updateActiveWidget: () => {},
 });

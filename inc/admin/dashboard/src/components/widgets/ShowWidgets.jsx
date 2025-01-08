@@ -4,8 +4,8 @@ import WidgetCard from "../shared/WidgetCard";
 import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { deviceMediaMatch, filterWidgets } from "@/lib/utils";
-import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import { deviceMediaMatch, filterWidgets, isEqual } from "@/lib/utils";
+import { useActiveItem, useNotification, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
@@ -17,6 +17,7 @@ const ShowWidgets = ({
   setWidgetCount,
 }) => {
   const { allWidgets } = useWidgets();
+  const { updateNotice } = useNotification();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
 
   const [tabValue, setTabValue] = useState("all");
@@ -94,6 +95,26 @@ const ShowWidgets = ({
   };
 
   const saveWidget = async () => {
+    const isChanged = isEqual(
+      allWidgets,
+      JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {}
+    );
+
+    if (isChanged && Object.keys(isChanged).length) {
+      const date = new Date();
+      const utcDate = date.toISOString();
+
+      const sampleData = {
+        type: "notice",
+        title: "Widgets Activity Log",
+        description:
+          "Your widget settings have been successfully updated in the following time period.",
+        date: utcDate,
+      };
+
+      updateNotice(sampleData);
+    }
+
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -118,8 +139,6 @@ const ShowWidgets = ({
         });
       });
   };
-
-  
 
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>

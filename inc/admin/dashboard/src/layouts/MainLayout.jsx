@@ -1,4 +1,5 @@
 import MainHeader from "@/components/header/MainHeader";
+import { useNotification } from "@/hooks/app.hooks";
 import { useEffect, useState, lazy, Suspense } from "react";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -10,6 +11,58 @@ const Integrations = lazy(() => import("@/pages/Integrations"));
 const MainLayout = () => {
   const [open, setOpen] = useState(false);
   const [tabKey, setTabKey] = useState("");
+  const { setChangelog, setNotice } = useNotification();
+
+  const fetchChangelog = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "wcf_get_changelog_data",
+
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_widgets",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        if (return_content?.changelog?.change_logs)
+          setChangelog(return_content.changelog.change_logs);
+      });
+  };
+  const fetchNotice = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "wcf_get_notice_data",
+
+        nonce: WCF_ADDONS_ADMIN.nonce,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        if (return_content?.notice) setNotice(return_content?.notice);
+      });
+  };
+
+  useEffect(async () => {
+    fetchChangelog();
+    fetchNotice();
+  }, []);
+
   const hash = window.location.hash;
 
   useEffect(() => {

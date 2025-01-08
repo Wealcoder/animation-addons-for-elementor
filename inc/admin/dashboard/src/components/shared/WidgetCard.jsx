@@ -4,37 +4,29 @@ import { Switch } from "../ui/switch";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
-import ExtensionMissingDialog from "./ExtensionMissingDialog";
+import { useActivate } from "@/hooks/app.hooks";
 
-const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
+const WidgetCard = ({
+  widget,
+  slug,
+  className,
+  updateActiveItem,
+  isDisable = false,
+}) => {
+  const { activated } = useActivate();
+
   const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
-
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
-  const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
-  const extensionAction =
-    WCF_ADDONS_ADMIN?.addons_config?.integrations?.plugins?.elements[
-      "extension-for-animation-addons"
-    ]?.action;
-
   const setCheck = (value, slug) => {
     if (widget?.is_pro) {
-      if (isValid) {
+      if (activated.wcf_valid) {
         if (updateActiveItem) {
           updateActiveItem({ value, slug });
         }
       } else {
         setOpen(value);
-      }
-    } else if (widget?.is_extension) {
-      if (extensionAction === "Activated") {
-        if (updateActiveItem) {
-          updateActiveItem({ value, slug });
-        }
-      } else {
-        setOpen2(true);
       }
     } else {
       if (updateActiveItem) {
@@ -57,7 +49,12 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
       >
         {widget ? (
           <>
-            <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "flex items-center gap-3",
+                widget?.is_upcoming ? "opacity-50 pointer-events-none" : ""
+              )}
+            >
               <div
                 className={cn(
                   "border rounded-full h-11 w-11 flex justify-center items-center shadow-common text-[20px]",
@@ -70,7 +67,15 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
                   <h2 className="text-[15px] leading-6 font-medium">
                     {widget?.label}
                   </h2>
-                  {widget?.is_pro ? (
+                  {widget?.is_upcoming ? (
+                    <>
+                      <Dot
+                        className="w-3.5 h-3.5 text-icon-secondary"
+                        strokeWidth={2}
+                      />
+                      <Badge variant="pro">COMING</Badge>
+                    </>
+                  ) : widget?.is_pro ? (
                     <>
                       <Dot
                         className="w-3.5 h-3.5 text-icon-secondary"
@@ -104,19 +109,23 @@ const WidgetCard = ({ widget, slug, className, updateActiveItem }) => {
                 </div>
               </div>
             </div>
-            <div>
-              <Switch
-                checked={widget?.is_active}
-                onCheckedChange={(value) => setCheck(value, slug)}
-              />
-            </div>
+            {widget?.is_upcoming ? (
+              ""
+            ) : (
+              <div>
+                <Switch
+                  disabled={widget?.is_upcoming || isDisable}
+                  checked={widget?.is_active}
+                  onCheckedChange={(value) => setCheck(value, slug)}
+                />
+              </div>
+            )}
           </>
         ) : (
           ""
         )}
       </div>
       <ProConfirmDialog open={open} setOpen={setOpen} />
-      <ExtensionMissingDialog open={open2} setOpen={setOpen2} />
     </>
   );
 };

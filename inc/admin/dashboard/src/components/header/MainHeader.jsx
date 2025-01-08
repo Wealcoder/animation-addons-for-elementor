@@ -1,13 +1,7 @@
-import {
-  RiKey2Line,
-  RiNotificationLine,
-  RiSearchLine,
-  RiVipCrown2Line,
-} from "react-icons/ri";
+import { RiKey2Line, RiSearchLine, RiVipCrown2Line } from "react-icons/ri";
 import { Button, buttonVariants } from "../ui/button";
 import MainNav from "./MainNav";
 import ShortLogo from "./ShortLogo";
-import { Badge } from "../ui/badge";
 import GlobalSearch from "../shared/GlobalSearch";
 import LicenseDialog from "../shared/LicenseDialog";
 import { cn } from "@/lib/utils";

@@ -4,8 +4,11 @@ import { Button, buttonVariants } from "../ui/button";
 import { RiCheckLine, RiDownloadLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
 import { toast } from "sonner";
+import { useNotification } from "@/hooks/app.hooks";
 
 const IntegrationCard = ({ item, className }) => {
+  const { updateNotice } = useNotification();
+
   const deactivate = async (item) => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -28,6 +31,20 @@ const IntegrationCard = ({ item, className }) => {
           toast.success(return_content?.data, {
             position: "top-right",
           });
+
+          const date = new Date();
+          const utcDate = date.toISOString();
+
+          const sampleData = {
+            type: "notice",
+            title: "Integration Status",
+            description:
+              "You have successfully deactivated Animation Addon Pro",
+            date: utcDate,
+          };
+
+          updateNotice(sampleData);
+
           window.location.reload();
         }
       });
@@ -55,6 +72,19 @@ const IntegrationCard = ({ item, className }) => {
           toast.success(return_content?.message, {
             position: "top-right",
           });
+
+          const date = new Date();
+          const utcDate = date.toISOString();
+
+          const sampleData = {
+            type: "notice",
+            title: "Integration Status",
+            description:
+              "You have successfully activated Animation Addon Pro",
+            date: utcDate,
+          };
+
+          updateNotice(sampleData);
 
           window.location.reload();
         }
