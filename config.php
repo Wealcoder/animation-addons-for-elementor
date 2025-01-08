@@ -694,6 +694,21 @@ $config = [
 						'youtube_url'  => '',
 					],
 
+					'posts-slider'              => [
+						'label'        => esc_html__( 'Posts Slider', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-slider/',
+						'youtube_url'  => '',
+					],
+
 					'banner-posts'              => [
 						'label'        => esc_html__( 'Banner Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
