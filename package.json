@@ -31,7 +31,7 @@
   "scripts": {
     "test-old": "eslint --quiet . && stylelint --syntax scss -q **/*.scss && composer run-script phpcs",
     "test": "eslint --quiet .",
-    "test-js": "eslint --quiet .",
+    "test-js": "eslint --quiet .",   
     "test-scss": "stylelint --syntax scss -q **/*.scss",
     "test-php": "composer run-script phpcs",
     "style-fix": "stylelint --syntax scss **/*.scss --fix",

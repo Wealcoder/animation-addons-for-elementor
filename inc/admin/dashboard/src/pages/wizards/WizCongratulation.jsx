@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 
 const WizCongratulation = () => {
   const gotoDashboard = () => {
-    const baseUrl = window.location.origin;
-
     setTimeout(() => {
-      window.location.href = `${baseUrl}/wp-admin/admin.php?page=wcf_addons_settings&tab=dashboard`;
+      window.location.href = `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=dashboard`;
     }, 100);
   };
 

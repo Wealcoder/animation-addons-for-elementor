@@ -25,14 +25,14 @@ const AccessData = [
   {
     title: "Pro Widget",
     subTitle: "Customize pro widgets",
-    url: `${window.location.origin}/wp-admin/admin.php?page=wcf_addons_settings&tab=widgets&filter=pro`,
+    url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=widgets&filter=pro`,
     icon: <RiVipCrown2Line size={22} className="text-[#FFA132]" />,
   },
   {
     title: "Custom Fonts",
     slug: "custom-fonts",
-    subTitle: "Customize custom fonts",
-    url: `${window.location.origin}/wp-admin/edit.php?post_type=wcf-custom-fonts`,
+    subTitle: "Customize Custom fonts",
+    url: `${WCF_ADDONS_ADMIN.adminURL}/edit.php?post_type=wcf-custom-fonts`,
     icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
   },
   {

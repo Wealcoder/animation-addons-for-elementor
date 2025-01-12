@@ -1,7 +1,7 @@
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
 import { useActivate } from "@/hooks/app.hooks";
@@ -49,7 +49,12 @@ const WidgetCard = ({
       >
         {widget ? (
           <>
-            <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "flex items-center gap-3",
+                widget?.is_upcoming ? "opacity-50 pointer-events-none" : ""
+              )}
+            >
               <div
                 className={cn(
                   "border rounded-full h-11 w-11 flex justify-center items-center shadow-common text-[20px]",
@@ -62,7 +67,15 @@ const WidgetCard = ({
                   <h2 className="text-[15px] leading-6 font-medium">
                     {widget?.label}
                   </h2>
-                  {widget?.is_pro ? (
+                  {widget?.is_upcoming ? (
+                    <>
+                      <Dot
+                        className="w-3.5 h-3.5 text-icon-secondary"
+                        strokeWidth={2}
+                      />
+                      <Badge variant="pro">COMING</Badge>
+                    </>
+                  ) : widget?.is_pro ? (
                     <>
                       <Dot
                         className="w-3.5 h-3.5 text-icon-secondary"
@@ -96,13 +109,17 @@ const WidgetCard = ({
                 </div>
               </div>
             </div>
-            <div>
-              <Switch
-                disabled={isDisable}
-                checked={widget?.is_active}
-                onCheckedChange={(value) => setCheck(value, slug)}
-              />
-            </div>
+            {widget?.is_upcoming ? (
+              ""
+            ) : (
+              <div>
+                <Switch
+                  disabled={widget?.is_upcoming || isDisable}
+                  checked={widget?.is_active}
+                  onCheckedChange={(value) => setCheck(value, slug)}
+                />
+              </div>
+            )}
           </>
         ) : (
           ""
