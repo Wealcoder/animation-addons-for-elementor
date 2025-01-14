@@ -308,6 +308,19 @@ class Posts extends Widget_Base {
 		);
 
 		$this->add_control(
+			'show_video',
+			[
+				'label'     => esc_html__( 'Show Video', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'condition'   => [
+					'element_list' => '6',
+				],
+			]
+		);
+
+		$this->add_control(
 			'post_taxonomy',
 			[
 				'label'       => esc_html__( 'Taxonomy', 'animation-addons-for-elementor' ),
@@ -483,7 +496,6 @@ class Posts extends Widget_Base {
 		);
 
 		$this->end_controls_section();
-
 
 		//Tile
 		$this->start_controls_section(
@@ -897,6 +909,77 @@ class Posts extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .wcf-meta' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Date style
+		$this->start_controls_section(
+			'section_style_post_dates',
+			[
+				'label' => esc_html__( 'Date Style', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'element_list' => '6',
+				],
+			]
+		);
+
+		$this->add_control(
+			'day_color',
+			[
+				'label'     => esc_html__( 'Day Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_day' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_typography',
+				'selector'  => '{{WRAPPER}} span.meta_day',
+			]
+		);
+
+		$this->add_control(
+			'day_number_color',
+			[
+				'label'     => esc_html__( 'Day Color ( Number )', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_year' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_number_typography',
+				'selector'  => '{{WRAPPER}} span.meta_year',
+			]
+		);
+
+		$this->add_control(
+			'day_month_color',
+			[
+				'label'     => esc_html__( 'Month Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_month' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_month_typography',
+				'selector'  => '{{WRAPPER}} span.meta_month',
 			]
 		);
 
@@ -1414,6 +1497,7 @@ class Posts extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .wcf-posts' => 'column-gap: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf__posts.style-6 .wcf-post' => 'column-gap: {{SIZE}}{{UNIT}}',
 				],
 			]
 		);
@@ -1872,6 +1956,8 @@ class Posts extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	
+
 	public function get_current_page() {
 		if ( '' === $this->get_settings_for_display( 'pagination_type' ) ) {
 			return 1;
@@ -2064,10 +2150,21 @@ class Posts extends Widget_Base {
 			'id' => get_post_thumbnail_id(),
 		];
 		// PHPCS - `get_permalink` is safe.
+		$show_videos = $settings['show_video'];
+		if($show_videos == 'yes'){
+			$meta = get_post_meta( get_the_ID(), 'wcf_post_options', true );
+			echo $link = get_post_meta( get_the_ID(), '_video_url', true )
 		?>
 		<div class="thumb">
 			<iframe width="190" height="120" src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
 		</div>
+		<?php }else{ ?>
+		<div class="thumb">
+			<a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
+			</a>
+		</div>
+		<?php } ?>
 		<?php
 	}
 
