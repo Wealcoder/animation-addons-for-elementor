@@ -57,14 +57,4 @@
     }
     return css;
   });
-  $(window).on('elementor:init', function () {
-    var interval = setInterval(function () {
-      var $sidebar = $('.wcf.eicon-lock');
-      if ($sidebar.length) {
-        $sidebar.parent().parent('.elementor-element-wrapper').off('mouseenter mouseleave mousemove');
-        clearInterval(interval); // Stop checking once the sidebar is found
-      }
-    }, 100);
-  });
 })(jQuery, window, document, WCF_Addons_Editor);
-//wcf eicon-lock

@@ -61,17 +61,10 @@
             css += customCSS.replace(/selector/g, selector);
         }
         return css;
-    });
-    
-    $(window).on('elementor:init', function () {
-        const interval = setInterval(() => {
-            const $sidebar = $('.wcf.eicon-lock');
-            if ($sidebar.length) {
-                $sidebar.parent().parent('.elementor-element-wrapper').off('mouseenter mouseleave mousemove');
-                clearInterval(interval); // Stop checking once the sidebar is found
-            }
-        }, 100);
-    });
-
+    });       
+     
+   
+   
 })(jQuery, window, document, WCF_Addons_Editor);
-//wcf eicon-lock
+
+

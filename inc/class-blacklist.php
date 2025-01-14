@@ -76,7 +76,7 @@ class WCFAddon_BlackList_Notice {
 		
 		// Widgets
 		
-		add_action( 'elementor/widgets/register', [ __CLASS__, 'register_widgets' ] );	
+		//add_action( 'elementor/widgets/register', [ __CLASS__, 'register_widgets' ] );	
 	}
 	
     public static function register_widgets() { 
