@@ -145,6 +145,7 @@ class Posts extends Widget_Base {
 					'3' => esc_html__( 'Three', 'animation-addons-for-elementor' ),
 					'4' => esc_html__( 'Four', 'animation-addons-for-elementor' ),
 					'5' => esc_html__( 'Five', 'animation-addons-for-elementor' ),
+					'6' => esc_html__( 'Six', 'animation-addons-for-elementor' ),
 				],
 			]
 		);
@@ -1909,7 +1910,11 @@ class Posts extends Widget_Base {
 
         while ( $query->have_posts() ) {
             $query->the_post();
+			if($settings['element_list'] == '6'){
+				$this->render_post_video( $settings );
+			}else{
             $this->render_post( $settings );
+			}
         }
 
 		$this->render_loop_footer();
@@ -2054,6 +2059,18 @@ class Posts extends Widget_Base {
 		<?php
 	}
 
+	protected function render_thumbnail_video( $settings ) {
+		$settings['thumbnail_size'] = [
+			'id' => get_post_thumbnail_id(),
+		];
+		// PHPCS - `get_permalink` is safe.
+		?>
+		<div class="thumb">
+			<iframe width="190" height="120" src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
+		</div>
+		<?php
+	}
+
 	protected function render_title() {
 		if ( ! $this->get_settings( 'show_title' ) ) {
 			return;
@@ -2161,6 +2178,23 @@ class Posts extends Widget_Base {
 		<?php
 	}
 
+	protected function render_author_video() {
+		if ( ! $this->get_settings( 'show_author' ) ) {
+			return;
+		}
+		?>
+		<div class="author_views">
+			<a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>">
+				By <?php the_author(); ?>
+			</a>
+			<span class="posts_views">
+				<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>
+				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
+			</span>
+		</div>
+		<?php
+	}
+
 	protected function render_author_avatar() {
 		if ( ! $this->get_settings( 'show_author' ) ) {
 			return;
@@ -2234,6 +2268,16 @@ class Posts extends Widget_Base {
 		<?php
 	}
 
+	protected function render_post_meta_video() {
+		?>
+		<ul class="wcf-meta_video">
+			<span class="meta_day"><?php echo get_the_date('D'); ?></span>
+			<span class="meta_year"><?php echo get_the_date('d'); ?></span>
+			<span class="meta_month"><?php echo get_the_date('F'); ?></span>
+		</ul>
+		<?php
+	}
+
 	protected function render_read_more() {
 		if ( ! $this->get_settings( 'show_read_more' ) ) {
 			return;
@@ -2274,6 +2318,29 @@ class Posts extends Widget_Base {
 				$this->render_post_taxonomy();
 				$this->render_post_meta();
 				$this->render_title();
+				$this->render_excerpt();
+				$this->render_read_more();
+				?>
+			</div>
+		</article>
+		<?php
+	}
+
+	protected function render_post_video( $settings ) {
+		?>
+		<article <?php post_class( 'wcf-post' ); ?>>
+			<div class="post_video_date">
+				<?php $this->render_post_meta_video(); ?>
+			</div>
+			<div class="posts_video_thumb">
+				<?php $this->render_thumbnail_video( $settings ); ?>
+			</div>
+			<div class="content">
+				<?php
+				$this->render_author_avatar();
+				$this->render_post_taxonomy();
+				$this->render_title();
+				$this->render_author_video();
 				$this->render_excerpt();
 				$this->render_read_more();
 				?>
