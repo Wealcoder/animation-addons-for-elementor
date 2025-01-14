@@ -220,7 +220,11 @@ const LicenseDialog = ({ open, setOpen }) => {
                     <FormControl className="relative">
                       <Input
                         placeholder="Enter your license key here"
-                        value={getMaskedValue(field.value || "")}
+                        value={
+                          activated?.wcf_valid
+                            ? getMaskedValue(field.value || "")
+                            : field.value
+                        }
                         onChange={handleChange}
                       />
                     </FormControl>

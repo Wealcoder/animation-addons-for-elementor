@@ -1426,6 +1426,21 @@ $config = [
 								'youtube_url'  => '',
 							],
 
+							'gallery-filter' => [
+								'label'        => esc_html__( 'Gallery Filter', 'animation-addons-for-elementor' ),
+								'location'     => [
+									'cTab'     => 'gsap',
+									'pluginId' => 'flip'
+								],
+								'is_pro'       => true,
+								'is_active'    => true,
+								'is_extension' => true,
+								'is_upcoming'  => false,
+								'icon'         => "wcf-icon-Floating-Elements",
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
 
 						]
 					],
