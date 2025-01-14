@@ -240,6 +240,30 @@ class Posts extends Widget_Base {
 		);
 
 		$this->add_control(
+			'show_highlited_title',
+			[
+				'label'     => esc_html__( 'Highlited Title', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'default'   => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'highlight_title_length',
+			[
+				'label'     => esc_html__( 'Title Length', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::NUMBER,
+				'min'       => 1,
+				'max'       => 100,
+				'condition' => [
+					'show_highlited_title' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
 			'show_excerpt',
 			[
 				'label'     => esc_html__( 'Show Excerpt', 'animation-addons-for-elementor' ),
@@ -549,10 +573,21 @@ class Posts extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Title Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .title, {{WRAPPER}} .title a' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'highlited_title_color',
+			[
+				'label'     => esc_html__( 'Highlited Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .title span.highlight' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -572,7 +607,7 @@ class Posts extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .title:hover, {{WRAPPER}} .title a:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .title:hover, {{WRAPPER}} .title a:hover, {{WRAPPER}} .title span.highlight:hover' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -794,11 +829,25 @@ class Posts extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'view_meta_icon',
+			[
+				'label'   => esc_html__( 'View Icon', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default' => [
+					'value'   => 'far fa-flag',
+					'library' => 'fa-regular',
+				],
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'meta_typography',
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span',
+				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
 			]
 		);
 
@@ -809,7 +858,7 @@ class Posts extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -831,7 +880,7 @@ class Posts extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -840,7 +889,7 @@ class Posts extends Widget_Base {
 			[
 				'name' => 'meta_bg',
 				'types' => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span',
+				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
 			]
 		);
 
@@ -2168,6 +2217,25 @@ class Posts extends Widget_Base {
 		<?php
 	}
 
+	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
+		// Split the text into an array of words
+		$words = explode( ' ', $text );
+		// Check if the text has enough words to wrap
+		if ( count( $words ) >= $n ) {
+			// Extract the first N words and wrap them in a span tag
+			$wrapped_words   = array_slice( $words, 0, $n );
+			$remaining_words = array_slice( $words, $n );
+			// Create the wrapped portion
+			$wrapped = '<span class="' . $class . '">' . implode( ' ', $wrapped_words ) . '</span>';
+
+			// Combine the wrapped portion with the remaining words
+			return $wrapped . ' ' . implode( ' ', $remaining_words );
+		}
+
+		// If there are fewer words than N, wrap the whole text
+		return '<span class="' . $class . '">' . $text . '</span>';
+	}
+
 	protected function render_title() {
 		if ( ! $this->get_settings( 'show_title' ) ) {
 			return;
@@ -2183,7 +2251,11 @@ class Posts extends Widget_Base {
 			if ( ! empty( $post->post_title ) ) {
 				$max_length = (int) $this->get_settings( 'title_length' );
 				$title      = $this->trim_words( get_the_title(), $max_length );
-				echo esc_html( $title );
+
+				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
+
+				echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+
 			} else {
 				the_title();
 			}
@@ -2285,6 +2357,7 @@ class Posts extends Widget_Base {
 				By <?php the_author(); ?>
 			</a>
 			<span class="posts_views">
+				<?php \Elementor\Icons_Manager::render_icon( $this->get_settings( 'view_meta_icon' ) ); ?>
 				<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>
 				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
 			</span>
@@ -2374,6 +2447,8 @@ class Posts extends Widget_Base {
 		</ul>
 		<?php
 	}
+
+	
 
 	protected function render_read_more() {
 		if ( ! $this->get_settings( 'show_read_more' ) ) {
