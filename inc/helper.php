@@ -375,6 +375,31 @@ if(!function_exists('wcfaddon_get_current_user_roles')) {
 	
 }
 
+if(!function_exists('wcfaddon_get_pronotice_html')){
+	function wcfaddon_get_pronotice_html() {
+		$img_src = esc_url(WCF_ADDONS_URL.'assets/images/get-pro.png'); // Replace '#' with the actual URL or dynamic value
+		$upgrade_url = esc_url('https://animation-addons.com/'); // Replace '#' with the actual upgrade URL
+		
+		return sprintf(
+			'<div class="wcfaddon-pro-notice">
+				<img src="%s" alt="%s" />
+				<div class="wcfaddon-pro-notice-content">
+					<h4>%s</h4>
+					<p>%s</p>
+					<a target="__blank" rel="nofollow" class="elementor-button elementor-button-default" href="%s">%s</a>
+				</div>
+			</div>',
+			$img_src,
+			esc_attr(__('Upgrade Notice', 'animation-addons-for-elementor')),
+			__('Upgrade to premium plan and unlock every feature!', 'animation-addons-for-elementor'),
+			__('Upgrade and get access to every feature.', 'animation-addons-for-elementor'),
+			$upgrade_url,
+			__('Upgrade Animation Addon', 'animation-addons-for-elementor')
+		);
+	}
+}
+
+
 
 
 
