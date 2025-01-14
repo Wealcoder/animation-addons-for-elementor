@@ -195,7 +195,7 @@ final class WCF_ADDONS_Plugin {
 		} );
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
-		require_once( 'class-plugin.php' );
+		require_once 'class-plugin.php';
 
 		//wcf plugin loaded
 		do_action( 'wcf_plugins_loaded' );

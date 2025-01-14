@@ -957,7 +957,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advance-pricing-table' => [
-						'label'        => __( 'Advance Pricing Table', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Advanced Pricing Table', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -985,7 +985,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advance-portfolio'     => [
-						'label'        => __( 'Advance Portfolio', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Advanced Portfolio', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -1083,7 +1083,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advance-slider'        => [
-						'label'        => __( 'Advance Slider', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Advanced Slider', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -1111,7 +1111,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'advance-accordion'     => [
-						'label'        => __( 'Advance Accordion', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Advanced Accordion', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -1496,7 +1496,7 @@ $config = [
 	],
 	'dashboardProWidget' => [
 		'advance-portfolio'  => [
-			'label'        => __( 'Advance Portfolio', 'animation-addons-for-elementor' ),
+			'label'        => __( 'Advanced Portfolio', 'animation-addons-for-elementor' ),
 			'is_active'    => false,
 			'location'     => [
 				'cTab' => 'all'

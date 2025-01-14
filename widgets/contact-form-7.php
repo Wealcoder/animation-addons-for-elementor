@@ -44,7 +44,7 @@ class Contact_Form_7 extends Widget_Base {
 	 * @access public
 	 */
 	public function get_title() {
-		return esc_html__( 'AAE Contact Form 7', 'animation-addons-for-elementor' );
+		return esc_html__( 'Contact Form 7', 'animation-addons-for-elementor' );
 	}
 
 	/**

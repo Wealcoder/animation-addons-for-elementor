@@ -3,12 +3,13 @@
 namespace WCF_ADDONS;
 
 use Elementor\Controls_Manager;
+use Elementor\Plugin as ElementorPlugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
-class WCFAddon_BlackList_Notice {
 
+class WCFAddon_BlackList_Notice {
 	public static function init() {
         add_action( 'elementor/element/common/_section_style/after_section_end', [
 			__CLASS__,
@@ -71,15 +72,38 @@ class WCFAddon_BlackList_Notice {
 				__CLASS__,
 				'register_text_animation_controls',
 			], 10, 2 );
-		}
+		}		
 		
+		// Widgets
 		
+		add_action( 'elementor/widgets/register', [ __CLASS__, 'register_widgets' ] );	
 	}
+	
+    public static function register_widgets() { 
+        $arr = [
+            [
+               'name' => 'wcf--videopoup', 
+               'heading' => 'Video Popup' 
+            ],
+            [
+                'name' => 'wcf--portfolio-pro', 
+                'heading' => 'Portfolio Pro' 
+            ]
+        ];
+        require_once WCF_ADDONS_PATH . 'inc/class-blacklist-widget.php';
+        foreach($arr as $item){
+            $black = new BlackList_Widget();
+            $black->setWdigetName($item['name'] );
+            $black->setWdigetLabel($item['heading'] );
+            ElementorPlugin::instance()->widgets_manager->register( $black );
+        }
+       
+    }
 	public static function register_text_animation_controls( $element ) {
 		$element->start_controls_section(
 			'_section_wcf_text_animation',
 			[
-				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Text Animation', 'wcf-addons-pro' ) ),
+				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Text Animation', 'animation-addons-for-elementor' ) ),
 			]
 		);
 		
@@ -101,7 +125,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'_section_wcf_image_animation',
 			[
-				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Image Animation', 'wcf-addons-pro')),
+				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Image Animation', 'animation-addons-for-elementor')),
 			]
 		);
 		
@@ -169,7 +193,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'notice_section_wcf_popup_area',
 			[
-				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Popup', 'wcf-addons-pro' ) ),
+				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Popup', 'animation-addons-for-elementor' ) ),
 				'tab'   => Controls_Manager::TAB_LAYOUT,
 			]
 		);
@@ -212,7 +236,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'notice_section_wcf_tilt_area',
 			[
-				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Tilt', 'wcf-addons-pro' ) ),
+				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Tilt', 'animation-addons-for-elementor' ) ),
 				'tab'   => Controls_Manager::TAB_ADVANCED,
 			]
 		);
@@ -252,7 +276,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'_section_wcf_horizontal_scroll_area',
 			[
-				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Horizontal Scroll', 'wcf-addons-pro')),
+				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Horizontal Scroll', 'animation-addons-for-elementor' )),
 				'tab'   => Controls_Manager::TAB_ADVANCED,
 			]
 		);
@@ -271,7 +295,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'_section_wcf_animation_area',
 			[
-				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Animation', 'wcf-addons-pro')),
+				'label' =>  sprintf('%s <i class="wcf-logo"></i>', __('Animation', 'animation-addons-for-elementor')),
 				'tab'   => Controls_Manager::TAB_ADVANCED,
 			]
 		);
@@ -290,7 +314,7 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_section(
 			'_section_pin-area',
 			[
-				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Pin Element', 'wcf-addons-pro' ) ),
+				'label' => sprintf( '%s <i class="wcf-logo"></i>', __( 'Pin Element', 'animation-addons-for-elementor') ),
 				'tab'   => Controls_Manager::TAB_ADVANCED,
 			]
 		);
