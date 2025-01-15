@@ -240,6 +240,30 @@ class Posts extends Widget_Base {
 		);
 
 		$this->add_control(
+			'show_highlited_title',
+			[
+				'label'     => esc_html__( 'Highlited Title', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'default'   => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'highlight_title_length',
+			[
+				'label'     => esc_html__( 'Title Length', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::NUMBER,
+				'min'       => 1,
+				'max'       => 100,
+				'condition' => [
+					'show_highlited_title' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
 			'show_excerpt',
 			[
 				'label'     => esc_html__( 'Show Excerpt', 'animation-addons-for-elementor' ),
@@ -304,6 +328,19 @@ class Posts extends Widget_Base {
 				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
 				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'default'   => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'show_video',
+			[
+				'label'     => esc_html__( 'Show Video', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'condition'   => [
+					'element_list' => '6',
+				],
 			]
 		);
 
@@ -484,7 +521,6 @@ class Posts extends Widget_Base {
 
 		$this->end_controls_section();
 
-
 		//Tile
 		$this->start_controls_section(
 			'section_style_post_title',
@@ -501,7 +537,17 @@ class Posts extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'      => 'title_typography',
+				'label' => esc_html__( 'Title Typography', 'animation-addons-for-elementor' ),
 				'selector'  => '{{WRAPPER}} .title, {{WRAPPER}} .title a',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'highlited_title_typography',
+				'label' => esc_html__( 'Highlight Title', 'animation-addons-for-elementor' ),
+				'selector'  => '{{WRAPPER}} .title span.highlight',
 			]
 		);
 
@@ -537,10 +583,21 @@ class Posts extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Title Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .title, {{WRAPPER}} .title a' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'highlited_title_color',
+			[
+				'label'     => esc_html__( 'Highlited Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .title span.highlight' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -560,7 +617,7 @@ class Posts extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .title:hover, {{WRAPPER}} .title a:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .title:hover, {{WRAPPER}} .title a:hover, {{WRAPPER}} .title span.highlight:hover' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -782,11 +839,25 @@ class Posts extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'view_meta_icon',
+			[
+				'label'   => esc_html__( 'View Icon', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default' => [
+					'value'   => 'far fa-flag',
+					'library' => 'fa-regular',
+				],
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'meta_typography',
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span',
+				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
 			]
 		);
 
@@ -797,7 +868,7 @@ class Posts extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -819,7 +890,7 @@ class Posts extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -828,7 +899,7 @@ class Posts extends Widget_Base {
 			[
 				'name' => 'meta_bg',
 				'types' => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span',
+				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
 			]
 		);
 
@@ -897,6 +968,77 @@ class Posts extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .wcf-meta' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Date style
+		$this->start_controls_section(
+			'section_style_post_dates',
+			[
+				'label' => esc_html__( 'Date Style', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'element_list' => '6',
+				],
+			]
+		);
+
+		$this->add_control(
+			'day_color',
+			[
+				'label'     => esc_html__( 'Day Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_day' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_typography',
+				'selector'  => '{{WRAPPER}} span.meta_day',
+			]
+		);
+
+		$this->add_control(
+			'day_number_color',
+			[
+				'label'     => esc_html__( 'Day Color ( Number )', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_year' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_number_typography',
+				'selector'  => '{{WRAPPER}} span.meta_year',
+			]
+		);
+
+		$this->add_control(
+			'day_month_color',
+			[
+				'label'     => esc_html__( 'Month Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.meta_month' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'day_month_typography',
+				'selector'  => '{{WRAPPER}} span.meta_month',
 			]
 		);
 
@@ -1414,6 +1556,7 @@ class Posts extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .wcf-posts' => 'column-gap: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf__posts.style-6 .wcf-post' => 'column-gap: {{SIZE}}{{UNIT}}',
 				],
 			]
 		);
@@ -1872,6 +2015,8 @@ class Posts extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	
+
 	public function get_current_page() {
 		if ( '' === $this->get_settings_for_display( 'pagination_type' ) ) {
 			return 1;
@@ -2064,11 +2209,65 @@ class Posts extends Widget_Base {
 			'id' => get_post_thumbnail_id(),
 		];
 		// PHPCS - `get_permalink` is safe.
+		$show_videos = $settings['show_video'];
+		if($show_videos == 'yes'){
+
+
+		$format = get_post_format();
+
+		$meta = get_post_meta( get_the_ID(), 'wcf_post_options', true );
+
+		$link = '';
+
+		if ( 'audio' === $format ) {
+			if ( isset($meta['audio']) ) {
+				$link = $meta['audio'];
+			} else {
+				$link = get_post_meta( get_the_ID(), '_audio_url', true );
+			}
+		}elseif ('video' === $format){
+			if ( isset($meta['video']) ) {
+				$link = $meta['video'];
+			} else {
+				$link = get_post_meta( get_the_ID(), '_video_url', true );
+			}
+        }
+
+		if ( empty( $link ) ) {
+			return;
+		}
+
 		?>
 		<div class="thumb">
 			<iframe width="190" height="120" src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
 		</div>
+		<?php }else{ ?>
+		<div class="thumb">
+			<a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
+			</a>
+		</div>
+		<?php } ?>
 		<?php
+	}
+
+	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
+		// Split the text into an array of words
+		$words = explode( ' ', $text );
+		// Check if the text has enough words to wrap
+		if ( count( $words ) >= $n ) {
+			// Extract the first N words and wrap them in a span tag
+			$wrapped_words   = array_slice( $words, 0, $n );
+			$remaining_words = array_slice( $words, $n );
+			// Create the wrapped portion
+			$wrapped = '<span class="' . $class . '">' . implode( ' ', $wrapped_words ) . '</span>';
+
+			// Combine the wrapped portion with the remaining words
+			return $wrapped . ' ' . implode( ' ', $remaining_words );
+		}
+
+		// If there are fewer words than N, wrap the whole text
+		return '<span class="' . $class . '">' . $text . '</span>';
 	}
 
 	protected function render_title() {
@@ -2086,7 +2285,11 @@ class Posts extends Widget_Base {
 			if ( ! empty( $post->post_title ) ) {
 				$max_length = (int) $this->get_settings( 'title_length' );
 				$title      = $this->trim_words( get_the_title(), $max_length );
-				echo esc_html( $title );
+
+				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
+
+				echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+
 			} else {
 				the_title();
 			}
@@ -2188,6 +2391,7 @@ class Posts extends Widget_Base {
 				By <?php the_author(); ?>
 			</a>
 			<span class="posts_views">
+				<?php \Elementor\Icons_Manager::render_icon( $this->get_settings( 'view_meta_icon' ) ); ?>
 				<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>
 				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
 			</span>
@@ -2277,6 +2481,8 @@ class Posts extends Widget_Base {
 		</ul>
 		<?php
 	}
+
+	
 
 	protected function render_read_more() {
 		if ( ! $this->get_settings( 'show_read_more' ) ) {

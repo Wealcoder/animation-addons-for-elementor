@@ -294,3 +294,29 @@
 .elementor-widget-wcf--tabs.tabs-alignment-stretch .tab-desktop-title {
   flex: 1 1 auto;
 }
+
+.wcfaddon-pro-notice {
+  padding: 15px 0;
+  max-width: 350px;
+  text-align: center;
+}
+.wcfaddon-pro-notice .wcfaddon-pro-notice-content h4 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 20px;
+}
+.wcfaddon-pro-notice .wcfaddon-pro-notice-content p {
+  line-height: 1.8;
+  font-size: 11px;
+  margin-top: 5px;
+}
+.wcfaddon-pro-notice .wcfaddon-pro-notice-content .elementor-button {
+  background-color: #d30c5c;
+  color: #fff;
+  padding: 7px 25px;
+  margin-top: 20px;
+  border: none;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+}
