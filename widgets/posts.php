@@ -537,7 +537,17 @@ class Posts extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'      => 'title_typography',
+				'label' => esc_html__( 'Title Typography', 'animation-addons-for-elementor' ),
 				'selector'  => '{{WRAPPER}} .title, {{WRAPPER}} .title a',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'highlited_title_typography',
+				'label' => esc_html__( 'Highlight Title', 'animation-addons-for-elementor' ),
+				'selector'  => '{{WRAPPER}} .title span.highlight',
 			]
 		);
 
@@ -2201,8 +2211,32 @@ class Posts extends Widget_Base {
 		// PHPCS - `get_permalink` is safe.
 		$show_videos = $settings['show_video'];
 		if($show_videos == 'yes'){
-			$meta = get_post_meta( get_the_ID(), 'wcf_post_options', true );
-			echo $link = get_post_meta( get_the_ID(), '_video_url', true )
+
+
+		$format = get_post_format();
+
+		$meta = get_post_meta( get_the_ID(), 'wcf_post_options', true );
+
+		$link = '';
+
+		if ( 'audio' === $format ) {
+			if ( isset($meta['audio']) ) {
+				$link = $meta['audio'];
+			} else {
+				$link = get_post_meta( get_the_ID(), '_audio_url', true );
+			}
+		}elseif ('video' === $format){
+			if ( isset($meta['video']) ) {
+				$link = $meta['video'];
+			} else {
+				$link = get_post_meta( get_the_ID(), '_video_url', true );
+			}
+        }
+
+		if ( empty( $link ) ) {
+			return;
+		}
+
 		?>
 		<div class="thumb">
 			<iframe width="190" height="120" src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
