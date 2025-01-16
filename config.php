@@ -19,6 +19,7 @@ $config = [
 						],
 						'is_active'    => false,
 						'is_pro'       => false,
+						'setup' 			 => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Box",
@@ -32,6 +33,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -47,6 +49,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -61,6 +64,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -75,6 +79,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -89,6 +94,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -103,6 +109,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -117,6 +124,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -131,6 +139,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -145,6 +154,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -1171,6 +1181,7 @@ $config = [
 						],
 						'is_pro'       => false,
 						'is_active'    => false,
+						'setup' 			 => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Floating-Elements",
@@ -1299,7 +1310,7 @@ $config = [
 					'wcf-smooth-scroller' => [
 						'title'     => esc_html__( 'Smooth Scroller', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => false,
+						'is_pro'    => true,
 						'is_active' => false,
 						'elements'  => [
 							'animation-effects'       => [
@@ -1450,7 +1461,7 @@ $config = [
 					'flip'                => [
 						'title'     => esc_html__( 'Flip', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => false,
+						'is_pro'    => true,
 						'is_active' => false,
 						'elements'  => [
 							'portfolio-filter' => [
@@ -1490,7 +1501,7 @@ $config = [
 					'gsap-builder'        => [
 						'title'     => esc_html__( 'Builder', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => false,
+						'is_pro'    => true,
 						'is_active' => false,
 						'elements'  => [
 							'animation-builder' => [

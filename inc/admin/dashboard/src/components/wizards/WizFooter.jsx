@@ -61,6 +61,7 @@ const WizFooter = ({ NavigateComponent }) => {
   };
 
   const saveWidget = async () => {
+    console.log(allWidgets);
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -82,6 +83,7 @@ const WizFooter = ({ NavigateComponent }) => {
   };
 
   const saveExtension = async () => {
+    console.log(allExtensions);
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -113,7 +115,6 @@ const WizFooter = ({ NavigateComponent }) => {
       try {
         saveWidget();
         saveExtension();
-        
       } catch (error) {
         console.log(error);
       }

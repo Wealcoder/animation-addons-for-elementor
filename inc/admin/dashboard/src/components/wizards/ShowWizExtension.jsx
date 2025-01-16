@@ -11,9 +11,10 @@ import {
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { deviceMediaMatch } from "@/lib/utils";
-import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import { useActiveItem, useExtensions, useSetup } from "@/hooks/app.hooks";
 import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 import ExtensionGsapSettings from "../extentions/ExtensionGsapSettings";
+import { allSetupExtensionFn } from "@/lib/extensionService";
 
 const ShowWizExtensions = () => {
   const exSettings = ExtensionSettingConfig;
@@ -25,6 +26,7 @@ const ShowWizExtensions = () => {
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
   } = useActiveItem();
+  const { setupType } = useSetup();
 
   const [filteredGsapExtensions, setFilteredGsapExtensions] = useState(
     allExtensions.elements["gsap-extensions"]
@@ -36,12 +38,12 @@ const ShowWizExtensions = () => {
 
   useEffect(() => {
     if (allExtensions) {
-      setFilteredGsapExtensions(allExtensions?.elements["gsap-extensions"]);
-      setFilteredGeneralExtensions(
-        allExtensions?.elements["general-extensions"]
-      );
+      const result = allSetupExtensionFn(allExtensions, setupType);
+      console.log(result);
+      setFilteredGsapExtensions(result?.gsapResult);
+      setFilteredGeneralExtensions(result?.generalResult);
     }
-  }, [allExtensions]);
+  }, []);
 
   return (
     <div className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-background-secondary p-3 rounded-lg">
