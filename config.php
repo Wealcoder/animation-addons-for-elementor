@@ -1178,6 +1178,20 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'youtube_url'  => '',
 					],
+					'dynamic-tags'       => [
+						'label'        => esc_html__( 'Dynamic Tags', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'is_pro'       => true,
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Floating-Elements",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/dynamic-tags/',
+						'youtube_url'  => '',
+					],
 					'wrapper-link'     => [
 						'label'        => esc_html__( 'Wrapper Link', 'animation-addons-for-elementor' ),
 						'location'     => [
