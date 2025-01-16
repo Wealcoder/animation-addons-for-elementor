@@ -413,7 +413,8 @@ class Image_Gallery extends Widget_Base {
 
 			$html .= wp_get_attachment_image( $image['id'], $size, false, $image_attr );
 		} else {
-			$image_src = Group_Control_Image_Size::get_attachment_image_src( $image['id'], $image_size_key, $settings );
+	
+			$image_src = Group_Control_Image_Size::get_attachment_image_src( $image, $image_size_key, $settings );
 
 			if ( ! $image_src && isset( $image['url'] ) ) {
 				$image_src = $image['url'];

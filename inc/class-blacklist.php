@@ -73,32 +73,9 @@ class WCFAddon_BlackList_Notice {
 				'register_text_animation_controls',
 			], 10, 2 );
 		}		
-		
-		// Widgets
-		
-		//add_action( 'elementor/widgets/register', [ __CLASS__, 'register_widgets' ] );	
+				
 	}
 	
-    public static function register_widgets() { 
-        $arr = [
-            [
-               'name' => 'wcf--videopoup', 
-               'heading' => 'Video Popup' 
-            ],
-            [
-                'name' => 'wcf--portfolio-pro', 
-                'heading' => 'Portfolio Pro' 
-            ]
-        ];
-        require_once WCF_ADDONS_PATH . 'inc/class-blacklist-widget.php';
-        foreach($arr as $item){
-            $black = new BlackList_Widget();
-            $black->setWdigetName($item['name'] );
-            $black->setWdigetLabel($item['heading'] );
-            ElementorPlugin::instance()->widgets_manager->register( $black );
-        }
-       
-    }
 	public static function register_text_animation_controls( $element ) {
 		$element->start_controls_section(
 			'_section_wcf_text_animation',

@@ -439,6 +439,9 @@ class Image_Box extends Widget_Base {
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
 				],
+				'dynamic' => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -937,9 +940,8 @@ class Image_Box extends Widget_Base {
 
 		<<?php Utils::print_validated_html_tag($link_tag); ?> <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
 			<div class="thumb">
-				<?php
+				<?php				
                 Group_Control_Image_Size::print_attachment_image_html($settings, 'image_size', 'image');
-
 				if ( '2' === $settings['image_box_style'] && 'button' === $settings['link_type'] ) {
 					$this->render_button( $settings );
 				}
