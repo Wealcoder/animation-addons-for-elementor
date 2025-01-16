@@ -41,7 +41,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'social-icons'      => [
+					'social-icons'     => [
 						'label'        => esc_html__( 'Social Icons', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -55,7 +55,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-social-icons/',
 						'youtube_url'  => '',
 					],
-					'image'             => [
+					'image'            => [
 						'label'        => esc_html__( 'Image', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -69,7 +69,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image/',
 						'youtube_url'  => '',
 					],
-					'image-gallery'     => [
+					'image-gallery'    => [
 						'label'        => esc_html__( 'Image Gallery', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -83,7 +83,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-gallery/',
 						'youtube_url'  => '',
 					],
-					'text-hover-image'  => [
+					'text-hover-image' => [
 						'label'        => esc_html__( 'Text Hover Image', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -97,7 +97,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-text-hover-image/',
 						'youtube_url'  => '',
 					],
-					'brand-slider'      => [
+					'brand-slider'     => [
 						'label'        => esc_html__( 'Brand Slider', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -111,7 +111,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-brand-slider/',
 						'youtube_url'  => '',
 					],
-					'counter'           => [
+					'counter'          => [
 						'label'        => esc_html__( 'Counter', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -125,7 +125,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-counter/',
 						'youtube_url'  => '',
 					],
-					'icon-box'          => [
+					'icon-box'         => [
 						'label'        => esc_html__( 'Icon Box', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -139,7 +139,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-icon-box/',
 						'youtube_url'  => '',
 					],
-					'testimonial'       => [
+					'testimonial'      => [
 						'label'        => esc_html__( 'Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -153,7 +153,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial/',
 						'youtube_url'  => '',
 					],
-					'testimonial2'      => [
+					'testimonial2'     => [
 						'label'        => esc_html__( 'Testimonial 2', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -167,7 +167,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-2/',
 						'youtube_url'  => '',
 					],
-					'testimonial3'      => [
+					'testimonial3'     => [
 						'label'        => esc_html__( 'Testimonial 3', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -182,7 +182,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'testimonial-pro'      => [
+					'testimonial-pro' => [
 						'label'        => esc_html__( 'Testimonial Pro', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -196,7 +196,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-pro/',
 						'youtube_url'  => '',
 					],
-					'button'            => [
+					'button'          => [
 						'label'        => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -211,13 +211,13 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'button-pro'            => [
+					'button-pro' => [
 						'label'        => esc_html__( 'Button Pro', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Button",
@@ -268,7 +268,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team/',
 						'youtube_url'  => '',
 					],
-					'team-slider'              => [
+					'team-slider'       => [
 						'label'        => esc_html__( 'Team Slider', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -282,7 +282,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team-slider/',
 						'youtube_url'  => '',
 					],
-					'notification'     => [
+					'notification'      => [
 						'label'        => esc_html__( 'Notification', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -470,7 +470,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
 					],
-					'lottie'  => [
+					'lottie'         => [
 						'label'        => esc_html__( 'Lottie', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -484,7 +484,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
 					],
-					'draw-svg'  => [
+					'draw-svg'       => [
 						'label'        => esc_html__( 'DrawSvg', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -679,7 +679,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'posts-pro'              => [
+					'posts-pro' => [
 						'label'        => esc_html__( 'Posts Pro', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -694,7 +694,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'posts-filter'              => [
+					'posts-filter' => [
 						'label'        => esc_html__( 'Filterable Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -709,7 +709,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'posts-slider'              => [
+					'posts-slider' => [
 						'label'        => esc_html__( 'Posts Slider', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -724,7 +724,36 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'banner-posts'              => [
+					'grid-hover-posts'  => [
+						'label'        => esc_html__( 'Grid Hover Posts', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
+						'youtube_url'  => '',
+					],
+					'category-showcase' => [
+						'label'        => esc_html__( 'Category Showcase', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
+						'youtube_url'  => '',
+					],
+
+					'banner-posts' => [
 						'label'        => esc_html__( 'Banner Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -739,7 +768,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'current-date'              => [
+					'current-date' => [
 						'label'        => esc_html__( 'Current Date', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -754,7 +783,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'feature-posts'              => [
+					'feature-posts' => [
 						'label'        => esc_html__( 'Feature Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -769,7 +798,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'archive-title'      => [
+					'archive-title'    => [
 						'label'        => esc_html__( 'Archive Title', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -783,7 +812,7 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
-					'portfolio'          => [
+					'portfolio'        => [
 						'label'        => esc_html__( 'Portfolio', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -797,7 +826,7 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-portfolio/',
 						'youtube_url'  => '',
 					],
-					'search-form'        => [
+					'search-form'      => [
 						'label'        => esc_html__( 'Search Form', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -811,7 +840,7 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
-					'search-query'       => [
+					'search-query'     => [
 						'label'        => esc_html__( 'Search Query', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
@@ -825,7 +854,7 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
-					'search-no-result'   => [
+					'search-no-result' => [
 						'label'        => esc_html__( 'Search No Result', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
