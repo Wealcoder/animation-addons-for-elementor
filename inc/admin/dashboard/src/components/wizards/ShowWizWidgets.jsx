@@ -15,6 +15,12 @@ const ShowWizWidgets = () => {
 
   useEffect(() => {
     if (allWidgets) {
+      setCatWidgets(allWidgets.elements);
+    }
+  }, [allWidgets]);
+
+  useEffect(() => {
+    if (allWidgets) {
       const result = activeFullSetupWidgetFn(allWidgets, setupType);
       setCatWidgets(result);
     }

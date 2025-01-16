@@ -263,7 +263,6 @@ export const allSetupExtensionFn = (mainContent, data) => {
           })
         );
         if (value?.elements && Object.keys(value.elements).length) {
-          console.log(isGroupActive);
           value.is_active = isGroupActive;
         }
         return [key, { ...value, elements: filteredElements }];

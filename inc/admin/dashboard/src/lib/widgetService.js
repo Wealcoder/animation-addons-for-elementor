@@ -88,7 +88,6 @@ export const activeFullWidgetFn = (mainContent, data, dispatch) => {
 };
 
 export const activeFullSetupWidgetFn = (mainContent, data) => {
-  console.log(mainContent, data);
   const result = Object.fromEntries(
     Object.entries(mainContent.elements).map(([key, value]) => {
       const filteredElements = Object.fromEntries(
@@ -109,8 +108,6 @@ export const activeFullSetupWidgetFn = (mainContent, data) => {
       return [key, { ...value, elements: filteredElements }];
     })
   );
-
-  console.log(result);
 
   return result;
 };
