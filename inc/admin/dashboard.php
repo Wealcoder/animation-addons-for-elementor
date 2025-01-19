@@ -636,6 +636,9 @@ class WCF_Admin_Init {
 		if ( isset( $_POST['mobile'] ) ) {
 			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
+		if ( isset( $_POST['media'] ) ) {
+			$settings['media'] = sanitize_text_field( wp_unslash( $_POST['media'] ) );
+		}
 
 		$option = wp_json_encode( $settings );
 

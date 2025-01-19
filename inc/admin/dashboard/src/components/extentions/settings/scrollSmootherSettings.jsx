@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -12,18 +13,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DialogClose } from "@/components/ui/dialog";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRef, useState } from "react";
+
+const FormSchema = z.object({
+  smooth: z.coerce
+    .number({
+      invalid_type_error: "Smooth must be a number",
+    })
+    .optional(),
+  mobile: z.boolean().optional(),
+  media: z.string().regex(/^(?:\d+px|min-width:\s?\d+px|max-width:\s?\d+px)$/, {
+    message:
+      "Invalid format. Use '900px', 'min-width: 800px', or 'max-width: 1024px'.",
+  }),
+});
 
 const ScrollSmootherSettings = () => {
+  const dialogCloseRef = useRef(null);
+
   const form = useForm({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       smooth: WCF_ADDONS_ADMIN?.smoothScroller?.smooth || 1.35,
       mobile:
-        (WCF_ADDONS_ADMIN?.smoothScroller?.mobile === "true" ? true : false) ||
-        false,
+        WCF_ADDONS_ADMIN?.smoothScroller?.mobile === "true" ? true : false,
+      media: WCF_ADDONS_ADMIN?.smoothScroller?.media || "768px",
     },
   });
 
+  const convertToMinWidth = (value) => {
+    if (/^\d+px$/.test(value)) {
+      return `min-width: ${value}`;
+    }
+    return value;
+  };
+
   async function onSubmit(data) {
+    const convertedMedia = convertToMinWidth(data.media);
+
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
@@ -35,6 +64,7 @@ const ScrollSmootherSettings = () => {
         action: "save_smooth_scroller_settings",
         mobile: data.mobile,
         smooth: data.smooth,
+        media: convertedMedia,
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
@@ -43,6 +73,9 @@ const ScrollSmootherSettings = () => {
       })
       .then((return_content) => {
         WCF_ADDONS_ADMIN.smoothScroller = JSON.parse(return_content);
+        if (dialogCloseRef.current) {
+          dialogCloseRef.current.click();
+        }
       });
   }
 
@@ -96,10 +129,31 @@ const ScrollSmootherSettings = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="media"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-text">Media</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="768px"
+                        className="h-11 text-base"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {`Ex: 900px or min-width: 800px or max-width: 1024px`}
+                    </FormDescription>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="px-8 pt-4 flex gap-3 justify-end items-center">
-              <DialogClose asChild>
+              <DialogClose asChild ref={dialogCloseRef}>
                 <Button
                   variant="secondary"
                   className="h-11 shadow-common-2 text-base px-[18px]"
@@ -107,14 +161,14 @@ const ScrollSmootherSettings = () => {
                   Cancel
                 </Button>
               </DialogClose>
-              <DialogClose asChild>
-                <Button
-                  type="submit"
-                  className="h-11 shadow-common-2 text-base px-6"
-                >
-                  Save
-                </Button>
-              </DialogClose>
+              {/* <DialogClose asChild> */}
+              <Button
+                type="submit"
+                className="h-11 shadow-common-2 text-base px-6"
+              >
+                Save
+              </Button>
+              {/* </DialogClose> */}
             </div>
           </form>
         </Form>
