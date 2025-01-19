@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DialogClose } from "@/components/ui/dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 const FormSchema = z.object({
   smooth: z.coerce
@@ -161,14 +161,12 @@ const ScrollSmootherSettings = () => {
                   Cancel
                 </Button>
               </DialogClose>
-              {/* <DialogClose asChild> */}
               <Button
                 type="submit"
                 className="h-11 shadow-common-2 text-base px-6"
               >
                 Save
               </Button>
-              {/* </DialogClose> */}
             </div>
           </form>
         </Form>

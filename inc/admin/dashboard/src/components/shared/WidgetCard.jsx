@@ -5,6 +5,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
 import { useActivate } from "@/hooks/app.hooks";
+import ExtensionCardSettings from "../extentions/ExtensionCardSettings";
 
 const WidgetCard = ({
   widget,
@@ -12,6 +13,7 @@ const WidgetCard = ({
   className,
   updateActiveItem,
   isDisable = false,
+  exSettings,
 }) => {
   const { activated } = useActivate();
 
@@ -109,17 +111,25 @@ const WidgetCard = ({
                 </div>
               </div>
             </div>
-            {widget?.is_upcoming ? (
-              ""
-            ) : (
-              <div>
-                <Switch
-                  disabled={widget?.is_upcoming || isDisable}
-                  checked={widget?.is_active}
-                  onCheckedChange={(value) => setCheck(value, slug)}
-                />
-              </div>
-            )}
+            <div className="flex justify-end items-center gap-2">
+              {exSettings && (
+                <div>
+                  <ExtensionCardSettings>{exSettings}</ExtensionCardSettings>
+                </div>
+              )}
+
+              {widget?.is_upcoming ? (
+                ""
+              ) : (
+                <div>
+                  <Switch
+                    disabled={widget?.is_upcoming || isDisable}
+                    checked={widget?.is_active}
+                    onCheckedChange={(value) => setCheck(value, slug)}
+                  />
+                </div>
+              )}
+            </div>
           </>
         ) : (
           ""
