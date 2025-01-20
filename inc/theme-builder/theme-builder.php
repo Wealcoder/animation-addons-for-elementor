@@ -417,7 +417,7 @@ class WCF_Theme_Builder {
 
 		//check for archive
 		if ( is_archive() ) {
-
+		
 			//check for all date archive
 			if ( is_date() && array_key_exists( 'date', $templates ) ) {
 				return $templates['date'];
@@ -435,6 +435,23 @@ class WCF_Theme_Builder {
 
 			//check for custom post type archive
 			$custom_archive = get_post_type() . '-archive';
+			
+			if(is_tax()){
+				$get_queried_object = get_queried_object();		
+				$taxonomy = $get_queried_object->taxonomy; // Get the taxonomy slug.
+				$post_types = get_taxonomy($taxonomy)->object_type; // Get all post types for this taxonomy.
+				
+				if(is_array($post_types)){					
+					foreach($post_types as $ptype){
+						$custom_archive = $ptype . '-archive';
+						if ( array_key_exists( $custom_archive, $templates ) ) {
+							return $templates[ $custom_archive ];
+						}
+					}					
+				}				
+				
+			}
+			
 			if ( array_key_exists( $custom_archive, $templates ) ) {
 				return $templates[ $custom_archive ];
 			}
@@ -509,7 +526,7 @@ class WCF_Theme_Builder {
 		} else {
 			$current_id = get_the_id();
 		}
-
+		
 		return $page_type;
 	}
 
