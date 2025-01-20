@@ -466,7 +466,7 @@ class WCF_Admin_Init {
 		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
 		$settings      = json_decode( $sanitize_data , true );
 	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
-	    
+		update_option( 'wcf_addons_setup_wizard', 'complete' );
 		// update new settings
 		if ( ! empty( $option_name ) )
 		{
@@ -487,7 +487,7 @@ class WCF_Admin_Init {
 		  ];
 			wp_send_json( $return_message );
 		}
-		
+
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
 	}
 

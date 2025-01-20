@@ -186,12 +186,13 @@ final class WCF_ADDONS_Plugin {
 				// update plugin version
 				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
 			}
-		
-			//redirect addons setup page
-			if ( 'redirect' === get_option( 'wcf_addons_setup_wizard' ) || !get_option( 'wcf_addons_setup_wizard' ) ) {
-				update_option( 'wcf_addons_setup_wizard', 'init' );
-				wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+			if(isset($_GET['page']) && $_GET['page'] === 'wcf_addons_settings'){
+				//redirect addons setup page
+				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {				
+					wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+				}
 			}
+			
 		} );
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin

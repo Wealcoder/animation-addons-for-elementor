@@ -257,7 +257,7 @@ class WCF_Setup_Wizard_Init {
 		}
 
 		update_option( 'wcf_addons_setup_wizard', 'complete' );
-
+    
 		wp_send_json_success( [ 'redirect_url' => esc_url( admin_url( 'admin.php?page=wcf_addons_settings' ) ) ] );
 
 	}
