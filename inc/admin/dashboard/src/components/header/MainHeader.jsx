@@ -27,7 +27,7 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
 
       body: new URLSearchParams({
         action: "wcf_active_plugin",
-        action_base: "animation-addon-for-elementor-pro/animation-addon-for-elementor-pro.php",
+        action_base: "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
