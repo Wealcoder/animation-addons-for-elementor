@@ -28,7 +28,7 @@ const ProConfirmDialog = ({ open, setOpen }) => {
 
       body: new URLSearchParams({
         action: "wcf_active_plugin",
-        action_base: "wcf-addons-pro/wcf-addons-pro.php",
+        action_base: "animation-addon-for-elementor-pro/animation-addon-for-elementor-pro.php",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
