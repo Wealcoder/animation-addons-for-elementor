@@ -587,7 +587,7 @@ class WCF_Admin_Init {
 	          
 	            if( !array_key_exists($slug, $actives) && $item['is_active']){
 					$actives[$slug] = true;
-					error_log($slug);
+				
 	            }
 	          
 	        }

@@ -181,7 +181,7 @@ class WCF_Plugin_Installer {
 		}
 
 		$basename = isset( $_POST['action_base'] ) ? sanitize_text_field( $_POST['action_base'] ) : '';
-		error_log( $basename );
+		
 		$result   = deactivate_plugins( [ '/'.$basename ], true);
 
 		if ( is_wp_error( $result ) ) {
