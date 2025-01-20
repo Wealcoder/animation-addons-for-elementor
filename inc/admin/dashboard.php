@@ -212,7 +212,7 @@ class WCF_Admin_Init {
 			self::MENU_PAGE_SLUG,
 			'',
 			WCF_ADDONS_URL . '/assets/images/wcf.png',
-			100
+			8
 		);
 
 		add_submenu_page(
