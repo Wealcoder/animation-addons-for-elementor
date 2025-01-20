@@ -73,6 +73,7 @@ class WCF_Admin_Init {
 		add_action( 'wp_ajax_save_settings_with_ajax_dashboard', [ $this, 'save_settings_dashboard' ] );
 		
 		add_action( 'wp_ajax_save_smooth_scroller_settings', [ $this, 'save_smooth_scroller_settings' ] );	
+		add_action( 'wp_ajax_wcf_addon_custom_font_settings', [ $this, 'custom_font_settings' ] );	
 		add_filter( 'admin_body_class', [$this,'admin_classes'],100 ); 	
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_widgets_config'], 11 );
 		add_filter( 'wcf_addons_dashboard_config', [ $this, 'dashboard_db_extnsions_config'], 10 );		
@@ -263,6 +264,7 @@ class WCF_Admin_Init {
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
 				'smoothScroller'      => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+				'load_in_head' 				=> get_option('wcf_custom_font_setting'),
 				'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
 				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'global_settings_url' => $this->get_elementor_active_edit_url(),
@@ -636,6 +638,9 @@ class WCF_Admin_Init {
 		if ( isset( $_POST['mobile'] ) ) {
 			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
 		}
+		if ( isset( $_POST['media'] ) ) {
+			$settings['media'] = sanitize_text_field( wp_unslash( $_POST['media'] ) );
+		}
 
 		$option = wp_json_encode( $settings );
 
@@ -647,6 +652,23 @@ class WCF_Admin_Init {
 		}
 
 		wp_send_json( esc_html__( 'Option name not found!', 'animation-addons-for-elementor' ) );
+	}
+
+	public function custom_font_settings() {
+
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+		if ( ! isset( $_POST['load_in_head'] ) ) {
+			return;
+		}
+
+		$load_in_head = $_POST['load_in_head'];
+	  update_option( 'wcf_custom_font_setting', $load_in_head );
+	  wp_send_json( $load_in_head );
 	}
 
 

@@ -86,3 +86,28 @@ export const activeFullWidgetFn = (mainContent, data, dispatch) => {
     },
   });
 };
+
+export const activeFullSetupWidgetFn = (mainContent, data) => {
+  const result = Object.fromEntries(
+    Object.entries(mainContent.elements).map(([key, value]) => {
+      const filteredElements = Object.fromEntries(
+        Object.entries(value.elements || {}).filter(([key2, value2]) => {
+          if (value2.is_pro && !isValid) {
+            return [key2, value2];
+          } else {
+            if (value2?.setup) {
+              value2.is_active = value2.setup?.includes(data);
+            } else {
+              value2.is_active = false;
+            }
+            return [key2, value2];
+          }
+        })
+      );
+      value.is_active = false;
+      return [key, { ...value, elements: filteredElements }];
+    })
+  );
+
+  return result;
+};

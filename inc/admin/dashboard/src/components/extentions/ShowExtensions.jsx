@@ -331,6 +331,10 @@ const ShowExtensions = ({
                     slug={content}
                     updateActiveItem={updateActiveGeneralExtension}
                     className="rounded p-5"
+                    exSettings={
+                      exSettings?.find((item) => item.key === content)
+                        ?.component
+                    }
                   />
                 </React.Fragment>
               )

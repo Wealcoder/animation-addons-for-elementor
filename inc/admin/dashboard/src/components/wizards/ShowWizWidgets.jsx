@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { deviceMediaMatch } from "@/lib/utils";
-import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import { useActiveItem, useSetup, useWidgets } from "@/hooks/app.hooks";
+import { activeFullSetupWidgetFn } from "@/lib/widgetService";
 
 const ShowWizWidgets = () => {
   const { allWidgets } = useWidgets();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
+  const { setupType } = useSetup();
 
   const [catWidgets, setCatWidgets] = useState({});
 
@@ -16,6 +18,13 @@ const ShowWizWidgets = () => {
       setCatWidgets(allWidgets.elements);
     }
   }, [allWidgets]);
+
+  useEffect(() => {
+    if (allWidgets) {
+      const result = activeFullSetupWidgetFn(allWidgets, setupType);
+      setCatWidgets(result);
+    }
+  }, []);
 
   const setCheck = (data) => {
     updateActiveGroupWidget(data);

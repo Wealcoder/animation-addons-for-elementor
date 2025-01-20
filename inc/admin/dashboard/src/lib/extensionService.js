@@ -242,3 +242,60 @@ export const allExtensionFn = (mainContent, data, dispatch) => {
     },
   });
 };
+
+export const allSetupExtensionFn = (mainContent, data) => {
+  const gsapResult = Object.fromEntries(
+    Object.entries(mainContent.elements["gsap-extensions"].elements).map(
+      ([key, value]) => {
+        let isGroupActive = false;
+        const filteredElements = Object.fromEntries(
+          Object.entries(value.elements || {}).map(([key2, value2]) => {
+            if (value2.is_pro && !isValid) {
+              return [key2, value2];
+            } else {
+              const activeItem = value2.setup?.includes(data);
+              if (activeItem) {
+                isGroupActive = true;
+              }
+              value2.is_active = activeItem;
+              return [key2, value2];
+            }
+          })
+        );
+        if (value?.elements && Object.keys(value.elements).length) {
+          value.is_active = isGroupActive;
+        }
+        return [key, { ...value, elements: filteredElements }];
+      }
+    )
+  );
+
+  const generalResult = Object.fromEntries(
+    Object.entries(mainContent.elements["general-extensions"].elements).map(
+      ([key, value]) => {
+        if (value.is_pro && !isValid) {
+          return [key, value];
+        } else {
+          value.is_active = value.setup?.includes(data);
+          return [key, value];
+        }
+      }
+    )
+  );
+
+  return {
+    gsapResult: {
+      ...mainContent.elements["gsap-extensions"],
+      is_active: false,
+      elements: {
+        ...mainContent.elements["gsap-extensions"].elements,
+        ...gsapResult,
+      },
+    },
+    generalResult: {
+      ...mainContent.elements["general-extensions"],
+      is_active: false,
+      elements: generalResult,
+    },
+  };
+};
