@@ -704,6 +704,21 @@ $config = [
 						'youtube_url'  => '',
 					],
 
+					'posts-tab'              => [
+						'label'        => esc_html__( 'Posts Tab', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
+						'youtube_url'  => '',
+					],
+
 					'posts-filter' => [
 						'label'        => esc_html__( 'Filterable Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
