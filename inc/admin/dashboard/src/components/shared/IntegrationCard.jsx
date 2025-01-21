@@ -60,7 +60,7 @@ const IntegrationCard = ({ item, className }) => {
 
       body: new URLSearchParams({
         action: "wcf_active_plugin",
-        action_base: "animation-addon-for-elementor-pro/animation-addon-for-elementor-pro",
+        action_base: "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })

@@ -222,6 +222,7 @@ final class WCF_ADDONS_Plugin {
 	
 	function enqueue_elementor_install_script() {
 		// Check if the plugin is not active
+		wp_enqueue_style( 'aaeaddon-common', WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css' );
 		if ( !is_plugin_active('elementor/elementor.php') ) {
 			wp_enqueue_script(
 				'wcf-install-elementor-script',

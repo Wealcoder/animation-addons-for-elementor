@@ -17,16 +17,19 @@ const ComparisonTable = () => {
         <div className="w-[464px] p-6 border-r border-border">
           <h3 className="text-lg font-medium">Features</h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Our plugin is designed to elevate your e-commerce capabilities by
-            offering intuitive, flexible, and feature-rich tools to enhance
-            customer satisfaction and boost sales.
+            Our plugin comes with a comprehensive set of features designed to
+            meet all your animation needs. From basic transitions to complex
+            motion effects, you have everything you need to create visually
+            appealing and interactive designs.
           </p>
         </div>
         <div className="w-[392px] p-6 border-r border-border">
           <h3 className="text-lg font-medium">Free Version</h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Explore the core features of our plugin at no charge, and see how it
-            can help you improve your online store with ease.
+            Unlock basic animation capabilities with our free version. It
+            provides essential features to enhance your designs without any
+            cost. Experiment with a variety of simple but effective animation
+            options to make your website more engaging.
           </p>
         </div>
         <div className="w-[392px] p-6">
@@ -59,9 +62,10 @@ const ComparisonTable = () => {
             Pro Version
           </h3>
           <p className="text-[15px] text-text-secondary leading-6 mt-2">
-            Unlock the full potential of our plugin with the paid version,
-            offering exclusive tools, priority updates, and dedicated customer
-            support.
+            Take your animations to the next level with the Pro Version. Enjoy
+            advanced features, premium widgets, and a wider range of
+            customization options. This version is ideal for professionals
+            looking to create stunning, high-quality animations that stand out.
           </p>
         </div>
       </div>

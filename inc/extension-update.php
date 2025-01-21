@@ -168,8 +168,8 @@ Class WCfAddon_Extension_Pro{
 	 */
 	public function __construct() {
 	
-        $this->plugin_slug   = 'animation-addon-for-elementor-pro/animation-addon-for-elementor-pro.php';
-		$this->plugin_path   = 'animation-addon-for-elementor-proanimation-addon-for-elementor-pro.php';
+        $this->plugin_slug   = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+		$this->plugin_path   = 'animation-addons-for-elementor-proanimation-addons-for-elementor-pro.php';
 		
 		$this->version       = 1.2;
 		$this->cache_key     = 'wcf_addon_pro_ma_upd';

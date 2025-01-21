@@ -251,7 +251,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'progressbar'       => [
-						'label'        => esc_html__( 'Progressbar', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Progress Bar', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -495,7 +495,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'draw-svg'       => [
-						'label'        => esc_html__( 'DrawSvg', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'GSAP DrawSvg', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -515,7 +515,7 @@ $config = [
 				'is_active' => false,
 				'elements'  => [
 					'animated-offcanvas' => [
-						'label'        => __( 'Animated Offcanvas', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Animated Off-Canvas', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -577,7 +577,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-feature-image' => [
-						'label'        => esc_html__( 'Post Feature Image', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Featured Image', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -619,7 +619,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-comment'       => [
-						'label'        => esc_html__( 'Post Comment', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Comments', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -735,7 +735,7 @@ $config = [
 					],
 
 					'posts-slider' => [
-						'label'        => esc_html__( 'Posts Slider', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Slider', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -809,7 +809,7 @@ $config = [
 					],
 
 					'feature-posts' => [
-						'label'        => esc_html__( 'Feature Posts', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Featured Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -992,12 +992,12 @@ $config = [
 				]
 			],
 			'advanced-elements'  => [
-				'title'     => esc_html__( 'Advanced', 'animation-addons-for-elementor' ),
+				'title'     => esc_html__( 'Advanced Widgets', 'animation-addons-for-elementor' ),
 				'is_active' => false,
 				'elements'  => [
 
 					'toggle-switcher'       => [
-						'label'        => __( 'Toggle Switcher', 'animation-addons-for-elementor' ),
+						'label'        => __( 'Toggle Switch', 'animation-addons-for-elementor' ),
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
@@ -1186,7 +1186,7 @@ $config = [
 		'is_active' => false,
 		'elements'  => [
 			'general-extensions' => [
-				'title'     => esc_html__( 'General Extension', 'animation-addons-for-elementor' ),
+				'title'     => esc_html__( 'General Extensions', 'animation-addons-for-elementor' ),
 				'is_active' => false,
 				'elements'  => [
 					'custom-css'       => [
@@ -1319,11 +1319,11 @@ $config = [
 				]
 			],
 			'gsap-extensions'    => [
-				'title'     => esc_html__( 'Gsap Extension', 'animation-addons-for-elementor' ),
+				'title'     => esc_html__( 'GSAP Extensions', 'animation-addons-for-elementor' ),
 				'is_active' => false,
 				'elements'  => [
 					'wcf-smooth-scroller' => [
-						'title'     => esc_html__( 'Smooth Scroller', 'animation-addons-for-elementor' ),
+						'title'     => esc_html__( 'Scroll Smoother', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
@@ -1344,7 +1344,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'pin-element'             => [
-								'label'        => esc_html__( 'Pin Element', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__( 'Pin Elements', 'animation-addons-for-elementor' ),
 								'location'     => [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
@@ -1391,7 +1391,7 @@ $config = [
 						]
 					],
 					'effect'              => [
-						'title'     => esc_html__( 'Effect', 'animation-addons-for-elementor' ),
+						'title'     => esc_html__( 'Effects', 'animation-addons-for-elementor' ),
 						'doc_url'   => '#',
 						'is_pro'    => true,
 						'is_active' => false,
@@ -1412,7 +1412,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'hover-effect-image'  => [
-								'label'        => esc_html__( 'Hover Effect Image', 'animation-addons-for-elementor' ),
+								'label'        => esc_html__( 'Image Hover Effect', 'animation-addons-for-elementor' ),
 								'location'     => [
 									'cTab'     => 'gsap',
 									'pluginId' => 'effect'
@@ -1474,7 +1474,7 @@ $config = [
 						'elements'  => []
 					],
 					'flip'                => [
-						'title'     => esc_html__( 'Flip', 'animation-addons-for-elementor' ),
+						'title'     => esc_html__( 'Flips', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
@@ -1514,7 +1514,7 @@ $config = [
 						]
 					],
 					'gsap-builder'        => [
-						'title'     => esc_html__( 'Builder', 'animation-addons-for-elementor' ),
+						'title'     => esc_html__( 'Builders', 'animation-addons-for-elementor' ),
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
@@ -1546,7 +1546,7 @@ $config = [
 			'elements' => [
 				'animation-addon-for-elementorpro' => [
 					'label'        => esc_html__( 'Animation Addon Pro', 'animation-addons-for-elementor' ),
-					'basename'     => 'animation-addon-for-elementor-pro/animation-addon-for-elementor-pro.php',
+					'basename'     => 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php',
 					'source'       => 'custom',
 					'is_pro'       => true,
 					'slug'         => '',
