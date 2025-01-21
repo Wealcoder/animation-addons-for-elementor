@@ -2716,7 +2716,7 @@ msgstr ""
 
 #: widgets/image-box-slider.php:556 widgets/image-box.php:370
 #: widgets/image-gallery.php:318 widgets/posts.php:1467
-msgid "This effect will work only image tag."
+msgid "This effect will work only on image tags."
 msgstr ""
 
 #: widgets/image-box-slider.php:561 widgets/image-box.php:375
