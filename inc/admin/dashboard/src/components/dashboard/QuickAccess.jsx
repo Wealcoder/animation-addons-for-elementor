@@ -23,7 +23,7 @@ const AccessData = [
     icon: <RiLayout3Line size={22} className="text-[#7772FC]" />,
   },
   {
-    title: "Pro Widget",
+    title: "Pro Widgets",
     subTitle: "Customize pro widgets",
     url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=widgets&filter=pro`,
     icon: <RiVipCrown2Line size={22} className="text-[#FFA132]" />,

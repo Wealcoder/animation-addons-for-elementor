@@ -250,7 +250,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
-
+			'posts-tab'             => [
+				'handler' => 'aae-posts-tab',
+				'src'     => 'widgets/posts-tab.min.js',
+				'dep'     => [ 'jquery' ],
+				'version' => false,
+				'arg'     => true,
+			],
 		];
 	}
 
@@ -407,6 +413,13 @@ class Plugin {
 			'meta-info'        => [
 				'handler' => 'wcf--meta-info',
 				'src'     => 'widgets/meta-info.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'posts-tab'        => [
+				'handler' => 'aae-posts-tab',
+				'src'     => 'widgets/posts-tab.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
