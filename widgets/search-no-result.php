@@ -49,7 +49,7 @@ class Search_No_Result extends Widget_Base {
 			[
 				'label' => esc_html__( 'Important Note: ', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::RAW_HTML,
-				'raw' => esc_html__( 'Message will be show when no search content found', 'animation-addons-for-elementor' ),
+				'raw' => esc_html__( 'Message will be shown when no search content is found.', 'animation-addons-for-elementor' ),
 			]
 		);
 

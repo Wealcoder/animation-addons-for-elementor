@@ -258,7 +258,7 @@ class One_page_Nav extends Widget_Base {
 			'show_tooltip',
 			[
 				'label'        => esc_html__( 'Show Tooltip', 'animation-addons-for-elementor' ),
-				'description'  => esc_html__( 'If enable this settings menu text will be hidden. ', 'animation-addons-for-elementor' ),
+				'description'  => esc_html__( 'If you enable this button, settings menu text will be hidden. ', 'animation-addons-for-elementor' ),
 				'separator'    => 'before',
 				'type'         => Controls_Manager::SWITCHER,
 				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),

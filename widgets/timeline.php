@@ -163,7 +163,7 @@ class Timeline extends Widget_Base {
 		$this->add_responsive_control(
 			'image_position',
 			[
-				'label'          => esc_html__( 'Image position', 'animation-addons-for-elementor' ),
+				'label'          => esc_html__( 'Image Position', 'animation-addons-for-elementor' ),
 				'type'           => Controls_Manager::SELECT,
 				'default'        => 'column',
 				'tablet_default' => 'column',
