@@ -18,27 +18,36 @@
                     data: function (params) {
                         return {
                             q: params.term, // search term
-                            page: params.page,
+                            page: params.page || 1,
                             action: 'wcf_get_posts_by_query',
-                            'nonce' : WCF_Theme_Builder.nonce,
+                            nonce: WCF_Theme_Builder.nonce,
                         };
                     },
                     processResults: function (data) {
-                        // console.log(data);
-                        // console.log("inside");
-                        // parse the results into the format expected by Select2.
-                        // since we are using custom formatting functions we do not need to
-                        // alter the remote JSON data
-
+                        console.log('Response data:', data);
+            
+                        // Filter out duplicate options
+                        let uniqueData = [];
+                        let seen = new Set();
+            
+                        data.forEach(item => {
+                            if (!seen.has(item.id)) {
+                                seen.add(item.id);
+                                uniqueData.push(item);
+                            }
+                        });
+            
                         return {
-                            results: data
+                            results: uniqueData
                         };
                     },
                     cache: true
                 },
                 minimumInputLength: 2,
+                placeholder: 'Search and select an option',
+                allowClear: true
             });
-
+            
             //open popup onclick
             $( 'body.post-type-wcf-addons-template #wpcontent' ).on( 'click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup );
             $(document )
@@ -46,7 +55,7 @@
                 .on( 'click', ".wcf-addons-tmp-save", this.savePost )
                 .on( 'click', '.wcf-addons-tmp-elementor', this.redirectEditPage )
                 .on( 'wcf_template_edit_popup_open', this.displayLocation)
-                .on( 'change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation)
+                .on( 'change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
         },
 
         // Render Popup HTML
@@ -110,7 +119,7 @@
                     },
 
                     complete:function( response ){
-
+                        $('#wcf-addons-hf-s-display-type').val(null).trigger('change');  
                         // Fire custom event.
                         $(document).trigger('wcf_template_edit_popup_open');
 
@@ -127,7 +136,7 @@
                                 let newOption = new Option(data.text, data.id, true, true);
                                 // Append it to the select
                                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
-                            })
+                            });
                         }
 
 
@@ -234,13 +243,13 @@
             $('.hf-s-location').addClass('hidden');
 
             if ('archive' === type) {
-                $('.archive-location').removeClass('hidden')
-                $('.hf-location, .single-location').addClass('hidden')
+                $('.archive-location').removeClass('hidden');
+                $('.hf-location, .single-location').addClass('hidden');
             } else if ('single' === type) {
-                $('.single-location').removeClass('hidden')
-                $('.hf-location, .archive-location').addClass('hidden')
+                $('.single-location').removeClass('hidden');
+                $('.hf-location, .archive-location').addClass('hidden');
             } else {
-                $('.hf-location').removeClass('hidden')
+                $('.hf-location').removeClass('hidden');
                 $('.single-location, .archive-location').addClass('hidden');
 
                 setTimeout(function () {

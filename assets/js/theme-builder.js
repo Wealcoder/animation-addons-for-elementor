@@ -17,25 +17,32 @@
             return {
               q: params.term,
               // search term
-              page: params.page,
+              page: params.page || 1,
               action: 'wcf_get_posts_by_query',
-              'nonce': WCF_Theme_Builder.nonce
+              nonce: WCF_Theme_Builder.nonce
             };
           },
           processResults: function processResults(data) {
-            // console.log(data);
-            // console.log("inside");
-            // parse the results into the format expected by Select2.
-            // since we are using custom formatting functions we do not need to
-            // alter the remote JSON data
+            console.log('Response data:', data);
 
+            // Filter out duplicate options
+            var uniqueData = [];
+            var seen = new Set();
+            data.forEach(function (item) {
+              if (!seen.has(item.id)) {
+                seen.add(item.id);
+                uniqueData.push(item);
+              }
+            });
             return {
-              results: data
+              results: uniqueData
             };
           },
           cache: true
         },
-        minimumInputLength: 2
+        minimumInputLength: 2,
+        placeholder: 'Search and select an option',
+        allowClear: true
       });
 
       //open popup onclick
@@ -89,6 +96,7 @@
             $('.wcf-addons-tmp-elementor').removeClass('disabled').removeAttr('disabled', 'disabled');
           },
           complete: function complete(response) {
+            $('#wcf-addons-hf-s-display-type').val(null).trigger('change');
             // Fire custom event.
             $(document).trigger('wcf_template_edit_popup_open');
 

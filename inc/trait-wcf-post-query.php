@@ -66,7 +66,7 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => 'custom' ],
+				'condition' => [ 'query_type' => ['custom','archive'] ],
 			]
 		);
 
@@ -323,7 +323,7 @@ trait WCF_Post_Query_Trait {
 			'order'               => $this->get_settings( 'post_order' ),
 			'orderby'             => $this->get_settings( 'post_order_by' ),
 		];
-
+		
 		if ( 'anytime' !== $this->get_settings( 'post_date' ) ) {
 			$query_args['date_query'] = [ 'after' => $this->get_settings( 'post_date' ) ];
 		}
@@ -400,13 +400,39 @@ trait WCF_Post_Query_Trait {
 	}
 
 	public function get_query() {
-		global $wp_query;
-
+		global $wp_query;		
+		
+		// Check custom post type archive
+		if('archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && is_tax()){
+		
+			if($this->get_settings('post_type') !='post'){
+				$query_object = get_queried_object();		
+				$tax_query = [];			
+				if (isset($query_object->taxonomy) && isset($query_object->term_id))
+				{
+				    $tax_query = [
+				        [
+				            'taxonomy' => $query_object->taxonomy,
+				            'field'    => 'term_id',
+				            'terms'    => $query_object->term_id,
+				        ],
+				    ];
+				}			
+				// Create a new WP_Query instance
+				$GLOBALS['wp_query'] = new \WP_Query([
+				    'post_type' => $this->get_settings('post_type'),
+				    'tax_query' => $tax_query,
+				]);
+				
+				return $GLOBALS['wp_query'];
+			}
+			
+		}
+	
 		if ( 'archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && ( $wp_query->is_archive || $wp_query->is_search ) ) {
-
 			return $this->query = $wp_query;
 		} else {
-			return $this->query = new WP_Query( $this->query_arg() );
+			return $this->query = new \WP_Query( $this->query_arg() );
 		}
 	}
 

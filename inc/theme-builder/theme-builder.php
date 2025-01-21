@@ -437,6 +437,7 @@ class WCF_Theme_Builder {
 			$custom_archive = get_post_type() . '-archive';
 			
 			if(is_tax()){
+			
 				$get_queried_object = get_queried_object();		
 				$taxonomy = $get_queried_object->taxonomy; // Get the taxonomy slug.
 				$post_types = get_taxonomy($taxonomy)->object_type; // Get all post types for this taxonomy.
