@@ -1608,7 +1608,7 @@ class Posts_Tab extends Widget_Base {
 			'el_hover_effects',
 			[
 				'label'        => esc_html__( 'Hover Effect', 'animation-addons-for-elementor' ),
-				'description'  => esc_html__( 'This effect will work only image tag.', 'animation-addons-for-elementor' ),
+				'description'  => esc_html__( 'This effect will work only on image tags.', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SELECT,
 				'default'      => 'effect-zoom-in',
 				'options'      => [
