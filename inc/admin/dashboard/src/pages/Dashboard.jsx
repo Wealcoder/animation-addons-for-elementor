@@ -12,9 +12,13 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative">
-        <img src={HeroBanner} className="w-full h-full" alt="Banner" />
+        <img
+          src={HeroBanner}
+          className="w-full h-full rounded-[10px]"
+          alt="Banner"
+        />
         <Badge
-          className="absolute bottom-[34px] right-[25px]"
+          className="absolute bottom-[34px] right-[20px]"
           variant="version"
         >
           Ver. {WCF_ADDONS_ADMIN?.version}

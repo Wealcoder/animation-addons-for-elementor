@@ -3,8 +3,16 @@ import Sassly from "../../../public/images/promotion/sassly.png";
 import Binox from "../../../public/images/promotion/binox.png";
 import Builder from "../../../public/images/promotion/builder.png";
 import Axtra from "../../../public/images/promotion/axtra.png";
+import Helo from "../../../public/images/promotion/helo.png";
 
 export const PromotionList = [
+  {
+    title: "Helo | Multi-Purpose Elementor WordPress Theme",
+    description:
+      "Helo is a multipurpose WordPress theme designed for agencies, personal portfolios, resumes, business consultancies, technology, non-profit organizations, and so on. It’s crafted with 55+ demos, 1000+ sections, and 300+ pages in both dark and light versions. The most standout feature of Helo is the integration of smooth GSAP animations.",
+    url: "https://crowdytheme.com/wp/helo-preview",
+    image: Helo,
+  },
   {
     title: "Arolax | Creative Digital Agency Theme",
     description:
