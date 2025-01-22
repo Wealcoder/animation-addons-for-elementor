@@ -112,6 +112,9 @@ class Animated_Heading extends Widget_Base {
 				'type'        => Controls_Manager::TEXTAREA,
 				'default'     => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 

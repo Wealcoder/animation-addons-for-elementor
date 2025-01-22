@@ -9,8 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
+
 ?>
-<main id="content" <?php post_class( 'site-main' ); ?>>
+<main data-aee="builder" id="content" <?php post_class( 'site-main' ); ?>>	
 	<?php do_action( 'wcf_single_builder_content' ); ?>
 </main>
 <?php

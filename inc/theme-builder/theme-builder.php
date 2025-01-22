@@ -65,7 +65,7 @@ class WCF_Theme_Builder {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		// Change Template
-		add_filter( 'template_include', [ $this, 'template_loader' ] );
+		add_filter( 'template_include', [ $this, 'template_loader' ] , 30 );
 
 		// Archive Page
 		add_action( 'wcf_archive_builder_content', [ $this, 'archive_page_builder_content' ] );
