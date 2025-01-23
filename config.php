@@ -704,8 +704,8 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'posts-tab'              => [
-						'label'        => esc_html__( 'Posts Tab', 'animation-addons-for-elementor' ),
+					'video-posts-tab'              => [
+						'label'        => esc_html__( 'Video Posts Tab', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],

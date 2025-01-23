@@ -250,9 +250,9 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
-			'posts-tab'             => [
-				'handler' => 'aae-posts-tab',
-				'src'     => 'widgets/posts-tab.min.js',
+			'video-posts-tab'             => [
+				'handler' => 'aae-video-posts-tab',
+				'src'     => 'widgets/video-posts-tab.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
@@ -417,9 +417,9 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-			'posts-tab'        => [
-				'handler' => 'aae-posts-tab',
-				'src'     => 'widgets/posts-tab.min.css',
+			'video-posts-tab'        => [
+				'handler' => 'aae-video-posts-tab',
+				'src'     => 'widgets/video-posts-tab.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
