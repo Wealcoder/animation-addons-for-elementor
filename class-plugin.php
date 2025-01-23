@@ -508,7 +508,7 @@ class Plugin {
 		];
 
 		$categories['wcf-hf-addon'] = [
-			'title' => esc_html__( 'AAE Header/Footer', 'animation-addons-for-elementor' ),
+			'title' => __( 'AAE Header & Footer', 'animation-addons-for-elementor' ),
 			'icon'  => 'fa fa-plug',
 		];
 
