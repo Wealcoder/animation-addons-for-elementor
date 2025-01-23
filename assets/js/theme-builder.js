@@ -1,3 +1,9 @@
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 ;
 (function ($) {
   "use strict";
@@ -7,6 +13,21 @@
     templateId: 0,
     init: function init() {
       this.renderPopup();
+      this.reinitSelect2();
+      //open popup onclick
+      $('body.post-type-wcf-addons-template #wpcontent').on('click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup);
+      $(document).on('click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup).on('click', ".wcf-addons-tmp-save", this.savePost).on('click', '.wcf-addons-tmp-elementor', this.redirectEditPage).on('wcf_template_edit_popup_open', this.displayLocation).on('change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
+      $('#wcf-addons-hf-s-display-type').on('select2:select', function (e) {
+        // Get the selected data
+        var selectedItems = $(this).val(); // Get the selected values
+
+        var uniqueItems = _toConsumableArray(new Set(selectedItems)); // Remove duplicates
+
+        // Update the Select2 element with unique values
+        $(this).val(uniqueItems).trigger('change');
+      });
+    },
+    reinitSelect2: function reinitSelect2() {
       $('#wcf-addons-hf-s-display-type').select2({
         ajax: {
           url: ajaxurl,
@@ -17,30 +38,30 @@
             return {
               q: params.term,
               // search term
-              page: params.page,
+              page: params.page || 1,
               action: 'wcf_get_posts_by_query',
-              'nonce': WCF_Theme_Builder.nonce
+              nonce: WCF_Theme_Builder.nonce
             };
           },
           processResults: function processResults(data) {
-            // console.log(data);
-            // console.log("inside");
-            // parse the results into the format expected by Select2.
-            // since we are using custom formatting functions we do not need to
-            // alter the remote JSON data
-
+            var uniqueData = [];
+            var seen = new Set();
+            data.forEach(function (item) {
+              if (!seen.has(item.id)) {
+                seen.add(item.id);
+                uniqueData.push(item);
+              }
+            });
             return {
-              results: data
+              results: uniqueData
             };
           },
           cache: true
         },
-        minimumInputLength: 2
+        minimumInputLength: 2,
+        placeholder: 'Search and select an option',
+        allowClear: true
       });
-
-      //open popup onclick
-      $('body.post-type-wcf-addons-template #wpcontent').on('click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup);
-      $(document).on('click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup).on('click', ".wcf-addons-tmp-save", this.savePost).on('click', '.wcf-addons-tmp-elementor', this.redirectEditPage).on('wcf_template_edit_popup_open', this.displayLocation).on('change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
     },
     // Render Popup HTML
     renderPopup: function renderPopup(event) {
@@ -89,6 +110,7 @@
             $('.wcf-addons-tmp-elementor').removeClass('disabled').removeAttr('disabled', 'disabled');
           },
           complete: function complete(response) {
+            $('#wcf-addons-hf-s-display-type').val(null).trigger('change');
             // Fire custom event.
             $(document).trigger('wcf_template_edit_popup_open');
 
@@ -125,6 +147,10 @@
     // Close Popup
     closePopup: function closePopup(event) {
       $('.wcf-addons-template-edit-popup-area').removeClass('open-popup');
+      $('#wcf-addons-hf-s-display-type').select2('destroy');
+      var $_select2html = "<label class=\"wcf-addons-template-edit-label\"></label>\n                                <select class=\"wcf-addons-template-edit-input\" name=\"wcf-addons-hf-s-display-type[]\"\n                                        id=\"wcf-addons-hf-s-display-type\" multiple=\"multiple\">\n                                </select>";
+      $('.wcf-addons-template-edit-field.hf-s-location').html($_select2html);
+      WCFThemeBuilder.reinitSelect2();
     },
     // Save Post
     savePost: function savePost(event) {

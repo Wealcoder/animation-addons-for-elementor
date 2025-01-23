@@ -598,7 +598,7 @@ class Team extends Widget_Base {
 		$this->add_responsive_control(
 			'name_spacing',
 			[
-				'label'      => esc_html__( 'spacing', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem' ],
 				'range'      => [
@@ -649,7 +649,7 @@ class Team extends Widget_Base {
 		$this->add_responsive_control(
 			'designation_spacing',
 			[
-				'label'      => esc_html__( 'spacing', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem' ],
 				'range'      => [
@@ -700,7 +700,7 @@ class Team extends Widget_Base {
 		$this->add_responsive_control(
 			'description_spacing',
 			[
-				'label'      => esc_html__( 'spacing', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem' ],
 				'range'      => [

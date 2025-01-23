@@ -65,7 +65,7 @@ class WCF_Theme_Builder {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		// Change Template
-		add_filter( 'template_include', [ $this, 'template_loader' ] );
+		add_filter( 'template_include', [ $this, 'template_loader' ] , 30 );
 
 		// Archive Page
 		add_action( 'wcf_archive_builder_content', [ $this, 'archive_page_builder_content' ] );
@@ -437,6 +437,7 @@ class WCF_Theme_Builder {
 			$custom_archive = get_post_type() . '-archive';
 			
 			if(is_tax()){
+			
 				$get_queried_object = get_queried_object();		
 				$taxonomy = $get_queried_object->taxonomy; // Get the taxonomy slug.
 				$post_types = get_taxonomy($taxonomy)->object_type; // Get all post types for this taxonomy.

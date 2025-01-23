@@ -50,7 +50,7 @@ const WizardStart = () => {
               </p>
             </div>
             <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
-              Create Stunning Animations with WCF Animation Addons
+              Create Stunning Animations with AAE Animation Addons
             </h1>
           </div>
           <div className="mt-[40px] rounded-3xl max-w-[892px] mx-auto border-[10px] border-white overflow-hidden">

@@ -7,8 +7,32 @@
         templateId: 0,
 
         init: function() {
-            this.renderPopup();
-
+            this.renderPopup();        
+            this.reinitSelect2();
+            //open popup onclick
+            $( 'body.post-type-wcf-addons-template #wpcontent' ).on( 'click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup );
+            $(document )
+                .on( 'click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup )
+                .on( 'click', ".wcf-addons-tmp-save", this.savePost )
+                .on( 'click', '.wcf-addons-tmp-elementor', this.redirectEditPage )
+                .on( 'wcf_template_edit_popup_open', this.displayLocation)
+                .on( 'change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
+                
+                $('#wcf-addons-hf-s-display-type').on('select2:select', function (e) {
+                    // Get the selected data
+                    var selectedItems = $(this).val(); // Get the selected values
+             
+                    var uniqueItems = [...new Set(selectedItems)]; // Remove duplicates
+                
+                    // Update the Select2 element with unique values
+                    $(this).val(uniqueItems).trigger('change');              
+                 
+                });
+                
+        },
+        
+        reinitSelect2: function(){
+        
             $('#wcf-addons-hf-s-display-type').select2({
                 ajax: {
                     url: ajaxurl,
@@ -18,35 +42,32 @@
                     data: function (params) {
                         return {
                             q: params.term, // search term
-                            page: params.page,
+                            page: params.page || 1,
                             action: 'wcf_get_posts_by_query',
-                            'nonce' : WCF_Theme_Builder.nonce,
+                            nonce: WCF_Theme_Builder.nonce,
                         };
                     },
-                    processResults: function (data) {
-                        // console.log(data);
-                        // console.log("inside");
-                        // parse the results into the format expected by Select2.
-                        // since we are using custom formatting functions we do not need to
-                        // alter the remote JSON data
-
+                    processResults: function (data) {  
+                       
+                        let uniqueData = [];
+                        let seen = new Set();            
+                        data.forEach(item => {
+                            if (!seen.has(item.id)) {
+                                seen.add(item.id);
+                                uniqueData.push(item);
+                            }
+                        });            
                         return {
-                            results: data
+                            results: uniqueData
                         };
                     },
                     cache: true
                 },
                 minimumInputLength: 2,
+                placeholder: 'Search and select an option',
+                allowClear: true
             });
-
-            //open popup onclick
-            $( 'body.post-type-wcf-addons-template #wpcontent' ).on( 'click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup );
-            $(document )
-                .on( 'click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup )
-                .on( 'click', ".wcf-addons-tmp-save", this.savePost )
-                .on( 'click', '.wcf-addons-tmp-elementor', this.redirectEditPage )
-                .on( 'wcf_template_edit_popup_open', this.displayLocation)
-                .on( 'change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation)
+           
         },
 
         // Render Popup HTML
@@ -70,7 +91,7 @@
         // Edit PopUp
         openPopup: function( event ) {
             event.preventDefault();
-
+                
             let rowId = $(this).closest('tr').attr('id'),
                 tmpId = null,
                 elementorEditlink = null;
@@ -83,8 +104,7 @@
 
             $('.wcf-addons-tmp-save').attr( 'data-tmpid', tmpId );
             $('.wcf-addons-tmp-elementor').attr( { 'data-link': elementorEditlink, 'data-tmpid': tmpId } );
-
-
+                 
             if( tmpId ){
                 //fetch existing template data
                 $.ajax({
@@ -101,7 +121,6 @@
                     },
 
                     success:function( response ) {
-
                         //type
                         document.querySelector("#wcf-addons-template-type option[value='"+response.data.tmpType+"']").selected = "true";
                         $('#wcf-addons-template-title').attr( 'value', response.data.tmpTitle );
@@ -110,14 +129,13 @@
                     },
 
                     complete:function( response ){
-
+                        $('#wcf-addons-hf-s-display-type').val(null).trigger('change');  
                         // Fire custom event.
                         $(document).trigger('wcf_template_edit_popup_open');
 
                         //display
                         let temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select');
                         temDisplay.find("option[value='"+response.responseJSON.data.tmpLocation+"']")[0].selected = "true";
-
 
                         //display specific locations
                         if (response.responseJSON.data.tmpSpLocation) {
@@ -127,7 +145,7 @@
                                 let newOption = new Option(data.text, data.id, true, true);
                                 // Append it to the select
                                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
-                            })
+                            });
                         }
 
 
@@ -154,6 +172,13 @@
         // Close Popup
         closePopup: function( event ) {
             $('.wcf-addons-template-edit-popup-area').removeClass('open-popup');
+            $('#wcf-addons-hf-s-display-type').select2('destroy');   
+            const $_select2html = `<label class="wcf-addons-template-edit-label"></label>
+                                <select class="wcf-addons-template-edit-input" name="wcf-addons-hf-s-display-type[]"
+                                        id="wcf-addons-hf-s-display-type" multiple="multiple">
+                                </select>`;
+            $('.wcf-addons-template-edit-field.hf-s-location').html($_select2html);                    
+            WCFThemeBuilder.reinitSelect2();
         },
 
         // Save Post
@@ -234,13 +259,13 @@
             $('.hf-s-location').addClass('hidden');
 
             if ('archive' === type) {
-                $('.archive-location').removeClass('hidden')
-                $('.hf-location, .single-location').addClass('hidden')
+                $('.archive-location').removeClass('hidden');
+                $('.hf-location, .single-location').addClass('hidden');
             } else if ('single' === type) {
-                $('.single-location').removeClass('hidden')
-                $('.hf-location, .archive-location').addClass('hidden')
+                $('.single-location').removeClass('hidden');
+                $('.hf-location, .archive-location').addClass('hidden');
             } else {
-                $('.hf-location').removeClass('hidden')
+                $('.hf-location').removeClass('hidden');
                 $('.single-location, .archive-location').addClass('hidden');
 
                 setTimeout(function () {
