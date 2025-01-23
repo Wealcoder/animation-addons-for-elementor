@@ -11,7 +11,7 @@ use Elementor\Icons_Manager;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\WCF_Post_Query_Trait;
+use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -24,9 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Posts_Tab extends Widget_Base {
-
-	use WCF_Post_Query_Trait;
+class Video_Posts_Tab extends Widget_Base {
 
 	/**
 	 * @var \WP_Query
@@ -43,7 +41,7 @@ class Posts_Tab extends Widget_Base {
 	 *
 	 */
 	public function get_name() {
-		return 'aae--posts-tab';
+		return 'aae--video-posts-tab';
 	}
 
 	/**
@@ -56,7 +54,7 @@ class Posts_Tab extends Widget_Base {
 	 *
 	 */
 	public function get_title() {
-		return esc_html__( 'Posts Tab', 'animation-addons-for-elementor' );
+		return esc_html__( 'Video Posts Tab', 'animation-addons-for-elementor' );
 	}
 
 	/**
@@ -101,7 +99,7 @@ class Posts_Tab extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'aae-posts-tab' ];
+		return [ 'aae-video-posts-tab' ];
 	}
 
 	/**
@@ -110,7 +108,7 @@ class Posts_Tab extends Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return [ 'aae-posts-tab' ];
+		return [ 'aae-video-posts-tab' ];
 	}
 
 	/**
@@ -173,6 +171,17 @@ class Posts_Tab extends Widget_Base {
 				'exclude'      => [ 'custom' ],
 				'default'      => 'medium',
 				'prefix_class' => 'elementor-portfolio--thumbnail-size-',
+			]
+		);
+
+		$this->add_control(
+			'show_thumb',
+			[
+				'label'     => esc_html__( 'Show Thumb', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'default'   => 'no',
+				'label_off' => esc_html__( 'Off', 'animation-addons-for-elementor' ),
+				'label_on'  => esc_html__( 'On', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -329,20 +338,6 @@ class Posts_Tab extends Widget_Base {
 		);
 
 		$this->add_control(
-			'post_taxonomy',
-			[
-				'label'       => esc_html__( 'Taxonomy', 'animation-addons-for-elementor' ),
-				'type'        => Controls_Manager::SELECT2,
-				'label_block' => true,
-				'default'     => 'category',
-				'options'     => $this->get_taxonomies(),
-				'condition'   => [
-					'show_taxonomy' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
 			'show_read_more',
 			[
 				'label'     => esc_html__( 'Read More', 'animation-addons-for-elementor' ),
@@ -415,12 +410,75 @@ class Posts_Tab extends Widget_Base {
 		//layout style
 		$this->register_design_layout_controls();
 
+
+		// Banner
+		$this->start_controls_section(
+			'style_banner_image',
+			[
+				'label' => esc_html__( 'Banner', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'banner_height',
+			[
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vh', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 1000,
+					],
+					'vh' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .posts-banner' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'banner_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .posts-banner' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+
 		//Thumbnail style
 		$this->start_controls_section(
 			'section_style_post_image',
 			[
 				'label' => esc_html__( 'Thumbnail', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'border_style',
+			[
+				'label' => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'block',
+				'options' => [
+					'block' => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+					'none' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .aae-posts .thumb' => 'display: {{VALUE}};',
+				],
 			]
 		);
 
@@ -441,70 +499,16 @@ class Posts_Tab extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .thumb img' => 'height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .aae-posts .thumb img' => 'height: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
 
 		$this->end_controls_section();
 
-		// Content style
+		// Title
 		$this->start_controls_section(
-			'section_style_post_content',
-			[
-				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'      => 'content_background',
-				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
-				'selector'  => '{{WRAPPER}} .content',
-				'separator' => 'before',
-			]
-		);
-
-		$this->add_responsive_control(
-			'content_padding',
-			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
-				'selectors'  => [
-					'{{WRAPPER}} .content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'content_bg_even_heading',
-			[
-				'label'     => esc_html__( 'Background for Even Items', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'content_bg_even',
-				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
-				'selector' => '{{WRAPPER}} .wcf-post:nth-child(even) .content',
-				'label'    => ''
-			]
-		);
-
-		$this->end_controls_section();
-
-		//Tile
-		$this->start_controls_section(
-			'section_style_post_title',
+			'style_post_title',
 			[
 				'label'     => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
@@ -517,8 +521,8 @@ class Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'title_typography',
-				'label'    => esc_html__( 'Title Typography', 'animation-addons-for-elementor' ),
+				'name'     => 'title_typo',
+				'label'    => esc_html__( 'Typography', 'animation-addons-for-elementor' ),
 				'selector' => '{{WRAPPER}} .title, {{WRAPPER}} .title a',
 			]
 		);
@@ -526,29 +530,9 @@ class Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'highlited_title_typography',
-				'label'    => esc_html__( 'Highlight Title', 'animation-addons-for-elementor' ),
+				'name'     => 'hl_title_typo',
+				'label'    => esc_html__( 'Highlight Typography', 'animation-addons-for-elementor' ),
 				'selector' => '{{WRAPPER}} .title span.highlight',
-			]
-		);
-
-		$this->add_responsive_control(
-			'title_padding',
-			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'selectors'  => [
-					'{{WRAPPER}} .title' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
-			[
-				'name'     => 'title_border',
-				'selector' => '{{WRAPPER}} .title',
 			]
 		);
 
@@ -564,7 +548,7 @@ class Posts_Tab extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__( 'Title Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .title, {{WRAPPER}} .title a' => 'color: {{VALUE}};',
@@ -573,9 +557,9 @@ class Posts_Tab extends Widget_Base {
 		);
 
 		$this->add_control(
-			'highlited_title_color',
+			'hl_title_color',
 			[
-				'label'     => esc_html__( 'Highlited Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .title span.highlight' => 'color: {{VALUE}};',
@@ -586,7 +570,7 @@ class Posts_Tab extends Widget_Base {
 		$this->end_controls_tab();
 
 		$this->start_controls_tab(
-			'tab_tile_hover',
+			'tab_title_hover',
 			[
 				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
 			]
@@ -608,19 +592,15 @@ class Posts_Tab extends Widget_Base {
 		$this->end_controls_tabs();
 
 		$this->add_responsive_control(
-			'title_spacing',
+			'title_padding',
 			[
-				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'range'      => [
-					'px' => [
-						'max' => 100,
-					],
-				],
 				'selectors'  => [
-					'{{WRAPPER}} .title' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .title' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
+				'separator'  => 'before'
 			]
 		);
 
@@ -653,7 +633,7 @@ class Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'excerpt_typography',
+				'name'     => 'excerpt_typo',
 				'selector' => '{{WRAPPER}} .desc, {{WRAPPER}} .desc p',
 			]
 		);
@@ -677,179 +657,30 @@ class Posts_Tab extends Widget_Base {
 
 		$this->end_controls_section();
 
-
-		//Taxonomy
-		$this->start_controls_section(
-			'section_style_post_taxonomy',
-			[
-				'label'     => esc_html__( 'Taxonomy', 'animation-addons-for-elementor' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [
-					'show_taxonomy' => 'yes',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'taxonomy_typography',
-				'selector' => '{{WRAPPER}} .wcf-taxonomy a',
-			]
-		);
-
-		$this->add_responsive_control(
-			'taxonomy_padding',
-			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'selectors'  => [
-					'{{WRAPPER}} .wcf-taxonomy a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->start_controls_tabs(
-			'taxonomy_style_tabs'
-		);
-
-		$this->start_controls_tab(
-			'taxonomy_normal_tab',
-			[
-				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
-			]
-		);
-
-		$this->add_control(
-			'taxonomy_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-taxonomy a' => 'color: {{VALUE}};',
-				],
-			]
-		);
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'taxonomy_bg',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-taxonomy a',
-			]
-		);
-
-		$this->end_controls_tab();
-
-		$this->start_controls_tab(
-			'taxonomy_hover_tab',
-			[
-				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
-			]
-		);
-
-		$this->add_control(
-			'taxonomy_h_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-taxonomy a:hover' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'taxonomy_h_bg',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-taxonomy a:hover',
-			]
-		);
-
-		$this->end_controls_tab();
-
-		$this->end_controls_tabs();
-
-		$this->add_control(
-			'taxonomy_border',
-			[
-				'label'     => esc_html__( 'Border', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => '',
-				'options'   => [
-					''  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-					'0' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
-				],
-				'selectors' => [
-					'{{WRAPPER}} .wcf-taxonomy::before' => 'width: {{VALUE}};',
-				],
-				'condition' => [
-					'element_list' => [ '2', '5' ],
-				],
-			]
-		);
-
-		$this->add_responsive_control(
-			'taxonomy_spacing',
-			[
-				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'range'      => [
-					'px' => [
-						'max' => 100,
-					],
-				],
-				'selectors'  => [
-					'{{WRAPPER}} .wcf-taxonomy' => 'margin-bottom: {{SIZE}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->end_controls_section();
-
 		//Meta
 		$this->start_controls_section(
-			'section_style_post_meta',
+			'style_post_meta',
 			[
 				'label' => esc_html__( 'Meta', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
 
-		$this->add_control(
-			'view_meta_icon',
-			[
-				'label'       => esc_html__( 'View Icon', 'animation-addons-for-elementor' ),
-				'type'        => Controls_Manager::ICONS,
-				'skin'        => 'inline',
-				'label_block' => false,
-				'default'     => [
-					'value'   => 'far fa-flag',
-					'library' => 'fa-regular',
-				],
-			]
-		);
-
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'meta_typography',
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
+				'name'     => 'meta_typo',
+				'selector' => '{{WRAPPER}} .aae-meta a, {{WRAPPER}} .aae-meta span',
 			]
 		);
 
-		$this->add_responsive_control(
-			'meta_padding',
+		$this->add_control(
+			'separator_color',
 			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'selectors'  => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				'label'     => esc_html__( 'Separator Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .style-1 .aae-meta li::after' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -871,16 +702,8 @@ class Posts_Tab extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .aae-meta a, {{WRAPPER}} .wcf-meta span' => 'color: {{VALUE}};',
 				],
-			]
-		);
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'meta_bg',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-meta a, {{WRAPPER}} .wcf-meta span, {{WRAPPER}} .author_views a, {{WRAPPER}} .author_views span.posts_views',
 			]
 		);
 
@@ -899,41 +722,14 @@ class Posts_Tab extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-meta a:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .aae-meta a:hover' => 'color: {{VALUE}};',
 				],
-			]
-		);
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'meta_h_bg',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .wcf-meta a:hover',
 			]
 		);
 
 		$this->end_controls_tab();
 
 		$this->end_controls_tabs();
-
-		$this->add_control(
-			'meta_border',
-			[
-				'label'     => esc_html__( 'Border', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => '',
-				'options'   => [
-					''  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-					'0' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
-				],
-				'selectors' => [
-					'{{WRAPPER}} .wcf-meta::before' => 'width: {{VALUE}};',
-				],
-				'condition' => [
-					'element_list' => [ '2', '5' ],
-				],
-			]
-		);
 
 		$this->add_responsive_control(
 			'meta_spacing',
@@ -947,149 +743,9 @@ class Posts_Tab extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .wcf-meta' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .aae-meta' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
-			]
-		);
-
-		$this->end_controls_section();
-
-		// Date style
-		$this->start_controls_section(
-			'section_style_post_dates',
-			[
-				'label'     => esc_html__( 'Date Style', 'animation-addons-for-elementor' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [
-					'element_list' => '6',
-				],
-			]
-		);
-
-		$this->add_control(
-			'day_color',
-			[
-				'label'     => esc_html__( 'Day Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} span.meta_day' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'day_typography',
-				'selector' => '{{WRAPPER}} span.meta_day',
-			]
-		);
-
-		$this->add_control(
-			'day_number_color',
-			[
-				'label'     => esc_html__( 'Day Color ( Number )', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} span.meta_year' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'day_number_typography',
-				'selector' => '{{WRAPPER}} span.meta_year',
-			]
-		);
-
-		$this->add_control(
-			'day_month_color',
-			[
-				'label'     => esc_html__( 'Month Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} span.meta_month' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'day_month_typography',
-				'selector' => '{{WRAPPER}} span.meta_month',
-			]
-		);
-
-		$this->end_controls_section();
-
-		//Author
-		$this->start_controls_section(
-			'section_style_post_author',
-			[
-				'label'     => esc_html__( 'Author', 'animation-addons-for-elementor' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'element_list' => '4' ]
-			]
-		);
-
-		$this->add_control(
-			'author_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .author .author-bio p' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'author_typography',
-				'selector' => '{{WRAPPER}} .author .author-bio p',
-			]
-		);
-
-		$this->add_responsive_control(
-			'author_spacing',
-			[
-				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'range'      => [
-					'px' => [
-						'max' => 300,
-					],
-				],
-				'selectors'  => [
-					'{{WRAPPER}} .author' => 'margin-bottom: {{SIZE}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'author_name_color',
-			[
-				'label'     => esc_html__( 'Name Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'separator' => 'before',
-				'selectors' => [
-					'{{WRAPPER}} .author .author-bio a' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'      => 'author_name_typography',
-				'label'     => esc_html__( 'Name Typography', 'animation-addons-for-elementor' ),
-				'selector'  => '{{WRAPPER}} .author .author-bio a',
-				'condition' => [ 'element_list' => '4' ]
+				'separator'  => 'before'
 			]
 		);
 
@@ -1098,7 +754,7 @@ class Posts_Tab extends Widget_Base {
 
 		//Read More
 		$this->start_controls_section(
-			'style_post_read_more',
+			'style_read_more',
 			[
 				'label'     => esc_html__( 'Read More', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
@@ -1111,7 +767,7 @@ class Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'read_more_typography',
+				'name'     => 'read_more_typo',
 				'selector' => '{{WRAPPER}} .link',
 			]
 		);
@@ -1301,211 +957,6 @@ class Posts_Tab extends Widget_Base {
 		);
 
 		$this->end_controls_section();
-
-		//hover color
-		$this->start_controls_section(
-			'section_style_hover_post_content',
-			[
-				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-		//tile
-		$this->add_control(
-			'heading_title_hover_style',
-			[
-				'label'     => esc_html__( 'Title', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'condition' => [
-					'show_title' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'title_hover_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .title, {{WRAPPER}} .wcf-post:hover .title a' => 'color: {{VALUE}};',
-				],
-				'condition' => [
-					'show_title' => 'yes',
-				],
-			]
-		);
-
-		//excerpt
-		$this->add_control(
-			'heading_excerpt_hover_style',
-			[
-				'label'     => esc_html__( 'Excerpt', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-				'condition' => [
-					'show_excerpt' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'excerpt_hover_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .desc, {{WRAPPER}} .wcf-post:hover .desc p' => 'color: {{VALUE}};',
-				],
-				'condition' => [
-					'show_excerpt' => 'yes',
-				],
-			]
-		);
-
-		//taxonomy
-		$this->add_control(
-			'heading_taxonomy_hover_style',
-			[
-				'label'     => esc_html__( 'Taxonomy', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-				'condition' => [
-					'show_taxonomy' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'taxonomy_hover_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .wcf-taxonomy a' => 'color: {{VALUE}};',
-				],
-				'condition' => [
-					'show_taxonomy' => 'yes',
-				],
-			]
-		);
-
-		//meta
-		$this->add_control(
-			'heading_meta_hover_style',
-			[
-				'label'     => esc_html__( 'Meta', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-			]
-		);
-
-		$this->add_control(
-			'meta_hover_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .wcf-meta a, {{WRAPPER}} .wcf-post:hover .wcf-meta span' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		//author
-		$this->add_control(
-			'heading_author_hover_style',
-			[
-				'label'     => esc_html__( 'Author', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-				'condition' => [ 'element_list' => '4' ]
-			]
-		);
-
-		$this->add_control(
-			'author_hover_color',
-			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .author .author-bio p' => 'color: {{VALUE}};',
-				],
-				'condition' => [ 'element_list' => '4' ]
-			]
-		);
-
-		$this->add_control(
-			'author_name_hover_color',
-			[
-				'label'     => esc_html__( 'Name Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'separator' => 'before',
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .author .author-bio a' => 'color: {{VALUE}};',
-				],
-				'condition' => [ 'element_list' => '4' ]
-			]
-		);
-
-		//read more
-		$this->add_control(
-			'heading_read_more_hover_style',
-			[
-				'label'     => esc_html__( 'Read More', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-				'condition' => [
-					'show_read_more' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'read_more_hover_text_color',
-			[
-				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .link'       => 'color: {{VALUE}};',
-					'{{WRAPPER}} .wcf-post:hover .link svg'   => 'fill: {{VALUE}};',
-					'{{WRAPPER}} .wcf-post:hover .link:after' => 'background-color: {{VALUE}};',
-				],
-				'condition' => [
-					'show_read_more' => 'yes',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'      => 'read_more_hover_link_background',
-				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
-				'selector'  => '{{WRAPPER}} .wcf-post:hover .link',
-				'condition' => [
-					'show_read_more' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'read_more_hover_link_border_color',
-			[
-				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .wcf-post:hover .link' => 'border-color: {{VALUE}};',
-				],
-				'condition' => [
-					'read_more_border_border!' => '',
-					'show_read_more'           => 'yes',
-				],
-			]
-		);
-
-		$this->end_controls_section();
 	}
 
 	protected function register_design_layout_controls() {
@@ -1582,12 +1033,14 @@ class Posts_Tab extends Widget_Base {
 			]
 		);
 
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
+		$this->add_control(
+			'post_b_color',
 			[
-				'name'      => 'post_border',
-				'separator' => 'before',
-				'selector'  => '{{WRAPPER}} .aae-post',
+				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .aae-post, {{WRAPPER}} .style-2 .aae-posts-wrap, {{WRAPPER}} .style-2 .aae-view-all' => 'border-color: {{VALUE}}',
+				],
 			]
 		);
 
@@ -1600,25 +1053,6 @@ class Posts_Tab extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .aae-post' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-			]
-		);
-
-		//hover effect
-		$this->add_control(
-			'el_hover_effects',
-			[
-				'label'        => esc_html__( 'Hover Effect', 'animation-addons-for-elementor' ),
-				'description'  => esc_html__( 'This effect will work only image tag.', 'animation-addons-for-elementor' ),
-				'type'         => Controls_Manager::SELECT,
-				'default'      => 'effect-zoom-in',
-				'options'      => [
-					''                => esc_html__( 'None', 'animation-addons-for-elementor' ),
-					'effect-zoom-in'  => esc_html__( 'Zoom In', 'animation-addons-for-elementor' ),
-					'effect-zoom-out' => esc_html__( 'Zoom Out', 'animation-addons-for-elementor' ),
-					'left-move'       => esc_html__( 'Left Move', 'animation-addons-for-elementor' ),
-					'right-move'      => esc_html__( 'Right Move', 'animation-addons-for-elementor' ),
-				],
-				'prefix_class' => 'wcf--image-',
 			]
 		);
 
@@ -1643,8 +1077,72 @@ class Posts_Tab extends Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .aae-post' => 'text-align: {{VALUE}};',
-					'{{WRAPPER}} .content'  => 'align-items: {{VALUE}};',
+					'{{WRAPPER}} .aae-meta' => 'justify-content: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function register_query_controls() {
+		$this->start_controls_section(
+			'section_query',
+			[
+				'label' => esc_html__( 'Query', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+//		$this->add_control(
+//			'include_term_ids',
+//			[
+//				'label'       => esc_html__( 'Category ID', 'animation-addons-for-elementor' ),
+//				'description' => esc_html__( 'Add comma for separated.', 'animation-addons-for-elementor' ),
+//				'placeholder' => esc_html__( '122, 125', 'animation-addons-for-elementor' ),
+//				'label_block' => true,
+//			]
+//		);
+
+		$this->add_control(
+			'post_order_by',
+			[
+				'label'   => esc_html__( 'Order By', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'date',
+				'options' => [
+					'date'          => esc_html__( 'Date', 'animation-addons-for-elementor' ),
+					'title'         => esc_html__( 'Title', 'animation-addons-for-elementor' ),
+					'menu_order'    => esc_html__( 'Menu Order', 'animation-addons-for-elementor' ),
+					'modified'      => esc_html__( 'Last Modified', 'animation-addons-for-elementor' ),
+					'comment_count' => esc_html__( 'Comment Count', 'animation-addons-for-elementor' ),
+					'rand'          => esc_html__( 'Random', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+
+		$this->add_control(
+			'post_order',
+			[
+				'label'   => esc_html__( 'Order', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'desc',
+				'options' => [
+					'asc'  => esc_html__( 'ASC', 'animation-addons-for-elementor' ),
+					'desc' => esc_html__( 'DESC', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+
+		$this->add_control(
+			'post_sticky_ignore',
+			[
+				'label'        => esc_html__( 'Ignore Sticky Posts', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
 			]
 		);
 
@@ -1663,11 +1161,22 @@ class Posts_Tab extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$query = $this->get_query();
+		$query = array(
+			'post_type'           => 'post',
+			'posts_per_page'      => $this->get_settings( 'posts_per_page' ),
+			'ignore_sticky_posts' => empty( $this->get_settings( 'post_sticky_ignore' ) ) ? false : true,
+			'order'               => $this->get_settings( 'post_order' ),
+			'orderby'             => $this->get_settings( 'post_order_by' ),
+			'tax_query'           => array(
+				array(
+					'taxonomy' => 'post_format',
+					'field'    => 'slug',
+					'terms'    => array( 'post-format-video' ), // Only video posts
+				),
+			),
+		);
 
-		if ( ! $query->found_posts ) {
-			return;
-		}
+		$query = new WP_Query( $query );
 
 		// Wrapper Class
 		$this->add_render_attribute( 'wrapper', 'class', [
@@ -1679,12 +1188,16 @@ class Posts_Tab extends Widget_Base {
         <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
             <div class="posts-banner">
 				<?php
-				while ( $query->have_posts() ) {
-					$query->the_post();
-					$this->render_banner_thumbnail( $settings );
-				}
-				?>
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						$query->the_post();
+						$this->render_banner_video();
+					}
+				} else { ?>
+                    <p style="text-align: center"><?php echo esc_html__( "No Video Post Found!", "animation-addons-for-elementor" ); ?></p>
+				<?php } ?>
             </div>
+
             <div class="aae-posts-wrap">
                 <div class="aae-posts">
 					<?php
@@ -1719,60 +1232,35 @@ class Posts_Tab extends Widget_Base {
 		<?php
 	}
 
-	protected function render_banner_thumbnail( $settings ) {
-		$settings['thumbnail_size'] = [
-			'id' => get_post_thumbnail_id(),
-		];
-		// PHPCS - `get_permalink` is safe.
-
+	protected function render_banner_video() {
 		$format = get_post_format();
-		$meta   = get_post_meta( get_the_ID(), 'wcf_post_options', true );
 
-		if ( 'audio' === $format ) {
-			$link = get_post_meta( get_the_ID(), '_audio_url', true );
-			?>
-            <div class="thumb">
-                <audio controls>
-                    <source src="<?php echo $link; ?>" type="audio/mpeg">
-                </audio>
-            </div>
-			<?php
-		} elseif ( 'video' === $format ) {
-			$link = get_post_meta( get_the_ID(), '_video_url', true );
-			?>
-            <div class="thumb">
-                <iframe src="<?php echo $link; ?>"></iframe>
-            </div>
-			<?php
-		} elseif ( 'gallery' === $format ) {
-			$gallery_images = get_post_meta( get_the_ID(), '_gallery_images', true );
-			$gallery_images = is_array( $gallery_images ) ? $gallery_images : [];
-			?>
-            <div class="aae-post-gallery-wrapper">
-                <div class="swiper gallery-slider">
-                    <div class="swiper-wrapper">
-						<?php foreach ( $gallery_images as $img ) { ?>
-                            <div class="swiper-slide">
-                                <img src="<?php echo esc_url( $img ); ?>"
-                                     alt="<?php echo esc_attr__( 'Gallery Image', 'wcf-addons-pro' ) ?>">
-                            </div>
-						<?php } ?>
-                    </div>
-
-                    <div class="aae-gallery-btn btn-next"> ></div>
-                    <div class="aae-gallery-btn btn-prev"> <</div>
-                </div>
-            </div>
-			<?php
-		} else {
-			?>
-            <div class="thumb">
-                <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
-					<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
-                </a>
-            </div>
-			<?php
+		if ( 'video' != $format ) {
+			return;
 		}
+
+		$link = get_post_meta( get_the_ID(), '_video_url', true );
+
+		if ( strpos( $link, "https://www.youtube.com/" ) === 0 ) {
+			parse_str( parse_url( $link, PHP_URL_QUERY ), $query );
+
+			if ( isset( $query['v'] ) ) {
+				$ytVideoId = $query['v'];
+				$link      = "https://www.youtube.com/embed/" . $ytVideoId;
+			}
+		}
+
+		// Vimeo Link Checking
+		if ( strpos( $link, "https://vimeo.com/" ) === 0 ) {
+			$videoId = str_replace( "https://vimeo.com/", "", $link );
+			$link    = "https://player.vimeo.com/video/" . $videoId;
+		}
+
+		?>
+        <div class="thumb" data-target="<?php echo get_the_ID(); ?>">
+            <iframe src="<?php echo $link; ?>"></iframe>
+        </div>
+		<?php
 	}
 
 	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
@@ -1905,24 +1393,6 @@ class Posts_Tab extends Widget_Base {
 		<?php
 	}
 
-	protected function render_author_video() {
-		if ( ! $this->get_settings( 'show_author' ) ) {
-			return;
-		}
-		?>
-        <div class="author_views">
-            <a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>">
-                By <?php the_author(); ?>
-            </a>
-            <span class="posts_views">
-				<?php \Elementor\Icons_Manager::render_icon( $this->get_settings( 'view_meta_icon' ) ); ?>
-				<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>
-				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
-			</span>
-        </div>
-		<?php
-	}
-
 	protected function render_author_avatar() {
 		if ( ! $this->get_settings( 'show_author' ) ) {
 			return;
@@ -1949,6 +1419,7 @@ class Posts_Tab extends Widget_Base {
 		<?php
 	}
 
+
 	protected function render_post_taxonomy() {
 		if ( ! $this->get_settings( 'show_taxonomy' ) ) {
 			return;
@@ -1967,7 +1438,7 @@ class Posts_Tab extends Widget_Base {
 		}
 
 		?>
-        <ul class="wcf-taxonomy">
+        <ul class="aae-meta">
 			<?php
 			foreach ( $terms as $term ) {
 				printf( '<li><a href="%1$s">%2$s</a></li>',
@@ -1975,37 +1446,19 @@ class Posts_Tab extends Widget_Base {
 					esc_html( $term->name )
 				);
 			}
-			?>
-        </ul>
-		<?php
-	}
 
-	protected function render_post_meta() {
-		?>
-        <ul class="wcf-meta">
-			<?php
-			if ( '4' !== $this->get_settings( 'element_list' ) && $this->get_settings( 'show_author' ) ) {
+			if ( $this->get_settings( 'show_author' ) ) {
 				?>
                 <li><?php $this->render_author(); ?></li>
 				<?php
 			}
+
 			$this->render_date_by_type();
 			$this->render_comment();
 			?>
         </ul>
 		<?php
 	}
-
-	protected function render_post_meta_video() {
-		?>
-        <ul class="wcf-meta_video">
-            <span class="meta_day"><?php echo get_the_date( 'D' ); ?></span>
-            <span class="meta_year"><?php echo get_the_date( 'd' ); ?></span>
-            <span class="meta_month"><?php echo get_the_date( 'F' ); ?></span>
-        </ul>
-		<?php
-	}
-
 
 	protected function render_read_more() {
 		if ( ! $this->get_settings( 'show_read_more' ) ) {
@@ -2038,18 +1491,24 @@ class Posts_Tab extends Widget_Base {
 
 	protected function render_post( $settings ) {
 		?>
-        <article data-id="<?php echo get_the_ID(); ?>" <?php post_class( 'aae-post' ); ?>>
-			<?php $this->render_thumbnail( $settings ); ?>
-
-            <div class="content">
-				<?php
-				$this->render_title();
-				$this->render_excerpt();
-				$this->render_author_avatar();
-				$this->render_post_taxonomy();
-				$this->render_post_meta();
-				$this->render_read_more();
-				?>
+        <article <?php post_class( 'aae-post' ); ?>>
+			<?php
+			if ( 'yes' === $settings['show_thumb'] ) {
+				$this->render_thumbnail( $settings );
+			}
+			?>
+            <div class="content-wrap">
+                <div class="content" data-id="<?php echo get_the_ID(); ?>">
+					<?php
+					$this->render_title();
+					$this->render_excerpt();
+					$this->render_author_avatar();
+					$this->render_post_taxonomy();
+					?>
+                </div>
+                <div class="link-wrap">
+					<?php $this->render_read_more(); ?>
+                </div>
             </div>
         </article>
 		<?php
