@@ -1330,6 +1330,20 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
+					'restrict-content'        => [
+						'label'        => esc_html__( 'Content Protection', 'animation-addons-for-elementor' ),
+						'is_pro'       => true,
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'icon'         => "wcf-icon-Floating-Elements",
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
 				]
 			],
 			'gsap-extensions'    => [

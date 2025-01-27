@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 trait WCF_Post_Query_Trait {
-
+    
 	public static function get_public_post_types( $args = [] ) {
 		$post_type_args = [
 			// Default is the value $public.
@@ -55,6 +55,8 @@ trait WCF_Post_Query_Trait {
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
 					'related' => esc_html__( 'related', 'animation-addons-for-elementor' ),
+					'recent_visited' => esc_html__( 'Recent Visited(cookie)', 'animation-addons-for-elementor' ),
+					'most_views' => esc_html__( 'Most Views', 'animation-addons-for-elementor' ),
 				],
 			]
 		);
@@ -66,7 +68,7 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive'] ],
+				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views'] ],
 			]
 		);
 
