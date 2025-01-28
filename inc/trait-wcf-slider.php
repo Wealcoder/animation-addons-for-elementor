@@ -347,7 +347,7 @@ trait WCF_Slider_Trait {
 		$this->add_control(
 			'arrow_padding',
 			[
-				'label'     => esc_html__( 'padding', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [

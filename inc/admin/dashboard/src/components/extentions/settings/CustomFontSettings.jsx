@@ -21,11 +21,10 @@ const FormSchema = z.object({
 
 const CustomFontSettings = () => {
   const dialogCloseRef = useRef(null);
-
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      load_in_head: WCF_ADDONS_ADMIN?.load_in_head === "true" ? true : false,
+      load_in_head: WCF_ADDONS_ADMIN?.cf_settings?.load_in_head ?? false,
     },
   });
 
@@ -39,7 +38,7 @@ const CustomFontSettings = () => {
 
       body: new URLSearchParams({
         action: "wcf_addon_custom_font_settings",
-        load_in_head: data.load_in_head,
+        settings: JSON.stringify( data ),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
@@ -47,7 +46,8 @@ const CustomFontSettings = () => {
         return response.json();
       })
       .then((return_content) => {
-        WCF_ADDONS_ADMIN.load_in_head = return_content;
+     
+        WCF_ADDONS_ADMIN.cf_settings = JSON.parse( return_content );
         if (dialogCloseRef.current) {
           dialogCloseRef.current.click();
         }

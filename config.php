@@ -511,7 +511,7 @@ $config = [
 				]
 			],
 			'hf-elements'        => [
-				'title'     => esc_html__( 'Header/Footer Widgets', 'animation-addons-for-elementor' ),
+				'title'     => __( 'Header & Footer Widgets', 'animation-addons-for-elementor' ),
 				'is_active' => false,
 				'elements'  => [
 					'animated-offcanvas' => [
@@ -704,8 +704,8 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'posts-tab'              => [
-						'label'        => esc_html__( 'Posts Tab', 'animation-addons-for-elementor' ),
+					'video-posts-tab'              => [
+						'label'        => esc_html__( 'Video Posts Tab', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -1302,8 +1302,36 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
+					'custom-icon'       => [
+						'label'        => esc_html__( 'Custom Icon', 'animation-addons-for-elementor' ),
+						'is_pro'       => true,
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'is_extension' => false,
+						'is_active'    => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'icon'         => "wcf-icon-Floating-Elements",
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
 					'mega-menu'        => [
 						'label'        => esc_html__( 'Mega Menu', 'animation-addons-for-elementor' ),
+						'is_pro'       => true,
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'icon'         => "wcf-icon-Floating-Elements",
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					],
+					'restrict-content'        => [
+						'label'        => esc_html__( 'Content Protection', 'animation-addons-for-elementor' ),
 						'is_pro'       => true,
 						'location'     => [
 							'cTab' => 'general'
