@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 trait WCF_Post_Query_Trait {
-
+    
 	public static function get_public_post_types( $args = [] ) {
 		$post_type_args = [
 			// Default is the value $public.
@@ -55,6 +55,9 @@ trait WCF_Post_Query_Trait {
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
 					'related' => esc_html__( 'related', 'animation-addons-for-elementor' ),
+					'recent_visited' => esc_html__( 'Recent Visited(cookie)', 'animation-addons-for-elementor' ),
+					'most_views' => esc_html__( 'Most Views', 'animation-addons-for-elementor' ),
+					'top_post_week' => esc_html__( 'Top Post This Week', 'animation-addons-for-elementor' ),
 				],
 			]
 		);
@@ -66,7 +69,7 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive'] ],
+				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views' , 'top_post_week'] ],
 			]
 		);
 
@@ -395,7 +398,54 @@ trait WCF_Post_Query_Trait {
 				$query_args['author__not_in'] = explode( ',', $this->get_settings( 'exclude_authors' ) );
 			}
 		}
-
+		
+		if ( 'top_post_week' === $this->get_settings( 'query_type' ) ){
+			$query_args['meta_key'] = 'wcf_post_views_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			$query_args['date_query'] = [
+				[
+					'after'     => '1 week ago', // Filter posts from the last 7 days
+					'inclusive' => true, // Include posts exactly 7 days old
+				],
+			];
+			$query_args['meta_query'] = [
+				[
+					'key'     => 'wcf_post_views_count',
+					'value'   => 0, // Optional: Only include posts with at least 1 view
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+	
+		if ( 'most_views' === $this->get_settings( 'query_type' ) ){
+			$query_args['meta_key'] = 'wcf_post_views_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			$query_args['meta_query'] = [
+				[
+					'key'     => 'wcf_post_views_count',
+					'value'   => 0, // Optional: Only include posts with at least 1 view
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+		}
+		
+		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ){
+			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( stripslashes( $_COOKIE['aae_visited_posts'] ), true ) : [];
+			
+			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
+				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode
+			}	
+			
+		}
+		
 		return $query_args;
 	}
 
