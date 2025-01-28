@@ -121,29 +121,6 @@ class Video_Posts_Tab extends Widget_Base {
 	 * @access protected
 	 */
 	protected function register_controls() {
-		$this->start_controls_section(
-			'section_layout',
-			[
-				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor' ),
-				'tab'   => Controls_Manager::TAB_CONTENT,
-			]
-		);
-
-		$this->add_control(
-			'element_list',
-			[
-				'label'   => esc_html__( 'Style', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => '1',
-				'options' => [
-					'1' => esc_html__( 'One', 'animation-addons-for-elementor' ),
-					'2' => esc_html__( 'Two', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->end_controls_section();
-
 		// Query
 		$this->register_query_controls();
 
@@ -321,19 +298,6 @@ class Video_Posts_Tab extends Widget_Base {
 				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
 				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'default'   => 'yes',
-			]
-		);
-
-		$this->add_control(
-			'show_video',
-			[
-				'label'     => esc_html__( 'Show Video', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
-				'condition' => [
-					'element_list' => '6',
-				],
 			]
 		);
 
@@ -1179,10 +1143,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$query = new WP_Query( $query );
 
 		// Wrapper Class
-		$this->add_render_attribute( 'wrapper', 'class', [
-			'aae--posts-tab',
-			'style-' . $settings['element_list'],
-		] );
+		$this->add_render_attribute( 'wrapper', 'class', ['aae--posts-tab' ] );
 		?>
 
         <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
@@ -1207,12 +1168,9 @@ class Video_Posts_Tab extends Widget_Base {
 					}
 					?>
                 </div>
-				<?php
-				if ( '2' === $settings['element_list'] ) { ?>
-                    <div class="aae-view-all">
+								<div class="aae-view-all">
                         <a href="#">view all ></a>
                     </div>
-				<?php } ?>
             </div>
         </div>
 		<?php
@@ -1397,11 +1355,6 @@ class Video_Posts_Tab extends Widget_Base {
 		if ( ! $this->get_settings( 'show_author' ) ) {
 			return;
 		}
-
-		if ( '4' !== $this->get_settings( 'element_list' ) ) {
-			return;
-		}
-
 		?>
         <div class="author">
             <div class="author-img">
