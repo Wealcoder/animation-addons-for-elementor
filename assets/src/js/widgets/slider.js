@@ -89,6 +89,7 @@
             'video-box-slider': [],
             'brand-slider': [],
             'content-slider': [],
+            'breaking-news-slider': [],
         });
 
         $.each(WcfSliderWidgets, function( widget, $skins ) {
