@@ -112,6 +112,35 @@ class Post_Title extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'show_title_highlight',
+			[
+				'label'              => esc_html__( 'Show Highlight', 'animation-addons-for-elementor' ),
+				'type'               => Controls_Manager::SWITCHER,
+				'separator'          => 'before',
+				'label_on'           => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'          => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'return_value'       => 'yes',
+				'frontend_available' => true,
+			]
+		);
+
+		$this->add_control(
+			'highlight_title_length',
+			[
+				'label'              => esc_html__( 'Highlight Length', 'animation-addons-for-elementor' ),
+				'type'               => Controls_Manager::NUMBER,
+				'default'            => 5,
+				'min'                => 2,
+				'max'                => 100,
+				'condition'          => [
+					'show_title_highlight' => 'yes',
+				],
+				'frontend_available' => true,
+			]
+		);
+
+
 		$this->end_controls_section();
 
 		$this->start_controls_section(
@@ -184,6 +213,44 @@ class Post_Title extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'heading_highlight',
+			[
+				'label'     => esc_html__( 'Highlight Title', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [
+					'show_title_highlight' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_h_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--title .highlight' => 'color: {{VALUE}};',
+				],
+				'condition' => [
+					'show_title_highlight' => 'yes',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'title_h_typography',
+				'selector'  => '{{WRAPPER}} .wcf--title .highlight',
+				'condition' => [
+					'show_title_highlight' => 'yes',
+				],
+			]
+		);
+
+
 		$this->end_controls_section();
 	}
 
@@ -225,11 +292,38 @@ class Post_Title extends Widget_Base {
 
 		$this->add_render_attribute( 'title', 'class', 'wcf--title' );
 
-		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $title );
+		$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
+		$new_title = $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+
+		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $new_title );
 
 		// PHPCS - the variable $title_html holds safe data.
-		echo $title_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		// highlited title
+	  	
 
+		 echo $title_html; 
+		
 		Plugin::$instance->db->restore_current_post();
+
+	}
+
+
+	function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
+		// Split the text into an array of words
+		$words = explode( ' ', $text );
+		// Check if the text has enough words to wrap
+		if ( count( $words ) >= $n ) {
+			// Extract the first N words and wrap them in a span tag
+			$wrapped_words   = array_slice( $words, 0, $n );
+			$remaining_words = array_slice( $words, $n );
+			// Create the wrapped portion
+			$wrapped = '<span class="' . $class . '">' . implode( ' ', $wrapped_words ) . '</span>';
+	
+			// Combine the wrapped portion with the remaining words
+			return $wrapped . ' ' . implode( ' ', $remaining_words );
+		}
+	
+		// If there are fewer words than N, wrap the whole text
+		return '<span class="' . $class . '">' . $text . '</span>';
 	}
 }
