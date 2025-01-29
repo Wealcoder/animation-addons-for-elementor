@@ -332,12 +332,13 @@ class Posts extends Widget_Base {
 		);
 
 		$this->add_control(
-			'show_video',
+			'video_selected_icon',
 			[
-				'label'     => esc_html__( 'Show Video', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'label'            => esc_html__( 'Thumbnail Icon', 'animation-addons-for-elementor' ),
+				'type'             => Controls_Manager::ICONS,
+				'fa4compatibility' => 'icon',
+				'skin'             => 'inline',
+				'label_block'      => false,
 				'condition'   => [
 					'element_list' => '6',
 				],
@@ -461,6 +462,43 @@ class Posts extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .thumb img' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'thumb_icon_color',
+			[
+				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '',
+				'selectors' => [
+					'{{WRAPPER}} .wcftheme-wcf-icon'     => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcftheme-wcf-icon svg' => 'fill: {{VALUE}};',
+				],
+				'condition'   => [
+					'element_list' => '6',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'thumb_icon_size',
+			[
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 6,
+						'max' => 300,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcftheme-wcf-icon' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+				'condition'   => [
+					'element_list' => '6',
 				],
 			]
 		);
@@ -985,6 +1023,18 @@ class Posts extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'content_date_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .post_video_date .wcf-meta_video' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->add_control(
 			'day_color',
 			[
@@ -1004,6 +1054,28 @@ class Posts extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'name_space',
+			[
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'default'    => [
+					'size' => 5,
+				],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf-meta_video span.meta_day' => 'margin-bottom: {{SIZE}}{{UNIT}}',
+				],
+			]
+		);
+
+
 		$this->add_control(
 			'day_number_color',
 			[
@@ -1020,6 +1092,27 @@ class Posts extends Widget_Base {
 			[
 				'name'      => 'day_number_typography',
 				'selector'  => '{{WRAPPER}} span.meta_year',
+			]
+		);
+
+		$this->add_responsive_control(
+			'number_space',
+			[
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'default'    => [
+					'size' => 5,
+				],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf-meta_video span.meta_year' => 'margin-bottom: {{SIZE}}{{UNIT}}',
+				],
 			]
 		);
 
@@ -2209,8 +2302,7 @@ class Posts extends Widget_Base {
 			'id' => get_post_thumbnail_id(),
 		];
 		// PHPCS - `get_permalink` is safe.
-		$show_videos = $settings['show_video'];
-		if($show_videos == 'yes'){
+		
 
 
 		$format = get_post_format();
@@ -2238,16 +2330,17 @@ class Posts extends Widget_Base {
 		}
 
 		?>
-		<div class="thumb">
-			<iframe width="190" height="120" src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
-		</div>
-		<?php }else{ ?>
+		
 		<div class="thumb">
 			<a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
 			</a>
 		</div>
-		<?php } ?>
+		<div class="thumb_icon">
+			<a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+				<?php \Elementor\Icons_Manager::render_icon( $settings['video_selected_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+			</a>
+		</div>
 		<?php
 	}
 
