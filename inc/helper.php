@@ -398,8 +398,3 @@ if(!function_exists('wcfaddon_get_pronotice_html')){
 		);
 	}
 }
-
-
-
-
-

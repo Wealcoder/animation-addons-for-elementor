@@ -94,8 +94,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       'image-box-slider': [],
       'video-box-slider': [],
       'brand-slider': [],
-      'content-slider': [],
-      'breaking-news-slider': []
+      'content-slider': []
     });
     $.each(WcfSliderWidgets, function (widget, $skins) {
       elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(widget, ".default"), Slider);
