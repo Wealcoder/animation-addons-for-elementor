@@ -971,3 +971,14 @@ ul.wcf-meta_video {
 .author_views a{
   position: relative;
 }
+
+.posts_video_thumb {
+  position: relative;
+}
+
+.thumb_icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

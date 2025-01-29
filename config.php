@@ -763,6 +763,23 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
 					],
+
+					'breaking-news-slider'     => [
+						'label'        => esc_html__( 'Breaking News Slider', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'setup' 			 => ['basic'],
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Brand-Slider",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/breaking-news-slider',
+						'youtube_url'  => '',
+					],
+
 					'category-showcase' => [
 						'label'        => esc_html__( 'Category Showcase', 'animation-addons-for-elementor' ),
 						'location'     => [
