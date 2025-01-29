@@ -208,6 +208,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'socials-shares'          => [
+				'handler' => 'wcf--socials-share',
+				'src'     => 'widgets/social-share.min.js',
+				'dep'     => [ ],
+				'version' => false,
+				'arg'     => true,
+			],
 			'progressbar'      => [
 				'handler' => 'wcf--progressbar',
 				'src'     => 'widgets/progressbar.min.js',

@@ -51,14 +51,11 @@ trait WCF_Post_Query_Trait {
 				'label'   => esc_html__( 'Query Type', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'custom',
-				'options' => [
+				'options' => apply_filters('aae_widget_wp_query_type',[
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
-					'related' => esc_html__( 'related', 'animation-addons-for-elementor' ),
-					'recent_visited' => esc_html__( 'Recent Visited(cookie)', 'animation-addons-for-elementor' ),
-					'most_views' => esc_html__( 'Most Views', 'animation-addons-for-elementor' ),
-					'top_post_week' => esc_html__( 'Top Post This Week', 'animation-addons-for-elementor' ),
-				],
+					'related' => esc_html__( 'related', 'animation-addons-for-elementor' )					
+				]),
 			]
 		);
 
@@ -69,7 +66,7 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views' , 'top_post_week'] ],
+				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views' , 'top_post_week', 'most_popular'] ],
 			]
 		);
 
@@ -414,6 +411,30 @@ trait WCF_Post_Query_Trait {
 					'key'     => 'wcf_post_views_count',
 					'value'   => 0, // Optional: Only include posts with at least 1 view
 					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+		
+		if ( 'most_popular' === $this->get_settings( 'query_type' ) ){
+			
+			$query_args['orderby'] = array(
+				'meta_value_num'  => 'DESC',				
+				'comment_count' => 'DESC',
+			);
+			$query_args['order'] = 'DESC';			
+			$query_args['meta_query'] = [
+				'relation' => 'OR',
+				[
+					'key'     => 'wcf_post_views_count',			
+					'type'    => 'NUMERIC',
+				],
+				[
+					'key'     => 'aae_post_shares',				
 					'type'    => 'NUMERIC',
 				],
 			];

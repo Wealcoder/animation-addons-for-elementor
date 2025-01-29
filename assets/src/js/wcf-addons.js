@@ -138,7 +138,6 @@
         };
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--blog--search--form.default', Search);
 
-
     });
 
 })(jQuery);

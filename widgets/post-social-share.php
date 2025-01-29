@@ -30,7 +30,19 @@ class Post_Social_Share extends Widget_Base {
 		return [ 'wcf-single-addon' ];
 	}
 
-
+	/**
+	 * Retrieve the list of scripts the widget depended on.
+	 *
+	 * Used to set scripts dependencies required to run the widget.
+	 *
+	 * @return array Widget scripts dependencies.
+	 * @since 1.0.0
+	 *
+	 * @access public
+	 */
+	public function get_script_depends() {
+		return [ 'wcf--socials-share' ];
+	}
 	public function get_keywords() {
 		return [ 'social share', 'post share' ];
 	}
