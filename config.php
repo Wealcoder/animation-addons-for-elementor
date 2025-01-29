@@ -704,6 +704,21 @@ $config = [
 						'youtube_url'  => '',
 					],
 
+					'video-story' => [
+						'label'        => esc_html__( 'Video Story', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/aae-video-story/',
+						'youtube_url'  => '',
+					],
+
 					'video-posts-tab'              => [
 						'label'        => esc_html__( 'Video Posts Tab', 'animation-addons-for-elementor' ),
 						'location'     => [
