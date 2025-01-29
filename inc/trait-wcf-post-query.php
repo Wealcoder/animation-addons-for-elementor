@@ -66,7 +66,19 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views' , 'top_post_week', 'most_popular'] ],
+				'condition' => [ 
+				'query_type' => 
+					[
+					'custom',
+					'archive',
+					'recent_visited',
+					'most_views' ,
+					'top_post_week',
+					'most_popular',
+					'trending_score',
+					'most_share_count'
+					] 
+				],
 			]
 		);
 
@@ -204,12 +216,14 @@ trait WCF_Post_Query_Trait {
 				'options'   => [
 					'anytime'  => esc_html__( 'All', 'animation-addons-for-elementor' ),
 					'-1 day'   => esc_html__( 'Past Day', 'animation-addons-for-elementor' ),
+					'-3 day'   => esc_html__( 'Past 3 Day', 'animation-addons-for-elementor' ),
 					'-1 week'  => esc_html__( 'Past Week', 'animation-addons-for-elementor' ),
+					'-2 week'  => esc_html__( 'Past Two Weeks', 'animation-addons-for-elementor' ),
 					'-1 month' => esc_html__( 'Past Month', 'animation-addons-for-elementor' ),
 					'-3 month' => esc_html__( 'Past Quarter', 'animation-addons-for-elementor' ),
 					'-1 year'  => esc_html__( 'Past Year', 'animation-addons-for-elementor' ),
 				],
-				'condition' => [ 'query_type' => 'custom' ],
+				'condition' => [ 'query_type' => ['custom', 'most_share_count' , 'trending_score', 'most_views', 'most_popular'] ],
 			]
 		);
 
@@ -443,6 +457,29 @@ trait WCF_Post_Query_Trait {
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
+		
+		if ( 'trending_score' === $this->get_settings( 'query_type' ) ){
+			
+			$query_args['meta_key'] = 'aae_trending_score';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+		
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+		if ( 'most_share_count' === $this->get_settings( 'query_type' ) ){
+			
+			$query_args['meta_key'] = 'aae_post_shares';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+				
+			}
+		
+		}
 	
 		if ( 'most_views' === $this->get_settings( 'query_type' ) ){
 			$query_args['meta_key'] = 'wcf_post_views_count';
@@ -466,7 +503,7 @@ trait WCF_Post_Query_Trait {
 			}	
 			
 		}
-		
+	
 		return $query_args;
 	}
 
