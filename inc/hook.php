@@ -48,3 +48,8 @@ function aae_handle_aae_post_shares_count() {
 }
 add_action( 'wp_ajax_aae_post_shares', 'aae_handle_aae_post_shares_count' ); // For logged-in users
 add_action( 'wp_ajax_nopriv_aae_post_shares', 'aae_handle_aae_post_shares_count' ); // For non-logged-in users
+
+function aaeaddon_disable_comments_for_custom_post_type() {
+    remove_post_type_support( 'wcf-addons-template', 'comments' );
+}
+add_action( 'init', 'aaeaddon_disable_comments_for_custom_post_type' , 100);

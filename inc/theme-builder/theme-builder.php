@@ -272,6 +272,10 @@ class WCF_Theme_Builder {
 		if ( is_embed() ) {
 			return $template;
 		}
+		
+		if(isset($_REQUEST['aaeid']) && !isset($_REQUEST['preview_id'])){
+			return $template;
+		}
 
 		$default_file = self::get_template_loader_default_file();
 
