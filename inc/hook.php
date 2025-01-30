@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 if(function_exists('wcf_set_postview')){
-	add_filter( 'single_template', 'wcf_set_postview' );
+	add_action( 'wp_head', 'wcf_set_postview' );
 }
 
 function aae_handle_aae_post_shares_count() {
@@ -13,20 +13,34 @@ function aae_handle_aae_post_shares_count() {
 		exit( 'No naughty business please' );
 	}
 	
-    if ( isset( $_POST['post_id'] ) ) {
-        $post_id = intval( $_POST['post_id'] );
+    if ( isset( $_POST['post_id'] ) && isset($_POST['social'])) {
+        $post_id = intval( sanitize_text_field($_POST['post_id']) );
+        $social = sanitize_text_field( $_POST['social'] );
         
         // Retrieve current share count, increment it, or set it if it doesn't exist
         $current_shares = get_post_meta( $post_id, 'aae_post_shares', true );
-        $current_shares = is_numeric( $current_shares ) ? $current_shares : 0;
-        $new_share_count = $current_shares + 1;
-
-        // Update share count in post meta
-        update_post_meta( $post_id, 'aae_post_shares', $new_share_count );
+        if ( ! is_array( $current_shares ) ) {
+            $current_shares = [];
+        }
+        if ( isset( $current_shares[ $social ] ) ) {
+            $current_shares[ $social ]++;
+        } else {
+            $current_shares[ $social ] = 1;
+        }
+        
+        $shares_count = array_sum( array_values($current_shares) );
+	
+    	foreach($current_shares as $k=> $single){
+    		update_post_meta( $post_id, 'aae_post_shares_'.$k, $single );
+    	}
+	
+        update_post_meta( $post_id, 'aae_post_shares_count', $shares_count );
+        update_post_meta( $post_id, 'aae_post_shares', $current_shares );      
 
         // Return updated share count as a response
         wp_send_json_success( array(
-            'share_count' => $new_share_count
+            'share_count' => $shares_count,
+            'post_shares' => $current_shares
         ) );
     } else {
         wp_send_json_error( 'Invalid post ID' );

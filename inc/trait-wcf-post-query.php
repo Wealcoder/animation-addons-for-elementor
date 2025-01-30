@@ -448,7 +448,7 @@ trait WCF_Post_Query_Trait {
 					'type'    => 'NUMERIC',
 				],
 				[
-					'key'     => 'aae_post_shares',				
+					'key'     => 'aae_post_shares_count',				
 					'type'    => 'NUMERIC',
 				],
 			];
@@ -468,9 +468,53 @@ trait WCF_Post_Query_Trait {
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
-		if ( 'most_share_count' === $this->get_settings( 'query_type' ) ){
+		
+		if ( 'most_share_count' === $this->get_settings( 'query_type' ) )
+		{
 			
-			$query_args['meta_key'] = 'aae_post_shares';
+			$query_args['meta_key'] = 'aae_post_shares_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+				
+			}
+		
+		}
+		
+		if ( 'most_reactions' === $this->get_settings( 'query_type' ) )
+		{
+			
+			$query_args['meta_key'] = 'aaeaddon_post_total_reactions';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+				
+			}
+		
+		}
+		
+		if ( 'most_reactions_love' === $this->get_settings( 'query_type' ) )
+		{
+			
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_love';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+				
+			}
+		
+		}
+		
+		if ( 'most_reactions_like' === $this->get_settings( 'query_type' ) )
+		{
+			
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_like';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
 			

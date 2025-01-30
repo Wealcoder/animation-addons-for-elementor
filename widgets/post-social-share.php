@@ -100,6 +100,20 @@ class Post_Social_Share extends Widget_Base {
 				]
 			]
 		);
+		
+		$this->add_control(
+			'share_count',
+			[
+				'label'   => esc_html__( 'Share Count', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => '',
+				'options' => [
+					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
+
+				]
+			]
+		);
 
 		$this->add_control(
 			'share_text',
@@ -954,7 +968,9 @@ class Post_Social_Share extends Widget_Base {
 
 		$settings = $this->get_settings_for_display();
 		$socials  = $settings['list'];
-
+		$current_shares = get_post_meta( get_the_id() , 'aae_post_shares', true );
+		$total_share = get_post_meta( get_the_id() , 'aae_post_shares_count', true );
+		
 		?>
         <style>
             .default-details-social-media {
@@ -972,7 +988,7 @@ class Post_Social_Share extends Widget_Base {
         <ul class="default-details-social-media">
 			<?php foreach ( $socials as $share ) { ?>
                 <li>
-                    <a href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
+                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
                     <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
 							'aria-hidden' => 'true',
 							'class'       => 'share-ico'
@@ -986,6 +1002,15 @@ class Post_Social_Share extends Widget_Base {
                                 ] ); ?>
                                 <?php echo esc_html( $settings['share_text'] ); ?>
                             </span>
+					<?php } ?>
+					<?php if(isset($settings['share_count']) && $settings['share_count'] === 'yes' ) { ?>
+						<span data-type="<?php echo esc_attr($share['list_vendor']); ?>" class="aae-share-count <?php echo esc_attr($share['list_vendor']); ?>">
+							<?php
+							echo esc_html( 
+								aaeaddon_format_number_count(is_array($current_shares) && isset($current_shares[$share['list_vendor']]) ? $current_shares[$share['list_vendor']] : 0) 
+							);
+							?>
+						</span>
 					<?php } ?>
                     </a>
                 </li>
