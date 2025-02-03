@@ -208,6 +208,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'socials-shares'          => [
+				'handler' => 'wcf--socials-share',
+				'src'     => 'widgets/social-share.min.js',
+				'dep'     => [ ],
+				'version' => false,
+				'arg'     => true,
+			],
 			'progressbar'      => [
 				'handler' => 'wcf--progressbar',
 				'src'     => 'widgets/progressbar.min.js',
@@ -568,6 +575,20 @@ class Plugin {
 		//extensions
 		$this->register_extensions();
 	}
+	
+	public function elementor_editor_url( $url ){
+		$args = [
+			'numberposts' => 1,
+			'post_type'   => 'post',
+			'orderby'     => 'menu_order',
+			'order'       => 'ASC',
+		]; 
+		$latest_posts = get_posts($args);      
+		if (!is_wp_error( $latest_posts ) && !empty($latest_posts) && isset($latest_posts[0])) {  
+			return add_query_arg( 'aaeid', $latest_posts[0]->ID ,  $url ); 
+		}
+		return add_query_arg( 'aaeid', 1 , $url ); 
+	}
 
 	/**
 	 *  Plugin class constructor
@@ -594,9 +615,12 @@ class Plugin {
 
 		// Register editor style
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'editor_styles' ] );
-
+		add_filter( 'elementor/document/urls/preview' , [ $this, 'elementor_editor_url' ] , 4 );
+		add_filter( 'elementor/document/urls/wp_preview' , [ $this, 'elementor_editor_url' ] , 4 );
 		$this->include_files();
 	}
+	
+	
 }
 
 // Instantiate Plugin Class

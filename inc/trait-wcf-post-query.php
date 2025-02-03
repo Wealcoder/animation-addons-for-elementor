@@ -51,14 +51,11 @@ trait WCF_Post_Query_Trait {
 				'label'   => esc_html__( 'Query Type', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'custom',
-				'options' => [
+				'options' => apply_filters('aae_widget_wp_query_type',[
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
-					'related' => esc_html__( 'related', 'animation-addons-for-elementor' ),
-					'recent_visited' => esc_html__( 'Recent Visited(cookie)', 'animation-addons-for-elementor' ),
-					'most_views' => esc_html__( 'Most Views', 'animation-addons-for-elementor' ),
-					'top_post_week' => esc_html__( 'Top Post This Week', 'animation-addons-for-elementor' ),
-				],
+					'related' => esc_html__( 'related', 'animation-addons-for-elementor' )
+				]),
 			]
 		);
 
@@ -69,7 +66,19 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive','recent_visited', 'most_views' , 'top_post_week'] ],
+				'condition' => [
+				'query_type' =>
+					[
+					'custom',
+					'archive',
+					'recent_visited',
+					'most_views' ,
+					'top_post_week',
+					'most_popular',
+					'trending_score',
+					'most_share_count'
+					]
+				],
 			]
 		);
 
@@ -207,12 +216,14 @@ trait WCF_Post_Query_Trait {
 				'options'   => [
 					'anytime'  => esc_html__( 'All', 'animation-addons-for-elementor' ),
 					'-1 day'   => esc_html__( 'Past Day', 'animation-addons-for-elementor' ),
+					'-3 day'   => esc_html__( 'Past 3 Day', 'animation-addons-for-elementor' ),
 					'-1 week'  => esc_html__( 'Past Week', 'animation-addons-for-elementor' ),
+					'-2 week'  => esc_html__( 'Past Two Weeks', 'animation-addons-for-elementor' ),
 					'-1 month' => esc_html__( 'Past Month', 'animation-addons-for-elementor' ),
 					'-3 month' => esc_html__( 'Past Quarter', 'animation-addons-for-elementor' ),
 					'-1 year'  => esc_html__( 'Past Year', 'animation-addons-for-elementor' ),
 				],
-				'condition' => [ 'query_type' => 'custom' ],
+				'condition' => [ 'query_type' => ['custom', 'most_share_count' , 'trending_score', 'most_views', 'most_popular'] ],
 			]
 		);
 
@@ -422,7 +433,98 @@ trait WCF_Post_Query_Trait {
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
-	
+
+		if ( 'most_popular' === $this->get_settings( 'query_type' ) ){
+
+			$query_args['orderby'] = array(
+				'meta_value_num'  => 'DESC',
+				'comment_count' => 'DESC',
+			);
+			$query_args['order'] = 'DESC';
+			$query_args['meta_query'] = [
+				'relation' => 'OR',
+				[
+					'key'     => 'wcf_post_views_count',
+					'type'    => 'NUMERIC',
+				],
+				[
+					'key'     => 'aae_post_shares_count',
+					'type'    => 'NUMERIC',
+				],
+			];
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+
+		if ( 'trending_score' === $this->get_settings( 'query_type' ) ){
+
+			$query_args['meta_key'] = 'aae_trending_score';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+
+		if ( 'most_share_count' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aae_post_shares_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_total_reactions';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions_love' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_love';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions_like' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_like';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
 		if ( 'most_views' === $this->get_settings( 'query_type' ) ){
 			$query_args['meta_key'] = 'wcf_post_views_count';
 			$query_args['orderby'] = 'meta_value_num';
@@ -453,7 +555,8 @@ trait WCF_Post_Query_Trait {
 				'terms'    => array('post-format-video'),
 			];
 		}
-		
+
+
 		return $query_args;
 	}
 

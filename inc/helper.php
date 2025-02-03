@@ -234,7 +234,9 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	 *
 	 */
 	function wcf_set_postview( $template ) {
-	
+		if(!is_singular()){
+			return;
+		}
 		$postID     = get_the_ID();
 		$count_key  = 'wcf_post_views_count';
 		$count      = get_post_meta( $postID, $count_key, true );
@@ -245,6 +247,7 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 			add_post_meta( $postID, $count_key, '0' );
 		} else {
 			$count ++;
+			delete_post_meta( $postID, $count_key );
 			update_post_meta( $postID, $count_key, $count );
 		}
 
@@ -396,5 +399,18 @@ if(!function_exists('wcfaddon_get_pronotice_html')){
 			$upgrade_url,
 			__('Upgrade Animation Addon', 'animation-addons-for-elementor')
 		);
+	}
+}
+
+if(!function_exists('aaeaddon_format_number_count')) {
+	function aaeaddon_format_number_count($count) {
+		if ($count >= 1000000000) {
+			return number_format($count / 1000000000, 1) . esc_html__('b','animation-addons-for-elementor'); // Billion
+		} elseif ($count >= 1000000) {
+			return number_format($count / 1000000, 1) . esc_html__('m','animation-addons-for-elementor'); // Million
+		} elseif ($count >= 1000) {
+			return number_format($count / 1000, 1) . esc_html__('k','animation-addons-for-elementor'); // Thousand
+		}
+		return $count; // Less than 1000, return the count as is
 	}
 }

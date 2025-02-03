@@ -631,6 +631,20 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+					],	
+					'post-reactions'       => [
+						'label'        => esc_html__( 'Post Reactions', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Post-Comment",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
 					],
 					'post-meta-info'     => [
 						'label'        => esc_html__( 'Post Meta Info', 'animation-addons-for-elementor' ),

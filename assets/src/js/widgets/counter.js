@@ -5,7 +5,7 @@
      */
     const WcfCounter = function ($scope, $) {
 
-        const $counter = $('.wcf--counter-number', $scope)
+        const $counter = $('.wcf--counter-number', $scope);
 
         this.intersectionObserver = elementorModules.utils.Scroll.scrollObserver({
             callback: (event) => {
