@@ -17,6 +17,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Plugin {
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+	
+	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
+
+	/**
+	 * API templates URL.
+	 *
+	 * Holds the URL of the templates API.
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var string API URL.
+	 */
+	public $api_url = 'https://crowdytheme.com/elementor/info-templates/wp-json/api/v2/list';
+
 	/**
 	 * Instance
 	 *
@@ -142,6 +157,29 @@ class Plugin {
 		] );
 
 		wp_localize_script( 'wcf-editor', 'WCF_Addons_Editor', $data );
+		
+		// templates Library
+		if(class_exists('\WCF_ADDONS\Library_Source')){
+			wp_enqueue_script( 'wcf-template-library', plugins_url( '/assets/js/wcf-template-library.js', __FILE__ ), [
+				'jquery',
+	            'wp-util',
+			], WCF_ADDONS_VERSION, true );
+	
+			wp_localize_script( 'wcf-template-library', 'WCF_TEMPLATE_LIBRARY', [
+				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+				'template_file'  => plugins_url( 'templates.json', __FILE__ ),
+				'template_types' => self::get_template_types(),
+				'nonce'          => wp_create_nonce( 'wcf-template-library' ),
+				'config' => apply_filters('wcf_addons_editor_config', [])
+			] );
+			
+			wp_enqueue_style(
+				'wcf-template-library',
+				plugins_url( '/assets/css/wcf-template-library.css', __FILE__ ),
+				[],
+				WCF_ADDONS_VERSION
+			);
+		}
 	}
 
 	/**
@@ -564,14 +602,12 @@ class Plugin {
 		require_once( WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php' );
 
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
-		require_once WCF_ADDONS_PATH . 'inc/hook.php';
-		require_once WCF_ADDONS_PATH . 'inc/extension-update.php';		
+		require_once WCF_ADDONS_PATH . 'inc/hook.php';		
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
-
+		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';	
 		//extensions
 		$this->register_extensions();
 	}
@@ -589,6 +625,298 @@ class Plugin {
 		}
 		return add_query_arg( 'aaeid', 1 , $url ); 
 	}
+	
+	
+	public function print_templates() {
+		$all_plugins = get_plugins();
+		$plugin_slug = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+		$active_plugins = get_option( 'active_plugins' );
+		?>
+        <script type="text/template" id="tmpl-wcf-templates-header">
+            <div class="dialog-header dialog-lightbox-header">
+                <div class="elementor-templates-modal__header wcf-template-library--header">
+                    <div class="elementor-templates-modal__header__logo-area"></div>
+                    <div class="elementor-templates-modal__header__menu-area" data-disabled="false">
+                        <div id="elementor-template-library-header-menu">
+                            <#
+                            let i = 0;
+                            _.each( data.template_types, function( item, key ) {
+                            #>
+                            <div class="elementor-component-tab elementor-template-library-menu-item {{ 0==i ? 'elementor-active' : ''}}" data-tab="{{ key }}">
+                                {{{ item.label }}}
+                            </div>
+                            <#
+                            i ++ ;
+                            } );
+                            #>
+                        </div>
+                    </div>
+                    <div class="elementor-templates-modal__header__items-area">
+                        <div class="elementor-templates-modal__header__close elementor-templates-modal__header__close--normal elementor-templates-modal__header__item">
+                            <i class="eicon-close" aria-hidden="true" title="Close"></i>
+                            <span class="elementor-screen-only"><?php echo esc_html__( 'Close', 'animation-addons-for-elementor' ); ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <script type="text/template" id="tmpl-wcf-templates">
+            <div class="dialog-message dialog-lightbox-message">
+                <div class="dialog-content dialog-lightbox-content">
+                    <div class="elementor-template-library-templates">
+
+                        <!--toolbar-->
+                        <div id="elementor-template-library-toolbar">
+                            <div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
+                                <div id="elementor-template-library-filter">
+                                    <select id="wcf-template-library-filter-subtype" class="elementor-template-library-filter-select"  tabindex="-1">
+                                        <option value=""><?php echo esc_html__( 'Category', 'animation-addons-for-elementor' ); ?></option>
+                                        <#
+                                        _.each( data.categories, function( item, key ) {
+                                        #>
+                                        <option value="{{item.id}}">{{{item.title}}}</option>
+                                        <#
+                                        } );
+                                        #>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="elementor-template-library-filter-text-wrapper">
+                                <label for="wcf-template-library-filter-text" class="elementor-screen-only"><?php echo esc_html__( 'Search Templates:', 'animation-addons-for-elementor' ); ?></label>
+                                <input id="wcf-template-library-filter-text" placeholder="Search">
+                                <i class="eicon-search"></i>
+                            </div>
+                        </div>
+
+                        <!--templates -->
+                        <div class="wcf-library-templates">
+                            <#
+                            _.each( data.templates, function( item, key ) {                          
+                            #>
+                            <div class="wcf-library-template" data-id="{{item.id}}" data-url="{{item.url}}">
+                                <div class="thumbnail">
+                                    <img src="{{{ item.thumbnail }}}" alt="{{ item.title }}">
+                                </div>
+                                <# if(item?.valid && item.valid){ #>
+									<button class="library--action insert">
+                                        <i class="eicon-file-download"></i>
+                                        Insert
+                                     </button>
+                                <#
+                                } else {
+                                #>
+								<?php if ( !class_exists( 'AAE_ADDONS_Plugin_Pro' ) && !array_key_exists( $plugin_slug, $all_plugins )) { ?>
+	                                <a href="https://store.wealcoder.com/animatin-addon-for-elementor-trail/" class="library--action pro" target="_blank">
+	                                    <i class="eicon-external-link-square"></i>
+	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
+	                                </a>
+	                                <?php }elseif(in_array( $plugin_slug, $active_plugins )){ ?>
+										<button class="library--action pro">
+	                                        <i class="eicon-external-link-square"></i>
+	                                        <?php echo esc_html__( 'Pro', 'animation-addons-for-elementor' ); ?>
+									</button>                          
+	                                <?php }elseif(array_key_exists( $plugin_slug, $all_plugins )){ ?>
+										<button class="library--action pro aaeplugin-activate">
+	                                        <i class="eicon-external-link-square"></i>
+	                                        <?php echo esc_html__( 'Activate', 'animation-addons-for-elementor' ); ?>
+									</button>
+	                                <?php } ?>                                									
+                                <# } #>
+                                <p class="title">{{{ item.title }}}</p>
+                            </div>
+                            <#
+                            } );
+                            #>
+                        </div>
+                    </div>
+                </div>
+                <div class="dialog-loading dialog-lightbox-loading wcf-template-library--loading" hidden>
+                    <div id="elementor-template-library-loading">
+                        <div class="elementor-loader-wrapper">
+                            <div class="elementor-loader">
+                                <div class="elementor-loader-boxes">
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                </div>
+                            </div>
+                            <div class="elementor-loading-title"><?php echo esc_html__( 'Loading', 'animation-addons-for-elementor' ); ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <script type="text/template" id="tmpl-wcf-templates-single">
+            <div class="dialog-header dialog-lightbox-header">
+                <div class="elementor-templates-modal__header">
+                    <div id="wcf-template-library-header-preview-back">
+                            <i class="eicon-" aria-hidden="true"></i>
+                            <span><?php echo esc_html__( 'Back to Library', 'animation-addons-for-elementor' ); ?></span>
+                        </div>
+                    <div class="elementor-templates-modal__header__menu-area"></div>
+                    <div class="elementor-templates-modal__header__items-area">
+                        <div class="elementor-templates-modal__header__close elementor-templates-modal__header__close--normal elementor-templates-modal__header__item">
+
+                            <i class="eicon-close" aria-hidden="true"></i>
+                            <span class="elementor-screen-only"><?php echo esc_html__( 'Close', 'animation-addons-for-elementor' ); ?></span>
+                        </div>
+                        <div id="elementor-template-library-header-tools">
+                            <div id="elementor-template-library-header-preview">
+                                <div id="elementor-template-library-header-preview-insert-wrapper" class="elementor-templates-modal__header__item">
+                                    <button class="library--action insert">
+                                        <i class="eicon-file-download"></i>
+                                         <?php echo esc_html__( 'Insert', 'animation-addons-for-elementor' ); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-message dialog-lightbox-message">
+                <div class="dialog-content dialog-lightbox-content">
+                    <div id="elementor-template-library-preview">
+                        <iframe src="{{data.template_link}}"></iframe>
+                    </div>
+                </div>
+                <div class="dialog-loading dialog-lightbox-loading wcf-template-library--loading" hidden>
+                    <div id="elementor-template-library-loading">
+                        <div class="elementor-loader-wrapper">
+                            <div class="elementor-loader">
+                                <div class="elementor-loader-boxes">
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                    <div class="elementor-loader-box"></div>
+                                </div>
+                            </div>
+                            <div class="elementor-loading-title"><?php echo esc_html__( 'Loading', 'animation-addons-for-elementor' ); ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+		<?php
+	}
+	public function preview_styles() {
+
+		wp_enqueue_style(
+			'wcf-template-library-preview',
+			plugins_url( '/assets/css/preview.css', __FILE__ ),
+			[],
+			WCF_ADDONS_VERSION
+		);
+	}
+	public static function get_template_types() {
+		$template_type = [
+			'block' => [
+				'label' => esc_html__( 'Block', 'animation-addons-for-elementor' ),
+			],
+			'page'  => [
+				'label' => esc_html__( 'Page', 'animation-addons-for-elementor' ),
+			],
+		];
+
+		return $template_type;
+	}
+
+	/**
+	 * Get templates data.
+	 *
+	 * Retrieve the templates data from a remote server.
+	 *
+	 * @param bool $force_update Optional. Whether to force the data update or
+	 *                                     not. Default is false.
+	 *
+	 * @return array The templates data.
+	 * @since 1.0
+	 * @access public
+	 * @static
+	 *
+	 */
+	public static function get_library_data( $force_update = false ) {
+		// Define a unique transient key
+		$transient_key = 'aaeaddon_tpl_library_data2025';
+	
+		// Attempt to retrieve the cached data
+		$library_data = get_transient( $transient_key );
+	
+		// Check if data is not cached or a force update is requested
+		if ( $force_update || false === $library_data ) {
+			// Fetch the latest templates data
+			self::get_templates_data( $force_update );
+	
+			// Retrieve the library data from the database
+			$library_data = get_option( self::LIBRARY_OPTION_KEY, [] );
+	
+			// Cache the data with an expiration time (e.g., 12 hours)
+			set_transient( $transient_key, $library_data, 4 * HOUR_IN_SECONDS );
+	
+			// Optionally, update the JSON file if needed
+			$newJsonString = json_encode( $library_data );
+			file_put_contents( WCF_ADDONS_PATH . 'templates.json', $newJsonString );
+		}
+	
+		return $library_data;
+	}
+	
+
+	/**
+	 * Get templates data.
+	 *
+	 * This function the templates data.
+	 *
+	 * @param bool $force_update Optional. Whether to force the data retrieval or * not. Default is false.
+	 *
+	 * @return array|false Templates data, or false.
+	 * @since 1.0
+	 * @access private
+	 * @static
+	 */
+	private static function get_templates_data( $force_update = false ) {
+
+		$cache_key      = 'wcf_templates_data_' . 2.8;
+		$templates_data = get_transient( $cache_key );
+
+		if ( $force_update || false === $templates_data ) {
+
+			$timeout = ( $force_update ) ? 90 : 80;
+
+			$response = wp_remote_get( esc_url_raw( self::$instance->api_url ), [
+				'timeout'   => $timeout,
+				'sslverify' => false,
+				'body'      => [
+					// Which API version is used.
+					'api_version' => 1.1,
+					// Which language to return.
+					'site_lang'   => get_bloginfo( 'language' ),
+				],
+			] );
+
+			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+				set_transient( $cache_key, [], 1 * HOUR_IN_SECONDS );
+
+				return false;
+			}
+
+			$templates_data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( empty( $templates_data ) || ! is_array( $templates_data ) ) {
+				set_transient( $cache_key, [], 1 * HOUR_IN_SECONDS );
+
+				return false;
+			}
+
+			if ( isset( $templates_data['library'] ) ) {
+				update_option( self::LIBRARY_OPTION_KEY, $templates_data['library'], 'no' );
+				unset( $templates_data['library'] );
+			}
+			set_transient( $cache_key, $templates_data, 6 * HOUR_IN_SECONDS );
+		}
+
+		return $templates_data;
+	}
 
 	/**
 	 *  Plugin class constructor
@@ -599,6 +927,7 @@ class Plugin {
 	 * @access public
 	 */
 	public function __construct() {
+		
 		add_action( 'elementor/elements/categories_registered', [ $this, 'widget_categories' ] );
 
 		// Register widget scripts
@@ -617,7 +946,15 @@ class Plugin {
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'editor_styles' ] );
 		add_filter( 'elementor/document/urls/preview' , [ $this, 'elementor_editor_url' ] , 4 );
 		add_filter( 'elementor/document/urls/wp_preview' , [ $this, 'elementor_editor_url' ] , 4 );
+	
 		$this->include_files();
+		
+		if(class_exists('\WCF_ADDONS\Library_Source')){
+			add_action( 'admin_init', [ $this, 'get_library_data' ] );
+			add_action( 'elementor/editor/footer', [ $this, 'print_templates' ] );
+			// enqueue modal's preview css.
+			add_action( 'elementor/preview/enqueue_styles', array( $this, 'preview_styles' ) );
+		}
 	}
 	
 	

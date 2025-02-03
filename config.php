@@ -1289,6 +1289,20 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Floating-Elements",
 						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/dynamic-tags/',
+						'youtube_url'  => '',
+					],
+					'template-library'       => [
+						'label'        => esc_html__( 'Template library', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'is_pro'       => false,
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Floating-Elements",
+						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/dynamic-tags/',
 						'youtube_url'  => '',
 					],

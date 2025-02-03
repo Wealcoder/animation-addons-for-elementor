@@ -1,0 +1,174 @@
+#wcf-template-library>.dialog-widget-content {
+  width: 100%;
+  max-width: 1200px;
+}
+#wcf-template-library .elementor-templates-modal__header__logo-area{
+  width: 55px;
+  height: 40px;
+  background-image:url(../images/logo-big.png);
+  background-position: right center;
+  background-size: contain;
+  background-repeat: no-repeat
+}
+.aaeplugin-activate{
+  background: transparent;
+}
+#wcf-template-library-filter-text{
+  border: none;
+  border-block-end: var(--e-a-border-bold);
+  border-radius: 0;
+  font-size: 11px;
+  padding: 8px 15px 8px 0;
+  transition: border .5s;
+}
+#wcf-template-library-filter-subtype{
+  min-width: 150px;
+}
+
+#wcf-template-library-header-preview-back {
+  padding: 15px;
+  border-inline-end: 1px solid #e6e8ea;
+  cursor: pointer;
+  transition: color .5s;
+}
+
+.library--action {
+  display: block;
+  padding: 7px 0 10px;
+  border-width: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  transition: color .3s, opacity .3s, visibility .3s;
+  cursor: pointer;
+  z-index: 1;
+  &.pro{
+    color: #f12529;
+  }
+  &.insert{
+    color: #39b54a;
+    background-color: #fff;
+  }
+}
+
+#wcf-template-library .dialog-message {
+  overflow-y: scroll;
+}
+.wcf-library-templates{
+  column-count: 1;
+  gap: 20px;
+  margin-top: 25px;
+  padding-bottom: 100px;
+
+  @media (min-width: 576px) {
+    column-count: 2;
+  }
+
+  @media (min-width: 768px) {
+    column-count: 3;
+  }
+
+  @media (min-width: 992px) {
+    column-count: 4;
+  }
+}
+
+.wcf-library-template {
+  background-color: #fff;
+  position: relative;
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid #e6e8ea;
+  text-align: left;
+  margin-bottom: 20px;
+  break-inside: avoid;
+
+  .thumbnail {
+    line-height: 0;
+    background-color: #ddd;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top center;
+    position: relative;
+    max-height: 400px;
+    overflow: hidden;
+    img{
+      line-height: 0;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    &:before {
+      content: '\e92e';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d5dadf;
+      background-color: rgba(0, 0, 0, .5);
+      font-family: eicons;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .3s, visibility .3s;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    &:hover:before {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .title {
+    margin-bottom: 0;
+    padding-top: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: opacity .3s;
+  }
+
+  .library--action {
+    position: absolute;
+    left: 8px;
+    bottom: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  &:hover .library--action {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:hover .title {
+    opacity: 0;
+  }
+}
+
+.wcf-template-library--loading {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fcfcfc;
+  box-shadow: inset 0 0 8px rgba(0,0,0,.1);
+  z-index: 2;
+  transition: opacity .3s,visibility .3s;
+}
+.wcf-template-library--loading[hidden] {
+  opacity: 0;
+  visibility: hidden;
+}
