@@ -32,8 +32,6 @@ trait WCF_Slider_Trait {
 			'allow_touch_move'     => 'false',
 			'loop'                 => 'true',
 			'mousewheel'           => '',
-			'center_slide'         => 'false',
-			'slide_click_slide'    => 'false',
 			'speed'                => 500,
 			'space_between'        => 20,
 			//navigation
@@ -128,32 +126,6 @@ trait WCF_Slider_Trait {
 				'label'   => esc_html__( 'Loop', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => $default['loop'],
-				'options' => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->add_control(
-			'center_slide',
-			[
-				'label'   => esc_html__( 'Center Slide', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => $default['center_slide'],
-				'options' => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->add_control(
-			'slide_click_slide',
-			[
-				'label'   => esc_html__( 'Slide Clicked Slide', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => $default['slide_click_slide'],
 				'options' => [
 					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
 					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
@@ -635,8 +607,6 @@ trait WCF_Slider_Trait {
 			'allowTouchMove' => 'true' === $settings['allow_touch_move'],
 			'slidesPerView'  => $settings['slides_to_show'],
 			'spaceBetween'   => $settings['space_between'],
-			'centeredSlides' => 'true' === $settings['center_slide'],
-			'slideToClickedSlide' => 'true' === $settings['slide_click_slide'],
 		];
 
 		if ( 'yes' === $settings['autoplay'] ) {
