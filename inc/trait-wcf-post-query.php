@@ -54,7 +54,7 @@ trait WCF_Post_Query_Trait {
 				'options' => apply_filters('aae_widget_wp_query_type',[
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
-					'related' => esc_html__( 'related', 'animation-addons-for-elementor' )					
+					'related' => esc_html__( 'related', 'animation-addons-for-elementor' )
 				]),
 			]
 		);
@@ -66,8 +66,8 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 
-				'query_type' => 
+				'condition' => [
+				'query_type' =>
 					[
 					'custom',
 					'archive',
@@ -77,7 +77,7 @@ trait WCF_Post_Query_Trait {
 					'most_popular',
 					'trending_score',
 					'most_share_count'
-					] 
+					]
 				],
 			]
 		);
@@ -433,98 +433,98 @@ trait WCF_Post_Query_Trait {
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
-		
+
 		if ( 'most_popular' === $this->get_settings( 'query_type' ) ){
-			
+
 			$query_args['orderby'] = array(
-				'meta_value_num'  => 'DESC',				
+				'meta_value_num'  => 'DESC',
 				'comment_count' => 'DESC',
 			);
-			$query_args['order'] = 'DESC';			
+			$query_args['order'] = 'DESC';
 			$query_args['meta_query'] = [
 				'relation' => 'OR',
 				[
-					'key'     => 'wcf_post_views_count',			
+					'key'     => 'wcf_post_views_count',
 					'type'    => 'NUMERIC',
 				],
 				[
-					'key'     => 'aae_post_shares_count',				
+					'key'     => 'aae_post_shares_count',
 					'type'    => 'NUMERIC',
 				],
 			];
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
-		
+
 		if ( 'trending_score' === $this->get_settings( 'query_type' ) ){
-			
+
 			$query_args['meta_key'] = 'aae_trending_score';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
-		
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
 			}
 		}
-		
+
 		if ( 'most_share_count' === $this->get_settings( 'query_type' ) )
 		{
-			
+
 			$query_args['meta_key'] = 'aae_post_shares_count';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
-				
+
 			}
-		
+
 		}
-		
+
 		if ( 'most_reactions' === $this->get_settings( 'query_type' ) )
 		{
-			
+
 			$query_args['meta_key'] = 'aaeaddon_post_total_reactions';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
-				
+
 			}
-		
+
 		}
-		
+
 		if ( 'most_reactions_love' === $this->get_settings( 'query_type' ) )
 		{
-			
+
 			$query_args['meta_key'] = 'aaeaddon_post_reactions_love';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
-				
+
 			}
-		
+
 		}
-		
+
 		if ( 'most_reactions_like' === $this->get_settings( 'query_type' ) )
 		{
-			
+
 			$query_args['meta_key'] = 'aaeaddon_post_reactions_like';
 			$query_args['orderby'] = 'meta_value_num';
 			$query_args['order'] = 'DESC';
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
-				
+
 			}
-		
+
 		}
-	
+
 		if ( 'most_views' === $this->get_settings( 'query_type' ) ){
 			$query_args['meta_key'] = 'wcf_post_views_count';
 			$query_args['orderby'] = 'meta_value_num';
@@ -544,10 +544,19 @@ trait WCF_Post_Query_Trait {
 			
 			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
 				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode
-			}	
+			}
 			
 		}
-	
+
+		if($this->get_settings('post_layout') && ($this->get_settings('post_layout') == 'layout-gallery' || $this->get_settings('post_layout') == 'layout-gallery-2') ){
+			$query_args['tax_query'][] = [
+				'taxonomy' => 'post_format',
+				'field'    => 'slug',
+				'terms'    => array('post-format-video'),
+			];
+		}
+
+
 		return $query_args;
 	}
 
