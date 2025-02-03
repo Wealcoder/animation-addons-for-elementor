@@ -33,6 +33,7 @@ trait WCF_Slider_Trait {
 			'loop'                 => 'true',
 			'mousewheel'           => '',
 			'center_slide'         => 'false',
+			'slide_click_slide'    => 'false',
 			'speed'                => 500,
 			'space_between'        => 20,
 			//navigation
@@ -43,7 +44,7 @@ trait WCF_Slider_Trait {
 			'direction'            => 'ltr',
 		];
 
-		$default = array_merge(  $default, $default_value );
+		$default = array_merge( $default, $default_value );
 
 		$slides_to_show = range( 1, 10 );
 		$slides_to_show = array_combine( $slides_to_show, $slides_to_show );
@@ -140,6 +141,19 @@ trait WCF_Slider_Trait {
 				'label'   => esc_html__( 'Center Slide', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => $default['center_slide'],
+				'options' => [
+					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+
+		$this->add_control(
+			'slide_click_slide',
+			[
+				'label'   => esc_html__( 'Slide Clicked Slide', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => $default['slide_click_slide'],
 				'options' => [
 					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
 					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
@@ -330,12 +344,12 @@ trait WCF_Slider_Trait {
 	 */
 	protected function register_slider_navigation_style_controls( $default_selectors = [] ) {
 		$selectors = [
-			'arrow_size'              => [ '{{WRAPPER}} .wcf-arrow' => 'font-size: {{SIZE}}{{UNIT}};' ],
-			'arrow_padding'           => [ '{{WRAPPER}} .wcf-arrow' => 'padding: {{SIZE}}{{UNIT}};' ],
-			'arrow_color'             => [ '{{WRAPPER}} .wcf-arrow' => 'color: {{VALUE}}; fill: {{VALUE}};' ],
+			'arrow_size'               => [ '{{WRAPPER}} .wcf-arrow' => 'font-size: {{SIZE}}{{UNIT}};' ],
+			'arrow_padding'            => [ '{{WRAPPER}} .wcf-arrow' => 'padding: {{SIZE}}{{UNIT}};' ],
+			'arrow_color'              => [ '{{WRAPPER}} .wcf-arrow' => 'color: {{VALUE}}; fill: {{VALUE}};' ],
 			'arrow_background'         => '{{WRAPPER}} .wcf-arrow',
-			'arrow_hover_color'       => [ '{{WRAPPER}} .wcf-arrow:hover, {{WRAPPER}} .wcf-arrow:focus' => 'color: {{VALUE}}; fill: {{VALUE}};' ],
-			'arrow_hover_background'         => '{{WRAPPER}} .wcf-arrow:hover, {{WRAPPER}} .wcf-arrow:focus',
+			'arrow_hover_color'        => [ '{{WRAPPER}} .wcf-arrow:hover, {{WRAPPER}} .wcf-arrow:focus' => 'color: {{VALUE}}; fill: {{VALUE}};' ],
+			'arrow_hover_background'   => '{{WRAPPER}} .wcf-arrow:hover, {{WRAPPER}} .wcf-arrow:focus',
 			'arrow_hover_border_color' => [ '{{WRAPPER}} .wcf-arrow:hover, {{WRAPPER}} .wcf-arrow:focus' => 'border-color: {{VALUE}};' ],
 			'arrow_border'             => '{{WRAPPER}} .wcf-arrow',
 			'arrow_border_radius'      => [ '{{WRAPPER}} .wcf-arrow' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ],
@@ -394,8 +408,8 @@ trait WCF_Slider_Trait {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
-				'name' => 'arrow_background',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'arrow_background',
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => $selectors['arrow_background'],
 			]
 		);
@@ -421,8 +435,8 @@ trait WCF_Slider_Trait {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
-				'name' => 'arrow_hover_background',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'arrow_hover_background',
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => $selectors['arrow_hover_background'],
 			]
 		);
@@ -512,7 +526,7 @@ trait WCF_Slider_Trait {
 					],
 				],
 				'selectors' => $selectors['bullets_size'],
-                'condition' => ['pagination_type' => 'bullets']
+				'condition' => [ 'pagination_type' => 'bullets' ]
 			]
 		);
 
@@ -522,7 +536,7 @@ trait WCF_Slider_Trait {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['bullets_inactive_color'],
-				'condition' => ['pagination_type' => 'bullets']
+				'condition' => [ 'pagination_type' => 'bullets' ]
 			]
 		);
 
@@ -532,7 +546,7 @@ trait WCF_Slider_Trait {
 				'label'     => esc_html__( 'Active Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['bullets_color'],
-				'condition' => ['pagination_type' => 'bullets']
+				'condition' => [ 'pagination_type' => 'bullets' ]
 			]
 		);
 
@@ -542,7 +556,7 @@ trait WCF_Slider_Trait {
 				'name'      => 'bullets_border',
 				'selector'  => $selectors['bullets_border'],
 				'separator' => 'before',
-				'condition' => ['pagination_type' => 'bullets']
+				'condition' => [ 'pagination_type' => 'bullets' ]
 			]
 		);
 
@@ -553,7 +567,7 @@ trait WCF_Slider_Trait {
 				'label'     => esc_html__( 'Current Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_current_color'],
-				'condition' => ['pagination_type' => 'fraction']
+				'condition' => [ 'pagination_type' => 'fraction' ]
 			]
 		);
 
@@ -563,7 +577,7 @@ trait WCF_Slider_Trait {
 				'label'     => esc_html__( 'Total Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_total_color'],
-				'condition' => ['pagination_type' => 'fraction']
+				'condition' => [ 'pagination_type' => 'fraction' ]
 			]
 		);
 
@@ -573,7 +587,7 @@ trait WCF_Slider_Trait {
 				'label'     => esc_html__( 'Mid Line Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_midline_color'],
-				'condition' => ['pagination_type' => 'fraction']
+				'condition' => [ 'pagination_type' => 'fraction' ]
 			]
 		);
 
@@ -603,11 +617,11 @@ trait WCF_Slider_Trait {
 	 * get slider settings.
 	 *
 	 *
+	 * @return array
 	 * @since 1.0.0
 	 *
 	 * @access protected
-     *
-     * @return array
+	 *
 	 */
 	protected function get_slider_attributes( $settings = [] ) {
 		if ( empty( $settings ) ) {
@@ -621,7 +635,8 @@ trait WCF_Slider_Trait {
 			'allowTouchMove' => 'true' === $settings['allow_touch_move'],
 			'slidesPerView'  => $settings['slides_to_show'],
 			'spaceBetween'   => $settings['space_between'],
-			'centeredSlides'   => 'true' === $settings['center_slide'],
+			'centeredSlides' => 'true' === $settings['center_slide'],
+			'slideToClickedSlide' => 'true' === $settings['slide_click_slide'],
 		];
 
 		if ( 'yes' === $settings['autoplay'] ) {
@@ -657,10 +672,10 @@ trait WCF_Slider_Trait {
 
 		foreach ( $active_breakpoints as $breakpoint_name => $breakpoint ) {
 			$slides_to_show = ! empty( $settings[ 'slides_to_show_' . $breakpoint_name ] ) ? $settings[ 'slides_to_show_' . $breakpoint_name ] : $settings['slides_to_show'];
-			$space_between = ! empty( $settings[ 'space_between_' . $breakpoint_name ] ) ? $settings[ 'space_between_' . $breakpoint_name ] : $settings['space_between'];
+			$space_between  = ! empty( $settings[ 'space_between_' . $breakpoint_name ] ) ? $settings[ 'space_between_' . $breakpoint_name ] : $settings['space_between'];
 
 			$slider_settings['breakpoints'][ $breakpoint->get_value() ]['slidesPerView'] = $slides_to_show;
-			$slider_settings['breakpoints'][ $breakpoint->get_value() ]['spaceBetween'] = $space_between;
+			$slider_settings['breakpoints'][ $breakpoint->get_value() ]['spaceBetween']  = $space_between;
 		}
 
 		$swiper_class = Plugin::$instance->experiments->is_feature_active( 'e_swiper_latest' ) ? 'swiper' : 'swiper-container';
@@ -683,14 +698,14 @@ trait WCF_Slider_Trait {
 			return;
 		}
 		?>
-		<div class="ts-navigation">
-			<div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
+        <div class="ts-navigation">
+            <div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
 				<?php $this->render_swiper_button( 'previous' ); ?>
-			</div>
-			<div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
+            </div>
+            <div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
 				<?php $this->render_swiper_button( 'next' ); ?>
-			</div>
-		</div>
+            </div>
+        </div>
 		<?php
 	}
 

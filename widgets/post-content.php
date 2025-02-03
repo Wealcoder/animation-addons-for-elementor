@@ -56,10 +56,9 @@ class Post_Content extends Widget_Base {
 	 */
 	public function render_post_content( $with_wrapper = false, $with_css = true ) {
 		static $did_posts = [];
-		static $level = 0;
-
-		$post = get_post();
-
+		static $level = 0;		
+		$post = get_post();		
+		
 		if ( 'wcf-addons-template' === get_post_type() ) {
 			$recent_posts = wp_get_recent_posts( array(
 				'numberposts' => 1,
