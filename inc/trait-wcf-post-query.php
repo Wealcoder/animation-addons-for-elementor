@@ -442,8 +442,16 @@ trait WCF_Post_Query_Trait {
 			
 			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
 				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode
-			}	
+			}
 			
+		}
+
+		if($this->get_settings('post_layout') && ($this->get_settings('post_layout') == 'layout-gallery' || $this->get_settings('post_layout') == 'layout-gallery-2') ){
+			$query_args['tax_query'][] = [
+				'taxonomy' => 'post_format',
+				'field'    => 'slug',
+				'terms'    => array('post-format-video'),
+			];
 		}
 		
 		return $query_args;
