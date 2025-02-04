@@ -85,7 +85,7 @@
                 }
             }
         }
-
+       
         return templates;
     };
 
@@ -138,7 +138,7 @@
         elementor.on("preview:loaded", function () {
             $(elementor.$previewContents[0].body).on("click", ".elementor-add-wcf-template-button", function (event) {
                 event.preventDefault();
-                
+              
                 window.wcftmLibrary = elementorCommon.dialogsManager.createWidget("lightbox", {
                     id: "wcf-template-library",
                     onShow: function () {
@@ -166,7 +166,7 @@
                 function render_popup(t) {
                     let tmpTypes = wp.template('wcf-templates-header');
                     content = null;
-
+                    
                     content = tmpTypes({
                         template_types: Template_Library_data.template_types,
                     });
