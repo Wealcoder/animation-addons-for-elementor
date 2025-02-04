@@ -28,16 +28,6 @@ class Post_Comment extends Widget_Base {
 		return 'wcf eicon-comments';
 	}
 
-	public function show_in_panel() {
-		$tmpType = get_post_meta( get_the_ID(), 'wcf-addons-template-meta_type', true );
-
-		if ( 'single' === $tmpType ) {
-			return true;
-		}
-		// By default don't show.
-		return false;
-	}
-
 	public function get_categories() {
 		return [ 'wcf-single-addon' ];
 	}

@@ -10,7 +10,8 @@
     background-size: cover;
     filter: grayscale(0);
     transition: .3s;    
-    }
+}
+
 .elementor-panel .elementor-element:hover .icon .wcf::after {
     filter: grayscale(0);
     opacity: 1;
@@ -89,4 +90,6 @@
     top: 14px;
     right: 15px;
 }
+
+
 

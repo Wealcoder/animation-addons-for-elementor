@@ -88,7 +88,7 @@
             'image-box-slider': [],
             'video-box-slider': [],
             'brand-slider': [],
-            'content-slider': [],
+            'content-slider': [],            
         });
 
         $.each(WcfSliderWidgets, function( widget, $skins ) {

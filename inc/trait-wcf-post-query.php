@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 trait WCF_Post_Query_Trait {
-
+    
 	public static function get_public_post_types( $args = [] ) {
 		$post_type_args = [
 			// Default is the value $public.
@@ -51,11 +51,11 @@ trait WCF_Post_Query_Trait {
 				'label'   => esc_html__( 'Query Type', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'custom',
-				'options' => [
+				'options' => apply_filters('aae_widget_wp_query_type',[
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
-					'related' => esc_html__( 'related', 'animation-addons-for-elementor' ),
-				],
+					'related' => esc_html__( 'related', 'animation-addons-for-elementor' )
+				]),
 			]
 		);
 
@@ -66,7 +66,19 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'post',
 				'options'   => $this->get_public_post_types(),
-				'condition' => [ 'query_type' => ['custom','archive'] ],
+				'condition' => [
+				'query_type' =>
+					[
+					'custom',
+					'archive',
+					'recent_visited',
+					'most_views' ,
+					'top_post_week',
+					'most_popular',
+					'trending_score',
+					'most_share_count'
+					]
+				],
 			]
 		);
 
@@ -204,12 +216,14 @@ trait WCF_Post_Query_Trait {
 				'options'   => [
 					'anytime'  => esc_html__( 'All', 'animation-addons-for-elementor' ),
 					'-1 day'   => esc_html__( 'Past Day', 'animation-addons-for-elementor' ),
+					'-3 day'   => esc_html__( 'Past 3 Day', 'animation-addons-for-elementor' ),
 					'-1 week'  => esc_html__( 'Past Week', 'animation-addons-for-elementor' ),
+					'-2 week'  => esc_html__( 'Past Two Weeks', 'animation-addons-for-elementor' ),
 					'-1 month' => esc_html__( 'Past Month', 'animation-addons-for-elementor' ),
 					'-3 month' => esc_html__( 'Past Quarter', 'animation-addons-for-elementor' ),
 					'-1 year'  => esc_html__( 'Past Year', 'animation-addons-for-elementor' ),
 				],
-				'condition' => [ 'query_type' => 'custom' ],
+				'condition' => [ 'query_type' => ['custom', 'most_share_count' , 'trending_score', 'most_views', 'most_popular'] ],
 			]
 		);
 
@@ -395,6 +409,153 @@ trait WCF_Post_Query_Trait {
 				$query_args['author__not_in'] = explode( ',', $this->get_settings( 'exclude_authors' ) );
 			}
 		}
+		
+		if ( 'top_post_week' === $this->get_settings( 'query_type' ) ){
+			$query_args['meta_key'] = 'wcf_post_views_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			$query_args['date_query'] = [
+				[
+					'after'     => '1 week ago', // Filter posts from the last 7 days
+					'inclusive' => true, // Include posts exactly 7 days old
+				],
+			];
+			$query_args['meta_query'] = [
+				[
+					'key'     => 'wcf_post_views_count',
+					'value'   => 0, // Optional: Only include posts with at least 1 view
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+			
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+
+		if ( 'most_popular' === $this->get_settings( 'query_type' ) ){
+
+			$query_args['orderby'] = array(
+				'meta_value_num'  => 'DESC',
+				'comment_count' => 'DESC',
+			);
+			$query_args['order'] = 'DESC';
+			$query_args['meta_query'] = [
+				'relation' => 'OR',
+				[
+					'key'     => 'wcf_post_views_count',
+					'type'    => 'NUMERIC',
+				],
+				[
+					'key'     => 'aae_post_shares_count',
+					'type'    => 'NUMERIC',
+				],
+			];
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+
+		if ( 'trending_score' === $this->get_settings( 'query_type' ) ){
+
+			$query_args['meta_key'] = 'aae_trending_score';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+			}
+		}
+
+		if ( 'most_share_count' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aae_post_shares_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_total_reactions';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions_love' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_love';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_reactions_like' === $this->get_settings( 'query_type' ) )
+		{
+
+			$query_args['meta_key'] = 'aaeaddon_post_reactions_like';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+
+			if(isset($query_args['ignore_sticky_posts'])){
+				unset($query_args['ignore_sticky_posts']);
+
+			}
+
+		}
+
+		if ( 'most_views' === $this->get_settings( 'query_type' ) ){
+			$query_args['meta_key'] = 'wcf_post_views_count';
+			$query_args['orderby'] = 'meta_value_num';
+			$query_args['order'] = 'DESC';
+			$query_args['meta_query'] = [
+				[
+					'key'     => 'wcf_post_views_count',
+					'value'   => 0, // Optional: Only include posts with at least 1 view
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+		}
+		
+		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ){
+			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( stripslashes( $_COOKIE['aae_visited_posts'] ), true ) : [];
+			
+			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
+				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode
+			}
+			
+		}
+
+		if($this->get_settings('post_layout') && ($this->get_settings('post_layout') == 'layout-gallery' || $this->get_settings('post_layout') == 'layout-gallery-2') ){
+			$query_args['tax_query'][] = [
+				'taxonomy' => 'post_format',
+				'field'    => 'slug',
+				'terms'    => array('post-format-video'),
+			];
+		}
+
 
 		return $query_args;
 	}

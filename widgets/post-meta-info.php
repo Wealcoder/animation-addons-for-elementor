@@ -1731,22 +1731,25 @@ class Post_Meta_Info extends Widget_Base {
 	protected function render() {
 		$settings  = $this->get_settings_for_display();
 		$meta_list = $settings['list'];
+		
 		if ( empty( $meta_list ) ) {
 			return;
 		}
-
+		
 		$this->switch_post();
-
+		
 		?>
         <ul class="wcf--meta-list style-<?php echo esc_html( $settings['layout_style'] ); ?>">
-	        <?php foreach ( $meta_list as $meta ) {
-		        $this->render_date( $meta, $settings );
-		        $this->render_categories( $meta, $settings );
-		        $this->render_author( $meta, $settings );
-		        $this->render_view_count( $meta, $settings );
-		        $this->render_reading_time( $meta, $settings );
-		        $this->render_comments( $meta, $settings );
-	        }
+	        <?php 
+	            foreach ( $meta_list as $meta )
+		        {
+			        $this->render_date( $meta, $settings );
+			        $this->render_categories( $meta, $settings );
+			        $this->render_author( $meta, $settings );
+			        $this->render_view_count( $meta, $settings );
+			        $this->render_reading_time( $meta, $settings );
+			        $this->render_comments( $meta, $settings );
+		        }
 	        ?>
         </ul>
 		<?php
