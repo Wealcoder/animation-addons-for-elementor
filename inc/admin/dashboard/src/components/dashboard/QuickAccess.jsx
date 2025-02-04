@@ -38,7 +38,7 @@ const AccessData = [
   {
     title: "Popup",
     subTitle: "Customize popups",
-    url: "",
+    url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#popup`,
     icon: <SquareArrowUp size={22} className="text-[#A281FF]" />,
   },
   {
