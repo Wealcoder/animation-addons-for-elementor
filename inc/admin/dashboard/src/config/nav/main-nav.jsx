@@ -41,6 +41,7 @@ export const MainNavData = [
   {
     name: "Starter Template",
     path: "stater-template",
+    role: ["administrator"],
     icon: <RiShareBoxLine size={20} />,
     targetBlank: true,
   },

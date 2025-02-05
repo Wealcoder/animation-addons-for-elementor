@@ -7,7 +7,7 @@ const Extensions = lazy(() => import("@/pages/Extensions"));
 const FreePro = lazy(() => import("@/pages/FreePro"));
 const Widgets = lazy(() => import("@/pages/Widgets"));
 const Integrations = lazy(() => import("@/pages/Integrations"));
-// const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
+const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
 
 const MainLayout = () => {
   const [open, setOpen] = useState(false);
@@ -118,8 +118,8 @@ const MainLayout = () => {
         return <FreePro />;
       case "integrations":
         return <Integrations />;
-      // case "stater-template":
-      //   return <StaterTemplate />;
+      case "stater-template":
+        return <StaterTemplate />;
       default:
         return <Dashboard />;
     }
