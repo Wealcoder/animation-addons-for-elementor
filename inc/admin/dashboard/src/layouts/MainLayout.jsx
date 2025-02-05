@@ -1,4 +1,5 @@
 import MainHeader from "@/components/header/MainHeader";
+import TemplateHeader from "@/components/header/TemplateHeader";
 import { useNotification } from "@/hooks/app.hooks";
 import { useEffect, useState, lazy, Suspense } from "react";
 
@@ -109,19 +110,43 @@ const MainLayout = () => {
   const showContent = (tabKey) => {
     switch (tabKey) {
       case "dashboard":
-        return <Dashboard />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <Dashboard />
+          </div>
+        );
       case "widgets":
-        return <Widgets />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <Widgets />
+          </div>
+        );
       case "extensions":
-        return <Extensions />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <Extensions />
+          </div>
+        );
       case "free-pro":
-        return <FreePro />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <FreePro />
+          </div>
+        );
       case "integrations":
-        return <Integrations />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <Integrations />
+          </div>
+        );
       case "stater-template":
         return <StaterTemplate />;
       default:
-        return <Dashboard />;
+        return (
+          <div className="px-5 2xl:px-24 py-8">
+            <Dashboard />
+          </div>
+        );
     }
   };
 
@@ -134,12 +159,18 @@ const MainLayout = () => {
   return (
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
-        <MainHeader
-          open={open}
-          setOpen={setOpen}
-          NavigateComponent={NavigateComponent}
-        />
-        <div className="px-5 2xl:px-24 py-8">
+        {tabKey === "stater-template" ? (
+          <TemplateHeader
+            NavigateComponent={NavigateComponent}
+          />
+        ) : (
+          <MainHeader
+            open={open}
+            setOpen={setOpen}
+            NavigateComponent={NavigateComponent}
+          />
+        )}
+        <div>
           <Suspense fallback={<p>Loading...</p>}>
             {showContent(tabKey)}
           </Suspense>
