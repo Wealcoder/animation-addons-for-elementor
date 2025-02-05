@@ -107,45 +107,73 @@ const MainLayout = () => {
     }
   }, [urlParams]);
 
-  const showContent = (tabKey) => {
-    switch (tabKey) {
+  const showContent = (item) => {
+    switch (item.tabKey) {
       case "dashboard":
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <Dashboard />
-          </div>
+          </MainLayout.FirstLayout>
         );
       case "widgets":
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <Widgets />
-          </div>
+          </MainLayout.FirstLayout>
         );
       case "extensions":
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <Extensions />
-          </div>
+          </MainLayout.FirstLayout>
         );
       case "free-pro":
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <FreePro />
-          </div>
+          </MainLayout.FirstLayout>
         );
       case "integrations":
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <Integrations />
-          </div>
+          </MainLayout.FirstLayout>
         );
       case "stater-template":
-        return <StaterTemplate />;
+        return (
+          <MainLayout.SecondLayout NavigateComponent={item.NavigateComponent}>
+            <StaterTemplate />
+          </MainLayout.SecondLayout>
+        );
       default:
         return (
-          <div className="px-5 2xl:px-24 py-8">
+          <MainLayout.FirstLayout
+            open={item.open}
+            setOpen={item.setOpen}
+            NavigateComponent={item.NavigateComponent}
+          >
             <Dashboard />
-          </div>
+          </MainLayout.FirstLayout>
         );
     }
   };
@@ -158,24 +186,60 @@ const MainLayout = () => {
 
   return (
     <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
-        {tabKey === "stater-template" ? (
-          <TemplateHeader
-            NavigateComponent={NavigateComponent}
-          />
-        ) : (
-          <MainHeader
-            open={open}
-            setOpen={setOpen}
-            NavigateComponent={NavigateComponent}
-          />
-        )}
-        <div>
-          <Suspense fallback={<p>Loading...</p>}>
-            {showContent(tabKey)}
-          </Suspense>
-        </div>
+      <div className="wcf-anim2024-style">
+        <Suspense fallback={<p>Loading...</p>}>
+          {showContent({ tabKey, open, setOpen, NavigateComponent })}
+        </Suspense>
       </div>
+    </div>
+  );
+};
+
+MainLayout.FirstLayout = ({ open, setOpen, NavigateComponent, children }) => {
+  return (
+    <div className="container overflow-x-hidden bg-background rounded-[10px]">
+      <MainHeader
+        open={open}
+        setOpen={setOpen}
+        NavigateComponent={NavigateComponent}
+      />
+      <div className="px-5 2xl:px-24 py-8">{children}</div>
+    </div>
+  );
+};
+MainLayout.SecondLayout = ({ NavigateComponent, children }) => {
+  useEffect(() => {
+    const hideElements = () => {
+      const wpAdminBar = document.getElementById("wpadminbar");
+      const adminMenuWrap = document.getElementById("adminmenuwrap");
+      const adminMenuBack = document.getElementById("adminmenuback");
+      const wpfooter = document.getElementById("wpfooter");
+      const wpcontent = document.getElementById("wpcontent");
+      const wpbodyContent = document.getElementById("wpbody-content");
+      const wrap = document.querySelector(".wrap");
+      const wpToolbar = document.querySelector(".wp-toolbar");
+      const wcfAnim2024 = document.querySelector(".wcf-anim2024");
+
+      if (wpAdminBar) wpAdminBar.style.display = "none";
+      if (adminMenuWrap) adminMenuWrap.style.display = "none";
+      if (adminMenuBack) adminMenuBack.style.display = "none";
+      if (wpfooter) wpfooter.style.display = "none";
+      if (wpcontent) wpcontent.style.marginLeft = "0px";
+      if (wpcontent) wpcontent.style.paddingLeft = "0px";
+      if (wpbodyContent)
+        wpbodyContent.style.setProperty("padding-bottom", "0px", "important");
+      if (wrap) wrap.style.margin = "0px";
+      if (wpToolbar) wpToolbar.style.paddingTop = "0px";
+      if (wcfAnim2024) wcfAnim2024.style.overflow = "hidden";
+    };
+
+    hideElements();
+  }, []);
+
+  return (
+    <div className="bg-background">
+      <TemplateHeader NavigateComponent={NavigateComponent} />
+      <div>{children}</div>
     </div>
   );
 };

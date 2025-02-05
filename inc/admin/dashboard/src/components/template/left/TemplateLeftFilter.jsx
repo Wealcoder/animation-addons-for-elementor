@@ -26,7 +26,7 @@ const TemplateLeftFilter = () => {
           <RiFileTextLine size={20} className="text-icon-secondary" />
           <h3 className="font-medium">Filter Settings</h3>
         </div>
-        <ScrollArea className="h-[55vh]">
+        <ScrollArea className="h-[calc(100vh-410px)]">
           <div>
             <Accordion
               type="multiple"

@@ -8,7 +8,7 @@ import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 const TemplateShow = () => {
   const allTemplate = AllTemplateList;
   return (
-    <div className="grid grid-cols-3 gap-x-[23px] gap-y-8">
+    <div className="grid grid-cols-4 gap-x-[23px] gap-y-8">
       {allTemplate?.map((template, i) => (
         <div key={`all_template-${i}`} className="group" id={template.slug}>
           <div
