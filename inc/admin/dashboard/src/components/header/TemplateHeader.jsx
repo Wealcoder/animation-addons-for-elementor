@@ -1,6 +1,7 @@
 import { RiArrowLeftLine, RiVipCrown2Line } from "react-icons/ri";
 import { Button } from "../ui/button";
 import LargeLogo from "./LargeLogo";
+import GetProButton from "../shared/GetProButton";
 
 const TemplateHeader = () => {
   const changeRoute = (value) => {
@@ -27,12 +28,7 @@ const TemplateHeader = () => {
         <LargeLogo />
       </div>
       <div className="flex justify-end gap-3 items-center">
-        <Button variant="pro">
-          <span className="me-2">
-            <RiVipCrown2Line size={20} />
-          </span>{" "}
-          Get Pro Version
-        </Button>
+        <GetProButton />
       </div>
     </div>
   );

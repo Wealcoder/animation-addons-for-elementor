@@ -1,6 +1,7 @@
 import { useState } from "react";
 import TemplateTopBar from "./TemplateTopBar";
 import TemplateShow from "./TemplateShow";
+import TemplatePagination from "./TemplatePagination";
 
 const TemplateRightContent = () => {
   const [searchKey, setSearchKey] = useState("");
@@ -18,6 +19,9 @@ const TemplateRightContent = () => {
       </div>
       <div className="mb-10">
         <TemplateShow />
+      </div>
+      <div className="py-5">
+        <TemplatePagination />
       </div>
     </div>
   );

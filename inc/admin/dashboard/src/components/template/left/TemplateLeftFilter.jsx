@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import TemplateProBg from "../../../../public/images/template-pro-bg.png";
 import ProIcon from "../../../../public/images/pro-icon-1.png";
+import GetProButton from "@/components/shared/GetProButton";
 
 const TemplateLeftFilter = () => {
   const allCategory = AllTemplateCategoryList;
@@ -117,15 +118,11 @@ const TemplateLeftFilter = () => {
         </div>
         <div className="-mt-[25px] p-4 pt-0">
           <h3 className="text-lg font-medium">Get Pro Version</h3>
-          <p className="text-sm text-text-secondary mt-2">
+          <p className="text-sm text-text-secondary mt-2 mb-4">
             Enhance functionality therefor create a greatly premium user.
           </p>
-          <Button variant="pro" className="w-full mt-4">
-            <span className="me-2">
-              <RiVipCrown2Line size={20} />
-            </span>{" "}
-            Get Pro Version
-          </Button>
+
+          <GetProButton btnClassName="w-full" />
         </div>
       </div>
     </div>
