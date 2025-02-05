@@ -2,7 +2,7 @@ import { RiArrowLeftLine, RiVipCrown2Line } from "react-icons/ri";
 import { Button } from "../ui/button";
 import LargeLogo from "./LargeLogo";
 
-const TemplateHeader = ({ NavigateComponent }) => {
+const TemplateHeader = () => {
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
@@ -13,7 +13,6 @@ const TemplateHeader = ({ NavigateComponent }) => {
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
-    NavigateComponent(value);
     window.location.reload();
   };
   return (

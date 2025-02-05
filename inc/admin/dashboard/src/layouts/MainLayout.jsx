@@ -1,6 +1,7 @@
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
 import { useNotification } from "@/hooks/app.hooks";
+import { hideElements } from "@/lib/utils";
 import { useEffect, useState, lazy, Suspense } from "react";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -161,7 +162,7 @@ const MainLayout = () => {
         );
       case "stater-template":
         return (
-          <MainLayout.SecondLayout NavigateComponent={item.NavigateComponent}>
+          <MainLayout.SecondLayout>
             <StaterTemplate />
           </MainLayout.SecondLayout>
         );
@@ -187,7 +188,13 @@ const MainLayout = () => {
   return (
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style">
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          }
+        >
           {showContent({ tabKey, open, setOpen, NavigateComponent })}
         </Suspense>
       </div>
@@ -196,51 +203,60 @@ const MainLayout = () => {
 };
 
 MainLayout.FirstLayout = ({ open, setOpen, NavigateComponent, children }) => {
-  return (
-    <div className="container overflow-x-hidden bg-background rounded-[10px]">
-      <MainHeader
-        open={open}
-        setOpen={setOpen}
-        NavigateComponent={NavigateComponent}
-      />
-      <div className="px-5 2xl:px-24 py-8">{children}</div>
-    </div>
-  );
-};
-MainLayout.SecondLayout = ({ NavigateComponent, children }) => {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const hideElements = () => {
-      const wpAdminBar = document.getElementById("wpadminbar");
-      const adminMenuWrap = document.getElementById("adminmenuwrap");
-      const adminMenuBack = document.getElementById("adminmenuback");
-      const wpfooter = document.getElementById("wpfooter");
-      const wpcontent = document.getElementById("wpcontent");
-      const wpbodyContent = document.getElementById("wpbody-content");
-      const wrap = document.querySelector(".wrap");
-      const wpToolbar = document.querySelector(".wp-toolbar");
-      const wcfAnim2024 = document.querySelector(".wcf-anim2024");
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
 
-      if (wpAdminBar) wpAdminBar.style.display = "none";
-      if (adminMenuWrap) adminMenuWrap.style.display = "none";
-      if (adminMenuBack) adminMenuBack.style.display = "none";
-      if (wpfooter) wpfooter.style.display = "none";
-      if (wpcontent) wpcontent.style.marginLeft = "0px";
-      if (wpcontent) wpcontent.style.paddingLeft = "0px";
-      if (wpbodyContent)
-        wpbodyContent.style.setProperty("padding-bottom", "0px", "important");
-      if (wrap) wrap.style.margin = "0px";
-      if (wpToolbar) wpToolbar.style.paddingTop = "0px";
-      if (wcfAnim2024) wcfAnim2024.style.overflow = "hidden";
-    };
-
-    hideElements();
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="bg-background">
-      <TemplateHeader NavigateComponent={NavigateComponent} />
-      <div>{children}</div>
-    </div>
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      ) : (
+        <div className="container overflow-x-hidden bg-background rounded-[10px]">
+          <MainHeader
+            open={open}
+            setOpen={setOpen}
+            NavigateComponent={NavigateComponent}
+          />
+          <div className="px-5 2xl:px-24 py-8">{children}</div>
+        </div>
+      )}
+    </>
+  );
+};
+MainLayout.SecondLayout = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hideElements();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      ) : (
+        <div className="bg-background">
+          <TemplateHeader />
+          <div>{children}</div>
+        </div>
+      )}
+    </>
   );
 };
 
