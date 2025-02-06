@@ -371,6 +371,76 @@ class Video_Posts_Tab extends Widget_Base {
 
 		$this->end_controls_section();
 
+
+		$this->start_controls_section(
+			'section_button',
+			[
+				'label' => esc_html__( 'Button', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'show_view_more',
+			[
+				'label'     => esc_html__( 'View All', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'default'   => 'yes',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'show_view_more_text',
+			[
+				'label'   => esc_html__( 'View Text', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => 'View All',
+				'condition' => [
+					'show_view_more' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'view_more_link',
+			[
+				'label'       => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::URL,
+				'default'     => [
+					'is_external' => 'true',
+				],
+				'dynamic'     => [
+					'active' => true,
+				],
+				'placeholder' => esc_html__( 'https://your-link.com', 'animation-addons-for-elementor' ),
+				'condition' => [
+					'show_view_more' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'view_more_icon',
+			[
+				'label' => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
+				'type' => \Elementor\Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-circle',
+					'library' => 'fa-solid',
+				],
+				'condition' => [
+					'show_view_more' => 'yes',
+				],
+			]
+		);
+
+
+		$this->end_controls_section();
+
+
 		//layout style
 		$this->register_design_layout_controls();
 
@@ -464,6 +534,28 @@ class Video_Posts_Tab extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .aae-posts .thumb img' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'thumb_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vh', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 500,
+					],
+					'vh' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .aae-posts .thumb img' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -712,6 +804,141 @@ class Video_Posts_Tab extends Widget_Base {
 				'separator'  => 'before'
 			]
 		);
+
+		$this->end_controls_section();
+
+
+		// Date style 
+		$this->start_controls_section(
+			'style_post_date',
+			[
+				'label' => esc_html__( 'Date', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'date_typo',
+				'selector' => '{{WRAPPER}} span.post-date',
+			]
+		);
+
+		$this->start_controls_tabs(
+			'date_style_tabs'
+		);
+
+		$this->start_controls_tab(
+			'date_normal_tab',
+			[
+				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'date_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.post-date' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'date_hover_tab',
+			[
+				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'date_h_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.post-date:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->end_controls_section();
+
+
+		// Date style 
+		$this->start_controls_section(
+			'style_post_view_all',
+			[
+				'label' => esc_html__( 'View all', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'show_view_more' => 'yes',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'view_all_typo',
+				'selector' => '{{WRAPPER}} span.post-date',
+			]
+		);
+
+		$this->start_controls_tabs(
+			'view_all_style_tabs'
+		);
+
+		$this->start_controls_tab(
+			'view_all_normal_tab',
+			[
+				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'view_all_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.post-date' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'view_all_hover_tab',
+			[
+				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'view_all_h_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.post-date:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
 		$this->end_controls_section();
 
@@ -1004,10 +1231,13 @@ class Video_Posts_Tab extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae-post, {{WRAPPER}} .style-2 .aae-posts-wrap, {{WRAPPER}} .style-2 .aae-view-all' => 'border-color: {{VALUE}}',
+					'{{WRAPPER}} .aae--posts-tab .aae-posts-wrap' => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .aae--posts-tab .aae-view-all' => 'border-color: {{VALUE}};',
 				],
 			]
 		);
 
+		
 		$this->add_responsive_control(
 			'post_padding',
 			[
@@ -1168,9 +1398,18 @@ class Video_Posts_Tab extends Widget_Base {
 					}
 					?>
                 </div>
-								<div class="aae-view-all">
-                        <a href="#">view all ></a>
-                    </div>
+				<?php if($settings['show_view_more'] =='yes'):
+					if ( ! empty( $settings['view_more_link']['url'] ) ) {
+						$this->add_link_attributes( 'view_more_link', $settings['view_more_link'] );
+					}
+				?>
+				<div class="aae-view-all">
+					<a <?php $this->print_render_attribute_string( 'view_more_link' ); ?>>
+						<?php echo $settings['show_view_more_text']; ?>
+						<?php \Elementor\Icons_Manager::render_icon( $settings['view_more_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+					</a>
+				</div>
+				<?php endif; ?>
             </div>
         </div>
 		<?php
@@ -1313,7 +1552,7 @@ class Video_Posts_Tab extends Widget_Base {
 		}
 		?>
         <li>
-		<span>
+		<span class="post-date">
 			<?php
 			switch ( $type ) :
 				case 'modified':
@@ -1455,6 +1694,7 @@ class Video_Posts_Tab extends Widget_Base {
 					<?php
 					$this->render_title();
 					$this->render_excerpt();
+					$this->render_date_by_type();
 					$this->render_author_avatar();
 					$this->render_post_taxonomy();
 					?>
