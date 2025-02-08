@@ -454,6 +454,15 @@ class Video_Posts_Tab extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'     => 'background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .aae--posts-tab .posts-banner',
+			]
+		);
+
 		$this->add_responsive_control(
 			'banner_height',
 			[
@@ -887,10 +896,31 @@ class Video_Posts_Tab extends Widget_Base {
 		);
 
 		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'     => 'background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .aae--posts-tab .aae-view-all',
+			]
+		);
+
+		$this->add_responsive_control(
+			'view_all_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'wcf-addons-pro' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--posts-tab .aae-view-all' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'view_all_typo',
-				'selector' => '{{WRAPPER}} span.post-date',
+				'selector' => '{{WRAPPER}} .aae--posts-tab .aae-view-all a',
 			]
 		);
 
@@ -911,7 +941,7 @@ class Video_Posts_Tab extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} span.post-date' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .aae--posts-tab .aae-view-all a' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -931,7 +961,7 @@ class Video_Posts_Tab extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} span.post-date:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .aae--posts-tab .aae-view-all a:hover' => 'color: {{VALUE}};',
 				],
 			]
 		);
