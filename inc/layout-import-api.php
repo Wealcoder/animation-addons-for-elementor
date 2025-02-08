@@ -23,14 +23,14 @@ class Layout_Import_Api {
 					$editor_post_id = absint( $data['editor_post_id'] );
 
 					if ( ! get_post( $editor_post_id ) ) {
-						throw new \Exception( esc_html__( 'Post not found', 'template-library-for-animation-addons' ) );
+						throw new \Exception( esc_html__( 'Post not found', 'animation-addons-for-elementor' ) );
 					}
 
 					\Elementor\Plugin::instance()->db->switch_to_post( $editor_post_id );
 				}
 		
 				if ( empty( $data['template_id'] ) ) {
-					throw new \Exception( esc_html__( 'Template id missing', 'template-library-for-animation-addons' ) );
+					throw new \Exception( esc_html__( 'Template id missing', 'animation-addons-for-elementor' ) );
 				}
 
 				$result = $this->get_template_data( $data );
@@ -42,8 +42,7 @@ class Layout_Import_Api {
 
 	private function get_template_data( array $args ) {
 		$source = new Library_Source();
-		$data   = $source->get_data( $args );
-        error_log($args['template_id']);
+		$data   = $source->get_data( $args );       
 		return $data;
 	}
 }

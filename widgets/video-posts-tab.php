@@ -907,7 +907,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_responsive_control(
 			'view_all_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'wcf-addons-pro' ),
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [

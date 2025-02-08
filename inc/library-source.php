@@ -14,7 +14,7 @@ class Library_Source extends Source_Base {
 	}
 
 	public function get_title() {
-		return __( 'WCF Layout Manager', 'template-library-for-animation-addons' );
+		return __( 'AAE Layout Manager', 'animation-addons-for-elementor' );
 	}
 
 	public function register_data() {
@@ -76,7 +76,7 @@ class Library_Source extends Source_Base {
 		$data = json_decode( $data, true );
 
 		if ( empty( $data ) || empty( $data['content'] ) ) {
-			throw new \Exception( esc_html__( 'Template does not have any content', 'template-library-for-animation-addons' ) );
+			throw new \Exception( esc_html__( 'Template does not have any content', 'animation-addons-for-elementor' ) );
 		}
 
 		$data['content'] = $this->replace_elements_ids( $data['content'] );
