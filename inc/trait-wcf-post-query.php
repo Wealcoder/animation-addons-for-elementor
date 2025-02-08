@@ -540,7 +540,7 @@ trait WCF_Post_Query_Trait {
 		}
 		
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ){
-			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( stripslashes( $_COOKIE['aae_visited_posts'] ), true ) : [];
+			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( wp_unslash( $_COOKIE['aae_visited_posts'] ), true ) : [];
 			
 			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
 				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode

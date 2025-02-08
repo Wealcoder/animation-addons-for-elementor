@@ -920,10 +920,10 @@ class WCF_Theme_Builder {
 	public function register_custom_post_type() {
 
 		$labels = array(
-			'name'                  => esc_html_x( 'WCF Builder', 'Post Type General Name', 'animation-addons-for-elementor' ),
-			'singular_name'         => esc_html_x( 'WCF Builder', 'Post Type Singular Name', 'animation-addons-for-elementor' ),
-			'menu_name'             => esc_html__( 'WCF Builder', 'animation-addons-for-elementor' ),
-			'name_admin_bar'        => esc_html__( 'WCF Builder', 'animation-addons-for-elementor' ),
+			'name'                  => esc_html_x( 'AAE Builder', 'Post Type General Name', 'animation-addons-for-elementor' ),
+			'singular_name'         => esc_html_x( 'AAE Builder', 'Post Type Singular Name', 'animation-addons-for-elementor' ),
+			'menu_name'             => esc_html__( 'AAE Builder', 'animation-addons-for-elementor' ),
+			'name_admin_bar'        => esc_html__( 'AAE Builder', 'animation-addons-for-elementor' ),
 			'archives'              => esc_html__( 'Template Archives', 'animation-addons-for-elementor' ),
 			'attributes'            => esc_html__( 'Template Attributes', 'animation-addons-for-elementor' ),
 			'parent_item_colon'     => esc_html__( 'Parent Item:', 'animation-addons-for-elementor' ),
