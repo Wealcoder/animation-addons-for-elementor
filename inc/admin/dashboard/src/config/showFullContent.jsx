@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import MainLayout from "@/layouts/MainLayout";
+import CompleteImport from "@/pages/CompleteImport";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Extensions = lazy(() => import("@/pages/Extensions"));
@@ -8,6 +9,7 @@ const Widgets = lazy(() => import("@/pages/Widgets"));
 const Integrations = lazy(() => import("@/pages/Integrations"));
 const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
 const RequiredFeatures = lazy(() => import("@/pages/RequiredFeatures"));
+const DemoImporting = lazy(() => import("@/pages/DemoImporting"));
 
 export const ShowContent = (item) => {
   switch (item.tabKey) {
@@ -51,6 +53,18 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.ThirdLayout>
           <RequiredFeatures />
+        </MainLayout.ThirdLayout>
+      );
+    case "demo-importing":
+      return (
+        <MainLayout.ThirdLayout>
+          <DemoImporting />
+        </MainLayout.ThirdLayout>
+      );
+    case "complete-import":
+      return (
+        <MainLayout.ThirdLayout>
+          <CompleteImport />
         </MainLayout.ThirdLayout>
       );
     default:

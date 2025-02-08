@@ -1,12 +1,28 @@
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ConfettiAnimation } from "@/lib/confettiAnimation";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
+
+import CompleteBG from "../../public/images/complete-bg.png";
 
 const CompleteImport = () => {
   useEffect(() => {
     ConfettiAnimation();
   }, []);
+
+  const changeRoute = (value) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    window.location.reload();
+  };
+
   return (
     <div className="bg-background w-[680px] rounded-2xl p-1.5 shadow-auth-card">
       <div className="border border-border-secondary rounded-xl p-8 pb-3.5">
@@ -18,7 +34,7 @@ const CompleteImport = () => {
         </div>
         <div className="mb-6">
           <img
-            src="/images/complete-bg.png"
+            src={CompleteBG}
             className="w-[616px] h-[258px]"
             alt="demo importing"
           />
@@ -27,12 +43,13 @@ const CompleteImport = () => {
           <a href="#" className={cn(buttonVariants(), "w-full h-11")}>
             Visit your website
           </a>
-          <a
-            href="#"
-            className={cn(buttonVariants({ variant: "link" }), "w-full")}
+          <Button
+            variant="link"
+            className={"w-full"}
+            onClick={() => changeRoute("dashboard")}
           >
             Go to dashboard
-          </a>
+          </Button>
         </div>
       </div>
     </div>

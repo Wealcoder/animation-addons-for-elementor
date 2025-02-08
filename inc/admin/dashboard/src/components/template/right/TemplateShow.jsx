@@ -2,11 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { AllTemplateList } from "@/config/data/allTemplateList";
+import { useTNavigation } from "@/hooks/app.hooks";
 import { Dot, Heart } from "lucide-react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
 const TemplateShow = () => {
   const allTemplate = AllTemplateList;
+  const { setTabKey } = useTNavigation();
 
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
@@ -18,7 +20,7 @@ const TemplateShow = () => {
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
-    window.location.reload();
+    setTabKey(value);
   };
 
   return (

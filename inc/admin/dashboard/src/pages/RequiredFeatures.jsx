@@ -9,8 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTNavigation } from "@/hooks/app.hooks";
 
 const RequiredFeatures = () => {
+  const { setTabKey } = useTNavigation();
+
+  const changeRoute = (value) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    setTabKey(value);
+  };
   return (
     <div className="bg-background w-[692px] rounded-2xl p-1.5 shadow-auth-card">
       <div className="border border-border-secondary rounded-xl">
@@ -183,8 +198,15 @@ const RequiredFeatures = () => {
           </div>
         </div>
         <div className="px-8 pt-4 pb-6 flex justify-end items-center gap-3">
-          <Button variant="secondary">Go Back</Button>
-          <Button>Continue to next</Button>
+          <Button
+            variant="secondary"
+            onClick={() => changeRoute("stater-template")}
+          >
+            Go Back
+          </Button>
+          <Button onClick={() => changeRoute("demo-importing")}>
+            Continue to next
+          </Button>
         </div>
       </div>
     </div>

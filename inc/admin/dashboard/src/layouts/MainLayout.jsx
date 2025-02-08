@@ -196,17 +196,7 @@ MainLayout.ThirdLayout = ({ children }) => {
         </div>
       ) : (
         <div className="bg-background-secondary">
-          <div className="bg-background px-8 py-5 border-b border-border">
-            <div className="flex gap-4 items-center">
-              <div>
-                <RiArrowLeftLine
-                  size={20}
-                  className="text-icon-secondary hover:text-[#101828]"
-                />
-              </div>
-              <LargeLogo />
-            </div>
-          </div>
+          <TemplateHeader activeBtn={false} />
           <div className="flex justify-center items-center min-h-[calc(100vh-85px)]">
             {children}
           </div>
