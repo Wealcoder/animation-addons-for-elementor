@@ -11,12 +11,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { AllTemplateCategoryList } from "@/config/data/allTemplateCategoryList";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import TemplateProBg from "../../../../public/images/template-pro-bg.png";
-import ProIcon from "../../../../public/images/pro-icon-1.png";
-import GetProButton from "@/components/shared/GetProButton";
 
 const TemplateLeftFilter = () => {
   const allCategory = AllTemplateCategoryList;
@@ -27,7 +23,7 @@ const TemplateLeftFilter = () => {
           <RiFileTextLine size={20} className="text-icon-secondary" />
           <h3 className="font-medium">Filter Settings</h3>
         </div>
-        <ScrollArea className="h-[calc(100vh-410px)]">
+        <ScrollArea className="h-[calc(100vh-180px)]">
           <div>
             <Accordion
               type="multiple"
@@ -35,7 +31,7 @@ const TemplateLeftFilter = () => {
               className="w-full"
             >
               <AccordionItem value="types" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   Types
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
@@ -59,7 +55,7 @@ const TemplateLeftFilter = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="license" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   License
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
@@ -84,7 +80,7 @@ const TemplateLeftFilter = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="categories" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   Categories
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
@@ -108,22 +104,6 @@ const TemplateLeftFilter = () => {
             </Accordion>
           </div>
         </ScrollArea>
-      </div>
-      <div
-        className="bg-cover rounded-[10px]"
-        style={{ backgroundImage: `url(${TemplateProBg})` }}
-      >
-        <div>
-          <img src={ProIcon} alt="Pro icon" className="w-[105px] h-[106px]" />
-        </div>
-        <div className="-mt-[25px] p-4 pt-0">
-          <h3 className="text-lg font-medium">Get Pro Version</h3>
-          <p className="text-sm text-text-secondary mt-2 mb-4">
-            Enhance functionality therefor create a greatly premium user.
-          </p>
-
-          <GetProButton btnClassName="w-full" />
-        </div>
       </div>
     </div>
   );

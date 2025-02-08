@@ -16,12 +16,13 @@ import {
   generateSearchContent,
   generateWidgetSearchContent,
 } from "@/lib/utils";
-import { useExtensions, useWidgets } from "@/hooks/app.hooks";
+import { useExtensions, useTNavigation, useWidgets } from "@/hooks/app.hooks";
 
 const GlobalSearch = ({ open, setOpen }) => {
   const dashboardContent = DashboardSearchContent;
   const { allWidgets } = useWidgets();
   const { allExtensions } = useExtensions();
+  const { setTabKey } = useTNavigation();
 
   const [storeAllContent, setStoreAllContent] = useState([]);
   const [allSearchContent, setAllSearchContent] = useState([]);
@@ -102,6 +103,7 @@ const GlobalSearch = ({ open, setOpen }) => {
     }
     url.hash = value;
     window.history.replaceState({}, "", url);
+    setTabKey(path ?? "dashboard");
     setOpen(false);
   };
 

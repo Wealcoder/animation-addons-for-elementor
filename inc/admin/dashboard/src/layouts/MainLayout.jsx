@@ -1,19 +1,14 @@
+import LargeLogo from "@/components/header/LargeLogo";
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
-import { useNotification } from "@/hooks/app.hooks";
+import { ShowContent } from "@/config/showFullContent";
+import { useNotification, useTNavigation } from "@/hooks/app.hooks";
 import { hideElements } from "@/lib/utils";
-import { useEffect, useState, lazy, Suspense } from "react";
-
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Extensions = lazy(() => import("@/pages/Extensions"));
-const FreePro = lazy(() => import("@/pages/FreePro"));
-const Widgets = lazy(() => import("@/pages/Widgets"));
-const Integrations = lazy(() => import("@/pages/Integrations"));
-const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
+import { useEffect, useState, Suspense } from "react";
+import { RiArrowLeftLine } from "react-icons/ri";
 
 const MainLayout = () => {
-  const [open, setOpen] = useState(false);
-  const [tabKey, setTabKey] = useState("");
+  const { tabKey, setTabKey } = useTNavigation();
   const { setChangelog, setNotice } = useNotification();
 
   const fetchChangelog = async () => {
@@ -39,6 +34,7 @@ const MainLayout = () => {
           setChangelog(return_content.changelog.change_logs);
       });
   };
+
   const fetchNotice = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -65,6 +61,35 @@ const MainLayout = () => {
     fetchChangelog();
     fetchNotice();
   }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setTabKey(tabValue);
+    }
+  }, []);
+
+  return (
+    <div className="wcf-anim2024-wrapper">
+      <div className="wcf-anim2024-style">
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          }
+        >
+          {ShowContent({ tabKey })}
+        </Suspense>
+      </div>
+    </div>
+  );
+};
+
+MainLayout.FirstLayout = ({ children }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const hash = window.location.hash;
 
@@ -99,112 +124,6 @@ const MainLayout = () => {
     }
   }, [hash]);
 
-  const urlParams = new URLSearchParams(window.location.search);
-
-  useEffect(() => {
-    const tabValue = urlParams.get("tab");
-    if (tabValue) {
-      setTabKey(tabValue);
-    }
-  }, [urlParams]);
-
-  const showContent = (item) => {
-    switch (item.tabKey) {
-      case "dashboard":
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <Dashboard />
-          </MainLayout.FirstLayout>
-        );
-      case "widgets":
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <Widgets />
-          </MainLayout.FirstLayout>
-        );
-      case "extensions":
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <Extensions />
-          </MainLayout.FirstLayout>
-        );
-      case "free-pro":
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <FreePro />
-          </MainLayout.FirstLayout>
-        );
-      case "integrations":
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <Integrations />
-          </MainLayout.FirstLayout>
-        );
-      case "stater-template":
-        return (
-          <MainLayout.SecondLayout>
-            <StaterTemplate />
-          </MainLayout.SecondLayout>
-        );
-      default:
-        return (
-          <MainLayout.FirstLayout
-            open={item.open}
-            setOpen={item.setOpen}
-            NavigateComponent={item.NavigateComponent}
-          >
-            <Dashboard />
-          </MainLayout.FirstLayout>
-        );
-    }
-  };
-
-  const NavigateComponent = (value) => {
-    if (value) {
-      setTabKey(value);
-    }
-  };
-
-  return (
-    <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style">
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen">
-              <p className="text-lg font-semibold">Loading...</p>
-            </div>
-          }
-        >
-          {showContent({ tabKey, open, setOpen, NavigateComponent })}
-        </Suspense>
-      </div>
-    </div>
-  );
-};
-
-MainLayout.FirstLayout = ({ open, setOpen, NavigateComponent, children }) => {
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -221,17 +140,14 @@ MainLayout.FirstLayout = ({ open, setOpen, NavigateComponent, children }) => {
         </div>
       ) : (
         <div className="container overflow-x-hidden bg-background rounded-[10px]">
-          <MainHeader
-            open={open}
-            setOpen={setOpen}
-            NavigateComponent={NavigateComponent}
-          />
+          <MainHeader open={open} setOpen={setOpen} />
           <div className="px-5 2xl:px-24 py-8">{children}</div>
         </div>
       )}
     </>
   );
 };
+
 MainLayout.SecondLayout = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
@@ -254,6 +170,46 @@ MainLayout.SecondLayout = ({ children }) => {
         <div className="bg-background">
           <TemplateHeader />
           <div>{children}</div>
+        </div>
+      )}
+    </>
+  );
+};
+
+MainLayout.ThirdLayout = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hideElements();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      ) : (
+        <div className="bg-background-secondary">
+          <div className="bg-background px-8 py-5 border-b border-border">
+            <div className="flex gap-4 items-center">
+              <div>
+                <RiArrowLeftLine
+                  size={20}
+                  className="text-icon-secondary hover:text-[#101828]"
+                />
+              </div>
+              <LargeLogo />
+            </div>
+          </div>
+          <div className="flex justify-center items-center min-h-[calc(100vh-85px)]">
+            {children}
+          </div>
         </div>
       )}
     </>

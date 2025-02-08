@@ -44,8 +44,8 @@ const AccessData = [
   {
     title: "Custom Icons",
     subTitle: "Customize custom icons",
-    url: "",
-    icon: <RiImageCircleLine size={22} />,
+    url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-icon`,
+    icon: <RiImageCircleLine size={22} className="text-[#A281FF]" />,
   },
 ];
 

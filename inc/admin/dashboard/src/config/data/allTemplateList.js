@@ -1,4 +1,4 @@
-import TemplateImage from "../../../public/images/template-card.png"
+import TemplateImage from "../../../public/images/template-card.png";
 
 export const AllTemplateList = [
   {
@@ -11,21 +11,25 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
-    dependancies : {
-      plugins : [      
+    isFavorite: false,
+    dependencies: {
+      plugins: [
         {
-            'slug': 'arolax-essential', 'title': 'Essential Plugin', 'host': 'themecrowdy'
-        },        
+          slug: "arolax-essential",
+          title: "Essential Plugin",
+          host: "themecrowdy",
+        },
         {
-            'slug': 'contact-form-7', 'title': 'Contact form 7', 'host': 'wporg'
+          slug: "contact-form-7",
+          title: "Contact form 7",
+          host: "wporg",
         },
       ],
       theme: {
-        slug : null,
-        host: null
-      }
-    }
+        slug: null,
+        host: null,
+      },
+    },
   },
   {
     title: "Binox Business Theme 2",
@@ -37,21 +41,25 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: true,
-    dependancies : {
-      plugins : [      
+    isFavorite: true,
+    dependencies: {
+      plugins: [
         {
-            'slug': 'arolax-essential', 'title': 'Essential Plugin', 'host': 'themecrowdy'
-        },        
+          slug: "arolax-essential",
+          title: "Essential Plugin",
+          host: "themecrowdy",
+        },
         {
-            'slug': 'contact-form-7', 'title': 'Contact form 7', 'host': 'wporg'
+          slug: "contact-form-7",
+          title: "Contact form 7",
+          host: "wporg",
         },
       ],
       theme: {
-        slug : null,
-        host: null
-      }
-    }
+        slug: null,
+        host: null,
+      },
+    },
   },
   {
     title: "Binox Business Theme 3",
@@ -63,7 +71,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 4",
@@ -75,7 +83,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 5",
@@ -87,7 +95,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: true,
+    isFavorite: true,
   },
   {
     title: "Binox Business Theme 6",
@@ -99,7 +107,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 7",
@@ -111,7 +119,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 8",
@@ -123,7 +131,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: true,
+    isFavorite: true,
   },
   {
     title: "Binox Business Theme 9",
@@ -135,7 +143,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 10",
@@ -147,7 +155,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: true,
+    isFavorite: true,
   },
   {
     title: "Binox Business Theme 11",
@@ -159,7 +167,7 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: false,
+    isFavorite: false,
   },
   {
     title: "Binox Business Theme 12",
@@ -171,6 +179,6 @@ export const AllTemplateList = [
     downloaded: "26.3k",
     previewLink: "#",
     downloadLink: "#",
-    isFeatured: true,
+    isFavorite: true,
   },
 ];

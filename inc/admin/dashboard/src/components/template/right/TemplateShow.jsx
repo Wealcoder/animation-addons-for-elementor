@@ -7,6 +7,20 @@ import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
 const TemplateShow = () => {
   const allTemplate = AllTemplateList;
+
+  const changeRoute = (value) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    window.location.reload();
+  };
+
   return (
     <div className="grid grid-cols-4 gap-x-[23px] gap-y-8">
       {allTemplate?.map((template, i) => (
@@ -29,7 +43,11 @@ const TemplateShow = () => {
                 <Button variant="general" className="py-2 ps-3 pe-4">
                   <RiEyeLine size={20} className="mr-2" /> Preview
                 </Button>
-                <Button variant="general" className="py-2 ps-3 pe-4">
+                <Button
+                  variant="general"
+                  className="py-2 ps-3 pe-4"
+                  onClick={() => changeRoute("required-features")}
+                >
                   <RiDownloadLine size={20} className="mr-2" /> Insert
                 </Button>
               </div>
@@ -52,7 +70,7 @@ const TemplateShow = () => {
             <div className="mt-[3px] pe-1.5">
               <Toggle
                 aria-label="Toggle bold"
-                defaultPressed={template.isFeatured}
+                defaultPressed={template.isFavorite}
                 className={`[&[data-state=on]>svg]:fill-[#FF5733] [&[data-state=on]>svg]:stroke-[#FF5733] items-start px-0`}
               >
                 <Heart size={20} className="text-icon-secondary" />
