@@ -8,7 +8,7 @@ module.exports = {
     "./src/components/**/*.{js,jsx}",
     "./src/layouts/**/*.{js,ts,jsx,tsx}",
     "./src/pages/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    // "./src/**/*.{js,ts,jsx,tsx}",
   ],
   prefix: "",
   important: ".wcf-anim2024",

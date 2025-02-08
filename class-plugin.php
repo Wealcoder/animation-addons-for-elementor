@@ -771,10 +771,12 @@ class Plugin {
                         <div id="elementor-template-library-header-tools">
                             <div id="elementor-template-library-header-preview">
                                 <div id="elementor-template-library-header-preview-insert-wrapper" class="elementor-templates-modal__header__item">
-                                    <button class="library--action insert">
-                                        <i class="eicon-file-download"></i>
-                                         <?php echo esc_html__( 'Insert', 'animation-addons-for-elementor' ); ?>
-                                    </button>
+									<# if(WCF_TEMPLATE_LIBRARY?.config?.wcf_valid && WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true){ #> 
+	                                    <button class="library--action insert">
+	                                        <i class="eicon-file-download"></i>
+	                                         <?php echo esc_html__( 'Insert', 'animation-addons-for-elementor' ); ?>
+	                                    </button>
+                                    <# } #>
                                 </div>
                             </div>
                         </div>

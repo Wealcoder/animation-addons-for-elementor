@@ -41,8 +41,20 @@ const MainNav = ({ NavigateComponent }) => {
     setCurrentPath(value);
   };
 
+  const changeExternalRoute = (value) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+
+    url.searchParams.set("tab", value);
+    return url;
+  };
+
   function hasCommonElement(array1, array2) {
-    return array1.some((item) => array2.includes(item));
+    return array1?.some((item) => array2.includes(item));
   }
 
   return (
@@ -59,7 +71,7 @@ const MainNav = ({ NavigateComponent }) => {
                 )}
               >
                 <a
-                  href={item.path}
+                  href={changeExternalRoute(item.path)}
                   target="_blank"
                   className={cn(
                     navigationMenuTriggerStyle(),
