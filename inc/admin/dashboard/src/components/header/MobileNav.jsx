@@ -43,7 +43,7 @@ const MobileNav = ({ NavigateComponent }) => {
   };
 
   function hasCommonElement(array1, array2) {
-    return array1.some((item) => array2.includes(item));
+    return array1?.some((item) => array2.includes(item));
   }
 
   return (
