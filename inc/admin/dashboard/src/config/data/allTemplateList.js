@@ -12,6 +12,20 @@ export const AllTemplateList = [
     previewLink: "#",
     downloadLink: "#",
     isFeatured: false,
+    dependancies : {
+      plugins : [      
+        {
+            'slug': 'arolax-essential', 'title': 'Essential Plugin', 'host': 'themecrowdy'
+        },        
+        {
+            'slug': 'contact-form-7', 'title': 'Contact form 7', 'host': 'wporg'
+        },
+      ],
+      theme: {
+        slug : null,
+        host: null
+      }
+    }
   },
   {
     title: "Binox Business Theme 2",
@@ -24,6 +38,20 @@ export const AllTemplateList = [
     previewLink: "#",
     downloadLink: "#",
     isFeatured: true,
+    dependancies : {
+      plugins : [      
+        {
+            'slug': 'arolax-essential', 'title': 'Essential Plugin', 'host': 'themecrowdy'
+        },        
+        {
+            'slug': 'contact-form-7', 'title': 'Contact form 7', 'host': 'wporg'
+        },
+      ],
+      theme: {
+        slug : null,
+        host: null
+      }
+    }
   },
   {
     title: "Binox Business Theme 3",
