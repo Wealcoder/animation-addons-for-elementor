@@ -1,21 +1,13 @@
 import LargeLogo from "@/components/header/LargeLogo";
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
+import { ShowContent } from "@/config/showFullContent";
 import { useNotification, useTNavigation } from "@/hooks/app.hooks";
 import { hideElements } from "@/lib/utils";
-import RequiredFeatures from "@/pages/RequiredFeatures";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { RiArrowLeftLine } from "react-icons/ri";
 
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Extensions = lazy(() => import("@/pages/Extensions"));
-const FreePro = lazy(() => import("@/pages/FreePro"));
-const Widgets = lazy(() => import("@/pages/Widgets"));
-const Integrations = lazy(() => import("@/pages/Integrations"));
-const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
-
 const MainLayout = () => {
-  const [open, setOpen] = useState(false);
   const { tabKey, setTabKey } = useTNavigation();
   const { setChangelog, setNotice } = useNotification();
 
@@ -70,6 +62,35 @@ const MainLayout = () => {
     fetchNotice();
   }, []);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setTabKey(tabValue);
+    }
+  }, []);
+
+  return (
+    <div className="wcf-anim2024-wrapper">
+      <div className="wcf-anim2024-style">
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          }
+        >
+          {ShowContent({ tabKey })}
+        </Suspense>
+      </div>
+    </div>
+  );
+};
+
+MainLayout.FirstLayout = ({ children }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const hash = window.location.hash;
 
   useEffect(() => {
@@ -103,88 +124,6 @@ const MainLayout = () => {
     }
   }, [hash]);
 
-  const urlParams = new URLSearchParams(window.location.search);
-
-  useEffect(() => {
-    const tabValue = urlParams.get("tab");
-    if (tabValue) {
-      setTabKey(tabValue);
-    }
-  }, []);
-
-  const showContent = (item) => {
-    switch (item.tabKey) {
-      case "dashboard":
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <Dashboard />
-          </MainLayout.FirstLayout>
-        );
-      case "widgets":
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <Widgets />
-          </MainLayout.FirstLayout>
-        );
-      case "extensions":
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <Extensions />
-          </MainLayout.FirstLayout>
-        );
-      case "free-pro":
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <FreePro />
-          </MainLayout.FirstLayout>
-        );
-      case "integrations":
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <Integrations />
-          </MainLayout.FirstLayout>
-        );
-      case "stater-template":
-        return (
-          <MainLayout.SecondLayout>
-            <StaterTemplate />
-          </MainLayout.SecondLayout>
-        );
-      case "required-features":
-        return (
-          <MainLayout.ThirdLayout>
-            <RequiredFeatures />
-          </MainLayout.ThirdLayout>
-        );
-      default:
-        return (
-          <MainLayout.FirstLayout open={item.open} setOpen={item.setOpen}>
-            <Dashboard />
-          </MainLayout.FirstLayout>
-        );
-    }
-  };
-
-  return (
-    <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style">
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen">
-              <p className="text-lg font-semibold">Loading...</p>
-            </div>
-          }
-        >
-          {showContent({ tabKey, open, setOpen })}
-        </Suspense>
-      </div>
-    </div>
-  );
-};
-
-MainLayout.FirstLayout = ({ open, setOpen, children }) => {
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -208,6 +147,7 @@ MainLayout.FirstLayout = ({ open, setOpen, children }) => {
     </>
   );
 };
+
 MainLayout.SecondLayout = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
