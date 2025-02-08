@@ -270,7 +270,8 @@ class WCF_Admin_Init {
 				'global_settings_url' => $this->get_elementor_active_edit_url(),
 				'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
 				'user_role'           => wcfaddon_get_current_user_roles(),
-				'version'             => WCF_ADDONS_VERSION				
+				'version'             => WCF_ADDONS_VERSION,
+				'st_template_domain'		=> "https://framerbiz.com/starter-templates/"	 
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );

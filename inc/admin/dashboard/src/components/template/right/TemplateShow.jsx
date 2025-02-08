@@ -1,15 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
-import { AllTemplateList } from "@/config/data/allTemplateList";
 import { useTNavigation } from "@/hooks/app.hooks";
 import { Dot, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
-const TemplateShow = () => {
-  // const allTemplate = AllTemplateList;
-  const [allTemplate, setAllTemplate] = useState([]);
+const TemplateShow = ({ allTemplate }) => {
   const { setTabKey } = useTNavigation();
 
   const changeRoute = (value, slug) => {
@@ -26,27 +22,16 @@ const TemplateShow = () => {
     setTabKey(value);
   };
 
-  useEffect(() => {
-    fetch(
-      "https://framerbiz.com/starter-templates/wp-json/wp/v2/starter-templates"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        // setAllTemplate(data.message)
-        console.log(data);
-      });
-  }, []);
-
   return (
     <div className="grid grid-cols-4 gap-x-[23px] gap-y-8">
-      {allTemplate?.map((template, i) => (
-        <div key={`all_template-${i}`} className="group" id={template.slug}>
+      {allTemplate?.templates?.map((template, i) => (
+        <div key={`all_template-${i}`} className="group" id={template?.slug}>
           <div
             className="rounded-[12px] overflow-hidden shadow-template-card bg-cover h-[330px]"
-            style={{ backgroundImage: `url(${template.image})` }}
+            style={{ backgroundImage: `url(${template?.template_preview})` }}
           >
             <div className="w-full h-full group-hover:bg-[#0E121B]/40 relative">
-              {template.isPro ? (
+              {template?.is_pro ? (
                 <div className="absolute top-2.5 right-2.5">
                   <Badge variant={"tPro"} className={"ps-2"}>
                     <RiVipCrown2Fill size={14} className="mr-1.5" /> PRO
@@ -73,14 +58,22 @@ const TemplateShow = () => {
           </div>
           <div className="mt-4 flex justify-between">
             <div className="ms-1">
-              <h3 className="text-lg">{template.title}</h3>
+              <h3 className="text-lg">{template?.title}</h3>
               <div className="flex gap-1.5 items-center mt-1.5">
-                <p className="text-label text-sm">{template.category}</p>
+                <div className="flex gap-1 items-center">
+                  {template?.categories?.slice(0, 2)?.map((el, i) => (
+                    <p key={el + i} className="text-label text-sm">
+                      {el}
+                      {i === 0 ? ", " : ""}
+                    </p>
+                  ))}
+                </div>
+
                 <Dot className="w-2 h-2 text-icon-secondary" strokeWidth={2} />
                 <div className="text-label text-sm flex items-center gap-1">
                   <RiDownloadLine />
                   <p>
-                    <span>{template.downloaded}</span> Inserts
+                    <span>{template?.downloads}</span> Inserts
                   </p>
                 </div>
               </div>
@@ -89,7 +82,7 @@ const TemplateShow = () => {
               <Toggle
                 aria-label="Toggle bold"
                 defaultPressed={template.isFavorite}
-                className={`[&[data-state=on]>svg]:fill-[#FF5733] [&[data-state=on]>svg]:stroke-[#FF5733] items-start px-0`}
+                className={`[&[data-state=on]>svg]:fill-[#FF5733] [&[data-state=on]>svg]:stroke-[#FF5733] items-start px-0 cursor-pointer`}
               >
                 <Heart size={20} className="text-icon-secondary" />
               </Toggle>

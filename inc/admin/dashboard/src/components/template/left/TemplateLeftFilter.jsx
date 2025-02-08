@@ -10,12 +10,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { AllTemplateCategoryList } from "@/config/data/allTemplateCategoryList";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useEffect, useState } from "react";
 
 const TemplateLeftFilter = () => {
-  const allCategory = AllTemplateCategoryList;
+  const [allCategory, setAllCategory] = useState([]);
+
+  useEffect(() => {
+    fetch(`${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/st-cat`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllCategory(data);
+      });
+  }, []);
+
   return (
     <div className="px-5 py-6 flex flex-col justify-between gap-5 h-full">
       <div>
@@ -90,12 +99,12 @@ const TemplateLeftFilter = () => {
                   >
                     {allCategory?.map((category, i) => (
                       <ToggleGroupItem
-                        key={`${category.slug}-${i}`}
-                        value={category.slug}
+                        key={`${category?.slug}-${i}`}
+                        value={category?.slug}
                         variant="outline"
                         aria-label="Toggle category"
                       >
-                        {category.name}
+                        {category?.name}
                       </ToggleGroupItem>
                     ))}
                   </ToggleGroup>
