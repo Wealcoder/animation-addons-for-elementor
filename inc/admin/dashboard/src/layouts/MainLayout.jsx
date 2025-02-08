@@ -1,11 +1,10 @@
-import LargeLogo from "@/components/header/LargeLogo";
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShowContent } from "@/config/showFullContent";
 import { useNotification, useTNavigation } from "@/hooks/app.hooks";
 import { hideElements } from "@/lib/utils";
 import { useEffect, useState, Suspense } from "react";
-import { RiArrowLeftLine } from "react-icons/ri";
 
 const MainLayout = () => {
   const { tabKey, setTabKey } = useTNavigation();
@@ -197,9 +196,11 @@ MainLayout.ThirdLayout = ({ children }) => {
       ) : (
         <div className="bg-background-secondary">
           <TemplateHeader activeBtn={false} />
-          <div className="flex justify-center items-center min-h-[calc(100vh-85px)]">
-            {children}
-          </div>
+          <ScrollArea className="h-[calc(100vh-85px)]">
+            <div className="flex justify-center items-center min-h-[calc(100vh-85px)] py-5">
+              {children}
+            </div>
+          </ScrollArea>
         </div>
       )}
     </>

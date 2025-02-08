@@ -4,13 +4,15 @@ import { Toggle } from "@/components/ui/toggle";
 import { AllTemplateList } from "@/config/data/allTemplateList";
 import { useTNavigation } from "@/hooks/app.hooks";
 import { Dot, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
 const TemplateShow = () => {
-  const allTemplate = AllTemplateList;
+  // const allTemplate = AllTemplateList;
+  const [allTemplate, setAllTemplate] = useState([]);
   const { setTabKey } = useTNavigation();
 
-  const changeRoute = (value) => {
+  const changeRoute = (value, slug) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -19,9 +21,21 @@ const TemplateShow = () => {
     url.search = `page=${pageQuery}`;
 
     url.searchParams.set("tab", value);
+    url.searchParams.set("template", slug);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
+
+  useEffect(() => {
+    fetch(
+      "https://framerbiz.com/starter-templates/wp-json/wp/v2/starter-templates"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        // setAllTemplate(data.message)
+        console.log(data);
+      });
+  }, []);
 
   return (
     <div className="grid grid-cols-4 gap-x-[23px] gap-y-8">
@@ -48,7 +62,9 @@ const TemplateShow = () => {
                 <Button
                   variant="general"
                   className="py-2 ps-3 pe-4"
-                  onClick={() => changeRoute("required-features")}
+                  onClick={() =>
+                    changeRoute("required-features", template?.slug)
+                  }
                 >
                   <RiDownloadLine size={20} className="mr-2" /> Insert
                 </Button>
