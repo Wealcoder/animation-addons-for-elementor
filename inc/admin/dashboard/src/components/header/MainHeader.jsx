@@ -7,14 +7,14 @@ import MobileNav from "./MobileNav";
 import Notification from "../notification";
 import GetProButton from "../shared/GetProButton";
 
-const MainHeader = ({ open, setOpen, NavigateComponent }) => {
+const MainHeader = ({ open, setOpen }) => {
   return (
     <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
       <div>
         <ShortLogo />
       </div>
       <div className="hidden xl:block flex-1">
-        <MainNav NavigateComponent={NavigateComponent} />
+        <MainNav />
       </div>
       <div className="flex gap-2.5 max-w-[400px]">
         <Button variant="secondary" size="icon" onClick={() => setOpen(true)}>
@@ -26,7 +26,7 @@ const MainHeader = ({ open, setOpen, NavigateComponent }) => {
         </Button> */}
         <Notification />
         <div className="block xl:hidden">
-          <MobileNav NavigateComponent={NavigateComponent} />
+          <MobileNav />
         </div>
         <GetProButton />
       </div>

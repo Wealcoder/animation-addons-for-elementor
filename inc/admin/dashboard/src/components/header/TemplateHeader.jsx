@@ -1,5 +1,4 @@
-import { RiArrowLeftLine, RiVipCrown2Line } from "react-icons/ri";
-import { Button } from "../ui/button";
+import { RiArrowLeftLine } from "react-icons/ri";
 import LargeLogo from "./LargeLogo";
 import GetProButton from "../shared/GetProButton";
 

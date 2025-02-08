@@ -6,13 +6,16 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { MainNavData } from "@/config/nav/main-nav";
+import { useTNavigation } from "@/hooks/app.hooks";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-const MainNav = ({ NavigateComponent }) => {
+const MainNav = () => {
   const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
   const role = WCF_ADDONS_ADMIN.user_role;
+
+  const { setTabKey } = useTNavigation();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -37,7 +40,7 @@ const MainNav = ({ NavigateComponent }) => {
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
-    NavigateComponent(value);
+    setTabKey(value);
     setCurrentPath(value);
   };
 

@@ -67,3 +67,12 @@ export const useNotification = () => {
   } = useContext(AppContext);
   return { notice, changelog, setNotice, updateNotice, setChangelog };
 };
+
+export const useTNavigation = () => {
+  const {
+    mainState: { tabKey },
+    setTabKey,
+  } = useContext(AppContext);
+
+  return { tabKey, setTabKey };
+};

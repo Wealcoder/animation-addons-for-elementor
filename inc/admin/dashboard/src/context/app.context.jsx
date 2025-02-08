@@ -28,6 +28,7 @@ const initialState = {
   setupType: "basic",
   notice: [],
   changelog: [],
+  tabKey: ""
 };
 
 const reducer = (state, action) => {
@@ -44,6 +45,8 @@ const reducer = (state, action) => {
       return { ...state, notice: action.value };
     case "setChangelog":
       return { ...state, changelog: action.value };
+    case "setTabKey":
+      return { ...state, tabKey: action.value };
 
     default:
       throw new Error();
@@ -81,6 +84,13 @@ const useMainContext = (state) => {
   const setChangelog = useCallback((data) => {
     dispatch({
       type: "setChangelog",
+      value: data,
+    });
+  }, []);
+
+  const setTabKey = useCallback((data) => {
+    dispatch({
+      type: "setTabKey",
       value: data,
     });
   }, []);
@@ -220,6 +230,7 @@ const useMainContext = (state) => {
     setActivated,
     setNotice,
     setChangelog,
+    setTabKey,
     setSetupType,
     updateActiveWidget,
     updateActiveGroupWidget,
@@ -241,6 +252,7 @@ export const AppContext = createContext({
   setActivated: () => {},
   setNotice: () => {},
   setChangelog: () => {},
+  setTabKey: () => {},
   setSetupType: () => {},
   updateActiveWidget: () => {},
 });
