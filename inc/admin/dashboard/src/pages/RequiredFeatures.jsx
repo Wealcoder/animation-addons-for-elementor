@@ -23,6 +23,10 @@ const RequiredFeatures = () => {
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
     setTabKey(value);
+
+    setInterval(function(){
+        console.log(url)
+    },500)
   };
   return (
     <div className="bg-background w-[692px] rounded-2xl p-1.5 shadow-auth-card">
