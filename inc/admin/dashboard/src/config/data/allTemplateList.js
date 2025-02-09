@@ -27,6 +27,7 @@ export const AllTemplateList = [
       ],
       theme: {
         slug: null,
+        title: "Helo Theme",
         host: null,
       },
     },
@@ -57,6 +58,7 @@ export const AllTemplateList = [
       ],
       theme: {
         slug: null,
+        title: "Helo Theme",
         host: null,
       },
     },
