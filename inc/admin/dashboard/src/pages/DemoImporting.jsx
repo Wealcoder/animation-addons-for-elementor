@@ -7,6 +7,7 @@ import { debounceFn } from "@/lib/utils";
 const DemoImporting = () => {
  const url = new URL(window.location.href);
  const template = url.searchParams.get("template");
+ const templateid = url.searchParams.get("templateid");
  const [currenTemplate, setCurrenTemplate] = useState(false);
  const [msg, setMsg] = useState("");
  const [tempstate, setTempState] = useState(null);
@@ -14,8 +15,8 @@ const DemoImporting = () => {
  const [step, setStep] = useState("Varifying");
   useEffect(() => { 
     if(!currenTemplate){
-      getTemplate(template);
-    }else{
+      getTemplate(templateid);
+    }else{      
       runImport(currenTemplate);      
     }     
   
@@ -24,26 +25,27 @@ const DemoImporting = () => {
   }, [currenTemplate]);
 
     const getTemplate = useCallback(
-      debounceFn(async (slug) => {
+      debounceFn(async (id) => {
         try {        
           const url = new URL(
             `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
           );
   
-          if (slug) {
-            url.searchParams.append("slug", slug);
+          if (id) {
+            url.searchParams.append("tplid", id);
           }        
   
           await fetch(url.toString())
             .then((response) => response.json())
             .then((data) => { 
-
+                
               if(data?.templates){
                 const result = Object.entries(data.templates).find(
-                  ([key, value]) => value.slug === template
-                )?.[1]; 
-                              
-                setCurrenTemplate(result);                   
+                  ([key, value]) => value.id == id
+                )?.[1];    
+                                      
+                setCurrenTemplate(result);    
+                         
               }            
               
             });
@@ -75,9 +77,8 @@ const DemoImporting = () => {
     };
 
     const runImport = useCallback(
-      debounceFn(async (tpldata) => {
-        try {
-      
+      debounceFn(async (tpldata) => {         
+        try {      
           delete tpldata.author;
           delete tpldata.categories;
           delete tpldata.date;

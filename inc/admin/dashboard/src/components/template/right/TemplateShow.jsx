@@ -8,7 +8,7 @@ import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 const TemplateShow = ({ allTemplate }) => {
   const { setTabKey } = useTNavigation();
 
-  const changeRoute = (value, slug) => {
+  const changeRoute = (value, slug, id) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -18,6 +18,7 @@ const TemplateShow = ({ allTemplate }) => {
 
     url.searchParams.set("tab", value);
     url.searchParams.set("template", slug);
+    url.searchParams.set("templateid", id);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -51,7 +52,7 @@ const TemplateShow = ({ allTemplate }) => {
                   variant="general"
                   className="py-2 ps-3 pe-4"
                   onClick={() =>
-                    changeRoute("required-features", template?.slug)
+                    changeRoute("required-features", template?.slug, template?.id)
                   }
                 >
                   <RiDownloadLine size={20} className="mr-2" /> Insert
