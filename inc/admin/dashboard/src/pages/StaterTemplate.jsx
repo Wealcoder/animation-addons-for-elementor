@@ -123,13 +123,9 @@ const StaterTemplate = () => {
             setPageNum={setPageNum}
             allTemplate={allTemplate}
           />
-          {loading ? (
-            <div className="flex justify-center items-center h-[20vh]">
-              <p className="text-lg font-semibold">Loading...</p>
-            </div>
-          ) : (
-            ""
-          )}
+          <div className="flex justify-center items-center h-[20vh]">
+            {loading ? <p className="text-lg font-semibold">Loading...</p> : ""}
+          </div>
         </>
       </ScrollArea>
     </div>
