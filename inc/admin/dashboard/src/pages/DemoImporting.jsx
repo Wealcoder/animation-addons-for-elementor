@@ -77,7 +77,7 @@ const DemoImporting = () => {
     const runImport = useCallback(
       debounceFn(async (tpldata) => {
         try {
-
+      
           delete tpldata.author;
           delete tpldata.categories;
           delete tpldata.date;
@@ -100,13 +100,15 @@ const DemoImporting = () => {
             },
             body: formData.toString(),
           });
-    
+      
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }  
           const contentType = response.headers.get("content-type");  
+          
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
+           
             if (data?.template) {          
               if(data.template.next_step != 'done'){
                 runImport(data.template);             
