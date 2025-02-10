@@ -11,18 +11,20 @@ import { useTNavigation } from "@/hooks/app.hooks";
 
 const RequiredFeatures = () => {
   const { setTabKey } = useTNavigation();
+  
 
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
-
+    const template = url.searchParams.get("template");
     url.search = "";
     url.hash = "";
     url.search = `page=${pageQuery}`;
-
-    url.searchParams.set("tab", value);
+    url.searchParams.set("template", template);
+    url.searchParams.set("tab", value); 
     window.history.replaceState({}, "", url);
     setTabKey(value);
+   
   };
   return (
     <div className="bg-background w-[692px] rounded-2xl p-1.5 shadow-auth-card">
