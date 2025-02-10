@@ -20,7 +20,7 @@ const TemplateRightContent = () => {
   const getAllTemplate = useCallback(
     debounceFn(async (meta) => {
       try {
-        console.log(meta);
+      
         const url = new URL(
           `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
         );
@@ -40,6 +40,7 @@ const TemplateRightContent = () => {
           .then((response) => response.json())
           .then((data) => {
             setAllTemplate(data);
+            window.AAEADDON_STARTER_TPLS = data;
             console.log(data);
           });
       } catch (error) {

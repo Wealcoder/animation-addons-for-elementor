@@ -9,11 +9,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class WCF_Plugin_Installer {
+	public $importer = null;
 	public function __construct() {
 		add_action( 'wp_ajax_wcf_install_plugin', [ $this, 'ajax_install_plugin' ] );
 		add_action( 'wp_ajax_wcf_active_plugin', [ $this, 'ajax_activate_plugin' ] );
 		add_action( 'wp_ajax_activate_from_editor_plugin', [ $this, 'activate_from_editor_plugin' ] );
 		add_action( 'wp_ajax_wcf_deactive_plugin', [ $this, 'ajax_deactivate_plugin' ] );
+
 	}
 
 	/**
@@ -128,6 +130,7 @@ class WCF_Plugin_Installer {
 
 		return $install;
 	}
+
 
 	public function ajax_install_plugin() {
 
