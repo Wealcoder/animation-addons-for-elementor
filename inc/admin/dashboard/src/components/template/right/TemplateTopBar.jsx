@@ -14,6 +14,7 @@ const TemplateTopBar = ({
   setFilterKey,
   searchKey,
   setSearchKey,
+  setPageNum,
 }) => {
   return (
     <div className="flex justify-between items-center gap-5">
@@ -24,7 +25,10 @@ const TemplateTopBar = ({
             <RiSearchLine className="absolute left-3 top-2.5 h-5 w-5 text-icon-secondary" />
             <Input
               value={searchKey}
-              onChange={(e) => setSearchKey(e.target.value)}
+              onChange={(e) => {
+                setSearchKey(e.target.value);
+                setPageNum(1);
+              }}
               placeholder="Search Widgets"
               className="px-9"
             />
@@ -39,7 +43,13 @@ const TemplateTopBar = ({
           </div>
         </div>
         <div>
-          <Select value={filterKey} onValueChange={setFilterKey}>
+          <Select
+            value={filterKey}
+            onValueChange={(value) => {
+              setFilterKey(value);
+              setPageNum(1);
+            }}
+          >
             <SelectTrigger className="w-[119px] rounded-[10px] h-10">
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
