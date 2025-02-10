@@ -14,7 +14,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useEffect, useState } from "react";
 
-const TemplateLeftFilter = () => {
+const TemplateLeftFilter = ({
+  types,
+  setTypes,
+  license,
+  setLicense,
+  selectedCategory,
+  setSelectedCategory,
+  setPageNum,
+}) => {
   const [allCategory, setAllCategory] = useState([]);
 
   useEffect(() => {
@@ -44,14 +52,22 @@ const TemplateLeftFilter = () => {
                   Types
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <ToggleGroup type="multiple" className="justify-start gap-2">
+                  <ToggleGroup
+                    type="multiple"
+                    className="justify-start flex-wrap gap-2"
+                    value={types}
+                    onValueChange={(value) => {
+                      setTypes(value);
+                      setPageNum(1);
+                    }}
+                  >
                     <ToggleGroupItem
-                      value="wish-list"
+                      value="wishlist"
                       variant="outline"
                       className="ps-2"
                       aria-label="Toggle wish list"
                     >
-                      <RiHeartLine size={18} className="text-icon" /> Wish List
+                      <RiHeartLine size={18} className="text-icon" /> Wishlist
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="favorites"
@@ -69,7 +85,15 @@ const TemplateLeftFilter = () => {
                   License
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <ToggleGroup type="single" className="justify-start gap-2">
+                  <ToggleGroup
+                    type="single"
+                    className="justify-start flex-wrap gap-2"
+                    value={license}
+                    onValueChange={(value) => {
+                      setLicense(value);
+                      setPageNum(1);
+                    }}
+                  >
                     <ToggleGroupItem
                       value="pro"
                       variant="outline"
@@ -97,11 +121,16 @@ const TemplateLeftFilter = () => {
                   <ToggleGroup
                     type="multiple"
                     className="justify-start flex-wrap gap-1.5"
+                    value={selectedCategory}
+                    onValueChange={(value) => {
+                      setSelectedCategory(value);
+                      setPageNum(1);
+                    }}
                   >
                     {allCategory?.map((category, i) => (
                       <ToggleGroupItem
                         key={`${category?.slug}-${i}`}
-                        value={category?.slug}
+                        value={category?.id}
                         variant="outline"
                         aria-label="Toggle category"
                       >

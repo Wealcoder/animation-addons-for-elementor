@@ -24,11 +24,11 @@ const TemplateShow = ({ allTemplate }) => {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-x-[23px] gap-y-8">
+    <div className="grid grid-cols-4 gap-x-5 gap-y-8">
       {allTemplate?.templates?.map((template, i) => (
         <div key={`all_template-${i}`} className="group" id={template?.slug}>
           <div
-            className="rounded-[12px] overflow-hidden shadow-template-card bg-no-repeat h-[330px]"
+            className="rounded-[12px] overflow-hidden border border-[#ededed] bg-no-repeat h-[330px]"
             style={{
               backgroundImage: `url(${template?.template_preview})`,
               backgroundSize: "100%",
@@ -52,7 +52,11 @@ const TemplateShow = ({ allTemplate }) => {
                   variant="general"
                   className="py-2 ps-3 pe-4"
                   onClick={() =>
-                    changeRoute("required-features", template?.slug, template?.id)
+                    changeRoute(
+                      "required-features",
+                      template?.slug,
+                      template?.id
+                    )
                   }
                 >
                   <RiDownloadLine size={20} className="mr-2" /> Insert
