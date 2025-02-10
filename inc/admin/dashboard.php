@@ -197,7 +197,7 @@ class WCF_Admin_Init {
 	 */
 	public function include() {
 		require_once( 'template-functions.php' );
-		require_once( 'importer.php' );
+		require_once( 'template-importer.php' );
 		require_once( 'plugin-installer.php' );
 	}
 

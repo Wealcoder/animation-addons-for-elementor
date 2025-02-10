@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Admin;
+namespace WCF_ADDONS\Admin\Base;
 
 use WP_Error;
 
@@ -35,6 +35,7 @@ class AAEAddon_Importer {
 	public function heartbeat_data(){
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
         $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => get_option('aaeaddon_template_import_state')]);
+        // $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => false]);
 		wp_send_json($return_data);		
 	}
 
@@ -84,7 +85,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-template'){
 				$template_data['next_step'] = 'check-theme';
 				$progress                   = '50';
-				$msg                        = $this->install_template();
+				//$msg                        = $this->install_template();
 				update_option('aaeaddon_template_import_state', 'Checking Theme');
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-theme'){
 				$template_data['next_step'] = 'install-theme';
@@ -102,7 +103,10 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = 'Template Demo Import fail';	
 			}else{
-				$template_data['next_step'] = 'core-importer';
+				//$template_data['next_step'] = 'core-importer';
+				$template_data['next_step'] = 'done';
+				$msg                        = $this->install_template(); // remove after test
+			
 				update_option('aaeaddon_template_import_state', 'Checking Setup requirement');
 			}			
 			
@@ -119,38 +123,17 @@ class AAEAddon_Importer {
 		if (!file_exists($file_path)) {
 			return __('file_missing', 'XML file not found.','animation-addons-for-elementor');
 		}
-		if ( ! defined( 'WP_LOAD_IMPORTERS' ) ) {
-			define('WP_LOAD_IMPORTERS', true);
-		}
+
 		require_once ABSPATH . 'wp-admin/includes/import.php';
+        if (!class_exists('WXRImporter')) {           
+			require_once( 'base/WXRImporter.php' );
+        }
 
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/compat.php';
-
-		/** WXR_Parser class */
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/parsers/class-wxr-parser.php';
-
-		/** WXR_Parser_SimpleXML class */
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/parsers/class-wxr-parser-simplexml.php';
-
-		/** WXR_Parser_XML class */
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/parsers/class-wxr-parser-xml.php';
-
-		/** WXR_Parser_Regex class */
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/parsers/class-wxr-parser-regex.php';
-
-		/** WP_Import class */
-		require_once ABSPATH . 'wp-content/plugins/wordpress-importer' . '/class-wp-import.php';
-	
-		// if (!file_exists('WP_Import')) {			
-		// 	return 'importer_install';			
-		// }
-		update_option('aaeaddon_template_import_state', 'Processing Template Import');	
-	
-		$importer = new \WP_Import();
-	
-		$importer->fetch_attachments = true; // Set true if you want to download attachments
-		ob_start(); // Suppress output
-		$importer->import($file_path);
+		ob_start(); // Suppress output		
+		
+        $importer = new WXRImporter();
+        $importer->import($file_path);
+		error_log($file_path);
 		ob_end_clean(); // Clear the buffer
 		update_option('aaeaddon_template_import_state', 'Import completed successfully.');
 		return 'Import completed successfully.';
