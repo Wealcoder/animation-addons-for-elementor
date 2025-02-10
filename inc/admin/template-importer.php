@@ -60,24 +60,17 @@ class AAEAddon_Importer {
 				});			
 			}
 
-			if(isset($template_data['next_step']) && $template_data['next_step'] == 'core-importer'){
-				$template_data['next_step'] = 'check-template-status';
-				$msg = $this->wordpress_importer_installed_and_active();
-				update_option('aaeaddon_template_import_state', 'checking template ststus');
-			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){			
-				if(isset($template_data['file']['content_url'])){
-
-				 $msg =	$this->download_remote_wp_xml_file($template_data['file']['content_url']);
-
-				 if('importer_install' == $msg){
-					$template_data['next_step'] = 'core-importer';
-					$progress                   = '25';
-				 }else{
-					update_option('aaeaddon_template_import_state', 'Installing Template');
-					$template_data['next_step'] = 'install-template';
-					$progress                   = '50';
-				 }
+			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer'){
+				// Install required plugin
+				$template_data['next_step'] = 'check-template-status';				
+				update_option('aaeaddon_template_import_state', 'Install Required Plugins');
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
 				
+				if(isset($template_data['file']['content_url'])){
+					$msg =	$this->download_remote_wp_xml_file($template_data['file']['content_url']);				
+					update_option('aaeaddon_template_import_state', 'Demo file Downloaded');
+					$template_data['next_step'] = 'install-template';
+					$progress                   = '50';				 				
 				}else{
 					$template_data['next_step'] = 'fail';
 					update_option('aaeaddon_template_import_state', esc_html__('Missing xml file, contact plugin author', 'animation-addons-for-elementor'));
@@ -85,7 +78,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-template'){
 				$template_data['next_step'] = 'check-theme';
 				$progress                   = '50';
-				//$msg                        = $this->install_template();
+				$msg                        = $this->install_template();
 				update_option('aaeaddon_template_import_state', 'Checking Theme');
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-theme'){
 				$template_data['next_step'] = 'install-theme';
@@ -103,10 +96,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = 'Template Demo Import fail';	
 			}else{
-				//$template_data['next_step'] = 'core-importer';
-				$template_data['next_step'] = 'done';
-				$msg                        = $this->install_template(); // remove after test
-			
+				$template_data['next_step'] = 'plugins-importer';		
 				update_option('aaeaddon_template_import_state', 'Checking Setup requirement');
 			}			
 			
@@ -119,21 +109,30 @@ class AAEAddon_Importer {
 		// Define file path in the uploads directory
 		$upload_dir = wp_upload_dir();
 		$file_path = trailingslashit($upload_dir['path']) . $this->file_path;
-
+	
 		if (!file_exists($file_path)) {
 			return __('file_missing', 'XML file not found.','animation-addons-for-elementor');
 		}
-
-		require_once ABSPATH . 'wp-admin/includes/import.php';
-        if (!class_exists('WXRImporter')) {           
-			require_once( 'base/WXRImporter.php' );
-        }
-
-		ob_start(); // Suppress output		
 		
-        $importer = new WXRImporter();
-        $importer->import($file_path);
-		error_log($file_path);
+		require_once ABSPATH . 'wp-admin/includes/import.php';
+		require_once( 'base/WPImporterLogger.php' );
+		require_once( 'base/WPImporterLoggerCLI.php' );
+		require_once( 'base/WXRImportInfo.php' );
+		require_once( 'base/WXRImporter.php' );
+		require_once( 'base/Importer.php' );
+		ob_start(); 
+
+		$options = [
+			'chunk_size' => 100,
+			'validate_schema' => true,		
+			'skip_duplicates' => false,
+			'overwrite_existing' => true, // Do not overwrite existing records
+			'skip_empty_nodes' => true, // Skip nodes with empty data
+		];
+
+		$logger   = new WPImporterLogger();          		
+		$importer = new Importer($options, $logger);
+		$result   = $importer->import($file_path);
 		ob_end_clean(); // Clear the buffer
 		update_option('aaeaddon_template_import_state', 'Import completed successfully.');
 		return 'Import completed successfully.';
@@ -181,7 +180,7 @@ class AAEAddon_Importer {
 	}
 	
 
-	function wordpress_importer_installed_and_active() {
+	function installed_and_active($slug) {
 		ob_start();    
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		$plugin_slug = 'wordpress-importer';
