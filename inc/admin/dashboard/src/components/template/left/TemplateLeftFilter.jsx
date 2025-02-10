@@ -44,13 +44,14 @@ const TemplateLeftFilter = () => {
                   Types
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <ToggleGroup type="single" className="justify-start gap-2">
+                  <ToggleGroup type="multiple" className="justify-start gap-2">
                     <ToggleGroupItem
-                      value="all"
+                      value="wish-list"
                       variant="outline"
-                      aria-label="Toggle all"
+                      className="ps-2"
+                      aria-label="Toggle wish list"
                     >
-                      All
+                      <RiHeartLine size={18} className="text-icon" /> Wish List
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="favorites"

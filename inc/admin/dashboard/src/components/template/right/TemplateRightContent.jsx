@@ -62,9 +62,9 @@ const TemplateRightContent = () => {
       <div className="mb-10">
         <TemplateShow allTemplate={allTemplate} />
       </div>
-      <div className="py-5">
+      {/* <div className="py-5">
         <TemplatePagination />
-      </div>
+      </div> */}
     </div>
   );
 };
