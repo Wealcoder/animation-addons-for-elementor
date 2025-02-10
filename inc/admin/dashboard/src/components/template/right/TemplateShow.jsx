@@ -27,8 +27,11 @@ const TemplateShow = ({ allTemplate }) => {
       {allTemplate?.templates?.map((template, i) => (
         <div key={`all_template-${i}`} className="group" id={template?.slug}>
           <div
-            className="rounded-[12px] overflow-hidden shadow-template-card bg-cover h-[330px]"
-            style={{ backgroundImage: `url(${template?.template_preview})` }}
+            className="rounded-[12px] overflow-hidden shadow-template-card bg-no-repeat h-[330px]"
+            style={{
+              backgroundImage: `url(${template?.template_preview})`,
+              backgroundSize: "100%",
+            }}
           >
             <div className="w-full h-full group-hover:bg-[#0E121B]/40 relative">
               {template?.is_pro ? (
