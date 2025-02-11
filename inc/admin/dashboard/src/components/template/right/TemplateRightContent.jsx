@@ -10,7 +10,7 @@ const TemplateRightContent = ({
   allTemplate,
 }) => {
   return (
-    <div className="mx-8">
+    <div className="mx-[31px]">
       <div className="mt-6 mb-8">
         <TemplateTopBar
           filterKey={filterKey}

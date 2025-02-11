@@ -12,22 +12,29 @@ const StaterTemplate = () => {
   const [allTemplate, setAllTemplate] = useState({});
   const [pageNum, setPageNum] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [types, setTypes] = useState([]);
+  const [license, setLicense] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState([]);
 
   useEffect(() => {
     const meta = {
       searchKey,
       filterKey,
       pageNum,
+      types,
+      license,
+      selectedCategory,
       allTemplate,
     };
     getAllTemplate(meta);
-  }, [searchKey, filterKey, pageNum]);
+  }, [searchKey, filterKey, pageNum, types, license, selectedCategory]);
 
   const getAllTemplate = useCallback(
     debounceFn(async (meta) => {
       if (loading) return;
       setLoading(true);
       try {
+        console.log(meta);
         const url = new URL(
           `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
         );
@@ -45,6 +52,18 @@ const StaterTemplate = () => {
           } else {
             url.searchParams.append("orderby", "date");
           }
+        }
+
+        if (meta.selectedCategory && meta.selectedCategory.length) {
+          url.searchParams.append("st-cat", meta.selectedCategory.toString());
+        }
+
+        if (meta?.types?.includes("favorites")) {
+          url.searchParams.append("favourites", 1);
+        }
+
+        if (meta.license) {
+          url.searchParams.append("premium", meta.license === 'pro' ? 'yes': 'no');
         }
 
         await fetch(url.toString())
@@ -106,8 +125,16 @@ const StaterTemplate = () => {
 
   return (
     <div className="flex">
-      <div className="w-[275px] border-r border-border h-[calc(100vh-85px)]">
-        <TemplateLeftFilter />
+      <div className="w-[278px] border-r border-border h-[calc(100vh-85px)]">
+        <TemplateLeftFilter
+          types={types}
+          setTypes={setTypes}
+          license={license}
+          setLicense={setLicense}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          setPageNum={setPageNum}
+        />
       </div>
       <ScrollArea
         className="h-[calc(100vh-85px)] flex-1"
@@ -123,13 +150,9 @@ const StaterTemplate = () => {
             setPageNum={setPageNum}
             allTemplate={allTemplate}
           />
-          {loading ? (
-            <div className="flex justify-center items-center h-[20vh]">
-              <p className="text-lg font-semibold">Loading...</p>
-            </div>
-          ) : (
-            ""
-          )}
+          <div className="flex justify-center items-center h-[10vh]">
+            {loading ? <p className="text-lg font-semibold">Loading...</p> : ""}
+          </div>
         </>
       </ScrollArea>
     </div>
