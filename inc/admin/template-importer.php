@@ -127,10 +127,8 @@ class AAEAddon_Importer {
 				$msg = $this->install_theme($theme_slug);
 				update_option('aaeaddon_template_import_state', $msg);
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
-				$template_data['next_step'] = 'done';
+				$template_data['next_step'] = 'install-wp-options';
 				$progress                   = '90';		
-
-				
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && $template_data['elementor_settings']['type'] === 'json' ) {
 					$response = wp_remote_get( $template_data['elementor_settings']['content_url']);
 					if ( is_array( $response ) && ! is_wp_error( $response ) ) {
@@ -143,7 +141,11 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 				$template_data['next_step'] = 'done';
 				$progress                   = '100';
-				$msg                        = 'Done';				
+				$msg                        = 'Done';	
+				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
+					$this->install_options($template_data['wp_options']);
+				}
+							
 				delete_option('aaeaddon_template_import_state');			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
@@ -155,6 +157,27 @@ class AAEAddon_Importer {
 		}
 	    
 		wp_send_json( ['template' => wp_unslash( $template_data ),'msg' => $msg, 'progress' => $progress] );
+	}
+
+	public function install_options($settings){
+
+		foreach($settings as $item){
+			$response = wp_remote_get( $item['xml_file'] );
+			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+				$headers  = $response['headers']; // array of http header lines
+				$xml_data = wp_remote_retrieve_body( $response );
+				$xml      = simplexml_load_string( $xml_data );
+				// Extract the serialized value
+				$serialized_data = (string) $xml->value;
+				if ( is_string( $serialized_data ) ) {
+					$arr = unserialize( $serialized_data );
+					if ( is_array( $arr ) ) {
+						update_option( $item['option_name'], $arr );
+					}
+				}
+			}
+		}
+		
 	}
 
 	public function installElementorKit($elementor){
