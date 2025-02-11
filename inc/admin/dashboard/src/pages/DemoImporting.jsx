@@ -6,9 +6,8 @@ import { debounceFn } from "@/lib/utils";
 import { useTNavigation } from "@/hooks/app.hooks";
 
 const DemoImporting = () => {
- const url = new URL(window.location.href);
- const template = url.searchParams.get("template");
- const templateid = url.searchParams.get("templateid");
+
+
  const [currenTemplate, setCurrenTemplate] = useState(false);
  const [msg, setMsg] = useState("");
  const [tempstate, setTempState] = useState(null);
@@ -16,11 +15,13 @@ const DemoImporting = () => {
 
   const { setTabKey } = useTNavigation();  
  
+  const url = new URL(window.location.href);
+  const template = url.searchParams.get("template");
+  const templateid = url.searchParams.get("templateid");
+  const plugins = url.searchParams.get("plugins");
+  const theme = url.searchParams.get("theme");
    const changeRoute = (value) => {
-     const url = new URL(window.location.href);
      const pageQuery = url.searchParams.get("page");
-     const template = url.searchParams.get("template");
-     const templateid = url.searchParams.get("templateid");
      url.search = "";
      url.hash = "";
      url.search = `page=${pageQuery}`;
@@ -113,7 +114,8 @@ const DemoImporting = () => {
           formData.append("action", "aaeaddon_template_installer"); // Custom action name
           formData.append("template_data", JSON.stringify(tpldata)); // Optional custom data
           formData.append("nonce", WCF_ADDONS_ADMIN.nonce); // Assuming nonce is available in the object
-    
+          if(plugins) formData.append("user_plugin", plugins);
+          if(theme) formData.append("theme_slug", theme);
           const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
             method: "POST",
             headers: {

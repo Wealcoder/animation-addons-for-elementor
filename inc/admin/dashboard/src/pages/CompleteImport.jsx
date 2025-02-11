@@ -40,7 +40,10 @@ const CompleteImport = () => {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <a href="#" className={cn(buttonVariants(), "w-full h-11")}>
+          <a
+            href={WCF_ADDONS_ADMIN?.home_url ?? "#"}
+            className={cn(buttonVariants(), "w-full h-11")}
+          >
             Visit your website
           </a>
           <Button
