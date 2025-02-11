@@ -3,6 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import DemoImportingBG from "../../public/images/demo-importing-bg.png";
 import { useCallback, useEffect, useState } from "react";
 import { debounceFn } from "@/lib/utils";
+import { useTNavigation } from "@/hooks/app.hooks";
 
 const DemoImporting = () => {
  const url = new URL(window.location.href);
@@ -11,6 +12,25 @@ const DemoImporting = () => {
  const [currenTemplate, setCurrenTemplate] = useState(false);
  const [msg, setMsg] = useState("");
  const [tempstate, setTempState] = useState(null);
+ const [progress, setProgress] = useState(0);
+
+  const { setTabKey } = useTNavigation();  
+ 
+   const changeRoute = (value) => {
+     const url = new URL(window.location.href);
+     const pageQuery = url.searchParams.get("page");
+     const template = url.searchParams.get("template");
+     const templateid = url.searchParams.get("templateid");
+     url.search = "";
+     url.hash = "";
+     url.search = `page=${pageQuery}`;
+     url.searchParams.set("template", template);
+     url.searchParams.set("templateid", templateid);
+     url.searchParams.set("tab", value); 
+     window.history.replaceState({}, "", url);
+     setTabKey(value);
+ 
+   };
 
  const [step, setStep] = useState("Varifying");
   useEffect(() => { 
@@ -20,7 +40,7 @@ const DemoImporting = () => {
       runImport(currenTemplate);      
     }     
   
-    const interval = setInterval(fetchHeartbeatData, 5000);
+    const interval = setInterval(fetchHeartbeatData, 3000);
     return () => clearInterval(interval);
   }, [currenTemplate]);
 
@@ -109,7 +129,9 @@ const DemoImporting = () => {
           
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
-           
+            if(data?.progress){
+              setProgress(data.progress);
+            }
             if (data?.template) {          
               if(data.template.next_step != 'done'){
                 runImport(data.template);             
@@ -117,6 +139,8 @@ const DemoImporting = () => {
                 setMsg(data.msg);
               }else if(data.template.next_step == 'fail'){
                 setMsg(data.msg);
+              }else if(data.template.next_step == 'done'){
+                changeRoute('complete-import');
               }
             }
           } else {           
@@ -152,24 +176,15 @@ const DemoImporting = () => {
           <p className="text-text-secondary">
             <span className="text-text">{step} :</span> {msg}
           </p>
-          <div className="grid grid-cols-4 items-center gap-1 mt-4">
+          <div className="mt-4">
             <span>
-              <Progress value={100} />
-            </span>
-            <span>
-              <Progress value={0} />
-            </span>
-            <span>
-              <Progress value={0} />
-            </span>
-            <span>
-              <Progress value={0} />
-            </span>
+              <Progress value={progress} />
+            </span>          
           </div>
           <div className="flex items-center gap-1.5 mt-3">
             <LoadingSpinner className={"text-[#07B22B]"} />{" "}
             <p className="text-sm">
-              <span>25%</span> Completed
+              <span>{progress}%</span> Completed
             </p>
           </div>
         </div>

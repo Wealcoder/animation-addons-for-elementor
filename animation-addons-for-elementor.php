@@ -60,6 +60,13 @@ if ( ! defined( 'WCF_ADDONS_WIDGETS_PATH' ) ) {
 	define( 'WCF_ADDONS_WIDGETS_PATH', WCF_ADDONS_PATH . 'widgets/' );
 }
 
+if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
+	/**
+	 * Template Path
+	 */
+	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://framerbiz.com/starter-templates/' );
+}
+
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 	require __DIR__ . '/vendor/autoload.php';
 }
