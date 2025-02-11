@@ -54,7 +54,7 @@ class Importer extends WXRImporter {
 		}
 
 		if ( ! class_exists( 'XMLReader' ) ) {
-			$this->logger->critical( __( 'The XMLReader class is missing! Please install the XMLReader PHP extension on your server', 'wordpress-importer' ) );
+			$this->logger->critical( __( 'The XMLReader class is missing! Please install the XMLReader PHP extension on your server', 'animation-addons-for-elementor' ) );
 
 			return false;
 		}
@@ -67,7 +67,7 @@ class Importer extends WXRImporter {
 		}
 
 		if ( ! $status ) {
-			$this->logger->error( __( 'Could not open the XML file for parsing!', 'wordpress-importer' ) );
+			$this->logger->error( __( 'Could not open the XML file for parsing!', 'animation-addons-for-elementor' ) );
 
 			return false;
 		}
@@ -249,7 +249,7 @@ class Importer extends WXRImporter {
 		$result = $this->import_start( $file );
 
 		if ( is_wp_error( $result ) ) {
-			$this->logger->error( __( 'Content import start error: ', 'wordpress-importer' ) . $result->get_error_message() );
+			$this->logger->error( __( 'Content import start error: ', 'animation-addons-for-elementor' ) . $result->get_error_message() );
 
 			return false;
 		}
@@ -281,7 +281,7 @@ class Importer extends WXRImporter {
 
 					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
 						$this->logger->warning( sprintf(
-							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'wordpress-importer' ),
+							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
 							$this->version,
 							self::MAX_WXR_VERSION
 						) );
@@ -505,7 +505,7 @@ class Importer extends WXRImporter {
 			) );
 
 			// Add message to log file.
-			$this->logger->info( __( 'New AJAX call!', 'wordpress-importer' ) );
+			$this->logger->info( __( 'New AJAX call!', 'animation-addons-for-elementor' ) );
 
 			// Set the current importer state, so it can be continued on the next AJAX call.
 			$this->set_current_importer_data();
