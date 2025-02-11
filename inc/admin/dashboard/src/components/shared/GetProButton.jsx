@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import LicenseDialog from "./LicenseDialog";
 
-const GetProButton = ({btnClassName}) => {
+const GetProButton = ({ btnClassName }) => {
   const { activated } = useActivate();
   const [openLicense, setOpenLicense] = useState(false);
   const role = WCF_ADDONS_ADMIN.user_role;
@@ -31,7 +31,7 @@ const GetProButton = ({btnClassName}) => {
       })
       .then((return_content) => {
         if (return_content?.success) {
-          toast.success(return_content?.message, {
+          toast.success(return_content?.data?.message, {
             position: "top-right",
           });
 
@@ -45,7 +45,11 @@ const GetProButton = ({btnClassName}) => {
         (activated.integrations.plugins.elements[
           "animation-addon-for-elementorpro"
         ].action === "Active" ? (
-          <Button variant="pro" onClick={() => activePlugin()} className={btnClassName}>
+          <Button
+            variant="pro"
+            onClick={() => activePlugin()}
+            className={btnClassName}
+          >
             <span className="me-2 flex">
               <RiVipCrown2Line size={20} />
             </span>

@@ -120,7 +120,7 @@ class WCF_Plugin_Installer {
             wp_send_json_error($result->get_error_message());
         }
 
-        wp_send_json_success(__('Plugin activated successfully!', 'animation-addons-for-elementor'));
+        wp_send_json_success(['message'=>__('Plugin activated successfully!', 'animation-addons-for-elementor')]);
     }
 
     public function activate_from_editor_plugin() {
