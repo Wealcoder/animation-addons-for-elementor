@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import CompleteImport from "@/pages/CompleteImport";
+import FailImport from "@/pages/FailImport";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Extensions = lazy(() => import("@/pages/Extensions"));
@@ -65,6 +66,12 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.ThirdLayout>
           <CompleteImport />
+        </MainLayout.ThirdLayout>
+      );
+    case "fail-import":
+      return (
+        <MainLayout.ThirdLayout>
+          <FailImport />
         </MainLayout.ThirdLayout>
       );
     default:
