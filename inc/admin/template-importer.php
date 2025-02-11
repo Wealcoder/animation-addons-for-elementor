@@ -128,9 +128,18 @@ class AAEAddon_Importer {
 				update_option('aaeaddon_template_import_state', $msg);
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
 				$template_data['next_step'] = 'done';
-				$progress                   = '90';			
-				$msg = $this->installElementorKit();
-				update_option('aaeaddon_template_import_state', $msg);
+				$progress                   = '90';		
+
+				
+				if ( isset( $template_data['elementor_settings']['content_url'] ) && $template_data['elementor_settings']['type'] === 'json' ) {
+					$response = wp_remote_get( $template_data['elementor_settings']['content_url']);
+					if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+						$json_data = wp_remote_retrieve_body( $response );
+						$msg = $this->installElementorKit($json_data);
+						update_option('aaeaddon_template_import_state', $msg);
+					}
+				}	
+				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 				$template_data['next_step'] = 'done';
 				$progress                   = '100';
@@ -148,58 +157,19 @@ class AAEAddon_Importer {
 		wp_send_json( ['template' => wp_unslash( $template_data ),'msg' => $msg, 'progress' => $progress] );
 	}
 
-	public function installElementorKit($zip_path){
-		try {
-			update_option('aaeaddon_template_import_state', esc_html__('Importing data...', 'animation-addons-for-elementor'));
-		
-			/**
-			 * Running the import process through the import-export module so the import property in the module will be available to use.
-			 *
-			 * @type  Module $import_export_module
-			 */
-			$import_export_module = Plugin::$instance->app->get_component( 'import-export' );
-
-			if ( ! $import_export_module ) {				
-				update_option('aaeaddon_template_import_state', esc_html__('Elementor Import Export module is not available.', 'animation-addons-for-elementor'));
+	public function installElementorKit($elementor){
+		$activeKitId = get_option( 'elementor_active_kit' );
+		$kit_data    = json_decode( $elementor, true );
+		if ( $activeKitId ) {
+			$postMeta = get_post_meta( $activeKitId, '_elementor_page_settings', true );
+			// Ensure $postMeta is an array
+			$newPostMeta = is_array( $postMeta ) ? $postMeta : [];
+			// Add or override custom colors
+			if ( $kit_data && isset( $kit_data['settings'] ) ) {
+				$newPostMeta = $kit_data['settings'];
+				update_post_meta( $activeKitId, '_elementor_page_settings', $newPostMeta );
 			}
-			$import_settings = [
-				'include' => ['site-settings']
-			];
-			$import = $import_export_module->import_kit( $zip_path, $import_settings );
-
-			$manifest_data = $import_export_module->import->get_manifest();
-
-			/**
-			 * Import Export Manifest Data
-			 *
-			 * Allows 3rd parties to read and edit the kit's manifest before it is used.
-			 *
-			 * @since 3.7.0
-			 *
-			 * @param array $manifest_data The Kit's Manifest data
-			 */
-			$manifest_data = apply_filters( 'elementor/import-export/wp-cli/manifest_data', $manifest_data );
-
-			\WP_CLI::line( 'Removing temp files...' );
-
-			// The file was created from remote or library request, it also should be removed.
-			if ( $url ) {
-				Plugin::$instance->uploads_manager->remove_file_or_dir( dirname( $zip_path ) );
-			}
-
-			\WP_CLI::success( 'Kit imported successfully' );
-		} catch ( \Error $error ) {
-			Plugin::$instance->logger->get_logger()->error( $error->getMessage(), [
-				'meta' => [
-					'trace' => $error->getTraceAsString(),
-				],
-			] );
-
-			if ( $url ) {
-				Plugin::$instance->uploads_manager->remove_file_or_dir( dirname( $zip_path ) );
-			}
-
-			\WP_CLI::error( $error->getMessage() );
+			return esc_html__('Kit Settings Update', 'animation-addons-for-elementor');
 		}
 	}
 
