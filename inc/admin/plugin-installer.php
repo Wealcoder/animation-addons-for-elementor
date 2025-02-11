@@ -16,6 +16,7 @@ class WCF_Plugin_Installer {
 			add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
 			add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
 			add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);				
+			add_action('wp_ajax_aaeaddon_template_dependency_status', [$this, 'dependency_status']);				
 		}     	
     }
 
@@ -190,6 +191,40 @@ class WCF_Plugin_Installer {
         }
 
         return new WP_Error('invalid_source', __('Unsupported source.', 'animation-addons-for-elementor'));
+    }
+
+    function check_plugin_status_by_base_path( $base_path ) {
+        include_once ABSPATH . 'wp-admin/includes/plugin.php';    
+        if ( file_exists( WP_PLUGIN_DIR . '/' . $base_path ) ) {
+            return is_plugin_active( $base_path ) ? 'Active' : 'Inactive';
+        }
+        return __('Not Installed','animation-addons-for-elementor');
+    }
+
+    function check_theme_status_by_directory( $theme_slug ) {
+        $theme = wp_get_theme( $theme_slug );    
+        if ( $theme->exists() ) {
+            return  $theme->is_active() ? 'active' : 'Installed';
+        }
+        return __('not installed','animation-addons-for-elementor');
+    }
+
+    public function dependency_status(){
+        check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+        if (!current_user_can('activate_plugins')) {
+            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
+        }
+        $returns = []; 
+        $dependencies = sanitize_text_field($_REQUEST['dependencies']);
+        
+        $plugins = isset($dependencies['plugins']) && is_array($dependencies['plugins'])  ? $dependencies['plugins'] : [];
+        foreach($plugins as $dep){            
+            
+        }
+
+
+        wp_send_json_success($returns );
     }
 }
 
