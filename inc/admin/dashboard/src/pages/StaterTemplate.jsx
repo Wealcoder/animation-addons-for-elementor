@@ -34,7 +34,6 @@ const StaterTemplate = () => {
       if (loading) return;
       setLoading(true);
       try {
-        console.log(meta);
         const url = new URL(
           `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
         );
@@ -44,7 +43,7 @@ const StaterTemplate = () => {
         }
         if (meta.pageNum) {
           url.searchParams.append("page", meta.pageNum);
-          url.searchParams.append("per_page", 8);
+          url.searchParams.append("per_page", 16);
         }
         if (meta.filterKey) {
           if (meta.filterKey === "popular") {
@@ -63,7 +62,10 @@ const StaterTemplate = () => {
         }
 
         if (meta.license) {
-          url.searchParams.append("premium", meta.license === 'pro' ? 'yes': 'no');
+          url.searchParams.append(
+            "premium",
+            meta.license === "pro" ? "yes" : "no"
+          );
         }
 
         await fetch(url.toString())
@@ -99,7 +101,6 @@ const StaterTemplate = () => {
       if (!viewport) return;
 
       const { scrollTop, scrollHeight, clientHeight } = viewport;
-
       if (scrollTop + clientHeight >= scrollHeight - 5 && !hasReachedBottom) {
         setHasReachedBottom(true);
         setPageNum((prev) => prev + 1);
