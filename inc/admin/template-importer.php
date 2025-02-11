@@ -65,31 +65,25 @@ class AAEAddon_Importer {
 
 			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer'){
 				// Install required plugin
-				if(isset($template_data['dependencies']['plugins'])){
-					
-					foreach($template_data['dependencies']['plugins'] as $item){
-
+				if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){					
+					foreach($template_data['dependencies']['plugins'] as $item){				
 						if(isset($item['host']) && $item['slug']){
-							if($item['host'] == 'self_host'){
-							
+							update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
+							if($item['host'] == 'self_host'){							
 								$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
 							}else{
 								$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
 							}							
 						}
-
 					}
-					
 					$template_data['next_step'] = 'check-template-status';	
-					update_option('aaeaddon_template_import_state', $result);
-
+					update_option('aaeaddon_template_import_state', esc_html__( 'Plugin Installation Done' , 'animation-addons-for-elementor' ));
 				}else{
 					$template_data['next_step'] = 'check-template-status';	
 				}
 				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
-				$tpl = $this->validate_download_file($template_data);
-				
+				$tpl = $this->validate_download_file($template_data);				
 				if($tpl){
 					update_option('aaeaddon_template_import_state', esc_html__( 'Validating demo file' , 'animation-addons-for-elementor' ) );
 					$template_data['next_step'] = 'download-xml-file';
@@ -122,6 +116,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-theme'){
 				$template_data['next_step'] = 'install-elementor-settings';
 				$progress                   = '75';
+				$this->install_theme('hello-animation');
 				update_option('aaeaddon_template_import_state', 'Installing Elementor Settings');
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
 				$template_data['next_step'] = 'done';
@@ -147,6 +142,10 @@ class AAEAddon_Importer {
 	
 		if (!file_exists($file_path)) {
 			return __('file_missing', 'XML file not found.','animation-addons-for-elementor');
+		}
+		
+		if (!class_exists('WP_Importer')) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
 		}
 		
 		require_once ABSPATH . 'wp-admin/includes/import.php';
@@ -254,6 +253,51 @@ class AAEAddon_Importer {
 		}
 		update_option('aaeaddon_template_import_state', esc_html__('File downloaded and saved successfully', 'animation-addons-for-elementor'));
 		return esc_html__('File downloaded and saved successfully at ', 'animation-addons-for-elementor') . $file_path;
+	}
+	function install_theme($slug) {
+		
+		if (empty($slug)) {
+			update_option('aaeaddon_template_import_state', esc_html__('No theme specified.', 'animation-addons-for-elementor'));	
+			return esc_html__('No theme specified.', 'animation-addons-for-elementor');
+		}
+	
+		$theme_slug = sanitize_key($slug);
+
+		$theme_data = wp_get_theme($theme_slug);
+
+		if ($theme_data->exists()) {
+			switch_theme($theme_slug);
+			update_option('aaeaddon_template_import_state', esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor'));
+			return esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor');
+		}
+	
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		require_once ABSPATH . 'wp-admin/includes/theme.php';
+	
+		$api = themes_api('theme_information', array(
+			'slug' => $theme_slug,
+			'fields' => array('sections' => false),
+		));
+	
+		if (is_wp_error($api)) {	
+			return $api->get_error_message();
+		}
+	
+		$upgrader = new \Theme_Upgrader(new \WP_Ajax_Upgrader_Skin());
+		$result = $upgrader->install($api->download_link);
+	
+		if (is_wp_error($result)) {	
+			update_option('aaeaddon_template_import_state', $result->get_error_message());	
+			return $result->get_error_message();
+		}
+
+		if ($theme_data->exists()) {
+			switch_theme($theme_slug);
+			update_option('aaeaddon_template_import_state', esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor'));
+			return esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor');
+		}
+	
+		return esc_html__('Theme Installation Done', 'animation-addons-for-elementor');
 	}
 	
 	
