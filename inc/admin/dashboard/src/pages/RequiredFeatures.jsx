@@ -8,24 +8,57 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTNavigation } from "@/hooks/app.hooks";
+import { useEffect } from "react";
 
 const RequiredFeatures = () => {
-  const { setTabKey } = useTNavigation();  
+  const { setTabKey } = useTNavigation();
 
+  const url = new URL(window.location.href);
+  const templateid = url.searchParams.get("templateid");
   const changeRoute = (value) => {
-    const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
     const template = url.searchParams.get("template");
-    const templateid = url.searchParams.get("templateid");
     url.search = "";
     url.hash = "";
     url.search = `page=${pageQuery}`;
     url.searchParams.set("template", template);
     url.searchParams.set("templateid", templateid);
-    url.searchParams.set("tab", value); 
+    url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
+
+  // useEffect(() => {
+  //   if (templateid) {
+  //     getTemplateData(templateid);
+  //   }
+  // }, []);
+
+  // const getTemplateData = async (id) => {
+  //   try {
+  //     const url = new URL(
+  //       `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/starter-templates/v1/favourites?tpl_id=42`
+  //     );
+
+  //     await fetch(url.toString())
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         if (meta.pageNum === 1) {
+  //           setAllTemplate(data);
+  //           window.AAEADDON_STARTER_TPLS = data;
+  //         } else {
+  //           const updateData = {
+  //             ...data,
+  //             templates: [...meta?.allTemplate?.templates, ...data.templates],
+  //           };
+  //           setAllTemplate(updateData);
+  //           window.AAEADDON_STARTER_TPLS = updateData;
+  //         }
+  //       });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   return (
     <div className="bg-background w-[692px] rounded-2xl p-1.5 shadow-auth-card">
       <div className="border border-border-secondary rounded-xl">
