@@ -89,6 +89,7 @@ class WCF_Plugin_Installer {
     }
 
     public function ajax_install_plugin() {
+
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
         if (!current_user_can('install_plugins')) {
@@ -99,15 +100,14 @@ class WCF_Plugin_Installer {
         $source = isset($_POST['plugin_source']) ? sanitize_text_field($_POST['plugin_source']) : '';
 
         $result = $this->install_plugin($slug, $source);
-
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         }
-
         wp_send_json_success(__('Plugin installed successfully!', 'animation-addons-for-elementor'));
     }
 
     public function ajax_activate_plugin() {
+
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
         if (!current_user_can('activate_plugins')) {
@@ -125,6 +125,7 @@ class WCF_Plugin_Installer {
     }
 
     public function activate_from_editor_plugin() {
+
         check_ajax_referer('wcf-template-library', 'nonce');
 
         if (!current_user_can('activate_plugins')) {
@@ -194,28 +195,38 @@ class WCF_Plugin_Installer {
     }
 
     function check_plugin_status( $base_path ) {
+
         include_once ABSPATH . 'wp-admin/includes/plugin.php';    
         if ( file_exists( WP_PLUGIN_DIR . '/' . $base_path ) ) {
             return is_plugin_active( $base_path ) ? 'Active' : 'Inactive';
         }
+
         return __('Not Installed','animation-addons-for-elementor');
     }
 
     function check_theme_status( $theme_slug ) {
-        $theme = wp_get_theme( $theme_slug );    
+
+        $theme = wp_get_theme( $theme_slug ); 
+
         if ( $theme->exists() ) {
             return ( get_template() === $theme_slug ) ? 'Active' : 'Installed';
         }
+
         return __('Not Installed','animation-addons-for-elementor');
     }
 
+    /**
+     * Dependancy Check    
+     * @return mixed Json | bool
+     */
     public function dependency_status(){
+
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
         if (!current_user_can('activate_plugins')) {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
-        $returns = []; 
+       
         $dependencies = sanitize_text_field(wp_unslash($_REQUEST['dependencies']));
         $dependencies = json_decode($dependencies, true);
 
@@ -229,8 +240,7 @@ class WCF_Plugin_Installer {
             $tm['status'] = $this->check_theme_status($tm['slug']);
        }
 
-
-        wp_send_json_success( ['dependencies' => ['plugins' => $plugins, 'themes' => $themes] ]);
+       wp_send_json_success( ['dependencies' => ['plugins' => $plugins, 'themes' => $themes] ]);
     }
 }
 
