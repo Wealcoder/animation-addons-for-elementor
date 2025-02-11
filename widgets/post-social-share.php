@@ -434,7 +434,7 @@ class Post_Social_Share extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .default-details-social-media a .info-s-title' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .default-details-social-media a' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media a .aae-share-count' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -444,7 +444,7 @@ class Post_Social_Share extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'typography',
-				'selector' => '{{WRAPPER}} .default-details-social-media a',
+				'selector' => '{{WRAPPER}} .default-details-social-media a .info-s-title, {{WRAPPER}} .default-details-social-media a .aae-share-count',
 			]
 		);
 
