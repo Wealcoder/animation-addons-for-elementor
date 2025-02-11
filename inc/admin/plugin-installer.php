@@ -10,11 +10,13 @@ if (!defined('ABSPATH')) {
 
 class WCF_Plugin_Installer {
 
-    public function __construct() {
-        add_action('wp_ajax_wcf_install_plugin', [$this, 'ajax_install_plugin']);
-        add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
-        add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
-        add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);
+    public function __construct( $reload = false ) {
+		if(!$reload){
+			add_action('wp_ajax_wcf_install_plugin', [$this, 'ajax_install_plugin']);
+			add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
+			add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
+			add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);				
+		}     	
     }
 
     /**
@@ -44,7 +46,7 @@ class WCF_Plugin_Installer {
                 return $plugin_data;
             }
             $download_link = $plugin_data->download_link;
-        } elseif ($source === 'self_hosted') {
+        } elseif ($source === 'self_host') {
             if (filter_var($slug, FILTER_VALIDATE_URL)) {
                 $download_link = $slug;
             } else {
@@ -70,7 +72,12 @@ class WCF_Plugin_Installer {
 
         // Activate plugin if requested
         if ($install === true && $active) {
-            $activate = activate_plugin($upgrader->plugin_info(), '', false, true);
+			if($source === 'self_host'){
+				$activate = activate_plugin($upgrader->plugin_info());
+			}else{
+				$activate = activate_plugin($upgrader->plugin_info(), '', false, true);
+			}
+           
             if (is_wp_error($activate)) {
                 return $activate;
             }

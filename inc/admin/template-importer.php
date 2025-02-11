@@ -1,7 +1,7 @@
 <?php
 
 namespace WCF_ADDONS\Admin\Base;
-
+use WCF_ADDONS\Admin\WCF_Plugin_Installer;
 use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,12 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class AAEAddon_Importer {
+
 	public $file_path = 'aaeaddon_tpl_file.xml';
 	/**
 	 * [$_instance]
 	 * @var null
 	 */
 	private static $_instance = null;
+	private $plugin_installer = null;
 
 	/**
 	 * [instance] Initializes a singleton instance
@@ -29,7 +31,8 @@ class AAEAddon_Importer {
 	}
 	public function __construct() {
 		add_action( 'wp_ajax_aaeaddon_template_installer', [ $this, 'template_installer' ] );
-		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );       
+		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );  
+		$this->plugin_installer = new WCF_Plugin_Installer(true);     
 	}
 
 	public function heartbeat_data(){
@@ -62,12 +65,44 @@ class AAEAddon_Importer {
 
 			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer'){
 				// Install required plugin
-				$template_data['next_step'] = 'check-template-status';				
-				update_option('aaeaddon_template_import_state', 'Install Required Plugins');
-			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
+				if(isset($template_data['dependencies']['plugins'])){
+					
+					foreach($template_data['dependencies']['plugins'] as $item){
+
+						if(isset($item['host']) && $item['slug']){
+							if($item['host'] == 'self_host'){
+							
+								$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+							}else{
+								$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
+							}							
+						}
+
+					}
+					
+					$template_data['next_step'] = 'check-template-status';	
+					update_option('aaeaddon_template_import_state', $result);
+
+				}else{
+					$template_data['next_step'] = 'check-template-status';	
+				}
 				
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
+				$tpl = $this->validate_download_file($template_data);
+				
+				if($tpl){
+					update_option('aaeaddon_template_import_state', esc_html__( 'Validating demo file' , 'animation-addons-for-elementor' ) );
+					$template_data['next_step'] = 'download-xml-file';
+					$template_data['file'] = json_decode($tpl);
+				}else{
+					update_option('aaeaddon_template_import_state', esc_html__( 'Invalid file', 'animation-addons-for-elementor'));
+					$template_data['next_step'] = 'fail';
+				}
+
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){					
 				if(isset($template_data['file']['content_url'])){
 					$msg =	$this->download_remote_wp_xml_file($template_data['file']['content_url']);				
+								
 					update_option('aaeaddon_template_import_state', 'Demo file Downloaded');
 					$template_data['next_step'] = 'install-template';
 					$progress                   = '50';				 				
@@ -138,6 +173,47 @@ class AAEAddon_Importer {
 		return 'Import completed successfully.';
 	}
 
+	function validate_download_file($template) {
+	
+		if (empty($template)) {
+			update_option('aaeaddon_template_import_state', esc_html__('Template Required', 'animation-addons-for-elementor'));
+			return false;
+		}
+		
+	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
+		$args = [
+			'timeout'   => 60,
+			'body' => [
+				'template' => $template
+			],
+			'sslverify' => false // Disable SSL verification
+		];	
+	
+		// Fetch the remote file with POST request
+		$response = wp_safe_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args));
+	
+		if (is_wp_error($response)) {
+			update_option('aaeaddon_template_import_state', esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));
+			return false;
+		}
+	
+		$response_code = wp_remote_retrieve_response_code($response);		
+		if ($response_code !== 200) {
+			update_option('aaeaddon_template_import_state', esc_html__('Invalid file arguments. Please check the URL.', 'animation-addons-for-elementor'));
+			return false;
+		}
+	
+		$body = wp_remote_retrieve_body($response);
+	
+		if (empty($body)) {
+			update_option('aaeaddon_template_import_state', esc_html__('The downloadable file is empty.', 'animation-addons-for-elementor'));
+			return false;
+		}
+
+		return $body;
+	}
+	
+	
 	function download_remote_wp_xml_file($remote_url) {
 		
 		if (empty($remote_url)) {
@@ -155,6 +231,7 @@ class AAEAddon_Importer {
 		$body = wp_remote_retrieve_body($response);
 	
 		if (empty($body)) {
+			update_option('aaeaddon_template_import_state', esc_html__('The remote XML file is empty.', 'animation-addons-for-elementor'));
 			return esc_html__('The remote XML file is empty.', 'animation-addons-for-elementor');
 		}
 	
@@ -179,49 +256,6 @@ class AAEAddon_Importer {
 		return esc_html__('File downloaded and saved successfully at ', 'animation-addons-for-elementor') . $file_path;
 	}
 	
-
-	function installed_and_active($slug) {
-		ob_start();    
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
-		$plugin_slug = 'wordpress-importer';
-		$plugin_file = "$plugin_slug/wordpress-importer.php";
-	
-		// Check if the plugin is installed
-		if (!is_dir(WP_PLUGIN_DIR . '/' . $plugin_slug)) {
-			include_once ABSPATH . 'wp-admin/includes/file.php';
-			include_once ABSPATH . 'wp-admin/includes/misc.php';
-			include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-	
-			$api = plugins_api('plugin_information', ['slug' => $plugin_slug]);
-	
-			if (is_wp_error($api)) {
-				update_option('aaeaddon_template_import_state', 'Invalid plugin slug or API error.');
-				return json_encode(['status' => 'error', 'message' => 'Failed to retrieve plugin information.']);
-			}
-	
-			// Install the plugin
-			$upgrader = new \Plugin_Upgrader();
-			$result = $upgrader->install($api->download_link);
-	
-			if (is_wp_error($result)) {
-				update_option('aaeaddon_template_import_state', 'Importer Plugin installation failed.');
-				return json_encode(['status' => 'error', 'message' => 'Plugin installation failed.']);
-			}
-		}
-	
-		// Activate the plugin if not active
-		if (!is_plugin_active($plugin_file)) {
-			$activation_result = activate_plugin(WP_PLUGIN_DIR . '/' . $plugin_file);
-	
-			if (is_wp_error($activation_result)) {
-				return json_encode(['status' => 'error', 'message' => 'Plugin activation failed.']);
-			}
-		}
-	
-		update_option('aaeaddon_template_import_state', 'Importer installed and activated successfully.');
-		return ob_get_clean();
-	}
 	
 }
 AAEAddon_Importer::instance();
