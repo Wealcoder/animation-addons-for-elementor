@@ -70,13 +70,43 @@ const RequiredFeatures = () => {
               changeRoute("demo-importing");
               return;
             }
+            validateData(result);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const validateData = async (mainContent) => {
+    try {
+      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+
+        body: new URLSearchParams({
+          action: "aaeaddon_template_dependency_status",
+          nonce: WCF_ADDONS_ADMIN.nonce,
+          dependencies: JSON.stringify(mainContent?.dependencies),
+        }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((return_content) => {
+          if (return_content.success) {
+            const result = return_content?.data?.dependencies;
             setSelectedPlugins((prev) => {
-              const requiredSlugs = result?.dependencies?.plugins
+              const requiredSlugs = result?.plugins
                 .filter((p) => p.required)
                 .map((p) => p.slug);
-              return Array.from(new Set([...prev, ...requiredSlugs])); // Avoid duplicates
+              return Array.from(new Set([...prev, ...requiredSlugs]));
             });
-            setCurrenTemplate(result);
+            mainContent.dependencies = result;
+            setCurrenTemplate(mainContent);
           }
         });
     } catch (error) {
@@ -85,7 +115,6 @@ const RequiredFeatures = () => {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="bg-background w-[692px] rounded-2xl p-1.5 shadow-auth-card">
       {loading ? (
@@ -148,49 +177,18 @@ const RequiredFeatures = () => {
                             >
                               {plugin.name}
                             </label>
-                            <Badge variant={"installed"}>Installed</Badge>
+                            <Badge
+                              variant={
+                                plugin?.status === "Not Installed"
+                                  ? "inProgress"
+                                  : "installed"
+                              }
+                            >
+                              {plugin?.status}
+                            </Badge>
                           </div>
                         )
                       )}
-                      {/* <div className="flex items-center space-x-2.5">
-                      <Checkbox id="Elementor-Builder" />
-                      <label
-                        htmlFor="Elementor-Builder"
-                        className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Elementor Builder
-                      </label>
-                      <Badge variant={"installed"}>Installed</Badge>
-                    </div>
-                    <div className="flex items-center space-x-2.5">
-                      <Checkbox id="Animation-Addons-for-Elementor" />
-                      <label
-                        htmlFor="Animation-Addons-for-Elementor"
-                        className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Animation Addons for Elementor
-                      </label>
-                      <Badge variant={"installed"}>Installed</Badge>
-                    </div>
-                    <div className="flex items-center space-x-2.5">
-                      <Checkbox id="Jet-Form-Builder-for-Elementor" />
-                      <label
-                        htmlFor="Jet-Form-Builder-for-Elementor"
-                        className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Jet Form Builder for Elementor
-                      </label>
-                      <Badge variant={"inProgress"}>In Progress</Badge>
-                    </div>
-                    <div className="flex items-center space-x-2.5">
-                      <Checkbox id="WooCommerce–WordPress-plugin" />
-                      <label
-                        htmlFor="WooCommerce–WordPress-plugin"
-                        className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        WooCommerce – WordPress plugin
-                      </label>
-                    </div> */}
                     </AccordionContent>
                   </AccordionItem>
                 ) : (
@@ -234,7 +232,15 @@ const RequiredFeatures = () => {
                           >
                             {theme.title}
                           </label>
-                          <Badge variant={"installed"}>Installed</Badge>
+                          <Badge
+                            variant={
+                              theme?.status === "Not Installed"
+                                ? "inProgress"
+                                : "installed"
+                            }
+                          >
+                            {theme?.status}
+                          </Badge>
                         </div>
                       ))}
                     </AccordionContent>

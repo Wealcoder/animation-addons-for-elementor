@@ -193,7 +193,7 @@ class WCF_Plugin_Installer {
         return new WP_Error('invalid_source', __('Unsupported source.', 'animation-addons-for-elementor'));
     }
 
-    function check_plugin_status_by_base_path( $base_path ) {
+    function check_plugin_status( $base_path ) {
         include_once ABSPATH . 'wp-admin/includes/plugin.php';    
         if ( file_exists( WP_PLUGIN_DIR . '/' . $base_path ) ) {
             return is_plugin_active( $base_path ) ? 'Active' : 'Inactive';
@@ -201,12 +201,12 @@ class WCF_Plugin_Installer {
         return __('Not Installed','animation-addons-for-elementor');
     }
 
-    function check_theme_status_by_directory( $theme_slug ) {
+    function check_theme_status( $theme_slug ) {
         $theme = wp_get_theme( $theme_slug );    
         if ( $theme->exists() ) {
-            return  $theme->is_active() ? 'active' : 'Installed';
+            return ( get_template() === $theme_slug ) ? 'Active' : 'Installed';
         }
-        return __('not installed','animation-addons-for-elementor');
+        return __('Not Installed','animation-addons-for-elementor');
     }
 
     public function dependency_status(){
@@ -216,15 +216,21 @@ class WCF_Plugin_Installer {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
         $returns = []; 
-        $dependencies = sanitize_text_field($_REQUEST['dependencies']);
-        
+        $dependencies = sanitize_text_field(wp_unslash($_REQUEST['dependencies']));
+        $dependencies = json_decode($dependencies, true);
+
         $plugins = isset($dependencies['plugins']) && is_array($dependencies['plugins'])  ? $dependencies['plugins'] : [];
-        foreach($plugins as $dep){            
-            
+        $themes = isset($dependencies['themes']) && is_array($dependencies['themes'])  ? $dependencies['themes'] : [];
+        foreach($plugins as &$dep){           
+             $dep['status'] = $this->check_plugin_status($dep['Base_Slug']);
         }
 
+        foreach($themes as &$tm){           
+            $tm['status'] = $this->check_theme_status($tm['slug']);
+       }
 
-        wp_send_json_success($returns );
+
+        wp_send_json_success( ['dependencies' => ['plugins' => $plugins, 'themes' => $themes] ]);
     }
 }
 

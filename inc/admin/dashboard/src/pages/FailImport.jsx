@@ -30,7 +30,7 @@ const FailImport = () => {
         <div className="mb-6">
           <h3 className="text-2xl font-medium">Fail to Import</h3>
           <p className="mt-1.5 text-text-secondary">
-            Your website is not ready to use.
+            An issue occurred while importing
           </p>
         </div>
         <div className="mb-6">

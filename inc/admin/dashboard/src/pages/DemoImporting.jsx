@@ -112,7 +112,7 @@ const DemoImporting = () => {
         formData.append("action", "aaeaddon_template_installer"); // Custom action name
         formData.append("template_data", JSON.stringify(tpldata)); // Optional custom data
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce); // Assuming nonce is available in the object
-        if (plugins) formData.append("user_plugin", plugins);
+        if (plugins) formData.append("user_plugins", plugins);
         if (theme) formData.append("theme_slug", theme);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",
