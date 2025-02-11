@@ -10,11 +10,14 @@ if (!defined('ABSPATH')) {
 
 class WCF_Plugin_Installer {
 
-    public function __construct() {
-        add_action('wp_ajax_wcf_install_plugin', [$this, 'ajax_install_plugin']);
-        add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
-        add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
-        add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);
+    public function __construct( $reload = false ) {
+		if(!$reload){
+			add_action('wp_ajax_wcf_install_plugin', [$this, 'ajax_install_plugin']);
+			add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
+			add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
+			add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);				
+			add_action('wp_ajax_aaeaddon_template_dependency_status', [$this, 'dependency_status']);				
+		}     	
     }
 
     /**
@@ -44,7 +47,7 @@ class WCF_Plugin_Installer {
                 return $plugin_data;
             }
             $download_link = $plugin_data->download_link;
-        } elseif ($source === 'self_hosted') {
+        } elseif ($source === 'self_host') {
             if (filter_var($slug, FILTER_VALIDATE_URL)) {
                 $download_link = $slug;
             } else {
@@ -70,7 +73,12 @@ class WCF_Plugin_Installer {
 
         // Activate plugin if requested
         if ($install === true && $active) {
-            $activate = activate_plugin($upgrader->plugin_info(), '', false, true);
+			if($source === 'self_host'){
+				$activate = activate_plugin($upgrader->plugin_info());
+			}else{
+				$activate = activate_plugin($upgrader->plugin_info(), '', false, true);
+			}
+           
             if (is_wp_error($activate)) {
                 return $activate;
             }
@@ -81,6 +89,7 @@ class WCF_Plugin_Installer {
     }
 
     public function ajax_install_plugin() {
+
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
         if (!current_user_can('install_plugins')) {
@@ -91,15 +100,14 @@ class WCF_Plugin_Installer {
         $source = isset($_POST['plugin_source']) ? sanitize_text_field($_POST['plugin_source']) : '';
 
         $result = $this->install_plugin($slug, $source);
-
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         }
-
         wp_send_json_success(__('Plugin installed successfully!', 'animation-addons-for-elementor'));
     }
 
     public function ajax_activate_plugin() {
+
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
         if (!current_user_can('activate_plugins')) {
@@ -113,10 +121,11 @@ class WCF_Plugin_Installer {
             wp_send_json_error($result->get_error_message());
         }
 
-        wp_send_json_success(__('Plugin activated successfully!', 'animation-addons-for-elementor'));
+        wp_send_json_success(['message'=>__('Plugin activated successfully!', 'animation-addons-for-elementor')]);
     }
 
     public function activate_from_editor_plugin() {
+
         check_ajax_referer('wcf-template-library', 'nonce');
 
         if (!current_user_can('activate_plugins')) {
@@ -183,6 +192,55 @@ class WCF_Plugin_Installer {
         }
 
         return new WP_Error('invalid_source', __('Unsupported source.', 'animation-addons-for-elementor'));
+    }
+
+    function check_plugin_status( $base_path ) {
+
+        include_once ABSPATH . 'wp-admin/includes/plugin.php';    
+        if ( file_exists( WP_PLUGIN_DIR . '/' . $base_path ) ) {
+            return is_plugin_active( $base_path ) ? 'Active' : 'Inactive';
+        }
+
+        return __('Not Installed','animation-addons-for-elementor');
+    }
+
+    function check_theme_status( $theme_slug ) {
+
+        $theme = wp_get_theme( $theme_slug ); 
+
+        if ( $theme->exists() ) {
+            return ( get_template() === $theme_slug ) ? 'Active' : 'Installed';
+        }
+
+        return __('Not Installed','animation-addons-for-elementor');
+    }
+
+    /**
+     * Dependancy Check    
+     * @return mixed Json | bool
+     */
+    public function dependency_status(){
+
+        check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+        if (!current_user_can('activate_plugins')) {
+            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
+        }
+       
+        $dependencies = sanitize_text_field(wp_unslash($_REQUEST['dependencies']));
+        $dependencies = json_decode($dependencies, true);
+
+        $plugins = isset($dependencies['plugins']) && is_array($dependencies['plugins'])  ? $dependencies['plugins'] : [];
+        $themes = isset($dependencies['themes']) && is_array($dependencies['themes'])  ? $dependencies['themes'] : [];
+        foreach($plugins as &$dep){           
+             $dep['status'] = $this->check_plugin_status($dep['Base_Slug']);
+        }
+
+        foreach($themes as &$tm){           
+            $tm['status'] = $this->check_theme_status($tm['slug']);
+       }
+
+       wp_send_json_success( ['dependencies' => ['plugins' => $plugins, 'themes' => $themes] ]);
     }
 }
 

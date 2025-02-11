@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class WCF_Admin_Init {
+
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
@@ -197,8 +198,8 @@ class WCF_Admin_Init {
 	 */
 	public function include() {
 		require_once( 'template-functions.php' );
-		require_once( 'template-importer.php' );
 		require_once( 'plugin-installer.php' );
+		require_once( 'template-importer.php' );		
 	}
 
 	/**
@@ -272,7 +273,8 @@ class WCF_Admin_Init {
 				'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
 				'user_role'           => wcfaddon_get_current_user_roles(),
 				'version'             => WCF_ADDONS_VERSION,
-				'st_template_domain'		=> "https://framerbiz.com/starter-templates/"	 
+				'st_template_domain'		=> WCF_TEMPLATE_STARTER_BASE_URL,
+				'home_url' 	 					=> home_url('/')
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );

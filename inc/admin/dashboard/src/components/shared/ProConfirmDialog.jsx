@@ -28,7 +28,8 @@ const ProConfirmDialog = ({ open, setOpen }) => {
 
       body: new URLSearchParams({
         action: "wcf_active_plugin",
-        action_base: "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
+        action_base:
+          "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
@@ -36,9 +37,8 @@ const ProConfirmDialog = ({ open, setOpen }) => {
         return response.json();
       })
       .then((return_content) => {
-        console.log(return_content);
         if (return_content?.success) {
-          toast.success(return_content?.message, {
+          toast.success(return_content?.data?.message, {
             position: "top-right",
           });
 
