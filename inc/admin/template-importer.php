@@ -34,14 +34,39 @@ class AAEAddon_Importer {
 	public function __construct() {
 		add_action( 'wp_ajax_aaeaddon_template_installer', [ $this, 'template_installer' ] );
 		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );  
+		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] );  
 		$this->plugin_installer = new WCF_Plugin_Installer(true);     
 	}
 
 	public function heartbeat_data(){
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
-        $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => get_option('aaeaddon_template_import_state')]);
-        // $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => false]);
+        $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => get_option('aaeaddon_template_import_state')]);        
 		wp_send_json($return_data);		
+	}
+
+	public function wishlist(){
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
+		}
+
+    if (!isset($_POST['wishlist'])) {
+			wp_send_json_error( __( 'Provide wishlist data', 'animation-addons-for-elementor' ) );
+		} 
+		
+		$wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Remove slashes if added by WP		
+		$updated = update_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', $wishlist );
+		if(get_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', true ) === false) {
+		$wishlist_db = [$wishlist];
+		} else {
+			$wishlist_db = get_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', true );
+			if(is_array($wishlist_db) || 1) {
+				$wishlist_db[] = $wishlist;
+				$wishlist_db = array_unique($wishlist_db);
+			}
+		}
+		
+		wp_send_json($wishlist_db);		
 	}
 
 	public function template_installer(){

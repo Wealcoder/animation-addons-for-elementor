@@ -24,6 +24,33 @@ const TemplateShow = ({ allTemplate }) => {
     setTabKey(value);
   };
 
+  const saveWishlist = async (data) => {
+    try {
+      console.log(data);
+      console.log(allTemplate);
+      await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+
+        body: new URLSearchParams({
+          action: "aaeaddon_wishlist_option",
+          wishlist: JSON.stringify(data),
+          nonce: WCF_ADDONS_ADMIN.nonce,
+          settings: "wcf_save_widgets",
+        }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((return_content) => {
+          console.log(return_content);
+        });
+    } catch (error) {}
+  };
+
   return (
     <div className="grid grid-cols-4 gap-x-5 gap-y-8">
       {allTemplate?.templates?.map((template, i) => (
@@ -92,7 +119,7 @@ const TemplateShow = ({ allTemplate }) => {
                 aria-label="Toggle bold"
                 defaultPressed={template.isFavorite}
                 pressed={template.isFavorite}
-                onPressedChange={(value) => storeWisList(template.id)}
+                onPressedChange={(value) => saveWishlist(template.id)}
                 className={`[&[data-state=on]>svg]:fill-[#FF5733] [&[data-state=on]>svg]:stroke-[#FF5733] items-start px-0 cursor-pointer`}
               >
                 <Heart size={20} className="text-icon-secondary" />
