@@ -3,6 +3,14 @@ import TemplateRightContent from "@/components/template/right/TemplateRightConte
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { debounceFn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);
@@ -15,6 +23,7 @@ const StaterTemplate = () => {
   const [types, setTypes] = useState([]);
   const [license, setLicense] = useState("");
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [openSidebar, setOpenSidebar] = useState(false);
 
   useEffect(() => {
     const meta = {
@@ -141,6 +150,26 @@ const StaterTemplate = () => {
           setPageNum={setPageNum}
         />
       </div>
+      <Sheet open={openSidebar} onOpenChange={setOpenSidebar}>
+        <SheetContent
+          className="lg:hidden w-[278px] border-r border-border h-[calc(100vh-48px)] mt-0"
+          side={"left"}
+        >
+          <SheetHeader className="hidden">
+            <SheetTitle></SheetTitle>
+            <SheetDescription></SheetDescription>
+          </SheetHeader>
+          <TemplateLeftFilter
+            types={types}
+            setTypes={setTypes}
+            license={license}
+            setLicense={setLicense}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            setPageNum={setPageNum}
+          />
+        </SheetContent>
+      </Sheet>
       <ScrollArea
         className="h-[calc(100vh-85px)] flex-1"
         ref={viewportRef}
@@ -154,6 +183,7 @@ const StaterTemplate = () => {
             setFilterKey={setFilterKey}
             setPageNum={setPageNum}
             allTemplate={allTemplate}
+            setOpenSidebar={setOpenSidebar}
           />
           <div className="flex justify-center items-center h-[10vh]">
             {loading ? <p className="text-lg font-semibold">Loading...</p> : ""}
