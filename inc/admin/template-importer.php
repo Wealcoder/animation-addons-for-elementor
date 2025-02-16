@@ -53,10 +53,16 @@ class AAEAddon_Importer {
 		$progress = '25';	
 		$msg = '';			
 		$template_data = [];
-		$theme_slug = null;
+		$theme_slug = $user_plugins = null;
+
 		if (isset($_POST['theme_slug'])) {
 			$theme_slug = sanitize_text_field(wp_unslash($_POST['theme_slug'])); // Remove slashes if added by WP		
 		}
+		if (isset($_POST['user_plugins'])) {
+			$user_plugins = sanitize_text_field(wp_unslash($_POST['user_plugins'])); // Remove slashes if added by WP	
+			$user_plugins = explode(',',$user_plugins);	
+		}
+		
 		if (isset($_POST['template_data'])) {
 			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
 			$template_data = json_decode($json_data, true);		
@@ -69,17 +75,20 @@ class AAEAddon_Importer {
 				});			
 			}
 
-			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer'){
+			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer' && is_array($user_plugins) && $user_plugins){
 				// Install required plugin
+			    
 				if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){					
-					foreach($template_data['dependencies']['plugins'] as $item){				
-						if(isset($item['host']) && $item['slug']){
-							update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
-							if($item['host'] == 'self_host'){							
-								$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
-							}else{
-								$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
-							}							
+					foreach($template_data['dependencies']['plugins'] as $item){
+						if (in_array($item['slug'], $user_plugins)) {				
+							if(isset($item['host']) && $item['slug']){
+								update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
+								if($item['host'] == 'self_host'){							
+									$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+								}else{
+									$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
+								}							
+							}
 						}
 					}
 					$template_data['next_step'] = 'check-template-status';	
@@ -139,14 +148,14 @@ class AAEAddon_Importer {
 				}	
 				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
+
 				$template_data['next_step'] = 'done';
 				$progress                   = '100';
-				$msg                        = 'Done';	
+				$msg                        = 'done';	
 				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
 					$this->install_options($template_data['wp_options']);
-				}
-							
-				delete_option('aaeaddon_template_import_state');			
+				}							
+				update_option('aaeaddon_template_import_state', 'done');			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
 			}else{
