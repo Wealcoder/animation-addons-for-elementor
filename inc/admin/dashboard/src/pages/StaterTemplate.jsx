@@ -25,7 +25,9 @@ const StaterTemplate = () => {
       license,
       selectedCategory,
       allTemplate,
+      wishlist: WCF_ADDONS_ADMIN.addons_config.wishlist.toString(),
     };
+
     getAllTemplate(meta);
   }, [searchKey, filterKey, pageNum, types, license, selectedCategory]);
 
@@ -59,6 +61,8 @@ const StaterTemplate = () => {
 
         if (meta?.types?.includes("favorites")) {
           url.searchParams.append("favourites", 1);
+        } else if (meta?.types?.includes("wishlist")) {
+          url.searchParams.append("wishlist", meta.wishlist);
         }
 
         if (meta.license) {
