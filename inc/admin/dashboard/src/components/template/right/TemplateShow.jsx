@@ -52,11 +52,11 @@ const TemplateShow = ({ allTemplate }) => {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-x-5 gap-y-8">
+    <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-5 gap-y-8">
       {allTemplate?.templates?.map((template, i) => (
         <div key={`all_template-${i}`} className="group" id={template?.slug}>
           <div
-            className="rounded-[12px] overflow-hidden border border-[#ededed] bg-no-repeat h-[330px]"
+            className="rounded-[12px] overflow-hidden border border-[#ededed] bg-no-repeat aspect-[380/330]"
             style={{
               backgroundImage: `url(${template?.template_preview})`,
               backgroundSize: "100%",

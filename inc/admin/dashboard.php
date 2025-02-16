@@ -277,7 +277,7 @@ class WCF_Admin_Init {
 				'home_url' 	 					=> home_url('/')
 			];
 			
-			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data );
+			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN',$localize_data );
 
 		}
 	}

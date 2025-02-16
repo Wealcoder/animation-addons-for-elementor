@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AAEAddon_Importer {
 
 	public $file_path = 'aaeaddon_tpl_file.xml';
+	public $wishlist_key = 'aaeaddon_user_wishlists';
 	/**
 	 * [$_instance]
 	 * @var null
@@ -36,6 +37,15 @@ class AAEAddon_Importer {
 		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );  
 		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] );  
 		$this->plugin_installer = new WCF_Plugin_Installer(true);     
+		add_filter('wcf_addons_dashboard_config', [ $this, 'include_user_wishlist']);
+	}
+
+	public function include_user_wishlist($config) {
+		$user_id = get_current_user_id();
+    
+    // Fetch existing wishlist data
+    $config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
+		return $config;
 	}
 
 	public function heartbeat_data(){
@@ -44,30 +54,40 @@ class AAEAddon_Importer {
 		wp_send_json($return_data);		
 	}
 
-	public function wishlist(){
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
-		if ( ! current_user_can( 'install_plugins' ) ) {
-			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
-		}
+	public function wishlist() {
+    check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+    if (!current_user_can('install_plugins')) {
+        wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
+    }
 
     if (!isset($_POST['wishlist'])) {
-			wp_send_json_error( __( 'Provide wishlist data', 'animation-addons-for-elementor' ) );
-		} 
-		
-		$wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Remove slashes if added by WP		
-		$updated = update_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', $wishlist );
-		if(get_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', true ) === false) {
-		$wishlist_db = [$wishlist];
-		} else {
-			$wishlist_db = get_user_meta( get_current_user_id(), 'aaeaddon_user_wishlist', true );
-			if(is_array($wishlist_db) || 1) {
-				$wishlist_db[] = $wishlist;
-				$wishlist_db = array_unique($wishlist_db);
-			}
-		}
-		
-		wp_send_json($wishlist_db);		
-	}
+        wp_send_json_error(__('Provide wishlist data.', 'animation-addons-for-elementor'));
+    }
+
+    $wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Sanitize input
+    $user_id = get_current_user_id();
+    
+    // Fetch existing wishlist data
+    $wishlist_db = get_user_meta($user_id, $this->wishlist_key, true);
+    
+    // Ensure it's an array
+    $wishlist_db = is_array($wishlist_db) ? $wishlist_db : [];
+
+    if (in_array($wishlist, $wishlist_db, true)) {
+        // Remove if exists
+        $wishlist_db = array_values(array_filter($wishlist_db, fn($v) => $v !== $wishlist));
+    } else {
+        // Add new item
+        $wishlist_db[] = $wishlist;
+    }
+
+    // Update user meta with modified wishlist
+    update_user_meta($user_id, $this->wishlist_key, $wishlist_db);
+
+    wp_send_json_success($wishlist_db);
+}
+
 
 	public function template_installer(){
 

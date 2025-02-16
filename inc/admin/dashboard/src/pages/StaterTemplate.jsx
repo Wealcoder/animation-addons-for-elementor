@@ -126,7 +126,7 @@ const StaterTemplate = () => {
 
   return (
     <div className="flex">
-      <div className="w-[278px] border-r border-border h-[calc(100vh-85px)]">
+      <div className="hidden lg:block w-[278px] border-r border-border h-[calc(100vh-85px)]">
         <TemplateLeftFilter
           types={types}
           setTypes={setTypes}
