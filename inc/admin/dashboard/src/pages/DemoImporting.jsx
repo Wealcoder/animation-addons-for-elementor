@@ -33,6 +33,16 @@ const DemoImporting = () => {
     setTabKey(value);
   };
 
+  const changeCompleteRoute = (value) => {
+    const pageQuery = url.searchParams.get("page");
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;  
+    url.searchParams.set("tab", value); 
+    window.history.replaceState({}, "", url);
+    setTabKey(value);
+  };
+
   const [step, setStep] = useState("Varifying");
   useEffect(() => {
     if (!currenTemplate) {
@@ -41,7 +51,7 @@ const DemoImporting = () => {
       runImport(currenTemplate);
     }
 
-    const interval = setInterval(fetchHeartbeatData, 3000);
+    const interval = setInterval(fetchHeartbeatData, 5000);
     return () => clearInterval(interval);
   }, [currenTemplate]);
 
@@ -132,16 +142,18 @@ const DemoImporting = () => {
           if (data?.progress) {
             setProgress(data.progress);
           }
-          if (data?.template) {
-            if (data.template.next_step != "done") {
+          if (data?.template) {      
+            const completed = data.template.next_step?.trim().toLowerCase() === 'done'; 
+            if(completed === true) {            
+              changeCompleteRoute("complete-import");              
+            }else if ( data.template.next_step === 'fail' ) {
+              changeRoute("fail-import", { plugins , theme });             
+            }else{
               runImport(data.template);
               setStep(data.template.next_step);
               setMsg(data.msg);
-            } else if (data.template.next_step == "fail") {
-              changeRoute("fail-import", { plugins, theme });
-            } else if (data.template.next_step == "done") {
-              changeRoute("complete-import");
             }
+
           }
         } else {
           runImport(tpldata);
