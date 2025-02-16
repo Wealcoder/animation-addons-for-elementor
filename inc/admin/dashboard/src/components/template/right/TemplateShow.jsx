@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { useTNavigation } from "@/hooks/app.hooks";
+import { storeWisList } from "@/lib/wishlistStoreFunction";
 import { Dot, Heart } from "lucide-react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
@@ -90,6 +91,8 @@ const TemplateShow = ({ allTemplate }) => {
               <Toggle
                 aria-label="Toggle bold"
                 defaultPressed={template.isFavorite}
+                pressed={template.isFavorite}
+                onPressedChange={(value) => storeWisList(template.id)}
                 className={`[&[data-state=on]>svg]:fill-[#FF5733] [&[data-state=on]>svg]:stroke-[#FF5733] items-start px-0 cursor-pointer`}
               >
                 <Heart size={20} className="text-icon-secondary" />
