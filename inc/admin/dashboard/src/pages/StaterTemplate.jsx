@@ -9,17 +9,17 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);
+  const prevScrollTop = useRef(0); // Track previous scroll position
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [filterKey, setFilterKey] = useState("");
   const [allTemplate, setAllTemplate] = useState({});
   const [pageNum, setPageNum] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [license, setLicense] = useState("");
   const [selectedCategory, setSelectedCategory] = useState([]);
@@ -42,7 +42,6 @@ const StaterTemplate = () => {
 
   const getAllTemplate = useCallback(
     debounceFn(async (meta) => {
-      if (loading) return;
       setLoading(true);
       try {
         const url = new URL(
@@ -54,7 +53,7 @@ const StaterTemplate = () => {
         }
         if (meta.pageNum) {
           url.searchParams.append("page", meta.pageNum);
-          url.searchParams.append("per_page", 16);
+          url.searchParams.append("per_page", 8);
         }
         if (meta.filterKey) {
           if (meta.filterKey === "popular") {
@@ -114,7 +113,19 @@ const StaterTemplate = () => {
       if (!viewport) return;
 
       const { scrollTop, scrollHeight, clientHeight } = viewport;
-      if (scrollTop + clientHeight >= scrollHeight - 5 && !hasReachedBottom) {
+
+      // Check if scrolling down
+      const isScrollingDown = scrollTop > prevScrollTop.current;
+
+      // Update previous scroll position
+      prevScrollTop.current = scrollTop;
+
+      // Only trigger if scrolling down and near the bottom
+      if (
+        isScrollingDown &&
+        scrollTop + clientHeight >= scrollHeight - 5 &&
+        !hasReachedBottom
+      ) {
         setHasReachedBottom(true);
         setPageNum((prev) => prev + 1);
       }
@@ -133,9 +144,14 @@ const StaterTemplate = () => {
         viewport.removeEventListener("scroll", handleScroll);
       }
     };
-  }, [hasReachedBottom]);
+  }, [hasReachedBottom, allTemplate]);
 
-  const resetFlag = () => setHasReachedBottom(false);
+  // Reset the hasReachedBottom flag after loading more content
+  useEffect(() => {
+    if (hasReachedBottom) {
+      setHasReachedBottom(false);
+    }
+  }, [allTemplate]);
 
   return (
     <div className="flex">
@@ -170,24 +186,23 @@ const StaterTemplate = () => {
           />
         </SheetContent>
       </Sheet>
-      <ScrollArea
-        className="h-[calc(100vh-85px)] flex-1"
-        ref={viewportRef}
-        onScroll={resetFlag}
-      >
+      <ScrollArea className="h-[calc(100vh-85px)] flex-1" ref={viewportRef}>
         <>
-          <TemplateRightContent
-            searchKey={searchKey}
-            setSearchKey={setSearchKey}
-            filterKey={filterKey}
-            setFilterKey={setFilterKey}
-            setPageNum={setPageNum}
-            allTemplate={allTemplate}
-            setOpenSidebar={setOpenSidebar}
-          />
-          <div className="flex justify-center items-center h-[10vh]">
-            {loading ? <p className="text-lg font-semibold">Loading...</p> : ""}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center h-[10vh]">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          ) : (
+            <TemplateRightContent
+              searchKey={searchKey}
+              setSearchKey={setSearchKey}
+              filterKey={filterKey}
+              setFilterKey={setFilterKey}
+              setPageNum={setPageNum}
+              allTemplate={allTemplate}
+              setOpenSidebar={setOpenSidebar}
+            />
+          )}
         </>
       </ScrollArea>
     </div>

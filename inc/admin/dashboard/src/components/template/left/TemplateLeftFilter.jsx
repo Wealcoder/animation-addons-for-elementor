@@ -2,6 +2,7 @@ import {
   RiFileTextLine,
   RiGift2Line,
   RiHeartLine,
+  RiShoppingBasketLine,
   RiVipCrown2Line,
 } from "react-icons/ri";
 import {
@@ -67,7 +68,7 @@ const TemplateLeftFilter = ({
                       className="ps-2"
                       aria-label="Toggle wish list"
                     >
-                      <RiHeartLine size={18} className="text-icon" /> Wishlist
+                      <RiShoppingBasketLine size={18} className="text-icon" /> Wishlist
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="favorites"
