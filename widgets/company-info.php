@@ -349,6 +349,22 @@ class Company_Info extends Widget_Base {
 			]
 		);
 
+		$repeater->add_control(
+			'col_span',
+			[
+				'label'   => esc_html__( 'Col Span', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => '1',
+				'options' => [
+					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
+					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
+					'3' => esc_html__( '3', 'animation-addons-for-elementor' ),
+					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
+					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+
 		$this->add_control(
 			'social_posts',
 			[
@@ -356,39 +372,6 @@ class Company_Info extends Widget_Base {
 				'type'    => Controls_Manager::REPEATER,
 				'fields'  => $repeater->get_controls(),
 				'default' => [ [], [] ],
-			]
-		);
-
-		$this->add_control(
-			'masonry_position',
-			[
-				'label'     => esc_html__( 'Masonry Position', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::NUMBER,
-				'min'       => 1,
-				'max'       => 9,
-				'default'   => 3,
-				'selectors' => [
-					'{{WRAPPER}} .aae--company-profile .item' => '--masonry-position: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'masonry_span',
-			[
-				'label'     => esc_html__( 'Col Span', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => '2',
-				'options'   => [
-					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
-					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
-					'3' => esc_html__( '3', 'animation-addons-for-elementor' ),
-					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
-					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
-				],
-				'selectors' => [
-					'{{WRAPPER}} .aae--company-profile .item' => '--col-span: {{VALUE}};',
-				],
 			]
 		);
 
@@ -409,7 +392,7 @@ class Company_Info extends Widget_Base {
 			[
 				'label'     => esc_html__( 'Columns', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
-				'default'   => '4',
+				'default'   => '6',
 				'options'   => [
 					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
 					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
@@ -1043,8 +1026,10 @@ class Company_Info extends Widget_Base {
 						foreach ( $settings['social_posts'] as $index => $item ) {
 							$post_id = 'post_' . $index;
 							$this->add_link_attributes( $post_id, $item['social_post_link'] );
+							$this->add_render_attribute( $post_id, 'class', 'item' );
+							$this->add_render_attribute( $post_id, 'style', '--col-span:' . esc_attr( $item['col_span'] ) . ';' );
 							?>
-                            <a <?php $this->print_render_attribute_string( $post_id ); ?> class="item">
+                            <a <?php $this->print_render_attribute_string( $post_id ); ?>>
                                 <img src="<?php echo esc_url( $item['social_post_img']['url'] ); ?>"
                                      alt="<?php echo esc_attr( 'Post Image', 'animation-addons-for-elementor' ); ?>">
                             </a>
