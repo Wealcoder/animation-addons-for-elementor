@@ -103,7 +103,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_layout',
 			[
-				'label' => esc_html__( 'Layout', 'textdomain' ),
+				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -120,7 +120,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'layout_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'textdomain' ),
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
@@ -156,20 +156,20 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_name',
 			[
-				'label'       => esc_html__( 'Profile Name', 'textdomain' ),
+				'label'       => esc_html__( 'Profile Name', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'WealCoder', 'textdomain' ),
-				'placeholder' => esc_html__( 'Type your profile name here', 'textdomain' ),
+				'default'     => esc_html__( 'WealCoder', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your profile name here', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'badge_type',
 			[
-				'label'        => esc_html__( 'Badge Visibility', 'textdomain' ),
+				'label'        => esc_html__( 'Badge Visibility', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'textdomain' ),
-				'label_off'    => esc_html__( 'Hide', 'textdomain' ),
+				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -178,7 +178,7 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_badge',
 			[
-				'label'       => esc_html__( 'Profile Badge', 'textdomain' ),
+				'label'       => esc_html__( 'Profile Badge', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -193,7 +193,7 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_link',
 			[
-				'label'       => esc_html__( 'Profile Link', 'textdomain' ),
+				'label'       => esc_html__( 'Profile Link', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::URL,
 				'options'     => [ 'url', 'is_external', 'nofollow' ],
 				'default'     => [
@@ -208,21 +208,21 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_text',
 			[
-				'label'       => esc_html__( 'Follow Text', 'textdomain' ),
+				'label'       => esc_html__( 'Follow Text', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'Follow', 'textdomain' ),
-				'placeholder' => esc_html__( 'Type your button text here', 'textdomain' ),
+				'default'     => esc_html__( 'Follow', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your button text here', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'following',
 			[
-				'label'       => esc_html__( 'Total Following', 'textdomain' ),
+				'label'       => esc_html__( 'Total Following', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( '[1,081] Following', 'textdomain' ),
-				'placeholder' => esc_html__( 'Type your total following', 'textdomain' ),
-                'label_block' => true,
+				'default'     => esc_html__( '[1,081] Following', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your total following', 'animation-addons-for-elementor' ),
+				'label_block' => true,
 				'description' => 'For Highlight, keep text in [ ]. Ex. [ Text ]',
 			]
 		);
@@ -230,11 +230,11 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follower',
 			[
-				'label'       => esc_html__( 'Total Followers', 'textdomain' ),
+				'label'       => esc_html__( 'Total Followers', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
 				'label_block' => true,
-				'default'     => esc_html__( '[32M] Followers', 'textdomain' ),
-				'placeholder' => esc_html__( 'Type your total followers here', 'textdomain' ),
+				'default'     => esc_html__( '[32M] Followers', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your total followers here', 'animation-addons-for-elementor' ),
 				'description' => 'For Highlight, keep text in [ ]. Ex. [ Text ]',
 			]
 		);
@@ -242,7 +242,7 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_logo',
 			[
-				'label'   => esc_html__( 'Profile Logo', 'textdomain' ),
+				'label'   => esc_html__( 'Profile Logo', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -264,17 +264,17 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_name',
 			[
-				'label'       => esc_html__( 'Website Name', 'textdomain' ),
+				'label'       => esc_html__( 'Website Name', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'wealcoder.com', 'textdomain' ),
-				'placeholder' => esc_html__( 'Type your company website name here', 'textdomain' ),
+				'default'     => esc_html__( 'wealcoder.com', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your company website name here', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'website_icon',
 			[
-				'label'       => esc_html__( 'Icon', 'textdomain' ),
+				'label'       => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -288,7 +288,7 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_link',
 			[
-				'label'       => esc_html__( 'Company Website Link', 'textdomain' ),
+				'label'       => esc_html__( 'Company Website Link', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::URL,
 				'options'     => [ 'url', 'is_external', 'nofollow' ],
 				'default'     => [
@@ -303,10 +303,10 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'post_published',
 			[
-				'label'       => esc_html__( 'Total Posts Published', 'textdomain' ),
+				'label'       => esc_html__( 'Total Posts Published', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( '421.1K posts', 'textdomain' ),
-				'placeholder' => esc_html__( '421.1K posts published', 'textdomain' ),
+				'default'     => esc_html__( '421.1K posts', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( '421.1K posts published', 'animation-addons-for-elementor' ),
 				'label_block' => true,
 			]
 		);
@@ -326,7 +326,7 @@ class Company_Info extends Widget_Base {
 		$repeater->add_control(
 			'social_post_img',
 			[
-				'label'   => esc_html__( 'Social Post Image', 'textdomain' ),
+				'label'   => esc_html__( 'Social Post Image', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -337,7 +337,7 @@ class Company_Info extends Widget_Base {
 		$repeater->add_control(
 			'social_post_link',
 			[
-				'label'       => esc_html__( 'Social Post Link', 'textdomain' ),
+				'label'       => esc_html__( 'Social Post Link', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::URL,
 				'options'     => [ 'url', 'is_external', 'nofollow' ],
 				'default'     => [
@@ -352,10 +352,43 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'social_posts',
 			[
-				'label'   => esc_html__( 'Social Posts', 'textdomain' ),
+				'label'   => esc_html__( 'Social Posts', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::REPEATER,
 				'fields'  => $repeater->get_controls(),
 				'default' => [ [], [] ],
+			]
+		);
+
+		$this->add_control(
+			'masonry_position',
+			[
+				'label'     => esc_html__( 'Masonry Position', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::NUMBER,
+				'min'       => 1,
+				'max'       => 9,
+				'default'   => 3,
+				'selectors' => [
+					'{{WRAPPER}} .aae--company-profile .item' => '--masonry-position: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'masonry_span',
+			[
+				'label'     => esc_html__( 'Col Span', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '2',
+				'options'   => [
+					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
+					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
+					'3' => esc_html__( '3', 'animation-addons-for-elementor' ),
+					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
+					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .aae--company-profile .item' => '--col-span: {{VALUE}};',
+				],
 			]
 		);
 
@@ -366,7 +399,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_social_post',
 			[
-				'label' => esc_html__( 'Social Posts', 'textdomain' ),
+				'label' => esc_html__( 'Social Posts', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -374,16 +407,19 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'gallery_cols',
 			[
-				'label'     => esc_html__( 'Columns', 'textdomain' ),
+				'label'     => esc_html__( 'Columns', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => '4',
 				'options'   => [
-					'1' => esc_html__( '1', 'textdomain' ),
-					'2' => esc_html__( '2', 'textdomain' ),
-					'3' => esc_html__( '3', 'textdomain' ),
-					'4' => esc_html__( '4', 'textdomain' ),
-					'5' => esc_html__( '5', 'textdomain' ),
-					'6' => esc_html__( '6', 'textdomain' ),
+					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
+					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
+					'3' => esc_html__( '3', 'animation-addons-for-elementor' ),
+					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
+					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
+					'6' => esc_html__( '6', 'animation-addons-for-elementor' ),
+					'7' => esc_html__( '7', 'animation-addons-for-elementor' ),
+					'8' => esc_html__( '8', 'animation-addons-for-elementor' ),
+					'9' => esc_html__( '9', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .gallery' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
@@ -394,7 +430,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'g_col_gap',
 			[
-				'label'      => esc_html__( 'Column Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Column Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -416,7 +452,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'g_row_gap',
 			[
-				'label'      => esc_html__( 'Row Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Row Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -438,7 +474,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'g_width',
 			[
-				'label'      => esc_html__( 'Width', 'textdomain' ),
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -460,7 +496,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'g_height',
 			[
-				'label'      => esc_html__( 'Height', 'textdomain' ),
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -482,7 +518,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'gp_margin',
 			[
-				'label'      => esc_html__( 'Margin', 'textdomain' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
@@ -498,7 +534,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_profile_logo',
 			[
-				'label' => esc_html__( 'Profile Logo', 'textdomain' ),
+				'label' => esc_html__( 'Profile Logo', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -515,7 +551,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_logo_width',
 			[
-				'label'      => esc_html__( 'Logo Width', 'textdomain' ),
+				'label'      => esc_html__( 'Logo Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -537,7 +573,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_logo_circle',
 			[
-				'label'      => esc_html__( 'Circle Size', 'textdomain' ),
+				'label'      => esc_html__( 'Circle Size', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -567,7 +603,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'pl_border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'textdomain' ),
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
@@ -579,7 +615,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'pl_margin',
 			[
-				'label'      => esc_html__( 'Margin', 'textdomain' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
@@ -595,7 +631,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_profile_name',
 			[
-				'label' => esc_html__( 'Profile Name', 'textdomain' ),
+				'label' => esc_html__( 'Profile Name', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -603,8 +639,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_name_color',
 			[
-				'label' => esc_html__( 'Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .name' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -614,7 +650,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'profile_name_typo',
+				'name'     => 'profile_name_typo',
 				'selector' => '{{WRAPPER}} .name',
 			]
 		);
@@ -622,7 +658,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_name_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -634,15 +670,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .name' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-                'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'profile_badge_color',
 			[
-				'label' => esc_html__( 'Badge Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Badge Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .badge' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -652,7 +688,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_badge_size',
 			[
-				'label'      => esc_html__( 'Badge Size', 'textdomain' ),
+				'label'      => esc_html__( 'Badge Size', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -674,13 +710,13 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_name_margin',
 			[
-				'label'      => esc_html__( 'Margin', 'textdomain' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
 					'{{WRAPPER}} .name' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'separator' => 'before',
+				'separator'  => 'before',
 			]
 		);
 
@@ -691,7 +727,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_profile_follow',
 			[
-				'label' => esc_html__( 'Profile Follow', 'textdomain' ),
+				'label' => esc_html__( 'Profile Follow', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -699,8 +735,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_color',
 			[
-				'label' => esc_html__( 'Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-wrap p' => 'color: {{VALUE}}; ',
 				],
@@ -710,7 +746,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_typo',
+				'name'     => 'follow_typo',
 				'selector' => '{{WRAPPER}} .follow-wrap p',
 			]
 		);
@@ -718,7 +754,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'profile_follow_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -730,15 +766,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .follow-wrap' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'follow_hl_color',
 			[
-				'label' => esc_html__( 'Highlight Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-wrap .highlight' => 'color: {{VALUE}}; ',
 				],
@@ -748,7 +784,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_hl_typo',
+				'name'     => 'follow_hl_typo',
 				'selector' => '{{WRAPPER}} .follow-wrap .highlight  ',
 			]
 		);
@@ -756,8 +792,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_heading',
 			[
-				'label' => esc_html__( 'Follow Button', 'textdomain' ),
-				'type' => Controls_Manager::HEADING,
+				'label'     => esc_html__( 'Follow Button', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
 		);
@@ -765,8 +801,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_color',
 			[
-				'label' => esc_html__( 'Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-btn' => 'color: {{VALUE}};',
 				],
@@ -776,8 +812,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_h_color',
 			[
-				'label' => esc_html__( 'Hover Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-btn:hover' => 'color: {{VALUE}};',
 				],
@@ -787,7 +823,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_btn_typo',
+				'name'     => 'follow_btn_typo',
 				'selector' => '{{WRAPPER}} .follow-btn',
 			]
 		);
@@ -795,7 +831,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
 			[
-				'name' => 'f_btn_border',
+				'name'     => 'f_btn_border',
 				'selector' => '{{WRAPPER}} .follow-btn',
 			]
 		);
@@ -803,7 +839,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'follow_btn_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -815,17 +851,17 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .site-link' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_responsive_control(
 			'f_btn_padding',
 			[
-				'label' => esc_html__( 'Padding', 'textdomain' ),
-				'type' => Controls_Manager::DIMENSIONS,
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .follow-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
@@ -838,7 +874,7 @@ class Company_Info extends Widget_Base {
 		$this->start_controls_section(
 			'style_website_content',
 			[
-				'label' => esc_html__( 'Profile Website', 'textdomain' ),
+				'label' => esc_html__( 'Profile Website', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -846,8 +882,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_color',
 			[
-				'label' => esc_html__( 'Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .website-btn' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -857,8 +893,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_h_color',
 			[
-				'label' => esc_html__( 'Hover Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .website-btn:hover' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -868,7 +904,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'website_typo',
+				'name'     => 'website_typo',
 				'selector' => '{{WRAPPER}} .website-btn',
 			]
 		);
@@ -876,7 +912,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'website_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'textdomain' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -888,15 +924,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .website-btn' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'website_icon_color',
 			[
-				'label' => esc_html__( 'Icon Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -906,7 +942,7 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'website_icon_size',
 			[
-				'label'      => esc_html__( 'Icon Size', 'textdomain' ),
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -928,8 +964,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'web_post_color',
 			[
-				'label' => esc_html__( 'Post Text Color', 'textdomain' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Post Text Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .total-posts' => 'color: {{VALUE}};',
 				],
@@ -940,7 +976,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'web_text_typo',
+				'name'     => 'web_text_typo',
 				'selector' => '{{WRAPPER}} .total-posts',
 			]
 		);
@@ -948,13 +984,13 @@ class Company_Info extends Widget_Base {
 		$this->add_responsive_control(
 			'website_margin',
 			[
-				'label'      => esc_html__( 'Margin', 'textdomain' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
 					'{{WRAPPER}} .site-link' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'separator' => 'before',
+				'separator'  => 'before',
 			]
 		);
 
@@ -1027,7 +1063,7 @@ class Company_Info extends Widget_Base {
             <div class="site-link">
                 <a class="website-btn" <?php $this->print_render_attribute_string( 'website_link' ); ?>>
                     <span class="icon"><?php Icons_Manager::render_icon( $settings['website_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
-                    <?php echo esc_html( $settings['website_name'] ); ?>
+					<?php echo esc_html( $settings['website_name'] ); ?>
                 </a>
                 <a class="follow-btn" <?php $this->print_render_attribute_string( 'profile_link' ); ?>><?php echo esc_html( $settings['follow_text'] ); ?></a>
             </div>
