@@ -3,18 +3,27 @@ import TemplateRightContent from "@/components/template/right/TemplateRightConte
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { debounceFn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);
+  const prevScrollTop = useRef(0); // Track previous scroll position
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [filterKey, setFilterKey] = useState("");
   const [allTemplate, setAllTemplate] = useState({});
   const [pageNum, setPageNum] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [license, setLicense] = useState("");
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [openSidebar, setOpenSidebar] = useState(false);
 
   useEffect(() => {
     const meta = {
@@ -25,13 +34,14 @@ const StaterTemplate = () => {
       license,
       selectedCategory,
       allTemplate,
+      wishlist: WCF_ADDONS_ADMIN.addons_config.wishlist.toString(),
     };
+
     getAllTemplate(meta);
   }, [searchKey, filterKey, pageNum, types, license, selectedCategory]);
 
   const getAllTemplate = useCallback(
     debounceFn(async (meta) => {
-      if (loading) return;
       setLoading(true);
       try {
         const url = new URL(
@@ -43,7 +53,7 @@ const StaterTemplate = () => {
         }
         if (meta.pageNum) {
           url.searchParams.append("page", meta.pageNum);
-          url.searchParams.append("per_page", 16);
+          url.searchParams.append("per_page", 8);
         }
         if (meta.filterKey) {
           if (meta.filterKey === "popular") {
@@ -59,6 +69,8 @@ const StaterTemplate = () => {
 
         if (meta?.types?.includes("favorites")) {
           url.searchParams.append("favourites", 1);
+        } else if (meta?.types?.includes("wishlist")) {
+          url.searchParams.append("wishlist", meta.wishlist);
         }
 
         if (meta.license) {
@@ -101,7 +113,19 @@ const StaterTemplate = () => {
       if (!viewport) return;
 
       const { scrollTop, scrollHeight, clientHeight } = viewport;
-      if (scrollTop + clientHeight >= scrollHeight - 5 && !hasReachedBottom) {
+
+      // Check if scrolling down
+      const isScrollingDown = scrollTop > prevScrollTop.current;
+
+      // Update previous scroll position
+      prevScrollTop.current = scrollTop;
+
+      // Only trigger if scrolling down and near the bottom
+      if (
+        isScrollingDown &&
+        scrollTop + clientHeight >= scrollHeight - 5 &&
+        !hasReachedBottom
+      ) {
         setHasReachedBottom(true);
         setPageNum((prev) => prev + 1);
       }
@@ -120,9 +144,14 @@ const StaterTemplate = () => {
         viewport.removeEventListener("scroll", handleScroll);
       }
     };
-  }, [hasReachedBottom]);
+  }, [hasReachedBottom, allTemplate]);
 
-  const resetFlag = () => setHasReachedBottom(false);
+  // Reset the hasReachedBottom flag after loading more content
+  useEffect(() => {
+    if (hasReachedBottom) {
+      setHasReachedBottom(false);
+    }
+  }, [allTemplate]);
 
   return (
     <div className="flex">
@@ -137,23 +166,43 @@ const StaterTemplate = () => {
           setPageNum={setPageNum}
         />
       </div>
-      <ScrollArea
-        className="h-[calc(100vh-85px)] flex-1"
-        ref={viewportRef}
-        onScroll={resetFlag}
-      >
-        <>
-          <TemplateRightContent
-            searchKey={searchKey}
-            setSearchKey={setSearchKey}
-            filterKey={filterKey}
-            setFilterKey={setFilterKey}
+      <Sheet open={openSidebar} onOpenChange={setOpenSidebar}>
+        <SheetContent
+          className="lg:hidden w-[278px] border-r border-border h-[calc(100vh-48px)] mt-0"
+          side={"left"}
+        >
+          <SheetHeader className="hidden">
+            <SheetTitle></SheetTitle>
+            <SheetDescription></SheetDescription>
+          </SheetHeader>
+          <TemplateLeftFilter
+            types={types}
+            setTypes={setTypes}
+            license={license}
+            setLicense={setLicense}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
             setPageNum={setPageNum}
-            allTemplate={allTemplate}
           />
-          <div className="flex justify-center items-center h-[10vh]">
-            {loading ? <p className="text-lg font-semibold">Loading...</p> : ""}
-          </div>
+        </SheetContent>
+      </Sheet>
+      <ScrollArea className="h-[calc(100vh-85px)] flex-1" ref={viewportRef}>
+        <>
+          {loading ? (
+            <div className="flex justify-center items-center h-[10vh]">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          ) : (
+            <TemplateRightContent
+              searchKey={searchKey}
+              setSearchKey={setSearchKey}
+              filterKey={filterKey}
+              setFilterKey={setFilterKey}
+              setPageNum={setPageNum}
+              allTemplate={allTemplate}
+              setOpenSidebar={setOpenSidebar}
+            />
+          )}
         </>
       </ScrollArea>
     </div>

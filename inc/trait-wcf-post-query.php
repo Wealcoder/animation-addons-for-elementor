@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 trait WCF_Post_Query_Trait {
-    
+
 	public static function get_public_post_types( $args = [] ) {
 		$post_type_args = [
 			// Default is the value $public.
@@ -337,7 +337,7 @@ trait WCF_Post_Query_Trait {
 			'order'               => $this->get_settings( 'post_order' ),
 			'orderby'             => $this->get_settings( 'post_order_by' ),
 		];
-		
+
 		if ( 'anytime' !== $this->get_settings( 'post_date' ) ) {
 			$query_args['date_query'] = [ 'after' => $this->get_settings( 'post_date' ) ];
 		}
@@ -409,7 +409,7 @@ trait WCF_Post_Query_Trait {
 				$query_args['author__not_in'] = explode( ',', $this->get_settings( 'exclude_authors' ) );
 			}
 		}
-		
+
 		if ( 'top_post_week' === $this->get_settings( 'query_type' ) ){
 			$query_args['meta_key'] = 'wcf_post_views_count';
 			$query_args['orderby'] = 'meta_value_num';
@@ -428,7 +428,7 @@ trait WCF_Post_Query_Trait {
 					'type'    => 'NUMERIC',
 				],
 			];
-			
+
 			if(isset($query_args['ignore_sticky_posts'])){
 				unset($query_args['ignore_sticky_posts']);
 			}
@@ -538,14 +538,14 @@ trait WCF_Post_Query_Trait {
 				],
 			];
 		}
-		
+
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ){
 			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( wp_unslash( $_COOKIE['aae_visited_posts'] ), true ) : [];
 			
 			if(is_array($visited_posts) && isset($visited_posts[$this->get_settings( 'post_type' )]) && is_array($visited_posts[$this->get_settings( 'post_type' )])){
 				$query_args['post__in'] = [implode(',',$visited_posts[$this->get_settings( 'post_type' )])]; // implode
 			}
-			
+
 		}
 
 		if($this->get_settings('post_layout') && ($this->get_settings('post_layout') == 'layout-gallery' || $this->get_settings('post_layout') == 'layout-gallery-2') ){
@@ -556,19 +556,27 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
+		if ( $this->get_settings( 'post_layout' ) && ( $this->get_settings( 'post_layout' ) == 'layout-audio' ) ) {
+			$query_args['tax_query'][] = [
+				'taxonomy' => 'post_format',
+				'field'    => 'slug',
+				'terms'    => array( 'post-format-audio' ),
+			];
+		}
+
 
 		return $query_args;
 	}
 
 	public function get_query() {
-		global $wp_query;		
-		
+		global $wp_query;
+
 		// Check custom post type archive
 		if('archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && is_tax()){
-		
+
 			if($this->get_settings('post_type') !='post'){
-				$query_object = get_queried_object();		
-				$tax_query = [];			
+				$query_object = get_queried_object();
+				$tax_query = [];
 				if (isset($query_object->taxonomy) && isset($query_object->term_id))
 				{
 				    $tax_query = [
@@ -578,18 +586,18 @@ trait WCF_Post_Query_Trait {
 				            'terms'    => $query_object->term_id,
 				        ],
 				    ];
-				}			
+				}
 				// Create a new WP_Query instance
 				$GLOBALS['wp_query'] = new \WP_Query([
 				    'post_type' => $this->get_settings('post_type'),
 				    'tax_query' => $tax_query,
 				]);
-				
+
 				return $GLOBALS['wp_query'];
 			}
-			
+
 		}
-	
+
 		if ( 'archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && ( $wp_query->is_archive || $wp_query->is_search ) ) {
 			return $this->query = $wp_query;
 		} else {

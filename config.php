@@ -792,6 +792,36 @@ $config = [
 						'youtube_url'  => '',
 					],
 
+					'post-rating-form' => [
+						'label'        => esc_html__( 'Post Rating Form', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
+						'youtube_url'  => '',
+					],
+
+					'post-rating' => [
+						'label'        => esc_html__( 'Post Rating', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
+						'youtube_url'  => '',
+					],
+
 					'grid-hover-posts'  => [
 						'label'        => esc_html__( 'Grid Hover Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
