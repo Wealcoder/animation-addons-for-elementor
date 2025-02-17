@@ -222,7 +222,7 @@ class Company_Info extends Widget_Base {
 				'type'        => Controls_Manager::TEXT,
 				'default'     => esc_html__( '[1,081] Following', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your total following', 'animation-addons-for-elementor' ),
-                'label_block' => true,
+				'label_block' => true,
 				'description' => 'For Highlight, keep text in [ ]. Ex. [ Text ]',
 			]
 		);
@@ -359,6 +359,39 @@ class Company_Info extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'masonry_position',
+			[
+				'label'     => esc_html__( 'Masonry Position', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::NUMBER,
+				'min'       => 1,
+				'max'       => 9,
+				'default'   => 3,
+				'selectors' => [
+					'{{WRAPPER}} .aae--company-profile .item' => '--masonry-position: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'masonry_span',
+			[
+				'label'     => esc_html__( 'Col Span', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '2',
+				'options'   => [
+					'1' => esc_html__( '1', 'animation-addons-for-elementor' ),
+					'2' => esc_html__( '2', 'animation-addons-for-elementor' ),
+					'3' => esc_html__( '3', 'animation-addons-for-elementor' ),
+					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
+					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .aae--company-profile .item' => '--col-span: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -384,6 +417,9 @@ class Company_Info extends Widget_Base {
 					'4' => esc_html__( '4', 'animation-addons-for-elementor' ),
 					'5' => esc_html__( '5', 'animation-addons-for-elementor' ),
 					'6' => esc_html__( '6', 'animation-addons-for-elementor' ),
+					'7' => esc_html__( '7', 'animation-addons-for-elementor' ),
+					'8' => esc_html__( '8', 'animation-addons-for-elementor' ),
+					'9' => esc_html__( '9', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .gallery' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
@@ -603,8 +639,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'profile_name_color',
 			[
-				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .name' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -614,7 +650,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'profile_name_typo',
+				'name'     => 'profile_name_typo',
 				'selector' => '{{WRAPPER}} .name',
 			]
 		);
@@ -634,15 +670,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .name' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-                'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'profile_badge_color',
 			[
-				'label' => esc_html__( 'Badge Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Badge Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .badge' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -680,7 +716,7 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .name' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'separator' => 'before',
+				'separator'  => 'before',
 			]
 		);
 
@@ -699,8 +735,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_color',
 			[
-				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-wrap p' => 'color: {{VALUE}}; ',
 				],
@@ -710,7 +746,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_typo',
+				'name'     => 'follow_typo',
 				'selector' => '{{WRAPPER}} .follow-wrap p',
 			]
 		);
@@ -730,15 +766,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .follow-wrap' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'follow_hl_color',
 			[
-				'label' => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-wrap .highlight' => 'color: {{VALUE}}; ',
 				],
@@ -748,7 +784,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_hl_typo',
+				'name'     => 'follow_hl_typo',
 				'selector' => '{{WRAPPER}} .follow-wrap .highlight  ',
 			]
 		);
@@ -756,8 +792,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_heading',
 			[
-				'label' => esc_html__( 'Follow Button', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::HEADING,
+				'label'     => esc_html__( 'Follow Button', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
 		);
@@ -765,8 +801,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_color',
 			[
-				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-btn' => 'color: {{VALUE}};',
 				],
@@ -776,8 +812,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'follow_btn_h_color',
 			[
-				'label' => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follow-btn:hover' => 'color: {{VALUE}};',
 				],
@@ -787,7 +823,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'follow_btn_typo',
+				'name'     => 'follow_btn_typo',
 				'selector' => '{{WRAPPER}} .follow-btn',
 			]
 		);
@@ -795,7 +831,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
 			[
-				'name' => 'f_btn_border',
+				'name'     => 'f_btn_border',
 				'selector' => '{{WRAPPER}} .follow-btn',
 			]
 		);
@@ -815,17 +851,17 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .site-link' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_responsive_control(
 			'f_btn_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::DIMENSIONS,
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .follow-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
@@ -846,8 +882,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_color',
 			[
-				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .website-btn' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -857,8 +893,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'website_h_color',
 			[
-				'label' => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .website-btn:hover' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -868,7 +904,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'website_typo',
+				'name'     => 'website_typo',
 				'selector' => '{{WRAPPER}} .website-btn',
 			]
 		);
@@ -888,15 +924,15 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .website-btn' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'separator' => 'after',
+				'separator'  => 'after',
 			]
 		);
 
 		$this->add_control(
 			'website_icon_color',
 			[
-				'label' => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
 				],
@@ -928,8 +964,8 @@ class Company_Info extends Widget_Base {
 		$this->add_control(
 			'web_post_color',
 			[
-				'label' => esc_html__( 'Post Text Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Post Text Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .total-posts' => 'color: {{VALUE}};',
 				],
@@ -940,7 +976,7 @@ class Company_Info extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name' => 'web_text_typo',
+				'name'     => 'web_text_typo',
 				'selector' => '{{WRAPPER}} .total-posts',
 			]
 		);
@@ -954,7 +990,7 @@ class Company_Info extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .site-link' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'separator' => 'before',
+				'separator'  => 'before',
 			]
 		);
 
@@ -1027,7 +1063,7 @@ class Company_Info extends Widget_Base {
             <div class="site-link">
                 <a class="website-btn" <?php $this->print_render_attribute_string( 'website_link' ); ?>>
                     <span class="icon"><?php Icons_Manager::render_icon( $settings['website_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
-                    <?php echo esc_html( $settings['website_name'] ); ?>
+					<?php echo esc_html( $settings['website_name'] ); ?>
                 </a>
                 <a class="follow-btn" <?php $this->print_render_attribute_string( 'profile_link' ); ?>><?php echo esc_html( $settings['follow_text'] ); ?></a>
             </div>

@@ -11,6 +11,10 @@
     object-fit: cover;
   }
 
+  //.item:nth-child(var(--masonry-position)) {
+  //  grid-column: span var(--col-span);
+  //}
+
   .gallery {
     display: grid;
   }
@@ -44,6 +48,7 @@
       font-weight: 700;
     }
   }
+
   .website-btn,
   .site-link {
     display: flex;
