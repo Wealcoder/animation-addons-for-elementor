@@ -11,9 +11,9 @@
     object-fit: cover;
   }
 
-  //.item:nth-child(var(--masonry-position)) {
-  //  grid-column: span var(--col-span);
-  //}
+  .item {
+    grid-column: span var(--col-span);
+  }
 
   .gallery {
     display: grid;

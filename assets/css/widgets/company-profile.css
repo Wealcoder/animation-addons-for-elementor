@@ -10,6 +10,9 @@
   -o-object-fit: cover;
      object-fit: cover;
 }
+.aae--company-profile .item {
+  grid-column: span var(--col-span);
+}
 .aae--company-profile .gallery {
   display: grid;
 }

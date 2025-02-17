@@ -29,7 +29,7 @@ class Importer extends WXRImporter {
 		parent::__construct( $options );
 
 		$this->set_logger( $logger );
-
+		
 		// Check, if a new AJAX request is required.
 		add_filter( 'wxr_importer.pre_process.post', array( $this, 'new_ajax_request_maybe' ) );
 
@@ -497,8 +497,8 @@ class Importer extends WXRImporter {
 		$time = microtime( true ) - $this->start_time;
 
 		// We should make a new ajax call, if the time is right.
-		if ( $time > apply_filters( 'pt-importer/time_for_one_ajax_call', 20 ) ) {
-			$response = apply_filters( 'pt-importer/new_ajax_request_response_data', array(
+		if ( $time > apply_filters( 'aaeaddon/starter/importer/time_for_one_ajax_call', 20 ) ) {
+			$response = apply_filters( 'aaeaddon/starter/importer/new_ajax_request_response_data', array(
 				'status'                => 'newAJAX',
 				'log'                   => 'Time for new AJAX request!: ' . $time,
 				'num_of_imported_posts' => count( $this->mapping['post'] ),
@@ -513,9 +513,7 @@ class Importer extends WXRImporter {
 			// Send the request for a new AJAX call.
 			wp_send_json( $response );
 		}
-
-		// Set importing author to the current user.
-		// Fixes the [WARNING] Could not find the author for ... log warning messages.
+		
 		$current_user_obj    = wp_get_current_user();
 		$data['post_author'] = $current_user_obj->user_login;
 

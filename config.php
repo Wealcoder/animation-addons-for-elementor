@@ -164,7 +164,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'testimonial2'     => [
-						'label'        => esc_html__( 'Testimonial 2', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Classic Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -178,7 +178,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'testimonial3'     => [
-						'label'        => esc_html__( 'Testimonial 3', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Modern Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -1407,7 +1407,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'custom-cpt'       => [
-						'label'        => esc_html__( 'Custom Post Type', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Type Builder', 'animation-addons-for-elementor' ),
 						'is_pro'       => true,
 						'location'     => [
 							'cTab' => 'general'
