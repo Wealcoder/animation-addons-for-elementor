@@ -1407,7 +1407,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'custom-cpt'       => [
-						'label'        => esc_html__( 'Custom Post Type', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Type Builder', 'animation-addons-for-elementor' ),
 						'is_pro'       => true,
 						'location'     => [
 							'cTab' => 'general'
