@@ -10,16 +10,29 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { AllTemplateCategoryList } from "@/config/data/allTemplateCategoryList";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import TemplateProBg from "../../../../public/images/template-pro-bg.png";
-import ProIcon from "../../../../public/images/pro-icon-1.png";
-import GetProButton from "@/components/shared/GetProButton";
+import { useEffect, useState } from "react";
 
-const TemplateLeftFilter = () => {
-  const allCategory = AllTemplateCategoryList;
+const TemplateLeftFilter = ({
+  types,
+  setTypes,
+  license,
+  setLicense,
+  selectedCategory,
+  setSelectedCategory,
+  setPageNum,
+}) => {
+  const [allCategory, setAllCategory] = useState([]);
+
+  useEffect(() => {
+    fetch(`${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/st-cat`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllCategory(data);
+      });
+  }, []);
+
   return (
     <div className="px-5 py-6 flex flex-col justify-between gap-5 h-full">
       <div>
@@ -27,7 +40,7 @@ const TemplateLeftFilter = () => {
           <RiFileTextLine size={20} className="text-icon-secondary" />
           <h3 className="font-medium">Filter Settings</h3>
         </div>
-        <ScrollArea className="h-[calc(100vh-410px)]">
+        <ScrollArea className="h-[calc(100vh-180px)]">
           <div>
             <Accordion
               type="multiple"
@@ -35,17 +48,26 @@ const TemplateLeftFilter = () => {
               className="w-full"
             >
               <AccordionItem value="types" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   Types
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <ToggleGroup type="single" className="justify-start gap-2">
+                  <ToggleGroup
+                    type="multiple"
+                    className="justify-start flex-wrap gap-2"
+                    value={types}
+                    onValueChange={(value) => {
+                      setTypes(value);
+                      setPageNum(1);
+                    }}
+                  >
                     <ToggleGroupItem
-                      value="all"
+                      value="wishlist"
                       variant="outline"
-                      aria-label="Toggle all"
+                      className="ps-2"
+                      aria-label="Toggle wish list"
                     >
-                      All
+                      <RiHeartLine size={18} className="text-icon" /> Wishlist
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="favorites"
@@ -59,11 +81,19 @@ const TemplateLeftFilter = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="license" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   License
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <ToggleGroup type="single" className="justify-start gap-2">
+                  <ToggleGroup
+                    type="single"
+                    className="justify-start flex-wrap gap-2"
+                    value={license}
+                    onValueChange={(value) => {
+                      setLicense(value);
+                      setPageNum(1);
+                    }}
+                  >
                     <ToggleGroupItem
                       value="pro"
                       variant="outline"
@@ -84,22 +114,27 @@ const TemplateLeftFilter = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="categories" className="border-b-0 border-t">
-                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2 bg-transparent">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
                   Categories
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
                   <ToggleGroup
                     type="multiple"
                     className="justify-start flex-wrap gap-1.5"
+                    value={selectedCategory}
+                    onValueChange={(value) => {
+                      setSelectedCategory(value);
+                      setPageNum(1);
+                    }}
                   >
                     {allCategory?.map((category, i) => (
                       <ToggleGroupItem
-                        key={`${category.slug}-${i}`}
-                        value={category.slug}
+                        key={`${category?.slug}-${i}`}
+                        value={category?.id}
                         variant="outline"
                         aria-label="Toggle category"
                       >
-                        {category.name}
+                        {category?.name}
                       </ToggleGroupItem>
                     ))}
                   </ToggleGroup>
@@ -108,22 +143,6 @@ const TemplateLeftFilter = () => {
             </Accordion>
           </div>
         </ScrollArea>
-      </div>
-      <div
-        className="bg-cover rounded-[10px]"
-        style={{ backgroundImage: `url(${TemplateProBg})` }}
-      >
-        <div>
-          <img src={ProIcon} alt="Pro icon" className="w-[105px] h-[106px]" />
-        </div>
-        <div className="-mt-[25px] p-4 pt-0">
-          <h3 className="text-lg font-medium">Get Pro Version</h3>
-          <p className="text-sm text-text-secondary mt-2 mb-4">
-            Enhance functionality therefor create a greatly premium user.
-          </p>
-
-          <GetProButton btnClassName="w-full" />
-        </div>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
-import { RiArrowLeftLine, RiVipCrown2Line } from "react-icons/ri";
-import { Button } from "../ui/button";
+import { RiArrowLeftLine } from "react-icons/ri";
 import LargeLogo from "./LargeLogo";
 import GetProButton from "../shared/GetProButton";
 
-const TemplateHeader = () => {
+const TemplateHeader = ({ activeBtn = true }) => {
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
@@ -19,17 +18,28 @@ const TemplateHeader = () => {
   return (
     <div className="bg-background px-8 py-5 flex justify-between gap-11 items-center border-b border-border">
       <div className="flex gap-4 items-center">
-        <div onClick={() => changeRoute("dashboard")}>
-          <RiArrowLeftLine
-            size={20}
-            className="text-icon-secondary hover:text-[#101828]"
-          />
-        </div>
+        {activeBtn ? (
+          <div
+            onClick={() => changeRoute("dashboard")}
+            className="cursor-pointer"
+          >
+            <RiArrowLeftLine
+              size={20}
+              className="text-icon-secondary hover:text-[#101828]"
+            />
+          </div>
+        ) : (
+          ""
+        )}
         <LargeLogo />
       </div>
-      <div className="flex justify-end gap-3 items-center">
-        <GetProButton />
-      </div>
+      {activeBtn ? (
+        <div className="flex justify-end gap-3 items-center">
+          <GetProButton />
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

@@ -1,27 +1,29 @@
-import { useState } from "react";
 import TemplateTopBar from "./TemplateTopBar";
 import TemplateShow from "./TemplateShow";
-import TemplatePagination from "./TemplatePagination";
 
-const TemplateRightContent = () => {
-  const [searchKey, setSearchKey] = useState("");
-  const [filterKey, setFilterKey] = useState("popular");
-
+const TemplateRightContent = ({
+  searchKey,
+  setSearchKey,
+  filterKey,
+  setFilterKey,
+  setPageNum,
+  allTemplate,
+  setOpenSidebar
+}) => {
   return (
-    <div className="mx-8">
+    <div className="mx-[31px]">
       <div className="mt-6 mb-8">
         <TemplateTopBar
           filterKey={filterKey}
           setFilterKey={setFilterKey}
           searchKey={searchKey}
           setSearchKey={setSearchKey}
+          setPageNum={setPageNum}
+          setOpenSidebar={setOpenSidebar}
         />
       </div>
       <div className="mb-10">
-        <TemplateShow />
-      </div>
-      <div className="py-5">
-        <TemplatePagination />
+        <TemplateShow allTemplate={allTemplate} />
       </div>
     </div>
   );

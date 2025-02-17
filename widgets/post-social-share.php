@@ -64,6 +64,7 @@ class Post_Social_Share extends Widget_Base {
 				'options' => [
 					''                         => esc_html__( 'One', 'animation-addons-for-elementor' ),
 					'wcf-social-share-style-1' => esc_html__( 'Two', 'animation-addons-for-elementor' ),
+					'wcf-social-share-style-2' => esc_html__( 'Three', 'animation-addons-for-elementor' ),
 
 				]
 			]
@@ -137,6 +138,33 @@ class Post_Social_Share extends Widget_Base {
 				]
 			]
 		);
+
+		$this->add_control(
+			'share_separator',
+			[
+				'label'   => esc_html__( 'Separator', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'no',
+				'options' => [
+					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				]
+			]
+		);
+
+		$this->add_control(
+			'share_separator_icons',
+			[
+				'label'   => esc_html__( 'Separator Icon', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::ICONS,
+				'condition'   => [ 'share_separator' => [ 'yes' ] ],
+				'default' => [
+					'value'   => 'fa-solid fa-share-nodes',
+					'library' => 'fa-solid',
+				]
+			]
+		);
+
 
 		$repeater = new \Elementor\Repeater();
 
@@ -406,6 +434,7 @@ class Post_Social_Share extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .default-details-social-media a .info-s-title' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media a .aae-share-count' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -415,7 +444,7 @@ class Post_Social_Share extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'typography',
-				'selector' => '{{WRAPPER}} .default-details-social-media a',
+				'selector' => '{{WRAPPER}} .default-details-social-media a .info-s-title, {{WRAPPER}} .default-details-social-media a .aae-share-count',
 			]
 		);
 
@@ -903,6 +932,54 @@ class Post_Social_Share extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+
+		$this->start_controls_section(
+			'section_seperator_style',
+			[
+				'label' => esc_html__( 'Separator', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+                        'share_separator' => ['yes']
+                ]
+			]
+		);
+
+		$this->add_responsive_control(
+			'seperator_size_info',
+			[
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 200,
+						'step' => 5,
+					]
+				],
+				'selectors'  => [
+					'{{WRAPPER}} span.wcf_separator_icon' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+				'default'    => [
+					'unit' => 'px',
+					'size' => 16,
+				],
+			]
+		);
+
+		$this->add_control(
+			'seperator_icon_color',
+			[
+				'label' => esc_html__( 'Icon Color', 'textdomain' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.wcf_separator_icon' => 'fill: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	public function get_generated_link( $vendor ) {
@@ -985,6 +1062,51 @@ class Post_Social_Share extends Widget_Base {
                 height: 1em;
             }
         </style>
+
+		<?php
+			if($settings['social_icon_style'] =='wcf-social-share-style-2'){ ?>
+
+			<ul class="default-details-social-media">
+			<?php foreach ( $socials as $share ) { ?>
+                <li class="wcf-social-share-style-2">
+                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
+                    <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
+							'aria-hidden' => 'true',
+							'class'       => 'share-ico'
+						] ); ?></span>
+                    <span class="info-s-title"> <?php echo esc_html( $share['list_title'] ); ?> </span>
+					<?php if ( $settings['share_icon'] == 'yes' ) { ?>
+                        <span>
+                                <?php \Elementor\Icons_Manager::render_icon( $settings['share_icons'], [
+	                                'aria-hidden' => 'true',
+	                                'class'       => 'share-ico'
+                                ] ); ?>
+                                
+                            </span>
+					<?php } ?>
+					<span class="wcf_separator_icon">
+					<?php \Elementor\Icons_Manager::render_icon( $settings['share_separator_icons'], [
+	                                'aria-hidden' => 'true',
+	                                'class'       => 'share-ico'
+                                ] ); ?>
+					</span>
+					<?php if(isset($settings['share_count']) && $settings['share_count'] === 'yes' ) { ?>
+						<span data-type="<?php echo esc_attr($share['list_vendor']); ?>" class="aae-share-count <?php echo esc_attr($share['list_vendor']); ?>">
+							<?php
+							echo esc_html( 
+								aaeaddon_format_number_count(is_array($current_shares) && isset($current_shares[$share['list_vendor']]) ? $current_shares[$share['list_vendor']] : 0) 
+							);
+							?>
+						</span>
+					<?php } ?>
+					<?php echo esc_html( $settings['share_text'] ); ?>
+                    </a>
+                </li>
+			<?php } ?>
+        </ul>
+
+		<?php }else{?>
+
         <ul class="default-details-social-media">
 			<?php foreach ( $socials as $share ) { ?>
                 <li>
@@ -1016,6 +1138,7 @@ class Post_Social_Share extends Widget_Base {
                 </li>
 			<?php } ?>
         </ul>
+		<?php } ?>
 
 		<?php
 	}
