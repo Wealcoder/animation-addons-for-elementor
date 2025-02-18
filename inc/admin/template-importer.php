@@ -122,19 +122,26 @@ class AAEAddon_Importer {
 
 			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer' && is_array($user_plugins) && $user_plugins){
 				// Install required plugin
-			    
+			    // Include the necessary plugin.php file
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 				if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){					
 					foreach($template_data['dependencies']['plugins'] as $item){
-						if (in_array($item['slug'], $user_plugins)) {				
-							if(isset($item['host']) && $item['slug']){
-								update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
-								if($item['host'] == 'self_host'){							
-									$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
-								}else{
-									$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
-								}							
+						if ( file_exists( WP_PLUGIN_DIR . '/' . $item['Base_Slug'] ) ) {
+							$result = activate_plugin( $item['Base_Slug'] , '', false, false );	
+						}else{
+							
+							if (in_array($item['slug'], $user_plugins)) {				
+								if(isset($item['host']) && $item['slug']){
+									update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
+									if($item['host'] == 'self_host'){							
+										$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+									}else{
+										$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
+									}							
+								}
 							}
 						}
+						
 					}
 					$template_data['next_step'] = 'check-template-status';	
 					update_option('aaeaddon_template_import_state', esc_html__( 'Plugin Installation Done' , 'animation-addons-for-elementor' ));
@@ -297,7 +304,7 @@ class AAEAddon_Importer {
 		
 	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
 		$args = [
-			'timeout'   => 60,
+			'timeout'   => 180,
 			'body' => [
 				'template' => $template
 			],

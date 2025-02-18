@@ -42,24 +42,24 @@ class WXRImporter extends \WP_Importer {
 
 	// information to import from WXR file
 	protected $categories = array();
-	protected $tags = array();
-	protected $base_url = '';
+	protected $tags       = array();
+	protected $base_url   = '';
 
-	// TODO: REMOVE THESE
-	protected $processed_terms = array();
-	protected $processed_posts = array();
+	  // TODO: REMOVE THESE
+	protected $processed_terms      = array();
+	protected $processed_posts      = array();
 	protected $processed_menu_items = array();
-	protected $menu_item_orphans = array();
-	protected $missing_menu_items = array();
+	protected $menu_item_orphans    = array();
+	protected $missing_menu_items   = array();
 
-	// NEW STYLE
-	public $options = array();
-	protected $mapping = array();
+	  // NEW STYLE
+	public    $options            = array();
+	protected $mapping            = array();
 	protected $requires_remapping = array();
-	protected $exists = array();
+	protected $exists             = array();
 	protected $user_slug_override = array();
 
-	protected $url_remap = array();
+	protected $url_remap       = array();
 	protected $featured_images = array();
 
 	/**
