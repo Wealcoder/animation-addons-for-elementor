@@ -464,26 +464,6 @@ class Post_Social_Share extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'title_icon_color',
-			[
-				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .default-details-social-media a i'   => 'color: {{VALUE}};',
-					'{{WRAPPER}} .default-details-social-media a svg' => 'fill: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'icon_typography',
-				'label'    => esc_html__( 'Icon Typography', 'animation-addons-for-elementor' ),
-				'selector' => '{{WRAPPER}} .default-details-social-media a i',
-			]
-		);
 
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
@@ -907,6 +887,7 @@ class Post_Social_Share extends Widget_Base {
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
+		
 
 		$this->add_responsive_control(
 			'icon_svg_width',
@@ -922,7 +903,8 @@ class Post_Social_Share extends Widget_Base {
 					]
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .wcf-social-icn' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a i'   => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'font-size: {{SIZE}}{{UNIT}};',
 				],
 				'default'    => [
 					'unit' => 'px',
@@ -931,9 +913,160 @@ class Post_Social_Share extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'title_bg_color',
+			[
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media a i'   => 'background: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_icon_color',
+			[
+				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media a i'   => 'color: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'icon_border',
+				'selector' => '{{WRAPPER}} .default-details-social-media a svg',
+			]
+		);
+
+		$this->add_control(
+			'icon_border_rad',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 1000,
+						'step' => 5,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media a i'   => 'border-radius: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_icon_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-social-media a i' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'social_icon_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 200,
+						'step' => 5,
+					]
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-social-media a i'   => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'width: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+
+		$this->add_responsive_control(
+			'social_icon_height',
+			[
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 200,
+						'step' => 5,
+					]
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-social-media a i'   => 'height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .default-details-social-media a svg' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_bg_hover_divider',
+			[
+				'type' => \Elementor\Controls_Manager::DIVIDER,
+			]
+		);
+
+		$this->add_control(
+			'title_bg_color_hover',
+			[
+				'label'     => esc_html__( 'Hover BG Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media:hover a i'   => 'background: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media:hover a svg' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_icon_color_hover',
+			[
+				'label'     => esc_html__( 'Hover Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media:hover a i'   => 'color: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media:hover a svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_icon_border_hover',
+			[
+				'label'     => esc_html__( 'Hover Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .default-details-social-media:hover a i'   => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .default-details-social-media:hover a svg' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
-
-
 		$this->start_controls_section(
 			'section_seperator_style',
 			[
