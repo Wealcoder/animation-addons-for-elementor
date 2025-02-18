@@ -7,8 +7,12 @@ import ProWizItem from "../../../public/images/wizard/pro-wiz-item.png";
 import ProExtItem from "../../../public/images/wizard/pro-ext-item.png";
 import { buttonVariants } from "@/components/ui/button";
 import { RiVipCrown2Line } from "react-icons/ri";
+import GetProButton from "@/components/shared/GetProButton";
+import { useActivate } from "@/hooks/app.hooks";
 
 const WizPro = () => {
+  const { activated } = useActivate();
+
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
@@ -29,16 +33,25 @@ const WizPro = () => {
                   </p>
                 </div>
                 <div>
-                  <a
-                    href="https://animation-addons.com/"
-                    target="_blank"
-                    className={cn(buttonVariants({ variant: "pro" }))}
-                  >
-                    <span className="me-2 flex">
-                      <RiVipCrown2Line size={20} />
-                    </span>
-                    Get Pro Version
-                  </a>
+                  {activated.integrations.plugins.elements[
+                    "animation-addon-for-elementorpro"
+                  ].action === "Download" ? (
+                    <a
+                      href="https://animation-addons.com/"
+                      target="_blank"
+                      className={cn(
+                        buttonVariants({ variant: "pro" }),
+                        btnClassName
+                      )}
+                    >
+                      <span className="me-2 flex">
+                        <RiVipCrown2Line size={20} />
+                      </span>
+                      Get Pro Version
+                    </a>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
               <div className="mt-[54px] grid grid-cols-2 gap-1">
