@@ -124,7 +124,8 @@ const StaterTemplate = () => {
       if (
         isScrollingDown &&
         scrollTop + clientHeight >= scrollHeight - 5 &&
-        !hasReachedBottom
+        !hasReachedBottom &&
+        allTemplate?.templates?.length !== allTemplate?.total
       ) {
         setHasReachedBottom(true);
         setPageNum((prev) => prev + 1);
@@ -188,7 +189,7 @@ const StaterTemplate = () => {
       </Sheet>
       <ScrollArea className="h-[calc(100vh-85px)] flex-1" ref={viewportRef}>
         <>
-          {loading ? (
+          {loading && !allTemplate?.templates?.length ? (
             <div className="flex justify-center items-center h-[10vh]">
               <p className="text-lg font-semibold">Loading...</p>
             </div>
@@ -202,6 +203,13 @@ const StaterTemplate = () => {
               allTemplate={allTemplate}
               setOpenSidebar={setOpenSidebar}
             />
+          )}
+          {loading && allTemplate?.templates?.length ? (
+            <div className="flex justify-center items-center h-[25vh]">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          ) : (
+            ""
           )}
         </>
       </ScrollArea>
