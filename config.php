@@ -193,7 +193,7 @@ $config = [
 					],
 
 					'testimonial-pro' => [
-						'label'        => esc_html__( 'Testimonial Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -222,7 +222,7 @@ $config = [
 					],
 
 					'button-pro' => [
-						'label'        => esc_html__( 'Button Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Button', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -237,7 +237,7 @@ $config = [
 					],
 
 					'image-compare'     => [
-						'label'        => esc_html__( 'Image Compare', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Image Comparison', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -675,7 +675,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-paginate'      => [
-						'label'        => esc_html__( 'Post Paginate', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Pagination', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -689,7 +689,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-social-share'  => [
-						'label'        => esc_html__( 'Post Social Share', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Social Share', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -718,7 +718,7 @@ $config = [
 					],
 
 					'posts-pro' => [
-						'label'        => esc_html__( 'Posts Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
