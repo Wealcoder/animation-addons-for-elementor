@@ -35,7 +35,8 @@ class AAEAddon_Importer {
 	public function __construct() {
 		add_action( 'wp_ajax_aaeaddon_template_installer', [ $this, 'template_installer' ] );
 		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );  
-		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] );  
+		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] ); 
+	
 		$this->plugin_installer = new WCF_Plugin_Installer(true);     
 		add_filter('wcf_addons_dashboard_config', [ $this, 'include_user_wishlist']);
 	}
@@ -189,6 +190,7 @@ class AAEAddon_Importer {
 				$msg = $this->install_theme($theme_slug);
 				update_option('aaeaddon_template_import_state', $msg);
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
+
 				$template_data['next_step'] = 'install-wp-options';
 				$progress                   = '90';		
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && $template_data['elementor_settings']['type'] === 'json' ) {
@@ -198,7 +200,8 @@ class AAEAddon_Importer {
 						$msg = $this->installElementorKit($json_data);
 						update_option('aaeaddon_template_import_state', $msg);
 					}
-				}	
+				}
+				do_action('aaeaddon/starter-template/import/step/metasettings');				
 				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
@@ -243,6 +246,7 @@ class AAEAddon_Importer {
 				update_option( 'page_on_front', $front_page[0]->ID );
 			}
 		 }
+
 		 if($template_data['blog_page'] && $template_data['blog_page'] !=''){
 			// Get the blog page.
 			$blog_page = get_posts(
@@ -267,6 +271,7 @@ class AAEAddon_Importer {
 		}
 	}
 
+
 	public function install_options( $settings ) {
 
 		global $wpdb;	
@@ -280,9 +285,8 @@ class AAEAddon_Importer {
 				$xml      = simplexml_load_string( $xml_data );
 				if ( ! $xml ) {
 					continue; // Skip if XML parsing fails.
-				}
-	
-				// Check if the XML contains multiple options (i.e. a <options> container)
+				}	
+				
 				if ( isset( $xml->option ) ) {
 					// Iterate through each <option> node.
 					foreach ( $xml->option as $opt ) {
