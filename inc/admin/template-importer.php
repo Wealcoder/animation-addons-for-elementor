@@ -44,8 +44,8 @@ class AAEAddon_Importer {
 	public function include_user_wishlist($config) {
 		$user_id = get_current_user_id();
     
-    // Fetch existing wishlist data
-    $config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
+    	// Fetch existing wishlist data
+    	$config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
 		return $config;
 	}
 
@@ -56,38 +56,38 @@ class AAEAddon_Importer {
 	}
 
 	public function wishlist() {
-    check_ajax_referer('wcf_admin_nonce', 'nonce');
+    	check_ajax_referer('wcf_admin_nonce', 'nonce');
 
-    if (!current_user_can('install_plugins')) {
-        wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
-    }
+    	if (!current_user_can('install_plugins')) {
+        	wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
+    	}
 
-    if (!isset($_POST['wishlist'])) {
-        wp_send_json_error(__('Provide wishlist data.', 'animation-addons-for-elementor'));
-    }
+    	if (!isset($_POST['wishlist'])) {
+        	wp_send_json_error(__('Provide wishlist data.', 'animation-addons-for-elementor'));
+    	}
 
-    $wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Sanitize input
-    $user_id = get_current_user_id();
-    
-    // Fetch existing wishlist data
-    $wishlist_db = get_user_meta($user_id, $this->wishlist_key, true);
-    
-    // Ensure it's an array
-    $wishlist_db = is_array($wishlist_db) ? $wishlist_db : [];
+		$wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Sanitize input
+		$user_id = get_current_user_id();
+		
+		// Fetch existing wishlist data
+		$wishlist_db = get_user_meta($user_id, $this->wishlist_key, true);
+		
+		// Ensure it's an array
+		$wishlist_db = is_array($wishlist_db) ? $wishlist_db : [];
 
-    if (in_array($wishlist, $wishlist_db, true)) {
-        // Remove if exists
-        $wishlist_db = array_values(array_filter($wishlist_db, fn($v) => $v !== $wishlist));
-    } else {
-        // Add new item
-        $wishlist_db[] = $wishlist;
-    }
+		if (in_array($wishlist, $wishlist_db, true)) {
+			// Remove if exists
+			$wishlist_db = array_values(array_filter($wishlist_db, fn($v) => $v !== $wishlist));
+		} else {
+			// Add new item
+			$wishlist_db[] = $wishlist;
+		}
 
-    // Update user meta with modified wishlist
-    update_user_meta($user_id, $this->wishlist_key, $wishlist_db);
+		// Update user meta with modified wishlist
+		update_user_meta($user_id, $this->wishlist_key, $wishlist_db);
 
-    wp_send_json_success($wishlist_db);
-}
+		wp_send_json_success($wishlist_db);
+	}
 
 
 	public function template_installer(){
@@ -349,6 +349,7 @@ class AAEAddon_Importer {
 		require_once( 'base/WPImporterLoggerCLI.php' );
 		require_once( 'base/WXRImportInfo.php' );
 		require_once( 'base/WXRImporter.php' );
+		require_once( 'base/AAeImporter.php' );
 		require_once( 'base/Importer.php' );
 		ob_start(); 
 
@@ -358,13 +359,16 @@ class AAEAddon_Importer {
 			'skip_duplicates'    => false,
 			'overwrite_existing' => true,    // Do not overwrite existing records
 			'skip_empty_nodes'   => true,    // Skip nodes with empty data
+			'fetch_attachments'   => true,    // Skip nodes with empty data
+			//'update_attachment_guids'   => true,    // Skip nodes with empty data
+			//'aggressive_url_search'   => true,    // Skip nodes with empty data
 		];
-
+        error_log('Import Start');
 		$logger   = new WPImporterLogger();          		
 		$importer = new Importer($options, $logger);
 		$result   = $importer->import($file_path);
 		ob_end_clean(); // Clear the buffer
-
+		error_log('Import End');
 		update_option('aaeaddon_template_import_state', esc_html__('Import completed successfully.', 'animation-addons-for-elementor'));
 		return esc_html__('Import completed successfully.', 'animation-addons-for-elementor');
 	}
@@ -500,4 +504,5 @@ class AAEAddon_Importer {
 	
 	
 }
+
 AAEAddon_Importer::instance();

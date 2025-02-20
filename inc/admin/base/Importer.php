@@ -31,7 +31,7 @@ class Importer extends WXRImporter {
 		$this->set_logger( $logger );
 		
 		// Check, if a new AJAX request is required.
-		add_filter( 'wxr_importer.pre_process.post', array( $this, 'new_ajax_request_maybe' ) );
+		//add_filter( 'wxr_importer.pre_process.post', array( $this, 'new_ajax_request_maybe' ) );
 
 		// WooCommerce product attributes registration.
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -497,7 +497,7 @@ class Importer extends WXRImporter {
 		$time = microtime( true ) - $this->start_time;
 
 		// We should make a new ajax call, if the time is right.
-		if ( $time > apply_filters( 'aaeaddon/starter/importer/time_for_one_ajax_call', 20 ) ) {
+		if ( $time > apply_filters( 'aaeaddon/starter/importer/time_for_one_ajax_call', 180 ) ) {
 			$response = apply_filters( 'aaeaddon/starter/importer/new_ajax_request_response_data', array(
 				'status'                => 'newAJAX',
 				'log'                   => 'Time for new AJAX request!: ' . $time,

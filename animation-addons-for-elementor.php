@@ -269,7 +269,9 @@ final class WCF_ADDONS_Plugin {
 		if (is_plugin_active($plugin_file)) {
 			wp_send_json_success(['message' => esc_html__('Plugin is already active.', 'animation-addons-for-elementor')]);
 		}
-	
+		if (!current_user_can('activate_plugins')) {
+			wp_send_json_error(['message' => esc_html__('Plugin Activation Permission Required, Contact Admin', 'animation-addons-for-elementor')]);
+        }
 		// Fetch plugin information dynamically using the WordPress Plugin API
 		$api = plugins_api('plugin_information', [
 			'slug'   => $plugin_slug,
@@ -325,9 +327,9 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_elementor_version() {
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
-		}
+		if (!current_user_can('activate_plugins')) {
+            return;
+        }
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
@@ -349,9 +351,9 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_php_version() {
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
-		}
+		if (!current_user_can('activate_plugins')) {
+            return;
+        }
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: PHP 3: Required PHP version */

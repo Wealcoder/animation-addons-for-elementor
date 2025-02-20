@@ -116,6 +116,7 @@ class WPImporterLogger {
 	 * @return null
 	 */
 	public function log( $level, $message, array $context = array() ) {
+		update_option('aaeaddon_template_import_state', (string) $message);
 		$this->messages[] = array(
 			'timestamp' => time(),
 			'level'     => $level,

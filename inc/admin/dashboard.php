@@ -438,7 +438,8 @@ class WCF_Admin_Init {
 	 */
 	public function remove_all_notices() {
 		add_action( 'in_admin_header', function () {
-			if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
+			$screen = get_current_screen();
+			if ( $screen && 'toplevel_page_wcf_addons_settings' === $screen->id  ) {
 				remove_all_actions( 'admin_notices' );
 				remove_all_actions( 'all_admin_notices' );
 			}
