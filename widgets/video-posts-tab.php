@@ -1197,7 +1197,6 @@ class Video_Posts_Tab extends Widget_Base {
                     <p style="text-align: center"><?php echo esc_html__( "No Video Post Found!", "animation-addons-for-elementor" ); ?></p>
 				<?php } ?>
             </div>
-
             <div class="aae-posts-wrap">
                 <div class="aae-posts">
 					<?php
