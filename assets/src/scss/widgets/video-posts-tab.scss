@@ -12,7 +12,19 @@
 
   .posts-banner {
     width: 100%;
+    height: 680px;
     overflow: hidden;
+    position: relative;
+
+    &::after {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+    }
 
     .thumb {
       height: 100%;
@@ -30,6 +42,7 @@
 
   .aae-posts {
     display: grid;
+    flex-basis: auto;
   }
 
   .aae-post {
@@ -42,41 +55,15 @@
     }
   }
 
-  &.style-1 {
-    .posts-banner {
-      height: 495px;
-      margin-bottom: 30px;
-    }
-
-    .aae-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px 36px;
-      flex-wrap: wrap;
-
-      li {
-        position: relative;
-
-        &:last-child {
-          &::after {
-            display: none;
-          }
-        }
-
-        &::after {
-          position: absolute;
-          content: "";
-          width: 20px;
-          height: 1px;
-          top: 50%;
-          margin-left: 8px;
-          background-color: #0a0a0a;
-        }
-      }
-    }
-
+  .aae-posts-wrap {
+    display: flex;
+    border-top: 1px solid #222;
+    position: absolute;
+    bottom: 0;
+    left: 0;
   }
 
+<<<<<<< HEAD
   &.style-2 {
      .posts-banner {
       height: 680px;
@@ -107,4 +94,12 @@
   display: block;
   width: 100%;
   height: 400px;
+=======
+  .aae-view-all {
+    flex-basis: 200px;
+    border-left: 1px solid #222;
+    display: flex;
+    align-items: center;
+  }
+>>>>>>> aa7b3667be197417210e0c859715257bc1d21e60
 }

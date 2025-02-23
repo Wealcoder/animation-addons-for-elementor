@@ -6,13 +6,16 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { MainNavData } from "@/config/nav/main-nav";
+import { useTNavigation } from "@/hooks/app.hooks";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-const MainNav = ({ NavigateComponent }) => {
+const MainNav = () => {
   const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
   const role = WCF_ADDONS_ADMIN.user_role;
+
+  const { setTabKey } = useTNavigation();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -37,12 +40,24 @@ const MainNav = ({ NavigateComponent }) => {
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
-    NavigateComponent(value);
+    setTabKey(value);
     setCurrentPath(value);
   };
 
+  const changeExternalRoute = (value) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+
+    url.searchParams.set("tab", value);
+    return url;
+  };
+
   function hasCommonElement(array1, array2) {
-    return array1.some((item) => array2.includes(item));
+    return array1?.some((item) => array2.includes(item));
   }
 
   return (
@@ -59,7 +74,7 @@ const MainNav = ({ NavigateComponent }) => {
                 )}
               >
                 <a
-                  href={item.path}
+                  href={changeExternalRoute(item.path)}
                   target="_blank"
                   className={cn(
                     navigationMenuTriggerStyle(),

@@ -31,21 +31,21 @@ const AccessData = [
   {
     title: "Custom Fonts",
     slug: "custom-fonts",
-    subTitle: "Customize Custom fonts",
+    subTitle: "Upload Custom fonts",
     url: `${WCF_ADDONS_ADMIN.adminURL}/edit.php?post_type=wcf-custom-fonts`,
     icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
   },
   {
     title: "Popup",
     subTitle: "Customize popups",
-    url: "",
+    url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#popup`,
     icon: <SquareArrowUp size={22} className="text-[#A281FF]" />,
   },
   {
     title: "Custom Icons",
-    subTitle: "Customize custom icons",
-    url: "",
-    icon: <RiImageCircleLine size={22} />,
+    subTitle: "Upload custom icons",
+    url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-icon`,
+    icon: <RiImageCircleLine size={22} className="text-[#A281FF]" />,
   },
 ];
 

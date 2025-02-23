@@ -1,6 +1,6 @@
 {
-  "name": "react-app",
-  "description": "A Product Customizer",
+  "name": "animation-addon-for-elementor",
+  "description": "Animation Addon For Elementor",
   "version": "1.0.0",
   "type": "wordpress-plugin",
   "scripts": {

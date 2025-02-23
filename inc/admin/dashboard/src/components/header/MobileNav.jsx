@@ -9,11 +9,14 @@ import { RiMenuLine } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { MainNavData } from "@/config/nav/main-nav";
+import { useTNavigation } from "@/hooks/app.hooks";
 
-const MobileNav = ({ NavigateComponent }) => {
+const MobileNav = () => {
   const [currentPath, setCurrentPath] = useState("");
   const navItems = MainNavData;
   const role = WCF_ADDONS_ADMIN.user_role;
+
+  const { setTabKey } = useTNavigation();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -38,12 +41,12 @@ const MobileNav = ({ NavigateComponent }) => {
 
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
-    NavigateComponent(value);
+    setTabKey(value);
     setCurrentPath(value);
   };
 
   function hasCommonElement(array1, array2) {
-    return array1.some((item) => array2.includes(item));
+    return array1?.some((item) => array2.includes(item));
   }
 
   return (
@@ -67,7 +70,7 @@ const MobileNav = ({ NavigateComponent }) => {
                   currentPath === item.path.split("/").pop()
                     ? "bg-background-secondary text-text-secondary-hover"
                     : "",
-                  "w-max items-center justify-center bg-background ps-2.5 pe-3 py-2 font-medium transition-colors hover:bg-background-secondary hover:text-text-secondary-hover flex rounded-lg gap-2 text-base text-text-secondary"
+                  "w-max items-center justify-center bg-background ps-2.5 pe-3 py-2 font-medium transition-colors hover:bg-background-secondary hover:text-text-secondary-hover flex rounded-lg gap-2 text-base text-text-secondary no-underline"
                 )}
               >
                 {item.name}

@@ -164,7 +164,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'testimonial2'     => [
-						'label'        => esc_html__( 'Testimonial 2', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Classic Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -178,7 +178,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'testimonial3'     => [
-						'label'        => esc_html__( 'Testimonial 3', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Modern Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -193,7 +193,7 @@ $config = [
 					],
 
 					'testimonial-pro' => [
-						'label'        => esc_html__( 'Testimonial Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Testimonial', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -222,7 +222,7 @@ $config = [
 					],
 
 					'button-pro' => [
-						'label'        => esc_html__( 'Button Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Button', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -237,7 +237,7 @@ $config = [
 					],
 
 					'image-compare'     => [
-						'label'        => esc_html__( 'Image Compare', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Image Comparison', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -418,8 +418,8 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-countdown/',
 						'youtube_url'  => '',
 					],
-					'animated-heading'  => [
-						'label'        => esc_html__( 'Animated Heading', 'animation-addons-for-elementor' ),
+					'company-info'         => [
+						'label'        => esc_html__( 'Company Profile', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -427,9 +427,9 @@ $config = [
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Animated-Heading",
+						'icon'         => "wcf-icon-Countdown",
 						'demo_url'     => '',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/company-info/',
 						'youtube_url'  => '',
 					],
 				]
@@ -450,6 +450,20 @@ $config = [
 						'icon'         => "wcf-icon-Typewriter",
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-typewriter/',
+						'youtube_url'  => '',
+					],
+					'animated-heading'  => [
+						'label'        => esc_html__( 'Animated Heading', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Animated-Heading",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
 						'youtube_url'  => '',
 					],
 					'animated-title' => [
@@ -631,6 +645,20 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+					],	
+					'post-reactions'       => [
+						'label'        => esc_html__( 'Post Reactions', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Post-Comment",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
 					],
 					'post-meta-info'     => [
 						'label'        => esc_html__( 'Post Meta Info', 'animation-addons-for-elementor' ),
@@ -647,7 +675,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-paginate'      => [
-						'label'        => esc_html__( 'Post Paginate', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Pagination', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -661,7 +689,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'post-social-share'  => [
-						'label'        => esc_html__( 'Post Social Share', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Social Share', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -690,7 +718,7 @@ $config = [
 					],
 
 					'posts-pro' => [
-						'label'        => esc_html__( 'Posts Pro', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Advanced Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -701,6 +729,21 @@ $config = [
 						'icon'         => "wcf-icon-Posts",
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-pro/',
+						'youtube_url'  => '',
+					],
+
+					'video-story' => [
+						'label'        => esc_html__( 'Video Story', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/aae-video-story/',
 						'youtube_url'  => '',
 					],
 
@@ -749,6 +792,36 @@ $config = [
 						'youtube_url'  => '',
 					],
 
+					'post-rating-form' => [
+						'label'        => esc_html__( 'Post Rating Form', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
+						'youtube_url'  => '',
+					],
+
+					'post-rating' => [
+						'label'        => esc_html__( 'Post Rating', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
+						'youtube_url'  => '',
+					],
+
 					'grid-hover-posts'  => [
 						'label'        => esc_html__( 'Grid Hover Posts', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -763,6 +836,23 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
 					],
+
+					'breaking-news-slider'     => [
+						'label'        => esc_html__( 'Breaking News Slider', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'setup' 			 => ['basic'],
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Brand-Slider",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/breaking-news-slider',
+						'youtube_url'  => '',
+					],
+
 					'category-showcase' => [
 						'label'        => esc_html__( 'Category Showcase', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -775,6 +865,21 @@ $config = [
 						'icon'         => "wcf-icon-Posts",
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
+						'youtube_url'  => '',
+					],
+
+					'category-slider' => [
+						'label'        => esc_html__( 'Category Slider', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/category-slider/',
 						'youtube_url'  => '',
 					],
 
@@ -915,6 +1020,20 @@ $config = [
 					],
 					'mailchimp'      => [
 						'label'        => esc_html__( 'Mailchimp', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => true,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Mailchimp",
+						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-mailchimp/',
+						'youtube_url'  => '',
+					],
+					'advanced-mailchimp'      => [
+						'label'        => esc_html__( 'Advanced Mailchimp', 'animation-addons-for-elementor' ),
 						'location'     => [
 							'cTab' => 'all'
 						],
@@ -1215,6 +1334,20 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Floating-Elements",
 						'demo_url'     => '',
+						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/dynamic-tags/',
+						'youtube_url'  => '',
+					],
+					'template-library'       => [
+						'label'        => esc_html__( 'Template library', 'animation-addons-for-elementor' ),
+						'location'     => [
+							'cTab' => 'general'
+						],
+						'is_pro'       => false,
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Floating-Elements",
+						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/dynamic-tags/',
 						'youtube_url'  => '',
 					],
@@ -1289,7 +1422,7 @@ $config = [
 						'youtube_url'  => '',
 					],
 					'custom-cpt'       => [
-						'label'        => esc_html__( 'Custom Post Type', 'animation-addons-for-elementor' ),
+						'label'        => esc_html__( 'Post Type Builder', 'animation-addons-for-elementor' ),
 						'is_pro'       => true,
 						'location'     => [
 							'cTab' => 'general'

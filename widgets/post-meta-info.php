@@ -91,6 +91,32 @@ class Post_Meta_Info extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'share_separator',
+			[
+				'label'   => esc_html__( 'Separator', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'no',
+				'options' => [
+					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				]
+			]
+		);
+
+		$this->add_control(
+			'share_separator_icons',
+			[
+				'label'   => esc_html__( 'Separator Icon', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::ICONS,
+				'condition'   => [ 'share_separator' => [ 'yes' ] ],
+				'default' => [
+					'value'   => 'fa-solid fa-share-nodes',
+					'library' => 'fa-solid',
+				]
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Content
@@ -419,6 +445,40 @@ class Post_Meta_Info extends Widget_Base {
 				],
 				'condition' => [
 					'layout_style' => '1',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'seperator_size_info',
+			[
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 200,
+						'step' => 5,
+					]
+				],
+				'selectors'  => [
+					'{{WRAPPER}} span.wcf_separator_icon' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+				'default'    => [
+					'unit' => 'px',
+					'size' => 16,
+				],
+			]
+		);
+
+		$this->add_control(
+			'seperator_icon_color',
+			[
+				'label' => esc_html__( 'Icon Color', 'textdomain' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.wcf_separator_icon' => 'fill: {{VALUE}}',
 				],
 			]
 		);
@@ -1707,6 +1767,65 @@ class Post_Meta_Info extends Widget_Base {
 			]
 		);
 
+
+		$this->add_control(
+			'comment_separator_heading',
+			[
+				'label' => esc_html__( 'Separator', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'separator_icon',
+			[
+				'label' => esc_html__( 'Size', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+						'step' => 1,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} span.separator' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'separator_icon_color',
+			[
+				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} span.separator' => 'fill: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'separator_icon_space',
+			[
+				'label' => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem' ],
+				'range' => [
+					'px' => [
+						'min' => 1,
+						'max' => 150,
+						'step' => 1,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} span.separator' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -1731,22 +1850,25 @@ class Post_Meta_Info extends Widget_Base {
 	protected function render() {
 		$settings  = $this->get_settings_for_display();
 		$meta_list = $settings['list'];
+		
 		if ( empty( $meta_list ) ) {
 			return;
 		}
-
+		
 		$this->switch_post();
-
+		
 		?>
         <ul class="wcf--meta-list style-<?php echo esc_html( $settings['layout_style'] ); ?>">
-	        <?php foreach ( $meta_list as $meta ) {
-		        $this->render_date( $meta, $settings );
-		        $this->render_categories( $meta, $settings );
-		        $this->render_author( $meta, $settings );
-		        $this->render_view_count( $meta, $settings );
-		        $this->render_reading_time( $meta, $settings );
-		        $this->render_comments( $meta, $settings );
-	        }
+	        <?php 
+	            foreach ( $meta_list as $meta )
+		        {
+			        $this->render_date( $meta, $settings );
+			        $this->render_categories( $meta, $settings );
+			        $this->render_author( $meta, $settings );
+			        $this->render_view_count( $meta, $settings );
+			        $this->render_reading_time( $meta, $settings );
+			        $this->render_comments( $meta, $settings );
+		        }
 	        ?>
         </ul>
 		<?php
@@ -1959,6 +2081,8 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-comment wcf-separator" data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+
+					<span class="separator"><?php  Icons_Manager::render_icon( $settings['share_separator_icons'], [ 'aria-hidden' => 'true' ] ); ?></span>
                     <?php comments_number(); ?>
                 </li>
 			<?php endif; ?>

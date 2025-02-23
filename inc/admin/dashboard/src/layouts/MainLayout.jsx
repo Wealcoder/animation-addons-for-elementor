@@ -1,16 +1,13 @@
 import MainHeader from "@/components/header/MainHeader";
-import { useNotification } from "@/hooks/app.hooks";
-import { useEffect, useState, lazy, Suspense } from "react";
-
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Extensions = lazy(() => import("@/pages/Extensions"));
-const FreePro = lazy(() => import("@/pages/FreePro"));
-const Widgets = lazy(() => import("@/pages/Widgets"));
-const Integrations = lazy(() => import("@/pages/Integrations"));
+import TemplateHeader from "@/components/header/TemplateHeader";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ShowContent } from "@/config/showFullContent";
+import { useNotification, useTNavigation } from "@/hooks/app.hooks";
+import { hideElements } from "@/lib/utils";
+import { useEffect, useState, Suspense } from "react";
 
 const MainLayout = () => {
-  const [open, setOpen] = useState(false);
-  const [tabKey, setTabKey] = useState("");
+  const { tabKey, setTabKey } = useTNavigation();
   const { setChangelog, setNotice } = useNotification();
 
   const fetchChangelog = async () => {
@@ -36,6 +33,7 @@ const MainLayout = () => {
           setChangelog(return_content.changelog.change_logs);
       });
   };
+
   const fetchNotice = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -62,6 +60,35 @@ const MainLayout = () => {
     fetchChangelog();
     fetchNotice();
   }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setTabKey(tabValue);
+    }
+  }, []);
+
+  return (
+    <div className="wcf-anim2024-wrapper">
+      <div className="wcf-anim2024-style">
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen">
+              <p className="text-lg font-semibold">Loading...</p>
+            </div>
+          }
+        >
+          {ShowContent({ tabKey })}
+        </Suspense>
+      </div>
+    </div>
+  );
+};
+
+MainLayout.FirstLayout = ({ children }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const hash = window.location.hash;
 
@@ -96,53 +123,87 @@ const MainLayout = () => {
     }
   }, [hash]);
 
-  const urlParams = new URLSearchParams(window.location.search);
-
   useEffect(() => {
-    const tabValue = urlParams.get("tab");
-    if (tabValue) {
-      setTabKey(tabValue);
-    }
-  }, [urlParams]);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
 
-  const showContent = (tabKey) => {
-    switch (tabKey) {
-      case "dashboard":
-        return <Dashboard />;
-      case "widgets":
-        return <Widgets />;
-      case "extensions":
-        return <Extensions />;
-      case "free-pro":
-        return <FreePro />;
-      case "integrations":
-        return <Integrations />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
-  const NavigateComponent = (value) => {
-    if (value) {
-      setTabKey(value);
-    }
-  };
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
-        <MainHeader
-          open={open}
-          setOpen={setOpen}
-          NavigateComponent={NavigateComponent}
-        />
-        <div className="px-5 2xl:px-24 py-8">
-          <Suspense fallback={<p>Loading...</p>}>
-            {showContent(tabKey)}
-          </Suspense>
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="container overflow-x-hidden bg-background rounded-[10px]">
+          <MainHeader open={open} setOpen={setOpen} />
+          <div className="px-5 2xl:px-24 py-8">{children}</div>
+        </div>
+      )}
+    </>
+  );
+};
+
+MainLayout.SecondLayout = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hideElements();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      ) : (
+        <div className="bg-background">
+          <TemplateHeader />
+          <div>{children}</div>
+        </div>
+      )}
+    </>
+  );
+};
+
+MainLayout.ThirdLayout = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hideElements();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      ) : (
+        <div className="bg-background-secondary">
+          <TemplateHeader activeBtn={false} />
+          <ScrollArea className="h-[calc(100vh-85px)]">
+            <div className="flex justify-center items-center min-h-[calc(100vh-85px)] py-5">
+              {children}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
+    </>
   );
 };
 

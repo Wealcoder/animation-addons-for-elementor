@@ -28,16 +28,6 @@ class Post_Comment extends Widget_Base {
 		return 'wcf eicon-comments';
 	}
 
-	public function show_in_panel() {
-		$tmpType = get_post_meta( get_the_ID(), 'wcf-addons-template-meta_type', true );
-
-		if ( 'single' === $tmpType ) {
-			return true;
-		}
-		// By default don't show.
-		return false;
-	}
-
 	public function get_categories() {
 		return [ 'wcf-single-addon' ];
 	}
@@ -62,6 +52,15 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Container', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name' => 'background_box',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .joya--blog-post-comment',
 			]
 		);
 
@@ -91,10 +90,11 @@ class Post_Comment extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
 		$this->start_controls_section(
-			'element_ready_form_heading_section',
+			'element_ready_comment_area_section',
 			[
-				'label' => esc_html__( 'Common Text Color', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Comment Area', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -118,11 +118,23 @@ class Post_Comment extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'comment_counter_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .joya--comment .comment-num' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		// Author Name
 		$this->add_control(
 			'author_ct_color',
 			[
-				'label'     => esc_html__( 'Author Count', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Author Name', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .default-details-comment-name' => 'color: {{VALUE}};',
@@ -135,6 +147,18 @@ class Post_Comment extends Widget_Base {
 			[
 				'name'     => 'cathor_count_typography',
 				'selector' => '{{WRAPPER}} .default-details-comment-name',
+			]
+		);
+
+		$this->add_responsive_control(
+			'cathor_count_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-comment-name' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -159,27 +183,53 @@ class Post_Comment extends Widget_Base {
 				'label'    => esc_html__( 'Date', 'animation-addons-for-elementor' ),
 			]
 		);
+
+
+		$this->add_responsive_control(
+			'cathor_count_date_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-comment-date' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
 		// Comment TExt
 		$this->add_control(
 			'c_text_color',
 			[
-				'label'     => esc_html__( 'Body Text', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Comment Text', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .axtra-comment-text p' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .logged-in-as'        => 'color: {{VALUE}};',
-					'{{WRAPPER}} .comment-reply-link'  => 'color: {{VALUE}};',
-					'{{WRAPPER}} .comment-notes'       => 'color: {{VALUE}};',
+					'{{WRAPPER}} .axtra-comment-text p'      => 'color: {{VALUE}};',
+					'{{WRAPPER}} .logged-in-as'              => 'color: {{VALUE}};',
+					'{{WRAPPER}} .comment-reply-link'        => 'color: {{VALUE}};',
+					'{{WRAPPER}} .comment-notes'             => 'color: {{VALUE}};',
+					'{{WRAPPER}} .newsprint-comment-text p'  => 'color: {{VALUE}};',
 				],
 			]
 		);
-
+		
 		$this->add_group_control(
 			Group_Control_Typography:: get_type(),
 			[
 				'name'     => 'cmeta_ytext_typography',
-				'label'    => esc_html__( 'Body Text', 'animation-addons-for-elementor' ),
-				'selector' => '{{WRAPPER}} .axtra-comment-text p,{{WRAPPER}} .logged-in-as',
+				'label'    => esc_html__( 'Comment Text', 'animation-addons-for-elementor' ),
+				'selector' => '{{WRAPPER}} .axtra-comment-text p,{{WRAPPER}} .logged-in-as, {{WRAPPER}} .newsprint-comment-text p',
+			]
+		);
+
+		$this->add_responsive_control(
+			'cathor_body_text_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .newsprint-comment-text p' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -188,10 +238,10 @@ class Post_Comment extends Widget_Base {
 		$this->add_control(
 			'c_linkt_color',
 			[
-				'label'     => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Reply Link', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} a' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .joya--comment .comment-reply-link' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -200,8 +250,148 @@ class Post_Comment extends Widget_Base {
 			Group_Control_Typography:: get_type(),
 			[
 				'name'     => 'cmeta_linkt_typography',
-				'label'    => esc_html__( 'Link Text', 'animation-addons-for-elementor' ),
-				'selector' => '{{WRAPPER}} a',
+				'label'    => esc_html__( 'Typography', 'animation-addons-for-elementor' ),
+				'selector' => '{{WRAPPER}} .joya--comment .comment-reply-link',
+			]
+		);
+
+		$this->add_control(
+			'c_replbtn_color',
+			[
+				'label'     => esc_html__( 'Reply Icon Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .comment-reply-link' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+
+		$this->start_controls_section(
+			'element_ready_form_avatar_section',
+			[
+				'label' => esc_html__( 'Avator Images', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'avator_height',
+			[
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vh', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 500,
+					],
+					'vh' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-comment-thumb img' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'avator_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vh', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 500,
+					],
+					'vh' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-comment-thumb img' => 'width: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'border',
+				'selector' => '{{WRAPPER}} .default-details-comment-thumb img',
+			]
+		);
+
+		$this->add_responsive_control(
+			'avator_image_border_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .default-details-comment-thumb img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'element_ready_form_general_section',
+			[
+				'label' => esc_html__( 'Comment Form', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name' => 'aaebackground',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .joya--comment .comment-respond',
+			]
+		);
+
+		$this->add_responsive_control(
+			'comment_form_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .joya--comment .comment-respond' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'comment_form_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .joya--comment .comment-respond' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+
+		$this->start_controls_section(
+			'element_ready_form_heading_section',
+			[
+				'label' => esc_html__( 'Comment Box Title', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
 
@@ -225,18 +415,99 @@ class Post_Comment extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'c_replbtn_color',
+		$this->end_controls_section();
+
+
+		$this->start_controls_section(
+			'element_ready_note_section',
 			[
-				'label'     => esc_html__( 'Reply Icon Color', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Comment Notes', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'c_note_color',
+			[
+				'label'     => esc_html__( 'Note Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .comment-reply-link' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .joya--comment .comment-notes' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'cmetaiui_note_typography',
+				'label'    => esc_html__( 'Note Typography', 'animation-addons-for-elementor' ),
+				'selector' => '{{WRAPPER}} .joya--comment .comment-notes',
+			]
+		);
+
+		$this->add_responsive_control(
+			'comment_note_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .joya--comment .comment-notes' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'comment_note_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .joya--comment .comment-notes' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'comment_note_gap',
+			[
+				'label'          => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'           => Controls_Manager::SLIDER,
+				'default'        => [
+					'unit' => '%',
+				],
+				'tablet_default' => [
+					'unit' => '%',
+				],
+				'mobile_default' => [
+					'unit' => '%',
+				],
+				'size_units'     => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
+				'range'          => [
+					'%'  => [
+						'min' => 1,
+						'max' => 100,
+					],
+					'px' => [
+						'min' => 1,
+						'max' => 1000,
+					],
+					'vw' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'      => [
+					'{{WRAPPER}} img' => 'gap: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
 
 		$this->end_controls_section();
+
+		
 
 		/*----------------------------
 		LABEL STYLE

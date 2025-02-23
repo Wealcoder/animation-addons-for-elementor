@@ -261,6 +261,8 @@ class Image_Gallery extends Widget_Base {
 					'4' => '4',
 					'5' => '5',
 					'6' => '6',
+                    '7' => '7',
+                    '8' => '8',
 				],
 				'selectors' => [
 					'{{WRAPPER}} .wcf--image-gallery' => 'display:grid; grid-template-columns: repeat({{VALUE}}, 1fr);',
@@ -306,6 +308,18 @@ class Image_Gallery extends Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .wcf--image-gallery' => 'grid-row-gap: {{SIZE}}{{UNIT}}',
+				],
+			]
+		);
+
+		$this->add_control(
+			'img_b_radius',
+			[
+				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors' => [
+					'{{WRAPPER}} .wcf--gallery-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
