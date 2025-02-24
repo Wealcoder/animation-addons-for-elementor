@@ -418,20 +418,6 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-countdown/',
 						'youtube_url'  => '',
 					],
-					'company-info'         => [
-						'label'        => esc_html__( 'Company Profile', 'animation-addons-for-elementor' ),
-						'location'     => [
-							'cTab' => 'all'
-						],
-						'is_active'    => false,
-						'is_pro'       => false,
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Countdown",
-						'demo_url'     => '',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/company-info/',
-						'youtube_url'  => '',
-					],
 				]
 			],
 			'animation-elements' => [
