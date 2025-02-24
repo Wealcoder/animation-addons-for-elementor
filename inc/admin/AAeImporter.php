@@ -5,7 +5,7 @@ namespace WCF_ADDONS\Admin\Base;
 use WP_Error;
 use XMLReader;
 
-class AAeImporter extends WXRImporter {
+class AAEImporter extends WXRImporter {
 		/**
 	 * Constructor method.
 	 *

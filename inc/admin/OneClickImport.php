@@ -20,21 +20,7 @@ class OneClickDemoImport {
 	 *
 	 * @var object
 	 */
-	public $importer;
-
-	/**
-	 * The instance of the WCFOI\PluginInstaller class.
-	 *
-	 * @var PluginInstaller object
-	 */
-	public $plugin_installer;
-
-	/**
-	 * The resulting page's hook_suffix, or false if the user does not have the capability required.
-	 *
-	 * @var boolean or string
-	 */
-	private $plugin_page;
+	public $importer;	
 
 	/**
 	 * Holds the verified import files.
@@ -111,18 +97,14 @@ class OneClickDemoImport {
 	 * Protected constructor to prevent creating a new instance of the
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
-	protected function __construct() {
+	protected function __construct() {	
 	
-		add_action( 'wp_ajax_ocdi_upload_manual_import_files', array( $this, 'upload_manual_import_files_callback' ) );
-		add_action( 'wp_ajax_ocdi_import_demo_data', array( $this, 'import_demo_data_ajax_callback' ) );		
-		add_action( 'wp_ajax_ocdi_after_import_data', array( $this, 'after_all_import_data_ajax_callback' ) );
-		add_action( 'after_setup_theme', array( $this, 'setup_plugin_with_filter_data' ) );
-	
+		add_action( 'after_setup_theme', array( $this, 'setup_plugin_with_filter_data' ) );	
 		add_action( 'set_object_terms', array( $this, 'add_imported_terms' ), 10, 6 );
 		add_filter( 'wxr_importer.pre_process.post', [ $this, 'skip_failed_attachment_import' ] );
 		add_action( 'wxr_importer.process_failed.post', [ $this, 'handle_failed_attachment_import' ], 10, 5 );
 		add_action( 'wp_import_insert_post', [ $this, 'save_wp_navigation_import_mapping' ], 10, 4 );
-		add_action( 'wcfio/after_import', [ $this, 'fix_imported_wp_navigation' ] );
+		add_action( 'aaeaddon/after_import', [ $this, 'fix_imported_wp_navigation' ] );
 	}
 
 	/**
@@ -145,10 +127,6 @@ class OneClickDemoImport {
 	public function upload_manual_import_files_callback() {
 		Helpers::verify_ajax_call();
 
-		if ( empty( $_FILES ) ) {
-			wp_send_json_error( esc_html__( 'Manual import files are missing! Please select the import files and try again.', 'wcf-theme-demo-import' ) );
-		}
-
 		// Create a date and time string to use for demo and log file names.
 		Helpers::set_demo_import_start_time();
 
@@ -161,25 +139,16 @@ class OneClickDemoImport {
 		$this->selected_import_files = Helpers::process_uploaded_files( $_FILES, $this->log_file_path );
 
 		// Set the name of the import files, because we used the uploaded files.
-		$this->import_files[ $this->selected_index ]['import_file_name'] = esc_html__( 'Manually uploaded files', 'wcf-theme-demo-import' );
+		$this->import_files[ $this->selected_index ]['import_file_name'] = esc_html__( 'Manually uploaded files', 'animation-addons-for-elementor' );
 
 		// Save the initial import data as a transient, so the next import call (in new AJAX call) can use that data.
-		Helpers::set_ocdi_import_data_transient( $this->get_current_importer_data() );
+		Helpers::set_st_import_data_transient( $this->get_current_importer_data() );
 
 		wp_send_json_success();
 	}
-
-
-	/**
-	 * Main AJAX callback function for:
-	 * 1). prepare import files (uploaded or predefined via filters)
-	 * 2). execute 'before content import' actions (before import WP action)
-	 * 3). import content
-	 * 4). execute 'after content import' actions (before widget import WP action, widget import, customizer import, after import WP action)
-	 */
 	public function import_demo_data_ajax_callback() {
 		// Try to update PHP memory limit (so that it does not run out of it).
-		ini_set( 'memory_limit', Helpers::apply_filters( 'wcfio/import_memory_limit', '350M' ) );
+		ini_set( 'memory_limit', Helpers::apply_filters( 'aadaddon/st/import_memory_limit', '350M' ) );
 
 		// Verify if the AJAX call is valid (checks nonce and current_user_can).
 		Helpers::verify_ajax_call();
@@ -195,63 +164,41 @@ class OneClickDemoImport {
 			$this->log_file_path = Helpers::get_log_path();
 
 			// Get selected file index or set it to 0.
-			$this->selected_index = empty( $_POST['selected'] ) ? 0 : absint( $_POST['selected'] );
-
-			/**
-			 * 1). Prepare import files.
-			 * Manually uploaded import files or predefined import files via filter: wcfio/import_files
-			 */
-			if ( ! empty( $_FILES ) ) { // Using manual file uploads?
-				// Get paths for the uploaded files.
-				$this->selected_import_files = Helpers::process_uploaded_files( $_FILES, $this->log_file_path );
-
-				// Set the name of the import files, because we used the uploaded files.
-				$this->import_files[ $this->selected_index ]['import_file_name'] = esc_html__( 'Manually uploaded files', 'wcf-theme-demo-import' );
-			}
-			elseif ( ! empty( $this->import_files[ $this->selected_index ] ) ) { // Use predefined import files from wp filter: wcfio/import_files.
-
-				// Download the import files (content, widgets and customizer files).
-				$this->selected_import_files = Helpers::download_import_files( $this->import_files[ $this->selected_index ] );
-
+			$this->selected_index = 0;
+		
+			if ( 1 ) { // Provide url
+				// Download the import files (content).
+				$this->selected_import_files = Helpers::download_import_files( [ 'import_file_url' => '#' ] );
 				// Check Errors.
 				if ( is_wp_error( $this->selected_import_files ) ) {
 					// Write error to log file and send an AJAX response with the error.
 					Helpers::log_error_and_send_ajax_response(
 						$this->selected_import_files->get_error_message(),
 						$this->log_file_path,
-						esc_html__( 'Downloaded files', 'wcf-theme-demo-import' )
+						esc_html__( 'Downloaded files', 'animation-addons-for-elementor' )
 					);
 				}
 
-				// Add this message to log file.
-				$log_added = Helpers::append_to_file(
-					sprintf( /* translators: %s - the name of the selected import. */
-						__( 'The import files for: %s were successfully downloaded!', 'wcf-theme-demo-import' ),
-						$this->import_files[ $this->selected_index ]['import_file_name']
-					) . Helpers::import_file_info( $this->selected_import_files ),
-					$this->log_file_path,
-					esc_html__( 'Downloaded files' , 'wcf-theme-demo-import' )
-				);
 			}
 			else {
 				// Send JSON Error response to the AJAX call.
-				wp_send_json( esc_html__( 'No import files specified!', 'wcf-theme-demo-import' ) );
+				wp_send_json( esc_html__( 'No import files specified!', 'animation-addons-for-elementor' ) );
 			}
 		}
 
 		// Save the initial import data as a transient, so other import parts (in new AJAX calls) can use that data.
-		Helpers::set_ocdi_import_data_transient( $this->get_current_importer_data() );
+		Helpers::set_st_import_data_transient( $this->get_current_importer_data() );
 
 		if ( ! $this->before_import_executed ) {
 			$this->before_import_executed = true;
 
 			/**
-			 * 2). Execute the actions hooked to the 'wcfio/before_content_import_execution' action:
+			 * 2). Execute the actions hooked to the 'aaeaddon/before_content_import_execution' action:
 			 *
 			 * Default actions:
 			 * 1 - Before content import WP action (with priority 10).
 			 */
-			Helpers::do_action( 'wcfio/before_content_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
+			Helpers::do_action( 'aaeaddon/before_content_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
 		}
 
 		/**
@@ -261,63 +208,19 @@ class OneClickDemoImport {
 		if ( ! empty( $this->selected_import_files['content'] ) ) {
 			$this->append_to_frontend_error_messages( $this->importer->import_content( $this->selected_import_files['content'] ) );
 		}
-
-		/**
-		 * 4). Execute the actions hooked to the 'wcfio/after_content_import_execution' action:
-		 *
-		 * Default actions:
-		 * 1 - Before widgets import setup (with priority 10).
-		 * 2 - Import widgets (with priority 20).
-		 * 3 - Import Redux data (with priority 30).
-		 */
-		Helpers::do_action( 'wcfio/after_content_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
+	
+		Helpers::do_action( 'aaeaddon/after_content_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
 
 		// Save the import data as a transient, so other import parts (in new AJAX calls) can use that data.
-		Helpers::set_ocdi_import_data_transient( $this->get_current_importer_data() );
-
-		// Request the customizer import AJAX call.
-		if ( ! empty( $this->selected_import_files['customizer'] ) ) {
-			wp_send_json( array( 'status' => 'customizerAJAX' ) );
-		}
+		Helpers::set_st_import_data_transient( $this->get_current_importer_data() );
 
 		// Request the after all import AJAX call.
-		if ( false !== Helpers::has_action( 'wcfio/after_all_import_execution' ) ) {
+		if ( false !== Helpers::has_action( 'aaeaddon/after_all_import_execution' ) ) {
 			wp_send_json( array( 'status' => 'afterAllImportAJAX' ) );
 		}
 
 		// Update terms count.
 		$this->update_terms_count();
-
-		// Send a JSON response with final report.
-		$this->final_response();
-	}
-
-
-	/**
-	 * AJAX callback for importing the customizer data.
-	 * This request has the wp_customize set to 'on', so that the customizer hooks can be called
-	 * (they can only be called with the $wp_customize instance). But if the $wp_customize is defined,
-	 * then the widgets do not import correctly, that's why the customizer import has its own AJAX call.
-	 */
-	public function import_customizer_data_ajax_callback() {
-		// Verify if the AJAX call is valid (checks nonce and current_user_can).
-		Helpers::verify_ajax_call();
-
-		// Get existing import data.
-		if ( $this->use_existing_importer_data() ) {
-			/**
-			 * Execute the customizer import actions.
-			 *
-			 * Default actions:
-			 * 1 - Customizer import (with priority 10).
-			 */
-			Helpers::do_action( 'wcfio/customizer_import_execution', $this->selected_import_files );
-		}
-
-		// Request the after all import AJAX call.
-		if ( false !== Helpers::has_action( 'wcfio/after_all_import_execution' ) ) {
-			wp_send_json( array( 'status' => 'afterAllImportAJAX' ) );
-		}
 
 		// Send a JSON response with final report.
 		$this->final_response();
@@ -339,7 +242,7 @@ class OneClickDemoImport {
 			 * Default actions:
 			 * 1 - after_import action (with priority 10).
 			 */
-			Helpers::do_action( 'wcfio/after_all_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
+			Helpers::do_action( 'aaeaddon/after_all_import_execution', $this->selected_import_files, $this->import_files, $this->selected_index );
 		}
 
 		// Update terms count.
@@ -355,20 +258,13 @@ class OneClickDemoImport {
 	 */
 	private function final_response() {
 		// Delete importer data transient for current import.
-		delete_transient( 'ocdi_importer_data' );
-		delete_transient( 'ocdi_importer_data_failed_attachment_imports' );
-		delete_transient( 'ocdi_import_menu_mapping' );
-		delete_transient( 'ocdi_import_posts_with_nav_block' );
-
-		// Display final messages (success or warning messages).
-		$response['title'] = esc_html__( 'Import Complete!', 'wcf-theme-demo-import' );
-		$response['subtitle'] = '<p>' . esc_html__( 'Congrats, your demo was imported successfully. You can now begin editing your site.', 'wcf-theme-demo-import' ) . '</p>';
-		$response['message'] = '<img class="ocdi-imported-content-imported ocdi-imported-content-imported--success" src="' . esc_url( WCFIO_URL . 'assets/images/success.svg' ) . '" alt="' . esc_attr__( 'Successful Import', 'wcf-theme-demo-import' ) . '">';
-
-		if ( ! empty( $this->frontend_error_messages ) ) {
-			$response['subtitle'] = '<p>' . esc_html__( 'Your import completed', 'wcf-theme-demo-import' ) . '</p>';			
-		}
-
+		delete_transient( 'aadaddon_st_importer_data' );
+		delete_transient( 'aadaddon_st_mporter_data_failed_attachment_imports' );
+		delete_transient( 'aadaddon_import_menu_mapping' );
+		delete_transient( 'aaeaddon_import_posts_with_nav_block' );
+		
+		$response['message'] = '<p>' . esc_html__( 'Congrats, your demo was imported successfully. You can now begin editing your site.', 'animation-addons-for-elementor' ) . '</p>';
+	
 		wp_send_json( $response );
 	}
 
@@ -379,7 +275,7 @@ class OneClickDemoImport {
 	 * @return boolean
 	 */
 	private function use_existing_importer_data() {
-		if ( $data = get_transient( 'ocdi_importer_data' ) ) {
+		if ( $data = get_transient( 'aadaddon_st_importer_data' ) ) {
 			$this->frontend_error_messages = empty( $data['frontend_error_messages'] ) ? array() : $data['frontend_error_messages'];
 			$this->log_file_path           = empty( $data['log_file_path'] ) ? '' : $data['log_file_path'];
 			$this->selected_index          = empty( $data['selected_index'] ) ? 0 : $data['selected_index'];
@@ -472,22 +368,15 @@ class OneClickDemoImport {
 		}
 
 		// Get info of import data files and filter it.
-		$this->import_files = Helpers::validate_import_file_info( Helpers::apply_filters( 'wcfio/import_files', array() ) );
-
-		/**
-		 * Register all default actions (before content import, widget, customizer import and other actions)
-		 * to the 'before_content_import_execution' and the 'wcfio/after_content_import_execution' action hook.
-		 */
-		$import_actions = new ImportActions();
-		$import_actions->register_hooks();
+		$this->import_files = array();
 
 		// Importer options array.
-		$importer_options = Helpers::apply_filters( 'wcfio/importer_options', array(
+		$importer_options = Helpers::apply_filters( 'aaeaddon/importer_options', array(
 			'fetch_attachments' => true,
 		) );
 
 		// Logger options for the logger used in the importer.
-		$logger_options = Helpers::apply_filters( 'wcfio/logger_options', array(
+		$logger_options = Helpers::apply_filters( 'aaeaddon/logger_options', array(
 			'logger_min_level' => 'warning',
 		) );
 
@@ -498,40 +387,6 @@ class OneClickDemoImport {
 		// Create importer instance with proper parameters.
 		$this->importer = new Importer( $importer_options, $logger );	
 	}
-
-	/**
-	 * Getter for $plugin_page_setup.
-	 *
-	 * @return array
-	 */
-	public function get_plugin_page_setup() {
-		return $this->plugin_page_setup;
-	}
-
-	/**
-	 * Get the URL of the plugin settings page.
-	 *
-	 * @return string
-	 */
-	public function get_plugin_settings_url( $query_parameters = [] ) {
-		if ( empty( $this->plugin_page_setup ) ) {
-			$this->plugin_page_setup = Helpers::get_plugin_page_setup_data();
-		}
-
-		$parameters = array_merge(
-			array( 'page' => $this->plugin_page_setup['menu_slug'] ),
-			$query_parameters
-		);
-
-		$url = menu_page_url( $this->plugin_page_setup['parent_slug'], false );
-
-		if ( empty( $url ) ) {
-			$url = self_admin_url( $this->plugin_page_setup['parent_slug'] );
-		}
-
-		return add_query_arg( $parameters, $url );
-	}
-
 
 
 	/**
@@ -624,7 +479,7 @@ class OneClickDemoImport {
 			 */
 			if ( strpos( $postdata['post_content'], '<!-- wp:navigation' ) !== false ) {
 				// Keep track of POST ID that has navigation block.
-				$wcfio_post_nav_block = get_transient( 'ocdi_import_posts_with_nav_block' );
+				$wcfio_post_nav_block = get_transient( 'aaeaddon_import_posts_with_nav_block' );
 
 				if ( empty( $wcfio_post_nav_block ) ) {
 					$wcfio_post_nav_block = [];
@@ -632,7 +487,7 @@ class OneClickDemoImport {
 
 				$wcfio_post_nav_block[] = $post_id;
 
-				set_transient( 'ocdi_import_posts_with_nav_block', $wcfio_post_nav_block, HOUR_IN_SECONDS );
+				set_transient( 'aaeaddon_import_posts_with_nav_block', $wcfio_post_nav_block, HOUR_IN_SECONDS );
 			}
 		} else {
 
@@ -640,7 +495,7 @@ class OneClickDemoImport {
 			 * Save the `wp_navigation` post type mapping of the original menu ID and the new menu ID
 			 * in transient.
 			 */
-			$wcfio_menu_mapping = get_transient( 'ocdi_import_menu_mapping' );
+			$wcfio_menu_mapping = get_transient( 'aadaddon_import_menu_mapping' );
 
 			if ( empty( $wcfio_menu_mapping ) ) {
 				$wcfio_menu_mapping = [];
@@ -652,7 +507,7 @@ class OneClickDemoImport {
 				'new_menu_id'      => $post_id,
 			];
 
-			set_transient( 'ocdi_import_menu_mapping', $wcfio_menu_mapping, HOUR_IN_SECONDS );
+			set_transient( 'aadaddon_import_menu_mapping', $wcfio_menu_mapping, HOUR_IN_SECONDS );
 		}
 	}
 
@@ -667,10 +522,10 @@ class OneClickDemoImport {
 	public function fix_imported_wp_navigation() {
 
 		// Get the `wp_navigation` import mapping.
-		$nav_import_mapping = get_transient( 'ocdi_import_menu_mapping' );
+		$nav_import_mapping = get_transient( 'aadaddon_import_menu_mapping' );
 
 		// Get the post IDs that needs to be updated.
-		$posts_nav_block = get_transient( 'ocdi_import_posts_with_nav_block' );
+		$posts_nav_block = get_transient( 'aaeaddon_import_posts_with_nav_block' );
 
 		if ( empty( $nav_import_mapping ) || empty( $posts_nav_block ) ) {
 			return;
@@ -709,77 +564,5 @@ class OneClickDemoImport {
 		}
 	}
 
-	/**
-	 * Get the import buttons HTML for the successful import page.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @return string
-	 */
-	public function get_import_successful_buttons_html() {
-
-		/**
-		 * Filter the buttons that are displayed on the successful import page.
-		 *
-		 * @since 3.2.0
-		 *
-		 * @param array $buttons {
-		 *     Array of buttons.
-		 *
-		 *     @type string $label  Button label.
-		 *     @type string $class  Button class.
-		 *     @type string $href   Button URL.
-		 *     @type string $target Button target. Can be `_blank`, `_parent`, `_top`. Default is `_self`.
-		 * }
-		 */
-		$buttons = Helpers::apply_filters(
-			'wcfio/import_successful_buttons',
-			[				
-				[
-					'label'  => __( 'Visit Site' , 'wcf-theme-demo-import' ),
-					'class'  => 'button button-primary button-hero',
-					'href'   => get_home_url(),
-					'target' => '_blank',
-				],
-			]
-		);
-
-		if ( empty( $buttons ) || ! is_array( $buttons ) ) {
-			return '';
-		}
-
-		ob_start();
-
-		foreach ( $buttons as $button ) {
-
-			if ( empty( $button['href'] ) || empty( $button['label'] ) ) {
-				continue;
-			}
-
-			$target = '_self';
-			if (
-				! empty( $button['target'] ) &&
-				in_array( strtolower( $button['target'] ), [ '_blank', '_parent', '_top' ], true )
-			) {
-				$target = $button['target'];
-			}
-
-			$class = 'button button-primary button-hero';
-			if ( ! empty( $button['class'] ) ) {
-				$class = $button['class'];
-			}
-
-			printf(
-				'<a href="%1$s" class="%2$s" target="%3$s">%4$s</a>',
-				esc_url( $button['href'] ),
-				esc_attr( $class ),
-				esc_attr( $target ),
-				esc_html( $button['label'] )
-			);
-		}
-
-		$buttons_html = ob_get_clean();
-
-		return empty( $buttons_html ) ? '' : $buttons_html;
-	}
+	
 }
