@@ -37,8 +37,8 @@ const DemoImporting = () => {
     const pageQuery = url.searchParams.get("page");
     url.search = "";
     url.hash = "";
-    url.search = `page=${pageQuery}`;  
-    url.searchParams.set("tab", value); 
+    url.search = `page=${pageQuery}`;
+    url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -119,13 +119,13 @@ const DemoImporting = () => {
         delete tpldata.excerpt;
         setTempState(tpldata);
         const formData = new URLSearchParams();
-    
-        if(tpldata?.next_step && tpldata.next_step == 'download-xml-file'){
-         formData.append("action", "aaeaddon_upload_manual_import_file"); // Custom action name
-        }else{
+
+        if (tpldata?.next_step && tpldata.next_step == "download-xml-file") {
+          formData.append("action", "aaeaddon_upload_manual_import_file"); // Custom action name
+        } else {
           formData.append("action", "aaeaddon_template_installer"); // Custom action name
         }
-      
+
         formData.append("template_data", JSON.stringify(tpldata)); // Optional custom data
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce); // Assuming nonce is available in the object
         if (plugins) formData.append("user_plugins", plugins);
@@ -146,34 +146,36 @@ const DemoImporting = () => {
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
 
-          if ( 'undefined' !== typeof data.status && 'newAJAX' === data.status ) {              
+          if ("undefined" !== typeof data.status && "newAJAX" === data.status) {
             runImport(tpldata);
           }
 
-          if (data?.progress && data.progress > progress) {
-            setProgress(data.progress);
+          if (data?.progress) {
+            setProgress((prevProgress) =>
+              Number(data.progress) > Number(prevProgress)
+                ? data.progress
+                : prevProgress
+            );
           }
-          
-          if (data?.template) {      
-            const completed = data.template.next_step?.trim().toLowerCase() === 'done'; 
-            if(completed === true) {            
-              changeCompleteRoute("complete-import");              
-            }else if ( data.template.next_step === 'fail' ) {
-              changeRoute("fail-import", { plugins , theme });             
-            }else{
 
+          if (data?.template) {
+            const completed =
+              data.template.next_step?.trim().toLowerCase() === "done";
+            if (completed === true) {
+              changeCompleteRoute("complete-import");
+            } else if (data.template.next_step === "fail") {
+              changeRoute("fail-import", { plugins, theme });
+            } else {
               runImport(data.template);
 
-              if(data?.template?.next_step){
+              if (data?.template?.next_step) {
                 setStep(data.template.next_step);
               }
 
-              if(data?.msg){
+              if (data?.msg) {
                 setMsg(data.msg);
               }
-             
             }
-
           }
         } else {
           runImport(tpldata);
