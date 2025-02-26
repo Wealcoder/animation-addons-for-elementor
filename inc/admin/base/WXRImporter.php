@@ -61,6 +61,7 @@ class WXRImporter extends \WP_Importer {
 
 	protected $url_remap       = array();
 	protected $featured_images = array();
+	protected $background_attachments = array();
 
 	/**
 	 * Logger instance.
@@ -102,7 +103,7 @@ class WXRImporter extends \WP_Importer {
 			'prefill_existing_comments' => true,
 			'prefill_existing_terms'    => true,
 			'update_attachment_guids'   => false,
-			'fetch_attachments'         => false,
+			'fetch_attachments'         => true,
 			'aggressive_url_search'     => false,
 			'default_author'            => null,
 		) );
@@ -327,7 +328,7 @@ class WXRImporter extends \WP_Importer {
 	 *
 	 * @param string $file Path to the WXR file for importing.
 	 */
-	public function import( $file ) {
+	public function import( $file ) {		
 		add_filter( 'import_post_meta_key', array( $this, 'is_valid_meta_key' ) );
 		add_filter( 'http_request_timeout', array( &$this, 'bump_request_timeout' ) );
 
@@ -863,8 +864,10 @@ class WXRImporter extends \WP_Importer {
 		}
 
 		$postdata = apply_filters( 'wp_import_post_data_processed', wp_slash( $postdata ), $data );
-
+		
 		if ( 'attachment' === $postdata['post_type'] ) {
+			$remote_url = ! empty( $data['attachment_url'] ) ? $data['attachment_url'] : $data['guid'];
+			//$this->background_attachments[] = 
 			if ( ! $this->options['fetch_attachments'] ) {
 				$this->logger->notice( sprintf(
 					__( 'Skipping attachment "%s", fetching attachments disabled' ),
@@ -872,8 +875,9 @@ class WXRImporter extends \WP_Importer {
 				) );
 				return false;
 			}
-			$remote_url = ! empty( $data['attachment_url'] ) ? $data['attachment_url'] : $data['guid'];
+			
 			$post_id = $this->process_attachment( $postdata, $meta, $remote_url );
+			
 		} else {
 			$post_id = wp_insert_post( $postdata, true );
 			do_action( 'wp_import_insert_post', $post_id, $original_id, $postdata, $data );
@@ -1077,6 +1081,7 @@ class WXRImporter extends \WP_Importer {
 	 * @return int|WP_Error Post ID on success, WP_Error otherwise
 	 */
 	protected function process_attachment( $post, $meta, $remote_url ) {
+		
 		// try to use _wp_attached file for upload folder placement to ensure the same location as the export site
 		// e.g. location is 2003/05/image.jpg but the attachment post_date is 2010/09, see media_handle_upload()
 		$post['upload_date'] = $post['post_date'];

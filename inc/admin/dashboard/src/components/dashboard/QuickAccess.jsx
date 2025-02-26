@@ -31,7 +31,7 @@ const AccessData = [
   {
     title: "Custom Fonts",
     slug: "custom-fonts",
-    subTitle: "Customize Custom fonts",
+    subTitle: "Upload Custom fonts",
     url: `${WCF_ADDONS_ADMIN.adminURL}/edit.php?post_type=wcf-custom-fonts`,
     icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
   },
@@ -43,7 +43,7 @@ const AccessData = [
   },
   {
     title: "Custom Icons",
-    subTitle: "Customize custom icons",
+    subTitle: "Upload custom icons",
     url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-icon`,
     icon: <RiImageCircleLine size={22} className="text-[#A281FF]" />,
   },

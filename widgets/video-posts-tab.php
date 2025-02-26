@@ -457,7 +457,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'background',
+				'name'     => 'vaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .posts-banner',
 			]
@@ -898,7 +898,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'background',
+				'name'     => 'vvaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .aae-view-all',
 			]
@@ -1267,6 +1267,14 @@ class Video_Posts_Tab extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'post_overlay',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .posts-banner::after',
+			]
+		);
 		
 		$this->add_responsive_control(
 			'post_padding',
@@ -1418,7 +1426,6 @@ class Video_Posts_Tab extends Widget_Base {
                     <p style="text-align: center"><?php echo esc_html__( "No Video Post Found!", "animation-addons-for-elementor" ); ?></p>
 				<?php } ?>
             </div>
-
             <div class="aae-posts-wrap">
                 <div class="aae-posts">
 					<?php
