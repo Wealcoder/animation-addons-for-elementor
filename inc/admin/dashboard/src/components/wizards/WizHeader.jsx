@@ -1,39 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
-
-const NavList = [
-  {
-    serial: 1,
-    title: "Getting Started",
-    path: "getting-started",
-  },
-  {
-    serial: 2,
-    title: "Widgets",
-    path: "widgets",
-  },
-  {
-    serial: 3,
-    title: "Extensions",
-    path: "extensions",
-  },
-  {
-    serial: 4,
-    title: "Templates",
-    path: "templates",
-  },
-  {
-    serial: 5,
-    title: "Go Pro",
-    path: "go-pro",
-  },
-  {
-    serial: 6,
-    title: "Congratulations",
-    path: "congratulations",
-  },
-];
+import { WizNavList } from "@/config/nav/wiz-nav";
 
 export const WizHeader = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
@@ -45,11 +13,11 @@ export const WizHeader = ({ NavigateComponent }) => {
     if (tabValue) {
       setCurrentPath(tabValue);
     } else {
-      setCurrentPath("getting-started");
+      setCurrentPath("terms");
     }
   }, [urlParams]);
 
-  if (!(NavList && NavList.length)) return;
+  if (!(WizNavList && WizNavList.length)) return;
 
   const changeRoute = (value) => {
     const url = new URL(window.location.href);
@@ -66,14 +34,14 @@ export const WizHeader = ({ NavigateComponent }) => {
   };
 
   const getSerial = (path) => {
-    const result = NavList.find((item) => item.path === path);
+    const result = WizNavList.find((item) => item.path === path);
     return result ? result.serial : 1;
   };
 
   return (
     <div className="px-4 xl:px-8 py-6 flex justify-center items-center">
       <div className="flex justify-center items-center gap-3 xl:gap-4">
-        {NavList.map((item, i) => (
+        {WizNavList.map((item, i) => (
           <React.Fragment key={item.serial + i}>
             <div
               className={cn(
@@ -101,7 +69,7 @@ export const WizHeader = ({ NavigateComponent }) => {
                 {item.title}
               </p>
             </div>
-            {NavList.length - 1 !== i && (
+            {WizNavList.length - 1 !== i && (
               <Separator className="w-[13px] xl:w-[18px] bg-border-tertiary" />
             )}
           </React.Fragment>
