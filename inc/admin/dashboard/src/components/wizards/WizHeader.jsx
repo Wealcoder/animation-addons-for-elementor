@@ -13,7 +13,7 @@ export const WizHeader = ({ NavigateComponent }) => {
     if (tabValue) {
       setCurrentPath(tabValue);
     } else {
-      setCurrentPath("getting-started");
+      setCurrentPath("terms");
     }
   }, [urlParams]);
 

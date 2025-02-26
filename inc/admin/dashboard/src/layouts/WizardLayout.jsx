@@ -40,7 +40,7 @@ const WizardLayout = () => {
       case "congratulations":
         return <WizCongratulation />;
       default:
-        return <WizardStart />;
+        return <WizardTerms />;
     }
   };
 
