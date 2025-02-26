@@ -204,11 +204,11 @@ class WCF_Admin_Init {
 		require_once( 'plugin-installer.php' );
 		require_once( 'base/Helpers.php' );
 		require_once( 'base/Downloader.php' );
-		require_once( 'AAEImporter.php' );
 		require_once( 'base/WPImporterLogger.php' );		
 		require_once( 'base/WPImporterLoggerCLI.php' );
 		require_once( 'base/WXRImporter.php' );
 		require_once( 'base/WXRImportInfo.php' );
+		require_once( 'AAEImporter.php' );
 		require_once( 'Logger.php' );
 		require_once( 'Importer.php' );
 		require_once( 'OneClickImport.php' );
