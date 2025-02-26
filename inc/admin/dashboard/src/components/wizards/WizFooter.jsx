@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useExtensions, useWidgets } from "@/hooks/app.hooks";
+import { useExtensions, useSkip, useWidgets } from "@/hooks/app.hooks";
 import { WizNavList } from "@/config/nav/wiz-nav";
 
 const WizFooter = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
-  const [isSkip, setIsSkip] = useState(false);
 
   const { allExtensions } = useExtensions();
   const { allWidgets } = useWidgets();
+  const { setIsSkipTerms } = useSkip();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -39,7 +39,6 @@ const WizFooter = ({ NavigateComponent }) => {
       body: new URLSearchParams({
         action: "save_settings_with_ajax",
         fields: JSON.stringify(allWidgets),
-        terms: isSkip,
         nonce: WCF_ADDONS_ADMIN.nonce,
         settings: "wcf_save_widgets",
       }),
@@ -138,7 +137,7 @@ const WizFooter = ({ NavigateComponent }) => {
             variant="link"
             className="text-gray-500"
             onClick={() => {
-              setIsSkip(true);
+              setIsSkipTerms(true);
               goToContinue(currentPath);
             }}
           >

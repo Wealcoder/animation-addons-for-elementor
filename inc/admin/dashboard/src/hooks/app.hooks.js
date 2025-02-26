@@ -76,3 +76,11 @@ export const useTNavigation = () => {
 
   return { tabKey, setTabKey };
 };
+
+export const useSkip = () => {
+  const {
+    mainState: { isSkipTerms },
+    setIsSkipTerms,
+  } = useContext(AppContext);
+  return { isSkipTerms, setIsSkipTerms };
+};

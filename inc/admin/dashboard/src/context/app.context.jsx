@@ -28,7 +28,8 @@ const initialState = {
   setupType: "basic",
   notice: [],
   changelog: [],
-  tabKey: ""
+  tabKey: "",
+  isSkipTerms: false,
 };
 
 const reducer = (state, action) => {
@@ -47,6 +48,8 @@ const reducer = (state, action) => {
       return { ...state, changelog: action.value };
     case "setTabKey":
       return { ...state, tabKey: action.value };
+    case "setIsSkipTerms":
+      return { ...state, isSkipTerms: action.value };
 
     default:
       throw new Error();
@@ -91,6 +94,13 @@ const useMainContext = (state) => {
   const setTabKey = useCallback((data) => {
     dispatch({
       type: "setTabKey",
+      value: data,
+    });
+  }, []);
+
+  const setIsSkipTerms = useCallback((data) => {
+    dispatch({
+      type: "setIsSkipTerms",
       value: data,
     });
   }, []);
@@ -231,6 +241,7 @@ const useMainContext = (state) => {
     setNotice,
     setChangelog,
     setTabKey,
+    setIsSkipTerms,
     setSetupType,
     updateActiveWidget,
     updateActiveGroupWidget,
@@ -253,6 +264,7 @@ export const AppContext = createContext({
   setNotice: () => {},
   setChangelog: () => {},
   setTabKey: () => {},
+  setIsSkipTerms: () => {},
   setSetupType: () => {},
   updateActiveWidget: () => {},
 });
