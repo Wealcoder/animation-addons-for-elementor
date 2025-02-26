@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Animation Addon for Elementor
+ * Plugin Name: Animation Addons for Elementor
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://wealcoder.com//
  * Version:     2.0
@@ -334,7 +334,7 @@ final class WCF_ADDONS_Plugin {
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
 			esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'animation-addons-for-elementor' ),
-			'<strong>' . esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
+			'<strong>' . esc_html__( 'Animation Addons for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			'<strong>' . esc_html__( 'Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			self::MINIMUM_ELEMENTOR_VERSION
 		);
@@ -358,7 +358,7 @@ final class WCF_ADDONS_Plugin {
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: PHP 3: Required PHP version */
 			esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'animation-addons-for-elementor' ),
-			'<strong>' . esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
+			'<strong>' . esc_html__( 'Animation Addons for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			'<strong>' . esc_html__( 'PHP', 'animation-addons-for-elementor' ) . '</strong>',
 			self::MINIMUM_PHP_VERSION
 		);
