@@ -326,12 +326,6 @@ class WCF_Admin_Init {
 		return $configs;
 	}
 	
-	function add_type_to_script($tag, $handle, $source){
-		if ('wcf-admin' === $handle) {
-			$tag = '<script type="text/javascript" src="'. $source .'" type="module"></script>';
-		} 
-		return $tag;
-	}
 
 	/**
 	 * get Settings tabs to admin panel.

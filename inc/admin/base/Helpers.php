@@ -327,12 +327,14 @@ class Helpers {
 		// Check if user has the WP capability to import data.
 		if ( ! current_user_can( 'import' ) ) {
 			wp_die(
-				sprintf( /* translators: %1$s - opening div and paragraph HTML tags, %2$s - closing div and paragraph HTML tags. */
-					__( '%1$sYour user role isn\'t high enough. You don\'t have permission to import demo data.%2$s', 'animation-addons-for-elementor' ),
-					'<div class="notice  notice-error"><p>',
+				sprintf( 
+					/* translators: %1$s - opening div and paragraph HTML tags, %2$s - closing div and paragraph HTML tags. */
+					esc_html__( 'Your user role isn\'t high enough. You don\'t have permission to import demo data.', 'animation-addons-for-elementor' ),
+					'<div class="notice notice-error"><p>',
 					'</p></div>'
 				)
 			);
+			
 		}
 	}
 
@@ -455,7 +457,7 @@ class Helpers {
 	 * Set the $demo_import_start_time class variable with the current date and time string.
 	 */
 	public static function set_demo_import_start_time() {
-		self::$demo_import_start_time = date( self::apply_filters( 'aaeaddon/date_format_for_file_names', 'Y-m-d__H-i-s' ) );
+		self::$demo_import_start_time = gmdate( self::apply_filters( 'aaeaddon/date_format_for_file_names', 'Y-m-d__H-i-s' ) );
 	}
 
 	/**

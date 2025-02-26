@@ -188,19 +188,21 @@ final class WCF_ADDONS_Plugin {
 		}
 
 		add_action( 'wp_loaded', function () {
-			// set current version to db
-			if ( get_option( 'wcf_addons_version' ) != WCF_ADDONS_VERSION ) {
-				// update plugin version
+			// Set current version to DB
+			if ( get_option( 'wcf_addons_version' ) !== WCF_ADDONS_VERSION ) {
+				// Update plugin version
 				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
 			}
-			if(isset($_GET['page']) && $_GET['page'] === 'wcf_addons_settings'){
-				//redirect addons setup page
-				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {				
-					wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+		
+			// Sanitize and check the 'page' parameter
+			if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'wcf_addons_settings' ) {
+				// Redirect addons setup page
+				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+					exit; // Always exit after redirection
 				}
 			}
-			
-		} );
+		} );		
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once 'class-plugin.php';

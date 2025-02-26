@@ -34,8 +34,8 @@ class Logger extends WPImporterLoggerCLI {
 
 		printf(
 			'[%s] %s' . PHP_EOL,
-			strtoupper( $level ),
-			$message
+			esc_html(strtoupper($level )),
+			esc_html($message)
 		);
 	}
 

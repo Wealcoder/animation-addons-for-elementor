@@ -2446,7 +2446,7 @@ class Posts extends Widget_Base {
 
 				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-				echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+				echo wp_kses_post($this->wcf_wrap_first_n_words( $title,  $highlight_title_length )); // Wrap first 2 words
 
 			} else {
 				the_title();

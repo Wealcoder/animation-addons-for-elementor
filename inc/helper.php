@@ -321,13 +321,12 @@ if( !function_exists('wcf_get_search_active_keys') ) {
 			// Check if the current key is one we're looking for
 			if (in_array($key, $keysToFind) && is_array($value) && array_key_exists('is_extension', $value)) {
 				// Add to found keys list
-				$foundKeys[] = $key;
+				$foundKeys[] = sanitize_text_field($key);
 				// Store the entire element in $active
 				$value['is_active'] = 1;
 				$active[$key] = $value;
-			}
-	
-			// If value is an array, recurse into it
+			}		
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if (is_array($value)) {
 				wcf_get_search_active_keys($value, $keysToFind, $foundKeys, $active);
 			}
