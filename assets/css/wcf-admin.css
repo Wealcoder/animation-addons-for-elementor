@@ -2,3 +2,8 @@
   opacity: 1;
   padding: 7px 0 0;
 }
+
+.animation-addon_page_wcf_addons_settings .notice {
+  display: none;
+  height: 0;
+}

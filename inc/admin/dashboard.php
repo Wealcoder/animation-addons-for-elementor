@@ -197,10 +197,26 @@ class WCF_Admin_Init {
 	 * @return [void]
 	 */
 	public function include() {
+		if ( ! class_exists( '\WP_Importer' ) ) {
+			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
+		}
 		require_once( 'template-functions.php' );
 		require_once( 'plugin-installer.php' );
+		require_once( 'base/Helpers.php' );
+		require_once( 'base/Downloader.php' );
+		require_once( 'AAEImporter.php' );
+		require_once( 'base/WPImporterLogger.php' );		
+		require_once( 'base/WPImporterLoggerCLI.php' );
+		require_once( 'base/WXRImporter.php' );
+		require_once( 'base/WXRImportInfo.php' );
+		require_once( 'Logger.php' );
+		require_once( 'Importer.php' );
+		require_once( 'OneClickImport.php' );
 		require_once( 'template-importer.php' );		
+		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
 	}
+
+	
 
 	/**
 	 * [add_menu] Admin Menu
@@ -438,9 +454,12 @@ class WCF_Admin_Init {
 	 */
 	public function remove_all_notices() {
 		add_action( 'in_admin_header', function () {
-			if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
-				remove_all_actions( 'admin_notices' );
-				remove_all_actions( 'all_admin_notices' );
+			$screen = get_current_screen();
+			if ( $screen && 'toplevel_page_wcf_addons_settings' === $screen->id  ) {
+				remove_all_actions('admin_notices');
+				remove_all_actions('all_admin_notices');
+				remove_all_actions('user_admin_notices');
+				remove_all_actions('network_admin_notices');
 			}
 		}, 1000 );
 	}
