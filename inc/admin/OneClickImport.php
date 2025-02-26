@@ -7,7 +7,9 @@ use WP_Error;
 /**
  * One Click Demo Import class, so we don't have to worry about namespaces.
  */
-class OneClickDemoImport {
+class OneClickImport {
+
+	public $file_path = 'aaeaddon_tpl_file.xml';
 	/**
 	 * The instance *Singleton* of this class
 	 *
@@ -81,7 +83,7 @@ class OneClickDemoImport {
 	/**
 	 * Returns the *Singleton* instance of this class.
 	 *
-	 * @return OneClickDemoImport the *Singleton* instance.
+	 * @return OneClickImport the *Singleton* instance.
 	 */
 	public static function get_instance() {
 		if ( null === static::$instance ) {
@@ -98,8 +100,8 @@ class OneClickDemoImport {
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
 	protected function __construct() {	
-	
-		add_action( 'after_setup_theme', array( $this, 'setup_plugin_with_filter_data' ) );	
+		add_action( 'wp_ajax_aaeaddon_upload_manual_import_file', [ $this, 'import_demo_data_ajax_callback' ] );
+		add_action( 'admin_init', [$this, 'setup_plugin_with_filter_data']);
 		add_action( 'set_object_terms', array( $this, 'add_imported_terms' ), 10, 6 );
 		add_filter( 'wxr_importer.pre_process.post', [ $this, 'skip_failed_attachment_import' ] );
 		add_action( 'wxr_importer.process_failed.post', [ $this, 'handle_failed_attachment_import' ], 10, 5 );
@@ -120,35 +122,10 @@ class OneClickDemoImport {
 	 * @return void
 	 */
 	public function __wakeup() {}
-
-	/**
-	 * AJAX callback method for uploading the manual import files.
-	 */
-	public function upload_manual_import_files_callback() {
-		Helpers::verify_ajax_call();
-
-		// Create a date and time string to use for demo and log file names.
-		Helpers::set_demo_import_start_time();
-
-		// Define log file path.
-		$this->log_file_path = Helpers::get_log_path();
-
-		$this->selected_index = 0;
-
-		// Get paths for the uploaded files.
-		$this->selected_import_files = Helpers::process_uploaded_files( $_FILES, $this->log_file_path );
-
-		// Set the name of the import files, because we used the uploaded files.
-		$this->import_files[ $this->selected_index ]['import_file_name'] = esc_html__( 'Manually uploaded files', 'animation-addons-for-elementor' );
-
-		// Save the initial import data as a transient, so the next import call (in new AJAX call) can use that data.
-		Helpers::set_st_import_data_transient( $this->get_current_importer_data() );
-
-		wp_send_json_success();
-	}
+	
 	public function import_demo_data_ajax_callback() {
 		// Try to update PHP memory limit (so that it does not run out of it).
-		ini_set( 'memory_limit', Helpers::apply_filters( 'aadaddon/st/import_memory_limit', '350M' ) );
+		ini_set( 'memory_limit', Helpers::apply_filters( 'aadaddon/st/import_memory_limit', '1024M' ) );
 
 		// Verify if the AJAX call is valid (checks nonce and current_user_can).
 		Helpers::verify_ajax_call();
@@ -162,13 +139,29 @@ class OneClickDemoImport {
 
 			// Define log file path.
 			$this->log_file_path = Helpers::get_log_path();
-
+			
 			// Get selected file index or set it to 0.
 			$this->selected_index = 0;
+
+			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
+			$template_data = json_decode($json_data, true);		
+			//$template_data['next_step'] = 'download-xml-file'; // remove line after test
+			if (json_last_error() === JSON_ERROR_NONE) {			
+				array_walk_recursive($template_data, function (&$value) {
+					if (is_string($value)) {
+						$value = sanitize_text_field($value);
+					}
+				});			
+			}
+			
 		
-			if ( 1 ) { // Provide url
+			if ( isset($template_data['file']['content_url']) ) { // Provide url
 				// Download the import files (content).
-				$this->selected_import_files = Helpers::download_import_files( [ 'import_file_url' => '#' ] );
+			
+				$file_path = $template_data['file']['content_url'];
+			
+				$this->selected_import_files = Helpers::download_import_files( [ 'import_file_url' =>$file_path ] );
+			
 				// Check Errors.
 				if ( is_wp_error( $this->selected_import_files ) ) {
 					// Write error to log file and send an AJAX response with the error.
@@ -181,8 +174,12 @@ class OneClickDemoImport {
 
 			}
 			else {
-				// Send JSON Error response to the AJAX call.
-				wp_send_json( esc_html__( 'No import files specified!', 'animation-addons-for-elementor' ) );
+				$response = [];
+				$template_data['next_step'] = 'fail';
+				$response['msg'] = esc_html__( 'No import files specified!', 'animation-addons-for-elementor' );
+				$response['progress'] = 0;
+				$response['template']       = wp_unslash( $template_data );
+				wp_send_json( $response );
 			}
 		}
 
@@ -263,8 +260,19 @@ class OneClickDemoImport {
 		delete_transient( 'aadaddon_import_menu_mapping' );
 		delete_transient( 'aaeaddon_import_posts_with_nav_block' );
 		
-		$response['message'] = '<p>' . esc_html__( 'Congrats, your demo was imported successfully. You can now begin editing your site.', 'animation-addons-for-elementor' ) . '</p>';
-	
+		$response['msg'] = esc_html__( 'Congrats, your demo was imported.', 'animation-addons-for-elementor' );
+		$response['progress'] = 80;
+		if (isset($_POST['template_data'])) {
+			if(isset($template_data['local_path'])){
+				unset($template_data['local_path']);
+			}
+			$json_data                  = wp_unslash($_POST['template_data']);  // Remove slashes if added by WP		
+			$template_data              = json_decode($json_data, true);
+			$template_data['next_step'] = 'check-theme';
+			$response['template']       = wp_unslash( $template_data );
+			
+		}
+		
 		wp_send_json( $response );
 	}
 
@@ -362,23 +370,20 @@ class OneClickDemoImport {
 	/**
 	 * Get data from filters, after the theme has loaded and instantiate the importer.
 	 */
-	public function setup_plugin_with_filter_data() {
-		if ( ! ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) ) {
-			return;
-		}
+	public function setup_plugin_with_filter_data() {		
 
 		// Get info of import data files and filter it.
 		$this->import_files = array();
 
 		// Importer options array.
-		$importer_options = Helpers::apply_filters( 'aaeaddon/importer_options', array(
+		$importer_options = array(
 			'fetch_attachments' => true,
-		) );
+		);
 
 		// Logger options for the logger used in the importer.
-		$logger_options = Helpers::apply_filters( 'aaeaddon/logger_options', array(
+		$logger_options = array(
 			'logger_min_level' => 'warning',
-		) );
+		);
 
 		// Configure logger instance and set it to the importer.
 		$logger            = new Logger();
@@ -386,6 +391,8 @@ class OneClickDemoImport {
 
 		// Create importer instance with proper parameters.
 		$this->importer = new Importer( $importer_options, $logger );	
+
+		
 	}
 
 

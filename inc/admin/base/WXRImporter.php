@@ -103,7 +103,7 @@ class WXRImporter extends \WP_Importer {
 			'prefill_existing_comments' => true,
 			'prefill_existing_terms'    => true,
 			'update_attachment_guids'   => false,
-			'fetch_attachments'         => false,
+			'fetch_attachments'         => true,
 			'aggressive_url_search'     => false,
 			'default_author'            => null,
 		) );
@@ -877,7 +877,7 @@ class WXRImporter extends \WP_Importer {
 			}
 			
 			$post_id = $this->process_attachment( $postdata, $meta, $remote_url );
-			error_log($remote_url);
+			
 		} else {
 			$post_id = wp_insert_post( $postdata, true );
 			do_action( 'wp_import_insert_post', $post_id, $original_id, $postdata, $data );

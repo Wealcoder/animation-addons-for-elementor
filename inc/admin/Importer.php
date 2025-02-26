@@ -5,7 +5,7 @@
  * @package WCFOI
  */
 
- namespace WCF_ADDONS\Admin\Base;
+namespace WCF_ADDONS\Admin\Base;
 
 class Importer {
 	/**
@@ -56,7 +56,7 @@ class Importer {
 			$this->set_logger( $this->logger );
 		}
 				
-		$this->wcfio = OneClickDemoImport::get_instance();
+		$this->wcfio = OneClickImport::get_instance();
 	}
 
 
@@ -118,7 +118,7 @@ class Importer {
 
 		// Increase PHP max execution time. Just in case, even though the AJAX calls are only 25 sec long.
 		if ( strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
-			set_time_limit( Helpers::apply_filters( 'aaeaddon/set_time_limit_for_demo_data_import', 300 ) );
+			set_time_limit( Helpers::apply_filters( 'aaeaddon/set_time_limit_for_demo_data_import', 900 ) );
 		}
 
 		// Disable import of authors.
@@ -175,7 +175,7 @@ class Importer {
 
 			// Add message to log file.
 			$log_added = Helpers::append_to_file(
-				__( 'New AJAX call!' , 'animation-addons-for-elementor' ) . PHP_EOL . $message,
+				__( 'Content installing' , 'animation-addons-for-elementor' ) . PHP_EOL . $message,
 				$this->wcfio->get_log_file_path(),
 				''
 			);
@@ -202,6 +202,6 @@ class Importer {
 	private function set_current_importer_data() {
 		$data = array_merge( $this->wcfio->get_current_importer_data(), $this->get_importer_data() );
 
-		Helpers::set_ocdi_import_data_transient( $data );
+		Helpers::set_st_import_data_transient( $data );
 	}
 }

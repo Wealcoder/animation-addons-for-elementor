@@ -7,6 +7,7 @@ namespace WCF_ADDONS\Admin\Base;
  *
  */
 class WPImporterLogger {
+	
 	public $messages = [];
 	/**
 	 * System is unusable.

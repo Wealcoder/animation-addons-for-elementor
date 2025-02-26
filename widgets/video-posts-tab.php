@@ -457,7 +457,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'aaebackground',
+				'name'     => 'vaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .posts-banner',
 			]
@@ -898,7 +898,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'aaebackground',
+				'name'     => 'vvaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .aae-view-all',
 			]

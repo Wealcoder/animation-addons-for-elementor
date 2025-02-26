@@ -250,7 +250,11 @@ final class WCF_ADDONS_Plugin {
 	function install_elementor_plugin_handler() {
 		// Verify the AJAX nonce for security
 		check_ajax_referer('wcfinstall_elementor_nonce', '_ajax_nonce');
-	
+
+		if (!current_user_can('activate_plugins')) {
+			wp_send_json_error(['message' => esc_html__('Plugin Activation Permission Required, Contact Admin', 'animation-addons-for-elementor')]);
+        }
+		
 		// Include required WordPress files
 		if (!class_exists('Plugin_Upgrader')) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -269,9 +273,7 @@ final class WCF_ADDONS_Plugin {
 		if (is_plugin_active($plugin_file)) {
 			wp_send_json_success(['message' => esc_html__('Plugin is already active.', 'animation-addons-for-elementor')]);
 		}
-		if (!current_user_can('activate_plugins')) {
-			wp_send_json_error(['message' => esc_html__('Plugin Activation Permission Required, Contact Admin', 'animation-addons-for-elementor')]);
-        }
+		
 		// Fetch plugin information dynamically using the WordPress Plugin API
 		$api = plugins_api('plugin_information', [
 			'slug'   => $plugin_slug,
@@ -295,8 +297,7 @@ final class WCF_ADDONS_Plugin {
 		$upgrader = new Plugin_Upgrader(new WP_Ajax_Upgrader_Skin());
 		$installed = $upgrader->install($download_url);
 	
-		if (is_wp_error($installed)) {
-			error_log('Plugin installation error: ' . $installed->get_error_message());
+		if (is_wp_error($installed)) {			
 			wp_send_json_error(['message' => $installed->get_error_message()]);
 		}
 	
@@ -304,8 +305,7 @@ final class WCF_ADDONS_Plugin {
 		if (file_exists(WP_PLUGIN_DIR . '/' . $plugin_file)) {
 			$activated = activate_plugin($plugin_file);
 	
-			if (is_wp_error($activated)) {
-				error_log('Plugin activation error: ' . $activated->get_error_message());
+			if (is_wp_error($activated)) {			
 				wp_send_json_error(['message' => $activated->get_error_message()]);
 			}
 	

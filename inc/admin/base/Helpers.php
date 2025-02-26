@@ -143,7 +143,7 @@ class Helpers {
 		if ( is_wp_error( $verified_credentials ) ) {
 			return $verified_credentials;
 		}
-
+		update_option('aaeaddon_template_import_state', $content);
 		// By this point, the $wp_filesystem global should be working, so let's use it to create a file.
 		global $wp_filesystem;
 
@@ -203,7 +203,20 @@ class Helpers {
 		// Return the file data.
 		return $data;
 	}
-
+	/**
+	 * Get the plugin page setup data.
+	 *
+	 * @return array
+	 */
+	public static function get_plugin_page_setup_data() {
+		return Helpers::apply_filters( 'aaeaddon/plugin_page_setup', array(
+			'parent_slug' => 'wcf_addons_settings',
+			'page_title'  => esc_html__( 'Theme Demo Import' , 'animation-addons-for-elementor' ),
+			'menu_title'  => esc_html__( 'Import Demo Data' , 'animation-addons-for-elementor' ),
+			'capability'  => 'import',
+			'menu_slug'   => 'wcf_addons_settings',
+		) );
+	}
 
 	/**
 	 * Helper function: check for WP file-system credentials needed for reading and writing to a file.
@@ -359,14 +372,9 @@ class Helpers {
 		);
 
 		// Handle demo file uploads.
-		$content_file_info = isset( $_FILES['content_file'] ) ?
-			wp_handle_upload( $_FILES['content_file'], $upload_overrides ) :
+		$content_file_info = isset( $uploaded_files['content_file'] ) ?
+			wp_handle_upload( $uploaded_files['content_file'], $upload_overrides ) :
 			$file_not_provided_error;
-
-		$widget_file_info = isset( $_FILES['widget_file'] ) ?
-			wp_handle_upload( $_FILES['widget_file'], $upload_overrides ) :
-			$file_not_provided_error;
-
 
 		// Process content import file.
 		if ( $content_file_info && ! isset( $content_file_info['error'] ) ) {
@@ -385,39 +393,6 @@ class Helpers {
 			);
 		}
 
-		// Process widget import file.
-		if ( $widget_file_info && ! isset( $widget_file_info['error'] ) ) {
-			// Set uploaded widget file.
-			$selected_import_files['widgets'] = $widget_file_info['file'];
-		}
-		else {
-			// Add this error to log file.
-			$log_added = self::append_to_file(
-				sprintf( /* translators: %s - the error message. */
-					__( 'Widget file was not uploaded. Error: %s', 'animation-addons-for-elementor' ),
-					$widget_file_info['error']
-				),
-				$log_file_path,
-				esc_html__( 'Upload files' , 'animation-addons-for-elementor' )
-			);
-		}
-
-		// Process Customizer import file.
-		if ( $customizer_file_info && ! isset( $customizer_file_info['error'] ) ) {
-			// Set uploaded customizer file.
-			$selected_import_files['customizer'] = $customizer_file_info['file'];
-		}
-		else {
-			// Add this error to log file.
-			$log_added = self::append_to_file(
-				sprintf( /* translators: %s - the error message. */
-					__( 'Customizer file was not uploaded. Error: %s', 'animation-addons-for-elementor' ),
-					$customizer_file_info['error']
-				),
-				$log_file_path,
-				esc_html__( 'Upload files' , 'animation-addons-for-elementor' )
-			);
-		}	
 
 		// Add this message to log file.
 		$log_added = self::append_to_file(
@@ -437,13 +412,6 @@ class Helpers {
 	 * @param array $selected_import_files array of selected import files.
 	 */
 	public static function import_file_info( $selected_import_files ) {
-		$redux_file_string = '';
-
-		if ( ! empty( $selected_import_files['redux'] ) ) {
-			$redux_file_string = array_reduce( $selected_import_files['redux'], function( $string, $item ) {
-				return sprintf( '%1$s%2$s -> %3$s %4$s', $string, $item['option_name'], $item['file_path'], PHP_EOL );
-			}, '' );
-		}
 
 		return PHP_EOL .
 		sprintf( /* translators: %s - the max execution time. */
@@ -451,11 +419,10 @@ class Helpers {
 			ini_get( 'max_execution_time' )
 		) . PHP_EOL .
 		sprintf( /* translators: %1$s - new line break, %2$s - the site URL, %3$s - the file path for content import, %4$s - the file path for widgets import, %5$s - the file path for widgets import, %6$s - the file path for redux import. */
-			__( 'Files info:%1$sSite URL = %2$s%1$sData file = %3$s%1$sWidget', 'animation-addons-for-elementor' ),
+			__( 'Files info:%1$sSite URL = %2$s%1$sData file = %3$s%1$s', 'animation-addons-for-elementor' ),
 			PHP_EOL,
 			get_site_url(),
 			empty( $selected_import_files['content'] ) ? esc_html__( 'not defined!', 'animation-addons-for-elementor' ) : $selected_import_files['content'],		
-			empty( $redux_file_string ) ? esc_html__( 'not defined!', 'animation-addons-for-elementor' ) : $redux_file_string
 		);
 	}
 
@@ -474,9 +441,13 @@ class Helpers {
 			$log_file_path,
 			$separator
 		);
-
-		// Send JSON Error response to the AJAX call.
-		wp_send_json( $error_text );
+		$template_data              = [];
+		$response                   = [];
+		$template_data['next_step'] = 'fail';
+		$response['msg']            = $error_text;
+		$response['progress']       = 0;
+		$response['template']       = wp_unslash( $template_data );
+		wp_send_json( $response );
 	}
 
 
@@ -495,19 +466,7 @@ class Helpers {
 	public static function set_st_import_data_transient( $data ) {
 		set_transient( 'aadaddon_st_importer_data', $data, 0.1 * HOUR_IN_SECONDS );
 	}
-
-
-	/**
-	 * Backwards compatible apply_filters helper.
-	 * With 3.0 we changed the filter prefix from 'st-wcfio/' to just 'wcfio/',
-	 * but we needed to make sure backwards compatibility is in place.
-	 * This method should be used for all apply_filters calls.
-	 *
-	 * @param string $hook         The filter hook name.
-	 * @param mixed  $default_data The default filter data.
-	 *
-	 * @return mixed|void
-	 */
+	
 	public static function apply_filters( $hook, $default_data ) {
 		$new_data = apply_filters( $hook, $default_data );
 
