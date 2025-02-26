@@ -1104,7 +1104,7 @@ class Post_Social_Share extends Widget_Base {
 		$this->add_control(
 			'seperator_icon_color',
 			[
-				'label' => esc_html__( 'Icon Color', 'textdomain' ),
+				'label' => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
 				'type' => \Elementor\Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} span.wcf_separator_icon' => 'fill: {{VALUE}}',

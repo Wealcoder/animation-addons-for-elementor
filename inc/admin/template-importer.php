@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AAEAddon_Importer {
 
 	public $file_path = 'aaeaddon_tpl_file.xml';
+	public $full_path = null;
 	public $wishlist_key = 'aaeaddon_user_wishlists';
 	/**
 	 * [$_instance]
@@ -44,8 +45,8 @@ class AAEAddon_Importer {
 	public function include_user_wishlist($config) {
 		$user_id = get_current_user_id();
     
-    // Fetch existing wishlist data
-    $config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
+    	// Fetch existing wishlist data
+    	$config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
 		return $config;
 	}
 
@@ -56,42 +57,42 @@ class AAEAddon_Importer {
 	}
 
 	public function wishlist() {
-    check_ajax_referer('wcf_admin_nonce', 'nonce');
+    	check_ajax_referer('wcf_admin_nonce', 'nonce');
 
-    if (!current_user_can('install_plugins')) {
-        wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
-    }
+    	if (!current_user_can('install_plugins')) {
+        	wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
+    	}
 
-    if (!isset($_POST['wishlist'])) {
-        wp_send_json_error(__('Provide wishlist data.', 'animation-addons-for-elementor'));
-    }
+    	if (!isset($_POST['wishlist'])) {
+        	wp_send_json_error(__('Provide wishlist data.', 'animation-addons-for-elementor'));
+    	}
 
-    $wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Sanitize input
-    $user_id = get_current_user_id();
-    
-    // Fetch existing wishlist data
-    $wishlist_db = get_user_meta($user_id, $this->wishlist_key, true);
-    
-    // Ensure it's an array
-    $wishlist_db = is_array($wishlist_db) ? $wishlist_db : [];
+		$wishlist = sanitize_text_field(wp_unslash($_POST['wishlist'])); // Sanitize input
+		$user_id = get_current_user_id();
+		
+		// Fetch existing wishlist data
+		$wishlist_db = get_user_meta($user_id, $this->wishlist_key, true);
+		
+		// Ensure it's an array
+		$wishlist_db = is_array($wishlist_db) ? $wishlist_db : [];
 
-    if (in_array($wishlist, $wishlist_db, true)) {
-        // Remove if exists
-        $wishlist_db = array_values(array_filter($wishlist_db, fn($v) => $v !== $wishlist));
-    } else {
-        // Add new item
-        $wishlist_db[] = $wishlist;
-    }
+		if (in_array($wishlist, $wishlist_db, true)) {
+			// Remove if exists
+			$wishlist_db = array_values(array_filter($wishlist_db, fn($v) => $v !== $wishlist));
+		} else {
+			// Add new item
+			$wishlist_db[] = $wishlist;
+		}
 
-    // Update user meta with modified wishlist
-    update_user_meta($user_id, $this->wishlist_key, $wishlist_db);
+		// Update user meta with modified wishlist
+		update_user_meta($user_id, $this->wishlist_key, $wishlist_db);
 
-    wp_send_json_success($wishlist_db);
-}
+		wp_send_json_success($wishlist_db);
+	}
 
 
 	public function template_installer(){
-
+  
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -100,7 +101,7 @@ class AAEAddon_Importer {
 		$msg = '';			
 		$template_data = [];
 		$theme_slug = $user_plugins = null;
-
+       
 		if (isset($_POST['theme_slug'])) {
 			$theme_slug = sanitize_text_field(wp_unslash($_POST['theme_slug'])); // Remove slashes if added by WP		
 		}
@@ -112,7 +113,7 @@ class AAEAddon_Importer {
 		if (isset($_POST['template_data'])) {
 			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
 			$template_data = json_decode($json_data, true);		
-
+		
 			if (json_last_error() === JSON_ERROR_NONE) {			
 				array_walk_recursive($template_data, function (&$value) {
 					if (is_string($value)) {
@@ -121,60 +122,62 @@ class AAEAddon_Importer {
 				});			
 			}
 
-			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer' && is_array($user_plugins) && $user_plugins){
+			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer' ){
 				// Install required plugin
 			    // Include the necessary plugin.php file
-				$progress                   = '35';	
+				$progress                   = '20';	
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-				if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){					
-					foreach($template_data['dependencies']['plugins'] as $item){
-						if ( file_exists( WP_PLUGIN_DIR . '/' . $item['Base_Slug'] ) ) {
-							$result = activate_plugin( $item['Base_Slug'] , '', false, false );	
-						}else{
-							
-							if (in_array($item['slug'], $user_plugins)) {				
-								if(isset($item['host']) && $item['slug']){
-									update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
-									if($item['host'] == 'self_host'){							
-										$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+
+				if(is_array($user_plugins) && $user_plugins){
+					if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){	
+							if ( current_user_can( 'install_plugins' ) ) {				
+								foreach($template_data['dependencies']['plugins'] as $item){
+									if ( file_exists( WP_PLUGIN_DIR . '/' . $item['Base_Slug'] ) ) {
+										$result = activate_plugin( $item['Base_Slug'] , '', false, false );	
 									}else{
-										$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
+										
+										if (in_array($item['slug'], $user_plugins)) {				
+											if(isset($item['host']) && $item['slug']){
+												update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
+												if($item['host'] == 'self_host'){							
+													$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+												}else{
+													$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
+												}							
+											}
+										}
 									}							
 								}
-							}
+							}					
+							update_option('aaeaddon_template_import_state', esc_html__( 'Plugin Installation Done' , 'animation-addons-for-elementor' ));
 						}
-						
-					}
-					$template_data['next_step'] = 'check-template-status';	
-					update_option('aaeaddon_template_import_state', esc_html__( 'Plugin Installation Done' , 'animation-addons-for-elementor' ));
-				}else{
-					$template_data['next_step'] = 'check-template-status';	
-				}				
+				}
+				$template_data['next_step'] = 'install-wp-options';					
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
 				$tpl = $this->validate_download_file($template_data);				
 				if($tpl){
 					update_option('aaeaddon_template_import_state', esc_html__( 'Validating demo file' , 'animation-addons-for-elementor' ) );
 					$template_data['next_step'] = 'download-xml-file';
-					$template_data['file'] = json_decode($tpl);
+					$template_data['file']      = json_decode($tpl);
 				}else{
 					update_option('aaeaddon_template_import_state', esc_html__( 'Invalid file', 'animation-addons-for-elementor'));
 					$template_data['next_step'] = 'fail';
 				}
+				$progress                    = '30';
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){					
-				if(isset($template_data['file']['content_url'])){
-					$msg =	$this->download_remote_wp_xml_file($template_data['file']['content_url']);				
-								
-					update_option('aaeaddon_template_import_state', esc_html__('Demo file Downloaded', 'animation-addons-for-elementor'));
-					$template_data['next_step'] = 'install-template';
-					$progress                   = '50';				 				
+				if(isset($template_data['file']['content_url'])){						
+					update_option('aaeaddon_template_import_state', esc_html__('Content file Downloading', 'animation-addons-for-elementor'));
+					$template_data['next_step']  = 'install-template';
+					$template_data['local_path'] = $this->full_path;					
 				}else{
 					$template_data['next_step'] = 'fail';
-					update_option('aaeaddon_template_import_state', esc_html__('Missing xml file, contact plugin author', 'animation-addons-for-elementor'));
-				}			
+					update_option('aaeaddon_template_import_state', esc_html__('Missing Content file, contact author', 'animation-addons-for-elementor'));
+				}
+				$progress                    = '40';			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-template'){
 				$template_data['next_step'] = 'check-theme';
 				$progress                   = '50';
-				$msg                        = $this->install_template();
+				$msg                        = esc_html__('Varifying Content Import', 'animation-addons-for-elementor');
 				update_option('aaeaddon_template_import_state', 'Checking Theme');
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-theme'){
 				if($theme_slug){
@@ -186,13 +189,15 @@ class AAEAddon_Importer {
 				}			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-theme'){
 				$template_data['next_step'] = 'install-elementor-settings';
-				$progress                   = '75';
-				$msg = $this->install_theme($theme_slug);
+				$progress                   = '80';
+				if ( current_user_can( 'install_themes' ) ) {
+					$msg = $this->install_theme($theme_slug);
+				}
 				update_option('aaeaddon_template_import_state', $msg);
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
 
-				$template_data['next_step'] = 'install-wp-options';
-				$progress                   = '90';		
+				$template_data['next_step'] = 'done';
+				$progress                   = '100';		
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && $template_data['elementor_settings']['type'] === 'json' ) {
 					$response = wp_remote_get( $template_data['elementor_settings']['content_url']);
 					if ( is_array( $response ) && ! is_wp_error( $response ) ) {
@@ -201,23 +206,25 @@ class AAEAddon_Importer {
 						update_option('aaeaddon_template_import_state', $msg);
 					}
 				}
+				$this->update_blog_and_homepage_options($template_data);	
 				do_action('aaeaddon/starter-template/import/step/metasettings');				
 				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
-				$template_data['next_step'] = 'done';
-				$progress                   = '100';
-				$msg                        = 'done';	
+				$template_data['next_step'] = 'check-template-status';
+				$progress                   = '50';
+				$msg                        =  esc_html__('Checking Template Content', 'animation-addons-for-elementor');
 				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
 					$this->install_options($template_data['wp_options']);
 				}	
-				$this->update_blog_and_homepage_options($template_data);						
+									
 				update_option('aaeaddon_template_import_state', 'done');			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
 			}else{
 				$template_data['next_step'] = 'plugins-importer';	
-				$progress                   = '30';	
+				$progress                   = '10';	
+			
 				update_option('aaeaddon_template_import_state', esc_html__('Checking Setup requirement', 'animation-addons-for-elementor'));
 			}			
 			
@@ -241,8 +248,7 @@ class AAEAddon_Importer {
 				]
 			);
 			
-			if ( ! empty( $front_page ) ) {
-					error_log($front_page[0]->ID);
+			if ( ! empty( $front_page ) ) {		
 				update_option( 'page_on_front', $front_page[0]->ID );
 			}
 		 }
@@ -329,45 +335,7 @@ class AAEAddon_Importer {
 			}
 			return esc_html__('Kit Settings Update', 'animation-addons-for-elementor');
 		}
-	}
-
-	public function install_template(){
-		// Define file path in the uploads directory
-		$upload_dir = wp_upload_dir();
-		$file_path = trailingslashit($upload_dir['path']) . $this->file_path;
-	
-		if (!file_exists($file_path)) {
-			return __('file_missing', 'XML file not found.','animation-addons-for-elementor');
-		}
-
-		if (!class_exists('WP_Importer')) {
-			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
-		}
-		
-		require_once ABSPATH . 'wp-admin/includes/import.php';
-		require_once( 'base/WPImporterLogger.php' );
-		require_once( 'base/WPImporterLoggerCLI.php' );
-		require_once( 'base/WXRImportInfo.php' );
-		require_once( 'base/WXRImporter.php' );
-		require_once( 'base/Importer.php' );
-		ob_start(); 
-
-		$options = [
-			'chunk_size'         => 100,
-			'validate_schema'    => true,
-			'skip_duplicates'    => false,
-			'overwrite_existing' => true,    // Do not overwrite existing records
-			'skip_empty_nodes'   => true,    // Skip nodes with empty data
-		];
-
-		$logger   = new WPImporterLogger();          		
-		$importer = new Importer($options, $logger);
-		$result   = $importer->import($file_path);
-		ob_end_clean(); // Clear the buffer
-
-		update_option('aaeaddon_template_import_state', esc_html__('Import completed successfully.', 'animation-addons-for-elementor'));
-		return esc_html__('Import completed successfully.', 'animation-addons-for-elementor');
-	}
+	}	
 
 	function validate_download_file($template) {
 	
@@ -441,15 +409,15 @@ class AAEAddon_Importer {
 	
 		// Define file path in the uploads directory
 		$upload_dir = wp_upload_dir();
-		$file_path = trailingslashit($upload_dir['path']) . $this->file_path;
+		$this->full_path = trailingslashit($upload_dir['path']) . $this->file_path;
 		
 		// Write the file using the filesystem API
-		if (!$wp_filesystem->put_contents($file_path, $body, FS_CHMOD_FILE)) {
+		if (!$wp_filesystem->put_contents($this->full_path, $body, FS_CHMOD_FILE)) {
 			update_option('aaeaddon_template_import_state', esc_html__('Failed to save the XML file.', 'animation-addons-for-elementor'));
 			return esc_html__('Failed to save the XML file.', 'animation-addons-for-elementor');
 		}
 		update_option('aaeaddon_template_import_state', esc_html__('File downloaded and saved successfully', 'animation-addons-for-elementor'));
-		return esc_html__('File downloaded and saved successfully at ', 'animation-addons-for-elementor') . $file_path;
+		return esc_html__('File downloaded and saved successfully at ', 'animation-addons-for-elementor') . $this->full_path;
 	}
 	
 	function install_theme($slug) {
@@ -462,11 +430,19 @@ class AAEAddon_Importer {
 		$theme_slug = sanitize_key($slug);
 
 		$theme_data = wp_get_theme($theme_slug);
-
+		/* translators: 1: WordPress active theme name */
+		$msg = sprintf(	esc_html__('Theme "%s" installed and activated successfully.', 'animation-addons-for-elementor'), 
+					$theme_data->get('Name')
+		);		
 		if ($theme_data->exists()) {
 			switch_theme($theme_slug);
-			update_option('aaeaddon_template_import_state', esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor'));
-			return esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor');
+			
+			update_option(
+				'aaeaddon_template_import_state', 
+				$msg 
+			);
+			
+			return $msg;
 		}
 	
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -481,23 +457,25 @@ class AAEAddon_Importer {
 			return $api->get_error_message();
 		}
 	
-		$upgrader = new \Theme_Upgrader(new \WP_Ajax_Upgrader_Skin());
-		$result = $upgrader->install($api->download_link);
+		$upgrader 	= new \Theme_Upgrader(new \WP_Ajax_Upgrader_Skin());
+		$result 	= $upgrader->install($api->download_link);
 	
 		if (is_wp_error($result)) {	
-			update_option('aaeaddon_template_import_state', $result->get_error_message());	
+			update_option('aaeaddon_template_import_state', $result->get_error_message());
 			return $result->get_error_message();
 		}
 
+		// Translators: %s is the theme name.
+		$msg = sprintf(esc_html__('Theme "%s" installed and activated successfully.','animation-addons-for-elementor'),	esc_html($theme_data->get('Name')));
+		
 		if ($theme_data->exists()) {
-			switch_theme($theme_slug);
-			update_option('aaeaddon_template_import_state', esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor'));
-			return esc_html__("Theme '{$theme_data->get('Name')}' installed and activated successfully.",'animation-addons-for-elementor');
+			switch_theme($theme_slug);	
+			update_option('aaeaddon_template_import_state', $msg);			
 		}
-	
-		return esc_html__('Theme Installation Done', 'animation-addons-for-elementor');
+		return $msg;
 	}
 	
 	
 }
+
 AAEAddon_Importer::instance();

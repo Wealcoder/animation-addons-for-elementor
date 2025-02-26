@@ -567,7 +567,7 @@ class Image_Compare extends Widget_Base {
             <!-- After Image -->
             <div class="slider-right">
                 <div class="slider-img img-right"
-                     style="background-image: url('<?php echo $settings['after_image']['url']; ?>')">
+                     style="background-image: url('<?php echo esc_url($settings['after_image']['url']); ?>')">
 					<?php if ( 'yes' === $settings['show_caption'] ) { ?>
                         <p class="slider-caption slider-caption-right"><?php echo esc_html($settings['after_caption']); ?></p>
 					<?php } ?>
@@ -577,7 +577,7 @@ class Image_Compare extends Widget_Base {
             <!-- Before Image -->
             <div class="slider-left">
                 <div class="slider-img img-left"
-                     style="background-image: url('<?php echo $settings['before_image']['url']; ?>')">
+                     style="background-image: url('<?php echo esc_url($settings['before_image']['url']); ?>')">
 					<?php if ( 'yes' === $settings['show_caption'] ) { ?>
                         <p class="slider-caption slider-caption-left"><?php echo esc_html($settings['before_caption']); ?></p>
 					<?php } ?>

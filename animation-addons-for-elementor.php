@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Animation Addon for Elementor
+ * Plugin Name: Animation Addons for Elementor
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://wealcoder.com//
  * Version:     2.0
@@ -188,19 +188,21 @@ final class WCF_ADDONS_Plugin {
 		}
 
 		add_action( 'wp_loaded', function () {
-			// set current version to db
-			if ( get_option( 'wcf_addons_version' ) != WCF_ADDONS_VERSION ) {
-				// update plugin version
+			// Set current version to DB
+			if ( get_option( 'wcf_addons_version' ) !== WCF_ADDONS_VERSION ) {
+				// Update plugin version
 				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
 			}
-			if(isset($_GET['page']) && $_GET['page'] === 'wcf_addons_settings'){
-				//redirect addons setup page
-				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {				
-					wp_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+		
+			// Sanitize and check the 'page' parameter
+			if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'wcf_addons_settings' ) {
+				// Redirect addons setup page
+				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+					exit; // Always exit after redirection
 				}
 			}
-			
-		} );
+		} );		
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once 'class-plugin.php';
@@ -250,7 +252,11 @@ final class WCF_ADDONS_Plugin {
 	function install_elementor_plugin_handler() {
 		// Verify the AJAX nonce for security
 		check_ajax_referer('wcfinstall_elementor_nonce', '_ajax_nonce');
-	
+
+		if (!current_user_can('activate_plugins')) {
+			wp_send_json_error(['message' => esc_html__('Plugin Activation Permission Required, Contact Admin', 'animation-addons-for-elementor')]);
+        }
+		
 		// Include required WordPress files
 		if (!class_exists('Plugin_Upgrader')) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -269,7 +275,7 @@ final class WCF_ADDONS_Plugin {
 		if (is_plugin_active($plugin_file)) {
 			wp_send_json_success(['message' => esc_html__('Plugin is already active.', 'animation-addons-for-elementor')]);
 		}
-	
+		
 		// Fetch plugin information dynamically using the WordPress Plugin API
 		$api = plugins_api('plugin_information', [
 			'slug'   => $plugin_slug,
@@ -293,8 +299,7 @@ final class WCF_ADDONS_Plugin {
 		$upgrader = new Plugin_Upgrader(new WP_Ajax_Upgrader_Skin());
 		$installed = $upgrader->install($download_url);
 	
-		if (is_wp_error($installed)) {
-			error_log('Plugin installation error: ' . $installed->get_error_message());
+		if (is_wp_error($installed)) {			
 			wp_send_json_error(['message' => $installed->get_error_message()]);
 		}
 	
@@ -302,8 +307,7 @@ final class WCF_ADDONS_Plugin {
 		if (file_exists(WP_PLUGIN_DIR . '/' . $plugin_file)) {
 			$activated = activate_plugin($plugin_file);
 	
-			if (is_wp_error($activated)) {
-				error_log('Plugin activation error: ' . $activated->get_error_message());
+			if (is_wp_error($activated)) {			
 				wp_send_json_error(['message' => $activated->get_error_message()]);
 			}
 	
@@ -325,14 +329,14 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_elementor_version() {
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
-		}
+		if (!current_user_can('activate_plugins')) {
+            return;
+        }
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
 			esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'animation-addons-for-elementor' ),
-			'<strong>' . esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
+			'<strong>' . esc_html__( 'Animation Addons for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			'<strong>' . esc_html__( 'Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			self::MINIMUM_ELEMENTOR_VERSION
 		);
@@ -349,14 +353,14 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_php_version() {
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
-		}
+		if (!current_user_can('activate_plugins')) {
+            return;
+        }
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: PHP 3: Required PHP version */
 			esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'animation-addons-for-elementor' ),
-			'<strong>' . esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
+			'<strong>' . esc_html__( 'Animation Addons for Elementor', 'animation-addons-for-elementor' ) . '</strong>',
 			'<strong>' . esc_html__( 'PHP', 'animation-addons-for-elementor' ) . '</strong>',
 			self::MINIMUM_PHP_VERSION
 		);

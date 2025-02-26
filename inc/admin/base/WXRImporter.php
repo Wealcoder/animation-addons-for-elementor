@@ -61,6 +61,7 @@ class WXRImporter extends \WP_Importer {
 
 	protected $url_remap       = array();
 	protected $featured_images = array();
+	protected $background_attachments = array();
 
 	/**
 	 * Logger instance.
@@ -102,7 +103,7 @@ class WXRImporter extends \WP_Importer {
 			'prefill_existing_comments' => true,
 			'prefill_existing_terms'    => true,
 			'update_attachment_guids'   => false,
-			'fetch_attachments'         => false,
+			'fetch_attachments'         => true,
 			'aggressive_url_search'     => false,
 			'default_author'            => null,
 		) );
@@ -327,7 +328,7 @@ class WXRImporter extends \WP_Importer {
 	 *
 	 * @param string $file Path to the WXR file for importing.
 	 */
-	public function import( $file ) {
+	public function import( $file ) {		
 		add_filter( 'import_post_meta_key', array( $this, 'is_valid_meta_key' ) );
 		add_filter( 'http_request_timeout', array( &$this, 'bump_request_timeout' ) );
 
@@ -863,8 +864,10 @@ class WXRImporter extends \WP_Importer {
 		}
 
 		$postdata = apply_filters( 'wp_import_post_data_processed', wp_slash( $postdata ), $data );
-
+		
 		if ( 'attachment' === $postdata['post_type'] ) {
+			$remote_url = ! empty( $data['attachment_url'] ) ? $data['attachment_url'] : $data['guid'];
+			//$this->background_attachments[] = 
 			if ( ! $this->options['fetch_attachments'] ) {
 				$this->logger->notice( sprintf(
 					__( 'Skipping attachment "%s", fetching attachments disabled' ),
@@ -872,8 +875,9 @@ class WXRImporter extends \WP_Importer {
 				) );
 				return false;
 			}
-			$remote_url = ! empty( $data['attachment_url'] ) ? $data['attachment_url'] : $data['guid'];
+			
 			$post_id = $this->process_attachment( $postdata, $meta, $remote_url );
+			
 		} else {
 			$post_id = wp_insert_post( $postdata, true );
 			do_action( 'wp_import_insert_post', $post_id, $original_id, $postdata, $data );
@@ -1077,6 +1081,7 @@ class WXRImporter extends \WP_Importer {
 	 * @return int|WP_Error Post ID on success, WP_Error otherwise
 	 */
 	protected function process_attachment( $post, $meta, $remote_url ) {
+		
 		// try to use _wp_attached file for upload folder placement to ensure the same location as the export site
 		// e.g. location is 2003/05/image.jpg but the attachment post_date is 2010/09, see media_handle_upload()
 		$post['upload_date'] = $post['post_date'];
@@ -1928,69 +1933,81 @@ class WXRImporter extends \WP_Importer {
 	 * @return array|WP_Error Local file location details on success, WP_Error otherwise
 	 */
 	protected function fetch_remote_file( $url, $post ) {
-		// extract the file name and extension from the url
-		$file_name = basename( $url );
-
-		// get placeholder file in the upload dir with a unique, sanitized filename
-		$upload = wp_upload_bits( $file_name, 0, '', $post['upload_date'] );
-		if ( $upload['error'] ) {
-			return new WP_Error( 'upload_dir_error', $upload['error'] );
+		// Validate the URL to prevent SSRF attacks.
+		if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			return new WP_Error( 'invalid_url', esc_html__( 'Invalid URL provided.', 'animation-addons-for-elementor' ) );
 		}
-
-		// fetch the remote url and write it to the placeholder file
-		$response = wp_remote_get( $url, array(
-			'stream' => true,
+	
+		// Extract and sanitize the file name.
+		$file_name = sanitize_file_name( basename( wp_parse_url( $url, PHP_URL_PATH ) ) );
+	
+		// Ensure the file name is not empty.
+		if ( empty( $file_name ) ) {
+			return new WP_Error( 'invalid_filename', esc_html__( 'Invalid file name.', 'animation-addons-for-elementor' ) );
+		}
+	
+		// Get placeholder file in the upload directory (without the deprecated parameter).
+		$upload = wp_upload_bits( $file_name, '', '', isset( $post['upload_date'] ) ? $post['upload_date'] : null );
+		if ( ! empty( $upload['error'] ) ) {
+			return new WP_Error( 'upload_dir_error', esc_html( $upload['error'] ) );
+		}
+	
+		// Fetch the remote URL and write it to the placeholder file.
+		$response = wp_safe_remote_get( $url, array(
+			'stream'   => true,
+			'timeout'  => 20, // Prevent long-running requests.
 			'filename' => $upload['file'],
 		) );
-
-		// request failed
+	
+		// Check if the request failed.
 		if ( is_wp_error( $response ) ) {
-			unlink( $upload['file'] );
+			if ( file_exists( $upload['file'] ) ) {
+				unlink( $upload['file'] );
+			}
 			return $response;
 		}
-
+	
+		// Retrieve response code and ensure it’s 200 (OK).
 		$code = (int) wp_remote_retrieve_response_code( $response );
-
-		// make sure the fetch was successful
 		if ( $code !== 200 ) {
+			if ( file_exists( $upload['file'] ) ) {
+				unlink( $upload['file'] );
+			}
+			return new WP_Error(
+				'import_file_error',
+				sprintf(
+					/* translators: %1$d - HTTP response code, %2$s - status description, %3$s - file URL */
+					esc_html__( 'Remote server returned %1$d %2$s for %3$s', 'animation-addons-for-elementor' ),
+					$code,
+					esc_html( get_status_header_desc( $code ) ),
+					esc_url( $url )
+				)
+			);
+		}
+	
+		// Ensure the downloaded file is not empty.
+		$filesize = filesize( $upload['file'] );
+		if ( 0 === $filesize ) {
+			unlink( $upload['file'] );
+			return new WP_Error( 'import_file_error', esc_html__( 'Zero size file downloaded', 'animation-addons-for-elementor' ) );
+		}
+	
+		// Validate file size limit.
+		$max_size = (int) $this->max_attachment_size();
+		if ( ! empty( $max_size ) && $filesize > $max_size ) {
 			unlink( $upload['file'] );
 			return new WP_Error(
 				'import_file_error',
 				sprintf(
-					__( 'Remote server returned %1$d %2$s for %3$s', 'animation-addons-for-elementor' ),
-					$code,
-					get_status_header_desc( $code ),
-					$url
+					esc_html__( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ),
+					size_format( $max_size )
 				)
 			);
 		}
-
-		$filesize = filesize( $upload['file'] );
-		$headers = wp_remote_retrieve_headers( $response );
-
-		// OCDI fix!
-		// Smaller images with server compression do not pass this rule.
-		// More info here: https://github.com/proteusthemes/WordPress-Importer/pull/2
-		//
-		// if ( isset( $headers['content-length'] ) && $filesize !== (int) $headers['content-length'] ) {
-		// 	unlink( $upload['file'] );
-		// 	return new WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'animation-addons-for-elementor' ) );
-		// }
-
-		if ( 0 === $filesize ) {
-			unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'animation-addons-for-elementor' ) );
-		}
-
-		$max_size = (int) $this->max_attachment_size();
-		if ( ! empty( $max_size ) && $filesize > $max_size ) {
-			unlink( $upload['file'] );
-			$message = sprintf( __( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ), size_format( $max_size ) );
-			return new WP_Error( 'import_file_error', $message );
-		}
-
+	
 		return $upload;
 	}
+	
 
 	protected function post_process() {
 		// Time to tackle any left-over bits

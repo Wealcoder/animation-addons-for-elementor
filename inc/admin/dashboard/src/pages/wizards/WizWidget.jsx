@@ -1,8 +1,11 @@
 import ShowWizWidgets from "@/components/wizards/ShowWizWidgets";
 import WidgetTopBg from "../../../public/images/wizard/widget-top-bg.png";
 import { useEffect } from "react";
+import { useSkip } from "@/hooks/app.hooks";
 
 const WizWidget = () => {
+  const { isSkipTerms } = useSkip();
+
   const API_ENDPOINT =
     "https://themecrowdy.com/wp-json/fluent-crm/v2/subscribers";
   const AUTH_USERNAME = "rayhan";
@@ -22,9 +25,7 @@ const WizWidget = () => {
   };
 
   function extractNameFromEmail(email) {
-    // Split the email by the dot (.)
-    const nameParts = email.split("@")[0].split("."); // Get the part before the "@" and split by dot
-    // Capitalize the first letter of each part and join them
+    const nameParts = email.split("@")[0].split(".");
     const name = nameParts
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
@@ -55,7 +56,10 @@ const WizWidget = () => {
   }
 
   useEffect(() => {
-    if (localStorage.getItem("wcfanim_addon_subscribe") != "yes") {
+    if (
+      !isSkipTerms &&
+      localStorage.getItem("wcfanim_addon_subscribe") != "yes"
+    ) {
       addSubscriber();
     }
   }, []);

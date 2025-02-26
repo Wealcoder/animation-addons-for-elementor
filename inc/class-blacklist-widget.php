@@ -33,7 +33,7 @@ class BlackList_Widget extends \Elementor\Widget_Base {
     }  
     
     protected function render() {     
-        echo wcfaddon_get_pronotice_html();
+        echo wp_kses_post( wcfaddon_get_pronotice_html());
     }
    
 }

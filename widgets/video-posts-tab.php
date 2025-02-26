@@ -457,7 +457,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'aaebackground',
+				'name'     => 'vaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .posts-banner',
 			]
@@ -898,7 +898,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name'     => 'aaebackground',
+				'name'     => 'vvaaebackground',
 				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .aae--posts-tab .aae-view-all',
 			]
@@ -1442,7 +1442,7 @@ class Video_Posts_Tab extends Widget_Base {
 				?>
 				<div class="aae-view-all">
 					<a <?php $this->print_render_attribute_string( 'view_more_link' ); ?>>
-						<?php echo $settings['show_view_more_text']; ?>
+						<?php echo wp_kses_post( $settings['show_view_more_text']); ?>
 						<?php \Elementor\Icons_Manager::render_icon( $settings['view_more_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					</a>
 				</div>
@@ -1458,7 +1458,7 @@ class Video_Posts_Tab extends Widget_Base {
 			'id' => get_post_thumbnail_id(),
 		];
 		?>
-        <div class="thumb" data-target="<?php echo get_the_ID(); ?>">
+        <div class="thumb" data-target="<?php echo esc_attr( get_the_ID() ); ?>">
             <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
             </a>
@@ -1468,34 +1468,45 @@ class Video_Posts_Tab extends Widget_Base {
 
 	protected function render_banner_video() {
 		$format = get_post_format();
-
-		if ( 'video' != $format ) {
+	
+		if ( 'video' !== $format ) {
 			return;
 		}
-
+	
 		$link = get_post_meta( get_the_ID(), '_video_url', true );
-
-		if ( strpos( $link, "https://www.youtube.com/" ) === 0 ) {
-			parse_str( parse_url( $link, PHP_URL_QUERY ), $query );
-
-			if ( isset( $query['v'] ) ) {
-				$ytVideoId = $query['v'];
-				$link      = "https://www.youtube.com/embed/" . $ytVideoId;
+	
+		// Ensure $link is a valid URL
+		if ( empty( $link ) || ! filter_var( $link, FILTER_VALIDATE_URL ) ) {
+			return;
+		}
+	
+		$parsed_url = wp_parse_url( $link );
+	
+		if ( isset( $parsed_url['host'] ) ) {
+			// YouTube Link Handling
+			if ( strpos( $parsed_url['host'], 'youtube.com' ) !== false || strpos( $parsed_url['host'], 'youtu.be' ) !== false ) {
+				parse_str( $parsed_url['query'] ?? '', $query );
+	
+				if ( isset( $query['v'] ) ) {
+					$ytVideoId = sanitize_text_field( $query['v'] );
+					$link      = "https://www.youtube.com/embed/" . esc_attr( $ytVideoId );
+				}
+			}
+	
+			// Vimeo Link Handling
+			if ( strpos( $parsed_url['host'], 'vimeo.com' ) !== false ) {
+				$videoId = trim( str_replace( "https://vimeo.com/", "", $link ) );
+				$link    = "https://player.vimeo.com/video/" . esc_attr( sanitize_text_field( $videoId ) );
 			}
 		}
-
-		// Vimeo Link Checking
-		if ( strpos( $link, "https://vimeo.com/" ) === 0 ) {
-			$videoId = str_replace( "https://vimeo.com/", "", $link );
-			$link    = "https://player.vimeo.com/video/" . $videoId;
-		}
-
+	
 		?>
-        <div class="thumb" data-target="<?php echo get_the_ID(); ?>">
-            <iframe src="<?php echo $link; ?>"></iframe>
-        </div>
+		<div class="thumb" data-target="<?php echo esc_attr( get_the_ID() ); ?>">
+			<iframe src="<?php echo esc_url( $link ); ?>" allowfullscreen></iframe>
+		</div>
 		<?php
 	}
+	
 
 	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
 		// Split the text into an array of words
@@ -1534,7 +1545,7 @@ class Video_Posts_Tab extends Widget_Base {
 
 				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-				echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+				echo wp_kses_post( $this->wcf_wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
 
 			} else {
 				the_title();
@@ -1727,7 +1738,7 @@ class Video_Posts_Tab extends Widget_Base {
 			}
 			?>
             <div class="content-wrap">
-                <div class="content" data-id="<?php echo get_the_ID(); ?>">
+                <div class="content" data-id="<?php echo esc_attr(get_the_ID()); ?>">
 					<?php
 					$this->render_title();
 					$this->render_excerpt();

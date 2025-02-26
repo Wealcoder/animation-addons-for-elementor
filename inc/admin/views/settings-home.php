@@ -142,7 +142,7 @@ $allowed_svg = array_merge( $kses_defaults, $svg_args );
                 </div>
                 <div>
                     <span><?php echo esc_html__( 'Statistics', 'animation-addons-for-elementor' ); ?></span>
-                    <div class="title-2"><?php echo esc_html__( 'Animation Addon for Elementor', 'animation-addons-for-elementor' ); ?></div>
+                    <div class="title-2"><?php echo esc_html__( 'Animation Addons for Elementor', 'animation-addons-for-elementor' ); ?></div>
                 </div>
             </div>
             <div class="statistic-body">

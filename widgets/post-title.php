@@ -301,7 +301,7 @@ class Post_Title extends Widget_Base {
 		// highlited title
 	  	
 
-		 echo $title_html; 
+		 echo wp_kses_post($title_html); 
 		
 		Plugin::$instance->db->restore_current_post();
 
