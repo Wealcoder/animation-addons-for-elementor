@@ -599,9 +599,9 @@ class Plugin {
 
 		if ( is_admin() ) {
 			
-			if (  'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+			// if (  'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-			}
+			// }
 
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
