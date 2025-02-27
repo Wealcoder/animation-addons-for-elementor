@@ -80,7 +80,9 @@ const GetProButton = ({ btnClassName }) => {
               <RiKey2Line size={20} />
             </span>
 
-            {activated?.wcf_valid ? "Deactivate License" : "Activate License"}
+            {activated?.product_status?.item_id === 13
+              ? "Deactivate License"
+              : "Activate License"}
           </Button>
         ))}
       <LicenseDialog open={openLicense} setOpen={setOpenLicense} />
