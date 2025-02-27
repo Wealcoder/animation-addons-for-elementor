@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { WizNavList } from "@/config/nav/wiz-nav";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 export const WizHeader = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
@@ -39,42 +40,45 @@ export const WizHeader = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="px-4 xl:px-8 py-6 flex justify-center items-center">
-      <div className="flex justify-center items-center gap-3 xl:gap-4">
-        {WizNavList.map((item, i) => (
-          <React.Fragment key={item.serial + i}>
-            <div
-              className={cn(
-                "cursor-pointer flex justify-center items-center gap-2 text-sm font-medium"
+    <div className="flex justify-center items-center">
+      <ScrollArea className="w-[1200px] px-4 xl:px-8 py-6 ">
+        <div className="w-max flex justify-center items-center gap-3 xl:gap-4">
+          {WizNavList.map((item, i) => (
+            <React.Fragment key={item.serial + i}>
+              <div
+                className={cn(
+                  "cursor-pointer flex justify-center items-center gap-2 text-sm font-medium"
+                )}
+                onClick={() => changeRoute(item.path)}
+              >
+                <p
+                  className={cn(
+                    "w-7 h-7 rounded-full border flex justify-center items-center",
+                    getSerial(currentPath) >= item.serial
+                      ? "text-button-secondary border-brand bg-brand"
+                      : "text-text-secondary border-border"
+                  )}
+                >
+                  {item.serial}
+                </p>
+                <p
+                  className={cn(
+                    getSerial(currentPath) >= item.serial
+                      ? "text-text"
+                      : "text-text-secondary"
+                  )}
+                >
+                  {item.title}
+                </p>
+              </div>
+              {WizNavList.length - 1 !== i && (
+                <Separator className="w-[13px] xl:w-[18px] bg-border-tertiary" />
               )}
-              onClick={() => changeRoute(item.path)}
-            >
-              <p
-                className={cn(
-                  "w-7 h-7 rounded-full border flex justify-center items-center",
-                  getSerial(currentPath) >= item.serial
-                    ? "text-button-secondary border-brand bg-brand"
-                    : "text-text-secondary border-border"
-                )}
-              >
-                {item.serial}
-              </p>
-              <p
-                className={cn(
-                  getSerial(currentPath) >= item.serial
-                    ? "text-text"
-                    : "text-text-secondary"
-                )}
-              >
-                {item.title}
-              </p>
-            </div>
-            {WizNavList.length - 1 !== i && (
-              <Separator className="w-[13px] xl:w-[18px] bg-border-tertiary" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+            </React.Fragment>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 };

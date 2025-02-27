@@ -2632,11 +2632,11 @@ class Posts extends Widget_Base {
 
 	protected function render_post_meta_video() {
 		?>
-        <ul class="wcf-meta_video">
+        <div class="wcf-meta_video">
             <span class="meta_day"><?php echo get_the_date( 'D' ); ?></span>
             <span class="meta_year"><?php echo get_the_date( 'd' ); ?></span>
             <span class="meta_month"><?php echo get_the_date( 'F' ); ?></span>
-        </ul>
+        </div>
 		<?php
 	}
 
