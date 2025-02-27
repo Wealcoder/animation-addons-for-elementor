@@ -110,7 +110,7 @@ const ProConfirmDialog = ({ open, setOpen }) => {
                     <RiKey2Line size={20} />
                   </span>
 
-                  {activated?.wcf_valid
+                  {activated?.product_status?.item_id === 13
                     ? "Deactivate License"
                     : "Activate License"}
                 </Button>
