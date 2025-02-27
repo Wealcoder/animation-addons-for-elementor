@@ -560,14 +560,26 @@ trait WCF_Post_Query_Trait {
 		}
 
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ) {
+			// Retrieve and decode the cookie data
 			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( wp_unslash( $_COOKIE['aae_visited_posts'] ), true ) : [];
-
-			if ( is_array( $visited_posts ) && isset( $visited_posts[ $this->get_settings( 'post_type' ) ] ) && is_array( $visited_posts[ $this->get_settings( 'post_type' ) ] ) ) {
-				$query_args['post__in'] = [ implode( ',', $visited_posts[ $this->get_settings( 'post_type' ) ] ) ]; // implode
+		
+			// Check if the decoded data is an array
+			if ( is_array( $visited_posts ) ) {
+				$post_type = $this->get_settings( 'post_type' );
+		
+				// Check if the post type exists in the visited posts array and is an array
+				if ( isset( $visited_posts[ $post_type ] ) && is_array( $visited_posts[ $post_type ] ) ) {
+					// Sanitize each post ID to ensure they are positive integers
+					$post_ids = array_map( 'absint', $visited_posts[ $post_type ] );
+		
+					// If there are valid post IDs, assign them to the query arguments
+					if ( ! empty( $post_ids ) ) {
+						$query_args['post__in'] = $post_ids;
+					}
+				}
 			}
-
 		}
-
+		
 		if ( $this->get_settings( 'post_layout' ) && ( $this->get_settings( 'post_layout' ) == 'layout-gallery' || $this->get_settings( 'post_layout' ) == 'layout-gallery-2' ) ) {
 			$query_args['tax_query'][] = [
 				'taxonomy' => 'post_format',

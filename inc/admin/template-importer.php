@@ -296,8 +296,9 @@ class AAEAddon_Importer {
 				if ( isset( $xml->option ) ) {
 					// Iterate through each <option> node.
 					foreach ( $xml->option as $opt ) {
-						$option_name     = (string) $opt->name;
-						$serialized_data = (string) $opt->value;	
+
+						$option_name     = sanitize_text_field((string) $opt->name);
+						$serialized_data = sanitize_text_field((string) $opt->value);	
 					
 						$wpdb->update(
 							$wpdb->options,
@@ -307,8 +308,8 @@ class AAEAddon_Importer {
 					}
 				} else {
 					// Fallback for a single option XML structure.
-					$serialized_data = (string) $xml->value;
-					$option_name     = (string) $xml->name;
+					$serialized_data = sanitize_text_field((string) $xml->value);
+					$option_name     = sanitize_text_field((string) $xml->name);
 					
 					$wpdb->update(
 						$wpdb->options,
