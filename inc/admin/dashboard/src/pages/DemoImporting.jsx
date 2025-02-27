@@ -51,7 +51,7 @@ const DemoImporting = () => {
       runImport(currenTemplate);
     }
 
-    const interval = setInterval(fetchHeartbeatData, 5000);
+    const interval = setInterval(fetchHeartbeatData, 15000);
     return () => clearInterval(interval);
   }, [currenTemplate]);
 

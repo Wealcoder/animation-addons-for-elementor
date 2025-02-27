@@ -195,11 +195,14 @@ final class WCF_ADDONS_Plugin {
 			}
 		
 			// Sanitize and check the 'page' parameter
-			if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'wcf_addons_settings' ) {
-				// Redirect addons setup page
-				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
-					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
-					exit; // Always exit after redirection
+			if(current_user_can( 'manage_options' )){
+				
+				if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'wcf_addons_settings' ) {
+					// Redirect addons setup page
+					if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+						wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+						exit; // Always exit after redirection
+					}
 				}
 			}
 		} );		
