@@ -1933,81 +1933,69 @@ class WXRImporter extends \WP_Importer {
 	 * @return array|WP_Error Local file location details on success, WP_Error otherwise
 	 */
 	protected function fetch_remote_file( $url, $post ) {
-		// Validate the URL to prevent SSRF attacks.
-		if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
-			return new WP_Error( 'invalid_url', esc_html__( 'Invalid URL provided.', 'animation-addons-for-elementor' ) );
+		// extract the file name and extension from the url
+		$file_name = basename( $url );
+
+		// get placeholder file in the upload dir with a unique, sanitized filename
+		$upload = wp_upload_bits( $file_name, 0, '', $post['upload_date'] );
+		if ( $upload['error'] ) {
+			return new WP_Error( 'upload_dir_error', $upload['error'] );
 		}
-	
-		// Extract and sanitize the file name.
-		$file_name = sanitize_file_name( basename( wp_parse_url( $url, PHP_URL_PATH ) ) );
-	
-		// Ensure the file name is not empty.
-		if ( empty( $file_name ) ) {
-			return new WP_Error( 'invalid_filename', esc_html__( 'Invalid file name.', 'animation-addons-for-elementor' ) );
-		}
-	
-		// Get placeholder file in the upload directory (without the deprecated parameter).
-		$upload = wp_upload_bits( $file_name, '', '', isset( $post['upload_date'] ) ? $post['upload_date'] : null );
-		if ( ! empty( $upload['error'] ) ) {
-			return new WP_Error( 'upload_dir_error', esc_html( $upload['error'] ) );
-		}
-	
-		// Fetch the remote URL and write it to the placeholder file.
-		$response = wp_safe_remote_get( $url, array(
-			'stream'   => true,
-			'timeout'  => 20, // Prevent long-running requests.
+
+		// fetch the remote url and write it to the placeholder file
+		$response = wp_remote_get( $url, array(
+			'stream' => true,
 			'filename' => $upload['file'],
 		) );
-	
-		// Check if the request failed.
+
+		// request failed
 		if ( is_wp_error( $response ) ) {
-			if ( file_exists( $upload['file'] ) ) {
-				unlink( $upload['file'] );
-			}
+			unlink( $upload['file'] );
 			return $response;
 		}
-	
-		// Retrieve response code and ensure it’s 200 (OK).
+
 		$code = (int) wp_remote_retrieve_response_code( $response );
+
+		// make sure the fetch was successful
 		if ( $code !== 200 ) {
-			if ( file_exists( $upload['file'] ) ) {
-				unlink( $upload['file'] );
-			}
+			unlink( $upload['file'] );
 			return new WP_Error(
 				'import_file_error',
 				sprintf(
-					/* translators: %1$d - HTTP response code, %2$s - status description, %3$s - file URL */
-					esc_html__( 'Remote server returned %1$d %2$s for %3$s', 'animation-addons-for-elementor' ),
+					__( 'Remote server returned %1$d %2$s for %3$s', 'animation-addons-for-elementor' ),
 					$code,
-					esc_html( get_status_header_desc( $code ) ),
-					esc_url( $url )
+					get_status_header_desc( $code ),
+					$url
 				)
 			);
 		}
-	
-		// Ensure the downloaded file is not empty.
+
 		$filesize = filesize( $upload['file'] );
+		$headers = wp_remote_retrieve_headers( $response );
+
+		// OCDI fix!
+		// Smaller images with server compression do not pass this rule.
+		// More info here: https://github.com/proteusthemes/WordPress-Importer/pull/2
+		//
+		// if ( isset( $headers['content-length'] ) && $filesize !== (int) $headers['content-length'] ) {
+		// 	unlink( $upload['file'] );
+		// 	return new WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'animation-addons-for-elementor' ) );
+		// }
+
 		if ( 0 === $filesize ) {
 			unlink( $upload['file'] );
-			return new WP_Error( 'import_file_error', esc_html__( 'Zero size file downloaded', 'animation-addons-for-elementor' ) );
+			return new WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'animation-addons-for-elementor' ) );
 		}
-	
-		// Validate file size limit.
+
 		$max_size = (int) $this->max_attachment_size();
 		if ( ! empty( $max_size ) && $filesize > $max_size ) {
 			unlink( $upload['file'] );
-			return new WP_Error(
-				'import_file_error',
-				sprintf(
-					esc_html__( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ),
-					size_format( $max_size )
-				)
-			);
+			$message = sprintf( __( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ), size_format( $max_size ) );
+			return new WP_Error( 'import_file_error', $message );
 		}
-	
+
 		return $upload;
 	}
-	
 
 	protected function post_process() {
 		// Time to tackle any left-over bits

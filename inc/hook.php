@@ -7,6 +7,15 @@ if(function_exists('wcf_set_postview')){
 	add_action( 'wp_head', 'wcf_set_postview' );
 }
 
+function aaeaddonlight_hk_allow_svg_uploads($mimes) {
+    // Allow SVG files
+    $mimes['svg']  = 'image/svg+xml';
+    $mimes['svgz'] = 'image/svg+xml'; // Compressed SVG
+    return $mimes;
+}
+
+add_filter('upload_mimes', 'aaeaddonlight_hk_allow_svg_uploads');
+
 function aae_handle_aae_post_shares_count() {
 
 	if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-frontend' ) ) {

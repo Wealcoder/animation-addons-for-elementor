@@ -116,9 +116,9 @@ class Importer {
 	public function import_content( $import_file_path ) {
 		$this->microtime = microtime( true );
 
-		// Increase PHP max execution time. Just in case, even though the AJAX calls are only 25 sec long.
+		// Increase PHP max execution time. Just in case, even though the AJAX calls are only 60 sec long.
 		if ( strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
-			set_time_limit( Helpers::apply_filters( 'aaeaddon/set_time_limit_for_demo_data_import', 25 ) );
+			set_time_limit( Helpers::apply_filters( 'aaeaddon/set_time_limit_for_demo_data_import', 60 ) );
 		}
 
 		// Disable import of authors.

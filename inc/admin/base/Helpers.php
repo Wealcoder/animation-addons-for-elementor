@@ -360,11 +360,13 @@ class Helpers {
 
 		// Register the import file types and their mime types.
 		add_filter( 'upload_mimes', function ( $defaults ) {
+
 			$custom = [
 				'xml'  => 'text/xml',
-				'json' => 'application/json'			
+				'json' => 'application/json',		
 			];
-
+		
+			
 			return array_merge( $custom, $defaults );
 		} );
 

@@ -156,17 +156,17 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
 				$tpl = $this->validate_download_file($template_data);				
 				if($tpl){
-					update_option('aaeaddon_template_import_state', esc_html__( 'Validating demo file' , 'animation-addons-for-elementor' ) );
+					update_option('aaeaddon_template_import_state', esc_html__( 'Content file Downloading' , 'animation-addons-for-elementor' ) );
 					$template_data['next_step'] = 'download-xml-file';
 					$template_data['file']      = json_decode($tpl);
 				}else{
 					update_option('aaeaddon_template_import_state', esc_html__( 'Invalid file', 'animation-addons-for-elementor'));
 					$template_data['next_step'] = 'fail';
 				}
-				$progress                    = '30';
+				$progress                    = '35';
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){					
 				if(isset($template_data['file']['content_url'])){						
-					update_option('aaeaddon_template_import_state', esc_html__('Content file Downloading', 'animation-addons-for-elementor'));
+					update_option('aaeaddon_template_import_state', esc_html__('Content installing', 'animation-addons-for-elementor'));
 					$template_data['next_step']  = 'install-template';
 					$template_data['local_path'] = $this->full_path;					
 				}else{
@@ -212,7 +212,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
 				$template_data['next_step'] = 'check-template-status';
-				$progress                   = '50';
+				$progress                   = '30';
 				$msg                        =  esc_html__('Checking Template Content', 'animation-addons-for-elementor');
 				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
 					$this->install_options($template_data['wp_options']);
