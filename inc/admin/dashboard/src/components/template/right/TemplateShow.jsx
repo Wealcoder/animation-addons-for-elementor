@@ -1,18 +1,21 @@
+import ProConfirmDialog from "@/components/shared/ProConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
-import { useTNavigation } from "@/hooks/app.hooks";
+import { useActivate, useTNavigation } from "@/hooks/app.hooks";
 import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
 
 const TemplateShow = ({ allTemplate }) => {
+  const [open, setOpen] = useState(false);
   const [wishlistData, setWishlistData] = useState(
     WCF_ADDONS_ADMIN.addons_config.wishlist || []
   );
   const { setTabKey } = useTNavigation();
+  const { activated } = useActivate();
 
-  const changeRoute = (value, slug, id) => {
+  const changeRoute = (value, slug, id, is_pro) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -23,8 +26,18 @@ const TemplateShow = ({ allTemplate }) => {
     url.searchParams.set("tab", value);
     url.searchParams.set("template", slug);
     url.searchParams.set("templateid", id);
-    window.history.replaceState({}, "", url);
-    setTabKey(value);
+
+    if (is_pro) {
+      if (activated?.product_status?.item_id === 13) {
+        window.history.replaceState({}, "", url);
+        setTabKey(value);
+      } else {
+        setOpen(value);
+      }
+    } else {
+      window.history.replaceState({}, "", url);
+      setTabKey(value);
+    }
   };
 
   const saveWishlist = async (data) => {
@@ -96,7 +109,8 @@ const TemplateShow = ({ allTemplate }) => {
                         changeRoute(
                           "required-features",
                           template?.slug,
-                          template?.id
+                          template?.id,
+                          template?.is_pro
                         )
                       }
                     >
@@ -149,6 +163,7 @@ const TemplateShow = ({ allTemplate }) => {
           <p className="text-lg font-semibold">No Item Found</p>
         </div>
       )}
+      <ProConfirmDialog open={open} setOpen={setOpen} />
     </>
   );
 };
