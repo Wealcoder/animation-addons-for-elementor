@@ -195,17 +195,20 @@ final class WCF_ADDONS_Plugin {
 			}
 		
 			// Sanitize and check the 'page' parameter
-			if(current_user_can( 'manage_options' )){
-				
-				if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'wcf_addons_settings' ) {
-					// Redirect addons setup page
-					if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
-						wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
-						exit; // Always exit after redirection
-					}
+			
+		} );
+		
+		add_action( 'current_screen', function ( $screen ) {
+			// Check if user has required capabilities
+			
+			if ( current_user_can( 'manage_options' ) && $screen->id === 'animation-addon_page_wcf_addons_settings' ) {
+				// Redirect if setup is incomplete
+				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+					exit; // Always exit after redirection
 				}
 			}
-		} );		
+		});
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once 'class-plugin.php';

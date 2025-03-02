@@ -2,7 +2,7 @@
 /**
  * Class for declaring the content importer used in the One Click Demo Import plugin
  *
- * @package WCFOI
+ * @package Animation Addon
  */
 
 namespace WCF_ADDONS\Admin\Base;
@@ -23,14 +23,14 @@ class Importer {
 	private $microtime;
 
 	/**
-	 * The instance of the WCFOI\Logger class.
+	 * The instance of the WCF_ADDONS\Admin\Base\Logger class.
 	 *
 	 * @var object
 	 */
 	public $logger;
 
 	/**
-	 * The instance of the One Click Demo Import class.
+	 * The instance of the Import class.
 	 *
 	 * @var object
 	 */

@@ -5,7 +5,7 @@ namespace WCF_ADDONS\Admin\Base;
 use WP_Error;
 
 /**
- * One Click Demo Import class, so we don't have to worry about namespaces.
+ * One Click Import class
  */
 class OneClickImport {
 
@@ -142,18 +142,22 @@ class OneClickImport {
 			
 			// Get selected file index or set it to 0.
 			$this->selected_index = 0;
+			$template_data = [];
 
-			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
-			$template_data = json_decode($json_data, true);		
-			//$template_data['next_step'] = 'download-xml-file'; // remove line after test
-			if (json_last_error() === JSON_ERROR_NONE) {			
-				array_walk_recursive($template_data, function (&$value) {
-					if (is_string($value)) {
-						$value = sanitize_text_field($value);
-					}
-				});			
-			}
-			
+			if(isset($_POST['template_data'])){
+
+				$json_data     = sanitize_text_field( wp_unslash($_POST['template_data']) );  // Remove slashes if added by WP		
+				$template_data = json_decode($json_data, true);
+				
+				if (json_last_error() === JSON_ERROR_NONE) {			
+					array_walk_recursive($template_data, function (&$value) {
+						if (is_string($value)) {
+							$value = sanitize_text_field($value);
+						}
+					});			
+				}
+
+			}		
 		
 			if ( isset($template_data['file']['content_url']) ) { // Provide url
 				// Download the import files (content).
@@ -174,10 +178,10 @@ class OneClickImport {
 
 			}
 			else {
-				$response = [];
+				$response                   = [];
 				$template_data['next_step'] = 'fail';
-				$response['msg'] = esc_html__( 'No import files specified!', 'animation-addons-for-elementor' );
-				$response['progress'] = 0;
+				$response['msg']            = esc_html__( 'No import files specified!', 'animation-addons-for-elementor' );
+				$response['progress']       = 0;
 				$response['template']       = wp_unslash( $template_data );
 				wp_send_json( $response );
 			}

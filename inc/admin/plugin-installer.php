@@ -97,7 +97,7 @@ class WCF_Plugin_Installer {
         }
 
         $slug   = isset($_POST['plugin_url']) ? esc_url_raw($_POST['plugin_url']) : '';
-        $source = isset($_POST['plugin_source']) ? sanitize_text_field($_POST['plugin_source']) : '';
+        $source = isset($_POST['plugin_source']) ? sanitize_text_field(wp_unslash( $_POST['plugin_source'] )) : '';
 
         $result = $this->install_plugin($slug, $source);
         if (is_wp_error($result)) {
@@ -114,7 +114,7 @@ class WCF_Plugin_Installer {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
 
-        $basename = isset($_POST['action_base']) ? sanitize_text_field($_POST['action_base']) : '';
+        $basename = isset($_POST['action_base']) ? sanitize_text_field(wp_unslash($_POST['action_base'])) : '';
         $result = activate_plugin($basename, '', false, true);
 
         if (is_wp_error($result)) {
@@ -132,7 +132,7 @@ class WCF_Plugin_Installer {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
 
-        $basename = isset($_POST['action_base']) ? sanitize_text_field($_POST['action_base']) : '';
+        $basename = isset($_POST['action_base']) ? sanitize_text_field(wp_unslash($_POST['action_base'])) : '';
         $result = activate_plugin($basename, '', false, true);
 
         if (is_wp_error($result)) {
@@ -227,7 +227,7 @@ class WCF_Plugin_Installer {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
        
-        $dependencies = sanitize_text_field(wp_unslash($_REQUEST['dependencies']));
+        $dependencies = sanitize_text_field(wp_unslash($_POST['dependencies']));
         $dependencies = json_decode($dependencies, true);
 
         $plugins = isset($dependencies['plugins']) && is_array($dependencies['plugins'])  ? $dependencies['plugins'] : [];

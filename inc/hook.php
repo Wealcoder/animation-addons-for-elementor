@@ -17,14 +17,14 @@ function aaeaddonlight_hk_allow_svg_uploads($mimes) {
 add_filter('upload_mimes', 'aaeaddonlight_hk_allow_svg_uploads');
 
 function aae_handle_aae_post_shares_count() {
-
-	if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-frontend' ) ) {
+    $nonce =  sanitize_text_field( wp_unslash($_POST['nonce']));
+	if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
 		exit( 'No naughty business please' );
 	}
 	
     if ( isset( $_POST['post_id'] ) && isset($_POST['social'])) {
-        $post_id = intval( sanitize_text_field($_POST['post_id']) );
-        $social = sanitize_text_field( $_POST['social'] );
+        $post_id = intval( sanitize_text_field( wp_unslash($_POST['post_id'])) );
+        $social = sanitize_text_field( wp_unslash($_POST['social']) );
         
         // Retrieve current share count, increment it, or set it if it doesn't exist
         $current_shares = get_post_meta( $post_id, 'aae_post_shares', true );

@@ -1,11 +1,11 @@
 <?php
 /**
- * Logger class used in the One Click Demo Import plugin
+ * 
  *
- * @package WCFOI
+ * @package WCF_ADDONS
  */
 
- namespace WCF_ADDONS\Admin\Base;
+namespace WCF_ADDONS\Admin\Base;
 
 class Logger extends WPImporterLoggerCLI {
 	/**
