@@ -93,7 +93,12 @@ const WidgetCard = ({
                   <a
                     href={widget?.doc_url}
                     target="_blank"
-                    className="text-sm text-label hover:text-text"
+                    className={cn(
+                      "text-sm",
+                      widget?.doc_url
+                        ? "text-label hover:text-text"
+                        : "pointer-events-none text-[#CACFD8]"
+                    )}
                   >
                     Documentation
                   </a>
@@ -104,7 +109,12 @@ const WidgetCard = ({
                   <a
                     href={widget?.demo_url}
                     target="_blank"
-                    className="text-sm text-label hover:text-text"
+                    className={cn(
+                      "text-sm",
+                      widget?.demo_url
+                        ? "text-label hover:text-text"
+                        : "pointer-events-none text-[#CACFD8]"
+                    )}
                   >
                     Preview
                   </a>
