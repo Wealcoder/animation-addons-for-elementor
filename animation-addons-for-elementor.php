@@ -243,7 +243,7 @@ final class WCF_ADDONS_Plugin {
 				'wcf-install-elementor-script',
 				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js', // Replace with your JS file path
 				['jquery'], // Dependencies
-				'1.0', // Version
+				'2.0', // Version
 				true // Load in footer
 			);
 	

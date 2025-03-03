@@ -205,7 +205,7 @@ const useMainContext = (state) => {
   const updateNotice = useCallback(
     async (data) => {
       const result = mainState.notice;
-      if (result.length >= 10) {
+      if (result.length >= 5) {
         result.pop();
       }
       result.unshift(data);
