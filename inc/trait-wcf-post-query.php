@@ -36,6 +36,25 @@ trait WCF_Post_Query_Trait {
 		return $post_types;
 	}
 
+	/**
+	 * Get taxonomy terms for dropdown
+	 */
+	protected function get_taxonomy_terms( $taxonomy ) {
+		$terms = get_terms( [
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false,
+		] );
+
+		$options = [];
+		if ( ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$options[ $term->name ] = $term->name;
+			}
+		}
+
+		return $options;
+	}
+
 	protected function register_query_controls() {
 		$this->start_controls_section(
 			'section_query',
@@ -224,6 +243,30 @@ trait WCF_Post_Query_Trait {
 		);
 
 		$this->add_control(
+			'post_categories',
+			[
+				'label'     => esc_html__( 'Post Categories', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT2,
+				'default'   => [],
+				'multiple'  => true,
+				'options'   => $this->get_taxonomy_terms('category'), // Fetch categories dynamically
+				'condition' => [ 'post_type' => [ 'post' ], 'include' => 'terms' ],
+			]
+		);
+		
+		$this->add_control(
+			'post_tags',
+			[
+				'label'     => esc_html__( 'Post Tags', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT2,
+				'default'   => [],
+				'multiple'  => true,
+				'options'   => $this->get_taxonomy_terms('post_tag'), // Fetch tags dynamically
+				'condition' => [ 'post_type' => [ 'post' ], 'include' => 'terms' ],
+			]
+		);
+
+		$this->add_control(
 			'post_date',
 			[
 				'label'     => esc_html__( 'Date', 'animation-addons-for-elementor' ),
@@ -369,7 +412,7 @@ trait WCF_Post_Query_Trait {
 		if ( ! empty( $this->get_settings( 'include' ) ) ) {
 			if ( in_array( 'terms', $this->get_settings( 'include' ) ) ) {
 				$query_args['tax_query'] = [];
-
+				
 				if ( ! empty( $this->get_settings( 'include_term_ids' ) ) ) {
 					$terms = [];
 
@@ -393,6 +436,24 @@ trait WCF_Post_Query_Trait {
 						$query_args['tax_query'][] = $query;
 					}
 				}
+				//post_categories
+				if ( ! empty( $this->get_settings( 'post_categories' ) ) ) {					
+					// Add category filter using term names
+					$query_args['tax_query'][] = [
+						'taxonomy' => 'category',
+						'field'    => 'name', // Use 'name' instead of 'term_id'
+						'terms'    => $this->get_settings( 'post_categories' )
+					];
+				}
+				if ( ! empty( $this->get_settings( 'post_tags' ) ) ) {	
+					// Add tag filter using term names
+					$query_args['tax_query'][] = [
+						'taxonomy' => 'post_tag',
+						'field'    => 'name', // Use 'name' instead of 'term_id'
+						'terms'    => $this->get_settings( 'post_tags' )
+					];
+				}
+				
 			}
 
 			if ( ! empty( $this->get_settings( 'include_authors' ) ) ) {
@@ -605,7 +666,7 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
-
+		
 		return $query_args;
 	}
 

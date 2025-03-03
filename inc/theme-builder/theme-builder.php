@@ -959,7 +959,7 @@ class WCF_Theme_Builder {
 			'show_ui'             => true,
 			'show_in_menu'        => false,
 			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
+			'show_in_nav_menus'   => false,
 			'can_export'          => true,
 			'has_archive'         => false,
 			'rewrite'             => array(
