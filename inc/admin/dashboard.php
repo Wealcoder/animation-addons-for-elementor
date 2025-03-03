@@ -51,13 +51,22 @@ class WCF_Admin_Init {
 	}
 
 	function admin_classes( $classes ) {
-
-		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
+		// Get the current admin screen object
+		$screen = get_current_screen();
+	
+		// Ensure $classes is a string
+		if ( ! is_string( $classes ) ) {
+			$classes = '';
+		}
+	
+		// Check if we are on the correct page
+		if ( $screen && $screen->id === 'animation-addon_page_wcf_addons_settings' ) {
 			$classes .= ' wcf-anim2024';
 		}
 	
 		return $classes;
 	}
+	
 
 	/**
 	 * [init] Assets Initializes
@@ -208,10 +217,10 @@ class WCF_Admin_Init {
 		require_once( 'base/WPImporterLoggerCLI.php' );
 		require_once( 'base/WXRImporter.php' );
 		require_once( 'base/WXRImportInfo.php' );
-		require_once( 'AAEImporter.php' );
+		require_once( 'aae-importer.php' );
 		require_once( 'Logger.php' );
 		require_once( 'Importer.php' );
-		require_once( 'OneClickImport.php' );
+		require_once( 'st-init.php' );
 		require_once( 'template-importer.php' );		
 		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
 	}
@@ -256,7 +265,8 @@ class WCF_Admin_Init {
 	 */
 	public function enqueue_scripts( $hook ) {
 		$total_extensions = $total_widgets = 0;
-		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
+	
+		if ( $hook =='animation-addon_page_wcf_addons_settings' ) {
 			//sync element manager
 		    $this->disable_widgets_by_element_manager();
 			// CSS
@@ -268,29 +278,33 @@ class WCF_Admin_Init {
 			
 			$widgets       = get_option( 'wcf_save_widgets' );
 			$saved_widgets = is_array($widgets) ? array_keys( $widgets ) : [];
+
 			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);
 			
-			$extensions = get_option( 'wcf_save_extensions' );
-			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];		  
+			$extensions       = get_option( 'wcf_save_extensions' );
+			$saved_extensions = is_array($extensions) ? array_keys( $extensions ) : [];
+
             wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
-		    $active_widgets = self::get_widgets(); 
-		    $active_ext = self::get_extensions(); 
-			$font_settings = wp_unslash( get_option('wcf_custom_font_setting'));
+
+			$active_widgets = self::get_widgets();
+			$active_ext     = self::get_extensions();
+			$font_settings  = wp_unslash( get_option('wcf_custom_font_setting'));
+
 			$localize_data = [
 				'ajaxurl'             => admin_url( 'admin-ajax.php' ),
 				'nonce'               => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
 				'smoothScroller'      => json_decode( get_option( 'wcf_smooth_scroller' ) ),
-				'cf_settings' 		  => is_string($font_settings) ? json_decode($font_settings) : [],
+				'cf_settings'         => is_string($font_settings) ? json_decode($font_settings) : [],
 				'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
 				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
 				'global_settings_url' => $this->get_elementor_active_edit_url(),
 				'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
 				'user_role'           => wcfaddon_get_current_user_roles(),
 				'version'             => WCF_ADDONS_VERSION,
-				'st_template_domain'		=> WCF_TEMPLATE_STARTER_BASE_URL,
-				'home_url' 	 					=> home_url('/')
+				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
+				'home_url'            => home_url('/')
 			];
 			
 			wp_localize_script( 'wcf-admin', 'WCF_ADDONS_ADMIN',$localize_data );
@@ -373,72 +387,25 @@ class WCF_Admin_Init {
 		}
 		
 		return false;
-	}
-
-	/**
-	 * [plugin_page] Load plugin page template
-	 * @return [void]
-	 */
-	public function plugin_page() {
-		?>
-        <div class="wrap wcf-admin-wrapper">
-
-			<?php
-			$tabs = $this->get_settings_tab();
-
-			if ( ! empty( $tabs ) ) {
-				?>
-                <div class="wcf-admin-tab">
-					<?php
-					foreach ( $tabs as $key => $el ) {
-						?>
-                        <button class="tablinks <?php echo esc_attr( $key ); ?>-tab"
-                                data-target="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $el['title'] ); ?></button>
-						<?php
-					}
-					?>
-                </div>
-
-                <div class="wcf-admin-tab-content">
-					<?php
-					foreach ( $tabs as $key => $el ) {
-						?>
-                        <div id="<?php echo esc_attr( $key ); ?>" class="wcf-tab-pane">
-							<?php
-							if ( isset( $el['callback'] ) ) {
-								call_user_func( $el['callback'], $key, $el );
-							}
-							?>
-                        </div>
-						<?php
-					}
-					?>
-                </div>
-				<?php
-			}
-			?>
-            <div class="wcf-settings-footer">
-                <a href="https://support.crowdytheme.com/" class="wcf-admin-btn"><?php echo esc_html__('View Documentation', 'animation-addons-for-elementor') ?></a>
-                <div class="footer-right">
-                </div>
-            </div>
-        </div>
-		<?php
-	}
+	}	
 
 	public function admin_footer()
     {
-        if (is_admin()) {
-					if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_settings' ) {
-             echo '<div id="wcf-admin-toast"></div>';
-    			}
-        }
+		if ( ! is_admin() ) {
+			return;
+		}	
+		// Get the current admin screen
+		$screen = get_current_screen();
+		
+       // Check if we are on the correct admin page
+		if ( $screen && $screen->id === 'animation-addon_page_wcf_addons_settings' ) {
+			echo '<div id="wcf-admin-toast"></div>';
+		}
     }
 	
 	public function plugin_dashboard_entry_page(){
 		?>
-		<div class="wrap wcf-admin-wrapper" id="wcf-admin-ds-cr-js">			
-		</div>
+			<div class="wrap wcf-admin-wrapper" id="wcf-admin-ds-cr-js"></div>	
 		<?php
 	}
 
@@ -480,7 +447,7 @@ class WCF_Admin_Init {
 		
 		$actives       = $foundkeys = [];
 		$option_name   = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
-		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
+		$sanitize_data = sanitize_text_field( wp_unslash($_POST['fields']) );
 		$settings      = json_decode( $sanitize_data , true );
 	    wcf_get_nested_config_keys($settings,$foundkeys, $actives);	
 		update_option( 'wcf_addons_setup_wizard', 'complete' );
@@ -520,7 +487,7 @@ class WCF_Admin_Init {
 			return;
 		}
 		
-		$sanitize_data = wp_unslash( sanitize_text_field($_POST['notice']) );
+		$sanitize_data = sanitize_text_field( wp_unslash($_POST['notice']) );
 		update_option('wcf_notice_data', $sanitize_data);
 			
 		$return_message = [
@@ -591,7 +558,7 @@ class WCF_Admin_Init {
 		
 		$actives       = [];
 		$option_name   = isset( $_POST['settings'] ) ? sanitize_text_field( wp_unslash( $_POST['settings'] ) ) : '';
-		$sanitize_data = wp_unslash( sanitize_text_field($_POST['fields']) );
+		$sanitize_data = sanitize_text_field( wp_unslash($_POST['fields']) );
 		$settings      = json_decode( $sanitize_data , true );
 		$actives    = get_option('wcf_save_widgets');
 	    
