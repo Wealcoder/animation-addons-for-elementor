@@ -622,7 +622,7 @@ trait WCF_Post_Query_Trait {
 
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ) {
 			// Retrieve and decode the cookie data
-			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( wp_unslash( $_COOKIE['aae_visited_posts'] ), true ) : [];
+			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( sanitize_text_field( wp_unslash( $_COOKIE['aae_visited_posts'] ) ), true ) : [];
 		
 			// Check if the decoded data is an array
 			if ( is_array( $visited_posts ) ) {

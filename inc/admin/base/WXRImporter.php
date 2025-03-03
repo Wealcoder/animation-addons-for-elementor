@@ -168,15 +168,7 @@ class WXRImporter extends \WP_Importer {
 			switch ( $reader->name ) {
 				case 'wp:wxr_version':
 					// Upgrade to the correct version
-					$this->version = $reader->readString();
-
-					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
-						$this->logger->warning( sprintf(
-							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
-							$this->version,
-							self::MAX_WXR_VERSION
-						) );
-					}
+					$this->version = $reader->readString();				
 
 					// Handled everything in this node, move on to the next
 					$reader->next();
@@ -289,6 +281,7 @@ class WXRImporter extends \WP_Importer {
 					$this->version = $reader->readString();
 
 					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
+						// Translators: %s is the WXR file version, %s is the importer version.
 						$this->logger->warning( sprintf(
 							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
 							$this->version,
@@ -373,6 +366,7 @@ class WXRImporter extends \WP_Importer {
 					$this->version = $reader->readString();
 
 					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
+						// Translators: %s is the WXR file version, %s is the importer version.
 						$this->logger->warning( sprintf(
 							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
 							$this->version,
@@ -688,7 +682,7 @@ class WXRImporter extends \WP_Importer {
 						// Bail now
 						return new WP_Error(
 							'wxr_importer.post.cannot_import_draft',
-							__( 'Cannot import auto-draft posts' ),
+							__( 'Cannot import auto-draft posts', 'animation-addons-for-elementor' ),
 							$data
 						);
 					}
@@ -778,22 +772,12 @@ class WXRImporter extends \WP_Importer {
 		$post_type_object = get_post_type_object( $data['post_type'] );
 
 		// Is this type even valid?
-		if ( ! $post_type_object ) {
-			$this->logger->warning( sprintf(
-				__( 'Failed to import "%s": Invalid post type %s', 'animation-addons-for-elementor' ),
-				$data['post_title'],
-				$data['post_type']
-			) );
+		if ( ! $post_type_object ) {			
 			return false;
 		}
 
 		$post_exists = $this->post_exists( $data );
-		if ( $post_exists ) {
-			$this->logger->info( sprintf(
-				__( '%s "%s" already exists.', 'animation-addons-for-elementor' ),
-				$post_type_object->labels->singular_name,
-				$data['post_title']
-			) );
+		if ( $post_exists ) {		
 
 			// Even though this post already exists, new comments might need importing
 			$this->process_comments( $comments, $original_id, $data, $post_exists );
@@ -868,11 +852,8 @@ class WXRImporter extends \WP_Importer {
 		if ( 'attachment' === $postdata['post_type'] ) {
 			$remote_url = ! empty( $data['attachment_url'] ) ? $data['attachment_url'] : $data['guid'];
 			//$this->background_attachments[] = 
-			if ( ! $this->options['fetch_attachments'] ) {
-				$this->logger->notice( sprintf(
-					__( 'Skipping attachment "%s", fetching attachments disabled' ),
-					$data['post_title']
-				) );
+			if ( ! $this->options['fetch_attachments'] ) {				
+				update_option('aaeaddon_template_import_state', __( 'fetching attachments disabled', 'animation-addons-for-elementor' ));
 				return false;
 			}
 			
@@ -883,12 +864,7 @@ class WXRImporter extends \WP_Importer {
 			do_action( 'wp_import_insert_post', $post_id, $original_id, $postdata, $data );
 		}
 
-		if ( is_wp_error( $post_id ) ) {
-			$this->logger->error( sprintf(
-				__( 'Failed to import "%s" (%s)', 'animation-addons-for-elementor' ),
-				$data['post_title'],
-				$post_type_object->labels->singular_name
-			) );
+		if ( is_wp_error( $post_id ) ) {			
 			$this->logger->debug( $post_id->get_error_message() );
 
 			/**
@@ -915,18 +891,7 @@ class WXRImporter extends \WP_Importer {
 			$this->requires_remapping['post'][ $post_id ] = true;
 		}
 		$this->mark_post_exists( $data, $post_id );
-
-		$this->logger->info( sprintf(
-			__( 'Imported "%s" (%s)', 'animation-addons-for-elementor' ),
-			$data['post_title'],
-			$post_type_object->labels->singular_name
-		) );
-		$this->logger->debug( sprintf(
-			__( 'Post %d remapped to %d', 'animation-addons-for-elementor' ),
-			$original_id,
-			$post_id
-		) );
-
+	
 		// Handle the terms too
 		$terms = apply_filters( 'wp_import_post_terms', $terms, $post_id, $data );
 
@@ -960,12 +925,7 @@ class WXRImporter extends \WP_Importer {
 							if ( ! is_wp_error( $t ) ) {
 								$term_id = $t['term_id'];
 								$this->mapping['term'][ $key ] = $term_id;
-							} else {
-								$this->logger->warning( sprintf(
-									esc_html__( 'Failed to import term: %s - %s', 'animation-addons-for-elementor' ),
-									esc_html( $taxonomy ),
-									esc_html( $term['name'] )
-								) );
+							} else {								
 								continue;
 							}
 						}
@@ -1053,8 +1013,7 @@ class WXRImporter extends \WP_Importer {
 
 			default:
 				// associated object is missing or not imported yet, we'll retry later
-				$this->missing_menu_items[] = $data;
-				$this->logger->debug( 'Unknown menu item type' );
+				$this->missing_menu_items[] = $data;			
 				break;
 		}
 
@@ -1605,11 +1564,7 @@ class WXRImporter extends \WP_Importer {
 		}
 
 		$user_id = wp_insert_user( wp_slash( $userdata ) );
-		if ( is_wp_error( $user_id ) ) {
-			$this->logger->error( sprintf(
-				__( 'Failed to import user "%s"', 'animation-addons-for-elementor' ),
-				$userdata['user_login']
-			) );
+		if ( is_wp_error( $user_id ) ) {			
 			$this->logger->debug( $user_id->get_error_message() );
 
 			/**
@@ -1625,19 +1580,9 @@ class WXRImporter extends \WP_Importer {
 		if ( $original_id ) {
 			$this->mapping['user'][ $original_id ] = $user_id;
 		}
-		$this->mapping['user_slug'][ $original_slug ] = $user_id;
+		$this->mapping['user_slug'][ $original_slug ] = $user_id;	
 
-		$this->logger->info( sprintf(
-			__( 'Imported user "%s"', 'animation-addons-for-elementor' ),
-			$userdata['user_login']
-		) );
-		$this->logger->debug( sprintf(
-			__( 'User %d remapped to %d', 'animation-addons-for-elementor' ),
-			$original_id,
-			$user_id
-		) );
-
-		// TODO: Implement meta handling once WXR includes it
+		
 		/**
 		 * User processing completed.
 		 *
@@ -1795,12 +1740,7 @@ class WXRImporter extends \WP_Importer {
 		}
 
 		$result = wp_insert_term( $data['name'], $data['taxonomy'], $termdata );
-		if ( is_wp_error( $result ) ) {
-			$this->logger->warning( sprintf(
-				__( 'Failed to import %s %s', 'animation-addons-for-elementor' ),
-				$data['taxonomy'],
-				$data['name']
-			) );
+		if ( is_wp_error( $result ) ) {		
 			$this->logger->debug( $result->get_error_message() );
 			do_action( 'wp_import_insert_term_failed', $result, $data );
 
@@ -1834,17 +1774,6 @@ class WXRImporter extends \WP_Importer {
 		if ( $requires_remapping ) {
 			$this->requires_remapping['term'][ $term_id ] = $data['taxonomy'];
 		}
-
-		$this->logger->info( sprintf(
-			__( 'Imported "%s" (%s)', 'animation-addons-for-elementor' ),
-			$data['name'],
-			$data['taxonomy']
-		) );
-		$this->logger->debug( sprintf(
-			__( 'Term %d remapped to %d', 'animation-addons-for-elementor' ),
-			$original_id,
-			$term_id
-		) );
 
 		// Actuall process of the term meta data.
 		$this->process_term_meta( $meta, $term_id, $data );
@@ -1899,22 +1828,11 @@ class WXRImporter extends \WP_Importer {
 				$result    = add_term_meta( $term_id, $key, $value );
 				$log_value = is_string( $value ) ? $value : wp_json_encode( $value, JSON_UNESCAPED_UNICODE );
 
-				if ( is_wp_error( $result ) ) {
-					$this->logger->warning( sprintf(
-						__( 'Failed to add metakey: %s, metavalue: %s to term_id: %d', 'animation-addons-for-elementor' ),
-						$key,
-						$log_value,
-						$term_id
-					) );
+				if ( is_wp_error( $result ) ) {				
 					do_action( 'wxr_importer.process_failed.termmeta', $result, $meta_item, $term_id, $term );
 				}
 				else {
-					$this->logger->debug( sprintf(
-						__( 'Meta for term_id %d : %s => %s ; successfully added!', 'animation-addons-for-elementor' ),
-						$term_id,
-						$key,
-						$log_value
-					) );
+				
 				}
 
 				do_action( 'import_term_meta', $term_id, $key, $value );
@@ -1950,7 +1868,7 @@ class WXRImporter extends \WP_Importer {
 
 		// request failed
 		if ( is_wp_error( $response ) ) {
-			unlink( $upload['file'] );
+			wp_delete_file( $upload['file'] );
 			return $response;
 		}
 
@@ -1958,7 +1876,7 @@ class WXRImporter extends \WP_Importer {
 
 		// make sure the fetch was successful
 		if ( $code !== 200 ) {
-			unlink( $upload['file'] );
+			wp_delete_file( $upload['file'] );
 			return new WP_Error(
 				'import_file_error',
 				sprintf(
@@ -1976,20 +1894,16 @@ class WXRImporter extends \WP_Importer {
 		// OCDI fix!
 		// Smaller images with server compression do not pass this rule.
 		// More info here: https://github.com/proteusthemes/WordPress-Importer/pull/2
-		//
-		// if ( isset( $headers['content-length'] ) && $filesize !== (int) $headers['content-length'] ) {
-		// 	unlink( $upload['file'] );
-		// 	return new WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'animation-addons-for-elementor' ) );
-		// }
+		//		
 
 		if ( 0 === $filesize ) {
-			unlink( $upload['file'] );
+			wp_delete_file( $upload['file'] );
 			return new WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'animation-addons-for-elementor' ) );
 		}
 
 		$max_size = (int) $this->max_attachment_size();
 		if ( ! empty( $max_size ) && $filesize > $max_size ) {
-			unlink( $upload['file'] );
+			wp_delete_file( $upload['file'] );
 			$message = sprintf( __( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ), size_format( $max_size ) );
 			return new WP_Error( 'import_file_error', $message );
 		}
@@ -2011,13 +1925,7 @@ class WXRImporter extends \WP_Importer {
 	}
 
 	protected function post_process_posts( $todo ) {
-		foreach ( $todo as $post_id => $_ ) {
-			$this->logger->debug( sprintf(
-				// Note: title intentionally not used to skip extra processing
-				// for when debug logging is off
-				__( 'Running post-processing for post %d', 'animation-addons-for-elementor' ),
-				$post_id
-			) );
+		foreach ( $todo as $post_id => $_ ) {		
 
 			$data = array();
 
@@ -2026,18 +1934,7 @@ class WXRImporter extends \WP_Importer {
 				// Have we imported the parent now?
 				if ( isset( $this->mapping['post'][ $parent_id ] ) ) {
 					$data['post_parent'] = $this->mapping['post'][ $parent_id ];
-				} else {
-					$this->logger->warning( sprintf(
-						__( 'Could not find the post parent for "%s" (post #%d)', 'animation-addons-for-elementor' ),
-						get_the_title( $post_id ),
-						$post_id
-					) );
-					$this->logger->debug( sprintf(
-						__( 'Post %d was imported with parent %d, but could not be found', 'animation-addons-for-elementor' ),
-						$post_id,
-						$parent_id
-					) );
-				}
+				} 
 			}
 
 			$author_slug = get_post_meta( $post_id, '_wxr_import_user_slug', true );
@@ -2045,17 +1942,6 @@ class WXRImporter extends \WP_Importer {
 				// Have we imported the user now?
 				if ( isset( $this->mapping['user_slug'][ $author_slug ] ) ) {
 					$data['post_author'] = $this->mapping['user_slug'][ $author_slug ];
-				} else {
-					$this->logger->warning( sprintf(
-						__( 'Could not find the author for "%s" (post #%d)', 'animation-addons-for-elementor' ),
-						get_the_title( $post_id ),
-						$post_id
-					) );
-					$this->logger->debug( sprintf(
-						__( 'Post %d was imported with author "%s", but could not be found', 'animation-addons-for-elementor' ),
-						$post_id,
-						$author_slug
-					) );
 				}
 			}
 
@@ -2239,30 +2125,18 @@ class WXRImporter extends \WP_Importer {
 			// This cast to integer may be unnecessary.
 			$term_id = (int) $termid;
 
-			if( empty( $term_taxonomy ) ){
-				$this->logger->warning( sprintf(
-					__( 'No taxonomy provided in terms-to-be-remapped array for term #%d', 'animation-addons-for-elementor' ),
-					$term_id
-					) );
+			if( empty( $term_taxonomy ) ){				
 				continue;
 			}
 
 			$parent_slug = get_term_meta( $term_id, '_wxr_import_parent', true );
 
-			if ( empty( $parent_slug ) ) {
-				$this->logger->warning( sprintf(
-					__( 'No parent_slug identified in remapping-array for term: %d', 'animation-addons-for-elementor' ),
-					$term_id
-					) );
+			if ( empty( $parent_slug ) ) {			
 				continue;
 			}
 
 			if ( ! isset( $this->mapping['term_slug'][ $parent_slug ] ) || ! is_numeric( $this->mapping['term_slug'][ $parent_slug ] ) ) {
-				$this->logger->warning( sprintf(
-					__( 'The term(%d)"s parent_slug (%s) is not found in the remapping-array.', 'animation-addons-for-elementor' ),
-					$term_id,
-					$parent_slug
-					) );
+		
 				continue;
 			}
 
@@ -2271,11 +2145,7 @@ class WXRImporter extends \WP_Importer {
 			$termattributes = get_term_by( 'id', $term_id, $term_taxonomy, ARRAY_A );
 			// Note: the default OBJECT return results in a reserved-word clash with 'parent' [$termattributes->parent], so instead return an associative array.
 
-			if ( empty( $termattributes ) ) {
-				$this->logger->warning( sprintf(
-					__( 'No data returned by get_term_by for term_id #%d', 'animation-addons-for-elementor' ),
-					$term_id
-					) );
+			if ( empty( $termattributes ) ) {				
 				continue;
 			}
 			// Check if the correct parent id is already correctly mapped.
@@ -2290,22 +2160,12 @@ class WXRImporter extends \WP_Importer {
 
 			$result = wp_update_term( $term_id, $termattributes['taxonomy'], $termattributes );
 
-			if ( is_wp_error( $result ) ) {
-			$this->logger->warning( sprintf(
-					__( 'Could not update "%s" (term #%d) with mapped data', 'animation-addons-for-elementor' ),
-					$termattributes['name'],
-					$term_id
-				) );
+			if ( is_wp_error( $result ) ) {			
 				$this->logger->debug( $result->get_error_message() );
 				continue;
 			}
 			// Clear out our temporary meta key.
-			delete_term_meta( $term_id, '_wxr_import_parent' );
-			$this->logger->debug( sprintf(
-				__( 'Term %d was successfully updated with parent %d', 'animation-addons-for-elementor' ),
-				$term_id,
-				$mapped_parent
-			) );
+			delete_term_meta( $term_id, '_wxr_import_parent' );		
 		}
 	}
 
@@ -2345,8 +2205,7 @@ class WXRImporter extends \WP_Importer {
 				$new_id = $this->mapping['post'][ $value ];
 
 				// Only update if there's a difference.
-				if ( $new_id !== $value ) {
-					$this->logger->info( sprintf( esc_html__( 'Remapping featured image ID %d to new ID %d for post ID %d', 'animation-addons-for-elementor' ), $value, $new_id, $post_id ) );
+				if ( $new_id !== $value ) {			
 
 					update_post_meta( $post_id, '_thumbnail_id', $new_id );
 				}

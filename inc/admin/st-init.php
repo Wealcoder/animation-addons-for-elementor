@@ -264,13 +264,13 @@ class OneClickImport {
 		delete_transient( 'aadaddon_import_menu_mapping' );
 		delete_transient( 'aaeaddon_import_posts_with_nav_block' );
 		
-		$response['msg'] = esc_html__( 'Congrats, your demo was imported.', 'animation-addons-for-elementor' );
+		$response['msg'] = esc_html__( 'Congrats, your demo has been imported.', 'animation-addons-for-elementor' );
 		$response['progress'] = 80;
 		if (isset($_POST['template_data'])) {
 			if(isset($template_data['local_path'])){
 				unset($template_data['local_path']);
 			}
-			$json_data                  = wp_unslash($_POST['template_data']);  // Remove slashes if added by WP		
+			$json_data                  = sanitize_text_field( wp_unslash($_POST['template_data']));  // Remove slashes if added by WP		
 			$template_data              = json_decode($json_data, true);
 			$template_data['next_step'] = 'check-theme';
 			$response['template']       = wp_unslash( $template_data );
