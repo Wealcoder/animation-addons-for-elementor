@@ -111,7 +111,7 @@ class AAEAddon_Importer {
 		}
 		
 		if (isset($_POST['template_data'])) {
-			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
+			$json_data = sanitize_text_field( wp_unslash($_POST['template_data']) ); // Remove slashes if added by WP		
 			$template_data = json_decode($json_data, true);		
 		
 			if (json_last_error() === JSON_ERROR_NONE) {			

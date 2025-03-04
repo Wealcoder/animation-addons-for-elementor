@@ -53,13 +53,25 @@ class WCF_Setup_Wizard_Init {
 		add_action( 'wp_ajax_save_setup_wizard_settings', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_wcf_installer_theme', [ $this ,'ajax_install_theme' ]);
 		add_action( 'wp_ajax_wcf_activate_theme', [ $this ,'activate_theme' ]);
+	
+		 // Hook to check the admin screen after it's loaded
+		 add_action('current_screen', [$this, 'maybe_remove_admin_footer']);
 		
-		if(isset( $_GET['page'] ) && $_GET[ 'page' ] == 'wcf_addons_setup_page')
-		{
-            add_filter('admin_footer_text', '__return_empty_string');
-            add_filter('update_footer', '__return_empty_string', 11);
+	}
+
+	/**
+	 * Remove Admin Footer Text if on the correct page.
+	 */
+	public function maybe_remove_admin_footer($screen) {
+	
+		if (!is_object($screen) || empty($screen->id)) {
+			return;
 		}
-		
+
+		if ($screen->id === 'animation-addon_page_wcf_addons_setup_page') {
+			add_filter('admin_footer_text', '__return_empty_string');
+			add_filter('update_footer', '__return_empty_string', 11);
+		}
 	}
 	
 	public function theme_status($theme_slug){
@@ -86,7 +98,7 @@ class WCF_Setup_Wizard_Init {
         }
     
         // Get the theme slug
-        $theme_slug = isset($_POST['theme_slug']) ? sanitize_text_field($_POST['theme_slug']) : '';
+        $theme_slug = isset($_POST['theme_slug']) ? sanitize_text_field(wp_unslash($_POST['theme_slug'])) : '';
         if (!$theme_slug) {
             wp_send_json_error(['message' => esc_html__('Theme slug is missing.', 'animation-addons-for-elementor')]);
         }
@@ -109,7 +121,7 @@ class WCF_Setup_Wizard_Init {
         }
     
         // Get the theme slug
-        $theme_slug = isset($_POST['theme_slug']) ? sanitize_text_field($_POST['theme_slug']) : '';
+        $theme_slug = isset($_POST['theme_slug']) ? sanitize_text_field(wp_unslash($_POST['theme_slug'])) : '';
         if (!$theme_slug) {
             wp_send_json_error(['message' => esc_html__('Theme slug is missing.', 'animation-addons-for-elementor')]);
         }
@@ -173,8 +185,8 @@ class WCF_Setup_Wizard_Init {
 	 * @return [void]
 	 */
 	public function enqueue_scripts( $hook ) {
-        $total_extensions = $total_widgets = 0;
-		if ( isset( $_GET['page'] ) && $_GET['page'] == 'wcf_addons_setup_page' ) {
+        $total_extensions = $total_widgets = 0;	
+		if ( $hook == 'animation-addon_page_wcf_addons_setup_page' ) {
 
 			// CSS
 			wp_enqueue_style( 'wcf-admin', WCF_ADDONS_URL . 'inc/admin/dashboard/build/wizardSetup.css' );
@@ -279,12 +291,15 @@ class WCF_Setup_Wizard_Init {
 	 * @return [void]
 	 */
 	public function remove_all_notices() {
-		add_action( 'in_admin_header', function () {
-			if ( isset( $_GET['page'] ) && ($_GET['page'] == 'wcf_addons_setup_page' || $_GET['page'] == 'wcf-cpt-builder')  ) {
-				remove_all_actions( 'admin_notices' );
-				remove_all_actions( 'all_admin_notices' );
+
+		add_action('in_admin_header', function () {
+			$screen = get_current_screen();		
+			if ($screen && in_array($screen->id, ['animation-addon_page_wcf_addons_setup_page', 'animation-addon_page_wcf-cpt-builder'], true)) {
+				remove_all_actions('admin_notices');
+				remove_all_actions('all_admin_notices');
 			}
-		}, 1000 );
+		}, 1000);
+		
 	}
 
 }
