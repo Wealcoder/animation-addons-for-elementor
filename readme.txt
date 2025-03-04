@@ -323,6 +323,8 @@ Animation Addons for Elementor focuses on maximizing your website’s overall fu
 ### Instant Loading:
 Animation Addons for Elementor is built to minimize delays and let you experience immediate loading times. Unlike other animation plugins, our plugin is super fast and SEO-friendly.  With a view to keeping visitors engaged and reducing bounce rates, the plugin will make your content appear quickly.
 
+This plugin using the modified version of [WP import 2.0] (https://github.com/humanmade/WordPress-Importer).
+
 == Frequently Asked Questions ==
 
 = What is Animation Addons for Elementor? =

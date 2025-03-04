@@ -37,30 +37,6 @@ class Importer {
 	private $wcfio;
 
 	/**
-	 * Constructor method.
-	 *
-	 * @param array  $importer_options Importer options.
-	 * @param object $logger           Logger object used in the importer.
-	 */
-	public function __construct( $importer_options = array(), $logger = null ) {
-		// Include files that are needed for WordPress Importer v2.
-		$this->include_required_files();
-
-		// Set the WordPress Importer v2 as the importer used in this plugin.
-		// More: https://github.com/humanmade/WordPress-Importer.
-		$this->importer = new AAEImporter( $importer_options );
-
-		// Set logger to the importer.
-		$this->logger = $logger;
-		if ( ! empty( $this->logger ) ) {
-			$this->set_logger( $this->logger );
-		}
-				
-		$this->wcfio = OneClickImport::get_instance();
-	}
-
-
-	/**
 	 * Include required files.
 	 */
 	private function include_required_files() {
@@ -118,6 +94,7 @@ class Importer {
 
 		// Increase PHP max execution time. Just in case, even though the AJAX calls are only 60 sec long.
 		if ( strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
+			// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 			set_time_limit( Helpers::apply_filters( 'aaeaddon/set_time_limit_for_demo_data_import', 60 ) );
 		}
 
@@ -168,7 +145,7 @@ class Importer {
 			// Add any output to the log file and clear the buffers.
 			$message = ob_get_clean();
 
-			// Add any error messages to the frontend_error_messages variable in OCDI main class.
+			// Add any error messages to the frontend_error_messages variable in main class.
 			if ( ! empty( $message ) ) {
 				$this->wcfio->append_to_frontend_error_messages( $message );
 			}
@@ -182,7 +159,7 @@ class Importer {
 
 			// Set the current importer stat, so it can be continued on the next AJAX call.
 			$this->set_current_importer_data();
-
+			$response['state'] = get_option('aaeaddon_template_import_state');
 			// Send the request for a new AJAX call.
 			wp_send_json( $response );
 		}
@@ -203,5 +180,28 @@ class Importer {
 		$data = array_merge( $this->wcfio->get_current_importer_data(), $this->get_importer_data() );
 
 		Helpers::set_st_import_data_transient( $data );
+	}
+
+	/**
+	 * Constructor method.
+	 *
+	 * @param array  $importer_options Importer options.
+	 * @param object $logger           Logger object used in the importer.
+	 */
+	public function __construct( $importer_options = array(), $logger = null ) {
+		// Include files that are needed for WordPress Importer v2.
+		$this->include_required_files();
+
+		// Set the WordPress Importer v2 as the importer used in this plugin.
+		// More: https://github.com/humanmade/WordPress-Importer.
+		$this->importer = new AAEImporter( $importer_options );
+
+		// Set logger to the importer.
+		$this->logger = $logger;
+		if ( ! empty( $this->logger ) ) {
+			$this->set_logger( $this->logger );
+		}
+				
+		$this->wcfio = OneClickImport::get_instance();
 	}
 }
