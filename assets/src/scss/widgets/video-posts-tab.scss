@@ -1,4 +1,9 @@
 .aae--posts-tab {
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+
   .thumb {
     img {
       object-fit: cover;
@@ -33,9 +38,26 @@
       align-items: center;
       justify-content: center;
 
-      iframe {
+      img {
         width: 100%;
         height: 100%;
+      }
+
+      .play-icon {
+        position: absolute;
+        left: 50%;
+        top: 25%;
+        transform: translate(-50%, 0);
+        border: 2px solid #fff;
+        border-radius: 100%;
+        width: 85px;
+        height: 85px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        fill: #fff;
+        z-index: 1;
       }
     }
   }
@@ -64,9 +86,10 @@
   }
 
   &.style-2 {
-     .posts-banner {
+    .posts-banner {
       height: 680px;
     }
+
     .aae-posts-wrap {
       display: flex;
       border-top: 1px solid #222;
@@ -93,6 +116,7 @@
   display: block;
   width: 100%;
   height: 400px;
+
   .aae-view-all {
     flex-basis: 200px;
     border-left: 1px solid #222;
