@@ -157,7 +157,8 @@ function _arrayLikeToArray(arr, len) {
 			'image-box-slider': [],
 			'video-box-slider': [],
 			'brand-slider': [],
-			'content-slider': []
+			'content-slider': [],
+			'a-portfolio': ['skin-portfolio-base', 'skin-portfolio-one', 'skin-portfolio-two', 'skin-portfolio-three', 'skin-portfolio-four', 'skin-portfolio-five', 'skin-portfolio-six', 'skin-portfolio-seven', 'skin-portfolio-eight', 'skin-portfolio-nine']
 		});
 		$.each(WcfSliderWidgets, function(widget, $skins) {
 			elementorFrontend.hooks.addAction("frontend/element_ready/wcf--".concat(widget, ".default"), Slider);
