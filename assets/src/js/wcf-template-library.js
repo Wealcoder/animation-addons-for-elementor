@@ -8,6 +8,8 @@
 (function ($, window, document, config) {
     // const Template_Library_data = WCF_TEMPLATE_LIBRARY.data;
     let Template_Library_data = {};
+    let Template_Library_Chunk_data = [];
+    let aaeadddon_tpl_lazy_load = false;
 
     // API for get requests
     // let fetchRes = fetch("https://crowdytheme.com/elementor/info-templates/wp-json/api/v1/list");
@@ -50,7 +52,7 @@
     const get_type_templates = function (type) {
         let templates = [];
         if (Template_Library_data['templates'] !== undefined) {
-            Template_Library_data['templates'].forEach((template, index) => {
+            Template_Library_data['templates'].forEach((template, index) => {                
                 if (type === template.type) {
                     if(WCF_TEMPLATE_LIBRARY?.config?.wcf_valid && WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true){
                         template['valid'] = 'yes';
@@ -65,8 +67,7 @@
     //get specific category templates
     const get_category_templates = function (category = '', type) {
         const type_templates = get_type_templates(type);
-        let templates = type_templates;
-
+        let templates      = type_templates;
         if (type_templates.length && '' !== category) {
 
             templates = [];
@@ -84,10 +85,47 @@
                     templates.push(template);
                 }
             }
-        }
+        }       
+        Template_Library_Chunk_data = aaetemplate_chunkArray(templates,30);
        
-        return templates;
+        return Template_Library_Chunk_data.shift();       
     };
+
+     //get specific category templates
+     const search_category_templates = function (text = '', type) {
+        let types = $('#elementor-template-library-header-menu .elementor-active').attr('data-tab') || 'block';
+        const type_templates = get_type_templates(types);
+        let templates      = type_templates;
+       
+        if (type_templates.length && '' !== text) {
+
+            templates = [];
+
+            for (let template of type_templates) {
+
+                //if template has no category
+                if ('' === template.subtype) {
+                    continue;
+                }
+                text = text.toLowerCase();
+                
+                if (template.title.toLowerCase().includes(text)) {
+                    templates.push(template);                   
+                }
+            }
+        }       
+        Template_Library_Chunk_data = aaetemplate_chunkArray(templates,30);
+       
+        return Template_Library_Chunk_data.shift();       
+    };
+
+    const aaetemplate_chunkArray = function(array, chunkSize) {
+        const result = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+          result.push(array.slice(i, i + chunkSize));
+        }
+        return result;
+    }
 
     //get specific categories
     const get_categories = function (type) {
@@ -197,17 +235,13 @@
                     });
                 
                     t.append(contents);
-
+                    aaeadddon_run_lazy_load();
                     let is_loading = true;
                     loading(is_loading);
-
+                   
                     $($('.wcf-library-template').last()).find('img').on('load', function () {
-                        if ($(this).height() > 20) {
-                            setTimeout(() => {
-                                is_loading = false;
-                                loading(is_loading);
-                            }, 500);
-                        }
+                        is_loading = false;
+                        loading(is_loading);
                     });
                 }
 
@@ -324,19 +358,25 @@
 
                 function search_function() {
                     $('#wcf-template-library-filter-text').on('keyup', function () {
-                        let filter = this.value;
-                        let elements = $('.wcf-library-template');
-
-                        let re = new RegExp(filter, 'i');
-                        elements.each((x, element) => {
-                            let title = $(element).find('.title')[0];
-                            if (re.test(title.textContent)) {
-                                title.innerHTML = title.textContent.replace(re, '<b>$&</b>');
-                                $(element).show();
-                            } else {
-                                $(element).hide();
-                            }
+                        let filter = this.value;                        
+                        const container = document.querySelector('.wcf-library-templates');                         
+                        let currentchunk = search_category_templates(filter);
+                        container.innerHTML = '';
+                        currentchunk.forEach(item => {
+                            const templateHtml = generateTemplate(item);
+                            container.innerHTML += templateHtml;  // Add each generated HTML to the container
                         });
+                        
+                        setTimeout(function(){
+                            let elements = $('.wcf-library-template');   
+                            let re = new RegExp(filter, 'i');
+                            elements.each((x, element) => {
+                                let title = $(element).find('.title')[0];
+                                if (re.test(title.textContent)) {
+                                    title.innerHTML = title.textContent.replace(re, '<b>$&</b>');                                    
+                                } 
+                            }); 
+                        },100)
                     });
                 }
 
@@ -390,8 +430,81 @@
        var userConfirmed = confirm("Are you sure you want to activate plugin? Any unsaved changes will be lost. Please Save change.");
        if (userConfirmed) {
          activePlugin();
-       } 
-   
+       }    
     });
+
+    function aaeadddon_run_lazy_load(){
+        const listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
+        const lastItem = listItems[listItems.length - 1];
+      
+        const observerOptions = {
+          root: null, // Uses the viewport as the root
+          rootMargin: "0px",
+          threshold: 0.1 // Trigger when 10% of the element is visible
+        };
+      
+        const observerCallback = (entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              let currentchunk = Template_Library_Chunk_data.shift();         
+              const container = document.querySelector('.wcf-library-templates');         
+              if(currentchunk){
+                currentchunk.forEach(item => {
+                    const templateHtml = generateTemplate(item);
+                    container.innerHTML += templateHtml;  // Add each generated HTML to the container
+                });
+              }     
+            }
+          });
+        };
+      
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        observer.observe(lastItem);
+      };
+
+      const generateTemplate = (item, pluginSlug='animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', allPlugins=[], activePlugins=[]) => {
+        return `
+            <div class="wcf-library-template" data-id="${item.id}" data-url="${item.url}">
+                <div class="thumbnail">
+                    <img src="${item.thumbnail}" alt="${item.title}">
+                </div>
+                
+                ${item?.valid && item.valid ? `
+                    <!-- Show the 'Insert' button if the template is valid -->
+                    <button class="library--action insert">
+                        <i class="eicon-file-download"></i>
+                        Insert
+                    </button>
+                ` : `
+                    <!-- Show premium or activation buttons based on plugin status -->
+                    ${!allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? `
+                        <!-- Show 'Go Premium' button if the plugin is not installed -->
+                        <a href="https://animation-addons.com" class="library--action pro" target="_blank">
+                            <i class="eicon-external-link-square"></i>
+                            Go Premium
+                        </a>
+                    ` : ''}
+                    ${activePlugins.includes(pluginSlug) ? `
+                        <!-- Show 'Pro' button if the plugin is installed and active -->
+                        <button class="library--action pro">
+                            <i class="eicon-external-link-square"></i>
+                            Pro
+                        </button>
+                    ` : ''}
+                    ${allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? `
+                        <!-- Show 'Activate' button if the plugin is installed but not active -->
+                        <button class="library--action pro aaeplugin-activate">
+                            <i class="eicon-external-link-square"></i>
+                            Activate
+                        </button>
+                    ` : ''}
+                `}
+                
+                <p class="title">${item.title}</p>
+            </div>
+        `;
+    };
+    
+      
 
 })(jQuery, window, document);

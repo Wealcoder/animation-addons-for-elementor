@@ -18,7 +18,7 @@ class AAEAddon_Row_Actions {
 
 	/**
 	 * [instance] Initializes a singleton instance
-	 * @return [_Admin_Init]
+	 * @return [AAEAddon_Row_Actions]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {

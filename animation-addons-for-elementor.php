@@ -64,7 +64,7 @@ if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
 	/**
 	 * Template Path
 	 */
-	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://framerbiz.com/starter-templates/' );
+	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://themecrowdy.com/' );
 }
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
