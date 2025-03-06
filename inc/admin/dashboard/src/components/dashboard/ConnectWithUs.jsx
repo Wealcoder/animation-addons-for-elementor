@@ -44,7 +44,7 @@ const ConnectWithUs = () => {
         </div>
         <div>
           <a
-            href="https://wordpress.org/support/plugin/animation-addons-for-elementor"
+            href="https://crowdyflow.ticksy.com/submit"
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
