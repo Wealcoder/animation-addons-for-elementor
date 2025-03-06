@@ -713,7 +713,7 @@ class Plugin {
                                 } else {
                                 #>
 								<?php if ( !class_exists( 'AAE_ADDONS_Plugin_Pro' ) && !array_key_exists( $plugin_slug, $all_plugins )) { ?>
-	                                <a href="https://store.wealcoder.com/animatin-addon-for-elementor-trail/" class="library--action pro" target="_blank">
+	                                <a href="https://animation-addons.com" class="library--action pro" target="_blank">
 	                                    <i class="eicon-external-link-square"></i>
 	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
 	                                </a>

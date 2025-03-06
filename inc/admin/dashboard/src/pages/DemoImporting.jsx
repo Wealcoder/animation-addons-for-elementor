@@ -51,8 +51,8 @@ const DemoImporting = () => {
       runImport(currenTemplate);
     }
 
-    const interval = setInterval(fetchHeartbeatData, 15000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(fetchHeartbeatData, 15000);
+    // return () => clearInterval(interval);
   }, [currenTemplate]);
 
   const getTemplate = useCallback(
@@ -146,7 +146,11 @@ const DemoImporting = () => {
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
 
-          if ("undefined" !== typeof data.status && "newAJAX" === data.status) {
+          if ("undefined" !== typeof data.status && "newAJAX" === data.status) { 
+            if(data?.state && data.state !==''){
+              setMsg(data.state);
+            }         
+           
             runImport(tpldata);
           }
 

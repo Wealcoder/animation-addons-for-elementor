@@ -26,7 +26,7 @@ class WCF_Setup_Wizard_Init {
 
 	/**
 	 * [instance] Initializes a singleton instance
-	 * @return [Woolentor_Admin_Init]
+	 * @return [_Admin_Init]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
