@@ -63,7 +63,7 @@
         if (thumbSlider.length) {
             new elementorFrontend.utils.swiper(thumbSlider, thumbOptions).then(newSwiperInstance => newSwiperInstance).then((thumbSliderInstance) => {
 
-                new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance).then(( newSwiperInstance) => {
+                new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance).then((newSwiperInstance) => {
 
                     newSwiperInstance.controller.control = thumbSliderInstance;
                     thumbSliderInstance.controller.control = newSwiperInstance;
@@ -88,15 +88,27 @@
             'image-box-slider': [],
             'video-box-slider': [],
             'brand-slider': [],
-            'content-slider': [],            
+            'content-slider': [],
+            'a-portfolio': [
+                'skin-portfolio-base',
+                'skin-portfolio-one',
+                'skin-portfolio-two',
+                'skin-portfolio-three',
+                'skin-portfolio-four',
+                'skin-portfolio-five',
+                'skin-portfolio-six',
+                'skin-portfolio-seven',
+                'skin-portfolio-eight',
+                'skin-portfolio-nine',
+            ],
         });
 
-        $.each(WcfSliderWidgets, function( widget, $skins ) {
+        $.each(WcfSliderWidgets, function (widget, $skins) {
 
             elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.default`, Slider);
 
             //if widget has skin
-            if($skins.length){
+            if ($skins.length) {
                 for (const $skin of $skins) {
                     elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.${$skin}`, Slider);
                 }
