@@ -47,12 +47,13 @@ class AAEAddon_Row_Actions {
         
         $meta[] = '<a href="https://animation-addons.com/docs/" target="_blank">' . esc_html__('Documentation', 'animation-addons-for-elementor' ) . '</a>';
         $meta[] = '<a href="https://crowdyflow.ticksy.com/submit/" target="_blank">' . esc_html__('Support', 'animation-addons-for-elementor') . '</a>';
-        $meta[] = '<a href="https://animation-addons.com" style="color:#ff7a00; font-weight: bold;" target="_blank">' . esc_html__('Upgrade to Pro', 'animation-addons-for-elementor') . '</a>';
-    
+        if ( !file_exists( WP_PLUGIN_DIR . '/' . 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php' ) ) {
+            $meta[] = '<a href="https://animation-addons.com" style="color:#ff7a00; font-weight: bold;" target="_blank">' . esc_html__('Upgrade to Pro', 'animation-addons-for-elementor') . '</a>';
+        }
         return $meta;
     }
 
-        /**
+    /**
 	 * Add settings link to plugin actions
 	 *
 	 * @param  array  $plugin_actions
