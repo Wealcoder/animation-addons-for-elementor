@@ -153,7 +153,7 @@ class Plugin {
 
 		$data = apply_filters( 'wcf-addons-editor/js/data', [
 			'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-			'_wpnonce' => wp_create_nonce( 'wcf-addons-editor' ),
+			'_wpnonce' => wp_create_nonce( 'wcf-addons-editor' ),			
 		] );
 
 		wp_localize_script( 'wcf-editor', 'WCF_Addons_Editor', $data );
