@@ -13,6 +13,7 @@ module.exports = {
     ...getWebpackEntryPoints(),
     index: "./src/main.js",
     wizardSetup: "./src/wizardSetup.js",
+    optout: "./src/opt-out.js",
   },
   module: {
     ...defaultConfig.module,

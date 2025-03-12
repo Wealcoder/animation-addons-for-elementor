@@ -15,6 +15,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 (function ($, window, document, config) {
   // const Template_Library_data = WCF_TEMPLATE_LIBRARY.data;
   var Template_Library_data = {};
+  var Template_Library_Chunk_data = [];
+  var aaeadddon_tpl_lazy_load = false;
 
   // API for get requests
   // let fetchRes = fetch("https://crowdytheme.com/elementor/info-templates/wp-json/api/v1/list");
@@ -108,7 +110,48 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         _iterator.f();
       }
     }
-    return templates;
+    Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
+    return Template_Library_Chunk_data.shift();
+  };
+
+  //get specific category templates
+  var search_category_templates = function search_category_templates() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var type = arguments.length > 1 ? arguments[1] : undefined;
+    var types = $('#elementor-template-library-header-menu .elementor-active').attr('data-tab') || 'block';
+    var type_templates = get_type_templates(types);
+    var templates = type_templates;
+    if (type_templates.length && '' !== text) {
+      templates = [];
+      var _iterator2 = _createForOfIteratorHelper(type_templates),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var template = _step2.value;
+          //if template has no category
+          if ('' === template.subtype) {
+            continue;
+          }
+          text = text.toLowerCase();
+          if (template.title.toLowerCase().includes(text)) {
+            templates.push(template);
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
+    Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
+    return Template_Library_Chunk_data.shift();
+  };
+  var aaetemplate_chunkArray = function aaetemplate_chunkArray(array, chunkSize) {
+    var result = [];
+    for (var i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   };
 
   //get specific categories
@@ -117,11 +160,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var all_categories = [];
     var type_templates = get_type_templates(type);
     if (type_templates.length) {
-      var _iterator2 = _createForOfIteratorHelper(type_templates),
-        _step2;
+      var _iterator3 = _createForOfIteratorHelper(type_templates),
+        _step3;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var template = _step2.value;
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var template = _step3.value;
           //if template has no category
           if ('' === template.subtype) {
             continue;
@@ -132,36 +175,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           });
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator3.e(err);
       } finally {
-        _iterator2.f();
+        _iterator3.f();
       }
     }
-    var _iterator3 = _createForOfIteratorHelper(Template_Library_data.categories),
-      _step3;
+    var _iterator4 = _createForOfIteratorHelper(Template_Library_data.categories),
+      _step4;
     try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var item = _step3.value;
-        var _iterator4 = _createForOfIteratorHelper(type_categories),
-          _step4;
+      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+        var item = _step4.value;
+        var _iterator5 = _createForOfIteratorHelper(type_categories),
+          _step5;
         try {
-          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-            var category = _step4.value;
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var category = _step5.value;
             if (item.id === category) {
               all_categories.push(item);
               break;
             }
           }
         } catch (err) {
-          _iterator4.e(err);
+          _iterator5.e(err);
         } finally {
-          _iterator4.f();
+          _iterator5.f();
         }
       }
     } catch (err) {
-      _iterator3.e(err);
+      _iterator4.e(err);
     } finally {
-      _iterator3.f();
+      _iterator4.f();
     }
     return all_categories;
   };
@@ -220,24 +263,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             categories: get_categories(activeMenu)
           });
           t.append(contents);
+          aaeadddon_run_lazy_load();
           var is_loading = true;
           loading(is_loading);
           $($('.wcf-library-template').last()).find('img').on('load', function () {
-            if ($(this).height() > 20) {
-              setTimeout(function () {
-                is_loading = false;
-                loading(is_loading);
-              }, 500);
-            }
+            is_loading = false;
+            loading(is_loading);
           });
         }
         function render_single_template(t) {
-          var template = $('.thumbnail');
-          template.on('click', function () {
+          // let template = $('.thumbnail');
+          var backContent = $('#wcf-template-library .dialog-widget-content').html();
+          $(document).on('click', '.thumbnail', function () {
             var _that = $(this);
             var template_id = _that.closest('.wcf-library-template').data('id');
             var template_url = _that.closest('.wcf-library-template').data('url');
-            var backContent = $('#wcf-template-library .dialog-widget-content').html();
             var singleTmp = wp.template('wcf-templates-single');
             content_single = null;
             content_single = singleTmp({
@@ -252,27 +292,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               is_loading = false;
               loading(is_loading);
             });
-
-            //single back
-            var single_bak = $('#wcf-template-library-header-preview-back');
-            single_bak.on('click', function () {
-              $('#wcf-template-library .dialog-widget-content').html(backContent);
-
-              //active menu
-              active_menu(t);
-
-              //category select
-              selected_category(t);
-              render_single_template(t);
-              search_function();
-              template_import();
-            });
-
-            //hide modal
-            $('.elementor-templates-modal__header__close').on('click', function () {
-              window.wcftmLibrary.hide();
-            });
             template_import(template_id);
+          });
+
+          //single back                   
+          $(document).on('click', '#wcf-template-library-header-preview-back', function () {
+            $('#wcf-template-library .dialog-widget-content').html(backContent);
+            loading(false);
+            //active menu
+            active_menu(t);
+
+            //category select
+            selected_category(t);
+            render_single_template(t);
+            search_function();
+            template_import();
+          });
+
+          //hide modal
+          $(document).on('click', '.elementor-templates-modal__header__close', function () {
+            window.wcftmLibrary.hide();
           });
         }
         function active_menu(t) {
@@ -323,24 +362,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         function search_function() {
           $('#wcf-template-library-filter-text').on('keyup', function () {
             var filter = this.value;
-            var elements = $('.wcf-library-template');
-            var re = new RegExp(filter, 'i');
-            elements.each(function (x, element) {
-              var title = $(element).find('.title')[0];
-              if (re.test(title.textContent)) {
-                title.innerHTML = title.textContent.replace(re, '<b>$&</b>');
-                $(element).show();
-              } else {
-                $(element).hide();
-              }
+            var container = document.querySelector('.wcf-library-templates');
+            var currentchunk = search_category_templates(filter);
+            container.innerHTML = '';
+            currentchunk.forEach(function (item) {
+              var templateHtml = generateTemplate(item);
+              container.innerHTML += templateHtml; // Add each generated HTML to the container
             });
+
+            setTimeout(function () {
+              var elements = $('.wcf-library-template');
+              var re = new RegExp(filter, 'i');
+              elements.each(function (x, element) {
+                var title = $(element).find('.title')[0];
+                if (re.test(title.textContent)) {
+                  title.innerHTML = title.textContent.replace(re, '<b>$&</b>');
+                }
+              });
+            }, 100);
           });
         }
         function template_import() {
           var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-          var insert = $('.library--action.insert');
           var is_loading = true;
-          insert.on('click', function () {
+          $(document).on('click', '.library--action.insert', function () {
             var _that = $(this);
             var template_id = id;
             if (null === template_id) {
@@ -386,4 +431,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       activePlugin();
     }
   });
+  function aaeadddon_run_lazy_load() {
+    var listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
+    var lastItem = listItems[listItems.length - 1];
+    var observerOptions = {
+      root: null,
+      // Uses the viewport as the root
+      rootMargin: "0px",
+      threshold: 0.1 // Trigger when 10% of the element is visible
+    };
+
+    var observerCallback = function observerCallback(entries, observer) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var currentchunk = Template_Library_Chunk_data.shift();
+          var container = document.querySelector('.wcf-library-templates');
+          if (currentchunk) {
+            currentchunk.forEach(function (item) {
+              var templateHtml = generateTemplate(item);
+              container.innerHTML += templateHtml; // Add each generated HTML to the container
+            });
+          }
+        }
+      });
+    };
+
+    var observer = new IntersectionObserver(observerCallback, observerOptions);
+    observer.observe(lastItem);
+  }
+  ;
+  var generateTemplate = function generateTemplate(item) {
+    var pluginSlug = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+    var allPlugins = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var activePlugins = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+    return "\n            <div class=\"wcf-library-template\" data-id=\"".concat(item.id, "\" data-url=\"").concat(item.url, "\">\n                <div class=\"thumbnail\">\n                    <img src=\"").concat(item.thumbnail, "\" alt=\"").concat(item.title, "\">\n                </div>\n                \n                ").concat(item !== null && item !== void 0 && item.valid && item.valid ? "\n                    <!-- Show the 'Insert' button if the template is valid -->\n                    <button class=\"library--action insert\">\n                        <i class=\"eicon-file-download\"></i>\n                        Insert\n                    </button>\n                " : "\n                    <!-- Show premium or activation buttons based on plugin status -->\n                    ".concat(!allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? "\n                        <!-- Show 'Go Premium' button if the plugin is not installed -->\n                        <a href=\"https://animation-addons.com\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Go Premium\n                        </a>\n                    " : '', "\n                    ").concat(activePlugins.includes(pluginSlug) ? "\n                        <!-- Show 'Pro' button if the plugin is installed and active -->\n                        <button class=\"library--action pro\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Pro\n                        </button>\n                    " : '', "\n                    ").concat(allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? "\n                        <!-- Show 'Activate' button if the plugin is installed but not active -->\n                        <button class=\"library--action pro aaeplugin-activate\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate\n                        </button>\n                    " : '', "\n                "), "\n                \n                <p class=\"title\">").concat(item.title, "</p>\n            </div>\n        ");
+  };
 })(jQuery, window, document);

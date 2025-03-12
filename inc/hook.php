@@ -17,6 +17,9 @@ function aaeaddonlight_hk_allow_svg_uploads($mimes) {
 add_filter('upload_mimes', 'aaeaddonlight_hk_allow_svg_uploads');
 
 function aae_handle_aae_post_shares_count() {
+    if(!isset($_POST['nonce'])){
+        exit( 'No naughty business please . Provide Security Code' );  
+    }
     $nonce =  sanitize_text_field( wp_unslash($_POST['nonce']));
 	if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
 		exit( 'No naughty business please' );
@@ -62,3 +65,8 @@ function aaeaddon_disable_comments_for_custom_post_type() {
     remove_post_type_support( 'wcf-addons-template', 'comments' );
 }
 add_action( 'init', 'aaeaddon_disable_comments_for_custom_post_type' , 100);
+
+
+
+
+

@@ -1,3 +1,7 @@
+.aae--posts-tab svg {
+  width: 1em;
+  height: 1em;
+}
 .aae--posts-tab .thumb img {
   -o-object-fit: cover;
      object-fit: cover;
@@ -28,9 +32,25 @@
   align-items: center;
   justify-content: center;
 }
-.aae--posts-tab .posts-banner .thumb iframe {
+.aae--posts-tab .posts-banner .thumb img {
   width: 100%;
   height: 100%;
+}
+.aae--posts-tab .posts-banner .thumb .play-icon {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  transform: translate(-50%, 0);
+  border: 2px solid #fff;
+  border-radius: 100%;
+  width: 85px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  fill: #fff;
+  z-index: 1;
 }
 .aae--posts-tab .aae-posts {
   display: grid;

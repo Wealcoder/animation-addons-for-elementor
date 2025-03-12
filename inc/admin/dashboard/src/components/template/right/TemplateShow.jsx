@@ -1,8 +1,9 @@
 import ProConfirmDialog from "@/components/shared/ProConfirmDialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { useActivate, useTNavigation } from "@/hooks/app.hooks";
+import { cn } from "@/lib/utils";
 import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
@@ -99,9 +100,16 @@ const TemplateShow = ({ allTemplate }) => {
                     ""
                   )}
                   <div className="w-full h-full hidden group-hover:flex justify-center items-center gap-2">
-                    <Button variant="general" className="py-2 ps-3 pe-4">
+                    <a
+                      href={template?.demo_link}
+                      className={cn(
+                        buttonVariants({ variant: "general" }),
+                        "py-2 ps-3 pe-4"
+                      )}
+                      target="_blank"
+                    >
                       <RiEyeLine size={20} className="mr-2" /> Preview
-                    </Button>
+                    </a>
                     <Button
                       variant="general"
                       className="py-2 ps-3 pe-4"

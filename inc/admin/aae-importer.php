@@ -61,26 +61,30 @@ class AAEImporter extends WXRImporter {
 	 * @return array       The unchanged term data.
 	 */
 	public function woocommerce_product_attributes_registration( $data ) {
-		global $wpdb;
-
 		if ( strstr( $data['taxonomy'], 'pa_' ) ) {
 			if ( ! taxonomy_exists( $data['taxonomy'] ) ) {
 				$attribute_name = wc_sanitize_taxonomy_name( str_replace( 'pa_', '', $data['taxonomy'] ) );
-
-				// Create the taxonomy
-				if ( ! in_array( $attribute_name, wc_get_attribute_taxonomies() ) ) {
-					$attribute = array(
-						'attribute_label'   => $attribute_name,
-						'attribute_name'    => $attribute_name,
-						'attribute_type'    => 'select',
-						'attribute_orderby' => 'menu_order',
-						'attribute_public'  => 0
-					);
-					$wpdb->insert( $wpdb->prefix . 'woocommerce_attribute_taxonomies', $attribute );
-					delete_transient( 'wc_attribute_taxonomies' );
+	
+				// Get existing attributes
+				$existing_attributes = wc_get_attribute_taxonomies();
+				$existing_names = wp_list_pluck($existing_attributes, 'attribute_name');
+	
+				// Create the attribute if it doesn't exist
+				if ( ! in_array( $attribute_name, $existing_names, true ) ) {
+					$attribute_id = wc_create_attribute( array(
+						'name'         => $attribute_name,
+						'slug'         => $attribute_name,
+						'type'         => 'select',
+						'order_by'     => 'menu_order',
+						'has_archives' => false,
+					) );
+	
+					if ( ! is_wp_error( $attribute_id ) ) {
+						delete_transient( 'wc_attribute_taxonomies' );
+					}
 				}
-
-				// Register the taxonomy now so that the import works!
+	
+				// Register the taxonomy to ensure it works in imports
 				register_taxonomy(
 					$data['taxonomy'],
 					apply_filters( 'woocommerce_taxonomy_objects_' . $data['taxonomy'], array( 'product' ) ),
@@ -93,7 +97,8 @@ class AAEImporter extends WXRImporter {
 				);
 			}
 		}
-
+	
 		return $data;
 	}
+	
 }

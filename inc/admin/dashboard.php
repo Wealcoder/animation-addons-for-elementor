@@ -34,7 +34,7 @@ class WCF_Admin_Init {
 
 	/**
 	 * [instance] Initializes a singleton instance
-	 * @return [Woolentor_Admin_Init]
+	 * @return [_Admin_Init]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -209,6 +209,7 @@ class WCF_Admin_Init {
 		if ( ! class_exists( '\WP_Importer' ) ) {
 			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
 		}
+		require_once( 'row-actions.php' );
 		require_once( 'template-functions.php' );
 		require_once( 'plugin-installer.php' );
 		require_once( 'base/Helpers.php' );

@@ -24,7 +24,7 @@ class AAEAddon_Importer {
 
 	/**
 	 * [instance] Initializes a singleton instance
-	 * @return [Woolentor_Admin_Init]
+	 * @return [_Admin_Init]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -111,7 +111,7 @@ class AAEAddon_Importer {
 		}
 		
 		if (isset($_POST['template_data'])) {
-			$json_data = wp_unslash($_POST['template_data']); // Remove slashes if added by WP		
+			$json_data = sanitize_text_field( wp_unslash($_POST['template_data']) ); // Remove slashes if added by WP		
 			$template_data = json_decode($json_data, true);		
 		
 			if (json_last_error() === JSON_ERROR_NONE) {			
@@ -277,29 +277,25 @@ class AAEAddon_Importer {
 		}
 	}
 
-
 	public function install_options( $settings ) {
-
-		global $wpdb;	
-
+		global $wpdb;
+	
 		foreach ( $settings as $item ) {
-
 			$response = wp_remote_get( $item['xml_file'] );
-
+	
 			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 				$xml_data = wp_remote_retrieve_body( $response );
 				$xml      = simplexml_load_string( $xml_data );
 				if ( ! $xml ) {
 					continue; // Skip if XML parsing fails.
-				}	
-				
+				}
+	
 				if ( isset( $xml->option ) ) {
-					// Iterate through each <option> node.
 					foreach ( $xml->option as $opt ) {
-
-						$option_name     = sanitize_text_field((string) $opt->name);
-						$serialized_data = sanitize_text_field((string) $opt->value);	
-					
+						$option_name     = sanitize_text_field( (string) $opt->name );
+						$serialized_data = sanitize_text_field( (string) $opt->value );
+	
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 						$wpdb->update(
 							$wpdb->options,
 							array( 'option_value' => $serialized_data ),
@@ -307,10 +303,10 @@ class AAEAddon_Importer {
 						);
 					}
 				} else {
-					// Fallback for a single option XML structure.
-					$serialized_data = sanitize_text_field((string) $xml->value);
-					$option_name     = sanitize_text_field((string) $xml->name);
-					
+					$option_name     = sanitize_text_field( (string) $xml->name );
+					$serialized_data = sanitize_text_field( (string) $xml->value );
+	
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 					$wpdb->update(
 						$wpdb->options,
 						array( 'option_value' => $serialized_data ),
@@ -320,6 +316,7 @@ class AAEAddon_Importer {
 			}
 		}
 	}
+	
 	
 
 	public function installElementorKit($elementor){

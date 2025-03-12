@@ -369,6 +369,21 @@ class Video_Posts_Tab extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'video_play_icon',
+			[
+				'label'       => esc_html__( 'Play Icon', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default'     => [
+					'value'   => 'fas fa-play',
+					'library' => 'fa-solid',
+				],
+				'separator'   => 'before',
+			]
+		);
+
 		$this->end_controls_section();
 
 
@@ -395,9 +410,9 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_control(
 			'show_view_more_text',
 			[
-				'label'   => esc_html__( 'View Text', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::TEXT,
-				'default' => 'View All',
+				'label'     => esc_html__( 'View Text', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => 'View All',
 				'condition' => [
 					'show_view_more' => 'yes',
 				],
@@ -416,7 +431,7 @@ class Video_Posts_Tab extends Widget_Base {
 					'active' => true,
 				],
 				'placeholder' => esc_html__( 'https://your-link.com', 'animation-addons-for-elementor' ),
-				'condition' => [
+				'condition'   => [
 					'show_view_more' => 'yes',
 				],
 			]
@@ -425,10 +440,10 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_control(
 			'view_more_icon',
 			[
-				'label' => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
-				'type' => \Elementor\Controls_Manager::ICONS,
-				'default' => [
-					'value' => 'fas fa-circle',
+				'label'     => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
+				'type'      => \Elementor\Controls_Manager::ICONS,
+				'default'   => [
+					'value'   => 'fas fa-circle',
 					'library' => 'fa-solid',
 				],
 				'condition' => [
@@ -454,12 +469,14 @@ class Video_Posts_Tab extends Widget_Base {
 			]
 		);
 
-		$this->add_group_control(
-			\Elementor\Group_Control_Background::get_type(),
+		$this->add_control(
+			'banner_overlay',
 			[
-				'name'     => 'vaaebackground',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .aae--posts-tab .posts-banner',
+				'label' => esc_html__( 'Overlay Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .posts-banner::after' => 'background-color: {{VALUE}}',
+				],
 			]
 		);
 
@@ -499,6 +516,102 @@ class Video_Posts_Tab extends Widget_Base {
 
 		$this->end_controls_section();
 
+        // Play Icon
+		$this->start_controls_section(
+			'style_play_icon',
+			[
+				'label' => esc_html__( 'Play Icon', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'play_color',
+			[
+				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .play-icon' => 'fill: {{VALUE}}; color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'play_border',
+				'selector' => '{{WRAPPER}} .play-icon',
+			]
+		);
+
+		$this->add_responsive_control(
+			'Play_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .play-icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'play_icon_size',
+			[
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .play-icon' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'play_circle_size',
+			[
+				'label'      => esc_html__( 'Circle Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range'      => [
+					'px' => [
+						'min' => 1,
+						'max' => 200,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .play-icon' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'play_icon_position',
+			[
+				'label'      => esc_html__( 'Icon Position', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 500,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .play-icon' => 'top: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
 
 		//Thumbnail style
 		$this->start_controls_section(
@@ -512,12 +625,12 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_responsive_control(
 			'border_style',
 			[
-				'label' => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::SELECT,
-				'default' => 'block',
-				'options' => [
+				'label'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'block',
+				'options'   => [
 					'block' => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-					'none' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+					'none'  => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .aae-posts .thumb' => 'display: {{VALUE}};',
@@ -887,8 +1000,8 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->start_controls_section(
 			'style_post_view_all',
 			[
-				'label' => esc_html__( 'View all', 'animation-addons-for-elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
+				'label'     => esc_html__( 'View all', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_view_more' => 'yes',
 				],
@@ -1261,8 +1374,8 @@ class Video_Posts_Tab extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae-post, {{WRAPPER}} .style-2 .aae-posts-wrap, {{WRAPPER}} .style-2 .aae-view-all' => 'border-color: {{VALUE}}',
-					'{{WRAPPER}} .aae--posts-tab .aae-posts-wrap' => 'border-color: {{VALUE}};',
-					'{{WRAPPER}} .aae--posts-tab .aae-view-all' => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .aae--posts-tab .aae-posts-wrap'                                                     => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .aae--posts-tab .aae-view-all'                                                       => 'border-color: {{VALUE}};',
 				],
 			]
 		);
@@ -1270,12 +1383,12 @@ class Video_Posts_Tab extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
-				'name' => 'post_overlay',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'post_overlay',
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .posts-banner::after',
 			]
 		);
-		
+
 		$this->add_responsive_control(
 			'post_padding',
 			[
@@ -1411,7 +1524,7 @@ class Video_Posts_Tab extends Widget_Base {
 		$query = new WP_Query( $query );
 
 		// Wrapper Class
-		$this->add_render_attribute( 'wrapper', 'class', ['aae--posts-tab' ] );
+		$this->add_render_attribute( 'wrapper', 'class', [ 'aae--posts-tab' ] );
 		?>
 
         <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
@@ -1420,7 +1533,16 @@ class Video_Posts_Tab extends Widget_Base {
 				if ( $query->have_posts() ) {
 					while ( $query->have_posts() ) {
 						$query->the_post();
-						$this->render_banner_video();
+						?>
+                        <div class="thumb" data-target="<?php echo esc_attr( get_the_ID() ); ?>">
+							<?php the_post_thumbnail(); ?>
+                            <a href="<?php the_permalink(); ?>">
+                                <div class="play-icon">
+		                            <?php Icons_Manager::render_icon( $settings['video_play_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+                                </div>
+                            </a>
+                        </div>
+						<?php
 					}
 				} else { ?>
                     <p style="text-align: center"><?php echo esc_html__( "No Video Post Found!", "animation-addons-for-elementor" ); ?></p>
@@ -1435,17 +1557,17 @@ class Video_Posts_Tab extends Widget_Base {
 					}
 					?>
                 </div>
-				<?php if($settings['show_view_more'] =='yes'):
+				<?php if ( $settings['show_view_more'] == 'yes' ):
 					if ( ! empty( $settings['view_more_link']['url'] ) ) {
 						$this->add_link_attributes( 'view_more_link', $settings['view_more_link'] );
 					}
-				?>
-				<div class="aae-view-all">
-					<a <?php $this->print_render_attribute_string( 'view_more_link' ); ?>>
-						<?php echo wp_kses_post( $settings['show_view_more_text']); ?>
-						<?php \Elementor\Icons_Manager::render_icon( $settings['view_more_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-					</a>
-				</div>
+					?>
+                    <div class="aae-view-all">
+                        <a <?php $this->print_render_attribute_string( 'view_more_link' ); ?>>
+							<?php echo wp_kses_post( $settings['show_view_more_text'] ); ?>
+							<?php \Elementor\Icons_Manager::render_icon( $settings['view_more_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+                        </a>
+                    </div>
 				<?php endif; ?>
             </div>
         </div>
@@ -1466,47 +1588,6 @@ class Video_Posts_Tab extends Widget_Base {
 		<?php
 	}
 
-	protected function render_banner_video() {
-		$format = get_post_format();
-	
-		if ( 'video' !== $format ) {
-			return;
-		}
-	
-		$link = get_post_meta( get_the_ID(), '_video_url', true );
-	
-		// Ensure $link is a valid URL
-		if ( empty( $link ) || ! filter_var( $link, FILTER_VALIDATE_URL ) ) {
-			return;
-		}
-	
-		$parsed_url = wp_parse_url( $link );
-	
-		if ( isset( $parsed_url['host'] ) ) {
-			// YouTube Link Handling
-			if ( strpos( $parsed_url['host'], 'youtube.com' ) !== false || strpos( $parsed_url['host'], 'youtu.be' ) !== false ) {
-				parse_str( $parsed_url['query'] ?? '', $query );
-	
-				if ( isset( $query['v'] ) ) {
-					$ytVideoId = sanitize_text_field( $query['v'] );
-					$link      = "https://www.youtube.com/embed/" . esc_attr( $ytVideoId );
-				}
-			}
-	
-			// Vimeo Link Handling
-			if ( strpos( $parsed_url['host'], 'vimeo.com' ) !== false ) {
-				$videoId = trim( str_replace( "https://vimeo.com/", "", $link ) );
-				$link    = "https://player.vimeo.com/video/" . esc_attr( sanitize_text_field( $videoId ) );
-			}
-		}
-	
-		?>
-		<div class="thumb" data-target="<?php echo esc_attr( get_the_ID() ); ?>">
-			<iframe src="<?php echo esc_url( $link ); ?>" allowfullscreen></iframe>
-		</div>
-		<?php
-	}
-	
 
 	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
 		// Split the text into an array of words
@@ -1738,7 +1819,7 @@ class Video_Posts_Tab extends Widget_Base {
 			}
 			?>
             <div class="content-wrap">
-                <div class="content" data-id="<?php echo esc_attr(get_the_ID()); ?>">
+                <div class="content" data-id="<?php echo esc_attr( get_the_ID() ); ?>">
 					<?php
 					$this->render_title();
 					$this->render_excerpt();
