@@ -192,20 +192,20 @@ $config = [
 						'youtube_url'  => '',
 					],
 
-					'testimonial-pro' => [
-						'label'        => esc_html__( 'Advanced Testimonial', 'animation-addons-for-elementor' ),
-						'location'     => [
-							'cTab' => 'all'
-						],
-						'is_active'    => false,
-						'is_pro'       => true,
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Testimonial",
-						'demo_url'     => '',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-pro/',
-						'youtube_url'  => '',
-					],
+//					'testimonial-pro' => [
+//						'label'        => esc_html__( 'Advanced Testimonial', 'animation-addons-for-elementor' ),
+//						'location'     => [
+//							'cTab' => 'all'
+//						],
+//						'is_active'    => false,
+//						'is_pro'       => true,
+//						'is_extension' => false,
+//						'is_upcoming'  => false,
+//						'icon'         => "wcf-icon-Testimonial",
+//						'demo_url'     => '',
+//						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-pro/',
+//						'youtube_url'  => '',
+//					],
 					'button'          => [
 						'label'        => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 						'location'     => [
@@ -278,20 +278,20 @@ $config = [
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team/',
 						'youtube_url'  => '',
 					],
-					'team-slider'       => [
-						'label'        => esc_html__( 'Team Slider', 'animation-addons-for-elementor' ),
-						'location'     => [
-							'cTab' => 'all'
-						],
-						'is_active'    => false,
-						'is_pro'       => true,
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Team",
-						'demo_url'     => '',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team-slider/',
-						'youtube_url'  => '',
-					],
+//					'team-slider'       => [
+//						'label'        => esc_html__( 'Team Slider', 'animation-addons-for-elementor' ),
+//						'location'     => [
+//							'cTab' => 'all'
+//						],
+//						'is_active'    => false,
+//						'is_pro'       => true,
+//						'is_extension' => false,
+//						'is_upcoming'  => false,
+//						'icon'         => "wcf-icon-Team",
+//						'demo_url'     => '',
+//						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team-slider/',
+//						'youtube_url'  => '',
+//					],
 					'notification'      => [
 						'label'        => esc_html__( 'Notification', 'animation-addons-for-elementor' ),
 						'location'     => [
