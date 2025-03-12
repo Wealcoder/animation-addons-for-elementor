@@ -272,12 +272,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           });
         }
         function render_single_template(t) {
-          var template = $('.thumbnail');
-          template.on('click', function () {
+          // let template = $('.thumbnail');
+          var backContent = $('#wcf-template-library .dialog-widget-content').html();
+          $(document).on('click', '.thumbnail', function () {
             var _that = $(this);
             var template_id = _that.closest('.wcf-library-template').data('id');
             var template_url = _that.closest('.wcf-library-template').data('url');
-            var backContent = $('#wcf-template-library .dialog-widget-content').html();
             var singleTmp = wp.template('wcf-templates-single');
             content_single = null;
             content_single = singleTmp({
@@ -292,27 +292,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               is_loading = false;
               loading(is_loading);
             });
-
-            //single back
-            var single_bak = $('#wcf-template-library-header-preview-back');
-            single_bak.on('click', function () {
-              $('#wcf-template-library .dialog-widget-content').html(backContent);
-
-              //active menu
-              active_menu(t);
-
-              //category select
-              selected_category(t);
-              render_single_template(t);
-              search_function();
-              template_import();
-            });
-
-            //hide modal
-            $('.elementor-templates-modal__header__close').on('click', function () {
-              window.wcftmLibrary.hide();
-            });
             template_import(template_id);
+          });
+
+          //single back                   
+          $(document).on('click', '#wcf-template-library-header-preview-back', function () {
+            $('#wcf-template-library .dialog-widget-content').html(backContent);
+            loading(false);
+            //active menu
+            active_menu(t);
+
+            //category select
+            selected_category(t);
+            render_single_template(t);
+            search_function();
+            template_import();
+          });
+
+          //hide modal
+          $(document).on('click', '.elementor-templates-modal__header__close', function () {
+            window.wcftmLibrary.hide();
           });
         }
         function active_menu(t) {
@@ -385,9 +384,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
         function template_import() {
           var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-          var insert = $('.library--action.insert');
           var is_loading = true;
-          insert.on('click', function () {
+          $(document).on('click', '.library--action.insert', function () {
             var _that = $(this);
             var template_id = id;
             if (null === template_id) {

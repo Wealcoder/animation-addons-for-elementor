@@ -1,5 +1,5 @@
 === Animation Addons for Elementor ===
-Contributors: wealcoder, wcrayhan
+Contributors: wealcoder, wcrayhan, jhshakil
 Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7

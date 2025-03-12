@@ -65,3 +65,8 @@ function aaeaddon_disable_comments_for_custom_post_type() {
     remove_post_type_support( 'wcf-addons-template', 'comments' );
 }
 add_action( 'init', 'aaeaddon_disable_comments_for_custom_post_type' , 100);
+
+
+
+
+
