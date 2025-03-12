@@ -68,16 +68,18 @@ const TemplateLeftFilter = ({
                       className="ps-2"
                       aria-label="Toggle wish list"
                     >
-                      <RiShoppingBasketLine size={18} className="text-icon" /> Wishlist
+                      <RiHeartLine size={18} className="text-icon" />{" "}
+                      {/* <RiShoppingBasketLine size={18} className="text-icon" />{" "} */}
+                      Wishlist
                     </ToggleGroupItem>
-                    <ToggleGroupItem
+                    {/* <ToggleGroupItem
                       value="favorites"
                       variant="outline"
                       className="ps-2"
                       aria-label="Toggle favorites"
                     >
                       <RiHeartLine size={18} className="text-icon" /> Favorites
-                    </ToggleGroupItem>
+                    </ToggleGroupItem> */}
                   </ToggleGroup>
                 </AccordionContent>
               </AccordionItem>
