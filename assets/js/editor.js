@@ -10,7 +10,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* global jQuery, WCF_Addons_Editor*/
 
 (function ($, window, document, config) {
-  elementor.hooks.addAction('panel/open_editor/widget/wcf--mailchimp', function (panel, model, view) {
+  elementor.hooks.addAction("panel/open_editor/widget/wcf--mailchimp", function (panel, model, view) {
     var ajax_request = function ajax_request($api) {
       jQuery.ajax({
         type: "post",
@@ -29,20 +29,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               text: Object.values(response)
             };
             var newOption = new Option(data.text, data.id, false, false);
-            audience.append(newOption).trigger('change');
+            audience.append(newOption).trigger("change");
           } else {
             audience.empty();
           }
         }
       });
     };
-    var $element = panel.$el.find('[data-setting="mailchimp_api"]');
-    if ($element.val()) {
-      ajax_request($element.val());
-    }
-    $element.on('keyup', function () {
-      ajax_request($element.val());
-    });
   });
 
   // Custom Css
@@ -61,49 +54,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
     return css;
   });
-  function generateFingerprintString() {
-    var fingerprint = {
-      userAgent: navigator.userAgent,
-      // safe fallback
-      screenResolution: "".concat(window.screen.width, "x").concat(window.screen.height),
-      colorDepth: window.screen.colorDepth,
-      language: navigator.language,
-      languages: navigator.languages ? navigator.languages.join(",") : "unknown",
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      hardwareConcurrency: navigator.hardwareConcurrency || "unknown",
-      deviceMemory: navigator.deviceMemory || "unknown",
-      touchSupport: navigator.maxTouchPoints || 0
-    };
-    return JSON.stringify(fingerprint);
-  }
-  function longHash(str) {
-    var encoder = new TextEncoder();
-    var data = encoder.encode(str);
-
-    // FNV-1a 32-bit hash with multi-pass shifting
-    var hash1 = 2166136261;
-    var hash2 = 2166136261;
-    var hash3 = 2166136261;
-    for (var i = 0; i < data.length; i++) {
-      var _byte = data[i];
-      hash1 ^= _byte;
-      hash1 = hash1 * 16777619 >>> 0;
-      hash2 ^= _byte;
-      hash2 = hash2 * 16777619 >>> 0;
-      hash2 = (hash2 << 5 | hash2 >>> 27) >>> 0; // Rotate left
-
-      hash3 ^= _byte;
-      hash3 = hash3 * 16777619 >>> 0;
-      hash3 = (hash3 << 11 | hash3 >>> 21) >>> 0; // Rotate left more
-    }
-
-    // Concatenate and return as longer hex string
-    return hash1.toString(16).padStart(8, '0') + hash2.toString(16).padStart(8, '0') + hash3.toString(16).padStart(8, '0');
-  }
   function getFingerprintId() {
-    var fingerprintString = generateFingerprintString();
-    var fingerprintId = longHash(fingerprintString);
-    return fingerprintId; // Ready to store or send
+    if (!localStorage.getItem('aae_machine_id')) {
+      var url = 'https://animation-addons.com/wp-json/live/v1/fingerprint/';
+      return $.get(url).done(function (data) {
+        localStorage.setItem('aae_machine_id', data.ip);
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.error('Failed to fetch fingerprint ID:', textStatus, errorThrown);
+      });
+    }
   }
 
   // Function to request widget data
@@ -116,7 +75,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            machineId = getFingerprintId();
+            machineId = localStorage.getItem('aae_machine_id');
             livePasteUrl = "https://animation-addons.com/wp-json/live/v1/copy-paste?machine_id=".concat(machineId, "&type=paste");
             _context.prev = 2;
             _context.next = 5;
@@ -134,7 +93,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           case 10:
             data = _context.sent;
             $opts = {
-              model: '',
+              model: "",
               container: elementor.getPreviewContainer()
             };
             if ((_data$content = data.content) !== null && _data$content !== void 0 && _data$content.content) {
@@ -147,11 +106,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 $e.run("document/elements/create", $opts);
               });
               elementor.notifications.showToast({
-                message: elementor.translate('Content Pasted! ')
+                message: elementor.translate("Content Pasted! ")
               });
             } else {
               elementor.notifications.showToast({
-                message: elementor.translate('Content not found! ')
+                message: elementor.translate("Content not found! ")
               });
             }
             _context.next = 18;
@@ -160,7 +119,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             _context.prev = 15;
             _context.t0 = _context["catch"](2);
             elementor.notifications.showToast({
-              message: elementor.translate('Only same browser tab work, App using browser fingerprint for live copy ')
+              message: elementor.translate("Only same browser tab work, App using browser fingerprint for live copy ")
             });
           case 18:
           case "end":
@@ -171,6 +130,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return _requestWidgetData.apply(this, arguments);
   }
   window.addEventListener('elementor/init', function () {
+    getFingerprintId();
     var elTypes = ['widget', 'column', 'section', 'container'];
     var newAction = {
       name: 'aae-addon-live-paste',
