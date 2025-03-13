@@ -66,7 +66,23 @@ function aaeaddon_disable_comments_for_custom_post_type() {
 }
 add_action( 'init', 'aaeaddon_disable_comments_for_custom_post_type' , 100);
 
+function aaeaddon_custom_hide_admin_notices_for_specific_page() {   
+    $screen = get_current_screen();   
+    // ist of admin pages where you want to disable notices
+    $pages_to_hide_notices = array(
+        'wcf-custom-fonts', 
+        'wcf-custom-icons', 
+        'animation-addon_page_wcf-cpt-builder',
+        'edit-wcf-addons-template',
+        'animation-addon_page_wcf_addons_settings',
+        'animation-addon_page_wcf_addons_setup_page'
+    );
 
-
-
-
+    // Check if current screen ID matches any in the list
+    if (in_array($screen->id, $pages_to_hide_notices)) {
+        // Remove core and plugin notices
+        remove_all_actions('admin_notices');
+        remove_all_actions('all_admin_notices');
+    }
+}
+add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
