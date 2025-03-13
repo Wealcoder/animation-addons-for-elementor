@@ -89,12 +89,12 @@ export const freeProComparisonList = [
     name: "Theme Builder Compatibility	",
     helpText: "",
     free: {
-      text: "Limited Compatibility",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
     pro: {
-      text: "Full Compatibility with Popular Themes",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
   },
   {
@@ -122,18 +122,7 @@ export const freeProComparisonList = [
       icon: "",
     },
   },
-  {
-    name: "Support for 3rd Party Plugins	",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CrossIcon,
-    },
-    pro: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
+
   {
     name: "Animation Builder",
     helpText: "",
@@ -172,6 +161,42 @@ export const freeProComparisonList = [
   },
   {
     name: "Custom Font Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Dynamic Tags",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "AAE Fields",
+    helpText: "",
+    free: {
+      text: "Coming Soon",
+      icon: "",
+    },
+    pro: {
+      text: "Coming Soon",
+      icon: "",
+    },
+  },
+  {
+    name: "Support for 3rd Party Plugins	",
     helpText: "",
     free: {
       text: "",
