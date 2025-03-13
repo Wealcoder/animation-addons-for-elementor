@@ -1,7 +1,5 @@
 import ComparisonTable from "@/components/freePro/ComparisonTable";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { RiArrowRightUpLine, RiVipCrown2Line } from "react-icons/ri";
+import { RiVipCrown2Line } from "react-icons/ri";
 
 const FreePro = () => {
   return (

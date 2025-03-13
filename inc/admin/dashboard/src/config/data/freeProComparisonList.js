@@ -17,7 +17,7 @@ export const freeProComparisonList = [
     name: "Template Library	",
     helpText: "",
     free: {
-      text: "Coming Soon",
+      text: "Limited Access",
       icon: "",
     },
     pro: {
@@ -26,11 +26,23 @@ export const freeProComparisonList = [
     },
   },
   {
+    name: "Starter Template",
+    helpText: "",
+    free: {
+      text: "Limited Access",
+      icon: "",
+    },
+    pro: {
+      text: "Access All Prebuilt Templates",
+      icon: "",
+    },
+  },
+  {
     name: "Live Copy",
     helpText: "",
     free: {
-      text: "Coming Soon",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
     pro: {
       text: "",
@@ -81,7 +93,7 @@ export const freeProComparisonList = [
       icon: "",
     },
     pro: {
-      text: "Full Compatibility with Popular Themes and Woocommerce",
+      text: "Full Compatibility with Popular Themes",
       icon: "",
     },
   },
@@ -97,18 +109,7 @@ export const freeProComparisonList = [
       icon: CheckIcon,
     },
   },
-  {
-    name: "WooCommerce Widgets	",
-    helpText: "",
-    free: {
-      text: "Basic WooCommerce Support	",
-      icon: "",
-    },
-    pro: {
-      text: "Full WooCommerce Widgets Support",
-      icon: "",
-    },
-  },
+
   {
     name: "Forms Integration	",
     helpText: "",
@@ -135,6 +136,42 @@ export const freeProComparisonList = [
   },
   {
     name: "Animation Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Custom Icon Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "CPT Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Custom Font Builder",
     helpText: "",
     free: {
       text: "",
