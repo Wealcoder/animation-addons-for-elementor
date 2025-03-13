@@ -271,7 +271,12 @@ class WCF_Admin_Init {
 			//sync element manager
 		    $this->disable_widgets_by_element_manager();
 			// CSS
-			wp_enqueue_style( 'wcf-admin',plugins_url('dashboard/build/index.css', __FILE__));	
+			wp_enqueue_style(
+				'wcf-admin', // Handle for the stylesheet
+				plugins_url('dashboard/build/index.css', __FILE__), // Path to the CSS file
+				array(), // Dependencies (none in this case)
+				time()
+			);
 			
 			wp_enqueue_script( 'wcf-admin' , plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js' , array( 'react', 'react-dom', 'wp-element' , 'wp-i18n' ), time(), true );
 			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
@@ -416,8 +421,8 @@ class WCF_Admin_Init {
 	 */
 	public function remove_all_notices() {
 		add_action( 'in_admin_header', function () {
-			$screen = get_current_screen();
-			if ( $screen && 'toplevel_page_wcf_addons_settings' === $screen->id  ) {
+			$screen = get_current_screen();			
+			if ( $screen && 'animation-addon_page_wcf_addons_settings' === $screen->id  ) {
 				remove_all_actions('admin_notices');
 				remove_all_actions('all_admin_notices');
 				remove_all_actions('user_admin_notices');
