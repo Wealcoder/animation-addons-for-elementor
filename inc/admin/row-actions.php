@@ -50,6 +50,7 @@ class AAEAddon_Row_Actions {
         if ( !file_exists( WP_PLUGIN_DIR . '/' . 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php' ) ) {
             $meta[] = '<a href="https://animation-addons.com" style="color:#ff7a00; font-weight: bold;" target="_blank">' . esc_html__('Upgrade to Pro', 'animation-addons-for-elementor') . '</a>';
         }
+		$meta[] = '<a href="https://wordpress.org/support/plugin/animation-addons-for-elementor/reviews/#new-post" target="_blank">' . esc_html__(' Rate the plugin ★★★★★', 'animation-addons-for-elementor' ) . '</a>';
         return $meta;
     }
 

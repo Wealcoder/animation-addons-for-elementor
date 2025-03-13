@@ -195,7 +195,7 @@ class AAEAddon_Importer {
 				}
 				update_option('aaeaddon_template_import_state', $msg);
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
-
+				update_option( 'wcf_addons_setup_wizard', 'complete' );
 				$template_data['next_step'] = 'done';
 				$progress                   = '100';		
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && $template_data['elementor_settings']['type'] === 'json' ) {
