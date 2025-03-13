@@ -1,5 +1,4 @@
-import { RiInformation2Fill, RiVipCrown2Line } from "react-icons/ri";
-import { Button } from "../ui/button";
+import { RiInformation2Fill } from "react-icons/ri";
 import {
   Tooltip,
   TooltipContent,
@@ -11,8 +10,9 @@ import { cn } from "@/lib/utils";
 
 const ComparisonTable = () => {
   const comparisons = freeProComparisonList;
+
   return (
-    <div className="rounded-lg border border-border">
+    <div className="rounded-lg border border-border overflow-hidden">
       <div className="flex border-b border-border">
         <div className="w-[464px] p-6 border-r border-border">
           <h3 className="text-lg font-medium">Features</h3>
@@ -75,7 +75,7 @@ const ComparisonTable = () => {
         <div
           key={`comparison_item-${i}`}
           className={cn(
-            "flex border-b border-border hover:bg-border-secondary",
+            "flex border-b last:border-b-0 border-border hover:bg-border-secondary",
             (i + 1) % 2 === 0 ? "bg-[#F9FAFC]" : ""
           )}
         >
@@ -110,21 +110,6 @@ const ComparisonTable = () => {
           </div>
         </div>
       ))}
-
-      {/* content end  */}
-      <div className="flex">
-        <div className="w-[464px] px-6 py-4 border-r border-border"></div>
-        <div className="w-[392px] px-6 py-4 border-r border-border"></div>
-        <div className="w-[392px] px-6 py-4">
-          <Button variant="pro" className="w-full" disabled>
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>{" "}
-            {/* Get Pro Version */}
-            Coming Soon
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

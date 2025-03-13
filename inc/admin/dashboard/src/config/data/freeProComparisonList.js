@@ -17,7 +17,7 @@ export const freeProComparisonList = [
     name: "Template Library	",
     helpText: "",
     free: {
-      text: "Coming Soon",
+      text: "Limited Access",
       icon: "",
     },
     pro: {
@@ -26,11 +26,23 @@ export const freeProComparisonList = [
     },
   },
   {
+    name: "Starter Template",
+    helpText: "",
+    free: {
+      text: "Limited Access",
+      icon: "",
+    },
+    pro: {
+      text: "Access All Prebuilt Templates",
+      icon: "",
+    },
+  },
+  {
     name: "Live Copy",
     helpText: "",
     free: {
-      text: "Coming Soon",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
     pro: {
       text: "",
@@ -77,12 +89,12 @@ export const freeProComparisonList = [
     name: "Theme Builder Compatibility	",
     helpText: "",
     free: {
-      text: "Limited Compatibility",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
     pro: {
-      text: "Full Compatibility with Popular Themes and Woocommerce",
-      icon: "",
+      text: "",
+      icon: CheckIcon,
     },
   },
   {
@@ -97,18 +109,7 @@ export const freeProComparisonList = [
       icon: CheckIcon,
     },
   },
-  {
-    name: "WooCommerce Widgets	",
-    helpText: "",
-    free: {
-      text: "Basic WooCommerce Support	",
-      icon: "",
-    },
-    pro: {
-      text: "Full WooCommerce Widgets Support",
-      icon: "",
-    },
-  },
+
   {
     name: "Forms Integration	",
     helpText: "",
@@ -121,8 +122,9 @@ export const freeProComparisonList = [
       icon: "",
     },
   },
+
   {
-    name: "Support for 3rd Party Plugins	",
+    name: "Animation Builder",
     helpText: "",
     free: {
       text: "",
@@ -134,7 +136,67 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Animation Builder",
+    name: "Custom Icon Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "CPT Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Custom Font Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Dynamic Tags",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CrossIcon,
+    },
+    pro: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "AAE Fields",
+    helpText: "",
+    free: {
+      text: "Coming Soon",
+      icon: "",
+    },
+    pro: {
+      text: "Coming Soon",
+      icon: "",
+    },
+  },
+  {
+    name: "Support for 3rd Party Plugins	",
     helpText: "",
     free: {
       text: "",
