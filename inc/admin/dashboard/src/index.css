@@ -503,7 +503,7 @@
 
 }
 
-.wcf-icon-Post-Content-1:before {
+.wcf-icon-Post-Comments:before {
   content: "\e93f";
 
 }
@@ -692,26 +692,6 @@
 
 }
 
-.wcf-icon-behance2:before {
-  content: "\eaa9";
-}
-
-.wcf-icon-deviantart:before {
-  content: "\eaaa";
-}
-
-.wcf-icon-500px:before {
-  content: "\eaab";
-}
-
-.wcf-icon-steam:before {
-  content: "\eaac";
-}
-
-.wcf-icon-steam2:before {
-  content: "\eaad";
-}
-
-.wcf-icon-dropbox:before {
-  content: "\eaae";
+.wcf-icon-Post-Rating:before {
+  content: "\e966";
 }
