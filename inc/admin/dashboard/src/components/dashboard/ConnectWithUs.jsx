@@ -115,7 +115,7 @@ const ConnectWithUs = () => {
         </div>
         <div>
           <a
-            href="#"
+            href="https://www.facebook.com/groups/1328922111592002/"
             aria-disabled="true"
             className={cn(
               buttonVariants({ variant: "secondary" }),
