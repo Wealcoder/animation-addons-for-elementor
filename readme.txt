@@ -4,7 +4,7 @@ Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,8 @@ The Animation Addons comes with GSAP Animation, 86+ Widgets, 23+ Extensions, Cus
 Animation Addons for Elementor is the **No.1 Animation Plugin** with creative & premium design capabilities. This Elementor addons has advanced animation features that allow you to create an advanced animated website with the full features of GSAP in Elementor without writing a single line of code.
 
 Animation Addons for Elementor has all required website builders, including the **Custom Header & Footer Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, 404 Builder, etc.** The Animation Addons for Elementor plugin is designed to be lightweight and to ensure fast page loading times.
+
+[Check the Pro](https://animation-addons.com)
 
 **Exclusive Features:**
 * Preloaders
@@ -404,7 +406,20 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == Screenshots ==
 
+1. **Preset Animations** Instantly apply ready-made animations without any hassle.
+2. **Animation Builder** Build unlimited custom animations with intuitive controls and complete flexibility.
+3. **Pre-Built Templates** Choose from a rich collection of ready-to-use animation templates to save time and effort.
+4. **Extensions** Enhance functionality with essential add-ons and pro features to supercharge your animations.
+5. **Powerful Dashboard** Organize, manage, and monitor all your animations in one sleek and easy-to-use dashboard.
+6. **Widget Settings Panel** Advanced controls and customization for each animation widget to fine-tune effects as you like.
+7. **ection Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
+
 == Changelog ==
+
+## **v2.1 – 15 March 2025**
+
+- 🔄 **Updated:** Update banner screenshot 
+- 🔄 **Updated:** Prebuilt Template Path update
 
 
 ## **v2.0 – 13 March 2025**
