@@ -24,7 +24,7 @@ const FormSchema = z.object({
     })
     .optional(),
   mobile: z.boolean().optional(),
-  editMode: z.boolean().optional(),
+  disableMode: z.boolean().optional(),
   media: z.string().regex(/^(?:\d+px|min-width:\s?\d+px|max-width:\s?\d+px)$/, {
     message:
       "Invalid format. Use '900px', 'min-width: 800px', or 'max-width: 1024px'.",
@@ -40,8 +40,8 @@ const ScrollSmootherSettings = () => {
       smooth: WCF_ADDONS_ADMIN?.smoothScroller?.smooth || 1.35,
       mobile:
         WCF_ADDONS_ADMIN?.smoothScroller?.mobile === "true" ? true : false,
-      editMode:
-        WCF_ADDONS_ADMIN?.smoothScroller?.editMode === "true" ? true : false,
+      disableMode:
+        WCF_ADDONS_ADMIN?.smoothScroller?.disableMode === "true" ? true : false,
       media: WCF_ADDONS_ADMIN?.smoothScroller?.media || "768px",
     },
   });
@@ -66,7 +66,7 @@ const ScrollSmootherSettings = () => {
       body: new URLSearchParams({
         action: "save_smooth_scroller_settings",
         mobile: data.mobile,
-        editMode: data.editMode,
+        disableMode: data.disableMode,
         smooth: data.smooth,
         media: convertedMedia,
         nonce: WCF_ADDONS_ADMIN.nonce,
@@ -135,7 +135,7 @@ const ScrollSmootherSettings = () => {
               />
               <FormField
                 control={form.control}
-                name="editMode"
+                name="disableMode"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
@@ -146,7 +146,7 @@ const ScrollSmootherSettings = () => {
                     </FormControl>
                     <div className="space-y-1.5 leading-none">
                       <FormLabel className="text-[#0E121B]">
-                        Enable on edit mode
+                        Disable on editor mode
                       </FormLabel>
                     </div>
                   </FormItem>
