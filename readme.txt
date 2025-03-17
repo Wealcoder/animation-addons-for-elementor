@@ -414,13 +414,13 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 6. **Widget Settings Panel** Advanced controls and customization for each animation widget to fine-tune effects as you like.
 7. **ection Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
+
 == Changelog ==
 
 ## **v2.1 – 15 March 2025**
 
-- 🔄 **Updated:** Update banner screenshot 
+- 🔄 **Updated:** Update banner screenshot and widget icons
 - 🔄 **Updated:** Prebuilt Template Path update
-
 
 ## **v2.0 – 13 March 2025**
 

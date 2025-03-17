@@ -18,7 +18,7 @@ class BlackList_Widget extends \Elementor\Widget_Base {
     }
     public function setWdigetLabel($name){
         $this->custom_heading = $name; 
-     }
+    }
 
     public function get_title() {
         return $this->custom_heading;

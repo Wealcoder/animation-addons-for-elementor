@@ -401,6 +401,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 template_id: template_id
               },
               success: function success(e) {
+                console.log(e);
                 $e.run("document/elements/import", {
                   model: window.elementor.elementsModel,
                   data: e
