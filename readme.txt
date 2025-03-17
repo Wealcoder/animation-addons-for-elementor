@@ -1,20 +1,22 @@
 === Animation Addons for Elementor ===
-Contributors: wealcoder, wcrayhan, jhshakil
+Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
 Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-The Animation Addons comes with GSAP Animation, 100+ Widgets, 25+ Extensions, Custom Animation Builder, 150+ Pre-Designed Websites, and many more.
+The Animation Addons comes with GSAP Animation, 86+ Widgets, 23+ Extensions, Custom Animation Builder, 150+ Pre-Designed Websites, and many more.
 
 == Description ==
 
 Animation Addons for Elementor is the **No.1 Animation Plugin** with creative & premium design capabilities. This Elementor addons has advanced animation features that allow you to create an advanced animated website with the full features of GSAP in Elementor without writing a single line of code.
 
 Animation Addons for Elementor has all required website builders, including the **Custom Header & Footer Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, 404 Builder, etc.** The Animation Addons for Elementor plugin is designed to be lightweight and to ensure fast page loading times.
+
+[Check the Pro](https://animation-addons.com)
 
 **Exclusive Features:**
 * Preloaders
@@ -28,6 +30,7 @@ Animation Addons for Elementor has all required website builders, including the 
 * 3D Text Move and Character Animation
 * Text Invert and timeline-based animations
 * Dynamic Timelines with Play, Pause, and Reverse
+* Live Copy Paste
 
 **GSAP Features:**
 * DrawSVG Animation
@@ -63,6 +66,8 @@ Once you have designed your dream website with all the requisite elements, you m
 **Advanced Tooltip:** Display additional information about elements when users hover over them.
 
 **Custom Fonts:** Integrate unique custom fonts to maintain a consistent brand identity.
+
+**Custom Icons:** Integrate unique, custom-designed icomoon icons to create a consistent and memorable brand identity, enhance user experience, and improve visual recognition across your website or application.
 
 **Mega Menu:** Create a customizable, expansive mega menu for seamless navigation.
 
@@ -274,8 +279,8 @@ GSAP, or GreenSock Animation Platform, uses a robust JavaScript library for high
 – 3D Scaling
 – 3D Spin
 
-### 100+ Elementor Widgets:
-Explore limitless website design possibilities with a custom library of **100+ powerful widgets** exclusively built for Elementor. Some of these widgets include dynamic slider, service, header, portfolio, progress bar, breadcrumb, accordion, post feature image, excerpt, and much more.
+### 86+ Elementor Widgets:
+Explore limitless website design possibilities with a custom library of **86+ powerful widgets** exclusively built for Elementor. Some of these widgets include dynamic slider, service, header, portfolio, progress bar, breadcrumb, accordion, post feature image, excerpt, and much more.
 
 ### Text and Image Animation:
 Transform static text and images into interactive elements with advanced animation features. You can select from the different effects, like typewriter text, text split, 3D rotation for images, etc. In addition, you can create attention-grabbing parallax scrolling, reveals, mouseovers, and rotating effects on your website.
@@ -324,6 +329,7 @@ Animation Addons for Elementor focuses on maximizing your website’s overall fu
 Animation Addons for Elementor is built to minimize delays and let you experience immediate loading times. Unlike other animation plugins, our plugin is super fast and SEO-friendly.  With a view to keeping visitors engaged and reducing bounce rates, the plugin will make your content appear quickly.
 
 This plugin using the modified version of [WP import 2.0] (https://github.com/humanmade/WordPress-Importer).
+
 
 == Frequently Asked Questions ==
 
@@ -398,18 +404,31 @@ No. You cannot use it without Elementor since it’s an addon for Elementor.
 
 You don’t need to know the code to use the widgets and modules of Animation Addons for Elementor. That means, without any coding expertise, you can leverage all the elements to enhance your web design experience.
 
-= Is Animation Addons for Elementor Plugin Free? =
+== Screenshots ==
 
-The Animation Addons for Elementor provide a 3-month free trial for new users. Most widgets and extensions are free, and paid options are available. You can choose the pro version to use its advanced features. But its free version has plenty of options for professionals.
-
+1. **Preset Animations** Instantly apply ready-made animations without any hassle.
+2. **Animation Builder** Build unlimited custom animations with intuitive controls and complete flexibility.
+3. **Pre-Built Templates** Choose from a rich collection of ready-to-use animation templates to save time and effort.
+4. **Extensions** Enhance functionality with essential add-ons and pro features to supercharge your animations.
+5. **Powerful Dashboard** Organize, manage, and monitor all your animations in one sleek and easy-to-use dashboard.
+6. **Widget Settings Panel** Advanced controls and customization for each animation widget to fine-tune effects as you like.
+7. **ection Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 == Changelog ==
 
-## **v2.0 – 03 March 2025**
+## **v2.1 – 15 March 2025**
+
+- 🔄 **Updated:** Update banner screenshot 
+- 🔄 **Updated:** Prebuilt Template Path update
+
+
+## **v2.0 – 13 March 2025**
 
 - ❌ **Removed:** GoodShare Library from social share widget 
 - 🔄 **Updated:** Updated Dashboard UI
 - 🆕 **New Feature:** Added **Template Library** 
+- 🆕 **New Feature:** Added **Live Copy Paste** 
+- 🆕 **New Feature:** Added **Dynamic Tags** 
 
 ## **v1.1.9 – 20 February 2025**
 - 🔄 **Updated:** Upgraded `SweetAlert.js` and `Typed.js` to the latest versions for improved performance and security.  
