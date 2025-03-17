@@ -84,20 +84,30 @@
         container: elementor.getPreviewContainer(),
       };
       if (data.content?.content) {
-        data.content.content.forEach((element) => {
-          var newWidget = {};
-          newWidget.elType = element.elType;
-          newWidget.settings = element.settings;
-          newWidget.elements = element.elements;
-          $opts.model = newWidget;
-          $e.run("document/elements/create", $opts);
-        });
+        $e.run("document/elements/import", {
+          model: window.elementor.elementsModel,
+          data: data.content,
+          options: {
+            at: 0
+          }
+      });
+        // data.content.content.forEach((element) => {
+        //   var newWidget = {};
+        //   if(elementor.widgetsCache[element.elType]){
+        //     newWidget.elType   = element.elType;
+        //     newWidget.settings = element.settings;
+        //     newWidget.elements = element.elements;
+        //     $opts.model        = newWidget;
+        //     $e.run("document/elements/create", $opts);
+        //   }
+          
+        // });
         elementor.notifications.showToast({
-          message: elementor.translate("Content Pasted! "),
+          message: elementor.translate("Live Content Pasted! "),
         });
       } else {
         elementor.notifications.showToast({
-          message: elementor.translate("Content not found! "),
+          message: elementor.translate("Live Content not found! "),
         });
       }
     } catch (error) {

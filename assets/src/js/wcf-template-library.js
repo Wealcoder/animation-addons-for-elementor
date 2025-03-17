@@ -396,7 +396,7 @@
                             unique_id: template_id,
                             data: {edit_mode: !0, display: !0, template_id: template_id},
                             success: function (e) {
-
+                                   console.log(e);         
                                 $e.run("document/elements/import", {
                                     model: window.elementor.elementsModel,
                                     data: e,
