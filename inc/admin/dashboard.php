@@ -301,7 +301,7 @@ class WCF_Admin_Init {
 				'nonce'               => wp_create_nonce( 'wcf_admin_nonce' ),
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
-				'smoothScroller'      => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+				'smoothScroller'      => json_decode( get_option( 'wcf_smooth_scroller' ) ),				
 				'cf_settings'         => is_string($font_settings) ? json_decode($font_settings) : [],
 				'extensions'          => ['total' => $total_extensions,'active' => is_array($active_ext) ? count($active_ext): 0],
 				'widgets'             => ['total' =>$total_widgets,'active' => is_array($active_widgets) ? count($active_widgets): 0],
@@ -627,6 +627,9 @@ class WCF_Admin_Init {
 		
 		if ( isset( $_POST['mobile'] ) ) {
 			$settings['mobile'] = sanitize_text_field( wp_unslash( $_POST['mobile'] ) );
+		}
+		if ( isset( $_POST['disableMode'] ) ) {
+			$settings['disableMode'] = sanitize_text_field( wp_unslash( $_POST['disableMode'] ) );
 		}
 		if ( isset( $_POST['media'] ) ) {
 			$settings['media'] = sanitize_text_field( wp_unslash( $_POST['media'] ) );
