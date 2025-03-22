@@ -66,12 +66,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   }
 
   // Function to request widget data
-  function requestWidgetData() {
+  function requestWidgetData(_x) {
     return _requestWidgetData.apply(this, arguments);
   }
   function _requestWidgetData() {
-    _requestWidgetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var machineId, livePasteUrl, _data$content, response, data, $opts;
+    _requestWidgetData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(position) {
+      var machineId, livePasteUrl, _data$content, response, data, options, selectedElements;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -92,29 +92,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             return response.json();
           case 10:
             data = _context.sent;
-            $opts = {
-              model: "",
-              container: elementor.getPreviewContainer()
+            options = {
+              at: position
             };
+            selectedElements = elementor.selection.getElements();
             if ((_data$content = data.content) !== null && _data$content !== void 0 && _data$content.content) {
               $e.run("document/elements/import", {
                 model: window.elementor.elementsModel,
                 data: data.content,
-                options: {
-                  at: 0
-                }
+                options: options
               });
-              // data.content.content.forEach((element) => {
-              //   var newWidget = {};
-              //   if(elementor.widgetsCache[element.elType]){
-              //     newWidget.elType   = element.elType;
-              //     newWidget.settings = element.settings;
-              //     newWidget.elements = element.elements;
-              //     $opts.model        = newWidget;
-              //     $e.run("document/elements/create", $opts);
-              //   }
-
-              // });
               elementor.notifications.showToast({
                 message: elementor.translate("Live Content Pasted! ")
               });
@@ -123,40 +110,62 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 message: elementor.translate("Live Content not found! ")
               });
             }
-            _context.next = 18;
+            _context.next = 19;
             break;
-          case 15:
-            _context.prev = 15;
+          case 16:
+            _context.prev = 16;
             _context.t0 = _context["catch"](2);
             elementor.notifications.showToast({
               message: elementor.translate("Only same browser tab work, App using browser fingerprint for live copy ")
             });
-          case 18:
+          case 19:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[2, 15]]);
+      }, _callee, null, [[2, 16]]);
     }));
     return _requestWidgetData.apply(this, arguments);
   }
   window.addEventListener('elementor/init', function () {
     getFingerprintId();
     var elTypes = ['widget', 'column', 'section', 'container'];
-    var newAction = {
-      name: 'aae-addon-live-paste',
-      icon: 'wcf-logo eicon-link aae-icon-pro',
-      title: 'Paste from AAE Site',
-      isEnabled: function isEnabled() {
-        return true;
-      },
-      callback: function callback() {
-        return requestWidgetData();
-      },
-      shortcut: '^+B' // Custom property for shortcut
-    };
-
     elTypes.forEach(function (elType) {
       elementor.hooks.addFilter("elements/".concat(elType, "/contextMenuGroups"), function (groups, view) {
+        var newAction = {
+          name: 'aae-addon-live-paste',
+          icon: 'wcf-logo eicon-link aae-icon-pro',
+          title: 'Paste from AAE Site',
+          isEnabled: function isEnabled() {
+            var model = view.getEditModel(); // Current element model
+            var $currentElement = view.$el; // jQuery element
+            var currentDOMElement = $currentElement[0]; // Raw DOM element                                
+            var classesToCheck = ['e-parent', 'e-empty']; // Replace with the classes you want to check
+            var hasAllClasses = classesToCheck.every(function (cls) {
+              return currentDOMElement.classList.contains(cls);
+            });
+            if (hasAllClasses) {
+              return true;
+            }
+            return false;
+          },
+          callback: function callback() {
+            var model = view.getEditModel(); // Current element model
+            var $currentElement = view.$el; // jQuery element
+            var currentDOMElement = $currentElement[0]; // Raw DOM element
+
+            var classesToCheck = ['e-parent', 'e-empty']; // Replace with the classes you want to check
+            var hasAllClasses = classesToCheck.every(function (cls) {
+              return currentDOMElement.classList.contains(cls);
+            });
+            if (hasAllClasses) {
+              var siblings = model.collection;
+              var index = siblings.indexOf(model);
+              requestWidgetData(index, currentDOMElement);
+            }
+          }
+          // shortcut: '^+B', // Custom property for shortcut
+        };
+
         groups.forEach(function (group) {
           if ('general' === group.name) {
             group.actions.push(newAction);

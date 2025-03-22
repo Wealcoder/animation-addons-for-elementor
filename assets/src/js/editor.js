@@ -66,10 +66,9 @@
                 });
             }    
     }
-        
-    
+     
    // Function to request widget data
-   async function requestWidgetData() {
+   async function requestWidgetData(position) {
     const machineId = localStorage.getItem('aae_machine_id');     
     const livePasteUrl = `https://animation-addons.com/wp-json/live/v1/copy-paste?machine_id=${machineId}&type=paste`;
     try {
@@ -77,31 +76,17 @@
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const data = await response.json();
-
-      let $opts = {
-        model: "",
-        container: elementor.getPreviewContainer(),
-      };
+      const data = await response.json();    
+      let options = {
+        at: position
+      }
+      var selectedElements = elementor.selection.getElements();          
       if (data.content?.content) {
         $e.run("document/elements/import", {
-          model: window.elementor.elementsModel,
-          data: data.content,
-          options: {
-            at: 0
-          }
-      });
-        // data.content.content.forEach((element) => {
-        //   var newWidget = {};
-        //   if(elementor.widgetsCache[element.elType]){
-        //     newWidget.elType   = element.elType;
-        //     newWidget.settings = element.settings;
-        //     newWidget.elements = element.elements;
-        //     $opts.model        = newWidget;
-        //     $e.run("document/elements/create", $opts);
-        //   }
-          
-        // });
+            model: window.elementor.elementsModel,
+            data: data.content,
+            options: options
+        });      
         elementor.notifications.showToast({
           message: elementor.translate("Live Content Pasted! "),
         });
@@ -118,20 +103,46 @@
       });
     }
   }  
-  
+
+
     window.addEventListener( 'elementor/init', () => {          
         getFingerprintId();
         const elTypes = [ 'widget', 'column', 'section', 'container' ];    
-        const newAction = {
-            name: 'aae-addon-live-paste',
-            icon: 'wcf-logo eicon-link aae-icon-pro',
-            title: 'Paste from AAE Site',
-            isEnabled: () => true,
-            callback: () => requestWidgetData(),
-            shortcut: '^+B', // Custom property for shortcut
-        };
+       
         elTypes.forEach( ( elType ) => {    
             elementor.hooks.addFilter( `elements/${elType}/contextMenuGroups`, ( groups, view ) => {    
+              const newAction = {
+                name: 'aae-addon-live-paste',
+                icon: 'wcf-logo eicon-link aae-icon-pro',
+                title: 'Paste from AAE Site',
+                isEnabled: () => {
+                  const model             = view.getEditModel();                   // Current element model
+                  const $currentElement   = view.$el;                              // jQuery element
+                  const currentDOMElement = $currentElement[0];                   // Raw DOM element                                
+                  const classesToCheck = ['e-parent', 'e-empty']; // Replace with the classes you want to check
+                  const hasAllClasses = classesToCheck.every(cls => currentDOMElement.classList.contains(cls));
+                  if(hasAllClasses){                   
+                    return true;
+                  }
+                  return false;
+                },
+                callback: () => {
+                  const model             = view.getEditModel();                   // Current element model
+                  const $currentElement   = view.$el;                              // jQuery element
+                  const currentDOMElement = $currentElement[0];                   // Raw DOM element
+                                
+                  const classesToCheck = ['e-parent', 'e-empty']; // Replace with the classes you want to check
+                  const hasAllClasses = classesToCheck.every(cls => currentDOMElement.classList.contains(cls));
+                  if(hasAllClasses){                     
+                    const siblings    = model.collection;
+                    const index       = siblings.indexOf(model);  
+                    requestWidgetData(index, currentDOMElement);
+                  
+                  }      
+               
+                },          
+                // shortcut: '^+B', // Custom property for shortcut
+            };
                 groups.forEach( ( group ) => {
                     if ( 'general' === group.name ) {
                         group.actions.push( newAction );
@@ -145,7 +156,6 @@
     } ); 
     
     // End Live Copy paste
-    
-  
+
    
 })(jQuery, window, document, WCF_Addons_Editor);
