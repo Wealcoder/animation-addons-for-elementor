@@ -24,15 +24,17 @@ const TutorialDialog = ({ open, setOpen }) => {
               allowFullScreen
               className="rounded-md aspect-video"
             ></iframe> */}
-            <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-              <iframe
-                src="https://player.vimeo.com/video/1065400040?h=7d54677ea1&badge=0&autopause=0&player_id=0&app_id=58479/embed"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowfullscreen
-                frameborder="0"
-                className="absolute top-0 left-0 w-full h-full"
-              ></iframe>
-            </div>
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/1RUMEj3tXAI?si=uCS5Lb0EOA31SNrL"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              className="rounded-md aspect-video"
+            ></iframe>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
