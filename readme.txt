@@ -5,7 +5,7 @@ Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,106 +123,106 @@ Take your website design to the next level with 86+ Elementor widgets. Whether y
 
 **Portfolio**: Display pages, posts, and custom post types in a filterable grid.
 
-Search Form: Provide users with a simple and intuitive interface to input search queries and retrieve relevant results.
+**Search Form**: Provide users with a simple and intuitive interface to input search queries and retrieve relevant results.
 
-Search Query: Display search results in real-time as users type their queries.
+**Search Query**: Display search results in real-time as users type their queries.
 
-Search No Result: Offer helpful guidance and options when no relevant search results are found.
+**Search No Result**: Offer helpful guidance and options when no relevant search results are found.
 
 ### Form Widgets
-Contact Form 7: Customize Contact Form 7 forms to match specific needs.
+**Contact Form 7**: Customize Contact Form 7 forms to match specific needs.
 
-Mailchimp: Enable users to add opt-in forms to collect emails.
+**Mailchimp**: Enable users to add opt-in forms to collect emails.
 
 ### Video Widgets
-Video Popup: Display a video in a popup to enhance engagement.
+**Video Popup**: Display a video in a popup to enhance engagement.
 
-Video Box: Showcase external and self-hosted videos from various sources.
+**Video Box**: Showcase external and self-hosted videos from various sources.
 
-Video Box Slider: Create a slider with videos from multiple sources.
+**Video Box Slider**: Create a slider with videos from multiple sources.
 
-Video Mask: Apply transitions, visual effects, and isolate video elements.
+**Video Mask**: Apply transitions, visual effects, and isolate video elements.
 
 ### Advanced Widgets
-Toggle Switcher: Allow users to toggle between two mutually exclusive states (on/off).
+**Toggle Switcher**: Allow users to toggle between two mutually exclusive states (on/off).
 
-Advanced Portfolio: Add a responsive portfolio slider or grid to showcase images, videos, or projects.
+**Advanced Portfolio**: Add a responsive portfolio slider or grid to showcase images, videos, or projects.
 
-Table of Contents: Generate a list of navigation links to different sections of a page.
+**Table of Contents**: Generate a list of navigation links to different sections of a page.
 
-Flip Box: Provide interactive design effects such as flip, slide, fade, zoom-in, and zoom-out.
+**Flip Box**: Provide interactive design effects such as flip, slide, fade, zoom-in, and zoom-out.
 
-Advanced Accordion: Enable collapsible content sections for better organization.
+**Advanced Accordion**: Enable collapsible content sections for better organization.
 
-Advanced Pricing Table: Display structured pricing information effectively.
+**Advanced Pricing Table**: Display structured pricing information effectively.
 
-Filterable Gallery: Create an attractive, well-organized image gallery.
+**Filterable Gallery**: Create an attractive, well-organized image gallery.
 
-Image Accordion: Display a series of images interactively and compactly.
+**Image Accordion**: Display a series of images interactively and compactly.
 
-Advanced Slider: Customize and create advanced-level sliders.
+**Advanced Slider**: Customize and create advanced-level sliders.
 
-Scroll Elements: Implement scroll-driven interactions for enhanced engagement.
+**Scroll Elements**: Implement scroll-driven interactions for enhanced engagement.
 
-Breadcrumbs: Display the navigation path to the current page.
+**Breadcrumbs**: Display the navigation path to the current page.
 
-Author Box: Show detailed information about the author of a post or page.
+**Author Box**: Show detailed information about the author of a post or page.
 
-Filterable Slider: Allow users to filter data by removing unwanted content.
+**Filterable Slider**: Allow users to filter data by removing unwanted content.
 
 ### General Widgets
 
-Animated Title: Animate your titles with effects such as fade, character-based animation, word animation, text reveal, 3D movement, and more.
+**Animated Title**: Animate your titles with effects such as fade, character-based animation, word animation, text reveal, 3D movement, and more.
 
-Animated Text: Animate text with various effects, including fade, character-based animation, word animation, text reveal, and more.
+**Animated Text**: Animate text with various effects, including fade, character-based animation, word animation, text reveal, and more.
 
-Image Box: Present images with unique animations in five different styles.
+**Image Box**: Present images with unique animations in five different styles.
 
-Image Box Slider: Showcase images in a slider with five different styles.
+**Image Box Slider**: Showcase images in a slider with five different styles.
 
-Image: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
+**Image**: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
 
-Image Gallery: Create an image gallery with multiple styles and animations.
+**Image Gallery**: Create an image gallery with multiple styles and animations.
 
-Brand Slider: Showcase client or brand logos in a stylish slider with text and image options.
+**Brand Slider**: Showcase client or brand logos in a stylish slider with text and image options.
 
-Text Hover Image: Add a text overlay to an image on hover.
+**Text Hover Image**: Add a text overlay to an image on hover.
 
-Counter: Add an animated numbered counter to display statistics dynamically.
+**Counter**: Add an animated numbered counter to display statistics dynamically.
 
-Icon Box: Showcase information using icons, titles, and descriptions in multiple styles.
+**Icon Box**: Showcase information using icons, titles, and descriptions in multiple styles.
 
-Testimonial: Display client feedback with 15 unique styles.
+**Testimonial**: Display client feedback with 15 unique styles.
 
-Button: Add modern buttons with seven different styles.
+**Button**: Add modern buttons with seven different styles.
 
-Image Compare: Compare two images side by side to highlight differences.
+**Image Compare**: Compare two images side by side to highlight differences.
 
-Progress Bar: Display progress or completion status of tasks or processes in various styles.
+**Progress Bar**: Display progress or completion status of tasks or processes in various styles.
 
-Social Icons: Add social media icons that link to your profiles.
+**Social Icons**: Add social media icons that link to your profiles.
 
-Team: Showcase your team in style to build credibility effortlessly.
+**Team**: Showcase your team in style to build credibility effortlessly.
 
-One Page Nav: Simplify navigation with a smooth scrolling effect.
+**One Page Nav**: Simplify navigation with a smooth scrolling effect.
 
-Timeline: Create visually appealing timelines for events or personal journeys.
+**Timeline**: Create visually appealing timelines for events or personal journeys.
 
-Tabs: Enhance navigation and improve user experience with tabbed content.
+**Tabs**: Enhance navigation and improve user experience with tabbed content.
 
-Services Tab: Present services effectively with multiple styling options.
+**Services Tab**: Present services effectively with multiple styling options.
 
-Floating Elements: Add captivating animations like floating, moving, zooming in/out, and rotation.
+**Floating Elements**: Add captivating animations like floating, moving, zooming in/out, and rotation.
 
-Event Slider: Showcase special events with dynamic sliders.
+**Event Slider**: Showcase special events with dynamic sliders.
 
-Content Slider: Create seamless content sliders for showcasing information effectively.
+**Content Slider**: Create seamless content sliders for showcasing information effectively.
 
-Countdown: Add countdowns to create excitement for upcoming events or promotions.
+**Countdown**: Add countdowns to create excitement for upcoming events or promotions.
 
-Typewriter: Display a typing effect to engage users dynamically.
+**Typewriter**: Display a typing effect to engage users dynamically.
 
-Animated Heading: Create eye-catching and engaging animated headlines.
+**Animated Heading**: Create eye-catching and engaging animated headlines.
 
 ##  Animation Addons for Elementor: Key Features
 
@@ -407,6 +407,10 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 == Changelog ==
+
+ = v2.1.4 – 06 April 2025 =
+  - 🎨 **Fixed:** Slider animation issue
+  - 🎨 **Fixed:** Gallery Issue
 
  = v2.1.2 – 25 March 2025 =
   - 🔄 **Updated:** Banner and dashboard updated

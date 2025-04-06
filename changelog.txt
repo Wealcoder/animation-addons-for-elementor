@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+ = v2.1.4 – 06 April 2025 =
+  - ❌ **Fixed:** Slider animation issue
+  - ❌ **Fixed:** Gallery Issue
+  
 ## **v2.1.2 – 25 March 2025**
 
   - 🔄 **Updated:** Banner and dashboard updated
