@@ -5,7 +5,7 @@ Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,9 +13,9 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 
 == Description ==
 
-**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 86+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates. **
+**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 86+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
 
-As the **No.1 animation plugin for Elementor**, it enables you to create fully animated websites with advanced **GSAP functionality ** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
+As the **No.1 animation plugin for Elementor**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 150+ Pre-Built Websites](https://animation-addons.com/templates-list/)
@@ -23,7 +23,7 @@ As the **No.1 animation plugin for Elementor**, it enables you to create fully a
 
 https://youtu.be/NS0TGy8A_tU
 
-**Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
+**Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder**. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
 
 ### Powerful GSAP Features for Advanced Animations
 🌟 ScrollTrigger
@@ -270,7 +270,7 @@ Unlock endless design possibilities with 86+ advanced Elementor widgets. From dy
 The Custom Animation Builder is a powerful tool that allows WordPress users to create stunning GSAP-powered animations without any coding. This intuitive builder integrates the full potential of GSAP (GreenSock Animation Platform), enabling you to craft smooth transitions, complex timelines, and advanced animations like never before. Key features include ScrollTrigger for scroll-based animations, MorphSVG for shape transformations, DrawSVG for dynamic SVG animations, SplitText for text effects, ScrambleText for engaging typography, ScrollSmoother for smooth page scrolling, and 3D Transformations for depth and perspective adjustments. With easy-to-use controls, the Custom Animation Builder gives you complete creative freedom to elevate your website’s design and interactivity without writing a single line of code.
 
 ### Advanced Website Builders for Complete Customization
-**Animation Addons for Elementor** provides powerful **website builders** to design **custom headers, footers, mega menus, archive pages, single post layouts, and popups ** —without writing a single line of code. The **Header & Footer Builder** enables seamless branding with logos, menus, and call-to-action buttons, while the **Mega Menu Builder** creates expandable, visually rich navigation with icons and animations.
+**Animation Addons for Elementor** provides powerful **website builders** to design **custom headers, footers, mega menus, archive pages, single post layouts, and popups** —without writing a single line of code. The **Header & Footer Builder** enables seamless branding with logos, menus, and call-to-action buttons, while the **Mega Menu Builder** creates expandable, visually rich navigation with icons and animations.
 
 The **Archive Page Builder** simplifies designing category, taxonomy, and tag archive templates, while the **Single Page & Post Builder** gives full control over content structure and animations. Additionally, the **Popup Builder** helps craft high-converting, fully customizable pop-ups with advanced design and targeting options. These intuitive tools make website building effortless in Elementor!
 
