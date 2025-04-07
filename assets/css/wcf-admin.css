@@ -4,6 +4,6 @@
 }
 
 .animation-addon_page_wcf_addons_settings .notice {
-  display: none;
+  display: none !important;
   height: 0;
 }

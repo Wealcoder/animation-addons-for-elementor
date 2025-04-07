@@ -7,7 +7,6 @@ import ProWizItem from "../../../public/images/wizard/pro-wiz-item.png";
 import ProExtItem from "../../../public/images/wizard/pro-ext-item.png";
 import { buttonVariants } from "@/components/ui/button";
 import { RiVipCrown2Line } from "react-icons/ri";
-import GetProButton from "@/components/shared/GetProButton";
 import { useActivate } from "@/hooks/app.hooks";
 
 const WizPro = () => {
@@ -40,8 +39,7 @@ const WizPro = () => {
                       href="https://animation-addons.com/"
                       target="_blank"
                       className={cn(
-                        buttonVariants({ variant: "pro" }),
-                        btnClassName
+                        buttonVariants({ variant: "pro" })
                       )}
                     >
                       <span className="me-2 flex">

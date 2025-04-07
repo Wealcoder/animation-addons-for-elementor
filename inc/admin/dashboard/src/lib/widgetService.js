@@ -7,6 +7,9 @@ export const activeWidgetFn = (mainContent, data, dispatch) => {
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
           if (key2 === data.slug) {
             value2.is_active = data.value;
+            if (!data.value) {
+              value.is_active = data.value;
+            }
             return [key2, value2];
           } else {
             return [key2, value2];
@@ -18,13 +21,24 @@ export const activeWidgetFn = (mainContent, data, dispatch) => {
     })
   );
 
-  dispatch({
-    type: "setAllWidgets",
-    value: {
-      ...mainContent,
-      elements: result,
-    },
-  });
+  if (!data.value) {
+    dispatch({
+      type: "setAllWidgets",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: result,
+      },
+    });
+  } else {
+    dispatch({
+      type: "setAllWidgets",
+      value: {
+        ...mainContent,
+        elements: result,
+      },
+    });
+  }
 };
 
 export const activeGroupWidgetFn = (mainContent, data, dispatch) => {

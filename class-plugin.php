@@ -30,7 +30,7 @@ class Plugin {
 	 *
 	 * @var string API URL.
 	 */
-	public $api_url = 'https://crowdytheme.com/elementor/info-templates/wp-json/api/v2/list';
+	public $api_url = 'https://themecrowdy.com/wp-json/api/v2/list';
 
 	/**
 	 * Instance
@@ -94,7 +94,8 @@ class Plugin {
 				'success' => esc_html__( 'Success', 'animation-addons-for-elementor' ),
 				'warning' => esc_html__( 'Warning', 'animation-addons-for-elementor' ),
 			],
-			'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) )
+			'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+			'mode'								=> \Elementor\Plugin::$instance->editor->is_edit_mode(),
 		] );
 
 		wp_localize_script( 'wcf--addons', 'WCF_ADDONS_JS', $data );
@@ -153,7 +154,7 @@ class Plugin {
 
 		$data = apply_filters( 'wcf-addons-editor/js/data', [
 			'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-			'_wpnonce' => wp_create_nonce( 'wcf-addons-editor' ),
+			'_wpnonce' => wp_create_nonce( 'wcf-addons-editor' ),			
 		] );
 
 		wp_localize_script( 'wcf-editor', 'WCF_Addons_Editor', $data );
@@ -713,7 +714,7 @@ class Plugin {
                                 } else {
                                 #>
 								<?php if ( !class_exists( 'AAE_ADDONS_Plugin_Pro' ) && !array_key_exists( $plugin_slug, $all_plugins )) { ?>
-	                                <a href="https://store.wealcoder.com/animatin-addon-for-elementor-trail/" class="library--action pro" target="_blank">
+	                                <a href="https://animation-addons.com" class="library--action pro" target="_blank">
 	                                    <i class="eicon-external-link-square"></i>
 	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
 	                                </a>
@@ -735,6 +736,7 @@ class Plugin {
                             } );
                             #>
                         </div>
+						<div class="aaeaadon-loadmore-footer">.</div>
                     </div>
                 </div>
                 <div class="dialog-loading dialog-lightbox-loading wcf-template-library--loading" hidden>
@@ -846,7 +848,7 @@ class Plugin {
 	 */
 	public static function get_library_data( $force_update = false ) {
 		// Define a unique transient key
-		$transient_key = 'aaeaddon_tpl_library_data2025';
+		$transient_key = 'aaeaddon_tpl_library_data20252';
 	
 		// Attempt to retrieve the cached data
 		$library_data = get_transient( $transient_key );

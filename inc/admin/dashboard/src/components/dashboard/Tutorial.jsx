@@ -14,7 +14,7 @@ const Tutorial = () => {
         <h2 className="text-xl font-medium ">{`Watch The Beginner's Guide on How to Use Animation Addons.`}</h2>
         <p className="text-sm mt-[10px] text-text-secondary">{`Get started with ease by watching our step-by-step beginner's tutorial on Elementor.`}</p>
         <a
-          href={"https://www.youtube.com/"}
+          href={"https://www.youtube.com/@wealcoder-official"}
           className={cn(buttonVariants({ variant: "secondary" }), "mt-7")}
           target="_blank"
         >

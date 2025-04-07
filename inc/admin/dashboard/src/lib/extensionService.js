@@ -14,19 +14,37 @@ export const generalExtensionFn = (mainContent, data, dispatch) => {
     )
   );
 
-  dispatch({
-    type: "setAllExtensions",
-    value: {
-      ...mainContent,
-      elements: {
-        ...mainContent.elements,
-        "general-extensions": {
-          ...mainContent.elements["general-extensions"],
-          elements: result,
+  if (!data.value) {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: {
+          ...mainContent.elements,
+          "general-extensions": {
+            ...mainContent.elements["general-extensions"],
+            is_active: data.value,
+            elements: result,
+          },
         },
       },
-    },
-  });
+    });
+  } else {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        elements: {
+          ...mainContent.elements,
+          "general-extensions": {
+            ...mainContent.elements["general-extensions"],
+            elements: result,
+          },
+        },
+      },
+    });
+  }
 };
 
 export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
@@ -43,20 +61,38 @@ export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
     )
   );
 
-  dispatch({
-    type: "setAllExtensions",
-    value: {
-      ...mainContent,
-      elements: {
-        ...mainContent.elements,
-        "general-extensions": {
-          ...mainContent.elements["general-extensions"],
-          is_active: data.value,
-          elements: result,
+  if (!data.value) {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: {
+          ...mainContent.elements,
+          "general-extensions": {
+            ...mainContent.elements["general-extensions"],
+            is_active: data.value,
+            elements: result,
+          },
         },
       },
-    },
-  });
+    });
+  } else {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        elements: {
+          ...mainContent.elements,
+          "general-extensions": {
+            ...mainContent.elements["general-extensions"],
+            is_active: data.value,
+            elements: result,
+          },
+        },
+      },
+    });
+  }
 };
 
 export const gsapExtensionFn = (mainContent, data, dispatch) => {
@@ -124,22 +160,43 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
     )
   );
 
-  dispatch({
-    type: "setAllExtensions",
-    value: {
-      ...mainContent,
-      elements: {
-        ...mainContent.elements,
-        "gsap-extensions": {
-          ...mainContent.elements["gsap-extensions"],
-          elements: {
-            ...mainContent.elements["gsap-extensions"].elements,
-            ...result,
+  if (!data.value) {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: {
+          ...mainContent.elements,
+          "gsap-extensions": {
+            ...mainContent.elements["gsap-extensions"],
+            is_active: data.value,
+            elements: {
+              ...mainContent.elements["gsap-extensions"].elements,
+              ...result,
+            },
           },
         },
       },
-    },
-  });
+    });
+  } else {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        elements: {
+          ...mainContent.elements,
+          "gsap-extensions": {
+            ...mainContent.elements["gsap-extensions"],
+            elements: {
+              ...mainContent.elements["gsap-extensions"].elements,
+              ...result,
+            },
+          },
+        },
+      },
+    });
+  }
 };
 
 export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
@@ -164,23 +221,44 @@ export const gsapAllExtensionFn = (mainContent, data, dispatch) => {
     )
   );
 
-  dispatch({
-    type: "setAllExtensions",
-    value: {
-      ...mainContent,
-      elements: {
-        ...mainContent.elements,
-        "gsap-extensions": {
-          ...mainContent.elements["gsap-extensions"],
-          is_active: data.value,
-          elements: {
-            ...mainContent.elements["gsap-extensions"].elements,
-            ...result,
+  if (!data.value) {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: {
+          ...mainContent.elements,
+          "gsap-extensions": {
+            ...mainContent.elements["gsap-extensions"],
+            is_active: data.value,
+            elements: {
+              ...mainContent.elements["gsap-extensions"].elements,
+              ...result,
+            },
           },
         },
       },
-    },
-  });
+    });
+  } else {
+    dispatch({
+      type: "setAllExtensions",
+      value: {
+        ...mainContent,
+        elements: {
+          ...mainContent.elements,
+          "gsap-extensions": {
+            ...mainContent.elements["gsap-extensions"],
+            is_active: data.value,
+            elements: {
+              ...mainContent.elements["gsap-extensions"].elements,
+              ...result,
+            },
+          },
+        },
+      },
+    });
+  }
 };
 
 export const allExtensionFn = (mainContent, data, dispatch) => {

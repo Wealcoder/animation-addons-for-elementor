@@ -143,10 +143,10 @@ const ShowWidgets = ({
   return (
     <Tabs defaultValue={"all"} value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
-        <ScrollArea className="max-w-[465px] xl:max-w-[800px] rounded-lg bg-background-secondary">
-          <TabsList className="gap-1 h-11">
-            <TabsTrigger key={"all-widgets_tab"} value={"all"}>
-              All Widgets
+        <ScrollArea className="max-w-[500px] lg:max-w-[565px] xl:max-w-[900px] rounded-lg bg-background-secondary">
+          <TabsList className="h-11">
+            <TabsTrigger key={"all-widgets_tab"} value={"all"} className="px-4">
+              All
             </TabsTrigger>
 
             {widgetTabList?.map((tab) => (

@@ -101,7 +101,7 @@ class OneClickImport {
 	 */
 	protected function __construct() {	
 		add_action( 'wp_ajax_aaeaddon_upload_manual_import_file', [ $this, 'import_demo_data_ajax_callback' ] );
-		add_action( 'admin_init', [$this, 'setup_plugin_with_filter_data']);
+		add_action( 'admin_init', [$this, 'setup_st_importer']);
 		add_action( 'set_object_terms', array( $this, 'add_imported_terms' ), 10, 6 );
 		add_filter( 'wxr_importer.pre_process.post', [ $this, 'skip_failed_attachment_import' ] );
 		add_action( 'wxr_importer.process_failed.post', [ $this, 'handle_failed_attachment_import' ], 10, 5 );
@@ -125,6 +125,7 @@ class OneClickImport {
 	
 	public function import_demo_data_ajax_callback() {
 		// Try to update PHP memory limit (so that it does not run out of it).
+		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 		ini_set( 'memory_limit', Helpers::apply_filters( 'aadaddon/st/import_memory_limit', '1024M' ) );
 
 		// Verify if the AJAX call is valid (checks nonce and current_user_can).
@@ -143,7 +144,7 @@ class OneClickImport {
 			// Get selected file index or set it to 0.
 			$this->selected_index = 0;
 			$template_data = [];
-
+			check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 			if(isset($_POST['template_data'])){
 
 				$json_data     = sanitize_text_field( wp_unslash($_POST['template_data']) );  // Remove slashes if added by WP		
@@ -266,6 +267,7 @@ class OneClickImport {
 		
 		$response['msg'] = esc_html__( 'Congrats, your demo has been imported.', 'animation-addons-for-elementor' );
 		$response['progress'] = 80;
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 		if (isset($_POST['template_data'])) {
 			if(isset($template_data['local_path'])){
 				unset($template_data['local_path']);
@@ -374,7 +376,7 @@ class OneClickImport {
 	/**
 	 * Get data from filters, after the theme has loaded and instantiate the importer.
 	 */
-	public function setup_plugin_with_filter_data() {		
+	public function setup_st_importer() {		
 
 		// Get info of import data files and filter it.
 		$this->import_files = array();

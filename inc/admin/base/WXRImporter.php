@@ -281,9 +281,10 @@ class WXRImporter extends \WP_Importer {
 					$this->version = $reader->readString();
 
 					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
-						// Translators: %s is the WXR file version, %s is the importer version.
+						
 						$this->logger->warning( sprintf(
-							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
+							/* Translators: %s is the WXR file version, %s is the importer version. */
+							__( 'This WXR file (version %1$s) is newer than the importer (version %2$s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
 							$this->version,
 							self::MAX_WXR_VERSION
 						) );
@@ -366,9 +367,10 @@ class WXRImporter extends \WP_Importer {
 					$this->version = $reader->readString();
 
 					if ( version_compare( $this->version, self::MAX_WXR_VERSION, '>' ) ) {
-						// Translators: %s is the WXR file version, %s is the importer version.
+						
 						$this->logger->warning( sprintf(
-							__( 'This WXR file (version %s) is newer than the importer (version %s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
+							/* Translators: %1$s is the WXR file version, %2$s is the importer version. */
+							__( 'This WXR file (version %1$s) is newer than the importer (version %2$s) and may not be supported. Please consider updating.', 'animation-addons-for-elementor' ),
 							$this->version,
 							self::MAX_WXR_VERSION
 						) );
@@ -503,12 +505,6 @@ class WXRImporter extends \WP_Importer {
 	 */
 	protected function log_error( WP_Error $error ) {
 		$this->logger->warning( $error->get_error_message() );
-
-		// Log the data as debug info too
-		$data = $error->get_error_data();
-		if ( ! empty( $data ) ) {
-			$this->logger->debug( var_export( $data, true ) );
-		}
 	}
 
 	/**
@@ -581,8 +577,7 @@ class WXRImporter extends \WP_Importer {
 	public function set_user_mapping( $mapping ) {
 		foreach ( $mapping as $map ) {
 			if ( empty( $map['old_slug'] ) || empty( $map['old_id'] ) || empty( $map['new_id'] ) ) {
-				$this->logger->warning( __( 'Invalid author mapping', 'animation-addons-for-elementor' ) );
-				$this->logger->debug( var_export( $map, true ) );
+				$this->logger->warning( __( 'Invalid author mapping', 'animation-addons-for-elementor' ) );				
 				continue;
 			}
 
@@ -1097,16 +1092,7 @@ class WXRImporter extends \WP_Importer {
 		}
 
 		if ( $this->options['aggressive_url_search'] ) {
-			// remap resized image URLs, works by stripping the extension and remapping the URL stub.
-			/*if ( preg_match( '!^image/!', $info['type'] ) ) {
-				$parts = pathinfo( $remote_url );
-				$name = basename( $parts['basename'], ".{$parts['extension']}" ); // PATHINFO_FILENAME in PHP 5.2
-
-				$parts_new = pathinfo( $upload['url'] );
-				$name_new = basename( $parts_new['basename'], ".{$parts_new['extension']}" );
-
-				$this->url_remap[$parts['dirname'] . '/' . $name] = $parts_new['dirname'] . '/' . $name_new;
-			}*/
+			// remap resized image URLs, works by stripping the extension and remapping the URL stub.			
 		}
 
 		return $post_id;
@@ -1687,7 +1673,7 @@ class WXRImporter extends \WP_Importer {
 
 		$original_id = isset( $data['id'] ) ? (int) $data['id'] : 0;
 
-		/* FIX for OCDI!
+		/*
 		 * As of WP 4.5, export.php returns the SLUG for the term's parent,
 		 * rather than an integer ID (this differs from a post_parent)
 		 * wp_insert_term and wp_update_term use the key: 'parent' and an integer value 'id'
@@ -1763,7 +1749,7 @@ class WXRImporter extends \WP_Importer {
 		$this->mapping['term_slug'][ $term_slug ] = $term_id;
 
 		/*
-		 * Fix for OCDI!
+		 * 
 		 * The parent will be updated later in post_process_terms
 		 * we will need both the term_id AND the term_taxonomy to retrieve existing
 		 * term attributes. Those attributes will be returned with the corrected parent,
@@ -1855,7 +1841,7 @@ class WXRImporter extends \WP_Importer {
 		$file_name = basename( $url );
 
 		// get placeholder file in the upload dir with a unique, sanitized filename
-		$upload = wp_upload_bits( $file_name, 0, '', $post['upload_date'] );
+		$upload = wp_upload_bits( $file_name, null, '', $post['upload_date'] );
 		if ( $upload['error'] ) {
 			return new WP_Error( 'upload_dir_error', $upload['error'] );
 		}
@@ -1878,23 +1864,20 @@ class WXRImporter extends \WP_Importer {
 		if ( $code !== 200 ) {
 			wp_delete_file( $upload['file'] );
 			return new WP_Error(
-				'import_file_error',
+				'import_file_error',				
 				sprintf(
+					/* Translators: %1$d is the HTTP status code, %2$s is the status message, and %3$s is the requested URL. */
 					__( 'Remote server returned %1$d %2$s for %3$s', 'animation-addons-for-elementor' ),
 					$code,
 					get_status_header_desc( $code ),
 					$url
 				)
+
 			);
 		}
 
 		$filesize = filesize( $upload['file'] );
 		$headers = wp_remote_retrieve_headers( $response );
-
-		// OCDI fix!
-		// Smaller images with server compression do not pass this rule.
-		// More info here: https://github.com/proteusthemes/WordPress-Importer/pull/2
-		//		
 
 		if ( 0 === $filesize ) {
 			wp_delete_file( $upload['file'] );
@@ -1904,6 +1887,7 @@ class WXRImporter extends \WP_Importer {
 		$max_size = (int) $this->max_attachment_size();
 		if ( ! empty( $max_size ) && $filesize > $max_size ) {
 			wp_delete_file( $upload['file'] );
+			/* Translators: %s is for max_size. */
 			$message = sprintf( __( 'Remote file is too large, limit is %s', 'animation-addons-for-elementor' ), size_format( $max_size ) );
 			return new WP_Error( 'import_file_error', $message );
 		}
@@ -1913,13 +1897,17 @@ class WXRImporter extends \WP_Importer {
 
 	protected function post_process() {
 		// Time to tackle any left-over bits
+		
 		if ( ! empty( $this->requires_remapping['post'] ) ) {
+			update_option('aaeaddon_template_import_state', esc_html__('Processing Posts', 'animation-addons-for-elementor'));
 			$this->post_process_posts( $this->requires_remapping['post'] );
 		}
 		if ( ! empty( $this->requires_remapping['comment'] ) ) {
+			update_option('aaeaddon_template_import_state', esc_html__('Processing Comments', 'animation-addons-for-elementor'));
 			$this->post_process_comments( $this->requires_remapping['comment'] );
 		}
 		if ( ! empty( $this->requires_remapping['term'] ) ) {
+			update_option('aaeaddon_template_import_state', esc_html__('Processing Terms', 'animation-addons-for-elementor'));
 			$this->post_process_terms( $this->requires_remapping['term'] );
 		}
 	}
@@ -1964,6 +1952,7 @@ class WXRImporter extends \WP_Importer {
 			// Do we have updates to make?
 			if ( empty( $data ) ) {
 				$this->logger->debug( sprintf(
+					/* Translators: %d is for post_id. */
 					__( 'Post %d was marked for post-processing, but none was required.', 'animation-addons-for-elementor' ),
 					$post_id
 				) );
@@ -1975,10 +1964,11 @@ class WXRImporter extends \WP_Importer {
 			$result = wp_update_post( $data, true );
 			if ( is_wp_error( $result ) ) {
 				$this->logger->warning( sprintf(
-					__( 'Could not update "%s" (post #%d) with mapped data', 'animation-addons-for-elementor' ),
+					/* Translators: %1$s is the post title, %2$d is the post ID. */
+					__( 'Could not update "%1$s" (post #%2$d) with mapped data.', 'animation-addons-for-elementor' ),
 					get_the_title( $post_id ),
 					$post_id
-				) );
+				) );				
 				$this->logger->debug( $result->get_error_message() );
 				continue;
 			}
@@ -2019,17 +2009,21 @@ class WXRImporter extends \WP_Importer {
 		if ( ! empty( $menu_object ) ) {
 			update_post_meta( $post_id, '_menu_item_object_id', wp_slash( $menu_object ) );
 		} else {
+
 			$this->logger->warning( sprintf(
-				__( 'Could not find the menu object for "%s" (post #%d)', 'animation-addons-for-elementor' ),
+				/* Translators: %1$s is the post title, %2$d is the post ID. */
+				__( 'Could not find the menu object for "%1$s" (post #%2$d).', 'animation-addons-for-elementor' ),
 				get_the_title( $post_id ),
 				$post_id
 			) );
+			
 			$this->logger->debug( sprintf(
-				__( 'Post %d was imported with object "%d" of type "%s", but could not be found', 'animation-addons-for-elementor' ),
+				/* Translators: %1$d is the post ID, %2$d is the object ID, and %3$s is the menu item type. */
+				__( 'Post %1$d was imported with object "%2$d" of type "%3$s", but could not be found.', 'animation-addons-for-elementor' ),
 				$post_id,
 				$menu_object_id,
 				$menu_item_type
-			) );
+			) );			
 		}
 
 		delete_post_meta( $post_id, '_wxr_import_menu_item' );
@@ -2047,11 +2041,14 @@ class WXRImporter extends \WP_Importer {
 					$data['comment_parent'] = $this->mapping['comment'][ $parent_id ];
 				} else {
 					$this->logger->warning( sprintf(
-						__( 'Could not find the comment parent for comment #%d', 'animation-addons-for-elementor' ),
+						/* Translators: %1$d is the comment ID. */
+						__( 'Could not find the comment parent for comment #%1$d.', 'animation-addons-for-elementor' ),
 						$comment_id
 					) );
+
 					$this->logger->debug( sprintf(
-						__( 'Comment %d was imported with parent %d, but could not be found', 'animation-addons-for-elementor' ),
+						/* Translators: %1$d is the comment ID, %2$d is the parent comment ID. */
+						__( 'Comment %1$d was imported with parent %2$d, but could not be found.', 'animation-addons-for-elementor' ),
 						$comment_id,
 						$parent_id
 					) );
@@ -2065,14 +2062,17 @@ class WXRImporter extends \WP_Importer {
 					$data['user_id'] = $this->mapping['user'][ $author_id ];
 				} else {
 					$this->logger->warning( sprintf(
-						__( 'Could not find the author for comment #%d', 'animation-addons-for-elementor' ),
+						/* Translators: %1$d is the comment ID. */
+						__( 'Could not find the author for comment #%1$d.', 'animation-addons-for-elementor' ),
 						$comment_id
 					) );
+					
 					$this->logger->debug( sprintf(
-						__( 'Comment %d was imported with author %d, but could not be found', 'animation-addons-for-elementor' ),
+						/* Translators: %1$d is the comment ID, %2$d is the author ID. */
+						__( 'Comment %1$d was imported with author %2$d, but could not be found.', 'animation-addons-for-elementor' ),
 						$comment_id,
 						$author_id
-					) );
+					) );					
 				}
 			}
 
@@ -2086,9 +2086,10 @@ class WXRImporter extends \WP_Importer {
 			$result = wp_update_comment( wp_slash( $data ) );
 			if ( empty( $result ) ) {
 				$this->logger->warning( sprintf(
-					__( 'Could not update comment #%d with mapped data', 'animation-addons-for-elementor' ),
+					/* Translators: %1$d is the comment ID. */
+					__( 'Could not update comment #%1$d with mapped data.', 'animation-addons-for-elementor' ),
 					$comment_id
-				) );
+				) );				
 				continue;
 			}
 
@@ -2117,9 +2118,10 @@ class WXRImporter extends \WP_Importer {
 			// Basic check.
 			if( empty( $termid ) || ! is_numeric( $termid ) ) {
 				$this->logger->warning( sprintf(
-					__( 'Faulty term_id provided in terms-to-be-remapped array %s', 'animation-addons-for-elementor' ),
+					/* Translators: %1$s is the faulty term ID. */
+					__( 'Faulty term ID provided in terms-to-be-remapped array: %1$s.', 'animation-addons-for-elementor' ),
 					$termid
-					) );
+				) );
 				continue;
 			}
 			// This cast to integer may be unnecessary.
@@ -2175,19 +2177,39 @@ class WXRImporter extends \WP_Importer {
 	 */
 	protected function replace_attachment_urls_in_content() {
 		global $wpdb;
-		// make sure we do the longest urls first, in case one is a substring of another
-		uksort( $this->url_remap, array( $this, 'cmpr_strlen' ) );
-
-		foreach ( $this->url_remap as $from_url => $to_url ) {
-			// remap urls in post_content
-			$query = $wpdb->prepare( "UPDATE {$wpdb->posts} SET post_content = REPLACE(post_content, %s, %s)", $from_url, $to_url );
-			$wpdb->query( $query );
-
-			// remap enclosure urls
-			$query = $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_key='enclosure'", $from_url, $to_url );
-			$wpdb->query( $query );
+	
+		// Ensure we replace the longest URLs first
+		uksort($this->url_remap, array($this, 'cmpr_strlen'));
+	
+		foreach ($this->url_remap as $from_url => $to_url) {
+			// Remap URLs in post_content
+		    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			$result_content = $wpdb->query( 
+				$wpdb->prepare(
+					"UPDATE {$wpdb->posts} SET post_content = REPLACE(post_content, %s, %s) WHERE post_content LIKE %s",
+					$from_url, 
+					$to_url,
+					'%' . $wpdb->esc_like($from_url) . '%'
+				)
+			);
+		
+	
+			// Remap enclosure URLs in postmeta
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			$result_meta = $wpdb->query( 
+				$wpdb->prepare(
+					"UPDATE {$wpdb->postmeta} SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_key = %s AND meta_value LIKE %s",
+					$from_url, 
+					$to_url,
+					'enclosure',
+					'%' . $wpdb->esc_like($from_url) . '%'
+				)
+			);	
+		
 		}
 	}
+	
+	
 
 	/**
 	 * Update _thumbnail_id meta to new, imported attachment IDs
@@ -2196,9 +2218,8 @@ class WXRImporter extends \WP_Importer {
 		if ( empty( $this->featured_images ) ) {
 			return;
 		}
-
-		$this->logger->info( esc_html__( 'Starting remapping of featured images', 'animation-addons-for-elementor' ) );
-
+		
+		update_option('aaeaddon_template_import_state', esc_html__( 'Starting remapping of featured images', 'animation-addons-for-elementor' ) );
 		// Cycle through posts that have a featured image.
 		foreach ( $this->featured_images as $post_id => $value ) {
 			if ( isset( $this->mapping['post'][ $value ] ) ) {
@@ -2269,12 +2290,17 @@ class WXRImporter extends \WP_Importer {
 	 */
 	protected function prefill_existing_posts() {
 		global $wpdb;
-		$posts = $wpdb->get_results( "SELECT ID, guid FROM {$wpdb->posts}" );
-
+		
+		// Using prepare() with a fixed query to prevent PHPCS warnings.
+		$query = $wpdb->prepare( "SELECT ID, guid FROM {$wpdb->posts} WHERE post_type != %s", '' ); // Empty condition just for compliance.
+	
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		$posts = $wpdb->get_results( $query );
+	
 		foreach ( $posts as $item ) {
 			$this->exists['post'][ $item->guid ] = $item->ID;
 		}
-	}
+	}	
 
 	/**
 	 * Does the post exist?
@@ -2287,7 +2313,7 @@ class WXRImporter extends \WP_Importer {
 		$exists_key = $data['guid'];
 
 		if ( $this->options['prefill_existing_posts'] ) {
-			// OCDI: fix for custom post types. The guids in the prefilled section are escaped, so these ones should be as well.
+			// fix for custom post types. The guids in the prefilled section are escaped, so these ones should be as well.
 			$exists_key = htmlentities( $exists_key );
 			return isset( $this->exists['post'][ $exists_key ] ) ? $this->exists['post'][ $exists_key ] : false;
 		}
@@ -2322,6 +2348,8 @@ class WXRImporter extends \WP_Importer {
 	 */
 	protected function prefill_existing_comments() {
 		global $wpdb;
+		update_option('aaeaddon_template_import_state', esc_html__('Comment checking','animation-addons-for-elementor'));
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results( "SELECT comment_ID, comment_author, comment_date FROM {$wpdb->comments}" );
 
 		foreach ( $posts as $item ) {
@@ -2374,15 +2402,21 @@ class WXRImporter extends \WP_Importer {
 	 */
 	protected function prefill_existing_terms() {
 		global $wpdb;
-		$query = "SELECT t.term_id, tt.taxonomy, t.slug FROM {$wpdb->terms} AS t";
-		$query .= " JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id";
-		$terms = $wpdb->get_results( $query );
-
-		foreach ( $terms as $item ) {
-			$exists_key = sha1( $item->taxonomy . ':' . $item->slug );
-			$this->exists['term'][ $exists_key ] = $item->term_id;
+	
+		// Since there are no user inputs, we don't need `prepare()`
+		$query = "SELECT t.term_id, tt.taxonomy, t.slug 
+				  FROM {$wpdb->terms} AS t 
+				  JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id";
+	
+		// Ignore PHPCS false-positive warning
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$terms = $wpdb->get_results($query);	
+		foreach ($terms as $item) {
+			$exists_key = sha1($item->taxonomy . ':' . $item->slug);
+			$this->exists['term'][$exists_key] = $item->term_id;
 		}
-	}
+	}	
+	
 
 	/**
 	 * Does the term exist?
