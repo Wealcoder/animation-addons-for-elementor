@@ -167,6 +167,14 @@
   }
 }
 
+:where([data-sonner-toast]) :where([data-title]) {
+  @apply !text-text;
+}
+
+:where([data-sonner-toast]) :where([data-icon]) svg {
+  @apply !text-text;
+}
+
 @font-face {
   font-family: 'icomoon';
   src: url('../public/fonts/icomoon.eot?uunc8k');
@@ -200,410 +208,512 @@
   content: "\e900";
 
 }
+
 .wcf-icon-Advanced-Portfolio:before {
   content: "\e901";
 
 }
+
 .wcf-icon-Advanced-Pricing-Table:before {
   content: "\e902";
 
 }
+
 .wcf-icon-Advanced-Slider:before {
   content: "\e903";
 
 }
+
 .wcf-icon-Advanced-Tooltip:before {
   content: "\e904";
 
 }
+
 .wcf-icon-Animated-Heading:before {
   content: "\e905";
 
 }
+
 .wcf-icon-Animated-Off-Canvas:before {
   content: "\e906";
 
 }
+
 .wcf-icon-Animated-Text:before {
   content: "\e907";
 
 }
+
 .wcf-icon-Animated-Title:before {
   content: "\e908";
 
 }
+
 .wcf-icon-Animation-Builder:before {
   content: "\e909";
 
 }
+
 .wcf-icon-Animation:before {
   content: "\e90a";
 
 }
+
 .wcf-icon-Archive-Title:before {
   content: "\e90b";
 
 }
+
 .wcf-icon-Author-Box:before {
   content: "\e90c";
 
 }
+
 .wcf-icon-Banner-Posts:before {
   content: "\e90d";
 
 }
+
 .wcf-icon-Brand-Slider:before {
   content: "\e90e";
 
 }
+
 .wcf-icon-Breadcrumbs:before {
   content: "\e90f";
 
 }
+
 .wcf-icon-Button-Pro:before {
   content: "\e910";
 
 }
+
 .wcf-icon-Button:before {
   content: "\e911";
 
 }
+
 .wcf-icon-Category-Showcase:before {
   content: "\e912";
 
 }
+
 .wcf-icon-Contact-Form-7:before {
   content: "\e913";
 
 }
+
 .wcf-icon-Content-Protection:before {
   content: "\e914";
 
 }
+
 .wcf-icon-Content-Slider:before {
   content: "\e915";
 
 }
+
 .wcf-icon-Countdown:before {
   content: "\e916";
 
 }
+
 .wcf-icon-Counter:before {
   content: "\e917";
 
 }
+
 .wcf-icon-Current-Date:before {
   content: "\e918";
 
 }
+
 .wcf-icon-Cursor-Hover-Effect:before {
   content: "\e919";
 
 }
+
 .wcf-icon-Cursor-Move-Effect:before {
   content: "\e91a";
 
 }
+
 .wcf-icon-Custom-CSS:before {
   content: "\e91b";
 
 }
+
 .wcf-icon-Custom-Fonts:before {
   content: "\e91c";
 
 }
+
 .wcf-icon-Custom-Icons:before {
   content: "\e91d";
 
 }
+
 .wcf-icon-Custom-Post-Type:before {
   content: "\e91e";
 
 }
+
 .wcf-icon-Dynamic-Tags:before {
   content: "\e91f";
 
 }
+
 .wcf-icon-Event-Slider:before {
   content: "\e920";
 
 }
+
 .wcf-icon-Featured-Posts:before {
   content: "\e921";
 
 }
+
 .wcf-icon-Filterable-Gallery:before {
   content: "\e922";
 
 }
+
 .wcf-icon-Filterable-Posts:before {
   content: "\e923";
 
 }
+
 .wcf-icon-Filterable-Slider:before {
   content: "\e924";
 
 }
+
 .wcf-icon-Flip-Box:before {
   content: "\e925";
 
 }
+
 .wcf-icon-Floating-Elements:before {
   content: "\e926";
 
 }
+
 .wcf-icon-Gallery-Filter:before {
   content: "\e927";
 
 }
+
 .wcf-icon-Grid-Hover-Posts:before {
   content: "\e928";
 
 }
+
 .wcf-icon-GSAP-DrawSvg:before {
   content: "\e929";
 
 }
+
 .wcf-icon-Horizontal:before {
   content: "\e92a";
 
 }
+
 .wcf-icon-Icon-Box:before {
   content: "\e92b";
 
 }
+
 .wcf-icon-Image-Accordion:before {
   content: "\e92c";
 
 }
+
 .wcf-icon-Image-Animation:before {
   content: "\e92d";
 
 }
+
 .wcf-icon-Image-Box-Slider:before {
   content: "\e92e";
 
 }
+
 .wcf-icon-Image-Box:before {
   content: "\e92f";
 
 }
+
 .wcf-icon-Image-Compare:before {
   content: "\e930";
 
 }
+
 .wcf-icon-Image-Gallery:before {
   content: "\e931";
 
 }
+
 .wcf-icon-Image-Hover-Effect:before {
   content: "\e932";
 
 }
+
 .wcf-icon-Image:before {
   content: "\e933";
 
 }
+
 .wcf-icon-Lottie:before {
   content: "\e934";
 
 }
+
 .wcf-icon-Mailchimp:before {
   content: "\e935";
 
 }
+
 .wcf-icon-Mega-Menu:before {
   content: "\e936";
 
 }
+
 .wcf-icon-Nav-Menu:before {
   content: "\e937";
 
 }
+
 .wcf-icon-Notification:before {
   content: "\e938";
 
 }
+
 .wcf-icon-One-Page-Nav:before {
   content: "\e939";
 
 }
+
 .wcf-icon-Pin-Elements:before {
   content: "\e93a";
 
 }
+
 .wcf-icon-Popup:before {
   content: "\e93b";
 
 }
+
 .wcf-icon-Portfolio-Filter:before {
   content: "\e93c";
 
 }
+
 .wcf-icon-Portfolio:before {
   content: "\e93d";
 
 }
+
 .wcf-icon-Post-Content:before {
   content: "\e93e";
 
 }
+
 .wcf-icon-Post-Content-1:before {
   content: "\e93f";
 
 }
+
 .wcf-icon-Post-Excerpt:before {
   content: "\e940";
 
 }
+
 .wcf-icon-Post-Featured-Image:before {
   content: "\e941";
 
 }
+
 .wcf-icon-Post-Meta-Info:before {
   content: "\e942";
 
 }
+
 .wcf-icon-Post-Paginate:before {
   content: "\e943";
 
 }
+
 .wcf-icon-Post-Rating:before {
   content: "\e944";
 
 }
+
 .wcf-icon-Post-Slider:before {
   content: "\e945";
 
 }
+
 .wcf-icon-Post-Social-Share:before {
   content: "\e946";
 
 }
+
 .wcf-icon-Post-Title:before {
   content: "\e947";
 
 }
+
 .wcf-icon-Posts-Pro:before {
   content: "\e948";
 
 }
+
 .wcf-icon-Posts-Tab:before {
   content: "\e949";
 
 }
+
 .wcf-icon-Posts:before {
   content: "\e94a";
 
 }
+
 .wcf-icon-Progress-Bar:before {
   content: "\e94b";
 
 }
+
 .wcf-icon-Scroll-Elements:before {
   content: "\e94c";
 
 }
+
 .wcf-icon-Search-Form:before {
   content: "\e94d";
 
 }
+
 .wcf-icon-Search-No-Result:before {
   content: "\e94e";
 
 }
+
 .wcf-icon-Search-Query:before {
   content: "\e94f";
 
 }
+
 .wcf-icon-Services-Tabs:before {
   content: "\e950";
 
 }
+
 .wcf-icon-Site-Logo:before {
   content: "\e951";
 
 }
+
 .wcf-icon-Social-Icons:before {
   content: "\e952";
 
 }
+
 .wcf-icon-Table-Of-Content:before {
   content: "\e953";
 
 }
+
 .wcf-icon-Tabs:before {
   content: "\e954";
 
 }
+
 .wcf-icon-Team-Slider:before {
   content: "\e955";
 
 }
+
 .wcf-icon-Team:before {
   content: "\e956";
 
 }
+
 .wcf-icon-Template-library:before {
   content: "\e957";
 
 }
+
 .wcf-icon-Testimonial-2:before {
   content: "\e958";
 
 }
+
 .wcf-icon-Testimonial-3:before {
   content: "\e959";
 
 }
+
 .wcf-icon-Testimonial-Pro:before {
   content: "\e95a";
 
 }
+
 .wcf-icon-Testimonial:before {
   content: "\e95b";
 
 }
+
 .wcf-icon-Text-Animation:before {
   content: "\e95c";
 
 }
+
 .wcf-icon-Text-Hover-Image:before {
   content: "\e95d";
 
 }
+
 .wcf-icon-Tilt-Effect:before {
   content: "\e95e";
 
 }
+
 .wcf-icon-Timeline:before {
   content: "\e95f";
 
 }
+
 .wcf-icon-Toggle-Switch:before {
   content: "\e960";
 
 }
+
 .wcf-icon-Typewriter:before {
   content: "\e961";
 
 }
+
 .wcf-icon-Video-Box-Slider:before {
   content: "\e962";
 
 }
+
 .wcf-icon-Video-Box:before {
   content: "\e963";
 
 }
+
 .wcf-icon-Video-Mask:before {
   content: "\e964";
 
 }
+
 .wcf-icon-Video-Popup:before {
   content: "\e965";
 
 }
+
 .wcf-icon-Wrapper-Link:before {
   content: "\e966";
 
