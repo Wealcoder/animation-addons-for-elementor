@@ -1685,6 +1685,102 @@ $config = [
 				],
 			]
 		],
+		'library' => [
+			'title'    => esc_html__('Library', 'animation-addons-for-elementor'),
+			'elements' => [
+				'gsap-library'        => [
+						'title'     => esc_html__('GSAP Library', 'animation-addons-for-elementor'),
+						'is_pro'    => true,
+						'is_active' => false,
+						'elements'  => [
+							'draggable' => [
+								'label'        => esc_html__('Draggable', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/Draggable',
+							],
+							'easel' => [
+								'label'        => esc_html__('Easel', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/EaselPlugin',
+							],
+							'flip' => [
+								'label'        => esc_html__('Flip', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/Flip',
+							],
+							'motion-path' => [
+								'label'        => esc_html__('MotionPath', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/MotionPathPlugin',
+							],
+							'observer' => [
+								'label'        => esc_html__('Observer', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/Observer',
+							],
+							'pixi' => [
+								'label'        => esc_html__('Pixi', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/PixiPlugin',
+							],
+							'scroll-to' => [
+								'label'        => esc_html__('ScrollTo', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/ScrollToPlugin',
+							],
+							'scroll-trigger' => [
+								'label'        => esc_html__('ScrollTrigger', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/ScrollTrigger/?page=1',
+							],
+							'text' => [
+								'label'        => esc_html__('Text', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/TextPlugin',
+							],
+							'draw-svg' => [
+								'label'        => esc_html__('DrawSVG', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/DrawSVGPlugin',
+							],
+							'physics-2d' => [
+								'label'        => esc_html__('Physics2D', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/Physics2DPlugin',
+							],
+							'physics-props' => [
+								'label'        => esc_html__('PhysicsProps', 'animation-addons-for-elementor'),
+								'is_pro'       => true,
+								'is_active'    => false,
+								'icon'         => "wcf-icon-Animation-Builder",
+								'doc_url'      => 'https://gsap.com/docs/v3/Plugins/PhysicsPropsPlugin',
+							],
+						]
+					],
+			]
+		]
 	],
 	'dashboardProWidget' => [
 		'advance-portfolio'  => [

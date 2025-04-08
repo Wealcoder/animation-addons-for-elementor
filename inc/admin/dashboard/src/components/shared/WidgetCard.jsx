@@ -14,6 +14,7 @@ const WidgetCard = ({
   updateActiveItem,
   isDisable = false,
   exSettings,
+  preview = true,
 }) => {
   const { activated } = useActivate();
 
@@ -102,22 +103,27 @@ const WidgetCard = ({
                   >
                     Documentation
                   </a>
-                  <Dot
-                    className="w-3.5 h-3.5 text-icon-secondary"
-                    strokeWidth={2}
-                  />
-                  <a
-                    href={widget?.demo_url}
-                    target="_blank"
-                    className={cn(
-                      "text-sm",
-                      widget?.demo_url
-                        ? "text-label hover:text-text"
-                        : "pointer-events-none text-[#CACFD8]"
-                    )}
-                  >
-                    Preview
-                  </a>
+
+                  {preview && (
+                    <>
+                      <Dot
+                        className="w-3.5 h-3.5 text-icon-secondary"
+                        strokeWidth={2}
+                      />
+                      <a
+                        href={widget?.demo_url}
+                        target="_blank"
+                        className={cn(
+                          "text-sm",
+                          widget?.demo_url
+                            ? "text-label hover:text-text"
+                            : "pointer-events-none text-[#CACFD8]"
+                        )}
+                      >
+                        Preview
+                      </a>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
