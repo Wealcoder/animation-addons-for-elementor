@@ -5,7 +5,7 @@ Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -407,6 +407,11 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 == Changelog ==
+
+ = v2.1.5 – 08 April 2025 =
+  - 🎨 **Fixed:** Pre Built Tempplate SSL issue 
+  - 🎨 **Fixed:** Fix Toast Color Issue
+  - ✅ **Compatibility:** Optimized Markup compatibility with **Elementor core** for Animation.
 
  = v2.1.4 – 06 April 2025 =
   - 🎨 **Fixed:** Slider animation issue
