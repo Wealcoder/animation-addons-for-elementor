@@ -9,6 +9,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
   var getSliderOptions = function getSliderOptions($scope) {
     var slider = $($('.wcf__slider', $scope)[0]);
+    var slexist = $scope.find('.wcf__slider').length;
     // const sliderSettings = $('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope).data('settings') || {}; double slider not working
     var sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
     sliderSettings.handleElementorBreakpoints = true;
@@ -41,7 +42,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     $($('.wcf__slider-wrapper', $scope)[0]).removeAttr('data-settings');
     return {
       slider: slider,
-      options: sliderSettings
+      options: sliderSettings,
+      slider_exist: slexist
     };
   };
   var getThumbSliderOptions = function getThumbSliderOptions($scope) {
@@ -62,7 +64,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       thumbOptions = _getThumbSliderOption.thumbOptions;
     var _getSliderOptions = getSliderOptions($scope),
       slider = _getSliderOptions.slider,
-      options = _getSliderOptions.options;
+      options = _getSliderOptions.options,
+      slider_exist = _getSliderOptions.slider_exist;
 
     //if thumb slider enable
     if (thumbSlider.length) {
@@ -77,9 +80,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
       });
     } else {
-      new elementorFrontend.utils.swiper(slider, options).then(function (newSwiperInstance) {
-        return newSwiperInstance;
-      });
+      if (slider_exist) {
+        new elementorFrontend.utils.swiper(slider, options).then(function (newSwiperInstance) {
+          return newSwiperInstance;
+        });
+      }
     }
   };
 

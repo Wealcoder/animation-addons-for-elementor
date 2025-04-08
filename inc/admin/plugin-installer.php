@@ -48,17 +48,23 @@ class WCF_Plugin_Installer {
             }
             $download_link = $plugin_data->download_link;
         } elseif ($source === 'self_host') {
+           
             if (filter_var($slug, FILTER_VALIDATE_URL)) {
-                $download_link = $slug;
+                $download_link = str_replace('http://','https://', $slug);
             } else {
                 return new WP_Error('invalid_url', __('Invalid download URL.', 'animation-addons-for-elementor'));
             }
-
+          
             // Validate the file type
-            $file_headers = wp_remote_head($download_link);
+            $file_headers = wp_remote_head($download_link, [
+                'timeout'   => 60,           // Timeout in seconds
+                'sslverify' => false,       // Disable SSL verification (not for production)
+            ] );
+          
             if (is_wp_error($file_headers) || !isset($file_headers['headers']['content-type']) || strpos($file_headers['headers']['content-type'], 'application/zip') === false) {
                 return new WP_Error('invalid_file_type', __('Provided URL is not a valid plugin ZIP file.', 'animation-addons-for-elementor'));
             }
+           
         } else {
             return new WP_Error('invalid_source', __('Invalid source specified.', 'animation-addons-for-elementor'));
         }

@@ -6,6 +6,7 @@
 
     const getSliderOptions = function ($scope) {
         const slider = $($('.wcf__slider', $scope)[0]);
+        const slexist =  $scope.find('.wcf__slider').length;
         // const sliderSettings = $('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope).data('settings') || {}; double slider not working
         const sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
         sliderSettings.handleElementorBreakpoints = true
@@ -40,7 +41,7 @@
         //remove the attribute after getting the slider settings
         $($('.wcf__slider-wrapper', $scope)[0]).removeAttr('data-settings');
 
-        return {slider: slider, options: sliderSettings};
+        return {slider: slider, options: sliderSettings, slider_exist: slexist};
     }
 
     const getThumbSliderOptions = function ($scope) {
@@ -57,7 +58,7 @@
     const Slider = function ($scope, $) {
 
         const {thumbSlider, thumbOptions} = getThumbSliderOptions($scope);
-        const {slider, options} = getSliderOptions($scope);
+        const {slider, options, slider_exist} = getSliderOptions($scope);
 
         //if thumb slider enable
         if (thumbSlider.length) {
@@ -71,7 +72,9 @@
 
             });
         } else {
+           if(slider_exist){
             new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance);
+           }           
         }
 
     }

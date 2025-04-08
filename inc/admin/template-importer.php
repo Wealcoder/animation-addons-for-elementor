@@ -139,8 +139,9 @@ class AAEAddon_Importer {
 										if (in_array($item['slug'], $user_plugins)) {				
 											if(isset($item['host']) && $item['slug']){
 												update_option('aaeaddon_template_import_state', sprintf( 'Installing %s' , $item['name'] ));
-												if($item['host'] == 'self_host'){							
+												if($item['host'] == 'self_host'){	
 													$result = $this->plugin_installer->install_plugin($item['self_host_url'], $item['host'], true);
+													
 												}else{
 													$result = $this->plugin_installer->install_plugin($item['slug'], $item['host'], true);
 												}							

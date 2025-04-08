@@ -951,7 +951,7 @@ class WCF_Theme_Builder {
 
 		$args = array(
 			'label'               => esc_html__( 'Theme Builder', 'animation-addons-for-elementor' ),
-			'description'         => esc_html__( 'WCF Theme Builder', 'animation-addons-for-elementor' ),
+			'description'         => esc_html__( 'AAE Theme Builder', 'animation-addons-for-elementor' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title', 'elementor', 'thumbnail' ),
 			'hierarchical'        => false,
