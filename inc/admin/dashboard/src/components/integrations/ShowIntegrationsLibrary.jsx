@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import WidgetCard from "../shared/WidgetCard";
 import { deviceMediaMatch } from "@/lib/utils";
+import { useLibrary } from "@/hooks/app.hooks";
+import { Label } from "../ui/label";
 
 const ShowIntegrationsLibrary = () => {
-  const allLibrary = WCF_ADDONS_ADMIN.addons_config.integrations?.library;
+  const { allLibrary, updateLibrary, updateActiveGroupLibrary } = useLibrary();
 
   const [openAccordion, setOpenAccordion] = useState([]);
 
@@ -29,15 +31,15 @@ const ShowIntegrationsLibrary = () => {
           onValueChange={(value) => setOpenAccordion(value)}
           className="w-full mt-2 space-y-1.5"
         >
-          {Object.keys(allLibrary?.elements)?.map((extension) => (
-            <AccordionItem key={extension} value={extension}>
+          {Object.keys(allLibrary?.elements)?.map((library) => (
+            <AccordionItem key={library} value={library}>
               <div className="p-[2px]">
                 <div className="flex items-center bg-background justify-between gap-3 py-3 px-4">
                   <AccordionTrigger className="rounded cursor-pointer w-full">
                     <div className="flex flex-col gap-1">
                       <div className="text-[15px] leading-6 font-medium flex items-center">
-                        {allLibrary?.elements[extension].title}
-                        {allLibrary?.elements[extension]?.is_pro ? (
+                        {allLibrary?.elements[library].title}
+                        {allLibrary?.elements[library]?.is_pro ? (
                           <>
                             <Dot
                               className="w-3.5 h-3.5 text-icon-secondary"
@@ -52,7 +54,7 @@ const ShowIntegrationsLibrary = () => {
                     </div>
                   </AccordionTrigger>
                   <div className="flex gap-1 items-center">
-                    {Object.keys(allLibrary?.elements[extension]?.elements)
+                    {Object.keys(allLibrary?.elements[library]?.elements)
                       ?.length ? (
                       ""
                     ) : (
@@ -66,42 +68,46 @@ const ShowIntegrationsLibrary = () => {
                       </>
                     )}
 
-                    <Switch
-                      checked={allLibrary?.elements[extension]?.is_active}
-                      onCheckedChange={(value) => {
-                        value
-                          ? setOpenAccordion((prev) => [...prev, extension])
-                          : setOpenAccordion((prev) =>
-                              prev?.filter((el) => el !== extension)
-                            );
-                        updateActiveGsapGroupExtension({
-                          value,
-                          slug: extension,
-                        });
-                      }}
-                      disabled={
-                        !Object.keys(allLibrary?.elements[extension]?.elements)
-                          ?.length
-                      }
-                    />
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        index={library}
+                        checked={allLibrary?.elements[library]?.is_active}
+                        onCheckedChange={(value) => {
+                          value
+                            ? setOpenAccordion((prev) => [...prev, library])
+                            : setOpenAccordion((prev) =>
+                                prev?.filter((el) => el !== library)
+                              );
+                          updateActiveGroupLibrary({
+                            value,
+                            slug: library,
+                          });
+                        }}
+                        disabled={
+                          !Object.keys(allLibrary?.elements[library]?.elements)
+                            ?.length
+                        }
+                      />
+                      <Label htmlFor={library}>Enable All</Label>
+                    </div>
                   </div>
                 </div>
               </div>
               <AccordionContent>
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1 p-[2px]">
-                  {Object.keys(allLibrary?.elements[extension]?.elements)
+                  {Object.keys(allLibrary?.elements[library]?.elements)
                     ?.length ? (
                     <>
                       {Object.keys(
-                        allLibrary?.elements[extension]?.elements
+                        allLibrary?.elements[library]?.elements
                       )?.map((content, i) => (
                         <React.Fragment key={`tab_content-${i}`}>
                           <WidgetCard
                             widget={
-                              allLibrary?.elements[extension]?.elements[content]
+                              allLibrary?.elements[library]?.elements[content]
                             }
                             slug={content}
-                            updateActiveItem={() => "hi"}
+                            updateActiveItem={updateLibrary}
                             className="rounded p-5"
                             preview={false}
                           />
@@ -110,14 +116,13 @@ const ShowIntegrationsLibrary = () => {
                       {Array.from({
                         length:
                           deviceMediaMatch() -
-                          (Object.keys(
-                            allLibrary?.elements[extension]?.elements
-                          )?.length %
+                          (Object.keys(allLibrary?.elements[library]?.elements)
+                            ?.length %
                             deviceMediaMatch() ===
                           0
                             ? deviceMediaMatch()
                             : Object.keys(
-                                allLibrary?.elements[extension]?.elements
+                                allLibrary?.elements[library]?.elements
                               )?.length % deviceMediaMatch()),
                       }).map((_, index) => (
                         <WidgetCard

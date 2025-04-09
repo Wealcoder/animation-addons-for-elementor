@@ -65,13 +65,24 @@ export const activeGroupWidgetFn = (mainContent, data, dispatch) => {
     })
   );
 
-  dispatch({
-    type: "setAllWidgets",
-    value: {
-      ...mainContent,
-      elements: result,
-    },
-  });
+  if (!data.value) {
+    dispatch({
+      type: "setAllWidgets",
+      value: {
+        ...mainContent,
+        is_active: data.value,
+        elements: result,
+      },
+    });
+  } else {
+    dispatch({
+      type: "setAllWidgets",
+      value: {
+        ...mainContent,
+        elements: result,
+      },
+    });
+  }
 };
 
 export const activeFullWidgetFn = (mainContent, data, dispatch) => {

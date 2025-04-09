@@ -1,6 +1,39 @@
 import { RiPuzzle2Line } from "react-icons/ri";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
+import { useLibrary } from "@/hooks/app.hooks";
 
 const IntegrationTopBar = () => {
+  const { allLibrary } = useLibrary();
+
+  const saveIntegration = async () => {
+    saveLibrary();
+  };
+
+  const saveLibrary = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_dashboard_library_ajax",
+        fields: JSON.stringify(allLibrary),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        toast.success("Save Successful", {
+          position: "top-right",
+        });
+      });
+  };
+
   return (
     <div className="grid grid-cols-2 gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
@@ -23,6 +56,10 @@ const IntegrationTopBar = () => {
             </p>
           </div>
         </div>
+      </div>
+      <div className="flex gap-2.5 items-center justify-end">
+        {/* <Button variant="secondary">Reset</Button> */}
+        <Button onClick={() => saveIntegration()}>Save Settings</Button>
       </div>
     </div>
   );

@@ -84,3 +84,12 @@ export const useSkip = () => {
   } = useContext(AppContext);
   return { isSkipTerms, setIsSkipTerms };
 };
+
+export const useLibrary = () => {
+  const {
+    mainState: { allLibrary },
+    updateLibrary,
+    updateActiveGroupLibrary,
+  } = useContext(AppContext);
+  return { allLibrary, updateLibrary, updateActiveGroupLibrary };
+};

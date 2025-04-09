@@ -6,6 +6,7 @@ import {
   gsapExtensionFn,
   gsapGroupExtensionFn,
 } from "@/lib/extensionService";
+import { activeGroupLibraryFn, libraryFn } from "@/lib/libraryService";
 import {
   disableAllWidget,
   disableGeneralExtension,
@@ -24,6 +25,10 @@ const initialState = {
   allExtensions:
     JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
     {},
+  allLibrary:
+    JSON.parse(
+      JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.integrations?.library)
+    ) || {},
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
   setupType: "basic",
   notice: [],
@@ -40,6 +45,8 @@ const reducer = (state, action) => {
       return { ...state, allExtensions: action.value };
     case "setActivated":
       return { ...state, activated: action.value };
+    case "setLibrary":
+      return { ...state, allLibrary: action.value };
     case "setSetupType":
       return { ...state, setupType: action.value };
     case "setNotice":
@@ -65,12 +72,20 @@ const useMainContext = (state) => {
       value: data,
     });
   }, []);
+
   const setAllExtensions = useCallback((data) => {
     dispatch({
       type: "setAllExtensions",
       value: data,
     });
   }, []);
+
+  // const setLibrary = useCallback((data) => {
+  //   dispatch({
+  //     type: "setLibrary",
+  //     value: data,
+  //   });
+  // }, []);
 
   const setActivated = useCallback((data) => {
     dispatch({
@@ -181,6 +196,20 @@ const useMainContext = (state) => {
     [mainState.allExtensions]
   );
 
+  const updateLibrary = useCallback(
+    (data) => {
+      libraryFn(mainState.allLibrary, data, dispatch);
+    },
+    [mainState.allLibrary]
+  );
+
+  const updateActiveGroupLibrary = useCallback(
+    (data) => {
+      activeGroupLibraryFn(mainState.allLibrary, data, dispatch);
+    },
+    [mainState.allLibrary]
+  );
+
   const updateActiveGsapGroupExtension = useCallback(
     (data) => {
       gsapGroupExtensionFn(mainState.allExtensions, data, dispatch);
@@ -249,6 +278,8 @@ const useMainContext = (state) => {
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,
+    updateLibrary,
+    updateActiveGroupLibrary,
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
     updateActiveFullExtension,
