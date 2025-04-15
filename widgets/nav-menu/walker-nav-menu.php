@@ -11,6 +11,18 @@ defined( 'ABSPATH' ) || die();
 
 class WCF_Menu_Walker extends \Walker_Nav_Menu {
 
+	public $elementor_settings = [
+        'remove_span'             => false,       
+    ]; 
+
+	function __construct($settings = []) {
+
+        if( is_array($settings) ) {
+           $this->elementor_settings = wp_parse_args( $settings ,$this->elementor_settings );
+        }
+      
+    }
+
 	public function is_megamenu_enable( $menu_slug ) {
 		$menu_obj = wp_get_nav_menu_object( $menu_slug );
 		$menu_id  = ( ( ( gettype( $menu_obj ) == 'object' ) && ( isset( $menu_obj->slug ) ) ) ? $menu_obj->term_id : $menu_slug );
@@ -229,10 +241,14 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 				$submenu_indicator .= '<span class="wcf-submenu-indicator">' . $args->submenu_indicator_icon . '</span>';
 			}
 		}
-
+		
 		$item_output = $args->before;
 		$item_output .= '<a' . $attributes . '>';
-		$item_output .= $args->link_before .'<span class="menu-text" data-text="'.$title.'">'. $title .'</span>'. $args->link_after;
+		if( isset($this->elementor_settings['remove_span']) && $this->elementor_settings['remove_span'] == true){			
+			$item_output .= $args->link_before .'<span class="menu-text" data-text="'.$title.'">'. $title .'</span>'. $args->link_after;
+		}else{
+			$item_output .= $args->link_before . $title . $args->link_after;			
+		}
 		$item_output .= $badge;
 		$item_output .= $submenu_indicator . '</a>';
 		$item_output .= $args->after;

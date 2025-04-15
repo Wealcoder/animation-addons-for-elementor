@@ -218,6 +218,18 @@ class Nav_Menu extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'wrap_menu_title',
+			[
+				'label' => esc_html__( 'Wrap menu item', 'animation-addons-for-elementor' ),
+				'type' => \Elementor\Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+
 		$this->end_controls_section();
 
 		$this->start_controls_section(
@@ -1447,7 +1459,7 @@ class Nav_Menu extends Widget_Base {
 		}
 
 		$close_button = '<button class="wcf-menu-close" type="button">' . Icons_Manager::try_get_icon_html( $settings['mobile_close'], [ 'aria-hidden' => 'true' ] ) . '</button>';
-
+		$remove_span = isset($settings['wrap_menu_title']) && $settings['wrap_menu_title'] == 'yes' ? true : false; 	
 		//nav menu arguments
 		$arg = [
 			'items_wrap'             => '<ul id="%1$s" class="%2$s">%3$s</ul>' . $close_button,
@@ -1458,7 +1470,7 @@ class Nav_Menu extends Widget_Base {
 			'menu_class'             => 'wcf-nav-menu-nav ' . 'menu-layout-' . $settings['menu_layout'],
 			//this is custom argument
 			'submenu_indicator_icon' => Icons_Manager::try_get_icon_html( $settings['submenu_indicator'], [ 'aria-hidden' => 'true' ] ),
-			'walker'                 => ( class_exists( 'WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker' ) ? new WCF_Menu_Walker() : '' )
+			'walker'                 => ( class_exists( 'WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker' ) ? new WCF_Menu_Walker(['remove_span'=> $remove_span]) : '' )
 		];
 
 		//necessary preloaded class for style breaking

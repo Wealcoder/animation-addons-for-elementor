@@ -409,7 +409,7 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 == Changelog ==
 
  = v2.1.5 – 08 April 2025 =
-  - 🎨 **Fixed:** Pre Built Tempplate SSL issue 
+  - 🎨 **Fixed:** Pre Built Template SSL issue 
   - 🎨 **Fixed:** Fix Toast Color Issue
   - ✅ **Compatibility:** Optimized Markup compatibility with **Elementor core** for Animation.
 
