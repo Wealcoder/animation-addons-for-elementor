@@ -29,7 +29,7 @@ const Documentation = () => {
         </div>
         <div>
           <a
-            href={"https://support.crowdytheme.com/docs/widgets/wcf-widgets"}
+            href={"https://animation-addons.com/docs"}
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >

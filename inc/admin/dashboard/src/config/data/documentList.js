@@ -1,14 +1,14 @@
 export const DocumentList = [
   {
-    title: "AAE Posts",
+    title: "Typewriter",
     subTitle:
-      "Comprehensive guides and resources to help you get the most out of our amazing tools.",
-    url: "https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts",
+      "The Typewriter Widget in Animation Addons for Elementor adds engaging...",
+    url: "https://animation-addons.com/docs/animations-widgets/typewriter",
   },
   {
-    title: "AAE Image Gallery",
+    title: "Animated Text",
     subTitle:
-      "Comprehensive guides and resources to help you get the most out of our amazing tools.",
-    url: "https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-gallery",
+      "Animated text in Elementor addon lets users easily add dynamic text effects...",
+    url: "https://animation-addons.com/docs/animations-widgets/animated-text",
   },
 ];

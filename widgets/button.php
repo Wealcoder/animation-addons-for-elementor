@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Button extends Widget_Base {
-    use  WCF_Button_Trait;
+	use  WCF_Button_Trait;
 
 	/**
 	 * Retrieve the widget name.
@@ -142,6 +142,47 @@ class Button extends Widget_Base {
 		);
 
 		$this->register_button_style_controls();
+
+		$this->add_control(
+			'btn_stretch',
+			[
+				'label'     => esc_html__( 'Button Stretch', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '',
+				'options'   => [
+					''        => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'stretch' => esc_html__( 'Enable', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .wcf__btn a' => 'width: 100%;',
+				],
+				'condition' => [
+					'btn_element_list' => [ 'default', 'underline' ],
+				],
+			]
+		);
+
+		$this->add_control(
+			'btn_stretch_align',
+			[
+				'label'     => esc_html__( 'Stretch Align', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'start',
+				'options'   => [
+					'start'         => esc_html__( 'Start', 'animation-addons-for-elementor' ),
+					'center'        => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+					'end'           => esc_html__( 'End', 'animation-addons-for-elementor' ),
+					'space-between' => esc_html__( 'Space Between', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .wcf__btn a' => 'justify-content: {{VALUE}}',
+				],
+				'condition' => [
+					'btn_stretch' => 'stretch',
+					'btn_element_list' => [ 'default', 'underline' ],
+				],
+			]
+		);
 
 		$this->end_controls_section();
 	}
