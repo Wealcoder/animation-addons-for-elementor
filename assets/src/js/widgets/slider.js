@@ -6,8 +6,7 @@
 
     const getSliderOptions = function ($scope) {
         const slider = $($('.wcf__slider', $scope)[0]);
-        const slexist =  $scope.find('.wcf__slider').length;
-        // const sliderSettings = $('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope).data('settings') || {}; double slider not working
+        const slexist = $scope.find('.wcf__slider').length;
         const sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
         sliderSettings.handleElementorBreakpoints = true
 
@@ -72,9 +71,9 @@
 
             });
         } else {
-           if(slider_exist){
-            new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance);
-           }           
+            if (slider_exist) {
+                new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance);
+            }
         }
 
     }
@@ -87,6 +86,7 @@
             'testimonial': [],
             'testimonial2': [],
             'testimonial3': [],
+            'a-testimonial': [],
             'event-slider': [],
             'image-box-slider': [],
             'video-box-slider': [],
