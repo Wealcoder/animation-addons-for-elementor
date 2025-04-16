@@ -653,14 +653,13 @@ trait WCF_Slider_Trait {
 		$this->add_render_attribute(
 			'carousel-wrapper',
 			[
-				'class' => 'wcf__slider ' . $swiper_class,
+				'class' => 'wcf__slider swiper',
 				'dir'   => $settings['direction'],
 				'style' => 'position: static',
 			]
 		);
 
 		return $slider_settings;
-
 	}
 
 	protected function render_slider_navigation() {
