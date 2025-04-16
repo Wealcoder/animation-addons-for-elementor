@@ -408,6 +408,10 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == Changelog ==
 
+ = v2.1.6 – 16 April 2025 =
+  - 🎨 **Fixed:** Text Domain Translation Issue
+  - 🎨 **Fixed:** Fix  Pre Built Template Dashboard
+
  = v2.1.5 – 08 April 2025 =
   - 🎨 **Fixed:** Pre Built Template SSL issue 
   - 🎨 **Fixed:** Fix Toast Color Issue
