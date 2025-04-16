@@ -157,39 +157,6 @@ class WCF_Theme_Builder {
 					echo '</div></div>';
 					break;
 
-//				case 'neve':
-//					echo '</main>';
-//					break;
-//
-//				case 'generatepress':
-//				case 'generatepress-child':
-//				    echo '</div>';
-//					break;
-//
-//				case 'oceanwp':
-//				case 'oceanwp-child':
-//				    echo '</div>';
-//					break;
-//
-//				case 'bb-theme':
-//				case 'bb-theme-child':
-//				        echo '</div>';
-//					break;
-//
-//				case 'genesis':
-//				case 'genesis-child':
-//				    echo '</div>';
-//					break;
-//
-//				case 'twentynineteen':
-//					echo '</div>';
-//					break;
-//
-//				case 'my-listing':
-//				case 'my-listing-child':
-//				    echo '</div>';
-//					break;
-
 				default:
 					break;
 			}
@@ -234,18 +201,8 @@ class WCF_Theme_Builder {
 			// PHPCS - should not be escaped.
 			echo self::render_build_content( $archive_template_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
-	}
-	//header footer//
-
-
-	///template///
-	/**
-	 * [body_classes]
-	 *
-	 * @param  [array] $classes
-	 *
-	 * @return [array]
-	 */
+	}	
+	
 	public function body_classes( $classes ) {
 
 		$class_prefix = 'elementor-page-';
@@ -298,14 +255,15 @@ class WCF_Theme_Builder {
 	 * @since  3.0.0
 	 */
 	private function get_template_loader_default_file() {
+		
 		if ( is_singular() && $this->has_template( 'single' ) ) {
 			$default_file = 'single.php';
-		} elseif ( ( is_archive() || is_home() || is_search() || is_404() ) && $this->has_template( 'archive' ) ) {
+		} elseif ( ( is_archive() || is_home() || is_search() || is_404() || (function_exists('is_shop') && is_shop()) ) && $this->has_template( 'archive' ) ) {
 			$default_file = 'archive.php';
 		} else {
 			$default_file = '';
 		}
-
+       
 		return $default_file;
 	}
 
@@ -318,7 +276,7 @@ class WCF_Theme_Builder {
 	 */
 	public function has_template( $tmpType = '' ) {
 		$template_ID = self::get_current_post_by_condition( $tmpType );
-
+      
 		if ( $template_ID ) {
 			return $template_ID;
 		}
@@ -384,7 +342,7 @@ class WCF_Theme_Builder {
 		}
 
 		wp_reset_postdata();
-
+	
 		if ( empty( $templates ) ) {
 			return false;
 		}
@@ -418,10 +376,16 @@ class WCF_Theme_Builder {
 		if ( is_home() && array_key_exists( 'blog', $templates ) ) {
 			return $templates['blog'];
 		}
-
+		
+		if(function_exists('is_shop') && is_shop()){
+			//check for WooCommerce shop archive				
+			if ( function_exists( 'is_shop' ) && is_shop() && array_key_exists( 'product-archive', $templates ) ) {
+				return $templates['product-archive'];
+			}
+		}
 		//check for archive
 		if ( is_archive() ) {
-		
+		  
 			//check for all date archive
 			if ( is_date() && array_key_exists( 'date', $templates ) ) {
 				return $templates['date'];
@@ -432,10 +396,7 @@ class WCF_Theme_Builder {
 				return $templates['author'];
 			}
 
-			//check for WooCommerce shop archive
-			if ( function_exists( 'is_shop' ) && is_shop() && array_key_exists( 'woo-shop', $templates ) ) {
-				return $templates['woo-shop'];
-			}
+			
 
 			//check for custom post type archive
 			$custom_archive = get_post_type() . '-archive';
@@ -467,6 +428,8 @@ class WCF_Theme_Builder {
 			}
 		}
 
+		
+
 		//check for singular
 		if ( is_singular() ) {
 
@@ -487,7 +450,7 @@ class WCF_Theme_Builder {
 			}
 		}
 
-
+	
 		//check for global
 		if ( array_key_exists( 'global', $templates ) ) {
 			return $templates['global'];
@@ -717,7 +680,7 @@ class WCF_Theme_Builder {
 			'archive' => [
 				'label'     => esc_html__( 'Archive/404/Search', 'animation-addons-for-elementor' ),
 				'optionkey' => 'archivepage'
-			],
+			],			
 			'single'  => [
 				'label'     => esc_html__( 'Single', 'animation-addons-for-elementor' ),
 				'optionkey' => 'singlepage'
@@ -823,7 +786,7 @@ class WCF_Theme_Builder {
 		//unset unnecessary post type
 		unset( $post_types['page'] );
 		unset( $post_types['post'] );
-		unset( $post_types['product'] );
+		//unset( $post_types['product'] );
 		unset( $post_types[ self::CPTTYPE ] );
 
 		$special_pages = array(
@@ -882,7 +845,7 @@ class WCF_Theme_Builder {
 
 		//unset unnecessary post type
 		unset( $post_types['page'] );
-		unset( $post_types['product'] );
+		//unset( $post_types['product'] );
 		unset( $post_types[ self::CPTTYPE ] );
 
 		$selection_options = array(

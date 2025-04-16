@@ -596,6 +596,7 @@ class Plugin {
 	 * @access private
 	 */
 	private function include_files() {
+
 		require_once WCF_ADDONS_PATH . 'config.php';
 
 		if ( is_admin() ) {
