@@ -53,7 +53,7 @@ const StaterTemplate = () => {
         }
         if (meta.pageNum) {
           url.searchParams.append("page", meta.pageNum);
-          url.searchParams.append("per_page", 16);
+          url.searchParams.append("per_page", 20);
         }
         if (meta.filterKey) {
           if (meta.filterKey === "popular") {
