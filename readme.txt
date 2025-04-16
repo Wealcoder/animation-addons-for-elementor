@@ -1,4 +1,4 @@
-=== Animation Addons for Elementor ===
+=== Animation Addons for Elementor - GSAP-Powered Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
