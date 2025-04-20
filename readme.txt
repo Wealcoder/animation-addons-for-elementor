@@ -1,4 +1,4 @@
-=== Animation Addons for Elementor ===
+=== Animation Addons for Elementor - GSAP-Powered Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
@@ -407,6 +407,10 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 == Changelog ==
+
+ = v2.1.6 – 16 April 2025 =
+  - 🎨 **Fixed:** Text Domain Translation Issue
+  - 🎨 **Fixed:** Fix  Pre Built Template Dashboard
 
  = v2.1.5 – 08 April 2025 =
   - 🎨 **Fixed:** Pre Built Template SSL issue 
