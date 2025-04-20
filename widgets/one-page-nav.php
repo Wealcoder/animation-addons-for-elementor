@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 /**
- * Social Icons
+ * One Page Nav
  *
  * Elementor widget for social icons.
  *
@@ -34,44 +34,15 @@ class One_page_Nav extends Widget_Base {
 	public function get_name() {
 		return 'wcf--one-page-nav';
 	}
-
-	/**
-	 * Retrieve the widget title.
-	 *
-	 * @return string Widget title.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
+	
 	public function get_title() {
 		return esc_html__( 'One Page Nav', 'animation-addons-for-elementor' );
 	}
-
-	/**
-	 * Retrieve the widget icon.
-	 *
-	 * @return string Widget icon.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
+	
 	public function get_icon() {
 		return 'wcf eicon-nav-menu';
 	}
 
-	/**
-	 * Retrieve the list of categories the widget belongs to.
-	 *
-	 * Used to determine where to display the widget in the editor.
-	 *
-	 * Note that currently Elementor supports only one category.
-	 * When multiple categories passed, Elementor uses the first one.
-	 *
-	 * @return array Widget categories.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
 	public function get_categories() {
 		return [ 'weal-coder-addon' ];
 	}
@@ -80,16 +51,8 @@ class One_page_Nav extends Widget_Base {
 		return [ 'wcf--one-page-nav' ];
 	}
 
-	/**
-	 * Register the widget controls.
-	 *
-	 * Adds different input fields to allow the user to change and customize the widget settings.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @access protected
-	 */
 	protected function register_controls() {
+		
 		$this->start_controls_section(
 			'section_navigation',
 			[
@@ -435,6 +398,27 @@ class One_page_Nav extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'item_border',
+				'selector' => '{{WRAPPER}} .wcf-onepage-nav-item a',
+			]
+		);
+
+		$this->add_responsive_control(
+			'item_border-radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px' ],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf-onepage-nav-item a' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator'  => 'before',
+			]
+		);
+
 		$this->end_controls_tab();
 
 		$this->start_controls_tab(
@@ -478,6 +462,47 @@ class One_page_Nav extends Widget_Base {
 
 		$this->end_controls_tab();
 
+		$this->start_controls_tab(
+			'text_color_active_tab',
+			[
+				'label' => esc_html__( 'Active', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'text_color_active',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf-onepage-nav-item.active a' => 'color: {{VALUE}}; fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'item_background_active',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .wcf-onepage-nav-item.active',
+			]
+		);
+
+		$this->add_control(
+			'bder_color_active',
+			[
+				'label'     => esc_html__( 'Active Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'condition' => [ 'item_border_border!' => '' ],
+				'selectors' => [
+					'{{WRAPPER}} .wcf-onepage-nav-item.active a' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
 		$this->end_controls_tabs();
 
 		$this->add_responsive_control(
@@ -492,27 +517,7 @@ class One_page_Nav extends Widget_Base {
 				],
 			]
 		);
-
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
-			[
-				'name'     => 'item_border',
-				'selector' => '{{WRAPPER}} .wcf-onepage-nav-item a',
-			]
-		);
-
-		$this->add_responsive_control(
-			'item_border-radius',
-			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px' ],
-				'selectors'  => [
-					'{{WRAPPER}} .wcf-onepage-nav-item a' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator'  => 'before',
-			]
-		);
+		
 
 		$this->end_controls_section();
 	}
