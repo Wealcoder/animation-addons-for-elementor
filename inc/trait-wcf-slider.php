@@ -5,6 +5,7 @@ namespace WCF_ADDONS;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Typography;
 use Elementor\Icons_Manager;
 use Elementor\Plugin;
 
@@ -317,6 +318,7 @@ trait WCF_Slider_Trait {
 	protected function register_slider_navigation_style_controls( $default_selectors = [] ) {
 		$selectors = [
 			'arrow_size'               => [ '{{WRAPPER}} .wcf-arrow' => 'font-size: {{SIZE}}{{UNIT}};' ],
+			'arrow_circle_size'        => [ '{{WRAPPER}} .wcf-arrow' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};' ],
 			'arrow_padding'            => [ '{{WRAPPER}} .wcf-arrow' => 'padding: {{SIZE}}{{UNIT}};' ],
 			'arrow_color'              => [ '{{WRAPPER}} .wcf-arrow' => 'color: {{VALUE}}; fill: {{VALUE}};' ],
 			'arrow_background'         => '{{WRAPPER}} .wcf-arrow',
@@ -344,7 +346,40 @@ trait WCF_Slider_Trait {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
+			'arrow_circle_size',
+			[
+				'label'     => esc_html__( 'Circle Size', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+					],
+				],
+				'selectors' => $selectors['arrow_circle_size'],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'arrow_border',
+				'selector' => $selectors['arrow_border'],
+			]
+		);
+
+		$this->add_responsive_control(
+			'arrow_border_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => $selectors['arrow_border_radius'],
+			]
+		);
+
+		$this->add_responsive_control(
 			'arrow_padding',
 			[
 				'label'     => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
@@ -427,22 +462,177 @@ trait WCF_Slider_Trait {
 
 		$this->end_controls_tabs();
 
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
+		$this->add_responsive_control(
+			'navigation_position',
 			[
-				'name'      => 'arrow_border',
-				'selector'  => $selectors['arrow_border'],
+				'label'     => esc_html__( 'Position Type', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '',
+				'options'   => [
+					''         => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ts-navigation' => 'position: {{VALUE}};',
+				],
 				'separator' => 'before',
 			]
 		);
 
 		$this->add_responsive_control(
-			'arrow_border_radius',
+			'navigation_align',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => [
+					'flex-start'    => [
+						'title' => esc_html__( 'Start', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-justify-start-h',
+					],
+					'center'        => [
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-justify-center-h',
+					],
+					'flex-end'      => [
+						'title' => esc_html__( 'End', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-justify-end-h',
+					],
+					'space-between' => [
+						'title' => esc_html__( 'Space Between', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-justify-space-between-h',
+					],
+				],
+				'toggle'    => true,
+				'selectors' => [
+					'{{WRAPPER}} .ts-navigation' => 'justify-content: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'navigation_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors'  => $selectors['arrow_border_radius'],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-navigation' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'navigation_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 2000,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 200,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-navigation' => 'width: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'navigation_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_control(
+			'navigation_hr_orn',
+			[
+				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::CHOOSE,
+				'prefix_class' => 'aae--slider-hrp-',
+				'options'      => [
+					'left'  => [
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-left',
+					],
+					'right' => [
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-right',
+					],
+				],
+				'condition'    => [ 'navigation_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'navigation_hr_offset',
+			[
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => - 1000,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => - 100,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-navigation' => '--hr-offset: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'navigation_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_control(
+			'navigation_vr_orn',
+			[
+				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::CHOOSE,
+				'prefix_class' => 'aae--slider-vrp-',
+				'options'      => [
+					'top'    => [
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-top',
+					],
+					'bottom' => [
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-bottom',
+					],
+				],
+				'condition'    => [ 'navigation_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'navigation_vr_offset',
+			[
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => - 1000,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => - 100,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-navigation' => '--vr-offset: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'navigation_position' => 'absolute' ],
 			]
 		);
 	}
@@ -485,23 +675,7 @@ trait WCF_Slider_Trait {
 
 		$selectors = array_merge( $selectors, $default_selectors );
 
-		//pagination bullets
-		$this->add_responsive_control(
-			'bullets_size',
-			[
-				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SLIDER,
-				'range'     => [
-					'px' => [
-						'min' => 2,
-						'max' => 100,
-					],
-				],
-				'selectors' => $selectors['bullets_size'],
-				'condition' => [ 'pagination_type' => 'bullets' ]
-			]
-		);
-
+		// Pagination Bullets
 		$this->add_control(
 			'bullets_inactive_color',
 			[
@@ -522,17 +696,80 @@ trait WCF_Slider_Trait {
 			]
 		);
 
+		$this->add_responsive_control(
+			'bullets_size',
+			[
+				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => [
+					'px' => [
+						'min' => 2,
+						'max' => 100,
+					],
+				],
+				'selectors' => $selectors['bullets_size'],
+				'condition' => [ 'pagination_type' => 'bullets' ]
+			]
+		);
+
+		$this->add_responsive_control(
+			'bullets_gap',
+			[
+				'label'     => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .swiper-pagination-bullets' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'pagination_type' => 'bullets' ],
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
 			[
 				'name'      => 'bullets_border',
 				'selector'  => $selectors['bullets_border'],
-				'separator' => 'before',
 				'condition' => [ 'pagination_type' => 'bullets' ]
 			]
 		);
 
-		//pagination fraction
+		$this->add_control(
+			'bullets_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .swiper-pagination-bullet' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_type' => 'bullets' ]
+			]
+		);
+
+		$this->add_control(
+			'bullets_direction',
+			[
+				'label'     => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'row',
+				'options'   => [
+					'row'    => esc_html__( 'Row', 'animation-addons-for-elementor' ),
+					'column' => esc_html__( 'Column', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .swiper-pagination-bullets' => 'flex-direction: {{VALUE}};',
+				],
+				'condition' => [ 'pagination_type' => 'bullets' ],
+			]
+		);
+
+		// Pagination Fraction
 		$this->add_control(
 			'fraction_current_color',
 			[
@@ -543,13 +780,31 @@ trait WCF_Slider_Trait {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'fraction_current_typo',
+				'selector'  => '{{WRAPPER}} .swiper-pagination-current',
+				'condition' => [ 'pagination_type' => 'fraction' ],
+			]
+		);
+
 		$this->add_control(
 			'fraction_total_color',
 			[
 				'label'     => esc_html__( 'Total Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_total_color'],
-				'condition' => [ 'pagination_type' => 'fraction' ]
+				'condition' => [ 'pagination_type' => 'fraction' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'      => 'fraction_total_typo',
+				'selector'  => '{{WRAPPER}} .swiper-pagination-total',
+				'condition' => [ 'pagination_type' => 'fraction' ],
 			]
 		);
 
@@ -563,7 +818,76 @@ trait WCF_Slider_Trait {
 			]
 		);
 
-		//pagination progressbar
+		$this->add_responsive_control(
+			'fraction_line_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .mid-line, {{WRAPPER}} .swiper-pagination-progressbar' => 'width: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_type!' => 'bullets' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'fraction_line_height',
+			[
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 500,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .mid-line, {{WRAPPER}} .swiper-pagination-progressbar' => 'height: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_type!' => 'bullets' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'fraction_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .swiper-pagination-fraction' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_type' => 'fraction' ],
+			]
+		);
+
+		// Pagination Progressbar
 		$this->add_control(
 			'progress_color',
 			[
@@ -581,6 +905,156 @@ trait WCF_Slider_Trait {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['progress_fill_color'],
 				'condition' => [ 'pagination_type' => 'progressbar' ]
+			]
+		);
+
+		// Position Style For All Style
+		$this->add_control(
+			'pagination_position',
+			[
+				'label'     => esc_html__( 'Position', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'relative',
+				'options'   => [
+					'relative' => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ts-pagination' => 'position: {{VALUE}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'progressbar_rotate',
+			[
+				'label'      => esc_html__( 'Rotate', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 360,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .swiper-pagination-progressbar' => 'transform: rotate({{SIZE}}deg);',
+				],
+				'condition' => [ 'pagination_type' => 'progressbar' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'pagination_align',
+			[
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => [
+					'left'   => [
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-center',
+					],
+					'right'  => [
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-right',
+					],
+				],
+				'toggle'    => true,
+				'selectors' => [
+					'{{WRAPPER}} .ts-pagination' => 'text-align: {{VALUE}};',
+				],
+				'condition' => [ 'pagination_position' => 'relative' ],
+			]
+		);
+
+		$this->add_control(
+			'pagination_hr_orn',
+			[
+				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::CHOOSE,
+				'prefix_class' => 'aae--slider-pg-hr-',
+				'options'      => [
+					'left'  => [
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-left',
+					],
+					'right' => [
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-right',
+					],
+				],
+				'condition'    => [ 'pagination_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'pagination_hr_offset',
+			[
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => - 1000,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => - 100,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-pagination' => '--pg-hr-offset: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_control(
+			'pagination_vr_orn',
+			[
+				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::CHOOSE,
+				'prefix_class' => 'aae--slider-pg-vr-',
+				'options'      => [
+					'top'    => [
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-top',
+					],
+					'bottom' => [
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-bottom',
+					],
+				],
+				'condition'    => [ 'pagination_position' => 'absolute' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'pagination_vr_offset',
+			[
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => - 1000,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => - 100,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-pagination' => '--pg-vr-offset: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'pagination_position' => 'absolute' ],
 			]
 		);
 	}
