@@ -26,6 +26,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-box/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'image-box-slider'     => [
 						'label'        => 'Image Box Slider',
@@ -41,6 +42,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-box-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'social-icons'         => [
 						'label'        => 'Social Icons',
@@ -56,6 +58,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-social-icons/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-social-icons/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'image'                => [
 						'label'        => 'Image',
@@ -71,6 +74,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'image-gallery'        => [
 						'label'        => 'Image Gallery',
@@ -86,6 +90,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/image-gallery-widget/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-gallery/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'text-hover-image'     => [
 						'label'        => 'Text Hover Image',
@@ -101,6 +106,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-text-hover-image/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-text-hover-image/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'brand-slider'         => [
 						'label'        => 'Brand Slider',
@@ -116,6 +122,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-brand-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-brand-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'counter'              => [
 						'label'        => 'Counter',
@@ -131,6 +138,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-counter/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-counter/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'icon-box'             => [
 						'label'        => 'Icon Box',
@@ -146,6 +154,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-icon-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-icon-box/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'testimonial'          => [
 						'label'        => 'Testimonial',
@@ -161,6 +170,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'testimonial2'         => [
 						'label'        => 'Classic Testimonial',
@@ -175,6 +185,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-classic-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-2/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'testimonial3'         => [
 						'label'        => 'Modern Testimonial',
@@ -189,6 +200,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-modern-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'advanced-testimonial' => [
 						'label'        => 'Advanced Testimonial',
@@ -203,6 +215,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'button'               => [
 						'label'        => 'Button',
@@ -217,6 +230,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-button/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'button-pro'           => [
 						'label'        => 'Advanced Button',
@@ -231,6 +245,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-advanced-button/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button-pro/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'image-compare'        => [
 						'label'        => 'Image Comparison',
@@ -245,6 +260,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-comparison/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-compare/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'progressbar'          => [
 						'label'        => 'Progress Bar',
@@ -259,6 +275,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-progress-bar/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-progressbar/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'team'                 => [
 						'label'        => 'Team',
@@ -273,6 +290,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-team/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'notification'         => [
 						'label'        => 'Notification',
@@ -287,6 +305,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-notification/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-notification/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'one-page-nav'         => [
 						'label'        => 'One Page Nav',
@@ -301,6 +320,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-one-page-nav/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-one-page-nav/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'timeline'             => [
 						'label'        => 'Timeline',
@@ -315,6 +335,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-timeline',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-timeline/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'tabs'                 => [
 						'label'        => 'Tabs',
@@ -329,6 +350,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-tabs/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-tabs/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'services-tab'         => [
 						'label'        => 'Services Tabs',
@@ -343,6 +365,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-services-tabs',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-services-tab/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'floating-elements'    => [
 						'label'        => 'Floating Elements',
@@ -357,6 +380,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-floating-elements/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-floating-elements/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'event-slider'         => [
 						'label'        => 'Event Slider',
@@ -371,6 +395,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-event-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-event-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'content-slider'       => [
 						'label'        => 'Content Slider',
@@ -385,6 +410,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-content-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-content-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'countdown'            => [
 						'label'        => 'Countdown',
@@ -399,6 +425,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-countdown/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-countdown/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -419,6 +446,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-typewriter/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-typewriter/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'animated-heading' => [
 						'label'        => 'Animated Heading',
@@ -433,6 +461,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-animated-heading/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'animated-title'   => [
 						'label'        => 'Animated Title',
@@ -447,6 +476,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-title/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-title/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'animated-text'    => [
 						'label'        => 'Animated Text',
@@ -461,6 +491,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-text/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'lottie'           => [
 						'label'        => 'Lottie',
@@ -475,6 +506,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-lottie/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'draw-svg'         => [
 						'label'        => 'GSAP DrawSvg',
@@ -489,6 +521,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-gsap-drawsvg/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/draw-svg/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -509,6 +542,7 @@ $config = [
 						'icon'         => "wcf-icon-Animated-Off-Canvas",
 						'doc_url'      => 'https://animation-addons.com/widgets/aae-animated-off-canvas/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'site-logo'          => [
 						'label'        => 'Site Logo',
@@ -523,6 +557,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-site-logo/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'nav-menu'           => [
 						'label'        => 'Nav Menu',
@@ -537,6 +572,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -557,6 +593,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'breaking-news-slider' => [
 						'label'        => 'Breaking News Slider',
@@ -572,6 +609,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breaking-news-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/breaking-news-slider',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'category-slider'      => [
 						'label'        => 'Category Slider',
@@ -586,6 +624,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/category-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'video-box-slider'     => [
 						'label'        => 'Video Box Slider',
@@ -600,6 +639,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-box-slider/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'filterable-slider'    => [
 						'label'        => 'Filterable Slider',
@@ -614,6 +654,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-slider/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -634,6 +675,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-title/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-title/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-feature-image' => [
 						'label'        => 'Post Featured Image',
@@ -648,6 +690,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-excerpt'       => [
 						'label'        => 'Post Excerpt',
@@ -662,6 +705,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-content'       => [
 						'label'        => 'Post Content',
@@ -676,6 +720,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-content/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-content/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-comment'       => [
 						'label'        => 'Post Comments',
@@ -690,6 +735,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-reactions'     => [
 						'label'        => 'Post Reactions',
@@ -704,6 +750,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-meta-info'     => [
 						'label'        => 'Post Meta Info',
@@ -718,6 +765,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-paginate'      => [
 						'label'        => 'Post Pagination',
@@ -732,6 +780,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-social-share'  => [
 						'label'        => 'Social Share',
@@ -746,6 +795,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'posts'              => [
 						'label'        => 'Posts',
@@ -760,6 +810,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'posts-pro'          => [
 						'label'        => 'Advanced Posts',
@@ -774,6 +825,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-pro/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'video-story'        => [
 						'label'        => 'Video Story',
@@ -788,6 +840,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-story/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/aae-video-story/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'video-posts-tab'    => [
 						'label'        => 'Video Posts Tab',
@@ -802,6 +855,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-tabs/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'posts-filter'       => [
 						'label'        => 'Filterable Posts',
@@ -816,6 +870,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-filter/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-rating-form'   => [
 						'label'        => 'Post Rating Form',
@@ -830,6 +885,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-rating-form/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'post-rating'        => [
 						'label'        => 'Post Rating',
@@ -844,6 +900,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 
 					'grid-hover-posts'  => [
@@ -859,6 +916,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'category-showcase' => [
 						'label'        => 'Category Showcase',
@@ -873,6 +931,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-showcase/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'banner-posts'      => [
 						'label'        => 'Banner Posts',
@@ -887,6 +946,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-banner-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'current-date'      => [
 						'label'        => 'Current Date',
@@ -901,6 +961,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-current-date/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-current-date/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'feature-posts'     => [
 						'label'        => 'Featured Posts',
@@ -915,6 +976,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-featured-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-feature-posts/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'archive-title'     => [
 						'label'        => 'Archive Title',
@@ -929,6 +991,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'portfolio'         => [
 						'label'        => 'Portfolio',
@@ -943,6 +1006,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-portfolio/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-portfolio/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'search-form'       => [
 						'label'        => 'Search Form',
@@ -957,6 +1021,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'search-query'      => [
 						'label'        => 'Search Query',
@@ -971,6 +1036,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-search-query/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'search-no-result'  => [
 						'label'        => 'Search No Result',
@@ -985,6 +1051,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-search-no-result/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -1005,6 +1072,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-contact-form-7/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-contact-form-7/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'mailchimp'          => [
 						'label'        => 'Mailchimp',
@@ -1019,6 +1087,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-mailchimp/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-mailchimp/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'advanced-mailchimp' => [
 						'label'        => 'Advanced Mailchimp',
@@ -1033,6 +1102,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-mailchimp/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-mailchimp/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -1053,6 +1123,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-popup/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-popup/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'video-box'   => [
 						'label'        => 'Video Box',
@@ -1067,6 +1138,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-box/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'video-mask'  => [
 						'label'        => 'Video Mask',
@@ -1081,6 +1153,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-mask/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-mask/',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			],
@@ -1102,6 +1175,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-toggle-switch/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'advance-pricing-table' => [
 						'label'        => 'Advanced Pricing Table',
@@ -1116,6 +1190,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-pricing-table/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'scroll-elements'       => [
 						'label'        => 'Scroll Elements',
@@ -1130,6 +1205,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'advance-portfolio'     => [
 						'label'        => 'Advanced Portfolio',
@@ -1144,6 +1220,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-portfolio/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'filterable-gallery'    => [
 						'label'        => 'Filterable Gallery',
@@ -1158,6 +1235,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'breadcrumbs'           => [
 						'label'        => 'Breadcrumbs',
@@ -1172,6 +1250,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breadcrumbs/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'table-of-contents'     => [
 						'label'        => 'Table Of Content',
@@ -1186,6 +1265,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'image-accordion'       => [
 						'label'        => 'Image Accordion',
@@ -1200,6 +1280,7 @@ $config = [
 						'icon'         => "wcf-icon-Image-Accordion",
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'author-box'            => [
 						'label'        => 'Author Box',
@@ -1214,6 +1295,7 @@ $config = [
 						'icon'         => "wcf-icon-Author-Box",
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'flip-box'              => [
 						'label'        => 'Flip Box',
@@ -1228,6 +1310,7 @@ $config = [
 						'icon'         => "wcf-icon-Flip-Box",
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 					'advance-accordion'     => [
 						'label'        => 'Advanced Accordion',
@@ -1242,6 +1325,7 @@ $config = [
 						'icon'         => "wcf-icon-Advanced-Accordion",
 						'doc_url'      => '',
 						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
 				]
 			]
