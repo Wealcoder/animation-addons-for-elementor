@@ -225,14 +225,14 @@ class Contact_Form_7 extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_input_box_height',
 			[
-				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SLIDER,
-				'range'     => [
+				'label'   => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SLIDER,
+				'range'   => [
 					'px' => [
 						'max' => 150,
 					],
 				],
-				'default'   => [
+				'default' => [
 					'size' => 55,
 				],
 
@@ -398,14 +398,14 @@ class Contact_Form_7 extends Widget_Base {
 		$this->add_responsive_control(
 			'contactform_textarea_box_height',
 			[
-				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SLIDER,
-				'range'     => [
+				'label'   => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SLIDER,
+				'range'   => [
 					'px' => [
 						'max' => 500,
 					],
 				],
-				'default'   => [
+				'default' => [
 					'size' => 175,
 				],
 
@@ -637,12 +637,12 @@ class Contact_Form_7 extends Widget_Base {
 		$this->add_control(
 			'button_icon_align',
 			[
-				'label'   => esc_html__( 'Icon Position', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'before',
-				'options' => [
-					'before'  => esc_html__( 'Before', 'animation-addons-for-elementor' ),
-					'after' => esc_html__( 'After', 'animation-addons-for-elementor' ),
+				'label'        => esc_html__( 'Icon Position', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SELECT,
+				'default'      => 'before',
+				'options'      => [
+					'before' => esc_html__( 'Before', 'animation-addons-for-elementor' ),
+					'after'  => esc_html__( 'After', 'animation-addons-for-elementor' ),
 				],
 				'prefix_class' => 'icon-position-',
 			]
@@ -843,6 +843,67 @@ class Contact_Form_7 extends Widget_Base {
 		);
 
 		$this->end_controls_section(); // Input submit button style tab end
+
+		// Success/Error Message
+		$this->start_controls_section(
+			'style_message',
+			[
+				'label' => esc_html__( 'Message', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'empty_color',
+			[
+				'label'     => esc_html__( 'Error Field Text Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wpcf7-not-valid-tip' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'empty_typo',
+				'selector' => '{{WRAPPER}} .wpcf7-not-valid-tip',
+			]
+		);
+
+		$this->add_control(
+			'error_msg_color',
+			[
+				'label'     => esc_html__( 'Error Message Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .invalid .wpcf7-response-output' => 'color: {{VALUE}}',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'success_msg_color',
+			[
+				'label'     => esc_html__( 'Success Message Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .sent .wpcf7-response-output' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'message_typo',
+				'selector' => '{{WRAPPER}} .wpcf7-response-output',
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
@@ -868,12 +929,12 @@ class Contact_Form_7 extends Widget_Base {
 		$this->add_render_attribute( 'shortcode', 'id', $settings['contact_form_id'] );
 		$shortcode = sprintf( '[contact-form-7 %s]', $this->get_render_attribute_string( 'shortcode' ) );
 		?>
-            <style>
-               .wcf--form-wrapper form label {
-                   display: block;
-               }
-            </style>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?> >
+        <style>
+            .wcf--form-wrapper form label {
+                display: block;
+            }
+        </style>
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?> >
 			<?php
 			if ( ! empty( $settings['contact_form_id'] ) ) {
 				echo do_shortcode( $shortcode );
@@ -886,13 +947,13 @@ class Contact_Form_7 extends Widget_Base {
 			$is_new   = empty( $settings['icon'] ) && Icons_Manager::is_migration_allowed();
 			?>
             <div class="btn-icon elementor-screen-only">
-	            <?php if ( $is_new || $migrated ) :
-		            Icons_Manager::render_icon( $settings['button_icon'], [ 'aria-hidden' => 'true' ] );
-	            else : ?>
+				<?php if ( $is_new || $migrated ) :
+					Icons_Manager::render_icon( $settings['button_icon'], [ 'aria-hidden' => 'true' ] );
+				else : ?>
                     <i class="<?php echo esc_attr( $settings['icon'] ); ?>" aria-hidden="true"></i>
-	            <?php endif; ?>
+				<?php endif; ?>
             </div>
-		</div>
+        </div>
 
 		<?php
 	}
