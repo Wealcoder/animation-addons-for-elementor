@@ -140,12 +140,12 @@ export const gsapGroupExtensionFn = (mainContent, data, dispatch) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
             if (key === data.slug) {
-              if (
-                value2.is_pro &&
-                value2?.pro_only &&
-                activated?.product_status?.item_id === 13
-              ) {
-                return [key2, value2];
+              if (value2.is_pro && value2?.pro_only) {
+                if (
+                  WCF_ADDONS_ADMIN.addons_config?.product_status?.item_id === 13
+                ) {
+                  return [key2, value2];
+                }
               } else if (value2.is_pro && !isValid) {
                 return [key2, value2];
               } else {
