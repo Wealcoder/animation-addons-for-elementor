@@ -23,7 +23,15 @@ const WidgetCard = ({
   const hashValue = hash?.replace("#", "");
 
   const setCheck = (value, slug) => {
-    if (widget?.is_pro) {
+    if (widget?.is_pro && widget?.pro_only) {
+      if (activated?.product_status?.item_id === 13) {
+        if (updateActiveItem) {
+          updateActiveItem({ value, slug });
+        }
+      } else {
+        setOpen(value);
+      }
+    } else if (widget?.is_pro) {
       if (activated.wcf_valid) {
         if (updateActiveItem) {
           updateActiveItem({ value, slug });

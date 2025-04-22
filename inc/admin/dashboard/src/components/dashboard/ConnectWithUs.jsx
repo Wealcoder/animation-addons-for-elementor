@@ -33,7 +33,8 @@ const ConnectWithUs = () => {
             immediately from our{" "}
             {
               <a
-                href="https://wealcoder.com/"
+                href="https://animation-addons.com"
+                target="_blank"
                 className="text-[#2587EC] underline underline-offset-2"
               >
                 Website

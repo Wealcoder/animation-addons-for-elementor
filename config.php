@@ -1717,6 +1717,7 @@ $config = [
 									'pluginId' => 'gsap-builder'
 								],
 								'is_pro'       => true,
+								'pro_only'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
