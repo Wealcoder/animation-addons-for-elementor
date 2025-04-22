@@ -18,6 +18,9 @@
 .elementor-widget-wcf--one-page-nav .wcf--onepage-nav .wcf-onepage-nav-item a.active {
   color: red;
 }
+.elementor-widget-wcf--one-page-nav .wcf--onepage-nav .wcf-onepage-nav-item a svg {
+  min-width: 10px;
+}
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-position-left .wcf--onepage-nav, .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-position-right .wcf--onepage-nav {
   flex-direction: column;
 }

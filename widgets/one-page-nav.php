@@ -146,6 +146,8 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Navigation Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'toggle'       => false,
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position',
 				'options'      => [
 					'left'   => [
 						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
@@ -171,6 +173,8 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Vertical Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'default'      => 'middle',
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position_vr',
 				'toggle'       => false,
 				'options'      => [
 					'top'    => [
@@ -197,6 +201,8 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Horizontal Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'default'      => 'center',
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position_hr',
 				'toggle'       => false,
 				'options'      => [
 					'left'   => [
@@ -214,6 +220,31 @@ class One_page_Nav extends Widget_Base {
 				],
 				'prefix_class' => 'wcf-onepage-nav-hr-',
 				'condition'    => [ 'nav_position' => 'bottom' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'aae_wrp_height',
+			[
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'label' => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vh', 'custom' ],										
+				'selectors' => [
+					'{{WRAPPER}} .wcf--onepage-nav' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+	
+
+		$this->add_responsive_control(
+			'aae_wrp_width',
+			[
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'label' => esc_html__( 'Width', 'animation-addons-for-elementor' ),	
+				'size_units' => [ 'px', '%', 'em', 'rem', 'vw' ,'custom' ],							
+				'selectors' => [
+					'{{WRAPPER}} .wcf--onepage-nav' => 'width: {{SIZE}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -251,7 +282,7 @@ class One_page_Nav extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'wrapper_padding',
 			[
 				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
@@ -317,7 +348,8 @@ class One_page_Nav extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .wcf-onepage-nav-item  i, {{WRAPPER}} .wcf-onepage-nav-item svg' => 'font-size: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf-onepage-nav-item i, {{WRAPPER}} .wcf-onepage-nav-item svg' => 'font-size: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf-onepage-nav-item svg' => 'width:{{SIZE}}{{UNIT}};height:{{SIZE}}{{UNIT}}',
 				],
 			]
 		);

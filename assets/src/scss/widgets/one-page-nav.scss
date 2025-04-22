@@ -18,6 +18,9 @@
       &.active{
         color: red;
       }
+      svg{
+        min-width: 10px;
+      }
     }
   }
 
