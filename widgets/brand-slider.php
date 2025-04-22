@@ -5,6 +5,7 @@ namespace WCF_ADDONS\Widgets;
 use Elementor\Control_Media;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Image_Size;
+use Elementor\Group_Control_Text_Stroke;
 use Elementor\Group_Control_Typography;
 use Elementor\Icons_Manager;
 use Elementor\Plugin;
@@ -607,6 +608,14 @@ class Brand_Slider extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Text_Stroke::get_type(),
+			[
+				'name' => 'text_stroke',
+				'selector' => '{{WRAPPER}} .title',
+			]
+		);
+
 		$this->add_control(
 			'separator_color',
 			[
@@ -726,23 +735,23 @@ class Brand_Slider extends Widget_Base {
 
 		$allowed_tags = array_merge( wp_kses_allowed_html( 'post' ), $svg_args );
 		?>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
-			<!-- Slider main container -->
-			<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
-				<!-- Additional required wrapper -->
-				<div class="swiper-wrapper">
-					<!-- Slides -->
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+            <!-- Slider main container -->
+            <div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
+                <!-- Additional required wrapper -->
+                <div class="swiper-wrapper">
+                    <!-- Slides -->
 					<?php echo wp_kses( implode( '', $slides ), $allowed_tags ); ?>
-				</div>
-				<!-- navigation and pagination -->
+                </div>
+                <!-- navigation and pagination -->
 				<?php if ( 1 < $slides_count ) : ?>
 					<?php $this->render_slider_navigation(); ?>
 
 					<?php $this->render_slider_pagination(); ?>
 				<?php endif; ?>
 
-			</div>
-		</div>
+            </div>
+        </div>
 		<?php
 	}
 

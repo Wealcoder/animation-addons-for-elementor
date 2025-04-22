@@ -244,10 +244,10 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		
 		$item_output = $args->before;
 		$item_output .= '<a' . $attributes . '>';
-		if( isset($this->elementor_settings['remove_span']) && $this->elementor_settings['remove_span'] == true){			
-			$item_output .= $args->link_before .'<span class="menu-text" data-text="'.$title.'">'. $title .'</span>'. $args->link_after;
+		if( isset($this->elementor_settings['remove_span']) && $this->elementor_settings['remove_span'] == true){		
+			$item_output .= $args->link_before . $title . $args->link_after;				
 		}else{
-			$item_output .= $args->link_before . $title . $args->link_after;			
+			$item_output .= $args->link_before .'<span class="menu-text" data-text="'.$title.'">'. $title .'</span>'. $args->link_after;			
 		}
 		$item_output .= $badge;
 		$item_output .= $submenu_indicator . '</a>';
