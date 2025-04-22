@@ -326,4 +326,8 @@
   padding: 0;
   border: 0;
 }
+
+.wcf--image {
+  line-height: 0;
+}
 /*# sourceMappingURL=wcf-addons.css.map */
