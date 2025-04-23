@@ -53,7 +53,14 @@ export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro && !isValid) {
+        if (value.is_pro && (value?.pro_only ?? false)) {
+          if (isOnlyPro) {
+            value.is_active = data.value;
+            return [key, value];
+          } else {
+            return [key, value];
+          }
+        } else if (value.is_pro && !isValid) {
           return [key, value];
         } else {
           value.is_active = data.value;
@@ -104,7 +111,14 @@ export const gsapExtensionFn = (mainContent, data, dispatch) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
             if (key2 === data.slug) {
-              if (value2.is_pro && !isValid) {
+              if (value2.is_pro && (value2?.pro_only ?? false)) {
+                if (isOnlyPro) {
+                  value2.is_active = data.value;
+                  return [key2, value2];
+                } else {
+                  return [key2, value2];
+                }
+              } else if (value2.is_pro && !isValid) {
                 return [key2, value2];
               } else {
                 value2.is_active = data.value;
