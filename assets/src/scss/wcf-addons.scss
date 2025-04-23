@@ -241,8 +241,6 @@
   }
 
   &.prefix_on_hover {
-    transition: all 0.5s;
-
     &:before {
       width: 0;
     }
@@ -253,6 +251,11 @@
         margin-right: var(--prefix-gap);
       }
     }
+  }
+
+  .highlight,
+  a {
+    transition: all 0.5s;
   }
 }
 

@@ -179,15 +179,16 @@
   width: var(--prefix-width);
   margin-right: var(--prefix-gap);
 }
-.wcf--title.prefix_on_hover {
-  transition: all 0.5s;
-}
 .wcf--title.prefix_on_hover:before {
   width: 0;
 }
 .wcf--title.prefix_on_hover:hover:before {
   width: var(--prefix-width);
   margin-right: var(--prefix-gap);
+}
+.wcf--title .highlight,
+.wcf--title a {
+  transition: all 0.5s;
 }
 
 .elementor-widget .wcf--title > a {

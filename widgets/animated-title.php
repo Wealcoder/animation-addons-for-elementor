@@ -454,6 +454,51 @@ class Animated_Title extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// Hover
+		$this->start_controls_section(
+			'style_title_hover',
+			[
+				'label'     => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'title_h_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--title a:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'highlight_h_color',
+			[
+				'label'     => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--title a:hover .highlight' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'prefix_h_color',
+			[
+				'label'     => esc_html__( 'Prefix Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .has-link.prefix_on_normal:hover:before, {{WRAPPER}} .has-link.prefix_on_hover:hover:before' => 'background-color: {{VALUE}};',
+				],
+				'condition' => [ 'show_title_prefix' => 'yes' ],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
@@ -490,6 +535,7 @@ class Animated_Title extends Widget_Base {
 			echo wp_kses_post( $title_html );
 		} else {
 			$this->add_link_attributes( 'link', $settings['link'] );
+			$this->add_render_attribute( 'title', 'class', 'has-link' );
 			?>
             <<?php echo Utils::validate_html_tag( $settings['header_size'] ); ?> <?php echo $this->get_render_attribute_string( 'title' ) ?>>
             <a <?php $this->print_render_attribute_string( 'link' ); ?>>
