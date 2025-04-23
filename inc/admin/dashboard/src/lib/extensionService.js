@@ -283,8 +283,6 @@ export const allExtensionFn = (mainContent, data, dispatch) => {
       ([key, value]) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
-            
-
             if (value2.is_pro && (value2?.pro_only ?? false)) {
               if (isOnlyPro) {
                 value2.is_active = data.value;
@@ -353,7 +351,14 @@ export const allSetupExtensionFn = (mainContent, data) => {
         let isGroupActive = false;
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
-            if (value2.is_pro && !isValid) {
+            if (value2.is_pro && (value2?.pro_only ?? false)) {
+              if (isOnlyPro) {
+                value2.is_active = data.value;
+                return [key2, value2];
+              } else {
+                return [key2, value2];
+              }
+            } else if (value2.is_pro && !isValid) {
               return [key2, value2];
             } else {
               const activeItem = value2.setup?.includes(data);
