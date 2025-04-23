@@ -1,4 +1,6 @@
 const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+const isOnlyPro =
+  WCF_ADDONS_ADMIN.addons_config?.product_status?.item_id === 13;
 
 export const activeWidgetFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(

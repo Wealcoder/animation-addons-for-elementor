@@ -23,7 +23,7 @@ const WidgetCard = ({
   const hashValue = hash?.replace("#", "");
 
   const setCheck = (value, slug) => {
-    if (widget?.is_pro && widget?.pro_only) {
+    if (widget?.is_pro && (widget?.pro_only ?? false)) {
       if (activated?.product_status?.item_id === 13) {
         if (updateActiveItem) {
           updateActiveItem({ value, slug });
