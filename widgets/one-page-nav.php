@@ -526,7 +526,8 @@ class One_page_Nav extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-onepage-nav-item.active a' => 'color: {{VALUE}}; fill: {{VALUE}};',
+					'{{WRAPPER}} .wcf--onepage-nav .active a span' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf--onepage-nav .active a svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);

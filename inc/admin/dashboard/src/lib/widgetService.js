@@ -1,4 +1,6 @@
 const isValid = WCF_ADDONS_ADMIN.addons_config.wcf_valid;
+const isOnlyPro =
+  WCF_ADDONS_ADMIN.addons_config?.product_status?.item_id === 13;
 
 export const activeWidgetFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
@@ -47,7 +49,14 @@ export const activeGroupWidgetFn = (mainContent, data, dispatch) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
           if (key === data.slug) {
-            if (value2.is_pro && !isValid) {
+            if (value2.is_pro && (value2?.pro_only ?? false)) {
+              if (isOnlyPro) {
+                value2.is_active = data.value;
+                return [key2, value2];
+              } else {
+                return [key2, value2];
+              }
+            } else if (value2.is_pro && !isValid) {
               return [key2, value2];
             } else {
               value2.is_active = data.value;
@@ -90,7 +99,14 @@ export const activeFullWidgetFn = (mainContent, data, dispatch) => {
     Object.entries(mainContent.elements).map(([key, value]) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
-          if (value2.is_pro && !isValid) {
+          if (value2.is_pro && (value2?.pro_only ?? false)) {
+            if (isOnlyPro) {
+              value2.is_active = data.value;
+              return [key2, value2];
+            } else {
+              return [key2, value2];
+            }
+          } else if (value2.is_pro && !isValid) {
             return [key2, value2];
           } else {
             value2.is_active = data.value;
@@ -117,7 +133,14 @@ export const activeFullSetupWidgetFn = (mainContent, data) => {
     Object.entries(mainContent.elements).map(([key, value]) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
-          if (value2.is_pro && !isValid) {
+          if (value2.is_pro && (value2?.pro_only ?? false)) {
+            if (isOnlyPro) {
+              value2.is_active = data.value;
+              return [key2, value2];
+            } else {
+              return [key2, value2];
+            }
+          } else if (value2.is_pro && !isValid) {
             return [key2, value2];
           } else {
             if (value2?.setup) {

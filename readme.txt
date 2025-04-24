@@ -408,6 +408,10 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == Changelog ==
 
+ = v2.1.9 – 00 April 2025 =
+  - 🆕 **Added:** Added notice for pro element
+  - 🆕 **Added:** Responsive control to hide onepage nav title
+ 
  = v2.1.8 – 22 April 2025 =
   - 🆕 **Added:** Scroll Smother option
   - 🎨 **Fixed:** Table of content icon in dashboard

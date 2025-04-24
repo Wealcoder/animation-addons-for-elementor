@@ -10,3 +10,7 @@
 .wcf--brand-slider-wrapper.slide-width-auto .swiper-slide {
   width: auto !important;
 }
+.wcf--brand-slider-wrapper .swiper-pagination {
+  width: auto;
+  position: static;
+}
