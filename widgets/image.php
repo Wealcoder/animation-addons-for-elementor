@@ -81,11 +81,11 @@ class Image extends Widget_Base {
 	 *
 	 * @return array
 	 */
-	public function get_style_depends() {
-		return array(
-			'wcf--image',
-		);
-	}
+//	public function get_style_depends() {
+//		return array(
+//			'wcf--image',
+//		);
+//	}
 
 	/**
 	 * Register the widget controls.
@@ -124,6 +124,21 @@ class Image extends Widget_Base {
 				'name'      => 'image',
 				'default'   => 'large',
 				'separator' => 'none',
+			]
+		);
+
+		$this->add_control(
+			'link',
+			[
+				'label'       => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::URL,
+				'options'     => [ 'url', 'is_external', 'nofollow' ],
+				'default'     => [
+					'url'         => '',
+					'is_external' => false,
+					'nofollow'    => true,
+				],
+				'label_block' => true,
 			]
 		);
 
@@ -454,15 +469,26 @@ class Image extends Widget_Base {
 	 */
 	protected function render() {
 		$settings = $this->get_settings_for_display();
+		$link     = $settings['link'];
 
 		if ( empty( $settings['image']['url'] ) ) {
 			return;
 		}
 		$this->add_render_attribute( 'wrapper', 'class', 'wcf--image' );
+
+		if ( ! empty( $link['url'] ) ) {
+			$this->add_link_attributes( 'link', $link );
+		}
 		?>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
-			<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'image', 'image' ); ?>
-		</div>
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+			<?php if ( $link['url'] ) { ?>
+            <a <?php $this->print_render_attribute_string( 'link' ); ?>>
+				<?php } ?>
+				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'image', 'image' ); ?>
+				<?php if ( $link['url'] ) { ?>
+            </a>
+		<?php } ?>
+        </div>
 		<?php
 	}
 }

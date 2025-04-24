@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
+use Elementor\Plugin;
 
 if(function_exists('wcf_set_postview')){
 	add_action( 'wp_head', 'wcf_set_postview' );
@@ -86,3 +87,4 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page() {
     }
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
+

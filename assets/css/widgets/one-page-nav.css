@@ -1,3 +1,6 @@
+.elementor-widget-wcf--one-page-nav {
+  position: fixed;
+}
 .elementor-widget-wcf--one-page-nav .wcf--onepage-nav {
   display: inline-flex;
   padding: 20px;
@@ -34,24 +37,25 @@
   bottom: 0;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-vr-middle .wcf--onepage-nav {
-  top: 50%;
-  transform: translateY(-50%);
+  justify-content: center;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-vr-top .wcf--onepage-nav {
-  top: 0;
+  justify-content: start;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-vr-bottom .wcf--onepage-nav {
-  bottom: 0;
+  justify-content: end;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-hr-left .wcf--onepage-nav {
-  left: 0;
+  align-items: center;
+  justify-content: start;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-hr-center .wcf--onepage-nav {
-  left: 50%;
-  transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
 }
 .elementor-widget-wcf--one-page-nav.wcf-onepage-nav-hr-right .wcf--onepage-nav {
-  right: 0;
+  align-items: center;
+  justify-content: end;
 }
 .elementor-widget-wcf--one-page-nav.wcf-show-tooltip-yes span {
   font-size: 0.875em;

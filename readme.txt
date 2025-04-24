@@ -53,12 +53,12 @@ https://youtu.be/NS0TGy8A_tU
 🌟 Layered Animation
 
 ### Key Features of Animation Addons for Elementor
-📝 Life Copy Paste
+📝 Live Copy Paste
 🏗️ Header Builder
 🦶 Footer Builder
 🌍 Dynamic Content
 🔌 Elementor Extensions
-🎨 Preloaders
+🎨 Preloader
 🗂️ Mega Menus
 ↔️ Horizontal Scrolling
 🔁 Preset Animation

@@ -320,3 +320,13 @@
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.1);
   transition: 0.5s;
 }
+
+.wcf--form-wrapper .wpcf7 form .wpcf7-response-output {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.wcf--image {
+  line-height: 0;
+}
