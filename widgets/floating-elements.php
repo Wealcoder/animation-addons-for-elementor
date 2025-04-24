@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\Widgets;
 
 use Elementor\Control_Media;
+use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Image_Size;
 use Elementor\Group_Control_Text_Shadow;
 use Elementor\Group_Control_Text_Stroke;
@@ -135,11 +136,31 @@ class Floating_Elements extends Widget_Base {
 			]
 		);
 
+		$repeater->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'floating_box_shadow',
+				'selector' => '{{WRAPPER}} {{CURRENT_ITEM}}.floating-element img',
+			]
+		);
+
+		$repeater->add_responsive_control(
+			'floating_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} {{CURRENT_ITEM}}.floating-element img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$repeater->add_control(
 			'floating_el-translate_popover_toggle',
 			[
 				'label' => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::POPOVER_TOGGLE,
+				'type'  => Controls_Manager::POPOVER_TOGGLE,
 			]
 		);
 
@@ -359,7 +380,7 @@ class Floating_Elements extends Widget_Base {
 				),
 				'type'            => Controls_Manager::RAW_HTML,
 				'content_classes' => 'elementor-descriptor',
-				'separator' => 'before',
+				'separator'       => 'before',
 			]
 		);
 
@@ -405,10 +426,10 @@ class Floating_Elements extends Widget_Base {
 	 * @access protected
 	 */
 	protected function render() {
-		$settings = $this->get_settings_for_display();
-		$active_devices     = Plugin::$instance->breakpoints->get_active_devices_list( [ 'reverse' => true ] );
+		$settings       = $this->get_settings_for_display();
+		$active_devices = Plugin::$instance->breakpoints->get_active_devices_list( [ 'reverse' => true ] );
 		?>
-		<div class="wcf--floating-elements">
+        <div class="wcf--floating-elements">
 			<?php
 			foreach ( $settings['wcf_floating_elements'] as $index => $element ) {
 
@@ -443,12 +464,12 @@ class Floating_Elements extends Widget_Base {
 					<?php
 					$image_html = '<img src="' . esc_url( $element['floating_image']['url'] ) . '" alt="' . esc_attr( Control_Media::get_image_alt( $element['floating_image'] ) ) . '" />';
 					echo wp_kses_post( $image_html );
-                    ?>
-				</div>
+					?>
+                </div>
 				<?php
 			}
 			?>
-		</div>
+        </div>
 		<?php
 	}
 }

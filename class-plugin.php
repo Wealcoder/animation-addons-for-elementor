@@ -470,9 +470,9 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-			'company-profile'        => [
-				'handler' => 'company-profile',
-				'src'     => 'widgets/company-profile.min.css',
+			'contact-form'        => [
+				'handler' => 'aae-contact-form',
+				'src'     => 'widgets/contact-form.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
