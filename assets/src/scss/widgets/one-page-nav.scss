@@ -1,10 +1,10 @@
 .elementor-widget-wcf--one-page-nav {
-
+  position: fixed;   
   .wcf--onepage-nav {
     display: inline-flex;
     padding: 20px;
     background-color: #0a4b78;
-    position: fixed;
+    position: fixed;   
     z-index: 9999;
     .wcf-onepage-nav-item a {
       color: #fff;
@@ -17,6 +17,9 @@
       padding: 5px;
       &.active{
         color: red;
+      }
+      svg{
+        min-width: 10px;
       }
     }
   }
@@ -43,29 +46,30 @@
 
   &.wcf-onepage-nav-vr{
     &-middle .wcf--onepage-nav{
-      top: 50%;
-      transform: translateY(-50%);
+      justify-content: center;
     }
     &-top .wcf--onepage-nav{
-      top: 0;
+      justify-content: start;
     }
     &-bottom .wcf--onepage-nav{
-      bottom: 0;
+      justify-content: end;
     }
   }
 
   &.wcf-onepage-nav-hr {
     &-left .wcf--onepage-nav{
-      left: 0;
+      align-items: center;
+      justify-content: start;
     }
 
     &-center .wcf--onepage-nav{
-      left: 50%;
-      transform: translateX(-50%);
+      align-items: center;
+      justify-content: center;
     }
 
     &-right .wcf--onepage-nav{
-      right: 0;
+      align-items: center;
+      justify-content: end;
     }
   }
 

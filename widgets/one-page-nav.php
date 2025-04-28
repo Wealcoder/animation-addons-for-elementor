@@ -9,7 +9,7 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
-
+use Elementor\Plugin;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
@@ -58,8 +58,8 @@ class One_page_Nav extends Widget_Base {
 			[
 				'label' => esc_html__( 'Navigation', 'animation-addons-for-elementor' ),
 			]
-		);
-
+		);		
+		
 		$repeater = new Repeater();
 
 		$repeater->add_control(
@@ -131,6 +131,21 @@ class One_page_Nav extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'aae_hide_title',
+			[
+				'label'        => esc_html__( 'Hide Title', 'animation-addons-for-elementor' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'return_value' => 'display: none !important;',
+				'default'      => 'no',
+				'selectors'    => [
+					'{{WRAPPER}} .wcf-onepage-nav-item a span' => '{{VALUE}}',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		$this->start_controls_section(
@@ -146,18 +161,16 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Navigation Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'toggle'       => false,
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position',
 				'options'      => [
 					'left'   => [
 						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-arrow-left',
-					],
-					'right'  => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-arrow-right',
-					],
+						'icon'  => 'eicon-arrow-down',
+					],					
 					'bottom' => [
 						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-arrow-down',
+						'icon'  => 'eicon-arrow-right',
 					],
 				],
 				'default'      => 'right',
@@ -171,6 +184,8 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Vertical Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'default'      => 'middle',
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position_vr',
 				'toggle'       => false,
 				'options'      => [
 					'top'    => [
@@ -197,6 +212,8 @@ class One_page_Nav extends Widget_Base {
 				'label'        => esc_html__( 'Horizontal Position', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'default'      => 'center',
+				'render_type' => 'ui',
+				'event' => 'aae:editor:one_page_nav_position_hr',
 				'toggle'       => false,
 				'options'      => [
 					'left'   => [
@@ -214,6 +231,39 @@ class One_page_Nav extends Widget_Base {
 				],
 				'prefix_class' => 'wcf-onepage-nav-hr-',
 				'condition'    => [ 'nav_position' => 'bottom' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'aae_wrp_height',
+			[
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'label' => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'size_units' => [ 'vh', '%', 'em', 'rem', 'px', 'custom' ],		
+				'default' => [
+					'unit' => 'vh',
+					'size' => '',
+				],								
+				'selectors' => [
+					'{{WRAPPER}} .wcf--onepage-nav' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+	
+
+		$this->add_responsive_control(
+			'aae_wrp_width',
+			[
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'label' => esc_html__( 'Width', 'animation-addons-for-elementor' ),	
+				'size_units' => [ 'vw', '%', 'em', 'rem', 'px' ,'custom' ],			
+				'default' => [
+					'unit' => 'vw',
+					'size' => '',
+				],				
+				'selectors' => [
+					'{{WRAPPER}} .wcf--onepage-nav' => 'width: {{SIZE}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -251,7 +301,7 @@ class One_page_Nav extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'wrapper_padding',
 			[
 				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
@@ -317,7 +367,8 @@ class One_page_Nav extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .wcf-onepage-nav-item  i, {{WRAPPER}} .wcf-onepage-nav-item svg' => 'font-size: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf-onepage-nav-item i, {{WRAPPER}} .wcf-onepage-nav-item svg' => 'font-size: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .wcf-onepage-nav-item svg' => 'width:{{SIZE}}{{UNIT}};height:{{SIZE}}{{UNIT}}',
 				],
 			]
 		);
@@ -475,7 +526,8 @@ class One_page_Nav extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-onepage-nav-item.active a' => 'color: {{VALUE}}; fill: {{VALUE}};',
+					'{{WRAPPER}} .wcf--onepage-nav .active a span' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf--onepage-nav .active a svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
@@ -518,8 +570,8 @@ class One_page_Nav extends Widget_Base {
 			]
 		);
 		
-
 		$this->end_controls_section();
+
 	}
 
 	/**
@@ -539,6 +591,7 @@ class One_page_Nav extends Widget_Base {
 		$this->add_render_attribute( 'wrapper', 'class', 'wcf--onepage-nav' );
 		?>
 		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+		
 			<?php
 			foreach ( $settings['wcf_one_page_nav'] as $index => $item ) {
 				?>
@@ -559,6 +612,7 @@ class One_page_Nav extends Widget_Base {
 				<?php
 			}
 			?>
+	
 		</div>
 		<?php
 	}

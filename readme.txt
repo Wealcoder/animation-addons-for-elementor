@@ -1,7 +1,7 @@
 === Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
-Tags: Animation, Elementor Addon, Elementor, elementor widget, GSAP Animation
+Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Motion Effects
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -53,12 +53,12 @@ https://youtu.be/NS0TGy8A_tU
 🌟 Layered Animation
 
 ### Key Features of Animation Addons for Elementor
-📝 Life Copy Paste
+📝 Live Copy Paste
 🏗️ Header Builder
 🦶 Footer Builder
 🌍 Dynamic Content
 🔌 Elementor Extensions
-🎨 Preloaders
+🎨 Preloader
 🗂️ Mega Menus
 ↔️ Horizontal Scrolling
 🔁 Preset Animation
@@ -408,9 +408,14 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == Changelog ==
 
- = v2.1.8 – 20 April 2025 =
+ = v2.1.9 – 00 April 2025 =
+  - 🆕 **Added:** Added notice for pro element
+  - 🆕 **Added:** Responsive control to hide onepage nav title
+ 
+ = v2.1.8 – 22 April 2025 =
   - 🆕 **Added:** Scroll Smother option
   - 🎨 **Fixed:** Table of content icon in dashboard
+  - 🆕 **Added:** One Page Nav svg size 
 
  = v2.1.7 – 16 April 2025 =
   - 🎨 **Fixed:** Text Domain Translation Issue
