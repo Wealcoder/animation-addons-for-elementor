@@ -624,7 +624,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/category-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create an interactive category display with a stylish slider for improved user navigation.'
 					],
 					'video-box-slider'     => [
 						'label'        => 'Video Box Slider',
@@ -885,7 +885,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-rating-form/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Integrate a user-friendly post rating form to gather valuable feedback from your audience.'
 					],
 					'post-rating'        => [
 						'label'        => 'Post Rating',
@@ -1293,7 +1293,7 @@ $config = [
 						'icon'         => "wcf-icon-Author-Box",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Customize your Mailchimp forms perfectly to fit your site’s branding and improve sign-up rates.'
+						'description'  => 'Create a visually appealing author box with a photo, bio, and social media links.'
 					],
 					'flip-box'              => [
 						'label'        => 'Flip Box',
