@@ -26,7 +26,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-box/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create graceful image sections with animations, refined content placement, and thoughtful design.'
 					],
 					'image-box-slider'     => [
 						'label'        => 'Image Box Slider',
@@ -42,7 +42,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-box-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Craft graceful image sliders with custom styles, animations, and smooth transitions for a polished presentation.'
 					],
 					'social-icons'         => [
 						'label'        => 'Social Icons',
@@ -58,7 +58,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-social-icons/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-social-icons/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Link your social accounts and customize the look to perfectly match your branding.'
 					],
 					'image'                => [
 						'label'        => 'Image',
@@ -74,7 +74,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use this widget to display and animate images with precise control and styling options.'
 					],
 					'image-gallery'        => [
 						'label'        => 'Image Gallery',
@@ -90,7 +90,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/image-gallery-widget/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-gallery/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create an engaging image gallery that fits perfectly with your site’s design and style.'
 					],
 					'text-hover-image'     => [
 						'label'        => 'Text Hover Image',
@@ -106,7 +106,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-text-hover-image/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-text-hover-image/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Hover over text and reveal images for an interactive, engaging visual surprise!'
 					],
 					'brand-slider'         => [
 						'label'        => 'Brand Slider',
@@ -122,7 +122,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-brand-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-brand-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Boost credibility and visibility by highlighting trusted logos with a smooth, auto-scrolling slider.'
 					],
 					'counter'              => [
 						'label'        => 'Counter',
@@ -138,7 +138,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-counter/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-counter/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Impress visitors with live stats and milestones using fully animated number counters.'
 					],
 					'icon-box'             => [
 						'label'        => 'Icon Box',
@@ -154,7 +154,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-icon-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-icon-box/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Refine your content presentation with flexible icon styling, typography, and layout options.'
 					],
 					'testimonial'          => [
 						'label'        => 'Testimonial',
@@ -170,7 +170,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Share real stories and success quotes using animated testimonial sliders and flexible content settings.'
 					],
 					'testimonial2'         => [
 						'label'        => 'Classic Testimonial',
@@ -185,7 +185,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-classic-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-2/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Showcase real stories and client praise with a sleek, responsive testimonial carousel.'
 					],
 					'testimonial3'         => [
 						'label'        => 'Modern Testimonial',
@@ -200,7 +200,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-modern-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Highlight customer feedback with modern layouts, smooth sliders, and customizable design elements.'
 					],
 					'advanced-testimonial' => [
 						'label'        => 'Advanced Testimonial',
@@ -215,7 +215,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-testimonial/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create a stunning, responsive testimonial section with smooth transitions and customization options.'
 					],
 					'button'               => [
 						'label'        => 'Button',
@@ -230,7 +230,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-button/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create bold, clickable buttons with text, icons, alignment, and hover animation options.'
 					],
 					'button-pro'           => [
 						'label'        => 'Advanced Button',
@@ -245,7 +245,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-advanced-button/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-button-pro/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Advanced Button lets you tweak padding, border radius, typography, and interactive hover styles'
 					],
 					'image-compare'        => [
 						'label'        => 'Image Comparison',
@@ -260,7 +260,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-comparison/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-compare/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'This widget renders two images with synchronized alignment, interactive drag, and responsive customization options.'
 					],
 					'progressbar'          => [
 						'label'        => 'Progress Bar',
@@ -275,7 +275,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-progress-bar/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-progressbar/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add a clean progress bar that reflects achievements using smooth transitions and clear text labels.'
 					],
 					'team'                 => [
 						'label'        => 'Team',
@@ -290,7 +290,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-team/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-team/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Help visitors meet your team with photos, job titles, and clickable social media icons.'
 					],
 					'notification'         => [
 						'label'        => 'Notification',
@@ -305,7 +305,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-notification/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-notification/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Inform users instantly with attention-grabbing notifications, designed to blend seamlessly with your site.'
 					],
 					'one-page-nav'         => [
 						'label'        => 'One Page Nav',
@@ -320,7 +320,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-one-page-nav/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-one-page-nav/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Hover to preview section names and smoothly swipe between sections on your one-page layout.'
 					],
 					'timeline'             => [
 						'label'        => 'Timeline',
@@ -335,7 +335,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-timeline',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-timeline/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use animated timelines to present events or project stages in a clear, organized progression.'
 					],
 					'tabs'                 => [
 						'label'        => 'Tabs',
@@ -350,7 +350,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-tabs/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-tabs/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize your tabs with various icons, titles, and styles for a tailored design approach.'
 					],
 					'services-tab'         => [
 						'label'        => 'Services Tabs',
@@ -365,7 +365,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-services-tabs',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-services-tab/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Display your services in an attractive, tabbed layout that keeps your visitors engaged.'
 					],
 					'floating-elements'    => [
 						'label'        => 'Floating Elements',
@@ -380,7 +380,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-floating-elements/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-floating-elements/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add floating items to your page, such as buttons or icons, that stay in view as users scroll'
 					],
 					'event-slider'         => [
 						'label'        => 'Event Slider',
@@ -395,7 +395,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-event-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-event-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Organize your events beautifully with image, date, and text in a refined carousel format.'
 					],
 					'content-slider'       => [
 						'label'        => 'Content Slider',
@@ -410,7 +410,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-content-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-content-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Showcase dynamic content in a responsive slider with full layout and animation.'
 					],
 					'countdown'            => [
 						'label'        => 'Countdown',
@@ -425,7 +425,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-countdown/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-countdown/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.'
 					],
 				]
 			],
@@ -446,7 +446,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-typewriter/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-typewriter/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Bring back the charm of typing, minus the clunky keys and ink ribbons.'
 					],
 					'animated-heading' => [
 						'label'        => 'Animated Heading',
@@ -461,7 +461,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/aae-animated-heading/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-heading/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add stunning movement to your headlines and capture attention in just a second.'
 					],
 					'animated-title'   => [
 						'label'        => 'Animated Title',
@@ -476,7 +476,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-title/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-title/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use this widget to animate titles by character, word, or full text block.'
 					],
 					'animated-text'    => [
 						'label'        => 'Animated Text',
@@ -491,7 +491,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-text/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Explore text animation styles and transform static text into dynamic, engaging visual content.'
 					],
 					'lottie'           => [
 						'label'        => 'Lottie',
@@ -506,7 +506,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-lottie/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Grab attention with elegant Lottie motion effects that boost engagement and brand appeal instantly.'
 					],
 					'draw-svg'         => [
 						'label'        => 'GSAP DrawSvg',
@@ -521,7 +521,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-gsap-drawsvg/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/draw-svg/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Animate SVG paths with precision using GSAP’s smooth drawing effect, enhancing your web visuals.'
 					],
 				]
 			],
@@ -542,7 +542,7 @@ $config = [
 						'icon'         => "wcf-icon-Animated-Off-Canvas",
 						'doc_url'      => 'https://animation-addons.com/widgets/aae-animated-off-canvas/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Captivate your audience with stunning off-canvas reveals that keep users engaged longer on site!'
 					],
 					'site-logo'          => [
 						'label'        => 'Site Logo',
@@ -557,7 +557,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-site-logo/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add your website logo with full customization options here and make your site instantly recognizable.'
 					],
 					'nav-menu'           => [
 						'label'        => 'Nav Menu',
@@ -572,7 +572,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
 					],
 				]
 			],
@@ -593,7 +593,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create a dynamic, engaging post slider with custom settings for a polished website experience.'
 					],
 					'breaking-news-slider' => [
 						'label'        => 'Breaking News Slider',
@@ -609,7 +609,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breaking-news-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/breaking-news-slider',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Show updates in a sleek, customizable slider with dynamic animation effects.'
 					],
 					'category-slider'      => [
 						'label'        => 'Category Slider',
@@ -639,7 +639,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box-slider/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-box-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create a visually appealing video slider that perfectly fits your site’s design with this widget.'
 					],
 					'filterable-slider'    => [
 						'label'        => 'Filterable Slider',
@@ -654,7 +654,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-slider/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Organize content effortlessly with a filterable slider that’s easy to customize and navigate.'
 					],
 				]
 			],
@@ -675,7 +675,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-title/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-title/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Present your post titles with refined style, precise alignment, and fully customizable typography settings.'
 					],
 					'post-feature-image' => [
 						'label'        => 'Post Featured Image',
@@ -690,7 +690,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize the featured image of any post for a perfect fit across all device screens.'
 					],
 					'post-excerpt'       => [
 						'label'        => 'Post Excerpt',
@@ -705,7 +705,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use the Post Excerpt Widget to keep layouts clean and boost user engagement.'
 					],
 					'post-content'       => [
 						'label'        => 'Post Content',
@@ -720,7 +720,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-content/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-content/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Showcase your blog’s latest posts with this widget, perfectly styled for Elementor.'
 					],
 					'post-comment'       => [
 						'label'        => 'Post Comments',
@@ -735,7 +735,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Enable seamless comment integration, enhancing community interaction on your blog or articles.'
 					],
 					'post-reactions'     => [
 						'label'        => 'Post Reactions',
@@ -750,7 +750,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize reaction button styles and separator icons to seamlessly fit your website’s design.'
 					],
 					'post-meta-info'     => [
 						'label'        => 'Post Meta Info',
@@ -765,7 +765,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use Post Meta Info to keep your readers informed without cluttering your beautiful layout.'
 					],
 					'post-paginate'      => [
 						'label'        => 'Post Pagination',
@@ -780,7 +780,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize the pagination with icons, text, and animations to create a unique navigation experience.'
 					],
 					'post-social-share'  => [
 						'label'        => 'Social Share',
@@ -795,7 +795,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize social share icons to match your design and encourage content sharing with ease.'
 					],
 					'posts'              => [
 						'label'        => 'Posts',
@@ -810,7 +810,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create a dynamic blog section by customizing the layout, images, and post metadata display.'
 					],
 					'posts-pro'          => [
 						'label'        => 'Advanced Posts',
@@ -825,7 +825,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-pro/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.'
 					],
 					'video-story'        => [
 						'label'        => 'Video Story',
@@ -840,7 +840,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-story/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/aae-video-story/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Share engaging video content with smooth transitions to tell your story effectively.'
 					],
 					'video-posts-tab'    => [
 						'label'        => 'Video Posts Tab',
@@ -855,7 +855,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-tabs/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Enhance your site with organized video posts displayed in engaging, user-friendly tabbed format.'
 					],
 					'posts-filter'       => [
 						'label'        => 'Filterable Posts',
@@ -870,7 +870,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-posts-filter/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Display posts in filterable categories, offering visitors a seamless navigation and content sorting experience.'
 					],
 					'post-rating-form'   => [
 						'label'        => 'Post Rating Form',
@@ -900,10 +900,9 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/post-ratting/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add an intuitive rating system to your posts, allowing users to share their opinions easily.'
 					],
-
-					'grid-hover-posts'  => [
+					'grid-hover-posts'   => [
 						'label'        => 'Grid Hover Posts',
 						'location'     => [
 							'cTab' => 'all'
@@ -916,9 +915,9 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use the Grid Hover Posts Widget to display posts in a visually appealing, interactive grid.'
 					],
-					'category-showcase' => [
+					'category-showcase'  => [
 						'label'        => 'Category Showcase',
 						'location'     => [
 							'cTab' => 'all'
@@ -931,9 +930,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-showcase/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Category Showcase helps create a professional layout for showcasing your post categories.'
 					],
-					'banner-posts'      => [
+					'banner-posts'       => [
 						'label'        => 'Banner Posts',
 						'location'     => [
 							'cTab' => 'all'
@@ -946,9 +945,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-banner-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-banner-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use the Banner Posts Widget to add styled, customizable banners to elevate your post visibility.'
 					],
-					'current-date'      => [
+					'current-date'       => [
 						'label'        => 'Current Date',
 						'location'     => [
 							'cTab' => 'all'
@@ -961,9 +960,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-current-date/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-current-date/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'The Current Date Widget helps keep your content relevant by displaying the live date.'
 					],
-					'feature-posts'     => [
+					'feature-posts'      => [
 						'label'        => 'Featured Posts',
 						'location'     => [
 							'cTab' => 'all'
@@ -976,9 +975,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-featured-posts/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-feature-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Featured Posts allows you to showcase important posts with fully customizable design options.'
 					],
-					'archive-title'     => [
+					'archive-title'      => [
 						'label'        => 'Archive Title',
 						'location'     => [
 							'cTab' => 'all'
@@ -991,9 +990,9 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'The Archive Title Widget lets you tailor archive page titles, improving clarity and user experience.'
 					],
-					'portfolio'         => [
+					'portfolio'          => [
 						'label'        => 'Portfolio',
 						'location'     => [
 							'cTab' => 'all'
@@ -1006,9 +1005,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-portfolio/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-portfolio/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Enhance your website by featuring your work with the Portfolio Widget’s flexible layout and design options.'
 					],
-					'search-form'       => [
+					'search-form'        => [
 						'label'        => 'Search Form',
 						'location'     => [
 							'cTab' => 'all'
@@ -1021,9 +1020,9 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Add a search form widget for users to efficiently locate content across your website.'
 					],
-					'search-query'      => [
+					'search-query'       => [
 						'label'        => 'Search Query',
 						'location'     => [
 							'cTab' => 'all'
@@ -1036,9 +1035,9 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-search-query/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create a more intuitive search experience by customizing the Search Query Widgets content and style.'
 					],
-					'search-no-result'  => [
+					'search-no-result'   => [
 						'label'        => 'Search No Result',
 						'location'     => [
 							'cTab' => 'all'
@@ -1051,7 +1050,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-search-no-result/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize the "no results" message with rich text, media, or links for better user direction.'
 					],
 				]
 			],
@@ -1072,7 +1071,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-contact-form-7/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-contact-form-7/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'With the Contact Form 7 Widget, you can create secure, user-friendly forms for your site.'
 					],
 					'mailchimp'          => [
 						'label'        => 'Mailchimp',
@@ -1087,7 +1086,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-mailchimp/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-mailchimp/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Grow your email list effortlessly by adding and customizing Mailchimp forms with this widget.'
 					],
 					'advanced-mailchimp' => [
 						'label'        => 'Advanced Mailchimp',
@@ -1102,7 +1101,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-mailchimp/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-mailchimp/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Easily integrate and customize Mailchimp sign-up forms for a seamless email list growth experience.'
 					],
 				]
 			],
@@ -1123,7 +1122,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-popup/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-popup/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use the Video Popup Widget to display videos in popups, making content more engaging.'
 					],
 					'video-box'   => [
 						'label'        => 'Video Box',
@@ -1138,7 +1137,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-box/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Elevate your website’s look by incorporating a video box that blends seamlessly with your style.'
 					],
 					'video-mask'  => [
 						'label'        => 'Video Mask',
@@ -1153,7 +1152,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-mask/',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-video-mask/',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.'
 					],
 				]
 			],
@@ -1161,7 +1160,6 @@ $config = [
 				'title'     => 'Advanced Widgets',
 				'is_active' => false,
 				'elements'  => [
-
 					'toggle-switcher'       => [
 						'label'        => 'Toggle Switch',
 						'is_active'    => false,
@@ -1175,7 +1173,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-toggle-switch/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize the Toggle Switcher to fit your design and create seamless user interactions.'
 					],
 					'advance-pricing-table' => [
 						'label'        => 'Advanced Pricing Table',
@@ -1190,7 +1188,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-pricing-table/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create bold, interactive pricing tables to present your services with clarity and professionalism.'
 					],
 					'scroll-elements'       => [
 						'label'        => 'Scroll Elements',
@@ -1205,7 +1203,7 @@ $config = [
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Turn static content into a visual journey with smart, responsive scroll element animations.'
 					],
 					'advance-portfolio'     => [
 						'label'        => 'Advanced Portfolio',
@@ -1220,7 +1218,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-portfolio/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Make your portfolio shine with tailored layouts, animated sliders, and customized design elements.'
 					],
 					'filterable-gallery'    => [
 						'label'        => 'Filterable Gallery',
@@ -1235,7 +1233,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Craft engaging galleries where visitors can filter, view, and enjoy your creative work.'
 					],
 					'breadcrumbs'           => [
 						'label'        => 'Breadcrumbs',
@@ -1250,7 +1248,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breadcrumbs/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Show users exactly where they are with minimal, modern breadcrumbs built for any layout.'
 					],
 					'table-of-contents'     => [
 						'label'        => 'Table Of Content',
@@ -1265,7 +1263,7 @@ $config = [
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Structure your headings into a clear, clickable table and keep your readers engaged longer.'
 					],
 					'image-accordion'       => [
 						'label'        => 'Image Accordion',
@@ -1280,7 +1278,7 @@ $config = [
 						'icon'         => "wcf-icon-Image-Accordion",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Present images creatively with collapsible sections, enhancing user experience and saving screen space.'
 					],
 					'author-box'            => [
 						'label'        => 'Author Box',
@@ -1295,7 +1293,7 @@ $config = [
 						'icon'         => "wcf-icon-Author-Box",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Customize your Mailchimp forms perfectly to fit your site’s branding and improve sign-up rates.'
 					],
 					'flip-box'              => [
 						'label'        => 'Flip Box',
@@ -1310,7 +1308,7 @@ $config = [
 						'icon'         => "wcf-icon-Flip-Box",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Create interactive, animated flip boxes that grab attention and highlight your key messages instantly'
 					],
 					'advance-accordion'     => [
 						'label'        => 'Advanced Accordion',
@@ -1325,7 +1323,7 @@ $config = [
 						'icon'         => "wcf-icon-Advanced-Accordion",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+						'description'  => 'Keep your pages clean and visitors happy with smart, collapsible advanced accordion designs.'
 					],
 				]
 			]
@@ -1717,7 +1715,7 @@ $config = [
 									'pluginId' => 'gsap-builder'
 								],
 								'is_pro'       => true,
-								'pro_only'       => true,
+								'pro_only'     => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
