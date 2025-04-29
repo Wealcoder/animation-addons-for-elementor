@@ -1327,6 +1327,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
+					'nested-slider'     => [
+						'label'        => 'Nested Slider',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
+					],
 				]
 			]
 		]

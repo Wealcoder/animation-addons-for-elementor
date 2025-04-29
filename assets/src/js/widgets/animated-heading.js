@@ -5,7 +5,7 @@
      */
     const AnimatedHeading = function ($scope, $) {
         let animated_heading = $('.animated--heading', $scope);
-
+       
         let endTl = gsap.timeline({
             repeat: -1,
             delay: 0.5,

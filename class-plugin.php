@@ -204,7 +204,7 @@ class Plugin {
 	 * @access public
 	 */
 	public static function get_widget_scripts() {
-		return [
+		return apply_filters('aae/lite/widgets/scripts',[
 			'typed'            => [
 				'handler' => 'typed',
 				'src'     => 'typed.min.js',
@@ -303,7 +303,7 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
-		];
+		]);
 	}
 
 	/**
@@ -470,9 +470,9 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-			'contact-form'        => [
-				'handler' => 'aae-contact-form',
-				'src'     => 'widgets/contact-form.min.css',
+			'company-profile'        => [
+				'handler' => 'company-profile',
+				'src'     => 'widgets/company-profile.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
