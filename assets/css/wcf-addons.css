@@ -105,6 +105,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
+  cursor: pointer;
 }
 .wcf__slider-wrapper .wcf-arrow svg {
   width: 1em;

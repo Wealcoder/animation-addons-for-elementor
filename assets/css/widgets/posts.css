@@ -13,6 +13,9 @@
 .wcf__posts .wcf-posts {
   display: grid;
 }
+.wcf__posts .highlight {
+  font-weight: 600;
+}
 .wcf__posts a,
 .wcf__posts button {
   cursor: pointer;
