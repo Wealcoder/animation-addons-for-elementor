@@ -271,13 +271,36 @@ class Testimonial extends Widget_Base {
 				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf__testimonial .ts-navigation' => 'border-color: {{VALUE}}',
-					'{{WRAPPER}} .wcf__testimonial .ts-pagination' => 'border-color: {{VALUE}}',
-					'{{WRAPPER}} .wcf__testimonial .image:after' => 'border-color: {{VALUE}}',
+					'{{WRAPPER}} .wcf__testimonial .ts-navigation'                                                 => 'border-color: {{VALUE}}',
+					'{{WRAPPER}} .wcf__testimonial .ts-pagination'                                                 => 'border-color: {{VALUE}}',
+					'{{WRAPPER}} .wcf__testimonial .image:after'                                                   => 'border-color: {{VALUE}}',
 					'{{WRAPPER}} .wcf__testimonial .wcf-arrow-next, {{WRAPPER}} .wcf__testimonial .wcf-arrow-prev' => 'border-color: {{VALUE}}',
-					'{{WRAPPER}} .wcf__testimonial .mid-line' => 'background-color: {{VALUE}}',
-					'{{WRAPPER}} .wcf__testimonial:before,{{WRAPPER}} .wcf__testimonial:after' => 'background-color: {{VALUE}}',
+					'{{WRAPPER}} .wcf__testimonial .mid-line'                                                      => 'background-color: {{VALUE}}',
+					'{{WRAPPER}} .wcf__testimonial:before,{{WRAPPER}} .wcf__testimonial:after'                     => 'background-color: {{VALUE}}',
 				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'slide_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 2000,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf__slider' => 'max-width: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'element_list!' => '8' ],
 			]
 		);
 
@@ -609,8 +632,8 @@ class Testimonial extends Widget_Base {
 				'default'     => 'auto',
 				'required'    => true,
 				'options'     => [
-					'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
-				] + $slides_to_show,
+					                 'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
+				                 ] + $slides_to_show,
 				'render_type' => 'template',
 				'selectors'   => [
 					'{{WRAPPER}}' => '--slides-to-show: {{VALUE}}',
@@ -874,6 +897,32 @@ class Testimonial extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'navigation_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 20,
+						'max' => 1000,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ts-navigation' => 'width: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [
+					'navigation'   => [ 'arrows', 'both' ],
+					'element_list' => [ '', '4', '5', '8', '9' ],
+				],
+			]
+		);
+
 		$this->add_control(
 			'heading_style_arrows',
 			[
@@ -909,7 +958,7 @@ class Testimonial extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
 			[
-				'name' => 'arrows_border',
+				'name'     => 'arrows_border',
 				'selector' => '{{WRAPPER}} .wcf-arrow.wcf-arrow-prev, {{WRAPPER}} .wcf-arrow.wcf-arrow-next',
 			]
 		);
@@ -917,10 +966,10 @@ class Testimonial extends Widget_Base {
 		$this->add_control(
 			'arrows_b_radius',
 			[
-				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::DIMENSIONS,
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .wcf-arrow.wcf-arrow-prev, {{WRAPPER}} .wcf-arrow.wcf-arrow-next' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
@@ -955,9 +1004,9 @@ class Testimonial extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
-				'name' => 'arrows_bg_color',
-				'types' => [ 'classic', 'gradient' ],
-				'exclude' => ['image'],
+				'name'     => 'arrows_bg_color',
+				'types'    => [ 'classic', 'gradient' ],
+				'exclude'  => [ 'image' ],
 				'selector' => '{{WRAPPER}} .wcf-arrow.wcf-arrow-prev, {{WRAPPER}} .wcf-arrow.wcf-arrow-next',
 			]
 		);
@@ -989,9 +1038,9 @@ class Testimonial extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
-				'name' => 'arrows_h_bg_color',
-				'types' => [ 'classic', 'gradient' ],
-				'exclude' => ['image'],
+				'name'     => 'arrows_h_bg_color',
+				'types'    => [ 'classic', 'gradient' ],
+				'exclude'  => [ 'image' ],
 				'selector' => '{{WRAPPER}} .wcf-arrow.wcf-arrow-prev:hover, {{WRAPPER}} .wcf-arrow.wcf-arrow-next:hover',
 			]
 		);
@@ -1002,7 +1051,7 @@ class Testimonial extends Widget_Base {
 				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf-arrow.wcf-arrow-prev:hover, {{WRAPPER}} .wcf-arrow.wcf-arrow-next:hover'         => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .wcf-arrow.wcf-arrow-prev:hover, {{WRAPPER}} .wcf-arrow.wcf-arrow-next:hover' => 'border-color: {{VALUE}};',
 				],
 				'condition' => [
 					'navigation' => [ 'arrows', 'both' ],
@@ -1013,7 +1062,6 @@ class Testimonial extends Widget_Base {
 		$this->end_controls_tab();
 
 		$this->end_controls_tabs();
-
 
 
 		$this->add_control(
@@ -1054,7 +1102,7 @@ class Testimonial extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .swiper-pagination-bullet:not(.swiper-pagination-bullet-active)' => 'background: {{VALUE}}; opacity: 1',
+					'{{WRAPPER}} .swiper-pagination-bullet:not(.swiper-pagination-bullet-active)'  => 'background: {{VALUE}}; opacity: 1',
 					'{{WRAPPER}} .swiper-pagination-current, {{WRAPPER}} .swiper-pagination-total' => 'color: {{VALUE}}',
 				],
 				'condition' => [
@@ -1069,7 +1117,7 @@ class Testimonial extends Widget_Base {
 				'label'     => esc_html__( 'Active Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .swiper-pagination-bullet' => 'background: {{VALUE}};',
+					'{{WRAPPER}} .swiper-pagination-bullet'  => 'background: {{VALUE}};',
 					'{{WRAPPER}} .swiper-pagination-current' => 'color: {{VALUE}}',
 				],
 				'condition' => [
@@ -1160,10 +1208,10 @@ class Testimonial extends Widget_Base {
 			]
 		);
 		?>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
 
-			<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
-				<div class="swiper-wrapper">
+            <div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
+                <div class="swiper-wrapper">
 					<?php foreach ( $settings['testimonials'] as $index => $item ) { ?>
 						<?php
 						$link_key = 'link_' . $index;
@@ -1171,9 +1219,9 @@ class Testimonial extends Widget_Base {
 							$this->add_link_attributes( $link_key, $item['link'] );
 						}
 						?>
-						<div class="swiper-slide">
-							<div class="slide">
-								<div class="image">
+                        <div class="swiper-slide">
+                            <div class="slide">
+                                <div class="image">
 									<?php
 									$image_url = Group_Control_Image_Size::get_attachment_image_src( $item['testimonial_image']['id'], 'image', $settings );
 
@@ -1187,48 +1235,48 @@ class Testimonial extends Widget_Base {
 
 									echo wp_kses_post( $image_html );
 									?>
-								</div>
-								<div class="feedback">
+                                </div>
+                                <div class="feedback">
 									<?php $this->print_unescaped_setting( 'testimonial_content', 'testimonials', $index ); ?>
-								</div>
+                                </div>
 								<?php
 								if ( ! empty( $item['link']['url'] ) ) :
 									?>
-									<a class="name" <?php $this->print_render_attribute_string( $link_key ); ?>><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></a>
+                                    <a class="name" <?php $this->print_render_attribute_string( $link_key ); ?>><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></a>
 								<?php
 								else :
 									?>
-									<div class="name"><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></div>
+                                    <div class="name"><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></div>
 								<?php
 								endif;
 								?>
-								<div class="designation"><?php $this->print_unescaped_setting( 'testimonial_job', 'testimonials', $index ); ?></div>
-							</div>
-						</div>
+                                <div class="designation"><?php $this->print_unescaped_setting( 'testimonial_job', 'testimonials', $index ); ?></div>
+                            </div>
+                        </div>
 					<?php } ?>
-				</div>
-			</div>
+                </div>
+            </div>
 
-			<!-- navigation and pagination -->
+            <!-- navigation and pagination -->
 			<?php if ( 1 < count( $settings['testimonials'] ) ) : ?>
 				<?php if ( $show_arrows ) : ?>
-					<div class="ts-navigation">
-						<div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
+                    <div class="ts-navigation">
+                        <div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
 							<?php $this->render_swiper_button( 'previous' ); ?>
-						</div>
-						<div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
+                        </div>
+                        <div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
 							<?php $this->render_swiper_button( 'next' ); ?>
-						</div>
-					</div>
+                        </div>
+                    </div>
 				<?php endif; ?>
 
 				<?php if ( $show_dots ) : ?>
-					<div class="ts-pagination">
-						<div class="swiper-pagination"></div>
-					</div>
+                    <div class="ts-pagination">
+                        <div class="swiper-pagination"></div>
+                    </div>
 				<?php endif; ?>
 			<?php endif; ?>
-		</div>
+        </div>
 		<?php
 	}
 

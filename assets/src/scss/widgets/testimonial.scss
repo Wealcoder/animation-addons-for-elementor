@@ -949,6 +949,7 @@
         position: absolute;
         bottom: -25px;
         inset-inline-start: 0;
+        justify-content: space-between;
         display: flex;
         gap: 50px;
         z-index: 1;
@@ -1009,8 +1010,10 @@
       .ts-navigation {
         gap: 60px;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         padding-bottom: 30px;
+        margin: 0 auto;
+        width: 125px;
       }
     }
 
