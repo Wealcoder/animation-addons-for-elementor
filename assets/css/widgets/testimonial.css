@@ -918,6 +918,7 @@
   position: absolute;
   bottom: -25px;
   inset-inline-start: 0;
+  justify-content: space-between;
   display: flex;
   gap: 50px;
   z-index: 1;
@@ -969,8 +970,10 @@
 .wcf__testimonial.style-9 .ts-navigation {
   gap: 60px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   padding-bottom: 30px;
+  margin: 0 auto;
+  width: 125px;
 }
 .wcf__testimonial.style-10 .wcf__slider {
   max-width: 770px;
@@ -1031,3 +1034,4 @@
 .wcf__testimonial.style-10 .wcf-arrow-next {
   right: 0;
 }
+/*# sourceMappingURL=testimonial.css.map */

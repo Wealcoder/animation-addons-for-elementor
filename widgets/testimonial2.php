@@ -316,6 +316,18 @@ class Testimonial2 extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'content_padding',
+			[
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors' => [
+					'{{WRAPPER}} .feedback' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Image style.
@@ -402,6 +414,18 @@ class Testimonial2 extends Widget_Base {
 			[
 				'name'     => 'name_shadow',
 				'selector' => '{{WRAPPER}} .name',
+			]
+		);
+
+		$this->add_responsive_control(
+			'name_padding',
+			[
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors' => [
+					'{{WRAPPER}} .name' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 

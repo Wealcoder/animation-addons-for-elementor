@@ -1,4 +1,5 @@
 <?php
+
 namespace WCF_ADDONS\Widgets;
 
 use Elementor\Controls_Manager;
@@ -11,7 +12,7 @@ use Elementor\Utils;
 use Elementor\Widget_Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
-exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 /**
@@ -26,11 +27,11 @@ class Testimonial3 extends Widget_Base {
 	/**
 	 * Retrieve the widget name.
 	 *
+	 * @return string Widget name.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return string Widget name.
 	 */
 	public function get_name() {
 		return 'wcf--testimonial3';
@@ -39,11 +40,11 @@ class Testimonial3 extends Widget_Base {
 	/**
 	 * Retrieve the widget title.
 	 *
+	 * @return string Widget title.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return string Widget title.
 	 */
 	public function get_title() {
 		return esc_html__( 'Modern Testimonial', 'animation-addons-for-elementor' );
@@ -52,11 +53,11 @@ class Testimonial3 extends Widget_Base {
 	/**
 	 * Retrieve the widget icon.
 	 *
+	 * @return string Widget icon.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return string Widget icon.
 	 */
 	public function get_icon() {
 		return 'wcf eicon-testimonial';
@@ -70,11 +71,11 @@ class Testimonial3 extends Widget_Base {
 	 * Note that currently Elementor supports only one category.
 	 * When multiple categories passed, Elementor uses the first one.
 	 *
+	 * @return array Widget categories.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return array Widget categories.
 	 */
 	public function get_categories() {
 		return [ 'weal-coder-addon' ];
@@ -310,6 +311,18 @@ class Testimonial3 extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'sec_title_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .main-title' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Content style
@@ -318,6 +331,19 @@ class Testimonial3 extends Widget_Base {
 			[
 				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'title_wrapper_padding',
+			[
+				'label'      => esc_html__( 'Wrapper Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .slide' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator'  => 'after',
 			]
 		);
 
@@ -346,6 +372,18 @@ class Testimonial3 extends Widget_Base {
 			[
 				'name'     => 'content_shadow',
 				'selector' => '{{WRAPPER}} .feedback',
+			]
+		);
+
+		$this->add_responsive_control(
+			'content_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .feedback' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -388,6 +426,18 @@ class Testimonial3 extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'name_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .name' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Designation.
@@ -424,6 +474,18 @@ class Testimonial3 extends Widget_Base {
 			[
 				'name'     => 'job_shadow',
 				'selector' => '{{WRAPPER}} .designation',
+			]
+		);
+
+		$this->add_responsive_control(
+			'job_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .designation' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
@@ -473,6 +535,18 @@ class Testimonial3 extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'quote_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .elementor-icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -504,8 +578,8 @@ class Testimonial3 extends Widget_Base {
 				'default'     => 'auto',
 				'required'    => true,
 				'options'     => [
-					'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
-				] + $slides_to_show,
+					                 'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
+				                 ] + $slides_to_show,
 				'render_type' => 'template',
 				'selectors'   => [
 					'{{WRAPPER}}' => '--slides-to-show: {{VALUE}}',
@@ -961,70 +1035,71 @@ class Testimonial3 extends Widget_Base {
 			]
 		);
 		?>
-		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
 
-			<div class="quote elementor-icon">
+            <div class="quote elementor-icon">
 				<?php Icons_Manager::render_icon( $settings['quote_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-			</div>
+            </div>
 
-			<div class="main-title">
-				<<?php Utils::print_validated_html_tag( $settings['header_size'] ); ?> <?php $this->print_render_attribute_string( 'section_title' ); ?>>
+            <div class="main-title">
+                <<?php Utils::print_validated_html_tag( $settings['header_size'] ); ?> <?php $this->print_render_attribute_string( 'section_title' ); ?>
+                >
 				<?php $this->print_unescaped_setting( 'testimonial_sect_title' ); ?>
-				</<?php Utils::print_validated_html_tag( $settings['header_size'] ); ?>>
-			</div>
+            </<?php Utils::print_validated_html_tag( $settings['header_size'] ); ?>>
+        </div>
 
-			<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
-				<div class="swiper-wrapper">
-					<?php foreach ( $settings['testimonials'] as $index => $item ) { ?>
-						<?php
-						$link_key = 'link_' . $index;
-						if ( ! empty( $item['link']['url'] ) ) {
-							$this->add_link_attributes( $link_key, $item['link'] );
-						}
-						?>
-						<div class="swiper-slide">
-							<div class="slide">
-								<div class="feedback">
-									<?php $this->print_unescaped_setting( 'testimonial_content', 'testimonials', $index ); ?>
-								</div>
-								<?php
-								if ( ! empty( $item['link']['url'] ) ) :
-									?>
-									<a class="name" <?php $this->print_render_attribute_string( $link_key ); ?>><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></a>
-								<?php
-								else :
-									?>
-									<div class="name"><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></div>
-								<?php
-								endif;
+        <div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
+            <div class="swiper-wrapper">
+				<?php foreach ( $settings['testimonials'] as $index => $item ) { ?>
+					<?php
+					$link_key = 'link_' . $index;
+					if ( ! empty( $item['link']['url'] ) ) {
+						$this->add_link_attributes( $link_key, $item['link'] );
+					}
+					?>
+                    <div class="swiper-slide">
+                        <div class="slide">
+                            <div class="feedback">
+								<?php $this->print_unescaped_setting( 'testimonial_content', 'testimonials', $index ); ?>
+                            </div>
+							<?php
+							if ( ! empty( $item['link']['url'] ) ) :
 								?>
-								<div class="designation"><?php $this->print_unescaped_setting( 'testimonial_job', 'testimonials', $index ); ?></div>
-							</div>
-						</div>
-					<?php } ?>
-				</div>
-			</div>
+                                <a class="name" <?php $this->print_render_attribute_string( $link_key ); ?>><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></a>
+							<?php
+							else :
+								?>
+                                <div class="name"><?php $this->print_unescaped_setting( 'testimonial_name', 'testimonials', $index ); ?></div>
+							<?php
+							endif;
+							?>
+                            <div class="designation"><?php $this->print_unescaped_setting( 'testimonial_job', 'testimonials', $index ); ?></div>
+                        </div>
+                    </div>
+				<?php } ?>
+            </div>
+        </div>
 
-			<!-- navigation and pagination -->
-			<?php if ( 1 < count( $settings['testimonials'] ) ) : ?>
-				<?php if ( $show_arrows ) : ?>
-					<div class="ts-navigation">
-						<div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
-							<?php $this->render_swiper_button( 'previous' ); ?>
-						</div>
-						<div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
-							<?php $this->render_swiper_button( 'next' ); ?>
-						</div>
-					</div>
-				<?php endif; ?>
-
-				<?php if ( $show_dots ) : ?>
-					<div class="ts-pagination">
-						<div class="swiper-pagination"></div>
-					</div>
-				<?php endif; ?>
+        <!-- navigation and pagination -->
+		<?php if ( 1 < count( $settings['testimonials'] ) ) : ?>
+			<?php if ( $show_arrows ) : ?>
+                <div class="ts-navigation">
+                    <div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
+						<?php $this->render_swiper_button( 'previous' ); ?>
+                    </div>
+                    <div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
+						<?php $this->render_swiper_button( 'next' ); ?>
+                    </div>
+                </div>
 			<?php endif; ?>
-		</div>
+
+			<?php if ( $show_dots ) : ?>
+                <div class="ts-pagination">
+                    <div class="swiper-pagination"></div>
+                </div>
+			<?php endif; ?>
+		<?php endif; ?>
+        </div>
 		<?php
 	}
 
