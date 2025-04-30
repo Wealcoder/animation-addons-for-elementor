@@ -910,6 +910,21 @@ class Posts extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'tax_border_color',
+			[
+				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf-taxonomy::before' => 'background-color: {{VALUE}};',
+				],
+				'condition' => [
+					'element_list'     => [ '2', '5' ],
+					'taxonomy_border!' => '0',
+				],
+			]
+		);
+
 		$this->add_responsive_control(
 			'taxonomy_spacing',
 			[
@@ -1021,6 +1036,7 @@ class Posts extends Widget_Base {
 				],
 			]
 		);
+
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
 			[
@@ -1049,6 +1065,21 @@ class Posts extends Widget_Base {
 				],
 				'condition' => [
 					'element_list' => [ '2', '5' ],
+				],
+			]
+		);
+
+		$this->add_control(
+			'meta_border_color',
+			[
+				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf-meta::before' => 'background-color: {{VALUE}};',
+				],
+				'condition' => [
+					'element_list' => [ '2', '5' ],
+					'meta_border!' => '0',
 				],
 			]
 		);
@@ -2446,7 +2477,7 @@ class Posts extends Widget_Base {
 
 				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-				echo wp_kses_post($this->wcf_wrap_first_n_words( $title,  $highlight_title_length )); // Wrap first 2 words
+				echo wp_kses_post( $this->wcf_wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
 
 			} else {
 				the_title();
