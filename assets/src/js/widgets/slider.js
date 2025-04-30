@@ -6,7 +6,7 @@
 
     const getSliderOptions = function ($scope) {
         const slider = $($('.wcf__slider', $scope)[0]);
-      
+        console.log(slider);
         const slexist = $scope.find('.wcf__slider').length;
         const sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
         sliderSettings.handleElementorBreakpoints = true
@@ -94,7 +94,8 @@
             'a-testimonial': [],
             'event-slider': [],
             'image-box-slider': [],
-            'video-box-slider': [],         
+            'video-box-slider': [], 
+            'nested-slider': [],
             'brand-slider': [],
             'content-slider': [],
             'a-portfolio': [

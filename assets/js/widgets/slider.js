@@ -9,6 +9,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
   var getSliderOptions = function getSliderOptions($scope) {
     var slider = $($('.wcf__slider', $scope)[0]);
+    console.log(slider);
     var slexist = $scope.find('.wcf__slider').length;
     var sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
     sliderSettings.handleElementorBreakpoints = true;
@@ -98,6 +99,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       'event-slider': [],
       'image-box-slider': [],
       'video-box-slider': [],
+      'nested-slider': [],
       'brand-slider': [],
       'content-slider': [],
       'a-portfolio': ['skin-portfolio-base', 'skin-portfolio-one', 'skin-portfolio-two', 'skin-portfolio-three', 'skin-portfolio-four', 'skin-portfolio-five', 'skin-portfolio-six', 'skin-portfolio-seven', 'skin-portfolio-eight', 'skin-portfolio-nine']
