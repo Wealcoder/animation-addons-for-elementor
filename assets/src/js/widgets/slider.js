@@ -6,10 +6,11 @@
 
     const getSliderOptions = function ($scope) {
         const slider = $($('.wcf__slider', $scope)[0]);
+      
         const slexist = $scope.find('.wcf__slider').length;
         const sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
         sliderSettings.handleElementorBreakpoints = true
-
+      
         //navigation
         if (sliderSettings.hasOwnProperty('navigation')) {
             const next = $('.wcf-arrow-next', $scope)[$('.wcf-arrow-next', $scope).length - 1]
@@ -55,12 +56,13 @@
     }
 
     const Slider = function ($scope, $) {
-
+     
         const {thumbSlider, thumbOptions} = getThumbSliderOptions($scope);
         const {slider, options, slider_exist} = getSliderOptions($scope);
-
+       
         //if thumb slider enable
         if (thumbSlider.length) {
+         
             new elementorFrontend.utils.swiper(thumbSlider, thumbOptions).then(newSwiperInstance => newSwiperInstance).then((thumbSliderInstance) => {
 
                 new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance).then((newSwiperInstance) => {
@@ -71,8 +73,11 @@
 
             });
         } else {
+          
             if (slider_exist) {
-                new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => newSwiperInstance);
+                new elementorFrontend.utils.swiper(slider, options).then(newSwiperInstance => {
+                   return newSwiperInstance;
+                });
             }
         }
 
@@ -89,7 +94,8 @@
             'a-testimonial': [],
             'event-slider': [],
             'image-box-slider': [],
-            'video-box-slider': [],
+            'video-box-slider': [], 
+            'nested-slider': [],
             'brand-slider': [],
             'content-slider': [],
             'a-portfolio': [
@@ -109,7 +115,7 @@
         $.each(WcfSliderWidgets, function (widget, $skins) {
 
             elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.default`, Slider);
-
+           
             //if widget has skin
             if ($skins.length) {
                 for (const $skin of $skins) {
