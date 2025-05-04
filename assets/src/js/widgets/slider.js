@@ -94,8 +94,7 @@
             'a-testimonial': [],
             'event-slider': [],
             'image-box-slider': [],
-            'video-box-slider': [], 
-            'nested-slider': [],
+            'video-box-slider': [],            
             'brand-slider': [],
             'content-slider': [],
             'a-portfolio': [
