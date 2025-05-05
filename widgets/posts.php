@@ -1849,8 +1849,9 @@ class Posts extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .wcf-post' => 'text-align: {{VALUE}};',
-					'{{WRAPPER}} .content'  => 'align-items: {{VALUE}};',
+					'{{WRAPPER}} .wcf-post'                            => 'text-align: {{VALUE}};',
+					'{{WRAPPER}} .content'                             => 'align-items: {{VALUE}};',
+					'{{WRAPPER}} .wcf-taxonomy, {{WRAPPER}} .wcf-meta' => 'justify-content: {{VALUE}};',
 				],
 			]
 		);
