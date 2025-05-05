@@ -6,8 +6,12 @@ import Shape4 from "../../../public/images/wizard/shape4.png";
 import Shape5 from "../../../public/images/wizard/shape5.png";
 import Shape6 from "../../../public/images/wizard/shape6.png";
 import CredentialAlert from "@/components/wizards/CredentialAlert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useSkip } from "@/hooks/app.hooks";
 
 const WizardTerms = () => {
+  const { isSkipTerms, setIsSkipTerms } = useSkip();
+
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg relative">
@@ -16,7 +20,7 @@ const WizardTerms = () => {
           style={{ backgroundImage: `url(${TemplateTopBg})` }}
         >
           <div className="pt-[80px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
-            <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[120px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
+            <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
               <span className="flex justify-center items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +61,7 @@ const WizardTerms = () => {
           </div>
           <div className="mt-[40px] w-[600px] mx-auto text-center">
             <div className="flex justify-center items-center gap-2.5 ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]">
-              <svg
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="20"
@@ -76,7 +80,20 @@ const WizardTerms = () => {
                   </clipPath>
                 </defs>
               </svg>
-              <p>By continuing, you allow this plugin to collect your data.</p>
+              <p>By continuing, you allow this plugin to collect your data.</p> */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="aae-plugin-continuing-terms"
+                  checked={!isSkipTerms}
+                  onCheckedChange={() => setIsSkipTerms(!isSkipTerms)}
+                />
+                <label
+                  htmlFor="aae-plugin-continuing-terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  By continuing, you allow this plugin to collect your data.
+                </label>
+              </div>
               <CredentialAlert />
             </div>
           </div>

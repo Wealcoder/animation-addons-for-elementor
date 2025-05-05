@@ -29,8 +29,7 @@ const CredentialAlert = () => {
             plugin, including animation settings, performance metrics, feature
             preferences, and other non-sensitive data. This data helps us
             improve functionality, optimize performance, and ensure better
-            updates. We never collect any personal information and sensitive
-            data.
+            updates. We never collect sensitive data.
           </p>
           <div className="flex justify-end mt-6">
             <DialogClose asChild>
