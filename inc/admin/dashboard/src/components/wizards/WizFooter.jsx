@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useExtensions, useSkip, useWidgets } from "@/hooks/app.hooks";
+import { useExtensions, useWidgets } from "@/hooks/app.hooks";
 import { WizNavList } from "@/config/nav/wiz-nav";
 
 const WizFooter = ({ NavigateComponent }) => {
@@ -8,7 +8,6 @@ const WizFooter = ({ NavigateComponent }) => {
 
   const { allExtensions } = useExtensions();
   const { allWidgets } = useWidgets();
-  const { setIsSkipTerms } = useSkip();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -17,7 +16,7 @@ const WizFooter = ({ NavigateComponent }) => {
     if (tabValue) {
       setCurrentPath(tabValue);
     } else {
-      setCurrentPath("terms");
+      setCurrentPath("getting-started");
     }
   }, [urlParams]);
 
@@ -133,16 +132,7 @@ const WizFooter = ({ NavigateComponent }) => {
             Go back
           </Button>
         ) : (
-          <Button
-            variant="link"
-            className="text-gray-500"
-            onClick={() => {
-              setIsSkipTerms(true);
-              goToContinue(currentPath);
-            }}
-          >
-            Skip
-          </Button>
+          ""
         )}
 
         <Button
