@@ -34,7 +34,7 @@ const initialState = {
   notice: [],
   changelog: [],
   tabKey: "",
-  isSkipTerms: false,
+  isSkipTerms: true,
 };
 
 const reducer = (state, action) => {
