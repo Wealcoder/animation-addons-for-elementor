@@ -98,7 +98,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       'event-slider': [],
       'image-box-slider': [],
       'video-box-slider': [],
-      'nested-slider': [],
       'brand-slider': [],
       'content-slider': [],
       'a-portfolio': ['skin-portfolio-base', 'skin-portfolio-one', 'skin-portfolio-two', 'skin-portfolio-three', 'skin-portfolio-four', 'skin-portfolio-five', 'skin-portfolio-six', 'skin-portfolio-seven', 'skin-portfolio-eight', 'skin-portfolio-nine']
