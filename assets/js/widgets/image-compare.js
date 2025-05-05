@@ -1,3 +1,4 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function ($) {
   /**
    * @param $scope The Widget wrapper element as a jQuery element
@@ -18,49 +19,51 @@
     var $btnExpandRight = $('.btn-expand-right', $scope);
 
     // GSAP Timeline
-    var tl = gsap.timeline({
-      delay: 1
-    });
+    if ((typeof gsap === "undefined" ? "undefined" : _typeof(gsap)) === "object") {
+      var tl = gsap.timeline({
+        delay: 1
+      });
 
-    // Set initial positioning and animations
-    tl.set($caption, {
-      autoAlpha: 0,
-      yPercent: -100
-    });
-    tl.to($sliderLeft, {
-      duration: 0.7,
-      width: $startPosition,
-      ease: "back.out(1.7)"
-    });
-    tl.to($handle, {
-      duration: 0.7,
-      x: $startPosition,
-      ease: "back.out(1.7)"
-    });
-    tl.to($caption, {
-      duration: 0.7,
-      autoAlpha: 1,
-      yPercent: 0,
-      ease: "back.inOut(3)",
-      stagger: -0.3
-    });
+      // Set initial positioning and animations
+      tl.set($caption, {
+        autoAlpha: 0,
+        yPercent: -100
+      });
+      tl.to($sliderLeft, {
+        duration: 0.7,
+        width: $startPosition,
+        ease: "back.out(1.7)"
+      });
+      tl.to($handle, {
+        duration: 0.7,
+        x: $startPosition,
+        ease: "back.out(1.7)"
+      });
+      tl.to($caption, {
+        duration: 0.7,
+        autoAlpha: 1,
+        yPercent: 0,
+        ease: "back.inOut(3)",
+        stagger: -0.3
+      });
 
-    // Draggable
-    Draggable.create($handle, {
-      type: "x",
-      bounds: {
-        minX: 0,
-        minY: 0,
-        maxX: $comparisonSliderWidth,
-        maxY: $comparisonSliderHeight
-      },
-      edgeResistance: 1,
-      throwProps: true,
-      onDrag: onHandleDrag,
-      onLockAxis: function onLockAxis() {
-        console.log("onLockAxis");
-      }
-    });
+      // Draggable
+      Draggable.create($handle, {
+        type: "x",
+        bounds: {
+          minX: 0,
+          minY: 0,
+          maxX: $comparisonSliderWidth,
+          maxY: $comparisonSliderHeight
+        },
+        edgeResistance: 1,
+        throwProps: true,
+        onDrag: onHandleDrag,
+        onLockAxis: function onLockAxis() {
+          console.log("onLockAxis");
+        }
+      });
+    }
 
     // Drag Function
     function onHandleDrag() {

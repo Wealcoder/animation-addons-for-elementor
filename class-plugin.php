@@ -261,13 +261,7 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],		
-			'image-compare'    => [
-				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.min.js',
-				'dep'     => [ 'Draggable' ],
-				'version' => false,
-				'arg'     => true,
-			],
+			
 			'tabs'             => [
 				'handler' => 'wcf--tabs',
 				'src'     => 'widgets/tabs.min.js',
@@ -365,13 +359,7 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-			'image-compare'    => [
-				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.min.css',
-				'dep'     => [],
-				'version' => false,
-				'media'   => 'all',
-			],
+		
 			'brand-slider'     => [
 				'handler' => 'wcf--brand-slider',
 				'src'     => 'widgets/brand-slider.min.css',
