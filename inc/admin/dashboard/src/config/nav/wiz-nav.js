@@ -1,36 +1,31 @@
 export const WizNavList = [
   {
     serial: 1,
-    title: "Terms",
-    path: "terms",
-  },
-  {
-    serial: 2,
     title: "Getting Started",
     path: "getting-started",
   },
   {
-    serial: 3,
+    serial: 2,
     title: "Widgets",
     path: "widgets",
   },
   {
-    serial: 4,
+    serial: 3,
     title: "Extensions",
     path: "extensions",
   },
   {
-    serial: 5,
+    serial: 4,
     title: "Templates",
     path: "templates",
   },
   {
-    serial: 6,
+    serial: 5,
     title: "Go Pro",
     path: "go-pro",
   },
   {
-    serial: 7,
+    serial: 6,
     title: "Congratulations",
     path: "congratulations",
   },

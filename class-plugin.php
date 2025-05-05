@@ -261,13 +261,7 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],		
-			'image-compare'    => [
-				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.min.js',
-				'dep'     => [ 'Draggable' ],
-				'version' => false,
-				'arg'     => true,
-			],
+			
 			'tabs'             => [
 				'handler' => 'wcf--tabs',
 				'src'     => 'widgets/tabs.min.js',
@@ -365,13 +359,7 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-			'image-compare'    => [
-				'handler' => 'wcf--image-compare',
-				'src'     => 'widgets/image-compare.min.css',
-				'dep'     => [],
-				'version' => false,
-				'media'   => 'all',
-			],
+		
 			'brand-slider'     => [
 				'handler' => 'wcf--brand-slider',
 				'src'     => 'widgets/brand-slider.min.css',
@@ -842,10 +830,10 @@ class Plugin {
 	 */
 	public static function get_library_data( $force_update = false ) {
 		// Define a unique transient key
-		$transient_key = 'aaeaddon_tpl_library_data20252';
+		$transient_key = 'aaeaddon_tpl_library_data202523';
 	
 		// Attempt to retrieve the cached data
-		$library_data = get_transient( $transient_key );
+		$library_data = get_transient( $transient_key );		
 	
 		// Check if data is not cached or a force update is requested
 		if ( $force_update || false === $library_data ) {
@@ -881,7 +869,7 @@ class Plugin {
 	 */
 	private static function get_templates_data( $force_update = false ) {
 
-		$cache_key      = 'wcf_templates_data_' . 2.8;
+		$cache_key      = 'wcf_templates_data_' . 2.9;
 		$templates_data = get_transient( $cache_key );
 
 		if ( $force_update || false === $templates_data ) {
@@ -901,7 +889,6 @@ class Plugin {
 
 			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 				set_transient( $cache_key, [], 1 * HOUR_IN_SECONDS );
-
 				return false;
 			}
 
@@ -955,6 +942,9 @@ class Plugin {
 		$this->include_files();
 		
 		if(class_exists('\WCF_ADDONS\Library_Source')){
+			if(get_option('aae_addon_remote_status') && get_option('aae_addon_remote_status') === 404){
+				return;
+			}
 			add_action( 'admin_init', [ $this, 'get_library_data' ] );
 			add_action( 'elementor/editor/footer', [ $this, 'print_templates' ] );
 			// enqueue modal's preview css.

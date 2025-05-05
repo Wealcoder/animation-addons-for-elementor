@@ -253,7 +253,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Compare",
