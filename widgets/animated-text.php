@@ -1,12 +1,14 @@
 <?php
+
 namespace WCF_ADDONS\Widgets;
 
 use Elementor\Group_Control_Text_Shadow;
 use Elementor\Group_Control_Typography;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+
 if ( ! defined( 'ABSPATH' ) ) {
-exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 /**
@@ -20,11 +22,11 @@ class Animated_Text extends Widget_Base {
 	/**
 	 * Retrieve the widget name.
 	 *
+	 * @return string Widget name.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return string Widget name.
 	 */
 	public function get_name() {
 		return 'wcf--text';
@@ -45,11 +47,11 @@ class Animated_Text extends Widget_Base {
 	/**
 	 * Retrieve the widget icon.
 	 *
+	 * @return string Widget icon.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return string Widget icon.
 	 */
 	public function get_icon() {
 		return 'wcf eicon-text';
@@ -63,11 +65,11 @@ class Animated_Text extends Widget_Base {
 	 * Note that currently Elementor supports only one category.
 	 * When multiple categories passed, Elementor uses the first one.
 	 *
+	 * @return array Widget categories.
 	 * @since 1.0.0
 	 *
 	 * @access public
 	 *
-	 * @return array Widget categories.
 	 */
 	public function get_categories() {
 		return [ 'weal-coder-addon' ];
@@ -96,6 +98,49 @@ class Animated_Text extends Widget_Base {
 				'label'   => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::WYSIWYG,
 				'default' => esc_html__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_responsive_control(
+			'text_cols',
+			[
+				'label'     => esc_html__( 'Columns', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '',
+				'options'   => [
+					''   => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'1'  => esc_html__( '1', 'animation-addons-for-elementor' ),
+					'2'  => esc_html__( '2', 'animation-addons-for-elementor' ),
+					'3'  => esc_html__( '3', 'animation-addons-for-elementor' ),
+					'4'  => esc_html__( '4', 'animation-addons-for-elementor' ),
+					'5'  => esc_html__( '5', 'animation-addons-for-elementor' ),
+					'6'  => esc_html__( '6', 'animation-addons-for-elementor' ),
+					'7'  => esc_html__( '7', 'animation-addons-for-elementor' ),
+					'8'  => esc_html__( '8', 'animation-addons-for-elementor' ),
+					'9'  => esc_html__( '9', 'animation-addons-for-elementor' ),
+					'10' => esc_html__( '10', 'animation-addons-for-elementor' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .wcf--text' => 'columns: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'text_col_gap',
+			[
+				'label'      => esc_html__( 'Columns Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 300,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--text' => 'gap: {{SIZE}}{{UNIT}};',
+				],
 			]
 		);
 

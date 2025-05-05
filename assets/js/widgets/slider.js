@@ -9,7 +9,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
   var getSliderOptions = function getSliderOptions($scope) {
     var slider = $($('.wcf__slider', $scope)[0]);
-    console.log(slider);
     var slexist = $scope.find('.wcf__slider').length;
     var sliderSettings = $($('.wcf__slider-wrapper, .wcf__t_slider-wrapper', $scope)[0]).data('settings') || {};
     sliderSettings.handleElementorBreakpoints = true;
