@@ -530,18 +530,19 @@ class Animated_Title extends Widget_Base {
 		$this->add_render_attribute( 'title', 'class', 'wcf--title' );
 
 		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $title );
-
+		
 		if ( empty( $settings['link']['url'] ) ) {
 			echo wp_kses_post( $title_html );
 		} else {
+			
 			$this->add_link_attributes( 'link', $settings['link'] );
 			$this->add_render_attribute( 'title', 'class', 'has-link' );
 			?>
-            <<?php echo Utils::validate_html_tag( $settings['header_size'] ); ?> <?php echo $this->get_render_attribute_string( 'title' ) ?>>
+            <<?php echo esc_attr( Utils::validate_html_tag( $settings['header_size'] ) ); ?> <?php echo wp_kses_post($this->get_render_attribute_string( 'title' )); ?>>
             <a <?php $this->print_render_attribute_string( 'link' ); ?>>
 				<?php echo wp_kses_post( $title ); ?>
             </a>
-            </<?php echo Utils::validate_html_tag( $settings['header_size'] ); ?>>
+            </<?php echo esc_attr(Utils::validate_html_tag( $settings['header_size'] )); ?>>
 			<?php
 		}
 	}

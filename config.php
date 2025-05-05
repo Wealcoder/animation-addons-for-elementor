@@ -23,8 +23,7 @@ $config = [
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Box",
-//						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box?category=general-elements',
-						'demo_url'     => 'http://animation-addons.local/aae-image-box?category=general-elements',
+						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box?category=general-elements',						
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-box/',
 						'youtube_url'  => '',
 						'description'  => 'Create graceful image sections with animations, refined content placement, and thoughtful design.'

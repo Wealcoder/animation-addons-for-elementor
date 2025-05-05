@@ -23,7 +23,7 @@ const WizardStart = () => {
           style={{ backgroundImage: `url(${TemplateTopBg})` }}
         >
           <div className="pt-[80px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
-            <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[120px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
+            <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
               <span className="flex justify-center items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -219,7 +219,7 @@ const WizardStart = () => {
                   </linearGradient>
                 </defs>
               </svg>
-              <p className="text-text-tertiary">50+ Templates</p>
+              <p className="text-text-tertiary">150+ Templates</p>
             </div>
             <div className="bg-white rounded-xl w-[142px] pb-4 pt-[18px] flex flex-col gap-3 justify-center items-center shadow-[0px_4px_10px_0px_rgba(0,0,0,0.04)]">
               <svg
@@ -305,7 +305,7 @@ const WizardStart = () => {
                   </linearGradient>
                 </defs>
               </svg>
-              <p className="text-text-tertiary">5K+ Installations</p>
+              <p className="text-text-tertiary">9K+ Installations</p>
             </div>
           </div>
         </div>
