@@ -9,7 +9,7 @@
     let Template_Library_data = {};
     let Template_Library_Chunk_data = [];
     // API for get requests
-     let fetchRes = fetch("https://crowdytheme.com/elementor/info-templates/wp-json/api/v1/list");
+     let fetchRes = fetch("https://themecrowdy.com/wp-json/api/v1/list");    
 
     const activePlugin = async () => {
         await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
@@ -34,10 +34,11 @@
             }
           });
       };   
-// FetchRes is the promise to resolve
+    // FetchRes is the promise to resolve
     fetchRes.then(res => res.json()).then(d => {
-        Template_Library_data = d.library;       
-        Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
+            Template_Library_data = d.library;       
+            Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
+            localStorage.setItem("aae_template_lib_data", Template_Library_data);
     });
 
     //get type specific templates

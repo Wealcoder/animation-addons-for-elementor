@@ -407,7 +407,35 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 6. **Widget Settings Panel** Advanced controls and customization for each animation widget to fine-tune effects as you like.
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
+== External Services ==
+
+1. This plugin connects to an API to retrieve JSON data from the Elementor Template Library. It uses this data to display a popup inside the Elementor Editor, allowing users to view and import templates (sections or pages) easily.
+Users can choose to disable the Template Library feature at any time from the plugin settings in the dashboard—it's completely up to them.
+[The plugin does not collect or send any user data. It only fetches template content in JSON format from the Elementor Template Library.]
+
+2. This plugin is also integrated with the Themecrowdy.com api in dashboard under the Starter Template section, allowing users to browse and select from a range of pre-built templates based on their preferences. 
+Additionally, we automatically import the template’s XML file and any required plugins associated with that template.
+[We do not share any user information with third parties.]
+
+3. This plugin is also connected to the [animation-addons.com](https://animation-addons.com/wp-json/live/v1/copy-paste) domain for importing templates via the Live Copy feature. This service is used when a user wants to copy a template directly from the animation-addons.com website.
+To make this possible, we temporarily store the user's IP address on the Animation Addons server, which helps manage the live copy template data. This IP address is only used during the live copy import process and is not stored for any other purpose.
+
+4. This plugin lets you sync your audience data and form fields with Mailchimp’s API. It only connects when you provide your Mailchimp API key, which is used just for the Elementor Mailchimp widget. Your privacy matters to us, and we won’t share your information with anyone.
+
+Above services are provided by "Wealcoder": terms of use, privacy policy.
+
+== 🌍 Join a Global Community ==
+
+Join a global community that helps each other achieve their goals.
+
+- [GitHub](https://github.com/Wealcoder/animation-addons-for-elementor) - Get information about releases, request features, or report a bug.
+
 == Changelog ==
+
+ = v2.3 – 07 may 2025 =
+  - ❌ **Removed:** remote request of chnagelog
+  - 🎨 **Fixed:** template library store process
+
 
  = v2.2 – 06 may 2025 =
   - ❌ **Removed:** Draggable js
