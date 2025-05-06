@@ -4,24 +4,17 @@ namespace WCF_ADDONS\Admin\Base;
 
 use WP_Error;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+} // Exit if accessed directly
+
 /**
  * One Click Import class
  */
 class OneClickImport {
 
-	public $file_path = 'aaeaddon_tpl_file.xml';
-	/**
-	 * The instance *Singleton* of this class
-	 *
-	 * @var object
-	 */
+	public $file_path = 'aaeaddon_tpl_file.xml';	
 	private static $instance;
-
-	/**
-	 * The instance of the WCFOI\Importer class.
-	 *
-	 * @var object
-	 */
 	public $importer;	
 
 	/**

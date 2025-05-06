@@ -1,11 +1,8 @@
 <?php
-/**
- * Class for downloading a file from a given URL.
- *
- * @package WCF_ADDONS
- */
 
- namespace WCF_ADDONS\Admin\Base;
+namespace WCF_ADDONS\Admin\Base;
+
+defined( 'ABSPATH' ) || die();
 
 class Downloader {
 	/**

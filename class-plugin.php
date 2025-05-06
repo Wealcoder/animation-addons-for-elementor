@@ -817,47 +817,6 @@ class Plugin {
 	/**
 	 * Get templates data.
 	 *
-	 * Retrieve the templates data from a remote server.
-	 *
-	 * @param bool $force_update Optional. Whether to force the data update or
-	 *                                     not. Default is false.
-	 *
-	 * @return array The templates data.
-	 * @since 1.0
-	 * @access public
-	 * @static
-	 *
-	 */
-	public static function get_library_data( $force_update = false ) {
-		// Define a unique transient key
-		$transient_key = 'aaeaddon_tpl_library_data202523';
-	
-		// Attempt to retrieve the cached data
-		$library_data = get_transient( $transient_key );		
-	
-		// Check if data is not cached or a force update is requested
-		if ( $force_update || false === $library_data ) {
-			// Fetch the latest templates data
-			self::get_templates_data( $force_update );
-	
-			// Retrieve the library data from the database
-			$library_data = get_option( self::LIBRARY_OPTION_KEY, [] );
-	
-			// Cache the data with an expiration time (e.g., 12 hours)
-			set_transient( $transient_key, $library_data, 4 * HOUR_IN_SECONDS );
-	
-			// Optionally, update the JSON file if needed
-			$newJsonString = json_encode( $library_data );
-			file_put_contents( WCF_ADDONS_PATH . 'templates.json', $newJsonString );
-		}
-	
-		return $library_data;
-	}
-	
-
-	/**
-	 * Get templates data.
-	 *
 	 * This function the templates data.
 	 *
 	 * @param bool $force_update Optional. Whether to force the data retrieval or * not. Default is false.
@@ -869,12 +828,12 @@ class Plugin {
 	 */
 	private static function get_templates_data( $force_update = false ) {
 
-		$cache_key      = 'wcf_templates_data_' . 2.9;
+		$cache_key      = 'aae_templates_data_' . 3.0;
 		$templates_data = get_transient( $cache_key );
 
 		if ( $force_update || false === $templates_data ) {
 
-			$timeout = ( $force_update ) ? 90 : 80;
+			$timeout = ( $force_update ) ? 30 : 45;
 
 			$response = wp_remote_get( esc_url_raw( self::$instance->api_url ), [
 				'timeout'   => $timeout,
@@ -942,10 +901,7 @@ class Plugin {
 		$this->include_files();
 		
 		if(class_exists('\WCF_ADDONS\Library_Source')){
-			if(get_option('aae_addon_remote_status') && get_option('aae_addon_remote_status') === 404){
-				return;
-			}
-			add_action( 'admin_init', [ $this, 'get_library_data' ] );
+						
 			add_action( 'elementor/editor/footer', [ $this, 'print_templates' ] );
 			// enqueue modal's preview css.
 			add_action( 'elementor/preview/enqueue_styles', array( $this, 'preview_styles' ) );

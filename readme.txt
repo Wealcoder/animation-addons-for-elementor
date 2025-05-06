@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Motion Effect
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.1.9
+Stable tag: 2.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,7 @@ https://youtu.be/NS0TGy8A_tU
 📏 Stagger Animation
 🌪️ Scroll Smoother
 🌍 Parallax Effects
+🎥 Nested Elements
 ✒️ Text Scramble Animation
 🎞️ Clip Path Animation
 🎚️ Advanced Easing Functions
@@ -408,12 +409,14 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == Changelog ==
 
- = v2.1.9 – 05 may 2025 =
-  - 🆕 **Added:** Added notice for pro element
-  - 🆕 **Added:** Responsive control to hide onepage nav title
+ = v2.2 – 06 may 2025 =
   - ❌ **Removed:** Draggable js
   - 🎨 **Fixed:** user data security issue
   - 🆕 **Added:** Added 5 website templates
+
+ = v2.1.9 – 05 may 2025 =
+  - 🆕 **Added:** Added notice for pro element
+  - 🆕 **Added:** Responsive control to hide onepage nav title
  
  = v2.1.8 – 22 April 2025 =
   - 🆕 **Added:** Scroll Smother option

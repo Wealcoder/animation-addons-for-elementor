@@ -4,6 +4,9 @@ namespace WCF_ADDONS\Admin\Base;
 
 use WP_Error;
 use XMLReader;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+} // Exit if accessed directly
 
 class AAEImporter extends WXRImporter {
 		/**

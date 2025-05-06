@@ -5,16 +5,12 @@
 
 /* global jQuery, WCF_Template_library_Editor*/
 
-(function ($, window, document, config) {
-    // const Template_Library_data = WCF_TEMPLATE_LIBRARY.data;
+(function ($, window, document, config) { 
     let Template_Library_data = {};
     let Template_Library_Chunk_data = [];
-    let aaeadddon_tpl_lazy_load = false;
-
     // API for get requests
-    // let fetchRes = fetch("https://crowdytheme.com/elementor/info-templates/wp-json/api/v1/list");
-    let fetchRes = fetch(WCF_TEMPLATE_LIBRARY.template_file);
-   
+     let fetchRes = fetch("https://crowdytheme.com/elementor/info-templates/wp-json/api/v1/list");
+
     const activePlugin = async () => {
         await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
           method: "POST",
@@ -37,14 +33,10 @@
               window.location.reload();
             }
           });
-      };
-      
-      
-
+      };   
 // FetchRes is the promise to resolve
-// it by using.then() method
     fetchRes.then(res => res.json()).then(d => {
-        Template_Library_data = d;
+        Template_Library_data = d.library;       
         Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
     });
 
@@ -69,9 +61,7 @@
         const type_templates = get_type_templates(type);
         let templates      = type_templates;
         if (type_templates.length && '' !== category) {
-
             templates = [];
-
             for (let template of type_templates) {
 
                 //if template has no category
@@ -228,7 +218,6 @@
 
                     let templates = wp.template( 'wcf-templates' );
                     contents = null;
-
                     contents = templates({
                         templates: get_category_templates(category, activeMenu),
                         categories: get_categories(activeMenu),
@@ -251,18 +240,15 @@
                     $(document).on('click', '.thumbnail', function () {
                         let _that = $(this);
                         const template_id = _that.closest('.wcf-library-template').data('id');
-                        const template_url = _that.closest('.wcf-library-template').data('url');
-                       
+                        const template_url = _that.closest('.wcf-library-template').data('url');                     
 
                         let singleTmp = wp.template('wcf-templates-single');
                         content_single = null;
-
                         content_single = singleTmp({
                             template_link: template_url,
                         });
 
                         t.html(content_single);
-
                         //iframe is loaded
                         let is_loading = true;
                         loading(is_loading);
@@ -270,7 +256,6 @@
                             is_loading = false;
                             loading(is_loading);
                         });
-
                         template_import(template_id);
                     });
 
@@ -281,7 +266,6 @@
                         loading(false);
                         //active menu
                         active_menu(t);
-
                         //category select
                         selected_category(t);
 
@@ -395,8 +379,7 @@
                         window.wcftmLibrary.currentRequest = elementorCommon.ajax.addRequest("get_wcf_template_data", {
                             unique_id: template_id,
                             data: {edit_mode: !0, display: !0, template_id: template_id},
-                            success: function (e) {
-                                   console.log(e);         
+                            success: function (e) {                                  
                                 $e.run("document/elements/import", {
                                     model: window.elementor.elementsModel,
                                     data: e,

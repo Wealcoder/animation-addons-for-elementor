@@ -1,7 +1,9 @@
 <?php
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
+
 use Elementor\Plugin;
 
 if(function_exists('wcf_set_postview')){
