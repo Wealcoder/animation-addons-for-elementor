@@ -57,6 +57,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   }).then(function (d) {
     Template_Library_data = d.library;
     Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
+    localStorage.setItem("aae_template_lib_data", Template_Library_data);
   });
 
   //get type specific templates

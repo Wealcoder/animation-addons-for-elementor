@@ -422,7 +422,7 @@ To make this possible, we temporarily store the user's IP address on the Animati
 
 4. This plugin lets you sync your audience data and form fields with Mailchimp’s API. It only connects when you provide your Mailchimp API key, which is used just for the Elementor Mailchimp widget. Your privacy matters to us, and we won’t share your information with anyone.
 
-Above services are provided by "Wealcoder": terms of use, privacy policy.
+Above services are provided by "Wealcoder": [terms](https://animation-addons.com/terms-and-conditions/), [privacy policy](https://animation-addons.com/privacy-policy/).
 
 == 🌍 Join a Global Community ==
 
