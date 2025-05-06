@@ -12,7 +12,6 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
 import { useNotification } from "@/hooks/app.hooks";
-import React from "react";
 
 const showContent = (data) => {
   switch (data.type) {
@@ -41,7 +40,7 @@ const showContent = (data) => {
 };
 
 const Notification = () => {
-  const { notice, changelog } = useNotification();
+  const { notice } = useNotification();
 
   return (
     <Sheet>
@@ -71,35 +70,6 @@ const Notification = () => {
             <div>
               <p className="mt-2 text-sm">No Notification Found</p>
             </div>
-          )}
-
-          {changelog && (
-            <>
-              <Separator className="my-6" />
-              {changelog?.map((log, i) => (
-                <React.Fragment key={`changelog-${log.version}-${i}`}>
-                  <div>
-                    <Badge variant="secondary">Version {log.version}</Badge>
-                    <h3 className="text-lg font-medium mt-4">{log.date}</h3>
-                    <p className="mt-1 text-sm">{log.summery}</p>
-                    <div className="mt-5 ps-4">
-                      {log?.data && log?.data?.length && (
-                        <ul className="list-outside space-y-2 [&>li]:text-sm [&>li]:text-text-secondary [&>li]:tracking-wider">
-                          {log?.data.map((feature, j) => (
-                            <li key={`feature-${i}-${j}`}>
-                              <span className="text-text">
-                                {feature.type}:{" "}
-                              </span>{" "}
-                              {feature.title}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </React.Fragment>
-              ))}
-            </>
           )}
         </ScrollArea>
       </SheetContent>

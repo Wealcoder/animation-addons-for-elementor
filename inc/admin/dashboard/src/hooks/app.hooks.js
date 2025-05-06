@@ -60,12 +60,11 @@ export const useSetup = () => {
 
 export const useNotification = () => {
   const {
-    mainState: { notice, changelog },
+    mainState: { notice },
     setNotice,
     updateNotice,
-    setChangelog,
   } = useContext(AppContext);
-  return { notice, changelog, setNotice, updateNotice, setChangelog };
+  return { notice, setNotice, updateNotice };
 };
 
 export const useTNavigation = () => {

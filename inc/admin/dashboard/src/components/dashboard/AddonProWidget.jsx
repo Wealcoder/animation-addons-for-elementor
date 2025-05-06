@@ -1,9 +1,11 @@
-import { RiVipCrown2Line } from "react-icons/ri";
+import { RiArrowRightUpLine, RiVipCrown2Line } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import WidgetCard from "../shared/WidgetCard";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useActiveItem } from "@/hooks/app.hooks";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "../ui/button";
 
 const AddonProWidget = () => {
   const [widgets, setWidgets] = useState(
@@ -57,7 +59,15 @@ const AddonProWidget = () => {
           <RiVipCrown2Line size={20} color="#FFA132" />
           <p className="font-medium">AAE Addons Pro Widgets</p>
         </div>
-        
+        <div>
+          <a
+            href={"https://animation-addons.com/release-notes"}
+            target="_blank"
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+          >
+            Changelog <RiArrowRightUpLine size={18} className="ml-1" />
+          </a>
+        </div>
       </div>
       <Separator className="mt-4 mb-5" />
       <div className="grid grid-cols-2 justify-between gap-2.5 p-3 bg-background-secondary rounded-lg">
