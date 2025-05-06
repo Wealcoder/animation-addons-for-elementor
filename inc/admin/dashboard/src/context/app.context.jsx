@@ -32,7 +32,6 @@ const initialState = {
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
   setupType: "basic",
   notice: [],
-  changelog: [],
   tabKey: "",
   isSkipTerms: true,
 };
@@ -51,8 +50,6 @@ const reducer = (state, action) => {
       return { ...state, setupType: action.value };
     case "setNotice":
       return { ...state, notice: action.value };
-    case "setChangelog":
-      return { ...state, changelog: action.value };
     case "setTabKey":
       return { ...state, tabKey: action.value };
     case "setIsSkipTerms":
@@ -96,12 +93,6 @@ const useMainContext = (state) => {
   const setNotice = useCallback((data) => {
     dispatch({
       type: "setNotice",
-      value: data,
-    });
-  }, []);
-  const setChangelog = useCallback((data) => {
-    dispatch({
-      type: "setChangelog",
       value: data,
     });
   }, []);
@@ -268,7 +259,6 @@ const useMainContext = (state) => {
     setAllExtensions,
     setActivated,
     setNotice,
-    setChangelog,
     setTabKey,
     setIsSkipTerms,
     setSetupType,
@@ -293,7 +283,6 @@ export const AppContext = createContext({
   setAllExtensions: () => {},
   setActivated: () => {},
   setNotice: () => {},
-  setChangelog: () => {},
   setTabKey: () => {},
   setIsSkipTerms: () => {},
   setSetupType: () => {},
