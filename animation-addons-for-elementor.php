@@ -3,14 +3,14 @@
  * Plugin Name: Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://animation-addons.com/
- * Version:     2.1.9
+ * Version:     2.3
  * Author:      Wealcoder
  * Author URI:  https://animation-addons.com/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages
- *
+ * Requires Plugins: elementor
  * Elementor tested up to: 3.28.3
  * Elementor Pro tested up to: 3.28.3
  */
@@ -27,7 +27,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.1.9' );
+	define( 'WCF_ADDONS_VERSION', '2.3' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -91,7 +91,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.1.9';
+	const VERSION = '2.2';
 
 	/**
 	 * Minimum Elementor Version
@@ -122,14 +122,11 @@ final class WCF_ADDONS_Plugin {
 		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
-		add_action( 'plugins_loaded', array( $this, 'init' ) );
-		add_action( 'init', array( $this, 'text_domain_init' ) );
+		add_action( 'plugins_loaded', array( $this, 'init' ) );		
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );
 	}
 
-	public function text_domain_init() {
-		load_plugin_textdomain( 'animation-addons-for-elementor', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
+	
 
 	/**
 	 * Plugin activation hook

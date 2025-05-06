@@ -4,8 +4,11 @@
  *
  * @package Animation Addon
  */
-
 namespace WCF_ADDONS\Admin\Base;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+} // Exit if accessed directly
 
 class Importer {
 	/**

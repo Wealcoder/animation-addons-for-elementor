@@ -1,11 +1,10 @@
 <?php
-/**
- * 
- *
- * @package WCF_ADDONS
- */
 
 namespace WCF_ADDONS\Admin\Base;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
+} // Exit if accessed directly
 
 class Logger extends WPImporterLoggerCLI {
 	/**

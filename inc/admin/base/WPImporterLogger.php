@@ -2,6 +2,7 @@
 
 namespace WCF_ADDONS\Admin\Base;
 
+defined( 'ABSPATH' ) || die();
 /**
  * Describes a logger instance
  *

@@ -1,8 +1,10 @@
 <?php
 
 namespace WCF_ADDONS\Admin;
+
 use Elementor\Modules\ElementManager\Options;
 use Elementor\Plugin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
@@ -209,8 +211,7 @@ class WCF_Admin_Init {
 		if ( ! class_exists( '\WP_Importer' ) ) {
 			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
 		}
-		require_once( 'row-actions.php' );
-		require_once( 'template-functions.php' );
+		require_once( 'row-actions.php' );	
 		require_once( 'plugin-installer.php' );
 		require_once( 'base/Helpers.php' );
 		require_once( 'base/Downloader.php' );
@@ -344,37 +345,6 @@ class WCF_Admin_Init {
 		}
 		
 		return $configs;
-	}
-	
-
-	/**
-	 * get Settings tabs to admin panel.
-	 *
-	 * @param array $tabs Array of tabs.
-	 *
-	 * @return bool|true|void
-	 */
-	protected function get_settings_tab() {
-		$settings_tab = [
-			'home'         => [
-				'title'    => esc_html__( 'Home', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_home_tab',
-			],
-			'widgets'      => [
-				'title'    => esc_html__( 'Widgets', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_widget_tab',
-			],
-			'extensions'   => [
-				'title'    => esc_html__( 'Extensions', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_extension_tab',
-			],
-			'integrations' => [
-				'title'    => esc_html__( 'Integrations', 'animation-addons-for-elementor' ),
-				'callback' => 'wcf_admin_settings_integrations_tab',
-			],
-		];
-
-		return apply_filters( 'wcf_settings_tabs', $settings_tab );
 	}
 	
 	public function get_elementor_active_edit_url(){

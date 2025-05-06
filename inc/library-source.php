@@ -4,7 +4,6 @@ namespace WCF_ADDONS;
 
 defined( 'ABSPATH' ) || exit;
 
-
 use Elementor\TemplateLibrary\Source_Base;
 
 class Library_Source extends Source_Base {

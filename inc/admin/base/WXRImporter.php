@@ -5,6 +5,8 @@ namespace WCF_ADDONS\Admin\Base;
 use WP_Error;
 use XMLReader;
 
+defined( 'ABSPATH' ) || die();
+
 class WXRImporter extends \WP_Importer {
 	/**
 	 * Maximum supported WXR version

@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WCFAddon_BlackList_Notice {
 	public static function init() {
+		
         add_action( 'elementor/element/common/_section_style/after_section_end', [
 			__CLASS__,
 			'tooltip_controls_section'

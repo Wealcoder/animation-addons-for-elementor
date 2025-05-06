@@ -7,6 +7,7 @@
  */
 namespace WCF_ADDONS\Admin\Base;
 
+defined( 'ABSPATH' ) || die();
 /**
  * Class with static helper functions.
  */

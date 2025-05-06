@@ -2,6 +2,8 @@
 
 namespace WCF_ADDONS\Admin\Base;
 
+defined( 'ABSPATH' ) || die();
+
 class WPImporterLoggerCLI extends WPImporterLogger {
 	
 	public $min_level = 'notice';
