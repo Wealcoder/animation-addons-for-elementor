@@ -1,6 +1,6 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
 
@@ -19,7 +19,7 @@ $config = [
 						],
 						'is_active'    => false,
 						'is_pro'       => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Box",
@@ -34,7 +34,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -50,7 +50,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -66,7 +66,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -82,7 +82,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -98,7 +98,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -114,7 +114,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -130,7 +130,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -146,7 +146,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -162,7 +162,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -601,7 +601,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -731,7 +731,7 @@ $config = [
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Comments",
+						'icon'         => "wcf-icon-Post-Content",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-post-comments/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
@@ -1358,7 +1358,7 @@ $config = [
 						],
 						'is_pro'       => false,
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Custom-CSS",
