@@ -5,6 +5,9 @@
   width: 1em;
   height: 1em;
 }
+.elementor-widget-wcf--team .name a {
+  transition: all 0.3s;
+}
 .elementor-widget-wcf--team .thumb {
   display: block;
   line-height: 0;

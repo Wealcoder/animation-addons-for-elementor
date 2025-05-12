@@ -587,6 +587,17 @@ class Team extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'name_h_color',
+			[
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--team .name a:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
