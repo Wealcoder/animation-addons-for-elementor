@@ -8,6 +8,7 @@ import { deviceMediaMatch, filterWidgets, isEqual } from "@/lib/utils";
 import { useActiveItem, useNotification, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { WidgetSettingConfig } from "@/config/widgetSettingConfig";
 
 const ShowWidgets = ({
   searchKey,
@@ -16,6 +17,7 @@ const ShowWidgets = ({
   urlParams,
   setWidgetCount,
 }) => {
+  const widgetSettings = WidgetSettingConfig;
   const { allWidgets } = useWidgets();
   const { updateNotice } = useNotification();
   const { updateActiveWidget, updateActiveGroupWidget } = useActiveItem();
@@ -196,6 +198,10 @@ const ShowWidgets = ({
                       slug={content}
                       updateActiveItem={updateActiveWidget}
                       className="rounded p-5"
+                      exSettings={
+                        widgetSettings?.find((item) => item.key === content)
+                          ?.component
+                      }
                     />
                   </React.Fragment>
                 ))}
@@ -245,6 +251,10 @@ const ShowWidgets = ({
                     slug={content}
                     updateActiveItem={updateActiveWidget}
                     className="rounded p-5"
+                    exSettings={
+                      widgetSettings?.find((item) => item.key === content)
+                        ?.component
+                    }
                   />
                 </React.Fragment>
               ))}
