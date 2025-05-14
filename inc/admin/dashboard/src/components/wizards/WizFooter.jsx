@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useExtensions, useWidgets } from "@/hooks/app.hooks";
+import { useExtensions, useSkip, useWidgets } from "@/hooks/app.hooks";
 import { WizNavList } from "@/config/nav/wiz-nav";
+import { cn } from "@/lib/utils";
 
 const WizFooter = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
 
   const { allExtensions } = useExtensions();
   const { allWidgets } = useWidgets();
+  const { setIsSkipTerms } = useSkip();
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -16,7 +18,7 @@ const WizFooter = ({ NavigateComponent }) => {
     if (tabValue) {
       setCurrentPath(tabValue);
     } else {
-      setCurrentPath("getting-started");
+      setCurrentPath("terms");
     }
   }, [urlParams]);
 
@@ -136,7 +138,11 @@ const WizFooter = ({ NavigateComponent }) => {
         )}
 
         <Button
-          className="ps-[18px] pe-[14px]"
+          className={cn(
+            "ps-[18px] pe-[14px]",
+            getSerial(currentPath) == 1 &&
+              "bg-button-secondary-hover/80 text-button-text-secondary/80 hover:bg-button-secondary-hover/80 hover:text-button-text-secondary/80 border border-button-secondary-hover shadow-none"
+          )}
           onClick={() => goToContinue(currentPath)}
         >
           Continue{" "}
@@ -150,7 +156,7 @@ const WizFooter = ({ NavigateComponent }) => {
             >
               <path
                 d="M11.1248 10.0006L7 5.87577L8.17852 4.69727L13.4818 10.0006L8.17852 15.3038L7 14.1253L11.1248 10.0006Z"
-                fill="white"
+                fill={cn(getSerial(currentPath) == 1 ? "#52586666" : "#FFFFFF")}
               />
             </svg>
           </span>
