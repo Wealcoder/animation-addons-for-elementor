@@ -1154,6 +1154,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.'
 					],
+					'youtube-video'  => [
+						'label'        => 'Youtube Video',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => true,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Video-Mask",
+						'demo_url'     => '#',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Use the Youtube Video Widget to bring artistic, interactive flair to your sites videos.'
+					],
 				]
 			],
 			'advanced-elements'  => [
@@ -1351,6 +1366,7 @@ $config = [
 				'title'     => 'General Extensions',
 				'is_active' => false,
 				'elements'  => [
+				
 					'custom-css'       => [
 						'label'        => 'Custom CSS',
 						'location'     => [

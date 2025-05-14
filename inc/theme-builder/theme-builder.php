@@ -593,8 +593,7 @@ class WCF_Theme_Builder {
 	/**
 	 * Manage Template filter by template type
 	 *
-	 * @param \WP_Query $query
-	 *
+	 * @param \WP_Query $query	 
 	 * @return void
 	 */
 	public function query_filter( \WP_Query $query ) {
