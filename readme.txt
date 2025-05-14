@@ -163,67 +163,67 @@ Take your website design to the next level with 86+ Elementor widgets. Whether y
 
 **Advanced Slider**: Customize and create advanced-level sliders.
 
-**Scroll Elements**: Implement scroll-driven interactions for enhanced engagement.
+**[Scroll Elements](https://animation-addons.com/widgets/aae-scroll-elements/)**: Implement scroll-driven interactions for enhanced engagement.
 
-**Breadcrumbs**: Display the navigation path to the current page.
+**[Breadcrumbs](https://animation-addons.com/widgets/aae-breadcrumbs)**: Display the navigation path to the current page.
 
-**Author Box**: Show detailed information about the author of a post or page.
+**[Author Box](https://animation-addons.com/widgets/aae-author-box)**: Show detailed information about the author of a post or page.
 
-**Filterable Slider**: Allow users to filter data by removing unwanted content.
+**[Filterable Slider](https://animation-addons.com/widgets/aae-filterable-slider)**: Allow users to filter data by removing unwanted content.
 
 ### General Widgets
 
-**Animated Title**: Animate your titles with effects such as fade, character-based animation, word animation, text reveal, 3D movement, and more.
+**[Animated Title](https://animation-addons.com/widgets/aae-animated-titl)**: Animate your titles with effects such as fade, character-based animation, word animation, text reveal, 3D movement, and more.
 
-**Animated Text**: Animate text with various effects, including fade, character-based animation, word animation, text reveal, and more.
+**[Animated Text](https://animation-addons.com/widgets/aae-animated-text)**: Animate text with various effects, including fade, character-based animation, word animation, text reveal, and more.
 
-**Image Box**: Present images with unique animations in five different styles.
+**[Image Box](https://animation-addons.com/widgets/aae-image-box)**: Present images with unique animations in five different styles.
 
-**Image Box Slider**: Showcase images in a slider with five different styles.
+**[Image Box Slider](https://animation-addons.com/widgets/aae-image-box-slider)**: Showcase images in a slider with five different styles.
 
-**Image**: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
+**[Image](https://animation-addons.com/widgets/aae-image)**: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
 
-**Image Gallery**: Create an image gallery with multiple styles and animations.
+**[Image Gallery](https://animation-addons.com/widgets/image-gallery-widget)**: Create an image gallery with multiple styles and animations.
 
-**Brand Slider**: Showcase client or brand logos in a stylish slider with text and image options.
+**[Brand Slider](https://animation-addons.com/widgets/aae-brand-slider)**: Showcase client or brand logos in a stylish slider with text and image options.
 
-**Text Hover Image**: Add a text overlay to an image on hover.
+**[Text Hover Image](https://animation-addons.com/widgets/aae-text-hover-image)**: Add a text overlay to an image on hover.
 
-**Counter**: Add an animated numbered counter to display statistics dynamically.
+**[Counter](https://animation-addons.com/widgets/aae-counter)**: Add an animated numbered counter to display statistics dynamically.
 
-**Icon Box**: Showcase information using icons, titles, and descriptions in multiple styles.
+**[Icon Box](https://animation-addons.com/widgets/aae-icon-box)**: Showcase information using icons, titles, and descriptions in multiple styles.
 
-**Testimonial**: Display client feedback with 15 unique styles.
+**[Testimonial](https://animation-addons.com/widgets/aae-testimonial)**: Display client feedback with 15 unique styles.
 
-**Button**: Add modern buttons with seven different styles.
+**[Button](https://animation-addons.com/aae-button)**: Add modern buttons with seven different styles.
 
-**Image Compare**: Compare two images side by side to highlight differences.
+**[Image Compare](https://animation-addons.com/widgets/aae-image-comparison)**: Compare two images side by side to highlight differences.
 
-**Progress Bar**: Display progress or completion status of tasks or processes in various styles.
+**[Progress Bar](https://animation-addons.com/aae-progress-bar)**: Display progress or completion status of tasks or processes in various styles.
 
-**Social Icons**: Add social media icons that link to your profiles.
+**[Social Icons](https://animation-addons.com/widgets/aae-social-icons)**: Add social media icons that link to your profiles.
 
-**Team**: Showcase your team in style to build credibility effortlessly.
+**[Team](https://animation-addons.com/widgets/aae-team)**: Showcase your team in style to build credibility effortlessly.
 
-**One Page Nav**: Simplify navigation with a smooth scrolling effect.
+**[One Page Nav](https://animation-addons.com/widgets/aae-one-page-nav)**: Simplify navigation with a smooth scrolling effect.
 
-**Timeline**: Create visually appealing timelines for events or personal journeys.
+**[Timeline](https://animation-addons.com/widgets/aae-timeline)**: Create visually appealing timelines for events or personal journeys.
 
-**Tabs**: Enhance navigation and improve user experience with tabbed content.
+**[Tabs](https://animation-addons.com/widgets/aae-tabs)**: Enhance navigation and improve user experience with tabbed content.
 
-**Services Tab**: Present services effectively with multiple styling options.
+**[Services Tab](https://animation-addons.com/widgets/aae-services-tabs)**: Present services effectively with multiple styling options.
 
-**Floating Elements**: Add captivating animations like floating, moving, zooming in/out, and rotation.
+**[Floating Elements](https://animation-addons.com/widgets/aae-floating-elements)**: Add captivating animations like floating, moving, zooming in/out, and rotation.
 
-**Event Slider**: Showcase special events with dynamic sliders.
+**[Event Slider](https://animation-addons.com/aae-event-slider)**: Showcase special events with dynamic sliders.
 
-**Content Slider**: Create seamless content sliders for showcasing information effectively.
+**[Content Slider](https://animation-addons.com/aae-content-slider)**: Create seamless content sliders for showcasing information effectively.
 
-**Countdown**: Add countdowns to create excitement for upcoming events or promotions.
+**[Countdown](https://animation-addons.com/widgets/aae-countdown/)**: Add countdowns to create excitement for upcoming events or promotions.
 
-**Typewriter**: Display a typing effect to engage users dynamically.
+**[Typewriter](https://animation-addons.com/widgets/aae-typewriter/)**: Display a typing effect to engage users dynamically.
 
-**Animated Heading**: Create eye-catching and engaging animated headlines.
+**[Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)**: Create eye-catching and engaging animated headlines.
 
 ##  Animation Addons for Elementor: Key Features
 
@@ -409,26 +409,39 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 
 == External Services ==
 
-1. This plugin connects to an API to retrieve JSON data from the Elementor Template Library. It uses this data to display a popup inside the Elementor Editor, allowing users to view and import templates (sections or pages) easily.
-Users can choose to disable the Template Library feature at any time from the plugin settings in the dashboard—it's completely up to them.
-[The plugin does not collect or send any user data. It only fetches template content in JSON format from the Elementor Template Library.]
+This plugin connects to the following external services to provide enhanced template and widget functionality. These integrations are optional and designed to improve the user experience. No personal data is collected or shared without explicit user action.
 
-2. This plugin is also integrated with the Themecrowdy.com api in dashboard under the Starter Template section, allowing users to browse and select from a range of pre-built templates based on their preferences. 
-Additionally, we automatically import the template’s XML file and any required plugins associated with that template.
-[We do not share any user information with third parties.]
+-  ***Elementor Template Library API***
 
-3. This plugin is also connected to the [animation-addons.com](https://animation-addons.com/wp-json/live/v1/copy-paste) domain for importing templates via the Live Copy feature. This service is used when a user wants to copy a template directly from the animation-addons.com website.
-To make this possible, we temporarily store the user's IP address on the Animation Addons server, which helps manage the live copy template data. This IP address is only used during the live copy import process and is not stored for any other purpose.
+ - The plugin fetches template data in JSON format from the Elementor Template Library to display a popup inside the Elementor editor. This enables users to preview and import section or page templates with a single click.
 
-4. This plugin lets you sync your audience data and form fields with Mailchimp’s API. It only connects when you provide your Mailchimp API key, which is used just for the Elementor Mailchimp widget. Your privacy matters to us, and we won’t share your information with anyone.
+ - This feature is fully optional and can be disabled anytime from the plugin settings.
+ ***Note***: No user data is sent or collected during this process.
 
-Above services are provided by "Wealcoder": [terms](https://animation-addons.com/terms-and-conditions/), [privacy policy](https://animation-addons.com/privacy-policy/).
+- ***Themecrowdy.com API***
 
-== 🌍 Join a Global Community ==
+ - In the "Starter Templates" section of the plugin dashboard, users can browse pre-built website templates powered by Themecrowdy.com. Upon selection, the plugin automatically imports the template's XML file and any required plugins.
 
-Join a global community that helps each other achieve their goals.
+ - No user data is shared with Themecrowdy or any third-party services.
 
-- [GitHub](https://github.com/Wealcoder/animation-addons-for-elementor) - Get information about releases, request features, or report a bug.
+-  ***Live Copy Integration with AnimationAddons.com***
+
+ - The plugin connects to animation-addons.com to support the Live Copy feature. This allows users to copy and paste templates directly from the official site into their Elementor editor.
+
+ - To facilitate this, the user’s IP address may be temporarily stored on our server during the import process.
+
+ - This data is used only during the session and is not stored permanently or used for any other purpose.
+ 
+- ***Mailchimp API***
+
+ - When using the Elementor Mailchimp widget, users may enter their Mailchimp API key to sync form fields with their Mailchimp audience.
+
+ - This connection is only established when the API key is provided, and no data is shared beyond the intended integration.
+
+== Source Code ==
+
+The unminified source code for the minified JavaScript and CSS files included in this plugin can be found in our public repository: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src).
+You can find the original, human-readable versions of all compressed assets there.
 
 == Changelog ==
 

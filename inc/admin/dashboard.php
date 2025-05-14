@@ -233,7 +233,9 @@ class WCF_Admin_Init {
 	 * [add_menu] Admin Menu
 	 */
 	public function add_menu() {
-
+		if (!(current_user_can('manage_options'))) {  
+			return;
+		}
 		self::$parent_menu_hook = add_menu_page(
 			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),
 			esc_html__( 'Animation Addon', 'animation-addons-for-elementor' ),

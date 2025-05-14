@@ -211,9 +211,7 @@ class Helpers {
 	 */
 	public static function get_plugin_page_setup_data() {
 		return Helpers::apply_filters( 'aaeaddon/plugin_page_setup', array(
-			'parent_slug' => 'wcf_addons_settings',
-			'page_title'  => esc_html__( 'Theme Demo Import' , 'animation-addons-for-elementor' ),
-			'menu_title'  => esc_html__( 'Import Demo Data' , 'animation-addons-for-elementor' ),
+			'parent_slug' => 'wcf_addons_settings',	
 			'capability'  => 'import',
 			'menu_slug'   => 'wcf_addons_settings',
 		) );
