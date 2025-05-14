@@ -64,6 +64,7 @@ class Post_Feature_Image extends Widget_Base {
 					'post-format' => esc_html__( 'Post Format', 'animation-addons-for-elementor' ),
 				],
 				'separator' => 'after',
+                'description' => esc_html__( 'To use Post Format option, make sure your Posts supports post formats.', 'animation-addons-for-elementor' ),
 			]
 		);
 
