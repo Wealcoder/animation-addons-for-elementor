@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { RiSettings2Line } from "react-icons/ri";
 
-const ExtensionCardSettings = ({ children }) => {
+const ExtensionCardSettings = ({ children, disabled = false }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -20,7 +20,7 @@ const ExtensionCardSettings = ({ children }) => {
             "group disabled:opacity-100 p-0",
             children ? "text-icon" : "text-[#CACFD8] hover:text-[#CACFD8]"
           )}
-          disabled={!children}
+          disabled={disabled || !children}
         >
           <RiSettings2Line
             className={cn(

@@ -12,9 +12,10 @@ import {
 import { DialogClose } from "@/components/ui/dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { debounceFn } from "@/lib/utils";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 // Schema
 const FormSchema = z.object({
@@ -36,10 +37,20 @@ const YoutubeVideoSettings = () => {
 
   const { watch, setError, clearErrors, reset } = form;
   const apiKey = watch("api_key");
+  const playlistId = watch("playlist_id");
+
+  // State to track validation status
+  const [validationStatus, setValidationStatus] = useState({
+    api_key: null, // null: not validated, true: valid, false: invalid
+    playlist_id: null,
+  });
 
   // ✅ API validation logic
   const validateApiKey = async (key) => {
-    if (!key) return;
+    if (!key) {
+      setValidationStatus((prev) => ({ ...prev, api_key: null }));
+      return;
+    }
     try {
       const res = await fetch(
         `${WCF_ADDONS_ADMIN.home_url}wp-json/aae-addon-yt/v1/status?key=${key}`,
@@ -56,20 +67,72 @@ const YoutubeVideoSettings = () => {
           type: "manual",
           message: "Invalid API key",
         });
+        setValidationStatus((prev) => ({ ...prev, api_key: false }));
       } else {
         clearErrors("api_key");
+        setValidationStatus((prev) => ({ ...prev, api_key: true }));
       }
     } catch (err) {
       setError("api_key", {
         type: "manual",
         message: "API validation failed",
       });
+      setValidationStatus((prev) => ({ ...prev, api_key: false }));
     }
   };
 
-  // ✅ Debounce wrapped validator
+  // ✅ Playlist validation logic
+  const validatePlaylistId = async (id, apiKey) => {
+    if (!id) {
+      setValidationStatus((prev) => ({ ...prev, playlist_id: null }));
+      return;
+    }
+    if (!apiKey) {
+      setError("playlist_id", {
+        type: "manual",
+        message: "Please enter a valid API key first",
+      });
+      setValidationStatus((prev) => ({ ...prev, playlist_id: false }));
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${WCF_ADDONS_ADMIN.home_url}wp-json/aae-addon-yt/v1/playlist-status?key=${apiKey}&playlistId=${id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.status?.privacyStatus) {
+        setError("playlist_id", {
+          type: "manual",
+          message: "Invalid Playlist ID or not accessible with this API key",
+        });
+        setValidationStatus((prev) => ({ ...prev, playlist_id: false }));
+      } else {
+        clearErrors("playlist_id");
+        setValidationStatus((prev) => ({ ...prev, playlist_id: true }));
+      }
+    } catch (err) {
+      setError("playlist_id", {
+        type: "manual",
+        message: "Playlist validation failed",
+      });
+      setValidationStatus((prev) => ({ ...prev, playlist_id: false }));
+    }
+  };
+
+  // ✅ Debounce wrapped validators
   const debouncedValidateApiKey = useMemo(
     () => debounceFn((key) => validateApiKey(key), 500),
+    []
+  );
+
+  const debouncedValidatePlaylistId = useMemo(
+    () => debounceFn((id, key) => validatePlaylistId(id, key), 500),
     []
   );
 
@@ -77,8 +140,23 @@ const YoutubeVideoSettings = () => {
   useEffect(() => {
     if (apiKey) {
       debouncedValidateApiKey(apiKey);
+      // If playlist ID exists, validate it too when API key changes
+      if (playlistId) {
+        debouncedValidatePlaylistId(playlistId, apiKey);
+      }
+    } else {
+      setValidationStatus((prev) => ({ ...prev, api_key: null }));
     }
   }, [apiKey]);
+
+  // ✅ Call on playlist_id change
+  useEffect(() => {
+    if (playlistId) {
+      debouncedValidatePlaylistId(playlistId, apiKey);
+    } else {
+      setValidationStatus((prev) => ({ ...prev, playlist_id: null }));
+    }
+  }, [playlistId]);
 
   const getFullData = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
@@ -87,7 +165,6 @@ const YoutubeVideoSettings = () => {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
-
       body: new URLSearchParams({
         action: "aae_get_dynamic_settings",
         setting_name: "aae_youtube_video_advanced_settings",
@@ -111,8 +188,10 @@ const YoutubeVideoSettings = () => {
   }, []);
 
   async function onSubmit(data) {
-    const error = form.getFieldState("api_key").error;
-    if (error) return;
+    const apiKeyError = form.getFieldState("api_key").error;
+    const playlistIdError = form.getFieldState("playlist_id").error;
+
+    if (apiKeyError || playlistIdError) return;
 
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
@@ -120,7 +199,6 @@ const YoutubeVideoSettings = () => {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
-
       body: new URLSearchParams({
         action: "aae_save_dynamic_settings",
         setting_name: "aae_youtube_video_advanced_settings",
@@ -156,11 +234,22 @@ const YoutubeVideoSettings = () => {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-[#0E121B]">API Key</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your API key" {...field} />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input placeholder="Enter your API key" {...field} />
+                      </FormControl>
+                      {validationStatus.api_key !== null && (
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 flex">
+                          {validationStatus.api_key ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-500" />
+                          )}
+                        </span>
+                      )}
+                    </div>
                     <FormDescription>
-                      This key will be validated with the API.
+                      This key will be validated.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -176,7 +265,7 @@ const YoutubeVideoSettings = () => {
                       <Input placeholder="Enter your username" {...field} />
                     </FormControl>
                     <FormDescription>
-                      The font will be loaded in the head section
+                      Add your Youtube username to get videos from your channel.
                     </FormDescription>
                   </FormItem>
                 )}
@@ -189,12 +278,28 @@ const YoutubeVideoSettings = () => {
                     <FormLabel className="text-[#0E121B]">
                       Playlist Id
                     </FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your playlist id" {...field} />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your playlist id"
+                          {...field}
+                        />
+                      </FormControl>
+                      {validationStatus.playlist_id !== null && (
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 flex">
+                          {validationStatus.playlist_id ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-500" />
+                          )}
+                        </span>
+                      )}
+                    </div>
                     <FormDescription>
-                      The font will be loaded in the head section
+                      Add your Youtube playlist id to get videos from your
+                      playlist.
                     </FormDescription>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

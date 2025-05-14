@@ -22,27 +22,31 @@ const WidgetCard = ({
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
-  const setCheck = (value, slug) => {
+  const checkStatus = () => {
     if (widget?.is_pro && (widget?.pro_only ?? false)) {
       if (activated?.product_status?.item_id === 13) {
-        if (updateActiveItem) {
-          updateActiveItem({ value, slug });
-        }
+        return true;
       } else {
-        setOpen(value);
+        return false;
       }
     } else if (widget?.is_pro) {
       if (activated.wcf_valid) {
-        if (updateActiveItem) {
-          updateActiveItem({ value, slug });
-        }
+        return true;
       } else {
-        setOpen(value);
+        return false;
       }
     } else {
+      return true;
+    }
+  };
+
+  const setCheck = (value, slug) => {
+    if (checkStatus()) {
       if (updateActiveItem) {
         updateActiveItem({ value, slug });
       }
+    } else {
+      setOpen(value);
     }
   };
 
@@ -138,7 +142,9 @@ const WidgetCard = ({
             <div className="flex justify-end items-center gap-2">
               {exSettings && (
                 <div>
-                  <ExtensionCardSettings>{exSettings}</ExtensionCardSettings>
+                  <ExtensionCardSettings disabled={!checkStatus()}>
+                    {exSettings}
+                  </ExtensionCardSettings>
                 </div>
               )}
 
