@@ -1,6 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import WizFooter from "@/components/wizards/WizFooter";
 import { WizHeader } from "@/components/wizards/WizHeader";
+import WizardTerms from "@/pages/wizards/WizardTerms";
 import WizCongratulation from "@/pages/wizards/WizCongratulation";
 import { useEffect, useState, lazy, Suspense } from "react";
 
@@ -24,6 +25,8 @@ const WizardLayout = () => {
 
   const showContent = (tabKey) => {
     switch (tabKey) {
+      case "terms":
+        return <WizardTerms />;
       case "getting-started":
         return <WizardStart />;
       case "widgets":
@@ -37,7 +40,7 @@ const WizardLayout = () => {
       case "congratulations":
         return <WizCongratulation />;
       default:
-        return <WizardStart />;
+        return <WizardTerms />;
     }
   };
 
