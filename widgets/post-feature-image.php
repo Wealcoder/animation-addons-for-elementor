@@ -8,12 +8,14 @@ use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Image_Size;
 use Elementor\Plugin;
 use Elementor\Widget_Base;
+use WCF_ADDONS\WCF_Slider_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
 class Post_Feature_Image extends Widget_Base {
+	use WCF_Slider_Trait;
 
 	public function get_name() {
 		return 'wcf--theme-post-image';
@@ -32,14 +34,36 @@ class Post_Feature_Image extends Widget_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'feature', 'post image' ,'image'];
+		return [ 'feature', 'post image', 'image' ];
+	}
+
+	public function get_script_depends() {
+		return [ 'swiper', 'wcf--slider' ];
+	}
+
+	public function get_style_depends() {
+		return [ 'swiper' ];
 	}
 
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => esc_html__( 'Image', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Thumbnail', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'thumb_type',
+			[
+				'label'     => esc_html__( 'Thumb Type', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '',
+				'options'   => [
+					''            => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'post-format' => esc_html__( 'Post Format', 'animation-addons-for-elementor' ),
+				],
+				'separator' => 'after',
 			]
 		);
 
@@ -47,7 +71,6 @@ class Post_Feature_Image extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'    => 'thumbnail',
-				// Usage: `{name}_size` and `{name}_custom_dimension`, in this case `thumbnail_size` and `thumbnail_custom_dimension`.
 				'exclude' => [ 'custom' ],
 				'include' => [],
 				'default' => 'large',
@@ -83,6 +106,20 @@ class Post_Feature_Image extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// Slider Options
+		$this->start_controls_section(
+			'sec_slider_options',
+			[
+				'label'     => esc_html__( 'Slider Options', 'animation-addons-for-elementor' ),
+				'condition' => [ 'thumb_type' => 'post-format' ],
+			]
+		);
+
+		$this->register_slider_controls();
+
+		$this->end_controls_section();
+
+		// Style
 		$this->start_controls_section(
 			'section_style_image',
 			[
@@ -121,7 +158,7 @@ class Post_Feature_Image extends Widget_Base {
 					],
 				],
 				'selectors'      => [
-					'{{WRAPPER}} img' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -156,7 +193,7 @@ class Post_Feature_Image extends Widget_Base {
 					],
 				],
 				'selectors'      => [
-					'{{WRAPPER}} img' => 'max-width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio' => 'max-width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -178,7 +215,7 @@ class Post_Feature_Image extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} img' => 'height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio' => 'height: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -235,7 +272,7 @@ class Post_Feature_Image extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name'      => 'image_border',
-				'selector'  => '{{WRAPPER}} img',
+				'selector'  => '{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio',
 				'separator' => 'before',
 			]
 		);
@@ -247,7 +284,7 @@ class Post_Feature_Image extends Widget_Base {
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
-					'{{WRAPPER}} img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -259,11 +296,46 @@ class Post_Feature_Image extends Widget_Base {
 				'exclude'  => [
 					'box_shadow_position',
 				],
-				'selector' => '{{WRAPPER}} img',
+				'selector' => '{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio',
 			]
 		);
 
 		$this->end_controls_section();
+
+		// Navigation
+		$this->start_controls_section(
+			'style_navigation',
+			[
+				'label'     => esc_html__( 'Navigation', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'navigation' => 'yes',
+					'thumb_type' => 'post-format',
+				],
+			]
+		);
+
+		$this->register_slider_navigation_style_controls();
+
+		$this->end_controls_section();
+
+		// Pagination
+		$this->start_controls_section(
+			'style_pagination',
+			[
+				'label'     => esc_html__( 'Pagination', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'pagination' => 'yes',
+					'thumb_type' => 'post-format',
+				],
+			]
+		);
+
+		$this->register_slider_pagination_style_controls();
+
+		$this->end_controls_section();
+
 	}
 
 	protected function switch_post() {
@@ -285,17 +357,92 @@ class Post_Feature_Image extends Widget_Base {
 	}
 
 	protected function render() {
-
 		$settings = $this->get_settings_for_display();
 		$this->switch_post();
 
 		$post_id    = get_the_id();
 		$image_size = isset( $settings['thumbnail_size'] ) ? $settings['thumbnail_size'] : 'full';
-		?>
-        <div class="wcf-f-image-wrapper">
-			<?php echo get_the_post_thumbnail( $post_id, $image_size, array() ); ?>
-        </div>
-		<?php
+
+		if ( 'post-format' === $settings['thumb_type'] ) {
+			$post_format = get_post_format( $post_id );
+			if ( 'video' === $post_format ) {
+				$link = get_post_meta( get_the_ID(), '_video_url', true );
+
+				// Youtube Link Checking
+				if ( strpos( $link, "https://www.youtube.com/" ) === 0 ) {
+					parse_str( parse_url( $link, PHP_URL_QUERY ), $query );
+
+					if ( isset( $query['v'] ) ) {
+						$ytVideoId = $query['v'];
+						$link      = "https://www.youtube.com/embed/" . $ytVideoId;
+					}
+				}
+
+				// Vimeo Link Checking
+				if ( strpos( $link, "https://vimeo.com/" ) === 0 ) {
+					$videoId = str_replace( "https://vimeo.com/", "", $link );
+					$link    = "https://player.vimeo.com/video/" . $videoId;
+				}
+				?>
+                <div class="wcf-f-image-wrapper video">
+                    <iframe src="<?php echo $link; ?>"></iframe>
+                </div>
+				<?php
+			} elseif ( 'audio' === $post_format ) {
+				$link = get_post_meta( get_the_ID(), '_audio_url', true );
+				?>
+                <div class="wcf-f-image-wrapper audio">
+                    <audio controls>
+                        <source src="<?php echo $link; ?>" type="audio/mpeg">
+                    </audio>
+                </div>
+				<?php
+			} elseif ( 'gallery' === $post_format ) {
+				$slider_settings = $this->get_slider_attributes();
+
+				$this->add_render_attribute(
+					'wrapper',
+					[
+						'class'         => [ 'wcf__t_slider-wrapper aae-post-gallery-wrapper' ],
+						'data-settings' => json_encode( $slider_settings ), //phpcs:ignore
+					]
+				);
+
+				$gallery_images = get_post_meta( get_the_ID(), '_gallery_images', true );
+				$gallery_images = is_array( $gallery_images ) ? $gallery_images : [];
+				?>
+                <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+                    <div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
+                        <div class="swiper-wrapper">
+							<?php foreach ( $gallery_images as $img ) { ?>
+                                <div class="swiper-slide">
+                                    <img src="<?php echo esc_url( $img ); ?>"
+                                         alt="<?php echo esc_attr__( 'Gallery Image', 'animation-addons-for-elementor' ) ?>">
+                                </div>
+							<?php } ?>
+                        </div>
+
+						<?php // if ( 1 < count( $settings['testimonials'] ) ) : ?>
+						<?php $this->render_slider_navigation(); ?>
+						<?php $this->render_slider_pagination(); ?>
+						<?php // endif; ?>
+                    </div>
+                </div>
+				<?php
+			} else {
+				?>
+                <div class="wcf-f-image-wrapper">
+					<?php echo get_the_post_thumbnail( $post_id, $image_size, array() ); ?>
+                </div>
+				<?php
+			}
+		} else {
+			?>
+            <div class="wcf-f-image-wrapper">
+				<?php echo get_the_post_thumbnail( $post_id, $image_size, array() ); ?>
+            </div>
+			<?php
+		}
 
 		Plugin::$instance->db->restore_current_post();
 	}

@@ -91,6 +91,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   $(window).on('elementor/frontend/init', function () {
     var WcfSliderWidgets = elementorFrontend.hooks.applyFilters('wcf/widgets/slider', {
       // Add Widget name Here
+      'theme-post-image': [],
       'testimonial': [],
       'testimonial2': [],
       'testimonial3': [],

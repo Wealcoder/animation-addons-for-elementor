@@ -88,6 +88,7 @@
 
         const WcfSliderWidgets = elementorFrontend.hooks.applyFilters('wcf/widgets/slider', {
             // Add Widget name Here
+            'theme-post-image': [],
             'testimonial': [],
             'testimonial2': [],
             'testimonial3': [],
