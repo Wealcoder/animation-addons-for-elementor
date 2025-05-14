@@ -207,12 +207,28 @@ class Posts extends Widget_Base {
 		$this->add_control(
 			'title_length',
 			[
-				'label'     => esc_html__( 'Title Length', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__( 'Title Length (words)', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 5,
 				'max'       => 100,
 				'condition' => [
 					'show_title' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_length_line',
+			[
+				'label'     => esc_html__( 'Title Length (lines)', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::NUMBER,
+				'min'       => 1,
+				'max'       => 5,
+				'condition' => [
+					'show_title' => 'yes',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .wcf-posts .title a' => '-webkit-line-clamp: {{VALUE}}; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;',
 				],
 			]
 		);

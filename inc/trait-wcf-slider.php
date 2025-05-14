@@ -566,6 +566,7 @@ trait WCF_Slider_Trait {
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
+				'default'      => 'left',
 				'condition'    => [ 'navigation_position' => 'absolute' ],
 			]
 		);
@@ -609,6 +610,7 @@ trait WCF_Slider_Trait {
 						'icon'  => 'eicon-v-align-bottom',
 					],
 				],
+				'default'      => 'bottom',
 				'condition'    => [ 'navigation_position' => 'absolute' ],
 			]
 		);
@@ -941,7 +943,7 @@ trait WCF_Slider_Trait {
 				'selectors'  => [
 					'{{WRAPPER}} .swiper-pagination-progressbar' => 'transform: rotate({{SIZE}}deg);',
 				],
-				'condition' => [ 'pagination_type' => 'progressbar' ],
+				'condition'  => [ 'pagination_type' => 'progressbar' ],
 			]
 		);
 

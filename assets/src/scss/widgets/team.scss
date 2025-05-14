@@ -7,6 +7,10 @@
     }
   }
 
+  .name a {
+    transition: all 0.3s;
+  }
+
   .thumb {
     display: block;
     line-height: 0;
