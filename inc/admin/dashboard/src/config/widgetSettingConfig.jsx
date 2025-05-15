@@ -1,6 +1,8 @@
+import YoutubeVideoSettings from "@/components/widgets/settings/YoutubeVideoSettings";
+
 export const WidgetSettingConfig = [
-  // {
-  //   key: "image-box",
-  //   component: <CustomFontSettings />,
-  // },
+  {
+    key: "youtube-video",
+    component: <YoutubeVideoSettings />,
+  },
 ];
