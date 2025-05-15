@@ -420,6 +420,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 = Animation Addons for Elementor v2.3 – 15 may 2025 =
   - 🆕 **Added:** 5 animated business templates
+  - 🆕 **Added:** optin popup
   - 🎨 **Fixed:** animation library dependancy
 
  = Animation Addons for Elementor v2.3 – 07 may 2025 =

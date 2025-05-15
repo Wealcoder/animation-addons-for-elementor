@@ -91,7 +91,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.2';
+	const VERSION = '2.3.1';
 
 	/**
 	 * Minimum Elementor Version
@@ -125,8 +125,6 @@ final class WCF_ADDONS_Plugin {
 		add_action( 'plugins_loaded', array( $this, 'init' ) );		
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );
 	}
-
-	
 
 	/**
 	 * Plugin activation hook
