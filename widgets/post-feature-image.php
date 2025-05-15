@@ -371,7 +371,8 @@ class Post_Feature_Image extends Widget_Base {
 
 				// Youtube Link Checking
 				if ( strpos( $link, "https://www.youtube.com/" ) === 0 ) {
-					parse_str( parse_url( $link, PHP_URL_QUERY ), $query );
+//					parse_str( wp_parse_url( $link, PHP_URL_QUERY ), $query );
+					parse_str( wp_parse_url( $link )['query'] ?? '', $query );
 
 					if ( isset( $query['v'] ) ) {
 						$ytVideoId = $query['v'];
