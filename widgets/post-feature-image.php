@@ -386,7 +386,7 @@ class Post_Feature_Image extends Widget_Base {
 				}
 				?>
                 <div class="wcf-f-image-wrapper video">
-                    <iframe src="<?php echo $link; ?>"></iframe>
+                    <iframe src="<?php echo esc_url($link); ?>"></iframe>
                 </div>
 				<?php
 			} elseif ( 'audio' === $post_format ) {
@@ -394,7 +394,7 @@ class Post_Feature_Image extends Widget_Base {
 				?>
                 <div class="wcf-f-image-wrapper audio">
                     <audio controls>
-                        <source src="<?php echo $link; ?>" type="audio/mpeg">
+                        <source src="<?php echo esc_url( $link ); ?>" type="audio/mpeg">
                     </audio>
                 </div>
 				<?php
