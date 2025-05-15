@@ -1,11 +1,11 @@
 === Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
-Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Motion Effects
+Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website template
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3
+Stable tag: 2.3.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -408,47 +408,24 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 == External Services ==
-
-This plugin connects to the following external services to provide enhanced template and widget functionality. These integrations are optional and designed to improve the user experience. No personal data is collected or shared without explicit user action.
-
--  ***Elementor Template Library API***
-
- - The plugin fetches template data in JSON format from the Elementor Template Library to display a popup inside the Elementor editor. This enables users to preview and import section or page templates with a single click.
-
- - This feature is fully optional and can be disabled anytime from the plugin settings.
- ***Note***: No user data is sent or collected during this process.
-
-- ***Themecrowdy.com API***
-
- - In the "Starter Templates" section of the plugin dashboard, users can browse pre-built website templates powered by Themecrowdy.com. Upon selection, the plugin automatically imports the template's XML file and any required plugins.
-
- - No user data is shared with Themecrowdy or any third-party services.
-
--  ***Live Copy Integration with AnimationAddons.com***
-
- - The plugin connects to animation-addons.com to support the Live Copy feature. This allows users to copy and paste templates directly from the official site into their Elementor editor.
-
- - To facilitate this, the user’s IP address may be temporarily stored on our server during the import process.
-
- - This data is used only during the session and is not stored permanently or used for any other purpose.
- 
-- ***Mailchimp API***
-
- - When using the Elementor Mailchimp widget, users may enter their Mailchimp API key to sync form fields with their Mailchimp audience.
-
- - This connection is only established when the API key is provided, and no data is shared beyond the intended integration.
+We use the Themecrowdy API for one-click import of Elementor sites and section templates.
+Our Mailchimp widget connects to Mailchimp’s API.
+Subscribing is optional—no data is collected unless you opt in.
 
 == Source Code ==
 
-The unminified source code for the minified JavaScript and CSS files included in this plugin can be found in our public repository: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src).
-You can find the original, human-readable versions of all compressed assets there.
+See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3 – 15 may 2025 =
+  - 🆕 **Added:** 5 animated business templates
+  - 🆕 **Added:** optin popup
+  - 🎨 **Fixed:** animation library dependancy
 
  = Animation Addons for Elementor v2.3 – 07 may 2025 =
   - ❌ **Removed:** remote request of chnagelog
   - 🎨 **Fixed:** template library store process
-
 
  = Animation Addons for Elementor v2.2 – 06 may 2025 =
   - ❌ **Removed:** Draggable js
