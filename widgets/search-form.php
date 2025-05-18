@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\Widgets;
 
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Box_Shadow;
 use Elementor\Icons_Manager;
 use Elementor\Group_Control_Border;
@@ -79,11 +80,15 @@ class Search_Form extends Widget_Base {
 	 * @access public
 	 */
 	public function get_style_depends() {
-		return [ ];
+		return [ 'aae--search' ];
+	}
+
+	public function get_script_depends() {
+		return [ 'aae--search' ];
 	}
 
 	public function get_keywords() {
-		return ['search','form', 'search form' ];
+		return [ 'search', 'form', 'search form' ];
 	}
 
 	protected function register_controls() {
@@ -110,6 +115,20 @@ class Search_Form extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'enable_ajax_search',
+			[
+				'label'     => esc_html__( 'Enable Ajax Search', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => '',
+				'options'   => [
+					''             => esc_html__( 'Disable', 'animation-addons-for-elementor' ),
+					'search-field' => esc_html__( 'Enable', 'animation-addons-for-elementor' ),
+				],
+				'separator' => 'before',
+			]
+		);
+
 		$this->end_controls_section();
 
 		$this->register_search_controls();
@@ -120,6 +139,8 @@ class Search_Form extends Widget_Base {
 		//default theme styles
 		$this->register_default_theme_styles();
 
+		// Ajax Search
+		$this->style_ajax_search_controls();
 	}
 
 	protected function register_search_controls() {
@@ -155,8 +176,8 @@ class Search_Form extends Widget_Base {
 		$this->add_control(
 			'overlay_background_color',
 			[
-				'label' => esc_html__( 'Overlay Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Overlay Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .search--wrapper.style-full-screen .wcf-search-container' => 'background-color: {{VALUE}}',
 				],
@@ -190,16 +211,16 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'search_height',
 			[
-				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SLIDER,
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'range'     => [
+				'range'      => [
 					'px' => [
-						'min'  => 1,
-						'max'  => 500,
+						'min' => 1,
+						'max' => 500,
 					],
 				],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .wcf-search-form' => 'min-height: {{SIZE}}{{UNIT}}',
 				],
 			]
@@ -269,10 +290,10 @@ class Search_Form extends Widget_Base {
 		$this->end_controls_section();
 
 		//search style
-        $this->register_search_style_controls();
+		$this->register_search_style_controls();
 
-        //toggle
-        $this->register_search_toggle();
+		//toggle
+		$this->register_search_toggle();
 
 	}
 
@@ -282,8 +303,8 @@ class Search_Form extends Widget_Base {
 		$this->start_controls_section(
 			'section_input_style',
 			[
-				'label' => esc_html__( 'Input', 'animation-addons-for-elementor' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
+				'label'     => esc_html__( 'Input', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'preset!' => 'default' ]
 			]
 		);
@@ -559,16 +580,16 @@ class Search_Form extends Widget_Base {
 		$this->add_responsive_control(
 			'search_button_width',
 			[
-				'label'     => esc_html__( 'Width', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SLIDER,
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-				'range'     => [
+				'range'      => [
 					'px' => [
-						'min'  => 1,
-						'max'  => 200,
+						'min' => 1,
+						'max' => 200,
 					],
 				],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .wcf-search-form .wcf-search-form__submit' => 'min-width: {{SIZE}}{{UNIT}}',
 				],
 			]
@@ -740,7 +761,8 @@ class Search_Form extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	protected function register_search_close() {;
+	protected function register_search_close() {
+		;
 
 		$this->start_controls_section(
 			'section_search_close_style',
@@ -820,8 +842,8 @@ class Search_Form extends Widget_Base {
 		$this->add_control(
 			'close_hover_border_color',
 			[
-				'label' => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
 				'condition' => [
 					'close_border_border!' => '',
 				],
@@ -861,8 +883,8 @@ class Search_Form extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
 			[
-				'name' => 'close_border',
-				'selector' => '{{WRAPPER}} .style-full-screen .toggle--close',
+				'name'      => 'close_border',
+				'selector'  => '{{WRAPPER}} .style-full-screen .toggle--close',
 				'separator' => 'before',
 			]
 		);
@@ -1175,16 +1197,265 @@ class Search_Form extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	protected function style_ajax_search_controls() {
+		$this->start_controls_section(
+			'section_ajax_search',
+			[
+				'label'     => esc_html__( 'Ajax Search', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [ 'enable_ajax_search' => 'search-field' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'result_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--live-search-results' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'search_result_bg',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .aae--live-search-results',
+			]
+		);
+
+		$this->add_control(
+			'result_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--live-search-results' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'result_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--live-search-results' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'result_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--live-search-results' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// Thumb
+		$this->add_control(
+			'thumb_heading',
+			[
+				'label'     => esc_html__( 'Thumb', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'thumb_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .search-item' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'thumb_width',
+			[
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--live-search-results .search-item' => 'grid-template-columns: {{SIZE}}{{UNIT}} auto;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'thumb_height',
+			[
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .thumb' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'thumb_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .thumb img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// Title
+		$this->add_control(
+			'title_heading',
+			[
+				'label'     => esc_html__( 'Title', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .title' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_h_color',
+			[
+				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .title:hover' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'title_typo',
+				'selector' => '{{WRAPPER}} .title',
+			]
+		);
+
+		$this->add_responsive_control(
+			'title_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .title' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// Date
+		$this->add_control(
+			'date_heading',
+			[
+				'label'     => esc_html__( 'Date', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'date_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .date' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'date_typo',
+				'selector' => '{{WRAPPER}} .date',
+			]
+		);
+
+		$this->end_controls_section();
+	}
+
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
 		$this->add_render_attribute(
 			'form',
 			[
-				'class' => 'wcf-search-form',
+				'class'  => 'wcf-search-form',
 				'action' => home_url(),
 				'method' => 'get',
-				'role' => 'search',
+				'role'   => 'search',
 			]
 		);
 
@@ -1192,19 +1463,19 @@ class Search_Form extends Widget_Base {
 			'label',
 			[
 				'class' => 'elementor-screen-only',
-				'for' => 'wcf-search-form-' . $this->get_id(),
+				'for'   => 'wcf-search-form-' . $this->get_id(),
 			]
 		);
 
 		$this->add_render_attribute(
 			'input',
 			[
-				'id' => 'wcf-search-form-' . $this->get_id(),
+				'id'          => 'wcf-search-form-' . $this->get_id(),
 				'placeholder' => $settings['placeholder'],
-				'class' => 'wcf-search-form__input',
-				'type' => 'search',
-				'name' => 's',
-				'value' => get_search_query(),
+				'class'       => 'wcf-search-form__input ' . $settings['enable_ajax_search'],
+				'type'        => 'search',
+				'name'        => 's',
+				'value'       => get_search_query(),
 			]
 		);
 
@@ -1219,11 +1490,11 @@ class Search_Form extends Widget_Base {
 		);
 
 		?>
-        <style>.elementor-widget-wcf--blog--search--form svg{height:1em;width:1em}.elementor-widget-wcf--blog--search--form .wcf-search-form button,.elementor-widget-wcf--blog--search--form .wcf-search-form input[type=search]{margin:0;border:0;outline:0;display:inline-block;vertical-align:middle;white-space:normal;background:0 0;line-height:1;min-width:0;font-size:15px;-webkit-appearance:none;-moz-appearance:none}.elementor-widget-wcf--blog--search--form .wcf-search-form__input{flex-basis:100%;padding:10px 20px}.elementor-widget-wcf--blog--search--form .wcf-search-form{display:flex;background:#f1f2f3;border-radius:3px;overflow:hidden;border:0 solid transparent;min-height:50px}.elementor-widget-wcf--blog--search--form .wcf-search-form .wcf-search-form__submit{background-color:#54595f;color:#fff;fill:#fff;min-width:60px;transition:.3s}.elementor-widget-wcf--blog--search--form .wcf-search-form button:focus,.elementor-widget-wcf--blog--search--form .wcf-search-form input[type=search]:focus{outline:0;color:inherit}.elementor-widget-wcf--blog--search--form .wcf-search-form__input::-moz-placeholder{color:inherit;font-family:inherit;opacity:.6}.elementor-widget-wcf--blog--search--form .wcf-search-form__input::placeholder{color:inherit;font-family:inherit;opacity:.6}.elementor-widget-wcf--blog--search--form .toggle--close,.elementor-widget-wcf--blog--search--form .toggle--open{line-height:1;cursor:pointer;flex:1;display:flex;align-items:center;justify-content:center}.elementor-widget-wcf--blog--search--form .toggle--close{display:none}.elementor-widget-wcf--blog--search--form .wcf-search-toggle{position:relative;display:inline-flex;justify-content:center;vertical-align:middle;background-color:rgba(0,0,0,.05);border:0 solid #33373d;border-radius:3px;transition:.3s}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown .wcf-search-container{position:absolute;width:300px;top:100%;opacity:0;z-index:99;visibility:hidden;transition:all .5s;transform:translateY(20px)}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown .wcf-search-container.search-position-right{right:0}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown .wcf-search-container.search-position-left{left:0}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown.search-visible .toggle--open{display:none}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown.search-visible .toggle--close{display:flex}.elementor-widget-wcf--blog--search--form .search--wrapper.style-dropdown.search-visible .wcf-search-container{opacity:1;visibility:visible;transform:translateY(0)}.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-container{position:fixed;width:100%;height:100vh;transform:scale(0);background:#ddd;top:0;left:0;z-index:99;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .5s}.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .toggle--close{display:flex;cursor:pointer;position:absolute;right:30px;top:30px;transition:.3s}.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-form{width:300px}.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen.search-visible .wcf-search-container{opacity:1;visibility:visible;transform:scale(1)}</style>
-        <?php
+		<?php
 
 		if ( 'default' === $settings['preset'] ) {
 			echo get_search_form();
+			echo '<div class="aae--live-search-results"></div>';
 		}
 
 		if ( 'style-classic' === $settings['preset'] ) {
@@ -1242,7 +1513,8 @@ class Search_Form extends Widget_Base {
 	protected function render_search_preset_one( $settings ) {
 		?>
         <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ); ?>">
-	        <?php $this->render_search_form( $settings ); ?>
+			<?php $this->render_search_form( $settings ); ?>
+            <div class="aae--live-search-results"></div>
         </div>
 		<?php
 	}
@@ -1261,9 +1533,10 @@ class Search_Form extends Widget_Base {
                 </div>
             </div>
             <div class="wcf-search-container search-position-<?php echo esc_attr( $settings['search_position'] ) ?>">
-	            <?php $this->render_search_form( $settings ); ?>
+				<?php $this->render_search_form( $settings ); ?>
             </div>
         </div>
+        <div class="aae--live-search-results"></div>
 		<?php
 	}
 
@@ -1278,11 +1551,12 @@ class Search_Form extends Widget_Base {
             </div>
             <div class="wcf-search-container">
                 <div class="toggle--close" role="button" tabindex="0">
-		            <?php Icons_Manager::render_icon( $settings['toggle_close'], [ 'aria-hidden' => 'true' ] ); ?>
+					<?php Icons_Manager::render_icon( $settings['toggle_close'], [ 'aria-hidden' => 'true' ] ); ?>
                     <span class="elementor-screen-only"><?php esc_html_e( 'Close this search box', 'animation-addons-for-elementor' ); ?></span>
                 </div>
-                <?php $this->render_search_form( $settings ); ?>
+				<?php $this->render_search_form( $settings ); ?>
             </div>
+            <div class="aae--live-search-results"></div>
         </div>
 		<?php
 	}

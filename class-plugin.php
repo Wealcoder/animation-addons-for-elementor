@@ -95,7 +95,7 @@ class Plugin {
 				'warning' => esc_html__( 'Warning', 'animation-addons-for-elementor' ),
 			],
 			'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
-			'mode'								=> \Elementor\Plugin::$instance->editor->is_edit_mode(),
+			'mode'			 => \Elementor\Plugin::$instance->editor->is_edit_mode(),
 		] );
 
 		wp_localize_script( 'wcf--addons', 'WCF_ADDONS_JS', $data );
@@ -290,6 +290,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'search'             => [
+				'handler' => 'aae--search',
+				'src'     => 'widgets/search.min.js',
+				'dep'     => [ 'jquery' ],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -454,6 +461,13 @@ class Plugin {
 			'company-profile'        => [
 				'handler' => 'company-profile',
 				'src'     => 'widgets/company-profile.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'search'        => [
+				'handler' => 'aae--search',
+				'src'     => 'widgets/search.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
