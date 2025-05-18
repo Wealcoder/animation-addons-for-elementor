@@ -1355,6 +1355,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
+					'weather'         => [
+						'label'        => 'Weather',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Display real-time weather information on your website using OpenWeather API'
+					],
 				]
 			]
 		]
