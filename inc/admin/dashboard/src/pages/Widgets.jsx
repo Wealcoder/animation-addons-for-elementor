@@ -6,6 +6,7 @@ const Widgets = () => {
   const [searchKey, setSearchKey] = useState("");
   const [searchParam, setSearchParam] = useState("");
   const [filterKey, setFilterKey] = useState("free-pro");
+  const [settingOpen, setSettingOpen] = useState(null);
 
   const [widgetCount, setWidgetCount] = useState(WCF_ADDONS_ADMIN.widgets);
 
@@ -19,6 +20,11 @@ const Widgets = () => {
     const filterValue = urlParams.get("filter");
     if (filterValue) {
       setFilterKey(filterValue);
+    }
+
+    const settingValue = urlParams.get("wiz_setting");
+    if (settingValue) {
+      setSettingOpen(settingValue);
     }
   }, [urlParams]);
 
@@ -40,6 +46,7 @@ const Widgets = () => {
           searchParam={searchParam}
           urlParams={urlParams}
           setWidgetCount={setWidgetCount}
+          settingOpen={settingOpen}
         />
       </div>
     </div>

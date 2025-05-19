@@ -16,6 +16,7 @@ const ShowWidgets = ({
   searchParam,
   urlParams,
   setWidgetCount,
+  settingOpen
 }) => {
   const widgetSettings = WidgetSettingConfig;
   const { allWidgets } = useWidgets();
@@ -198,6 +199,7 @@ const ShowWidgets = ({
                       slug={content}
                       updateActiveItem={updateActiveWidget}
                       className="rounded p-5"
+                      settingOpen={settingOpen}
                       exSettings={
                         widgetSettings?.find((item) => item.key === content)
                           ?.component
