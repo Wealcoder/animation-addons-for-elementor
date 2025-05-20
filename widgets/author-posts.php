@@ -108,7 +108,7 @@ class Author_Posts extends Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return array();
+		return array('wcf--author-posts');
 	}
 
 	/**
@@ -174,50 +174,53 @@ class Author_Posts extends Widget_Base {
         $author_name = get_the_author_meta( 'display_name', $author_id );
         $author_designation = get_the_author_meta( 'description', $author_id );
         $author_email = get_the_author_meta('user_email', $author_id);
-        $author_phone = get_the_author_meta('phone', $author_id);
+        $author_phone = get_the_author_meta('author_phone', $author_id);
 
         // get data from custom meta fields
         $author_fb_icon = get_user_meta($author_id, 'author_fb_icon',true);
         $author_fb_url = get_user_meta($author_id, 'author_fb_url',true);
+        $author_fb_follower = get_user_meta($author_id, 'author_fb_follower',true);
         $author_tw_icon = get_user_meta($author_id, 'author_tw_icon',true);
         $author_tw_url = get_user_meta($author_id, 'author_tw_url',true);
+        $author_tw_follower = get_user_meta($author_id, 'author_tw_follower',true);
         $author_tik_icon = get_user_meta($author_id, 'author_tik_icon',true);
         $author_tik_url = get_user_meta($author_id, 'author_tik_url',true);
+        $author_tik_follower = get_user_meta($author_id, 'author_tik_follower',true);
 
 
         ?>
         <div class="wcf--author-posts">
+			<div class="wcf--author-posts-box">
             <div class="wcf--author-posts-header">
                 <div class="wcf--author-posts-image">
                     <img src="<?php echo esc_url($author_image);?>" alt="<?php echo esc_html($author_name); ?>">
                 </div>
                 <div class="wcf--author-posts-details">
-                    <h2><?php echo esc_html($author_name); ?></h2>
-                    <p><?php echo esc_html($author_designation); ?></p>
-                    <p><?php echo esc_html($author_email); ?></p>
-                    <p><?php echo esc_html($author_phone); ?></p>
+                    <h2 class="wcf--author-posts-name"><?php echo esc_html($author_name); ?></h2>
+                    <p class="wcf--author-posts-designation"><?php echo esc_html($author_designation); ?></p>
+                    <p class="wcf--author-posts-email"><?php echo esc_html($author_email); ?></p>
+                    <p class="wcf--author-posts-phone"><?php echo esc_html($author_phone); ?></p>
                 </div>
             </div>
 
             <div class="wcf--author-posts__social">
-				<?php
-					if($author_fb_icon){
-						?>
-						<img src="<?php echo esc_url($author_fb_icon);?>" alt="facebook">
-						<?php
-					}
-				?>
-                <?php if($author_fb_url): ?>
-                    <a href="<?php echo esc_url($author_fb_url); ?>" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <?php endif; ?>
-                <?php if($author_tw_url): ?>
-                    <a href="<?php echo esc_url($author_tw_url); ?>" target="_blank"><i class="fab fa-twitter"></i></a>
-                <?php endif; ?>
-                <?php if($author_tik_url): ?>
-                    <a href="<?php echo esc_url($author_tik_url); ?>" target="_blank"><i class="fab fa-tiktok"></i></a>
-                <?php endif; ?>
+				<h3 class="wcf--author-posts-social-title">Social Media:</h3>
+				<div class="wcf--author-posts-social-icons">
+						<div class="wcf--social-icon">
+							<a href="<?php echo esc_url($author_fb_url); ?>" target="_blank"><img src="<?php echo esc_url($author_fb_icon);?>" alt="facebook"></i></a>
+							<span><?php echo esc_html($author_fb_follower);?></span>
+						</div>
+						<div class="wcf--social-icon">
+							<a href="<?php echo esc_url($author_tw_url); ?>" target="_blank"><img src="<?php echo esc_url($author_fb_icon);?>" alt="twiter"></i></a>
+							<span><?php echo esc_html($author_tw_follower);?></span>
+						</div>
+						<div class="wcf--social-icon">
+							<a href="<?php echo esc_url($author_tik_url); ?>" target="_blank"><img src="<?php echo esc_url($author_fb_icon);?>" alt="twiter"></i></a>
+							<span><?php echo esc_html($author_tik_follower);?></span>
+						</div>
+				</div>
             </div>
-
+			</div>
             <div class="wcf--author-posts__posts">
                 <?php
                 $args = array(

@@ -437,6 +437,13 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
+			'author-posts'        => [
+				'handler' => 'wcf--author-posts',
+				'src'     => 'widgets/author-posts.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 			'meta-info'        => [
 				'handler' => 'wcf--meta-info',
 				'src'     => 'widgets/meta-info.min.css',

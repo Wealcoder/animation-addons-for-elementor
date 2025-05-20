@@ -1,0 +1,60 @@
+
+.wcf--author-posts-box{
+    min-width: 410px;
+    background-color: #FAFAFA;
+    padding: 40px 30px;
+}
+.wcf--author-posts-image{
+    margin-bottom: 10px;
+    img{
+        height:70px;
+        border-radius:50%;
+        object-fit:cover
+    }
+
+}
+.wcf--author-posts-name{
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-designation{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-email,.wcf--author-posts-phone{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 5px;
+    text-transform: lowercase;
+}
+.wcf--author-posts-phone{
+    margin-bottom: 0;
+}
+.wcf--author-posts-social-title{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-social-icons {
+    display: flex;
+    gap: 30px;
+}
+.wcf--social-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    a{
+        line-height: 0;
+    }
+}
+
+/* post layout style  */
+.wcf--author-posts {
+    display: flex;
+}
