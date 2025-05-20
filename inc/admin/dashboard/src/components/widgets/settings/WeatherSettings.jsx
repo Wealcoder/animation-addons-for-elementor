@@ -27,7 +27,7 @@ import {
 // Schema
 const FormSchema = z.object({
   api_key: z.string().min(1, "API key is required"),
-  country_name: z.string().min(1, "Country name is required"),
+  country_name: z.string().min(1, "Location is required"),
   unit: z.string(),
 });
 
@@ -64,8 +64,6 @@ const WeatherSettings = () => {
       );
 
       const data = await res.json();
-
-      console.log(data);
 
       if (data.cod != 400) {
         setError("api_key", {
@@ -110,7 +108,7 @@ const WeatherSettings = () => {
       if (data.cod != 200) {
         setError("country_name", {
           type: "manual",
-          message: "Invalid Country name or not accessible with this API key",
+          message: "Invalid Location or not accessible with this API key",
         });
         setValidationStatus((prev) => ({ ...prev, country_name: false }));
       } else {
@@ -120,7 +118,7 @@ const WeatherSettings = () => {
     } catch (err) {
       setError("country_name", {
         type: "manual",
-        message: "Country name validation failed",
+        message: "Location validation failed",
       });
       setValidationStatus((prev) => ({ ...prev, country_name: false }));
     }
@@ -266,12 +264,12 @@ const WeatherSettings = () => {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-[#0E121B]">
-                      Country Name
+                      Location
                     </FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder="Enter your playlist id"
+                          placeholder="Enter your country/city name"
                           {...field}
                         />
                       </FormControl>
@@ -286,7 +284,7 @@ const WeatherSettings = () => {
                       )}
                     </div>
                     <FormDescription>
-                      Add your country name to get the weather information.
+                      Add your Location to get the weather information.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
