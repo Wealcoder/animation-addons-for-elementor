@@ -96,7 +96,13 @@ const TikTokSettings = () => {
           href={`https://tiktok-feed.animation-addons.com/callback?redirect_uri=${WCF_ADDONS_ADMIN.adminURL}/admin.php&page=wcf_addons_settings&tab=widgets&cTab=all#tiktok-feed`}
           target="_blank"
           rel="noreferrer"
-          className={cn(buttonVariants(), "w-full no-underline")}
+          className={cn(
+            buttonVariants(),
+            "w-full no-underline",
+            token.accessToken
+              ? "bg-button-secondary text-button-text-secondary hover:bg-button-secondary-hover hover:text-button-text-secondary-hover border hover:border-button-secondary-hover hover:shadow-none"
+              : ""
+          )}
         >
           Add TikTok Account
         </a>
