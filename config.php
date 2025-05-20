@@ -752,6 +752,22 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Customize reaction button styles and separator icons to seamlessly fit your website’s design.'
 					],
+					'author-posts'     => [
+						'label'        => 'Author Posts',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Post-Meta-Info",
+						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/author-posts/',
+						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/author-posts/',
+						'youtube_url'  => '',
+						'description'  => 'Use author Post to keep your readers informed without cluttering your beautiful layout.'
+					],
+					
 					'post-meta-info'     => [
 						'label'        => 'Post Meta Info',
 						'location'     => [
