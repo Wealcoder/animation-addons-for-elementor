@@ -1,7 +1,7 @@
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ProConfirmDialog from "./ProConfirmDialog";
 import { useActivate } from "@/hooks/app.hooks";
@@ -15,6 +15,7 @@ const WidgetCard = ({
   isDisable = false,
   exSettings,
   preview = true,
+  settingOpen = null,
 }) => {
   const { activated } = useActivate();
 
@@ -49,6 +50,18 @@ const WidgetCard = ({
       setOpen(value);
     }
   };
+
+  useEffect(() => {
+    if (hashValue === slug) {
+      const element = document.getElementById(hashValue);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }, [hashValue]);
 
   return (
     <>
@@ -142,7 +155,10 @@ const WidgetCard = ({
             <div className="flex justify-end items-center gap-2">
               {exSettings && (
                 <div>
-                  <ExtensionCardSettings disabled={!checkStatus()}>
+                  <ExtensionCardSettings
+                    disabled={!checkStatus()}
+                    defaultOpen={settingOpen === slug ? true : false}
+                  >
                     {exSettings}
                   </ExtensionCardSettings>
                 </div>
