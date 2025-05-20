@@ -55,6 +55,21 @@
 }
 
 /* post layout style  */
+
 .wcf--author-posts {
-    display: flex;
+    display: grid;
+    grid-template-columns: 410px 1fr;
+}
+.wcf--author-posts__posts{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-inline-start: 1px solid #1212121A;
+}
+.wcf--author-posts__posts__item {
+    border-style: solid;
+    border-width: 0px 1px 1px 0px;
+    border-color: #1212121A;
+    padding: 0px 25px 20px 25px;
+    margin: 0px 0px 0px 0px;
+    text-align: start;
 }

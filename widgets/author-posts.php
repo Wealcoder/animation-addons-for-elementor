@@ -235,10 +235,21 @@ class Author_Posts extends Widget_Base {
                     while ( $query->have_posts() ) {
                         $query->the_post();
                         ?>
-                        <div class="wcf--author-posts__posts__item">
-                            <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                            <p><?php the_excerpt(); ?></p>
-                        </div>
+						<article class="wcf--author-post">
+							<div class="wcf-post-taxonomy">
+								<a href="#" class="aae-cat-politics">tt</a>
+							</div>
+							<div class="wcf--author-post-thumb">
+								<img src="" alt="">
+							</div>
+							<h3 class="wcf-post-title">
+								<a href="#"><span class="highlight"></a>
+							</h3>
+							<div class="wcf-post-meta">
+								<span class="wcf-post-date"></span>
+								<span class="wcf-post-author"></span>
+							</div>
+						</article>
                         <?php
                     }
                     wp_reset_postdata();
