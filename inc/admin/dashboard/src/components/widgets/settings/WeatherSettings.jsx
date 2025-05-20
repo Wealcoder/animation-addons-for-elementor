@@ -178,7 +178,6 @@ const WeatherSettings = () => {
         return response.json();
       })
       .then((return_content) => {
-        console.log(return_content);
         reset({
           api_key: return_content.settings.api_key || "",
           unit: return_content.settings.unit || "",
