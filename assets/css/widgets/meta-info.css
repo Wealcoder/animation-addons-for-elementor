@@ -117,6 +117,7 @@
   align-items: center;
 }
 
+.posted-time,
 .wcf--meta-date,
 .wcf--meta-list.style-2 li a,
 .wcf--meta-view {
@@ -229,3 +230,4 @@
     text-align: start;
   }
 }
+/*# sourceMappingURL=meta-info.css.map */
