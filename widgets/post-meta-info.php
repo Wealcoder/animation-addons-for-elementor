@@ -146,7 +146,7 @@ class Post_Meta_Info extends Widget_Base {
 			'author'       => esc_html__( 'Author', 'animation-addons-for-elementor' ),
 			'reading_time' => esc_html__( 'Reading Time', 'animation-addons-for-elementor' ),
 			'comment'      => esc_html__( 'Comment', 'animation-addons-for-elementor' ),
-			'posted-time'  => esc_html__( 'Posted Time', 'animation-addons-for-elementor' ),
+			'time-ago'     => esc_html__( 'Post Time Ago', 'animation-addons-for-elementor' ),
 		];
 
 		$repeater->add_control(
@@ -501,8 +501,8 @@ class Post_Meta_Info extends Widget_Base {
 		// Comment Styles
 		$this->comment_styles();
 
-		// Posted Time
-		$this->style_posted_time();
+		// Post Time Ago
+		$this->style_post_time_ago();
 	}
 
 	// Category Styles Control
@@ -1351,12 +1351,12 @@ class Post_Meta_Info extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	// Posted Time Styles Control
-	protected function style_posted_time() {
+	// Post Time Ago Styles Control
+	protected function style_post_time_ago() {
 		$this->start_controls_section(
 			'style_p_time',
 			[
-				'label' => esc_html__( 'Posted Time', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Post Time Ago', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -1382,7 +1382,7 @@ class Post_Meta_Info extends Widget_Base {
 				],
 				'toggle'    => true,
 				'selectors' => [
-					'{{WRAPPER}} .posted-time-wrap' => 'align-items: {{VALUE}}; text-align: {{VALUE}};',
+					'{{WRAPPER}} .post-time-ago-wrap' => 'align-items: {{VALUE}}; text-align: {{VALUE}};',
 				],
 				'condition' => [
 					'layout_style' => '2',
@@ -1396,7 +1396,7 @@ class Post_Meta_Info extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf--meta-list .posted-time' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .wcf--meta-list .post-time-ago' => 'color: {{VALUE}}',
 				],
 				'separator' => 'before',
 			]
@@ -1406,7 +1406,7 @@ class Post_Meta_Info extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'ptime_typo',
-				'selector' => '{{WRAPPER}} .wcf--meta-list .posted-time',
+				'selector' => '{{WRAPPER}} .wcf--meta-list .post-time-ago',
 			]
 		);
 
@@ -1428,7 +1428,7 @@ class Post_Meta_Info extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .posted-title' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .time-ago-title' => 'color: {{VALUE}}',
 				],
 				'condition' => [
 					'layout_style' => '2',
@@ -1440,7 +1440,7 @@ class Post_Meta_Info extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'      => 'ptime_label_typo',
-				'selector'  => '{{WRAPPER}} .posted-title',
+				'selector'  => '{{WRAPPER}} .time-ago-title',
 				'condition' => [
 					'layout_style' => '2',
 				],
@@ -1461,7 +1461,7 @@ class Post_Meta_Info extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .posted-title' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .time-ago-title' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
 				'condition'  => [
 					'layout_style' => '2',
@@ -1492,8 +1492,8 @@ class Post_Meta_Info extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .posted-time i, {{WRAPPER}} .posted-time svg'   => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .posted-title i, {{WRAPPER}} .posted-title svg' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .post-time-ago i, {{WRAPPER}} .post-time-ago svg'   => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .time-ago-title i, {{WRAPPER}} .time-ago-title svg' => 'font-size: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -1504,8 +1504,8 @@ class Post_Meta_Info extends Widget_Base {
 				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .wcf--meta-list .posted-time i, {{WRAPPER}} .wcf--meta-list .posted-title i'     => 'color: {{VALUE}}',
-					'{{WRAPPER}} .wcf--meta-list .posted-time svg, {{WRAPPER}} .wcf--meta-list .posted-title svg' => 'fill: {{VALUE}}',
+					'{{WRAPPER}} .wcf--meta-list .post-time-ago i, {{WRAPPER}} .wcf--meta-list .time-ago-title i'     => 'color: {{VALUE}}',
+					'{{WRAPPER}} .wcf--meta-list .post-time-ago svg, {{WRAPPER}} .wcf--meta-list .time-ago-title svg' => 'fill: {{VALUE}}',
 
 				],
 			]
@@ -1525,8 +1525,8 @@ class Post_Meta_Info extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .posted-time i, {{WRAPPER}} .posted-time svg'   => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .posted-title i, {{WRAPPER}} .posted-title svg' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .post-time-ago i, {{WRAPPER}} .post-time-ago svg'   => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .time-ago-title i, {{WRAPPER}} .time-ago-title svg' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -2054,7 +2054,7 @@ class Post_Meta_Info extends Widget_Base {
 				$this->render_view_count( $meta, $settings );
 				$this->render_reading_time( $meta, $settings );
 				$this->render_comments( $meta, $settings );
-				$this->render_posted_time( $meta, $settings );
+				$this->render_post_time_ago( $meta, $settings );
 			}
 			?>
         </ul>
@@ -2296,8 +2296,8 @@ class Post_Meta_Info extends Widget_Base {
 		<?php }
 	}
 
-	protected function render_posted_time( $meta, $settings ) {
-		if ( $meta['list_type'] == 'posted-time' ) {
+	protected function render_post_time_ago( $meta, $settings ) {
+		if ( $meta['list_type'] == 'time-ago' ) {
 			$posted_time     = get_the_date( 'c' );
 			$current_time    = current_time( 'timestamp' );
 			$time_difference = $current_time - strtotime( $posted_time );
@@ -2327,7 +2327,7 @@ class Post_Meta_Info extends Widget_Base {
 			?>
 
 			<?php if ( '1' == $settings['layout_style'] ): ?>
-                <li class="posted-time wcf-separator"
+                <li class="post-time-ago wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo esc_html( $meta['list_title'] ); ?>
@@ -2336,12 +2336,12 @@ class Post_Meta_Info extends Widget_Base {
 			<?php endif; ?>
 
 			<?php if ( '2' == $settings['layout_style'] ): ?>
-                <li class="posted-time-wrap">
-                    <div class="posted-title label">
+                <li class="post-time-ago-wrap">
+                    <div class="time-ago-title label">
 						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 						<?php echo esc_html( $meta['list_title'] ); ?>
                     </div>
-                    <div class="posted-time">
+                    <div class="post-time-ago">
 						<?php echo esc_html( $time_ago ); ?>
                     </div>
                 </li>
