@@ -8,22 +8,26 @@ const TikTokSettings = () => {
   const [token, setToken] = useState({
     accessToken: "",
     refreshToken: "",
+    openId: "",
   });
   const urlParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
     const accessToken = urlParams.get("tiktok_access_token");
     const refreshToken = urlParams.get("tiktok_refresh_token");
+    const openId = urlParams.get("tiktok_open_id");
 
     if (accessToken && refreshToken) {
       const tokenValue = {
         accessToken: accessToken || "",
         refreshToken: refreshToken || "",
+        openId: openId || "",
       };
       setToken(tokenValue);
       onSubmit(tokenValue);
       urlParams.delete("tiktok_access_token");
       urlParams.delete("tiktok_refresh_token");
+      urlParams.delete("tiktok_open_id");
       urlParams.delete("wiz_setting");
 
       const baseUrl = `${window.location.origin}${window.location.pathname}`;
@@ -59,6 +63,7 @@ const TikTokSettings = () => {
         setToken({
           accessToken: return_content.settings.accessToken || "",
           refreshToken: return_content.settings.refreshToken || "",
+          openId: return_content.settings.openId || "",
         });
       });
   };
@@ -124,6 +129,15 @@ const TikTokSettings = () => {
             disabled
             placeholder="Refresh Token"
             value={token.refreshToken}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="refresh-token">Open ID</Label>
+          <Input
+            id="open-id"
+            disabled
+            placeholder="Open ID"
+            value={token.openId}
           />
         </div>
       </div>
