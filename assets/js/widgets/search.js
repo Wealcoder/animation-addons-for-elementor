@@ -51,7 +51,7 @@
     }
 
     // Attach debounce to keyup
-    $inputField.on('keyup', debounce(handleSearch, 500));
+    $inputField.on('keyup input', debounce(handleSearch, 500));
   };
 
   // Hook into Elementor

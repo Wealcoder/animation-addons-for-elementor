@@ -418,7 +418,13 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= Animation Addons for Elementor v2.3 – 15 may 2025 =
+= Animation Addons for Elementor v2.3.2 – 25 may 2025 =
+  - 🆕 **Added:** x time in meta widget
+  - 🆕 **Added:** dependancy loaded in elementor widget for on demand asset load
+  - 🎨 **Updated:** Dashboard Settings for Youtube , Weather, Tiktok
+  - 🎨 **Updated:** Added ajax functionality in Search widget.
+
+= Animation Addons for Elementor v2.3.1 – 15 may 2025 =
   - 🆕 **Added:** 5 animated business templates
   - 🆕 **Added:** optin popup
   - 🎨 **Fixed:** animation library dependancy

@@ -294,7 +294,7 @@ class Plugin {
 			'search'             => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.js',
-				'dep'     => [ 'jquery','wcf-addons-core' ],
+				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],

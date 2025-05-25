@@ -5,11 +5,8 @@
    * @param $scope The Widget wrapper element as a jQuery element
    * @param $ The jQuery alias
    */
-
   // Make sure you run this code under Elementor.
   $(window).on('elementor/frontend/init', function () {
-    var device_width = $(window).width();
-    var elementorBreakpoints = elementorFrontend.config.responsive.activeBreakpoints;
     var Modules = elementorModules.frontend.handlers.Base;
     var contact_form_7 = function contact_form_7($scope) {
       var submit_btn = $('.wpcf7-submit', $scope);

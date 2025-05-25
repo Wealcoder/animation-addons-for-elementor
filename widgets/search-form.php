@@ -84,7 +84,7 @@ class Search_Form extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'aae--search' ];
+		return [ 'aae--search', 'wcf-addons-core' ];
 	}
 
 	public function get_keywords() {
