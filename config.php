@@ -1,6 +1,6 @@
 <?php
 
-if (! defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;  // Exit if accessed directly.
 }
 
@@ -19,7 +19,7 @@ $config = [
 						],
 						'is_active'    => false,
 						'is_pro'       => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Box",
@@ -34,7 +34,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -50,7 +50,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -66,7 +66,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -82,7 +82,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -98,7 +98,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -114,7 +114,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -130,7 +130,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -146,7 +146,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -162,7 +162,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -616,7 +616,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -841,6 +841,21 @@ $config = [
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/advanced-posts/',
 						'youtube_url'  => '',
 						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.'
+					],
+					'posts-read-later'         => [
+						'label'        => 'Posts Read Later',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Posts",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.'
 					],
 					'video-story'        => [
 						'label'        => 'Video Story',
@@ -1124,7 +1139,7 @@ $config = [
 				'title'     => 'Video Widgets',
 				'is_active' => false,
 				'elements'  => [
-					'video-popup' => [
+					'video-popup'   => [
 						'label'        => 'Video Popup',
 						'location'     => [
 							'cTab' => 'all'
@@ -1139,7 +1154,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Use the Video Popup Widget to display videos in popups, making content more engaging.'
 					],
-					'video-box'   => [
+					'video-box'     => [
 						'label'        => 'Video Box',
 						'location'     => [
 							'cTab' => 'all'
@@ -1154,7 +1169,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Elevate your website’s look by incorporating a video box that blends seamlessly with your style.'
 					],
-					'video-mask'  => [
+					'video-mask'    => [
 						'label'        => 'Video Mask',
 						'location'     => [
 							'cTab' => 'all'
@@ -1169,7 +1184,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.'
 					],
-					'youtube-video'  => [
+					'youtube-video' => [
 						'label'        => 'Youtube Video',
 						'location'     => [
 							'cTab' => 'all'
@@ -1370,6 +1385,36 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
 					],
+					'weather'               => [
+						'label'        => 'Weather',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Display real-time weather information on your website using OpenWeather API'
+					],
+					'tiktok-feed'           => [
+						'label'        => 'TikTok Feed',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.'
+					],
 				]
 			]
 		]
@@ -1381,7 +1426,7 @@ $config = [
 				'title'     => 'General Extensions',
 				'is_active' => false,
 				'elements'  => [
-				
+
 					'custom-css'       => [
 						'label'        => 'Custom CSS',
 						'location'     => [
@@ -1389,7 +1434,7 @@ $config = [
 						],
 						'is_pro'       => false,
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => [ 'basic' ],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Custom-CSS",

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -10,9 +11,21 @@ import {
 import { cn } from "@/lib/utils";
 import { RiSettings2Line } from "react-icons/ri";
 
-const ExtensionCardSettings = ({ children, disabled = false }) => {
+const ExtensionCardSettings = ({
+  children,
+  disabled = false,
+  defaultOpen = false,
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    if (defaultOpen) {
+      setIsOpen(true);
+    }
+  }, [defaultOpen]);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="link"

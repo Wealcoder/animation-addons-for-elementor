@@ -371,7 +371,8 @@ class Post_Feature_Image extends Widget_Base {
 
 				// Youtube Link Checking
 				if ( strpos( $link, "https://www.youtube.com/" ) === 0 ) {
-					parse_str( parse_url( $link, PHP_URL_QUERY ), $query );
+//					parse_str( wp_parse_url( $link, PHP_URL_QUERY ), $query );
+					parse_str( wp_parse_url( $link )['query'] ?? '', $query );
 
 					if ( isset( $query['v'] ) ) {
 						$ytVideoId = $query['v'];
@@ -386,7 +387,7 @@ class Post_Feature_Image extends Widget_Base {
 				}
 				?>
                 <div class="wcf-f-image-wrapper video">
-                    <iframe src="<?php echo $link; ?>"></iframe>
+                    <iframe src="<?php echo esc_url($link); ?>"></iframe>
                 </div>
 				<?php
 			} elseif ( 'audio' === $post_format ) {
@@ -394,7 +395,7 @@ class Post_Feature_Image extends Widget_Base {
 				?>
                 <div class="wcf-f-image-wrapper audio">
                     <audio controls>
-                        <source src="<?php echo $link; ?>" type="audio/mpeg">
+                        <source src="<?php echo esc_url( $link ); ?>" type="audio/mpeg">
                     </audio>
                 </div>
 				<?php

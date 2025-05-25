@@ -562,9 +562,17 @@ trait WCF_Post_Query_Trait {
 
 			if ( isset( $query_args['ignore_sticky_posts'] ) ) {
 				unset( $query_args['ignore_sticky_posts'] );
-
 			}
 
+		}
+
+		if ( 'most_comments' === $this->get_settings( 'query_type' ) ) {
+			$query_args['orderby'] = 'comment_count';
+			$query_args['order']   = 'DESC';
+
+			if ( isset( $query_args['ignore_sticky_posts'] ) ) {
+				unset( $query_args['ignore_sticky_posts'] );
+			}
 		}
 
 		if ( 'most_reactions' === $this->get_settings( 'query_type' ) ) {
@@ -575,7 +583,6 @@ trait WCF_Post_Query_Trait {
 
 			if ( isset( $query_args['ignore_sticky_posts'] ) ) {
 				unset( $query_args['ignore_sticky_posts'] );
-
 			}
 
 		}
