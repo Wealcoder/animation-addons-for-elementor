@@ -93,6 +93,10 @@ class Countdown extends Widget_Base {
 		return [ 'wcf--countdown' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'wcf-addons-core' ];
+	}
+
 	/**
 	 * Register the widget controls.
 	 *
