@@ -574,6 +574,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
 					],
+					'mega-menu'           => [
+						'label'        => 'Mega Menu',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => true,
+						'icon'         => "wcf-icon-Nav-Menu",
+						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu',
+						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/nav-menu/',
+						'youtube_url'  => '',
+						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
+					],
 				]
 			],
 			'slider'             => [
