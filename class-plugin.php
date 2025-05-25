@@ -69,11 +69,12 @@ class Plugin {
 	 * @access public
 	 */
 	public function widget_scripts() {
+		
 		$scripts = [
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
 				'src'     => 'wcf-addons.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => [ 'jquery', 'elementor-frontend', 'elementor-frontend-modules' ],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -97,7 +98,7 @@ class Plugin {
 			'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
 			'mode'			 => \Elementor\Plugin::$instance->editor->is_edit_mode(),
 		] );
-
+	
 		wp_localize_script( 'wcf--addons', 'WCF_ADDONS_JS', $data );
 
 		wp_enqueue_script( 'wcf--addons' );
