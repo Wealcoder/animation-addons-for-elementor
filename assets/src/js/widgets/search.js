@@ -6,7 +6,7 @@
         const $inputField = $scope.find('.search-field');
         const $resultBox = $scope.find('.aae--live-search-results');
         const $searchWrapper = $('.search--wrapper.style-full-screen .wcf-search-container');
-
+       
         // Debounce function
         function debounce(func, delay) {
             let timeout;
@@ -20,7 +20,7 @@
 
         function handleSearch() {
             const keyword = $inputField.val().trim();
-
+     
             if (keyword.length < 1) {
                 $resultBox.hide();
                 return;
@@ -54,7 +54,7 @@
         }
 
         // Attach debounce to keyup
-        $inputField.on('keyup', debounce(handleSearch, 500));
+        $inputField.on('keyup input', debounce(handleSearch, 500));
     };
 
     // Hook into Elementor

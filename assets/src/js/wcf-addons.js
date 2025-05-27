@@ -4,14 +4,9 @@
     /**
      * @param $scope The Widget wrapper element as a jQuery element
      * @param $ The jQuery alias
-     */
-
-    
+     */    
     // Make sure you run this code under Elementor.
     $(window).on('elementor/frontend/init', function () {
-
-        const device_width = $(window).width();
-        const elementorBreakpoints = elementorFrontend.config.responsive.activeBreakpoints;
 
         const Modules = elementorModules.frontend.handlers.Base;
 

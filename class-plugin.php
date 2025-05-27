@@ -74,7 +74,7 @@ class Plugin {
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
 				'src'     => 'wcf-addons.min.js',
-				'dep'     => [ 'jquery', 'elementor-frontend', 'elementor-frontend-modules' ],
+				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -441,7 +441,7 @@ class Plugin {
 			'countdown'        => [
 				'handler' => 'wcf--countdown',
 				'src'     => 'widgets/countdown.min.css',
-				'dep'     => [],
+				'dep'     => ['wcf-addons-core'],
 				'version' => false,
 				'media'   => 'all',
 			],
@@ -897,7 +897,7 @@ class Plugin {
 		add_action( 'elementor/elements/categories_registered', [ $this, 'widget_categories' ] );
 
 		// Register widget scripts
-		add_action( 'wp_enqueue_scripts', [ $this, 'widget_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'widget_scripts' ],29 );
 
 		// Register widget style
 		add_action( 'wp_enqueue_scripts', [ $this, 'widget_styles' ] );
