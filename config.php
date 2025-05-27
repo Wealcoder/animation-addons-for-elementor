@@ -827,7 +827,22 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.'
 					],
-					'posts-read-later'         => [
+					'post-timeline'      => [
+						'label'        => 'Posts Timeline',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts-Pro",
+						'demo_url'     => 'https://animation-addons.com/#',
+						'doc_url'      => 'https://animation-addons.com/docs/#',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
+					'posts-read-later'   => [
 						'label'        => 'Posts Read Later',
 						'is_active'    => false,
 						'location'     => [
