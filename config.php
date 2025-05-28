@@ -574,7 +574,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
 					],
-					'mega-menu'           => [
+					'mega-menu'          => [
 						'label'        => 'Mega Menu',
 						'location'     => [
 							'cTab' => 'all'
@@ -1067,6 +1067,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Add a search form widget for users to efficiently locate content across your website.'
 					],
+					'advanced-search'    => [
+						'label'        => 'Advanced Search',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Search-Form",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
 					'search-query'       => [
 						'label'        => 'Search Query',
 						'location'     => [
@@ -1096,6 +1111,21 @@ $config = [
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-no-result/',
 						'youtube_url'  => '',
 						'description'  => 'Customize the "no results" message with rich text, media, or links for better user direction.'
+					],
+					'live-events'        => [
+						'label'        => 'Live Events',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Search-No-Result",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
 					],
 				]
 			],
