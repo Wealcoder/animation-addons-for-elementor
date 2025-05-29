@@ -129,6 +129,62 @@ class Search_Form extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'show_search_filter',
+			[
+				'label'        => esc_html__( 'Enable Search Filter', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default'      => '',
+				'condition'    => [
+					'preset!' => 'default'
+				],
+			]
+		);
+
+		$this->add_control(
+			'show_date_filter',
+			[
+				'label'        => esc_html__( 'Show Date Filter', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'condition'    => [ 'show_search_filter' => 'yes', 'preset!' => 'default' ],
+			]
+		);
+
+		$this->add_control(
+			'show_cat_filter',
+			[
+				'label'        => esc_html__( 'Show Category Filter', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'condition'    => [ 'show_search_filter' => 'yes', 'preset!' => 'default' ],
+			]
+		);
+
+		$this->add_control(
+			'filter_icon',
+			[
+				'label'       => esc_html__( 'Dropdown Icon', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default'     => [
+					'value'   => 'fas fa-angle-down',
+					'library' => 'fa-solid',
+				],
+				'condition'   => [ 'show_search_filter' => 'yes', 'preset!' => 'default' ],
+			]
+		);
+
 		$this->end_controls_section();
 
 		$this->register_search_controls();
@@ -1449,6 +1505,12 @@ class Search_Form extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
+		if ( 'yes' === $settings['show_search_filter'] ) {
+			$filter_class = 'active-filter';
+		} else {
+			$filter_class = '';
+		}
+
 		$this->add_render_attribute(
 			'form',
 			[
@@ -1498,30 +1560,30 @@ class Search_Form extends Widget_Base {
 		}
 
 		if ( 'style-classic' === $settings['preset'] ) {
-			$this->render_search_preset_one( $settings );
+			$this->render_search_preset_one( $settings, $filter_class );
 		}
 
 		if ( 'style-dropdown' === $settings['preset'] ) {
-			$this->render_search_preset_two( $settings );
+			$this->render_search_preset_two( $settings, $filter_class );
 		}
 
 		if ( 'style-full-screen' === $settings['preset'] ) {
-			$this->render_search_preset_three( $settings );
+			$this->render_search_preset_three( $settings, $filter_class );
 		}
 	}
 
-	protected function render_search_preset_one( $settings ) {
+	protected function render_search_preset_one( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ); ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
 			<?php $this->render_search_form( $settings ); ?>
             <div class="aae--live-search-results"></div>
         </div>
 		<?php
 	}
 
-	protected function render_search_preset_two( $settings ) {
+	protected function render_search_preset_two( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ); ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
             <div class="wcf-search-toggle" role="button" tabindex="0">
                 <div class="toggle--open">
 					<?php Icons_Manager::render_icon( $settings['toggle_open_icon'], [ 'aria-hidden' => 'true' ] ); ?>
@@ -1540,9 +1602,9 @@ class Search_Form extends Widget_Base {
 		<?php
 	}
 
-	protected function render_search_preset_three( $settings ) {
+	protected function render_search_preset_three( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ); ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
             <div class="wcf-search-toggle" role="button" tabindex="0">
                 <div class="toggle--open">
 					<?php Icons_Manager::render_icon( $settings['toggle_open_icon'], [ 'aria-hidden' => 'true' ] ); ?>
@@ -1568,6 +1630,11 @@ class Search_Form extends Widget_Base {
 				<?php esc_html_e( 'Search', 'animation-addons-for-elementor' ); ?>
             </label>
             <input <?php $this->print_render_attribute_string( 'input' ); ?>>
+			<?php
+			if ( 'yes' === $settings['show_search_filter'] ) {
+				$this->render_search_filter( $settings );
+			}
+			?>
             <button <?php $this->print_render_attribute_string( 'submit' ); ?>>
 				<?php if ( 'icon' === $settings['button_type'] ) : ?>
 					<?php Icons_Manager::render_icon( $settings['button_icon'], [ 'aria-hidden' => 'true' ] ); ?>
@@ -1577,6 +1644,72 @@ class Search_Form extends Widget_Base {
 				<?php endif; ?>
             </button>
         </form>
+        <div class="selected-category-display"></div>
+		<?php
+	}
+
+	protected function render_search_filter( $settings ) {
+		$categories = get_categories( [
+			'taxonomy'   => 'category',
+			'hide_empty' => true
+		] );
+		?>
+        <div class="aae--search-filter">
+			<?php
+			if ( 'yes' === $settings['show_date_filter'] ) {
+				?>
+                <div class="date-container">
+                    <div class="date-toggle">
+                        Date <span
+                                class="icon"><?php Icons_Manager::render_icon( $settings['filter_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
+                    </div>
+                    <div class="date-dropdown">
+                        <ul class="preset-options">
+                            <li data-preset="today">Today</li>
+                            <li data-preset="yesterday">Yesterday</li>
+                            <li data-preset="week">This week</li>
+                            <li data-preset="month">This month</li>
+                        </ul>
+
+                        <div class="custom-range">
+                            <label>From</label>
+                            <input type="date" name="from_date" class="from-date"/>
+                            <label>To</label>
+                            <input type="date" name="to_date" class="to-date"/>
+                        </div>
+
+                        <div class="date-buttons">
+                            <button type="button" class="clear-btn">Clear</button>
+                            <button type="button" class="apply-btn">Apply</button>
+                        </div>
+                    </div>
+                </div>
+				<?php
+			}
+
+			if ( 'yes' === $settings['show_cat_filter'] ) {
+				?>
+                <div class="category-container">
+                    <div class="category-toggle">
+                        Category <span
+                                class="icon"><?php Icons_Manager::render_icon( $settings['filter_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
+                    </div>
+                    <div class="category-dropdown">
+                        <ul class="category-list">
+                            <li data-value="">All Categories</li>
+							<?php foreach ( $categories as $category ): ?>
+                                <li data-value="<?php echo esc_attr( $category->term_id ); ?>">
+									<?php echo esc_html( $category->name ); ?>
+                                </li>
+							<?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <input type="hidden" name="category[]" id="selectedCategory" value=""/>
+                </div>
+				<?php
+			}
+			?>
+        </div>
 		<?php
 	}
 }

@@ -1,8 +1,9 @@
-.elementor-widget-wcf--blog--search--form{
-  svg{
+.elementor-widget-wcf--blog--search--form {
+  svg {
     height: 1em;
     width: 1em;
   }
+
   .wcf-search-form button,
   .wcf-search-form input[type=search] {
     margin: 0;
@@ -18,17 +19,20 @@
     -webkit-appearance: none;
     -moz-appearance: none;
   }
+
   .wcf-search-form__input {
     flex-basis: 100%;
     padding: 10px 20px;
   }
-  .wcf-search-form{
+
+  .wcf-search-form {
     display: flex;
     background: #f1f2f3;
     border-radius: 3px;
     overflow: hidden;
     border: 0 solid transparent;
     min-height: 50px;
+
     .wcf-search-form__submit {
       background-color: #54595FFF;
       color: #fff;
@@ -59,7 +63,7 @@
 
   //toggle
   .toggle--close,
-  .toggle--open{
+  .toggle--open {
     line-height: 1;
     cursor: pointer;
     flex: 1;
@@ -67,22 +71,24 @@
     align-items: center;
     justify-content: center;
   }
-  .toggle--close{
+
+  .toggle--close {
     display: none;
   }
-  .wcf-search-toggle{
+
+  .wcf-search-toggle {
     position: relative;
     display: inline-flex;
     justify-content: center;
     vertical-align: middle;
     background-color: rgba(0, 0, 0, .05);
-    border: 0 solid  #33373d;
+    border: 0 solid #33373d;
     border-radius: 3px;
     transition: 0.3s;
   }
 
   //style classic
-  .search--wrapper.style-classic{
+  .search--wrapper.style-classic {
 
   }
 
@@ -98,18 +104,22 @@
       visibility: hidden;
       transition: all 0.5s;
       transform: translateY(20px);
-      &.search-position-right{
+
+      &.search-position-right {
         right: 0;
       }
-      &.search-position-left{
+
+      &.search-position-left {
         left: 0;
       }
     }
-    &.search-visible{
-      .toggle--open{
+
+    &.search-visible {
+      .toggle--open {
         display: none;
       }
-      .toggle--close{
+
+      .toggle--close {
         display: flex;
       }
 
@@ -144,7 +154,8 @@
         align-items: flex-start;
       }
     }
-    .toggle--close{
+
+    .toggle--close {
       display: flex;
       cursor: pointer;
       position: absolute;
@@ -152,11 +163,12 @@
       top: 30px;
       transition: .3s;
     }
-    .wcf-search-form{
+
+    .wcf-search-form {
       width: 300px;
     }
 
-    &.search-visible{
+    &.search-visible {
       .wcf-search-container {
         opacity: 1;
         visibility: visible;
@@ -206,4 +218,108 @@
 .elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-container.ajax-search {
   align-items: flex-start;
   padding-top: 15px;
+}
+
+// Search Filtering
+.aae--search-filter {
+  gap: 20px;
+  display: flex;
+  align-items: center;
+
+  .date-container,
+  .category-container {
+    position: relative;
+  }
+
+  .date-toggle,
+  .category-toggle {
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .icon {
+      line-height: 0;
+    }
+  }
+
+  .date-dropdown,
+  .category-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #1212120D;
+    padding: 15px;
+    z-index: 10;
+  }
+
+  .date-container.active .date-dropdown,
+  .category-container.active .category-dropdown {
+    display: block;
+  }
+
+  .preset-options,
+  .category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+  }
+
+  .preset-options li,
+  .category-list li {
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .custom-range {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .custom-range label {
+    font-size: 14px;
+  }
+
+  .custom-range input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .date-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .date-buttons button {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .date-buttons .clear-btn {
+    background-color: #444;
+  }
+
+  .date-buttons .apply-btn {
+    background-color: #007bff;
+  }
+
+}
+
+.active-filter {
+  .wcf-search-form {
+    overflow: unset;
+  }
+
 }
