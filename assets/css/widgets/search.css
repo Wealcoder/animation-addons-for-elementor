@@ -111,6 +111,7 @@
   z-index: 99;
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   opacity: 0;
   visibility: hidden;
@@ -118,7 +119,12 @@
 }
 .elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-container.ajax-fs-wrap {
   padding-top: 15px;
+  flex-direction: unset;
   align-items: flex-start;
+}
+.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-container.ajax-fs-wrap .selected-category-display {
+  position: absolute;
+  top: 70px;
 }
 .elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .toggle--close {
   display: flex;
@@ -172,3 +178,93 @@
   align-items: flex-start;
   padding-top: 15px;
 }
+
+.aae--search-filter {
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+.aae--search-filter button {
+  cursor: pointer;
+}
+.aae--search-filter .date-container,
+.aae--search-filter .category-container {
+  position: relative;
+}
+.aae--search-filter .date-toggle,
+.aae--search-filter .category-toggle {
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.aae--search-filter .date-toggle .icon,
+.aae--search-filter .category-toggle .icon {
+  line-height: 0;
+}
+.aae--search-filter .date-dropdown,
+.aae--search-filter .category-dropdown {
+  display: none;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 300px;
+  background-color: #fff;
+  border: 1px solid rgba(18, 18, 18, 0.0509803922);
+  z-index: 100;
+}
+.aae--search-filter .date-container.active .date-dropdown,
+.aae--search-filter .category-container.active .category-dropdown {
+  display: block;
+}
+.aae--search-filter .preset-options,
+.aae--search-filter .category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.aae--search-filter .preset-options li,
+.aae--search-filter .category-list li {
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.aae--search-filter .preset-options li.selected,
+.aae--search-filter .category-list li.selected {
+  background: #ddd;
+}
+.aae--search-filter .date-buttons,
+.aae--search-filter .category-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 15px;
+}
+.aae--search-filter .custom-range {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 15px;
+}
+.aae--search-filter .custom-range .wrap {
+  display: grid;
+}
+.aae--search-filter .custom-range label {
+  font-size: 14px;
+}
+.aae--search-filter .custom-range input[type=date] {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.active-filter .wcf-search-form {
+  overflow: unset;
+}
+
+.selected-category-display .category-pill {
+  font-size: 14px;
+}
+/*# sourceMappingURL=search.css.map */

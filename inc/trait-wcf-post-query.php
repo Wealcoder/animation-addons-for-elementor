@@ -95,7 +95,9 @@ trait WCF_Post_Query_Trait {
 							'top_post_week',
 							'most_popular',
 							'trending_score',
-							'most_share_count'
+							'most_share_count',
+							'last_12_hours',
+							'last_24_hours'
 						]
 				],
 			]
@@ -249,11 +251,11 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT2,
 				'default'   => [],
 				'multiple'  => true,
-				'options'   => $this->get_taxonomy_terms('category'), // Fetch categories dynamically
+				'options'   => $this->get_taxonomy_terms( 'category' ), // Fetch categories dynamically
 				'condition' => [ 'post_type' => [ 'post' ], 'include' => 'terms' ],
 			]
 		);
-		
+
 		$this->add_control(
 			'post_tags',
 			[
@@ -261,7 +263,7 @@ trait WCF_Post_Query_Trait {
 				'type'      => Controls_Manager::SELECT2,
 				'default'   => [],
 				'multiple'  => true,
-				'options'   => $this->get_taxonomy_terms('post_tag'), // Fetch tags dynamically
+				'options'   => $this->get_taxonomy_terms( 'post_tag' ), // Fetch tags dynamically
 				'condition' => [ 'post_type' => [ 'post' ], 'include' => 'terms' ],
 			]
 		);
@@ -412,7 +414,7 @@ trait WCF_Post_Query_Trait {
 		if ( ! empty( $this->get_settings( 'include' ) ) ) {
 			if ( in_array( 'terms', $this->get_settings( 'include' ) ) ) {
 				$query_args['tax_query'] = [];
-				
+
 				if ( ! empty( $this->get_settings( 'include_term_ids' ) ) ) {
 					$terms = [];
 
@@ -437,7 +439,7 @@ trait WCF_Post_Query_Trait {
 					}
 				}
 				//post_categories
-				if ( ! empty( $this->get_settings( 'post_categories' ) ) ) {					
+				if ( ! empty( $this->get_settings( 'post_categories' ) ) ) {
 					// Add category filter using term names
 					$query_args['tax_query'][] = [
 						'taxonomy' => 'category',
@@ -445,7 +447,7 @@ trait WCF_Post_Query_Trait {
 						'terms'    => $this->get_settings( 'post_categories' )
 					];
 				}
-				if ( ! empty( $this->get_settings( 'post_tags' ) ) ) {	
+				if ( ! empty( $this->get_settings( 'post_tags' ) ) ) {
 					// Add tag filter using term names
 					$query_args['tax_query'][] = [
 						'taxonomy' => 'post_tag',
@@ -453,7 +455,7 @@ trait WCF_Post_Query_Trait {
 						'terms'    => $this->get_settings( 'post_tags' )
 					];
 				}
-				
+
 			}
 
 			if ( ! empty( $this->get_settings( 'include_authors' ) ) ) {
@@ -511,6 +513,34 @@ trait WCF_Post_Query_Trait {
 					'value'   => 0, // Optional: Only include posts with at least 1 view
 					'compare' => '>',
 					'type'    => 'NUMERIC',
+				],
+			];
+
+			if ( isset( $query_args['ignore_sticky_posts'] ) ) {
+				unset( $query_args['ignore_sticky_posts'] );
+			}
+		}
+
+		if ( 'last_12_hours' === $this->get_settings( 'query_type' ) ) {
+			$query_args['order']      = 'DESC';
+			$query_args['date_query'] = [
+				[
+					'after'     => '-12 hours',
+					'inclusive' => true,
+				],
+			];
+
+			if ( isset( $query_args['ignore_sticky_posts'] ) ) {
+				unset( $query_args['ignore_sticky_posts'] );
+			}
+		}
+
+		if ( 'last_24_hours' === $this->get_settings( 'query_type' ) ) {
+			$query_args['order']      = 'DESC';
+			$query_args['date_query'] = [
+				[
+					'after'     => '-24 hours',
+					'inclusive' => true,
 				],
 			];
 
@@ -630,16 +660,16 @@ trait WCF_Post_Query_Trait {
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ) {
 			// Retrieve and decode the cookie data
 			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( sanitize_text_field( wp_unslash( $_COOKIE['aae_visited_posts'] ) ), true ) : [];
-		
+
 			// Check if the decoded data is an array
 			if ( is_array( $visited_posts ) ) {
 				$post_type = $this->get_settings( 'post_type' );
-		
+
 				// Check if the post type exists in the visited posts array and is an array
 				if ( isset( $visited_posts[ $post_type ] ) && is_array( $visited_posts[ $post_type ] ) ) {
 					// Sanitize each post ID to ensure they are positive integers
 					$post_ids = array_map( 'absint', $visited_posts[ $post_type ] );
-		
+
 					// If there are valid post IDs, assign them to the query arguments
 					if ( ! empty( $post_ids ) ) {
 						$query_args['post__in'] = $post_ids;
@@ -647,7 +677,7 @@ trait WCF_Post_Query_Trait {
 				}
 			}
 		}
-		
+
 		if ( $this->get_settings( 'post_layout' ) && ( $this->get_settings( 'post_layout' ) == 'layout-gallery' || $this->get_settings( 'post_layout' ) == 'layout-gallery-2' ) ) {
 			$query_args['tax_query'][] = [
 				'taxonomy' => 'post_format',
@@ -673,7 +703,7 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
-		
+
 		return $query_args;
 	}
 

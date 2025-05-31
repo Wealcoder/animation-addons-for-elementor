@@ -412,3 +412,36 @@ if(!function_exists('aaeaddon_format_number_count')) {
 		return $count; // Less than 1000, return the count as is
 	}
 }
+
+// Search Filtering
+function filter_search_by_date_and_category( $query ) {
+	if ( $query->is_search() && $query->is_main_query() && ! is_admin() ) {
+
+		// ==== Date range filter ====
+		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( $_GET['from_date'] ) : '';
+		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( $_GET['to_date'] ) : '';
+
+		if ( $from_date || $to_date ) {
+			$date_query = [ 'inclusive' => true ];
+			if ( $from_date ) {
+				$date_query['after'] = $from_date;
+			}
+			if ( $to_date ) {
+				$date_query['before'] = $to_date;
+			}
+			$query->set( 'date_query', [ $date_query ] );
+		}
+
+		// ==== Category filter ====
+		if ( isset( $_GET['category'] ) && is_array( $_GET['category'] ) ) {
+			$categories = array_filter( array_map( 'intval', $_GET['category'] ) );
+
+			if ( ! empty( $categories ) ) {
+				$query->set( 'category__in', $categories );
+			}
+		}
+	}
+}
+
+add_action( 'pre_get_posts', 'filter_search_by_date_and_category' );
+

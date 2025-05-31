@@ -574,7 +574,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
 					],
-					'mega-menu'           => [
+					'mega-menu'          => [
 						'label'        => 'Mega Menu',
 						'location'     => [
 							'cTab' => 'all'
@@ -842,7 +842,22 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.'
 					],
-					'posts-read-later'         => [
+					'post-timeline'      => [
+						'label'        => 'Posts Timeline',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Posts-Pro",
+						'demo_url'     => 'https://animation-addons.com/#',
+						'doc_url'      => 'https://animation-addons.com/docs/#',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
+					'posts-read-later'   => [
 						'label'        => 'Posts Read Later',
 						'is_active'    => false,
 						'location'     => [
@@ -1081,6 +1096,21 @@ $config = [
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-no-result/',
 						'youtube_url'  => '',
 						'description'  => 'Customize the "no results" message with rich text, media, or links for better user direction.'
+					],
+					'live-events'        => [
+						'label'        => 'Live Events',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Search-No-Result",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
 					],
 				]
 			],
