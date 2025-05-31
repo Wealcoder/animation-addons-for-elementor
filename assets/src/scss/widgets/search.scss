@@ -236,6 +236,7 @@
 
   button {
     cursor: pointer;
+    padding: 0;
   }
 
   .date-container,
@@ -293,6 +294,7 @@
 
   .date-buttons,
   .category-footer {
+    gap: 15px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

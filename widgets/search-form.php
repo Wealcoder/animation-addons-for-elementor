@@ -297,6 +297,19 @@ class Search_Form extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'autocomplete',
+			[
+				'label'   => esc_html__( 'Auto Suggest', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'off',
+				'options' => [
+					'off' => esc_html__( 'No', 'animation-addons-for-elementor' ),
+					'on'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+
 		//button
 		$this->add_control(
 			'heading_button_content',
@@ -1734,8 +1747,8 @@ class Search_Form extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'dd_date_typo',
-				'selector' => '{{WRAPPER}} .custom-range input[type=date]',
+				'name'      => 'dd_date_typo',
+				'selector'  => '{{WRAPPER}} .custom-range input[type=date]',
 				'condition' => [ 'show_date_filter' => 'yes' ],
 			]
 		);
@@ -1749,7 +1762,7 @@ class Search_Form extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .custom-range' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'condition' => [ 'show_date_filter' => 'yes' ],
+				'condition'  => [ 'show_date_filter' => 'yes' ],
 			]
 		);
 
@@ -1779,8 +1792,8 @@ class Search_Form extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
-				'name'     => 'date_label_typo',
-				'selector' => '{{WRAPPER}} .custom-range label',
+				'name'      => 'date_label_typo',
+				'selector'  => '{{WRAPPER}} .custom-range label',
 				'condition' => [ 'show_date_filter' => 'yes' ],
 			]
 		);
@@ -1794,7 +1807,7 @@ class Search_Form extends Widget_Base {
 				'selectors'  => [
 					'{{WRAPPER}} .custom-range label' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'condition' => [ 'show_date_filter' => 'yes' ],
+				'condition'  => [ 'show_date_filter' => 'yes' ],
 			]
 		);
 
@@ -1899,12 +1912,13 @@ class Search_Form extends Widget_Base {
 		$this->add_render_attribute(
 			'input',
 			[
-				'id'          => 'wcf-search-form-' . $this->get_id(),
-				'placeholder' => $settings['placeholder'],
-				'class'       => 'wcf-search-form__input ' . $settings['enable_ajax_search'],
-				'type'        => 'search',
-				'name'        => 's',
-				'value'       => get_search_query(),
+				'id'           => 'wcf-search-form-' . $this->get_id(),
+				'placeholder'  => $settings['placeholder'],
+				'class'        => 'wcf-search-form__input ' . $settings['enable_ajax_search'],
+				'type'         => 'search',
+				'name'         => 's',
+				'value'        => get_search_query(),
+				'autocomplete' => $settings['autocomplete'],
 			]
 		);
 

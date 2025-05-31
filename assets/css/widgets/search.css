@@ -187,6 +187,7 @@
 }
 .aae--search-filter button {
   cursor: pointer;
+  padding: 0;
 }
 .aae--search-filter .date-container,
 .aae--search-filter .category-container {
@@ -237,6 +238,7 @@
 }
 .aae--search-filter .date-buttons,
 .aae--search-filter .category-footer {
+  gap: 15px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
