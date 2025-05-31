@@ -15,15 +15,33 @@ class Ajax_Handler {
 		add_action( 'wp_ajax_nopriv_live_search', [ __CLASS__, 'handle_live_search' ] );
 	}
 
-
 	public static function handle_live_search() {
-		$keyword = isset( $_POST['keyword'] ) ? sanitize_text_field( $_POST['keyword'] ) : '';
+		$keyword    = isset( $_POST['keyword'] ) ? sanitize_text_field( $_POST['keyword'] ) : '';
+		$from_date  = isset( $_POST['from_date'] ) ? sanitize_text_field( $_POST['from_date'] ) : '';
+		$to_date    = isset( $_POST['to_date'] ) ? sanitize_text_field( $_POST['to_date'] ) : '';
+		$categories = isset( $_POST['category'] ) ? array_map( 'intval', $_POST['category'] ) : [];
 
 		$args = [
 			'post_type'      => 'post',
 			's'              => $keyword,
-			'posts_per_page' => 5,
+			'posts_per_page' => 10,
 		];
+
+		// Apply date filter if both dates provided
+		if ( ! empty( $from_date ) && ! empty( $to_date ) ) {
+			$args['date_query'] = [
+				[
+					'after'     => $from_date,
+					'before'    => $to_date,
+					'inclusive' => true,
+				],
+			];
+		}
+
+		//Apply category filter only if category array is not empty
+		if ( ! empty( $categories ) && ! in_array( '0', $categories ) ) {
+			$args['category__in'] = array_map( 'intval', $categories );
+		}
 
 		$query = new WP_Query( $args );
 
@@ -35,15 +53,15 @@ class Ajax_Handler {
 				$thumb = get_the_post_thumbnail_url( get_the_ID(), 'full' );
 				$date  = get_the_date();
 				?>
-					<div class="search-item">
-						<div class="thumb">
-							<img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_html( $title ); ?>">
-						</div>
-						<div class="content">
-							<a class="title" href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( $title ); ?></a>
-							<div class="date"><?php echo esc_html( $date ); ?></div>
-						</div>
-					</div>
+                <div class="search-item">
+                    <div class="thumb">
+                        <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_html( $title ); ?>">
+                    </div>
+                    <div class="content">
+                        <a class="title" href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( $title ); ?></a>
+                        <div class="date"><?php echo esc_html( $date ); ?></div>
+                    </div>
+                </div>
 				<?php
 			}
 			wp_reset_postdata();
@@ -53,7 +71,6 @@ class Ajax_Handler {
 
 		wp_die();
 	}
-
 
 }
 

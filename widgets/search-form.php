@@ -84,7 +84,7 @@ class Search_Form extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'aae--search', 'wcf-addons-core' ];
+		return [ 'aae--search' ];
 	}
 
 	public function get_keywords() {
@@ -194,6 +194,12 @@ class Search_Form extends Widget_Base {
 
 		//default theme styles
 		$this->register_default_theme_styles();
+
+		// Search Filter
+		$this->style_search_filter();
+
+		// Search Filter Dropdown
+		$this->style_search_filter_dropdown();
 
 		// Ajax Search
 		$this->style_ajax_search_controls();
@@ -1499,6 +1505,367 @@ class Search_Form extends Widget_Base {
 			]
 		);
 
+		// No Result
+		$this->add_control(
+			'no_result_heading',
+			[
+				'label'     => esc_html__( 'No Result', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'no_result_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .search-no-result' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'no_result_typo',
+				'selector' => '{{WRAPPER}} .search-no-result',
+			]
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function style_search_filter() {
+		$this->start_controls_section(
+			'sec_search_filter',
+			[
+				'label'     => esc_html__( 'Search Filter', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [ 'show_search_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'filter_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min' => 0,
+						'max' => 200,
+					],
+					'%'  => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--search-filter' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'filter_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .category-toggle, {{WRAPPER}} .date-toggle' => 'fill: {{VALUE}}; color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'filter_typo',
+				'selector' => '{{WRAPPER}} .category-toggle, {{WRAPPER}} .date-toggle',
+			]
+		);
+
+		$this->add_responsive_control(
+			'filter_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .category-toggle, {{WRAPPER}} .date-toggle' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'filter_margin',
+			[
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .aae--search-filter' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator'  => 'before',
+			]
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function style_search_filter_dropdown() {
+		$this->start_controls_section(
+			'sec_filter_dropdown',
+			[
+				'label'     => esc_html__( 'Filter Dropdown', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [ 'show_search_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'filter_dd_bg',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .category-dropdown, {{WRAPPER}} .date-dropdown',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'filter_dd_border',
+				'selector' => '{{WRAPPER}} .category-dropdown, {{WRAPPER}} .date-dropdown',
+			]
+		);
+
+		$this->add_control(
+			'filter_dd_b_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .category-dropdown, {{WRAPPER}} .date-dropdown' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'filter_dd_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .category-dropdown, {{WRAPPER}} .date-dropdown' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// Text
+		$this->add_control(
+			'dd_text_heading',
+			[
+				'label'     => esc_html__( 'Text', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'dd_text_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .category-list li, {{WRAPPER}} .preset-options li' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'dd_text_typo',
+				'selector' => '{{WRAPPER}} .category-list li, {{WRAPPER}} .preset-options li',
+			]
+		);
+
+		$this->add_responsive_control(
+			'dd_text_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .category-list li, {{WRAPPER}} .preset-options li' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// Date Range
+		$this->add_control(
+			'dd_date_heading',
+			[
+				'label'     => esc_html__( 'Date Range', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'dd_date_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .custom-range input[type=date]' => 'color: {{VALUE}}',
+				],
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'dd_date_typo',
+				'selector' => '{{WRAPPER}} .custom-range input[type=date]',
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'dd_date_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .custom-range' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		// Date Range Label
+		$this->add_control(
+			'date_label_heading',
+			[
+				'label'     => esc_html__( 'Date Range Label', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'date_label_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .custom-range label' => 'color: {{VALUE}}',
+				],
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'date_label_typo',
+				'selector' => '{{WRAPPER}} .custom-range label',
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'date_label_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .custom-range label' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [ 'show_date_filter' => 'yes' ],
+			]
+		);
+
+		// Clear and Apply
+		$this->add_control(
+			'clear_apply_heading',
+			[
+				'label'     => esc_html__( 'Clear & Apply', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'apply_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .category-footer button, {{WRAPPER}} .date-buttons button' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'apply_typo',
+				'selector' => '{{WRAPPER}} .category-footer button, {{WRAPPER}} .date-buttons button',
+			]
+		);
+
+		$this->add_responsive_control(
+			'apply_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors'  => [
+					'{{WRAPPER}} .category-footer button, {{WRAPPER}} .date-buttons button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'clear_apply_align',
+			[
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => [
+					'start'  => [
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-center',
+					],
+					'end'    => [
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-right',
+					],
+				],
+				'toggle'    => true,
+				'selectors' => [
+					'{{WRAPPER}} .category-footer, {{WRAPPER}} .date-buttons' => 'justify-content: {{VALUE}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -1574,7 +1941,8 @@ class Search_Form extends Widget_Base {
 
 	protected function render_search_preset_one( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>"
+             data-enable-ajax-search="<?php echo esc_attr( $settings['enable_ajax_search'] ); ?>">
 			<?php $this->render_search_form( $settings ); ?>
             <div class="aae--live-search-results"></div>
         </div>
@@ -1670,14 +2038,16 @@ class Search_Form extends Widget_Base {
                             <li data-preset="week">This week</li>
                             <li data-preset="month">This month</li>
                         </ul>
-
                         <div class="custom-range">
-                            <label>From</label>
-                            <input type="date" name="from_date" class="from-date"/>
-                            <label>To</label>
-                            <input type="date" name="to_date" class="to-date"/>
+                            <div class="wrap">
+                                <label>From</label>
+                                <input type="date" name="from_date" class="from-date"/>
+                            </div>
+                            <div class="wrap">
+                                <label>To</label>
+                                <input type="date" name="to_date" class="to-date"/>
+                            </div>
                         </div>
-
                         <div class="date-buttons">
                             <button type="button" class="clear-btn">Clear</button>
                             <button type="button" class="apply-btn">Apply</button>
@@ -1703,6 +2073,10 @@ class Search_Form extends Widget_Base {
                                 </li>
 							<?php endforeach; ?>
                         </ul>
+                        <div class="category-footer">
+                            <button class="clear-cat-btn">Clear</button>
+                            <button class="apply-cat-btn">Apply</button>
+                        </div>
                     </div>
                     <input type="hidden" name="category[]" id="selectedCategory" value=""/>
                 </div>

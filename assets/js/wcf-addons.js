@@ -94,24 +94,6 @@
 				$element: $scope
 			});
 		});
-		var Search = function Search($scope) {
-			var searchWrapper = $('.search--wrapper', $scope);
-			var toggle_open = $('.toggle--open', $scope);
-			var toggle_close = $('.toggle--close', $scope);
-			toggle_open.on('click', function(e) {
-				searchWrapper.addClass('search-visible');
-			});
-			toggle_close.on('click', function(e) {
-				searchWrapper.removeClass('search-visible');
-			});
-			$("input", $scope).focus(function() {
-				$(".wcf-search-form", $scope).addClass('wcf-search-form--focus');
-			});
-			$("input", $scope).focusout(function() {
-				$(".wcf-search-form", $scope).removeClass('wcf-search-form--focus');
-			});
-		};
-		elementorFrontend.hooks.addAction('frontend/element_ready/wcf--blog--search--form.default', Search);
 	});
 })(jQuery);
 //# sourceMappingURL=wcf-addons.js.map

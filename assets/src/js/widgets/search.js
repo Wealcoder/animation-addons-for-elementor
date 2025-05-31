@@ -3,6 +3,31 @@
      * @param $scope The Widget wrapper element as a jQuery element
      */
     const WcfAjaxSearch = function ($scope) {
+        const searchWrapper = $('.search--wrapper', $scope);
+        const toggle_open = $('.toggle--open', $scope);
+        const toggle_close = $('.toggle--close', $scope);
+
+        toggle_open.on('click', function (e) {
+            searchWrapper.addClass('search-visible');
+        });
+
+        toggle_close.on('click', function (e) {
+            searchWrapper.removeClass('search-visible');
+            $('.selected-category-display').html('');
+            $dateContainer.find('.preset-options li').removeClass('selected');
+            $categoryListItems.removeClass('selected');
+            $fromDate.val('');
+            $toDate.val('');
+        });
+
+        $("input", $scope).focus(function () {
+            $(".wcf-search-form", $scope).addClass('wcf-search-form--focus');
+        });
+
+        $("input", $scope).focusout(function () {
+            $(".wcf-search-form", $scope).removeClass('wcf-search-form--focus');
+        });
+
         // Search Filter
         const $dateContainer = $scope.find('.date-container');
         const $categoryContainer = $scope.find('.category-container');
@@ -12,6 +37,7 @@
             e.preventDefault();
             $scope.find('.date-container').not($dateContainer).removeClass('active');
             $dateContainer.toggleClass('active');
+            $categoryContainer.removeClass('active');
         });
 
         // ==== Date Presets ====
@@ -22,6 +48,7 @@
             const preset = $(this).data('preset');
             const today = new Date();
             let from, to;
+            $(this).toggleClass('selected').siblings().removeClass('selected');
 
             switch (preset) {
                 case 'today':
@@ -49,10 +76,12 @@
         $dateContainer.find('.clear-btn').on('click', function () {
             $fromDate.val('');
             $toDate.val('');
+            $dateContainer.find('.preset-options li').removeClass('selected');
         });
 
         $dateContainer.find('.apply-btn').on('click', function () {
             $dateContainer.removeClass('active');
+            handleSearch();
         });
 
         // ==== Category Dropdown ====
@@ -65,6 +94,7 @@
             e.preventDefault();
             $scope.find('.category-container').not($categoryContainer).removeClass('active');
             $categoryContainer.toggleClass('active');
+            $dateContainer.removeClass('active');
         });
 
         const selectedCategories = [];
@@ -108,11 +138,33 @@
                     selectedCategories.map(c => `<span class="category-pill">${c.label}</span>`).join(', ')
                 );
             } else {
-                $display.text('All Categories');
+                $display.html(`<span class="category-pill">All Categories</span>`);
             }
-
-            $categoryContainer.removeClass('active');
         });
+
+        // ==== Category Clear & Apply Buttons ====
+        $categoryContainer.find('.clear-cat-btn').on('click', function (e) {
+            e.preventDefault();
+            selectedCategories.length = 0;
+            $categoryListItems.removeClass('selected');
+
+            // Re-add default "All Categories"
+            const $allItem = $categoryListItems.filter('[data-value=""]');
+            $allItem.addClass('selected');
+
+            // Remove all hidden inputs
+            $categoryContainer.find('input[name="category[]"]').remove();
+
+            // Update display
+            $scope.find('.selected-category-display').html(`<span class="category-pill">All Categories</span>`);
+        });
+
+        $categoryContainer.find('.apply-cat-btn').on('click', function (e) {
+            e.preventDefault();
+            $categoryContainer.removeClass('active');
+            handleSearch();
+        });
+
 
         // ==== Close dropdowns if clicked outside ====
         $(document).on('click.advancedSearchOutside', function (e) {
@@ -139,21 +191,41 @@
         }
 
         function handleSearch() {
-            const keyword = $inputField.val().trim();
+            if (!$inputField.length) return;
 
-            if (keyword.length < 1) {
+            const keyword = $inputField.val().trim();
+            const fromDate = $scope.find('.from-date').val();
+            const toDate = $scope.find('.to-date').val();
+            const categoryInputs = $scope.find('input[name="category[]"]');
+
+            // Don't search only if EVERYTHING is empty
+            if (!keyword && !fromDate && !toDate && categoryInputs.length === 0) {
                 $resultBox.hide();
                 return;
+            }
+
+            const data = {
+                action: 'live_search',
+                keyword: keyword
+            };
+
+            if (fromDate && toDate) {
+                data.from_date = fromDate;
+                data.to_date = toDate;
+            }
+
+            if (categoryInputs.length > 0) {
+                data.category = categoryInputs.map(function () {
+                    return $(this).val();
+                }).get();
             }
 
             $.ajax({
                 url: WCF_ADDONS_JS.ajaxUrl,
                 type: 'POST',
-                data: {
-                    action: 'live_search',
-                    keyword: keyword
-                },
+                data: data,
                 success: function (response) {
+                    console.log(response)
                     if ($searchWrapper.length) {
                         $searchWrapper.addClass('ajax-fs-wrap');
                     }
@@ -175,6 +247,9 @@
 
         // Attach debounce to keyup
         $inputField.on('keyup input', debounce(handleSearch, 500));
+        // if ($searchWrapper.data('enable-ajax-search') === 'search-field') {
+        //     $inputField.on('keyup input', debounce(handleSearch, 500));
+        // }
     };
 
     // Hook into Elementor

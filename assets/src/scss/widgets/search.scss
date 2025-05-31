@@ -144,6 +144,7 @@
       z-index: 99;
       display: flex;
       align-items: center;
+      flex-direction: column;
       justify-content: center;
       opacity: 0;
       visibility: hidden;
@@ -151,7 +152,13 @@
 
       &.ajax-fs-wrap {
         padding-top: 15px;
+        flex-direction: unset;
         align-items: flex-start;
+
+        .selected-category-display {
+          position: absolute;
+          top: 70px;
+        }
       }
     }
 
@@ -225,6 +232,11 @@
   gap: 20px;
   display: flex;
   align-items: center;
+  margin-right: 15px;
+
+  button {
+    cursor: pointer;
+  }
 
   .date-container,
   .category-container {
@@ -248,12 +260,12 @@
   .category-dropdown {
     display: none;
     position: absolute;
-    top: 100%;
+    top: 40px;
+    right: 0;
     width: 300px;
     background-color: #fff;
     border: 1px solid #1212120D;
-    padding: 15px;
-    z-index: 10;
+    z-index: 100;
   }
 
   .date-container.active .date-dropdown,
@@ -265,21 +277,37 @@
   .category-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 10px 0;
+    margin: 0;
   }
 
   .preset-options li,
   .category-list li {
-    padding: 8px 0;
+    padding: 8px 15px;
     cursor: pointer;
     font-size: 14px;
+
+    &.selected {
+      background: #ddd;
+    }
+  }
+
+  .date-buttons,
+  .category-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 15px;
   }
 
   .custom-range {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-bottom: 10px;
+    padding: 15px;
+
+    .wrap {
+      display: grid;
+    }
   }
 
   .custom-range label {
@@ -292,34 +320,19 @@
     border-radius: 4px;
   }
 
-  .date-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .date-buttons button {
-    flex: 1;
-    padding: 6px 0;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-  }
-
-  .date-buttons .clear-btn {
-    background-color: #444;
-  }
-
-  .date-buttons .apply-btn {
-    background-color: #007bff;
-  }
-
 }
 
 .active-filter {
   .wcf-search-form {
     overflow: unset;
   }
+
+}
+
+.selected-category-display {
+  .category-pill {
+    font-size: 14px;
+  }
+
 
 }

@@ -1067,21 +1067,6 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Add a search form widget for users to efficiently locate content across your website.'
 					],
-					'advanced-search'    => [
-						'label'        => 'Advanced Search',
-						'location'     => [
-							'cTab' => 'all'
-						],
-						'is_active'    => false,
-						'is_pro'       => true,
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Search-Form",
-						'demo_url'     => '',
-						'doc_url'      => '',
-						'youtube_url'  => '',
-						'description'  => ''
-					],
 					'search-query'       => [
 						'label'        => 'Search Query',
 						'location'     => [
