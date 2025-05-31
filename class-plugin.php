@@ -445,6 +445,13 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
+			'author-posts'        => [
+				'handler' => 'wcf--author-posts',
+				'src'     => 'widgets/author-posts.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 			'meta-info'        => [
 				'handler' => 'wcf--meta-info',
 				'src'     => 'widgets/meta-info.min.css',
@@ -612,7 +619,8 @@ class Plugin {
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';	
+		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
+		include_once  WCF_ADDONS_PATH . 'inc/author-posts.php';	
 		//extensions
 		$this->register_extensions();
 	}
