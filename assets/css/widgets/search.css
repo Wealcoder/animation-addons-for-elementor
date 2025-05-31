@@ -35,6 +35,7 @@
   fill: #fff;
   min-width: 60px;
   transition: 0.3s;
+  cursor: pointer;
 }
 .elementor-widget-wcf--blog--search--form .wcf-search-form button:focus,
 .elementor-widget-wcf--blog--search--form .wcf-search-form input[type=search]:focus {
