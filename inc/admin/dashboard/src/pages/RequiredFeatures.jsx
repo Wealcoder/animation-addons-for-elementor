@@ -15,6 +15,7 @@ const RequiredFeatures = () => {
   const [currenTemplate, setCurrenTemplate] = useState({});
   const [selectedPlugins, setSelectedPlugins] = useState([]);
   const [selectedTheme, setSelectedTheme] = useState("");
+  const [allowAttachment, setAllowAttachment] = useState(true);
   const [loading, setIsLoading] = useState(true);
 
   const url = new URL(window.location.href);
@@ -34,6 +35,8 @@ const RequiredFeatures = () => {
     if (selectedTheme) {
       url.searchParams.set("theme", selectedTheme);
     }
+    url.searchParams.set("attachment", allowAttachment);
+
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -249,6 +252,19 @@ const RequiredFeatures = () => {
                   ""
                 )}
               </Accordion>
+            </div>
+            <div className="flex items-center space-x-2.5 mt-6">
+              <Checkbox
+                id={`demo-import-attachment`}
+                checked={allowAttachment}
+                onCheckedChange={setAllowAttachment}
+              />
+              <label
+                htmlFor={`demo-import-attachment`}
+                className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Import demo with attachments (recommended)
+              </label>
             </div>
           </div>
           <div className="px-8 pt-4 pb-6 flex justify-end items-center gap-3">
