@@ -628,7 +628,7 @@ class Plugin {
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
-		include_once  WCF_ADDONS_PATH . 'inc/author-settings.php';
+
 		//extensions
 		$this->register_extensions();
 	}

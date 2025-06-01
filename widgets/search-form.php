@@ -402,7 +402,7 @@ class Search_Form extends Widget_Base {
 		);
 
 		$this->add_control(
-			'input_text_color',
+			'input_title_color',
 			[
 				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
@@ -997,7 +997,7 @@ class Search_Form extends Widget_Base {
 		);
 
 		$this->add_control(
-			'title_color',
+			'input_text_color',
 			[
 				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
