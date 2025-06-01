@@ -97,7 +97,7 @@ class Contact_Form_7 extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'aae--contact-form' ];
+		return [ 'wcf-addons-core' ];
 	}
 	public function contactform_forms() {
 		$formlist   = array();

@@ -1,0 +1,75 @@
+
+.wcf--author-posts-box{
+    min-width: 410px;
+    background-color: #FAFAFA;
+    padding: 40px 30px;
+}
+.wcf--author-posts-image{
+    margin-bottom: 10px;
+    img{
+        height:70px;
+        border-radius:50%;
+        object-fit:cover
+    }
+
+}
+.wcf--author-posts-name{
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-designation{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-email,.wcf--author-posts-phone{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 5px;
+    text-transform: lowercase;
+}
+.wcf--author-posts-phone{
+    margin-bottom: 0;
+}
+.wcf--author-posts-social-title{
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    text-transform: capitalize;
+}
+.wcf--author-posts-social-icons {
+    display: flex;
+    gap: 30px;
+}
+.wcf--social-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    a{
+        line-height: 0;
+    }
+}
+
+/* post layout style  */
+
+.wcf--author-posts {
+    display: grid;
+    grid-template-columns: 410px 1fr;
+}
+.wcf--author-posts__posts{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-inline-start: 1px solid #1212121A;
+}
+.wcf--author-posts__posts__item {
+    border-style: solid;
+    border-width: 0px 1px 1px 0px;
+    border-color: #1212121A;
+    padding: 0px 25px 20px 25px;
+    margin: 0px 0px 0px 0px;
+    text-align: start;
+}

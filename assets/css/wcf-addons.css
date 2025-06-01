@@ -341,3 +341,11 @@
 .wcf--image {
   line-height: 0;
 }
+
+.post-filter-result {
+  font-size: 20px;
+}
+.post-filter-result.cat {
+  margin-top: 15px;
+  margin-bottom: 12px;
+}

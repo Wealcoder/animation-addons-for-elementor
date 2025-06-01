@@ -16,6 +16,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.2.0
  */
 class Plugin {
+	/**
+	 * Plugin version.
+	 *
+	 * Holds the current plugin version.
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var string Plugin version.
+	 */
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	
 	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
@@ -452,6 +462,13 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
+			'author-posts'        => [
+				'handler' => 'wcf--author-posts',
+				'src'     => 'widgets/author-posts.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 			'meta-info'        => [
 				'handler' => 'wcf--meta-info',
 				'src'     => 'widgets/meta-info.min.css',
@@ -602,11 +619,9 @@ class Plugin {
 
 		require_once WCF_ADDONS_PATH . 'config.php';
 
-		if ( is_admin() ) {
+		if ( is_admin() ) {		
 			
-			// if (  'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
-				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-			// }
+			require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';			
 
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
@@ -619,7 +634,8 @@ class Plugin {
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';	
+		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
+		include_once  WCF_ADDONS_PATH . 'inc/author-posts.php';	
 		//extensions
 		$this->register_extensions();
 	}

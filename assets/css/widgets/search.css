@@ -35,6 +35,7 @@
   fill: #fff;
   min-width: 60px;
   transition: 0.3s;
+  cursor: pointer;
 }
 .elementor-widget-wcf--blog--search--form .wcf-search-form button:focus,
 .elementor-widget-wcf--blog--search--form .wcf-search-form input[type=search]:focus {
@@ -187,6 +188,7 @@
 }
 .aae--search-filter button {
   cursor: pointer;
+  padding: 0;
 }
 .aae--search-filter .date-container,
 .aae--search-filter .category-container {
@@ -237,6 +239,7 @@
 }
 .aae--search-filter .date-buttons,
 .aae--search-filter .category-footer {
+  gap: 15px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

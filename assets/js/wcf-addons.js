@@ -88,9 +88,7 @@
         return finish_content;
       }
     });
-
-    //elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--contact-form-7.default`, contact_form_7);
-
+    elementorFrontend.hooks.addAction("frontend/element_ready/wcf--contact-form-7.default", contact_form_7);
     elementorFrontend.hooks.addAction('frontend/element_ready/wcf--countdown.default', function ($scope) {
       elementorFrontend.elementsHandler.addHandler(Countdown, {
         $element: $scope
