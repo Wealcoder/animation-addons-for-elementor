@@ -18,6 +18,7 @@ const DemoImporting = () => {
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
   const theme = url.searchParams.get("theme");
+  const attachment = url.searchParams.get("attachment");
 
   const changeRoute = (value, meta) => {
     const pageQuery = url.searchParams.get("page");
@@ -29,6 +30,7 @@ const DemoImporting = () => {
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
     if (meta.theme) url.searchParams.set("theme", meta.theme);
+    url.searchParams.set("attachment", meta.attachment);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -50,9 +52,6 @@ const DemoImporting = () => {
     } else {
       runImport(currenTemplate);
     }
-
-    // const interval = setInterval(fetchHeartbeatData, 15000);
-    // return () => clearInterval(interval);
   }, [currenTemplate]);
 
   const getTemplate = useCallback(
@@ -84,27 +83,6 @@ const DemoImporting = () => {
     []
   );
 
-  const fetchHeartbeatData = async () => {
-    try {
-      const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          action: "aaeaddon_heartbeat_data",
-          nonce: WCF_ADDONS_ADMIN.nonce,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const jsonData = await response.json();
-      if (jsonData.msg) {
-        setMsg(jsonData.msg);
-      } else {
-      }
-    } catch (err) {}
-  };
-
   const runImport = useCallback(
     debounceFn(async (tpldata) => {
       try {
@@ -121,15 +99,16 @@ const DemoImporting = () => {
         const formData = new URLSearchParams();
 
         if (tpldata?.next_step && tpldata.next_step == "download-xml-file") {
-          formData.append("action", "aaeaddon_upload_manual_import_file"); // Custom action name
+          formData.append("action", "aaeaddon_upload_manual_import_file");
         } else {
-          formData.append("action", "aaeaddon_template_installer"); // Custom action name
+          formData.append("action", "aaeaddon_template_installer");
         }
 
-        formData.append("template_data", JSON.stringify(tpldata)); // Optional custom data
-        formData.append("nonce", WCF_ADDONS_ADMIN.nonce); // Assuming nonce is available in the object
+        formData.append("template_data", JSON.stringify(tpldata));
+        formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
         if (theme) formData.append("theme_slug", theme);
+        formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",
           headers: {
@@ -146,11 +125,11 @@ const DemoImporting = () => {
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
 
-          if ("undefined" !== typeof data.status && "newAJAX" === data.status) { 
-            if(data?.state && data.state !==''){
+          if ("undefined" !== typeof data.status && "newAJAX" === data.status) {
+            if (data?.state && data.state !== "") {
               setMsg(data.state);
-            }         
-           
+            }
+
             runImport(tpldata);
           }
 
@@ -168,7 +147,7 @@ const DemoImporting = () => {
             if (completed === true) {
               changeCompleteRoute("complete-import");
             } else if (data.template.next_step === "fail") {
-              changeRoute("fail-import", { plugins, theme });
+              changeRoute("fail-import", { plugins, theme, attachment });
             } else {
               runImport(data.template);
 
