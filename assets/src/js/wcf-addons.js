@@ -8,21 +8,7 @@
     // Make sure you run this code under Elementor.
     $(window).on('elementor/frontend/init', function () {
 
-        const Modules = elementorModules.frontend.handlers.Base;
-
-        const contact_form_7 = function ($scope) {
-            const submit_btn = $('.wpcf7-submit', $scope);
-            let classes = submit_btn.attr('class');
-            classes += ' wcf-btn-default ' + $('.wcf--form-wrapper', $scope).attr('btn-hover');
-
-            submit_btn.replaceWith(function () {
-                return $('<button/>', {
-                    html: $('.btn-icon').html() + submit_btn.attr('value'),
-                    class: classes,
-                    type: 'submit'
-                });
-            });
-        };
+        const Modules = elementorModules.frontend.handlers.Base;       
 
         const Countdown = Modules.extend({
             bindEvents: function bindEvents() {
@@ -102,8 +88,6 @@
             }
 
         });
-
-        elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--contact-form-7.default`, contact_form_7);
 
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--countdown.default', function ($scope) {
             elementorFrontend.elementsHandler.addHandler(Countdown, {

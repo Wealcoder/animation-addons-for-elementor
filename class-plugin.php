@@ -298,6 +298,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'contact-form-7'             => [
+				'handler' => 'aae--contact-form',
+				'src'     => 'widgets/contact-form.min.js',
+				'dep'     => [ 'jquery' ],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
