@@ -5,7 +5,6 @@
      * @param $ The jQuery alias
      */
     const WcfProgressbar = function ($scope, $) {
-
         const progressbarWrap = $('.wcf__progressbar ', $scope);
         const progressbar = progressbarWrap.find('.progressbar');
         const settings = progressbarWrap.data('settings');

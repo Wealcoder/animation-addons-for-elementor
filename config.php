@@ -582,7 +582,7 @@ $config = [
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'is_upcoming'  => true,
+						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Nav-Menu",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu',
 						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/nav-menu/',
@@ -1598,20 +1598,7 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
-					'mega-menu'        => [
-						'label'        => 'Mega Menu',
-						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
-						'icon'         => "wcf-icon-Mega-Menu",
-						'is_active'    => false,
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'demo_url'     => '',
-						'doc_url'      => '',
-						'youtube_url'  => '',
-					],
+					
 					'restrict-content' => [
 						'label'        => 'Content Protection',
 						'is_pro'       => true,

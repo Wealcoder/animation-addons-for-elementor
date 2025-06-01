@@ -27,7 +27,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.3.1' );
+	define( 'WCF_ADDONS_VERSION', '2.3.2' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**

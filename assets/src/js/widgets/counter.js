@@ -4,9 +4,7 @@
      * @param $ The jQuery alias
      */
     const WcfCounter = function ($scope, $) {
-
         const $counter = $('.wcf--counter-number', $scope);
-
         this.intersectionObserver = elementorModules.utils.Scroll.scrollObserver({
             callback: (event) => {
 
@@ -24,9 +22,7 @@
                 }
             },
         });
-
         this.intersectionObserver.observe($counter[0]);
-
     };
 
     // Make sure you run this code under Elementor.

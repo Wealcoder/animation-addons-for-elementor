@@ -12,6 +12,7 @@
 
         const contact_form_7 = function ($scope) {
             const submit_btn = $('.wpcf7-submit', $scope);
+           
             let classes = submit_btn.attr('class');
             classes += ' wcf-btn-default ' + $('.wcf--form-wrapper', $scope).attr('btn-hover');
 

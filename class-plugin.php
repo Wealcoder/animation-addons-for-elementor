@@ -16,6 +16,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.2.0
  */
 class Plugin {
+	/**
+	 * Plugin version.
+	 *
+	 * Holds the current plugin version.
+	 *
+	 * @access public
+	 * @static
+	 *
+	 * @var string Plugin version.
+	 */
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	
 	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
@@ -294,6 +304,13 @@ class Plugin {
 			'search'             => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.js',
+				'dep'     => [ 'jquery' ],
+				'version' => false,
+				'arg'     => true,
+			],
+			'contact-form-7'             => [
+				'handler' => 'aae--contact-form',
+				'src'     => 'widgets/contact-form.min.js',
 				'dep'     => [ 'jquery' ],
 				'version' => false,
 				'arg'     => true,
@@ -595,11 +612,9 @@ class Plugin {
 
 		require_once WCF_ADDONS_PATH . 'config.php';
 
-		if ( is_admin() ) {
+		if ( is_admin() ) {		
 			
-			// if (  'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
-				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-			// }
+			require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';			
 
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
