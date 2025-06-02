@@ -154,6 +154,7 @@
     };
 
     $("document").ready(function () {
+    
         let templateAddSection = $("#tmpl-elementor-add-section");
         if (0 < templateAddSection.length) {
             var oldTemplateButton = templateAddSection.html();
@@ -461,21 +462,21 @@
                     </button>
                 ` : `
                     <!-- Show premium or activation buttons based on plugin status -->
-                    ${!allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? `
+                    ${!WCF_TEMPLATE_LIBRARY?.pro_installed ? `
                         <!-- Show 'Go Premium' button if the plugin is not installed -->
                         <a href="https://animation-addons.com" class="library--action pro" target="_blank">
                             <i class="eicon-external-link-square"></i>
                             Go Premium
                         </a>
                     ` : ''}
-                    ${activePlugins.includes(pluginSlug) ? `
+                    ${WCF_TEMPLATE_LIBRARY?.pro_installed && WCF_TEMPLATE_LIBRARY?.pro_active && !WCF_TEMPLATE_LIBRARY?.config?.wcf_valid?`
                         <!-- Show 'Pro' button if the plugin is installed and active -->
-                        <button class="library--action pro">
+                        <a href="${WCF_TEMPLATE_LIBRARY.dashboard_link}" class="library--action pro" target="_blank">
                             <i class="eicon-external-link-square"></i>
-                            Pro
-                        </button>
+                            Activate License
+                        </a>
                     ` : ''}
-                    ${allPlugins.includes(pluginSlug) && !activePlugins.includes(pluginSlug) ? `
+                    ${WCF_TEMPLATE_LIBRARY?.pro_installed && !WCF_TEMPLATE_LIBRARY?.pro_active ? `
                         <!-- Show 'Activate' button if the plugin is installed but not active -->
                         <button class="library--action pro aaeplugin-activate">
                             <i class="eicon-external-link-square"></i>

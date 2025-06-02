@@ -178,11 +178,13 @@ class Plugin {
 			], WCF_ADDONS_VERSION, true );
 	
 			wp_localize_script( 'wcf-template-library', 'WCF_TEMPLATE_LIBRARY', [
-				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
-				'template_file'  => plugins_url( 'templates.json', __FILE__ ),
+				'ajaxurl'        => admin_url( 'admin-ajax.php' ),				
 				'template_types' => self::get_template_types(),
 				'nonce'          => wp_create_nonce( 'wcf-template-library' ),
-				'config' => apply_filters('wcf_addons_editor_config', [])
+				'dashboard_link'          => admin_url( 'admin.php?page=wcf_addons_settings' ),
+				'config' => apply_filters('wcf_addons_editor_config', []),
+				'pro_installed' => array_key_exists( 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins() ),
+				'pro_active' => class_exists( '\AAE_ADDONS_Plugin_Pro' ) && array_key_exists( 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins() ),
 			] );
 			
 			wp_enqueue_style(
@@ -652,6 +654,7 @@ class Plugin {
 		$all_plugins = get_plugins();
 		$plugin_slug = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		$active_plugins = get_option( 'active_plugins' );
+		$dahsboard_link = admin_url( 'admin.php?page=wcf_addons_settings' );
 		?>
         <script type="text/template" id="tmpl-wcf-templates-header">
             <div class="dialog-header dialog-lightbox-header">
@@ -731,10 +734,10 @@ class Plugin {
 	                                    <i class="eicon-external-link-square"></i>
 	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
 	                                </a>
-	                                <?php }elseif(in_array( $plugin_slug, $active_plugins )){ ?>
-										<a href="https://animation-addons.com" class="library--action pro" target="_blank">
+	                                <?php }elseif(class_exists( 'AAE_ADDONS_Plugin_Pro' ) && in_array( $plugin_slug, $active_plugins ) && get_option('aae_sc_error_status_current_support') !== 'active'){ ?>
+										<a href="<?php echo esc_url($dahsboard_link); ?>" class="library--action pro" target="_blank">
 	                                        <i class="eicon-external-link-square"></i>
-	                                        	<?php echo esc_html__( 'Pro', 'animation-addons-for-elementor' ); ?>
+	                                        	<?php echo esc_html__( 'Activate License', 'animation-addons-for-elementor' ); ?>
 											</a>                
 	                                <?php }elseif(array_key_exists( $plugin_slug, $all_plugins )){ ?>
 										<button class="library--action pro aaeplugin-activate">
