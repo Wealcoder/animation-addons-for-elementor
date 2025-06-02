@@ -1,6 +1,6 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
 
@@ -19,7 +19,7 @@ $config = [
 						],
 						'is_active'    => false,
 						'is_pro'       => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Box",
@@ -34,7 +34,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -50,7 +50,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -66,7 +66,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -82,7 +82,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -98,7 +98,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -114,7 +114,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -130,7 +130,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -146,7 +146,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -162,7 +162,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -474,7 +474,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Animated-Title",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-title',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-title/',
+						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/animated-title/',
 						'youtube_url'  => '',
 						'description'  => 'Use this widget to animate titles by character, word, or full text block.'
 					],
@@ -489,7 +489,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Animated-Text",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-text',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-animated-text/',
+						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/animated-text/',
 						'youtube_url'  => '',
 						'description'  => 'Explore text animation styles and transform static text into dynamic, engaging visual content.'
 					],
@@ -519,7 +519,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-GSAP-DrawSvg",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-gsap-drawsvg',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/draw-svg/',
+						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/gsap-drawsvg/',
 						'youtube_url'  => '',
 						'description'  => 'Animate SVG paths with precision using GSAP’s smooth drawing effect, enhancing your web visuals.'
 					],
@@ -616,7 +616,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
@@ -652,7 +652,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box-Slider",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box-slider',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/slider-widgets/video-box-slider/',
 						'youtube_url'  => '',
 						'description'  => 'Create a visually appealing video slider that perfectly fits your site’s design with this widget.'
 					],
@@ -667,7 +667,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Filterable-Slider",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-slider',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/slider-widgets/filterable-slider/',
 						'youtube_url'  => '',
 						'description'  => 'Organize content effortlessly with a filterable slider that’s easy to customize and navigate.'
 					],
@@ -1063,7 +1063,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Search-Form",
 						'demo_url'     => 'https://animation-addons.com/wcf-template/search-form',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-form/',
 						'youtube_url'  => '',
 						'description'  => 'Add a search form widget for users to efficiently locate content across your website.'
 					],
@@ -1159,7 +1159,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Mailchimp",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-mailchimp',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/form-widgets/advanced-mailchimp/',
 						'youtube_url'  => '',
 						'description'  => 'Easily integrate and customize Mailchimp sign-up forms for a seamless email list growth experience.'
 					],
@@ -1180,7 +1180,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Popup",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-popup',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-popup/',
 						'youtube_url'  => '',
 						'description'  => 'Use the Video Popup Widget to display videos in popups, making content more engaging.'
 					],
@@ -1195,7 +1195,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Box",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-box/',
 						'youtube_url'  => '',
 						'description'  => 'Elevate your website’s look by incorporating a video box that blends seamlessly with your style.'
 					],
@@ -1210,7 +1210,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Video-Mask",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-mask',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-mask/',
 						'youtube_url'  => '',
 						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.'
 					],
@@ -1261,7 +1261,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Advanced-Pricing-Table",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-pricing-table',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-pricing-table/',
 						'youtube_url'  => '',
 						'description'  => 'Create bold, interactive pricing tables to present your services with clarity and professionalism.'
 					],
@@ -1276,7 +1276,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Scroll-Elements",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-scroll-elements/',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/scroll-elements/',
 						'youtube_url'  => '',
 						'description'  => 'Turn static content into a visual journey with smart, responsive scroll element animations.'
 					],
@@ -1291,7 +1291,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Advanced-Portfolio",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-portfolio',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-portfolio/',
 						'youtube_url'  => '',
 						'description'  => 'Make your portfolio shine with tailored layouts, animated sliders, and customized design elements.'
 					],
@@ -1306,7 +1306,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Filterable-Gallery",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/filterable-gallery/',
 						'youtube_url'  => '',
 						'description'  => 'Craft engaging galleries where visitors can filter, view, and enjoy your creative work.'
 					],
@@ -1321,7 +1321,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Breadcrumbs",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breadcrumbs',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/breadcrumbs/',
 						'youtube_url'  => '',
 						'description'  => 'Show users exactly where they are with minimal, modern breadcrumbs built for any layout.'
 					],
@@ -1336,7 +1336,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Table-Of-Content",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/table-of-content/',
 						'youtube_url'  => '',
 						'description'  => 'Structure your headings into a clear, clickable table and keep your readers engaged longer.'
 					],
@@ -1351,7 +1351,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Image-Accordion",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-accordion',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/image-accordion/',
 						'youtube_url'  => '',
 						'description'  => 'Present images creatively with collapsible sections, enhancing user experience and saving screen space.'
 					],
@@ -1366,7 +1366,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Author-Box",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-author-box',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/author-box/',
 						'youtube_url'  => '',
 						'description'  => 'Create a visually appealing author box with a photo, bio, and social media links.'
 					],
@@ -1381,7 +1381,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Flip-Box",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-flip-box',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/flip-box/',
 						'youtube_url'  => '',
 						'description'  => 'Create interactive, animated flip boxes that grab attention and highlight your key messages instantly'
 					],
@@ -1396,7 +1396,7 @@ $config = [
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Advanced-Accordion",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-accordion',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-accordion/',
 						'youtube_url'  => '',
 						'description'  => 'Keep your pages clean and visitors happy with smart, collapsible advanced accordion designs.'
 					],
@@ -1464,7 +1464,7 @@ $config = [
 						],
 						'is_pro'       => false,
 						'is_active'    => false,
-						'setup'        => [ 'basic' ],
+						'setup'        => ['basic'],
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Custom-CSS",
@@ -1511,7 +1511,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Wrapper-Link",
 						'demo_url'     => '',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/wrapper-link/',
 						'youtube_url'  => '',
 					],
 					'popup'            => [
@@ -1525,7 +1525,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Popup",
 						'demo_url'     => '',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-popup/',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/pop-up-extensions/',
 						'youtube_url'  => '',
 					],
 					'tilt-effect'      => [
@@ -1539,7 +1539,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Tilt-Effect",
 						'demo_url'     => '',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/tilt-effect-extensions/',
 						'youtube_url'  => '',
 					],
 					'advanced-tooltip' => [
@@ -1553,7 +1553,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Advanced-Tooltip",
 						'demo_url'     => '',
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/advanced-tooltip-extensions/',
 						'youtube_url'  => '',
 					],
 					'custom-fonts'     => [
@@ -1581,7 +1581,7 @@ $config = [
 						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'icon'         => "wcf-icon-Custom-Post-Type",
-						'doc_url'      => '',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
 						'youtube_url'  => '',
 					],
 					'custom-icon'      => [
@@ -1598,7 +1598,7 @@ $config = [
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					],
-					
+
 					'restrict-content' => [
 						'label'        => 'Content Protection',
 						'is_pro'       => true,
@@ -1637,7 +1637,7 @@ $config = [
 								'is_upcoming'  => false,
 								'icon'         => "wcf-icon-Animation",
 								'demo_url'     => '',
-								'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-animation/',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/animation-extension-for-elementor/',
 								'youtube_url'  => '',
 							],
 							'pin-element'             => [
@@ -1652,7 +1652,7 @@ $config = [
 								'is_upcoming'  => false,
 								'icon'         => "wcf-icon-Pin-Elements",
 								'demo_url'     => '',
-								'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/pin-element/',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/pin-elements/',
 								'youtube_url'  => '',
 							],
 							'text-animation-effects'  => [
@@ -1705,7 +1705,7 @@ $config = [
 								'is_upcoming'  => false,
 								'icon'         => "wcf-icon-Cursor-Hover-Effect",
 								'demo_url'     => '',
-								'doc_url'      => '',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/cursor-hover-effect-extensions/',
 								'youtube_url'  => '',
 							],
 							'hover-effect-image'  => [
@@ -1720,7 +1720,7 @@ $config = [
 								'is_upcoming'  => false,
 								'icon'         => "wcf-icon-Image-Hover-Effect",
 								'demo_url'     => '',
-								'doc_url'      => '',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/image-hover-effect-extensions/',
 								'youtube_url'  => '',
 							],
 							'cursor-move-effect'  => [
