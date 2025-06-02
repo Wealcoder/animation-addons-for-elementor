@@ -732,10 +732,10 @@ class Plugin {
 	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
 	                                </a>
 	                                <?php }elseif(in_array( $plugin_slug, $active_plugins )){ ?>
-										<button class="library--action pro">
+										<a href="https://animation-addons.com" class="library--action pro" target="_blank">
 	                                        <i class="eicon-external-link-square"></i>
-	                                        <?php echo esc_html__( 'Pro', 'animation-addons-for-elementor' ); ?>
-									</button>                          
+	                                        	<?php echo esc_html__( 'Pro', 'animation-addons-for-elementor' ); ?>
+											</a>                
 	                                <?php }elseif(array_key_exists( $plugin_slug, $all_plugins )){ ?>
 										<button class="library--action pro aaeplugin-activate">
 	                                        <i class="eicon-external-link-square"></i>
