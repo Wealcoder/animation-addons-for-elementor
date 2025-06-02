@@ -1,9 +1,15 @@
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.3 – 02 june 2025 =
+  - 🆕 **Added:** Date and category filter in search widgets  
+  - 🆕 **Added:** 10 new pre built template 
+  - 🎨 **Updated:** Optimize js , css
+  - 🎨 **optimize:** Improve asset on demand in search widget
+
 = Animation Addons for Elementor v2.3.2 – 25 may 2025 =
   - 🆕 **Added:** x time in meta widget
-  - 🆕 **Added:** dependancy loaded in elementor widget for on demand asset load
+  - 🆕 **Added:** Dependancy loaded in elementor widget for on demand asset load
   - 🎨 **Updated:** Dashboard Settings for Youtube , Weather, Tiktok
   - 🎨 **Updated:** Added ajax functionality in Search widget.
 

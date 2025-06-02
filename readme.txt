@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website templ
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -418,9 +418,15 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.3 – 02 june 2025 =
+  - 🆕 **Added:** Date and category filter in search widgets  
+  - 🆕 **Added:** 10 new pre built template 
+  - 🎨 **Updated:** Optimize js , css
+  - 🎨 **optimize:** Improve asset on demand in search widget
+
 = Animation Addons for Elementor v2.3.2 – 25 may 2025 =
   - 🆕 **Added:** x time in meta widget
-  - 🆕 **Added:** dependancy loaded in elementor widget for on demand asset load
+  - 🆕 **Added:** Dependancy loaded in elementor widget for on demand asset load
   - 🎨 **Updated:** Dashboard Settings for Youtube , Weather, Tiktok
   - 🎨 **Updated:** Added ajax functionality in Search widget.
 
