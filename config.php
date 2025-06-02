@@ -88,7 +88,7 @@ $config = [
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Gallery",
 						'demo_url'     => 'https://animation-addons.com/widgets/image-gallery-widget',
-						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-image-gallery/',
+						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-gallery/',
 						'youtube_url'  => '',
 						'description'  => 'Create an engaging image gallery that fits perfectly with your site’s design and style.'
 					],
