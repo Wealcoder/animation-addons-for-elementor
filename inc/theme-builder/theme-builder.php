@@ -385,6 +385,33 @@ class WCF_Theme_Builder {
 		}
 		//check for archive
 		if ( is_archive() ) {
+
+			if(is_category() && isset($templates['specifics_cat']) && is_numeric($templates['specifics_cat'])){
+				// get category slug
+				$get_queried_object = get_queried_object();				
+				$splocation = $get_queried_object->slug; // Get the category slug.			
+				$query_args['meta_query'][] = array(
+					'key'   => self::CPT_META . '_location',
+					'value' => 'specifics_cat',
+					'compare' => 'LIKE'
+				);					
+				$query     = new \WP_Query( $query_args );					
+				$cat_id    = null;
+				foreach ( $query->posts as $key => $post_id ) {
+					$location   = get_post_meta( absint( $post_id ), self::CPT_META . '_location', true );
+					$splocation = json_decode( get_post_meta( absint( $post_id ), self::CPT_META . '_splocation', true ) );					
+					if ( ! empty( $location ) && ! empty( $splocation ) ) {						
+						if ( 'specifics_cat' === $location && $splocation[0] === $get_queried_object->slug ) {							
+							$cat_id = $post_id;
+						} 
+					}					
+				}			
+				wp_reset_postdata();
+				if(is_numeric($cat_id)){
+					return $cat_id;			
+				}
+				
+			}
 		  
 			//check for all date archive
 			if ( is_date() && array_key_exists( 'date', $templates ) ) {
@@ -395,7 +422,7 @@ class WCF_Theme_Builder {
 			if ( is_author() && array_key_exists( 'author', $templates ) ) {
 				return $templates['author'];
 			}
-
+			
 			
 
 			//check for custom post type archive
@@ -821,6 +848,13 @@ class WCF_Theme_Builder {
 			];
 		}
 
+		$selection_options['specific-target'] = array(
+			'label' => esc_html__( 'Specific Target', 'animation-addons-for-elementor' ),
+			'value' => array(
+				'specifics_cat' => esc_html__( 'Specific Category', 'animation-addons-for-elementor' ),
+			),
+		);
+
 		/**
 		 * Filter options displayed in the display conditions select field of Display conditions.
 		 *
@@ -872,6 +906,36 @@ class WCF_Theme_Builder {
 		 * @since 1.0.0
 		 */
 		return apply_filters( 'wcf_display_archive_list', $selection_options );
+	}
+
+		/**
+	 * Get single location selection options.
+	 *
+	 * @return array
+	 */
+	public static function get_category_location_selections() {
+		$categories = get_categories( array(
+			'orderby' => 'name',
+			'order'   => 'ASC'
+		) );
+
+		$selection_options = array(			
+		);
+		foreach ( $categories as $cat ) {
+			$selection_options[ $cat->name ] = [
+				'label' => esc_html( $cat->name ),
+				'value' => array(
+					$cat->slug => esc_html( $cat->name . ' '. $cat->taxonomy ),
+				),
+			];
+		}
+
+		/**
+		 * Filter options displayed in the display conditions select field of Display conditions.
+		 *
+		 * @since 1.0.0
+		 */
+		return apply_filters( 'wcf_display_taxonomy_list', $selection_options );
 	}
 
 	/**
@@ -1060,6 +1124,26 @@ class WCF_Theme_Builder {
                                         } );
                                         #>
                                     </optgroup>
+                                    <#
+                                    } );
+                                    #>
+                                </select>
+                            </div>
+
+							<div class="wcf-addons-template-edit-field single-category-location hidden">
+                                <label class="wcf-addons-template-edit-label">{{{data.heading.fields.category}}}</label>
+                                <select class="wcf-addons-template-edit-input" name="wcf-addons-single-category-display-type"
+                                        id="wcf-addons-single-category-display-type">
+                                    <#								
+                                    _.each( data.postcategory, function( items, keys ) {
+                                    #>                                   
+                                        <#
+                                        _.each( items.value, function( item, key ) {
+                                        #>
+                                        <option value="{{ key }}">{{{ item }}}</option>
+                                        <#
+                                        } );
+                                        #>                                  
                                     <#
                                     } );
                                     #>
@@ -1353,6 +1437,10 @@ class WCF_Theme_Builder {
 				update_post_meta( $new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation'] );
 			}
 
+			if ( 'archive' === $data['tmptype'] && 'specifics_cat' === $data['tmplocation'] ) {
+				update_post_meta( $new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation'] );
+			}
+
 			wp_send_json_success( $return );
 
 		} else {
@@ -1389,10 +1477,14 @@ class WCF_Theme_Builder {
 		} else {
 			delete_post_meta( $data['id'], self::CPT_META . '_splocation' );
 		}
+		
+		if ( 'archive' === $data['tmptype'] && 'specifics_cat' === $data['tmplocation'] ) {
+				update_post_meta( $data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation'] );				
+		}
 
 		$return = array(
 			'message' => esc_html__( 'Template has been updated', 'animation-addons-for-elementor' ),
-			'id'      => $data['id']
+			'id'      => $data['id']			
 		);
 		wp_send_json_success( $return );
 
@@ -1427,6 +1519,7 @@ class WCF_Theme_Builder {
 				'hflocation'      => self::get_hf_location_selections(),
 				'archivelocation' => self::get_archive_location_selections(),
 				'singlelocation'  => self::get_single_location_selections(),
+				'postcategory'  => self::get_category_location_selections(),
 				'templatetype'    => self::get_template_type(),
 				'labels'          => [
 					'fields'  => [
@@ -1436,6 +1529,7 @@ class WCF_Theme_Builder {
 						],
 						'type'    => esc_html__( 'Type', 'animation-addons-for-elementor' ),
 						'display' => esc_html__( 'Display', 'animation-addons-for-elementor' ),
+						'category' => esc_html__( 'Category', 'animation-addons-for-elementor' ),
 					],
 					'head'    => esc_html__( 'Template Settings', 'animation-addons-for-elementor' ),
 					'buttons' => [

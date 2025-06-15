@@ -15,6 +15,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.renderPopup();
       this.reinitSelect2();
       //open popup onclick
+      $(document).on('click', '#wcf-addons-archive-display-type', this.specificsDisplay);
       $('body.post-type-wcf-addons-template #wpcontent').on('click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup);
       $(document).on('click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup).on('click', ".wcf-addons-tmp-save", this.savePost).on('click', '.wcf-addons-tmp-elementor', this.redirectEditPage).on('wcf_template_edit_popup_open', this.displayLocation).on('change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
       $('#wcf-addons-hf-s-display-type').on('select2:select', function (e) {
@@ -26,6 +27,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         // Update the Select2 element with unique values
         $(this).val(uniqueItems).trigger('change');
       });
+    },
+    specificsDisplay: function specificsDisplay(event) {
+      event.preventDefault();
+      var type = $(this).val();
+      if ('specifics_cat' == type) {
+        $('.single-category-location').removeClass('hidden');
+      } else {
+        $('.single-category-location').addClass('hidden');
+      }
     },
     reinitSelect2: function reinitSelect2() {
       $('#wcf-addons-hf-s-display-type').select2({
@@ -72,6 +82,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         hflocation: WCF_Theme_Builder.hflocation,
         archivelocation: WCF_Theme_Builder.archivelocation,
         singlelocation: WCF_Theme_Builder.singlelocation,
+        postcategory: WCF_Theme_Builder.postcategory,
         editor: WCF_Theme_Builder.editor,
         heading: WCF_Theme_Builder.labels
       });
@@ -113,7 +124,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             $('#wcf-addons-hf-s-display-type').val(null).trigger('change');
             // Fire custom event.
             $(document).trigger('wcf_template_edit_popup_open');
-
+            if (response.responseJSON.data.tmpLocation === 'specifics_cat') {
+              $('.single-category-location').removeClass('hidden');
+              var category_option = Object.keys(response.responseJSON.data.tmpSpLocation);
+              if ($('#wcf-addons-single-category-display-type').find("option[value='" + category_option[0] + "']").length) {
+                $('#wcf-addons-single-category-display-type').find("option[value='" + category_option[0] + "']")[0].selected = "true";
+                $('#wcf-addons-single-category-display-type').trigger('change');
+              }
+            } else {
+              $('.single-category-location').addClass('hidden');
+            }
             //display
             var temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select');
             temDisplay.find("option[value='" + response.responseJSON.data.tmpLocation + "']")[0].selected = "true";
@@ -159,8 +179,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         tmpId = event.target.dataset.tmpid ? event.target.dataset.tmpid : '',
         title = $('#wcf-addons-template-title').val(),
         tmpType = $('#wcf-addons-template-type').val(),
-        temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select').val(),
-        specificsDisplay = $('.hf-s-location:visible select').val();
+        temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select').val();
+      var specificsDisplay = $('.hf-s-location:visible select').val();
+      if ("specifics_cat" == temDisplay) {
+        specificsDisplay = [];
+        specificsDisplay.push($('#wcf-addons-single-category-display-type').val());
+      }
       $.ajax({
         url: WCF_Theme_Builder.ajaxurl,
         data: {
