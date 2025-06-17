@@ -657,6 +657,35 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
+		if ( 'most_reviews' === $this->get_settings( 'query_type' ) ) {
+			$query_args['meta_key']   = 'review_count';
+			$query_args['orderby']    = 'meta_value_num';
+			$query_args['order']      = 'DESC';
+			$query_args['meta_query'] = [
+				[
+					'key'     => 'review_count',
+					'value'   => 0,
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				],
+			];
+		}
+
+		if ( 'read_later' === $this->get_settings( 'query_type' ) ) {
+			if ( isset( $_COOKIE['readLater'] ) ) {
+				$ids = json_decode( stripslashes( $_COOKIE['readLater'] ), true );
+
+				if ( is_array( $ids ) && ! empty( $ids ) ) {
+					$query_args['post__in'] = array_map( 'absint', $ids );
+					$query_args['orderby']  = 'post__in';
+				} else {
+					$query_args['post__in'] = array( 0 );
+				}
+			} else {
+				$query_args['post__in'] = array( 0 ); // no cookie = no result
+			}
+		}
+
 		if ( 'recent_visited' === $this->get_settings( 'query_type' ) ) {
 			// Retrieve and decode the cookie data
 			$visited_posts = isset( $_COOKIE['aae_visited_posts'] ) ? json_decode( sanitize_text_field( wp_unslash( $_COOKIE['aae_visited_posts'] ) ), true ) : [];

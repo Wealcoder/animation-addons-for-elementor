@@ -10,6 +10,7 @@
             this.renderPopup();        
             this.reinitSelect2();
             //open popup onclick
+            $(document).on( 'click', '#wcf-addons-archive-display-type', this.specificsDisplay );
             $( 'body.post-type-wcf-addons-template #wpcontent' ).on( 'click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup );
             $(document )
                 .on( 'click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup )
@@ -29,6 +30,17 @@
                  
                 });
                 
+        },
+
+        specificsDisplay: function (event) {
+            event.preventDefault(); 
+            let type = $(this).val(); 
+
+            if('specifics_cat' == type){
+                $('.single-category-location').removeClass('hidden');    
+            }else{
+                $('.single-category-location').addClass('hidden');    
+            }
         },
         
         reinitSelect2: function(){
@@ -80,6 +92,7 @@
                 hflocation: WCF_Theme_Builder.hflocation,
                 archivelocation: WCF_Theme_Builder.archivelocation,
                 singlelocation: WCF_Theme_Builder.singlelocation,
+                postcategory: WCF_Theme_Builder.postcategory,
                 editor:       WCF_Theme_Builder.editor,
                 heading:      WCF_Theme_Builder.labels,
             } );
@@ -132,7 +145,18 @@
                         $('#wcf-addons-hf-s-display-type').val(null).trigger('change');  
                         // Fire custom event.
                         $(document).trigger('wcf_template_edit_popup_open');
-
+                    
+                        if(response.responseJSON.data.tmpLocation === 'specifics_cat'){
+                            $('.single-category-location').removeClass('hidden');
+                            let category_option = Object.keys( response.responseJSON.data.tmpSpLocation );
+                            if($('#wcf-addons-single-category-display-type').find("option[value='"+category_option[0]+"']").length){
+                                $('#wcf-addons-single-category-display-type').find("option[value='"+category_option[0]+"']")[0].selected = "true";
+                                $('#wcf-addons-single-category-display-type').trigger('change');
+                            }
+                           
+                        }else{
+                            $('.single-category-location').addClass('hidden');
+                        }  
                         //display
                         let temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select');
                         temDisplay.find("option[value='"+response.responseJSON.data.tmpLocation+"']")[0].selected = "true";
@@ -147,7 +171,6 @@
                                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
                             });
                         }
-
 
                         $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
                     },
@@ -188,8 +211,13 @@
                 tmpId = event.target.dataset.tmpid ? event.target.dataset.tmpid : '',
                 title = $('#wcf-addons-template-title').val(),
                 tmpType = $('#wcf-addons-template-type').val(),
-                temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select').val(),
-                specificsDisplay = $('.hf-s-location:visible select').val();
+                temDisplay = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select').val();
+               let specificsDisplay = $('.hf-s-location:visible select').val();
+
+                if("specifics_cat" == temDisplay){
+                    specificsDisplay = [];
+                    specificsDisplay.push( $('#wcf-addons-single-category-display-type').val() );
+                }
 
             $.ajax({
                 url: WCF_Theme_Builder.ajaxurl,
@@ -251,11 +279,11 @@
 
             window.location.replace( WCF_Theme_Builder.adminURL + link );
 
-        },
+        }, 
 
         displayLocation: function (event){
             let type = $('#wcf-addons-template-type').val();
-
+           
             $('.hf-s-location').addClass('hidden');
 
             if ('archive' === type) {

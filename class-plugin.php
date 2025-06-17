@@ -317,6 +317,13 @@ class Plugin {
 				'version' => false,
 				'arg'     => true,
 			],
+			'image-hotspot' => [
+				'handler' => 'aae-image-hotspot',
+				'src'     => 'widgets/image-hotspot.min.js',
+				'dep'     => [ 'jquery' ],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -488,6 +495,13 @@ class Plugin {
 			'search'        => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'image-hotspot' => [
+				'handler' => 'aae-image-hotspot',
+				'src'     => 'widgets/image-hotspot.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
