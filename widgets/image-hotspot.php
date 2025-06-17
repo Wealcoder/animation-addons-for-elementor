@@ -363,6 +363,18 @@ class Image_Hotspot extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'pulse_color',
+			[
+				'label'     => esc_html__( 'Pulse Color', 'animation-addons-for-elementor-pro' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .hotspot-icon' => '--pulse-color: {{VALUE}}',
+				],
+				'condition' => [ 'hsp_animation' => 'pulse' ]
+			]
+		);
+
 		$this->end_controls_section();
 	}
 

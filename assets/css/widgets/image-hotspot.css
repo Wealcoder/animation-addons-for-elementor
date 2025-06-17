@@ -81,7 +81,7 @@
   padding: 15px;
   opacity: 0;
   visibility: hidden;
-  transition: 0.3s ease;
+  transition: 0.5s ease;
 }
 .aae--hotspot-item .tooltip-content::after {
   position: absolute;
@@ -97,7 +97,7 @@
 }
 
 .aae--tlp-position-top .tooltip-content {
-  bottom: 100%;
+  bottom: calc(100% + 15px);
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: var(--tlp-gap, 20px);
@@ -110,9 +110,15 @@
   left: 50%;
   transform: translateX(-50%);
 }
+.aae--tlp-position-top .tooltip-content.active {
+  bottom: 100%;
+}
+.aae--tlp-position-top .hover:hover .tooltip-content {
+  bottom: 100%;
+}
 
 .aae--tlp-position-bottom .tooltip-content {
-  top: 100%;
+  top: calc(100% + 15px);
   left: 50%;
   transform: translateX(-50%);
   margin-top: var(--tlp-gap, 20px);
@@ -125,9 +131,15 @@
   left: 50%;
   transform: translateX(-50%);
 }
+.aae--tlp-position-bottom .tooltip-content.active {
+  top: 100%;
+}
+.aae--tlp-position-bottom .hover:hover .tooltip-content {
+  top: 100%;
+}
 
 .aae--tlp-position-left .tooltip-content {
-  right: 100%;
+  right: calc(100% + 15px);
   top: 50%;
   transform: translateY(-50%);
   margin-right: var(--tlp-gap, 20px);
@@ -140,9 +152,15 @@
   top: 50%;
   transform: translateY(-50%);
 }
+.aae--tlp-position-left .tooltip-content.active {
+  right: 100%;
+}
+.aae--tlp-position-left .hover:hover .tooltip-content {
+  right: 100%;
+}
 
 .aae--tlp-position-right .tooltip-content {
-  left: 100%;
+  left: calc(100% + 15px);
   top: 50%;
   transform: translateY(-50%);
   margin-left: var(--tlp-gap, 20px);
@@ -154,6 +172,12 @@
   left: -14px;
   top: 50%;
   transform: translateY(-50%);
+}
+.aae--tlp-position-right .tooltip-content.active {
+  left: 100%;
+}
+.aae--tlp-position-right .hover:hover .tooltip-content {
+  left: 100%;
 }
 
 @keyframes AAEBeat {
@@ -169,14 +193,14 @@
 }
 @keyframes AAEPulse {
   0% {
-    box-shadow: 0 0 0 0 currentColor;
+    box-shadow: 0 0 0 0 var(--pulse-color, #111);
   }
   70% {
-    box-shadow: 0 0 0 30px currentColor;
+    box-shadow: 0 0 0 30px var(--pulse-color, #111);
     opacity: 0;
   }
   100% {
-    box-shadow: 0 0 0 0 currentColor;
+    box-shadow: 0 0 0 0 var(--pulse-color, #111);
     opacity: 0;
   }
 }
