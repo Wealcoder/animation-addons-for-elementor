@@ -16,7 +16,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   var Template_Library_data = {};
   var Template_Library_Chunk_data = [];
   // API for get requests
-  var fetchRes = fetch("https://themecrowdy.com/wp-json/api/v1/list");
+  var fetchRes = fetch("https://themecrowdy.com/wp-json/api/v2/list");
   var activePlugin = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -57,7 +57,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   }).then(function (d) {
     Template_Library_data = d.library;
     Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
-    localStorage.setItem("aae_template_lib_data", Template_Library_data);
   });
 
   //get type specific templates

@@ -9,7 +9,7 @@
     let Template_Library_data = {};
     let Template_Library_Chunk_data = [];
     // API for get requests
-     let fetchRes = fetch("https://themecrowdy.com/wp-json/api/v1/list");    
+     let fetchRes = fetch("https://themecrowdy.com/wp-json/api/v2/list");    
 
     const activePlugin = async () => {
         await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
@@ -36,16 +36,18 @@
       };   
     // FetchRes is the promise to resolve
     fetchRes.then(res => res.json()).then(d => {
-            Template_Library_data = d.library;       
+            Template_Library_data = d.library;   
+            
             Template_Library_data['template_types'] = WCF_TEMPLATE_LIBRARY.template_types;
-            localStorage.setItem("aae_template_lib_data", Template_Library_data);
+           
     });
 
     //get type specific templates
     const get_type_templates = function (type) {
         let templates = [];
         if (Template_Library_data['templates'] !== undefined) {
-            Template_Library_data['templates'].forEach((template, index) => {                
+            Template_Library_data['templates'].forEach((template, index) => {    
+                     
                 if (type === template.type) {
                     if(WCF_TEMPLATE_LIBRARY?.config?.wcf_valid && WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true){
                         template['valid'] = 'yes';
@@ -64,14 +66,11 @@
         if (type_templates.length && '' !== category) {
             templates = [];
             for (let template of type_templates) {
-
                 //if template has no category
                 if ('' === template.subtype) {
                     continue;
                 }
-
                 const categories = template.subtype.split(",");
-
                 if (categories.includes(category)) {
                     templates.push(template);
                 }
@@ -99,7 +98,7 @@
                     continue;
                 }
                 text = text.toLowerCase();
-                
+              
                 if (template.title.toLowerCase().includes(text)) {
                     templates.push(template);                   
                 }
@@ -196,7 +195,7 @@
                 function render_popup(t) {
                     let tmpTypes = wp.template('wcf-templates-header');
                     content = null;
-                    
+                   
                     content = tmpTypes({
                         template_types: Template_Library_data.template_types,
                     });
