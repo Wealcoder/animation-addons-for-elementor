@@ -44,6 +44,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Craft graceful image sliders with custom styles, animations, and smooth transitions for a polished presentation.'
 					],
+					'image-hotspot' => [
+						'label'        => 'Image Hotspot',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
 					'social-icons'         => [
 						'label'        => 'Social Icons',
 						'location'     => [
@@ -1445,6 +1460,7 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.'
 					],
+
 				]
 			]
 		]
