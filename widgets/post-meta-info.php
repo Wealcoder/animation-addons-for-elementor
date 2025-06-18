@@ -146,7 +146,10 @@ class Post_Meta_Info extends Widget_Base {
 			'author'       => esc_html__( 'Author', 'animation-addons-for-elementor' ),
 			'reading_time' => esc_html__( 'Reading Time', 'animation-addons-for-elementor' ),
 			'comment'      => esc_html__( 'Comment', 'animation-addons-for-elementor' ),
+			'review'       => esc_html__( 'Review', 'animation-addons-for-elementor' ),
+			'read-later'   => esc_html__( 'Read Later', 'animation-addons-for-elementor' ),
 			'time-ago'     => esc_html__( 'Post Time Ago', 'animation-addons-for-elementor' ),
+			'last-update'  => esc_html__( 'Last Updated', 'animation-addons-for-elementor' ),
 		];
 
 		$repeater->add_control(
@@ -159,6 +162,20 @@ class Post_Meta_Info extends Widget_Base {
 				'label_block' => true,
 			]
 		);
+
+		if ( ! post_type_exists( 'aaeaddon_post_rating' ) ) {
+			$repeater->add_control(
+				'review_pro_alert',
+				[
+					'type'       => Controls_Manager::ALERT,
+					'alert_type' => 'warning',
+					'heading'    => esc_html__( 'This is a Pro feature. Please install the Pro plugin!', 'animation-addons-for-elementor' ),
+					'condition'  => [
+						'list_type' => 'review',
+					],
+				]
+			);
+		}
 
 		$repeater->add_control(
 			'list_icon',
@@ -2055,6 +2072,9 @@ class Post_Meta_Info extends Widget_Base {
 				$this->render_reading_time( $meta, $settings );
 				$this->render_comments( $meta, $settings );
 				$this->render_post_time_ago( $meta, $settings );
+				$this->render_reviews_count( $meta, $settings );
+				$this->render_read_later( $meta, $settings );
+				$this->render_last_updated( $meta, $settings );
 			}
 			?>
         </ul>
@@ -2348,5 +2368,108 @@ class Post_Meta_Info extends Widget_Base {
 			<?php endif; ?>
 			<?php
 		}
+	}
+
+	protected function render_reviews_count( $meta, $settings ) {
+		if ( $meta['list_type'] == 'review' ) {
+			if ( ! post_type_exists( 'aaeaddon_post_rating' ) ) {
+				echo '<li>' . esc_html__( '0 review', 'animation-addons-for-elementor' ) . '</li>';
+
+				return;
+			}
+
+			$post_id = get_the_ID();
+
+			$ratings = get_posts( [
+				'post_type'   => 'aaeaddon_post_rating',
+				'post_status' => 'publish',
+				'meta_query'  => [
+					[
+						'key'   => 'post_id',
+						'value' => $post_id,
+					]
+				]
+			] );
+
+			$total_ratings = count( $ratings );
+			?>
+			<?php if ( '1' == $settings['layout_style'] ): ?>
+                <li class="wcf--meta-view wcf-separator"
+                    data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+					<?php echo $total_ratings; ?>
+					<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
+                </li>
+			<?php endif; ?>
+
+			<?php if ( '2' == $settings['layout_style'] ): ?>
+                <li class="wcf--view-wrap">
+                    <div class="wcf--view-title label">
+						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+						<?php echo esc_html( $meta['list_title'] ); ?>
+                    </div>
+                    <div class="wcf--meta-view">
+						<?php echo $total_ratings; ?>&nbsp;
+                        <span><?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?></span>
+                    </div>
+                </li>
+			<?php endif; ?>
+			<?php
+		}
+	}
+
+	protected function render_read_later( $meta, $settings ) {
+		if ( $meta['list_type'] == 'read-later' ) {
+			$post_id = get_the_ID();
+			?>
+			<?php if ( '1' == $settings['layout_style'] ): ?>
+                <li class="wcf--meta-view wcf-separator"
+                    data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+                    <span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+                        <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor-pro' ); ?>
+                    </span>
+                </li>
+			<?php endif; ?>
+
+			<?php if ( '2' == $settings['layout_style'] ): ?>
+                <li class="wcf--view-wrap">
+                    <div class="wcf--view-title label">
+						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+						<?php echo esc_html( $meta['list_title'] ); ?>
+                    </div>
+                    <div class="wcf--meta-view">
+						<span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
+                            <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor-pro' ); ?>
+                        </span>
+                    </div>
+                </li>
+			<?php endif; ?>
+			<?php
+		}
+	}
+
+	protected function render_last_updated( $meta, $settings ) {
+		if ( $meta['list_type'] == 'last-update' ) { ?>
+			<?php if ( '1' == $settings['layout_style'] ): ?>
+                <li class="wcf--meta-date wcf-separator"
+                    data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+					<?php echo get_the_modified_time( get_option( 'date_format' ) ); ?>
+                </li>
+			<?php endif; ?>
+
+			<?php if ( '2' == $settings['layout_style'] ): ?>
+                <li class="wcf--date-wrap">
+                    <div class="wcf--date-title label">
+						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+						<?php echo esc_html( $meta['list_title'] ); ?>
+                    </div>
+                    <div class="wcf--meta-date">
+						<?php echo get_the_modified_time( get_option( 'date_format' ) ); ?>
+                    </div>
+                </li>
+			<?php endif; ?>
+		<?php }
 	}
 }
