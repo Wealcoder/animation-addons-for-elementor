@@ -418,8 +418,8 @@ function filter_search_by_date_and_category( $query ) {
 	if ( $query->is_search() && $query->is_main_query() && ! is_admin() ) {
 
 		// ==== Date range filter ====
-		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( $_GET['from_date'] ) : '';
-		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( $_GET['to_date'] ) : '';
+		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( wp_unslash( $_GET['from_date'] ) ) : '';
+		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( wp_unslash( $_GET['to_date'] ) ) : '';
 
 		if ( $from_date || $to_date ) {
 			$date_query = [ 'inclusive' => true ];

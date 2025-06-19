@@ -257,9 +257,9 @@ class Search_Query extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$from_date  = isset( $_GET['from_date'] ) ? $_GET['from_date'] : '';
-		$to_date    = isset( $_GET['to_date'] ) ? $_GET['to_date'] : '';
-		$categories = isset( $_GET['category'] ) && is_array( $_GET['category'] ) ? $_GET['category'] : [];
+		$from_date  = sanitize_text_field( isset( $_GET['from_date'] ) ? wp_unslash( $_GET['from_date'] ) : '');
+		$to_date    = sanitize_text_field( isset( $_GET['to_date'] ) ? wp_unslash($_GET['to_date']) : '' );
+		$categories = isset( $_GET['category'] ) && is_array( $_GET['category'] ) ?  array_map( 'sanitize_text_field', wp_unslash( $_GET['category'] ) ) : [];
 		$cat_filter = [];
 
 		foreach ( $categories as $cat_id ) {
