@@ -1955,7 +1955,7 @@ class Search_Form extends Widget_Base {
 
 	protected function render_search_preset_one( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>"
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . esc_attr($filter_class); ?>"
              data-enable-ajax-search="<?php echo esc_attr( $settings['enable_ajax_search'] ); ?>">
 			<?php $this->render_search_form( $settings ); ?>
             <div class="aae--live-search-results"></div>
@@ -1965,7 +1965,7 @@ class Search_Form extends Widget_Base {
 
 	protected function render_search_preset_two( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . esc_attr($filter_class); ?>">
             <div class="wcf-search-toggle" role="button" tabindex="0">
                 <div class="toggle--open">
 					<?php Icons_Manager::render_icon( $settings['toggle_open_icon'], [ 'aria-hidden' => 'true' ] ); ?>
@@ -1986,7 +1986,7 @@ class Search_Form extends Widget_Base {
 
 	protected function render_search_preset_three( $settings, $filter_class ) {
 		?>
-        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . $filter_class; ?>">
+        <div class="search--wrapper <?php echo esc_attr( $settings['preset'] ) . ' ' . esc_attr($filter_class); ?>">
             <div class="wcf-search-toggle" role="button" tabindex="0">
                 <div class="toggle--open">
 					<?php Icons_Manager::render_icon( $settings['toggle_open_icon'], [ 'aria-hidden' => 'true' ] ); ?>
