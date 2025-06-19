@@ -2397,7 +2397,7 @@ class Post_Meta_Info extends Widget_Base {
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-					<?php echo $total_ratings; ?>
+					<?php echo wp_kses_post( $total_ratings ); ?>
 					<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
                 </li>
 			<?php endif; ?>
@@ -2409,7 +2409,7 @@ class Post_Meta_Info extends Widget_Base {
 						<?php echo esc_html( $meta['list_title'] ); ?>
                     </div>
                     <div class="wcf--meta-view">
-						<?php echo $total_ratings; ?>&nbsp;
+						<?php echo wp_kses_post( $total_ratings ); ?>&nbsp;
                         <span><?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?></span>
                     </div>
                 </li>
@@ -2427,7 +2427,7 @@ class Post_Meta_Info extends Widget_Base {
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                     <span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
-                        <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor-pro' ); ?>
+                        <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
                     </span>
                 </li>
 			<?php endif; ?>
@@ -2440,7 +2440,7 @@ class Post_Meta_Info extends Widget_Base {
                     </div>
                     <div class="wcf--meta-view">
 						<span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
-                            <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor-pro' ); ?>
+                            <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
                         </span>
                     </div>
                 </li>
@@ -2455,7 +2455,7 @@ class Post_Meta_Info extends Widget_Base {
                 <li class="wcf--meta-date wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-					<?php echo get_the_modified_time( get_option( 'date_format' ) ); ?>
+					<?php echo wp_kses_post( get_the_modified_time( get_option( 'date_format' ) ) ); ?>
                 </li>
 			<?php endif; ?>
 
@@ -2466,7 +2466,7 @@ class Post_Meta_Info extends Widget_Base {
 						<?php echo esc_html( $meta['list_title'] ); ?>
                     </div>
                     <div class="wcf--meta-date">
-						<?php echo get_the_modified_time( get_option( 'date_format' ) ); ?>
+						<?php echo wp_kses_post( get_the_modified_time( get_option( 'date_format' ) ) ); ?>
                     </div>
                 </li>
 			<?php endif; ?>
