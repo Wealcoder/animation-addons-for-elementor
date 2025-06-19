@@ -158,6 +158,9 @@ class Countdown extends Widget_Base {
 				'default' => date("Y-m-d h:i:s", strtotime("+ 1 day")), // PHPCS:Ignore WordPress.DateTime.RestrictedFunctions.date_date
 				'description' => esc_html__( 'Set the due date and time', 'animation-addons-for-elementor' ),
 				'frontend_available' => true,
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -177,6 +180,9 @@ class Countdown extends Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => esc_html__( 'Days', 'animation-addons-for-elementor' ),
 				'frontend_available' => true,
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -187,6 +193,9 @@ class Countdown extends Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => esc_html__( 'Hours', 'animation-addons-for-elementor' ),
 				'frontend_available' => true,
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -197,6 +206,9 @@ class Countdown extends Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => esc_html__( 'Minutes', 'animation-addons-for-elementor' ),
 				'frontend_available' => true,
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -207,6 +219,9 @@ class Countdown extends Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => esc_html__( 'Seconds', 'animation-addons-for-elementor' ),
 				'frontend_available' => true,
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -288,6 +303,9 @@ class Countdown extends Widget_Base {
 				'label_block' => true,
 				'frontend_available' => true,
 				'default'     => esc_html__( 'Countdown is finished!', 'animation-addons-for-elementor' ),
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -299,6 +317,9 @@ class Countdown extends Widget_Base {
 				'rows'    => 10,
 				'frontend_available' => true,
 				'default' => esc_html__( 'Default description', 'animation-addons-for-elementor' ),
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 

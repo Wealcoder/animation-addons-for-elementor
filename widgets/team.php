@@ -174,6 +174,9 @@ class Team extends Widget_Base {
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
 				],
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 
@@ -472,6 +475,9 @@ class Team extends Widget_Base {
 				'label'       => esc_html__( 'Name', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
 				'separator'   => 'before',
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default'     => esc_html__( 'Adam Smith', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Enter Member Name', 'animation-addons-for-elementor' ),
 			]
@@ -503,6 +509,9 @@ class Team extends Widget_Base {
 			[
 				'label'       => esc_html__( 'Designation', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default'     => esc_html__( 'Developer', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Enter Member Designation', 'animation-addons-for-elementor' ),
 			]
@@ -530,6 +539,9 @@ class Team extends Widget_Base {
 					'url'         => '',
 					'is_external' => true,
 					'nofollow'    => true,
+				],
+				'dynamic'     => [
+					'active' => true,
 				],
 				'label_block' => true,
 			]

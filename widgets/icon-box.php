@@ -135,6 +135,9 @@ class Icon_Box extends Widget_Base {
 					'value'   => 'fas fa-star',
 					'library' => 'fa-solid',
 				],
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 

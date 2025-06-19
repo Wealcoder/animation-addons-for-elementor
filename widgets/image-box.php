@@ -588,6 +588,9 @@ class Image_Box extends Widget_Base {
 			[
 				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default'     => esc_html__( 'Siyantika Glory', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your title', 'animation-addons-for-elementor' ),
 			]
@@ -619,6 +622,9 @@ class Image_Box extends Widget_Base {
 			[
 				'label'       => esc_html__( 'Sub Title', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default'     => esc_html__( 'Modelling - 2012', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your sub title', 'animation-addons-for-elementor' ),
 			]
@@ -654,6 +660,9 @@ class Image_Box extends Widget_Base {
 				'label'       => esc_html__( 'Description', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXTAREA,
 				'rows'        => 10,
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default'     => esc_html__( 'Hatha yoga built on a harmonious balance between body strength and softness', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your description', 'animation-addons-for-elementor' ),
 			]

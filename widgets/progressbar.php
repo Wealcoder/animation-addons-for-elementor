@@ -154,6 +154,9 @@ class Progressbar extends Widget_Base {
 						'max' => 100,
 					],
 				],
+				'dynamic'     => [
+					'active' => true,
+				],
 			]
 		);
 

@@ -97,6 +97,9 @@ class Animated_Text extends Widget_Base {
 			[
 				'label'   => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::WYSIWYG,
+				'dynamic'     => [
+					'active' => true,
+				],
 				'default' => esc_html__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor' ),
 			]
 		);
