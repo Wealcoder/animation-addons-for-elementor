@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website templ
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,7 @@ https://youtu.be/NS0TGy8A_tU
 
 ### Key Features of Animation Addons for Elementor
 📝 Live Copy Paste
+📝 Live Section Download
 🏗️ Header Builder
 🦶 Footer Builder
 🌍 Dynamic Content
@@ -264,7 +265,7 @@ This template library is specifically crafted for developers, designers, and age
 
 💡 Unlock next-level animations with **Animation Addons for Elementor!**
 
-### 86+ Elementor Widgets:
+### 90+ Elementor Widgets:
 Unlock endless design possibilities with 86+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
 
 ### Custom Animation Builder:
@@ -407,6 +408,7 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 6. **Widget Settings Panel** Advanced controls and customization for each animation widget to fine-tune effects as you like.
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
+
 == External Services ==
 We use the Themecrowdy API for one-click import of Elementor sites and section templates.
 Our Mailchimp widget connects to Mailchimp’s API.
@@ -417,6 +419,13 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.4 – 19 june 2025 =
+  - 🆕 **Added:** Meta type review, read later, updated date 
+  - 🎨 **Fixed:** Template Library Cors 
+  - 🆕 **Added:** Image Hotspot widget
+  - 🆕 **Added:** Single Category Template Builder Capability
+  - 🎨 **Fixed:** Image Lazyload ScrollTrigger
 
 = Animation Addons for Elementor v2.3.3 – 02 june 2025 =
   - 🆕 **Added:** Date and category filter in search widgets  
