@@ -30,6 +30,7 @@ class Downloader {
 	 * @return string|WP_Error Full path to the downloaded file or WP_Error object with error message.
 	 */
 	public function download_file( $url, $filename ) {
+	
 		$content = $this->get_content_from_url( $url );
 
 		// Check if there was an error and break out.

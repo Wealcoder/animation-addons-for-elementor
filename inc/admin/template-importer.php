@@ -154,22 +154,25 @@ class AAEAddon_Importer {
 						}
 				}
 				$template_data['next_step'] = 'install-wp-options';					
-			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){	
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){					
 				$tpl = $this->validate_download_file($template_data);				
 				if($tpl){
 					update_option('aaeaddon_template_import_state', esc_html__( 'Content file Downloading' , 'animation-addons-for-elementor' ) );
 					$template_data['next_step'] = 'download-xml-file';
 					$template_data['file']      = json_decode($tpl);
+					
 				}else{
 					update_option('aaeaddon_template_import_state', esc_html__( 'Invalid file', 'animation-addons-for-elementor'));
 					$template_data['next_step'] = 'fail';
 				}
-				$progress                    = '35';
-			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){					
+				$progress                    = '37';
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){	
+				error_log(print_r($this->full_path,1)); // Log the response code for debugging						
 				if(isset($template_data['file']['content_url'])){						
 					update_option('aaeaddon_template_import_state', esc_html__('Content installing', 'animation-addons-for-elementor'));
 					$template_data['next_step']  = 'install-template';
-					$template_data['local_path'] = $this->full_path;					
+					$template_data['local_path'] = $this->full_path;	
+							
 				}else{
 					$template_data['next_step'] = 'fail';
 					update_option('aaeaddon_template_import_state', esc_html__('Missing Content file, contact author', 'animation-addons-for-elementor'));
@@ -345,29 +348,30 @@ class AAEAddon_Importer {
 		
 	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
 		$args = [
-			'timeout'   => 180,
+			'timeout'   => 90,
 			'body' => [
 				'template' => $template
 			],
 			'sslverify' => false // Disable SSL verification
 		];	
-	
+	    
 		// Fetch the remote file with POST request
-		$response = wp_safe_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args));
-	
+		$response = wp_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args));
+		
 		if (is_wp_error($response)) {
 			update_option('aaeaddon_template_import_state', esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));
 			return false;
 		}
-	
+		
 		$response_code = wp_remote_retrieve_response_code($response);		
+		
 		if ($response_code !== 200) {
 			update_option('aaeaddon_template_import_state', esc_html__('Invalid file arguments. Please check the URL.', 'animation-addons-for-elementor'));
 			return false;
 		}
-	
+	     
 		$body = wp_remote_retrieve_body($response);
-	
+		
 		if (empty($body)) {
 			update_option('aaeaddon_template_import_state', esc_html__('The downloadable file is empty.', 'animation-addons-for-elementor'));
 			return false;

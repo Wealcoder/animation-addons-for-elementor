@@ -7,7 +7,7 @@ const WizWidget = () => {
   const { isSkipTerms } = useSkip();
 
   const API_ENDPOINT =
-    "https://themecrowdy.com/wp-json/fluent-crm/v2/subscribers";
+    "https://www.themecrowdy.com/wp-json/fluent-crm/v2/subscribers";
   const AUTH_USERNAME = "rayhan";
   const AUTH_PASSWORD = "f1R7mK7WnjK17x7XbcxVH6b5";
   const authHeader = btoa(`${AUTH_USERNAME}:${AUTH_PASSWORD}`);

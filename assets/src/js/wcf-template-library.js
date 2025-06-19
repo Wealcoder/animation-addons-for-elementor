@@ -9,7 +9,7 @@
     let Template_Library_data = {};
     let Template_Library_Chunk_data = [];
     // API for get requests
-     let fetchRes = fetch("https://themecrowdy.com/wp-json/api/v2/list");    
+     let fetchRes = fetch("https://www.themecrowdy.com/wp-json/api/v2/list");    
 
     const activePlugin = async () => {
         await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
