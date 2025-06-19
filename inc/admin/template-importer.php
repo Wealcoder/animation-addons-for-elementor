@@ -167,7 +167,7 @@ class AAEAddon_Importer {
 				}
 				$progress                    = '37';
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){	
-				error_log(print_r($this->full_path,1)); // Log the response code for debugging						
+								
 				if(isset($template_data['file']['content_url'])){						
 					update_option('aaeaddon_template_import_state', esc_html__('Content installing', 'animation-addons-for-elementor'));
 					$template_data['next_step']  = 'install-template';

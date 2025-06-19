@@ -799,7 +799,7 @@ class Image_Hotspot extends Widget_Base {
 			return;
 		}
 		?>
-        <div class="aae--image-hotspot <?php echo $settings['hsp_animation']; ?>">
+        <div class="aae--image-hotspot <?php echo esc_attr($settings['hsp_animation']); ?>">
 			<?php
 			echo Group_Control_Image_Size::get_attachment_image_html(
 				$settings,
@@ -818,16 +818,16 @@ class Image_Hotspot extends Widget_Base {
 					}
 
 					?>
-                    <a class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . $settings['trigger_type']; ?>" <?php $this->print_render_attribute_string( $link_id ); ?>>
-                        <div class="hotspot-icon <?php echo $item['hsp_layout']; ?>">
+                    <a class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . esc_attr($settings['trigger_type']); ?>" <?php $this->print_render_attribute_string( $link_id ); ?>>
+                        <div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
 							<?php $this->render_hotspot_layout( $item ); ?>
                         </div>
                     </a>
 					<?php
 				} else {
 					?>
-                    <div class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . $settings['trigger_type']; ?>">
-                        <div class="hotspot-icon <?php echo $item['hsp_layout']; ?>">
+                    <div class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . esc_attr($settings['trigger_type']); ?>">
+                        <div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
 							<?php $this->render_hotspot_layout( $item ); ?>
                         </div>
 
