@@ -673,7 +673,7 @@ trait WCF_Post_Query_Trait {
 
 		if ( 'read_later' === $this->get_settings( 'query_type' ) ) {
 			if ( isset( $_COOKIE['readLater'] ) ) {
-				$ids = json_decode( stripslashes( $_COOKIE['readLater'] ), true );
+				$ids = json_decode( sanitize_text_field( wp_unslash( $_COOKIE['readLater']) ) , true );
 
 				if ( is_array( $ids ) && ! empty( $ids ) ) {
 					$query_args['post__in'] = array_map( 'absint', $ids );

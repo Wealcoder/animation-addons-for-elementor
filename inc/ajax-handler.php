@@ -16,10 +16,10 @@ class Ajax_Handler {
 	}
 
 	public static function handle_live_search() {
-		$keyword    = isset( $_POST['keyword'] ) ? sanitize_text_field( $_POST['keyword'] ) : '';
-		$from_date  = isset( $_POST['from_date'] ) ? sanitize_text_field( $_POST['from_date'] ) : '';
-		$to_date    = isset( $_POST['to_date'] ) ? sanitize_text_field( $_POST['to_date'] ) : '';
-		$categories = isset( $_POST['category'] ) ? array_map( 'intval', $_POST['category'] ) : [];
+		$keyword    = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
+		$from_date  = isset( $_POST['from_date'] ) ? sanitize_text_field( wp_unslash( $_POST['from_date'] ) ) : '';
+		$to_date    = isset( $_POST['to_date'] ) ? sanitize_text_field( wp_unslash( $_POST['to_date'] ) ) : '';
+		$categories = isset( $_POST['category'] ) ? array_map( 'intval', wp_unslash( $_POST['category'] ) ) : [];
 
 		$args = [
 			'post_type'      => 'post',
