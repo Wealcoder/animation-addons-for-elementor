@@ -1486,6 +1486,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => ''
 					],
+					'vertical-marquee' => [
+						'label'        => 'Vertical Marquee',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
 
 				]
 			]
