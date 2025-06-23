@@ -24,16 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Icon_Box extends Widget_Base {
-	use  WCF_Button_Trait;
-
-	/**
-	 * Retrieve the widget name.
-	 *
-	 * @return string Widget name.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
+	use WCF_Button_Trait;	
 	public function get_name() {
 		return 'wcf--icon-box';
 	}
@@ -101,6 +92,7 @@ class Icon_Box extends Widget_Base {
 	 * @access protected
 	 */
 	protected function register_controls() {
+
 		$this->start_controls_section(
 			'section_content',
 			[
@@ -134,10 +126,8 @@ class Icon_Box extends Widget_Base {
 				'default'          => [
 					'value'   => 'fas fa-star',
 					'library' => 'fa-solid',
-				],
-				'dynamic'     => [
-					'active' => true,
-				],
+				],				
+				
 			]
 		);
 
@@ -607,10 +597,10 @@ class Icon_Box extends Widget_Base {
 				'type' => Controls_Manager::SELECT,
 				'default' => 'right',
 				'options' => [
-					'top' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
-					'right' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
-					'bottom'  => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
-					'left' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+					'top'    => esc_html__( 'Top', 'animation-addons-for-elementor' ),
+					'right'  => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+					'bottom' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
+					'left'   => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 				],
 				'prefix_class' => 'hover-start-',
 				'condition' => [
