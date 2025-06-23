@@ -365,19 +365,19 @@ export const freeProComparisonList = [
     name: "Free Widgets",
     helpText: "",
     free: {
-      text: "44",
+      text: "46",
       icon: "",
     },
     pro1: {
-      text: "44",
+      text: "46",
       icon: "",
     },
     pro2: {
-      text: "44",
+      text: "46",
       icon: "",
     },
     pro3: {
-      text: "44",
+      text: "46",
       icon: "",
     },
   },
@@ -389,15 +389,15 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "44",
+      text: "46",
       icon: "",
     },
     pro2: {
-      text: "44",
+      text: "46",
       icon: "",
     },
     pro3: {
-      text: "44",
+      text: "46",
       icon: "",
     },
   },
@@ -506,7 +506,7 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CheckIcon,
+      icon: CrossIcon,
     },
     pro1: {
       text: "",
