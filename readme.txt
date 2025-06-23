@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website templ
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -419,6 +419,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.5 – 19 june 2025 =
+  - 🆕 **optimize:** Optimize Hotspot widget  
+  - 🎨 **Fixed:** Icon Box
+
 
 = Animation Addons for Elementor v2.3.4 – 19 june 2025 =
   - 🆕 **Added:** Meta type review, read later, updated date 
