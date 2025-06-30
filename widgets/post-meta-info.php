@@ -103,6 +103,20 @@ class Post_Meta_Info extends Widget_Base {
 				]
 			]
 		);
+		
+		$this->add_control(
+			'show_title',
+			[
+				'label'   => esc_html__( 'Show Title', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'condition' => [ 'layout_style' => [ '1' ] ],
+				'default' => 'no',
+				'options' => [
+					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
+				]
+			]
+		);
 
 		$this->add_control(
 			'share_separator_icons',
@@ -2088,6 +2102,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-date wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo get_the_date( get_option( 'date_format' ) ); ?>
                 </li>
@@ -2116,6 +2133,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
 				<?php if ( 'yes' === $meta['multiple_category'] ): ?>
                     <li class="wcf--category-wrap">
+                        <?php if($settings['show_title'] == 'yes') { ?>
+                        <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                        <?php } ?>
 						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                         <ul class="wcf--category-list">
 							<?php foreach ( $cat as $key => $term ) { ?>
@@ -2140,6 +2160,9 @@ class Post_Meta_Info extends Widget_Base {
 					<?php if ( isset( $cat[0] ) ) { ?>
                         <li class="wcf--meta-category wcf-separator"
                             data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                             <?php if($settings['show_title'] == 'yes') { ?>
+                                <span><?php echo wp_kses_post( $meta['list_title'] ); ?>;</span> 
+                            <?php } ?>
 							<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                             <a class="wcf-btn-default btn-<?php echo esc_attr( $settings['category_hover_list'] ); ?>"
                                href="<?php echo esc_url( get_category_link( $cat[0]->term_id ) ); ?>">
@@ -2210,7 +2233,12 @@ class Post_Meta_Info extends Widget_Base {
                 <li class="wcf--meta-author wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-                    <a href="<?php echo esc_url( $_posts_url ); ?>"><?php echo esc_html( $get_author ); ?></a>
+                    <a href="<?php echo esc_url( $_posts_url ); ?>">
+                          <?php if($settings['show_title'] == 'yes') { ?>
+                            <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                        <?php } ?>
+                        <?php echo esc_html( $get_author ); ?>
+                        </a>
                 </li>
 			<?php endif; ?>
 
@@ -2237,6 +2265,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>&nbsp;
 					<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
@@ -2269,6 +2300,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo esc_html( $time ); ?>
 					<?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?>
@@ -2295,8 +2329,10 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-comment wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-
                     <span class="separator"><?php Icons_Manager::render_icon( $settings['share_separator_icons'], [ 'aria-hidden' => 'true' ] ); ?></span>
 					<?php comments_number(); ?>
                 </li>
@@ -2349,6 +2385,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="post-time-ago wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo esc_html( $meta['list_title'] ); ?>
 					<?php echo esc_html( $time_ago ); ?>
@@ -2396,6 +2435,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo wp_kses_post( $total_ratings ); ?>
 					<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
@@ -2425,6 +2467,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                     <span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
                         <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
@@ -2454,6 +2499,9 @@ class Post_Meta_Info extends Widget_Base {
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-date wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
+                    <?php if($settings['show_title'] == 'yes') { ?>
+                    <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
+                    <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					<?php echo wp_kses_post( get_the_modified_time( get_option( 'date_format' ) ) ); ?>
                 </li>
