@@ -1255,6 +1255,21 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Use the Youtube Video Widget to bring artistic, interactive flair to your sites videos.'
 					],
+					'scrollable-video' => [
+						'label'        => 'Scrollable Video',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => true,
+						'is_upcoming'  => false,
+						'icon'         => "wcf-icon-Video-Box",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
 				]
 			],
 			'advanced-elements'  => [
@@ -1473,6 +1488,21 @@ $config = [
 					],
 					'stacked-cards'         => [
 						'label'        => 'Stacked Cards',
+						'is_active'    => false,
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => "wcf-icon-Advanced-Accordion",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => ''
+					],
+					'vertical-marquee' => [
+						'label'        => 'Vertical Marquee',
 						'is_active'    => false,
 						'location'     => [
 							'cTab' => 'all'
