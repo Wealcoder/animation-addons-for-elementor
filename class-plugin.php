@@ -702,7 +702,6 @@ class Plugin {
             <div class="dialog-message dialog-lightbox-message">
                 <div class="dialog-content dialog-lightbox-content">
                     <div class="elementor-template-library-templates">
-
                         <!--toolbar-->
                         <div id="elementor-template-library-toolbar">
                             <div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
