@@ -297,6 +297,26 @@ class Post_Meta_Info extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'label_gap',
+			[
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range'      => [
+					'px' => [
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--meta-list.style-2 li ' => 'gap: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--meta-list.style-1 li ' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[

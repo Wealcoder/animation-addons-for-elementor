@@ -420,6 +420,10 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.6 – 19 july 2025 =
+  - 🆕 **Added:** New title show control in meta widget 
+  
+
 = Animation Addons for Elementor v2.3.5 – 19 june 2025 =
   - 🆕 **optimize:** Optimize Hotspot widget  
   - 🎨 **Fixed:** Icon Box
