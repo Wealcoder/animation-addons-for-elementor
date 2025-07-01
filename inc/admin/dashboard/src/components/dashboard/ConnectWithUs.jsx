@@ -117,11 +117,8 @@ const ConnectWithUs = () => {
         <div>
           <a
             href="https://www.facebook.com/groups/animationaddons"
-            aria-disabled="true"
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "w-full pointer-events-none opacity-50"
-            )}
+            target="_blank"
+            className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
             Join Our Community{" "}
             <RiArrowRightUpLine
