@@ -98,7 +98,7 @@ const TikTokSettings = () => {
       </div>
       <div className="px-6 py-5 border-b border-[#F2F5F8]">
         <a
-          href={`https://feed.animation-addons.com/app/callback?redirect_uri=${WCF_ADDONS_ADMIN.adminURL}/admin.php&page=wcf_addons_settings&tab=widgets&cTab=all#tiktok-feed`}
+          href={`https://feed.animation-addons.com/callback?redirect_uri=${WCF_ADDONS_ADMIN.adminURL}/admin.php&page=wcf_addons_settings&tab=widgets&cTab=all#tiktok-feed`}
           target="_blank"
           rel="noreferrer"
           className={cn(
