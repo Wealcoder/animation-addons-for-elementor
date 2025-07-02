@@ -1,7 +1,7 @@
 .elementor-add-wcf-template-button {
-  background-image: url("../images/wcf.png");
+  background-image: url("../images/logo-tpl.png");
   background-repeat: no-repeat;
   background-position: center center;
   position: relative;
-  background-size: 65%;
+  background-size: 100%;
 }

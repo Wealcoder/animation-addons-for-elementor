@@ -61,7 +61,7 @@ const AddonProWidget = () => {
         </div>
         <div>
           <a
-            href={"https://animation-addons.com/release-notes"}
+            href={"https://animation-addons.com/docs/changelogs/"}
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >

@@ -71,13 +71,10 @@ class Library_Source extends Source_Base {
 
 	public function get_data( array $args, $context = 'display' ) {
 		$data = $this->request_template_data( $args['template_id'] );
-
 		$data = json_decode( $data, true );
-
 		if ( empty( $data ) || empty( $data['content'] ) ) {
 			throw new \Exception( esc_html__( 'Template does not have any content', 'animation-addons-for-elementor' ) );
 		}
-
 		$data['content'] = $this->replace_elements_ids( $data['content'] );
 		$data['content'] = $this->process_export_import_content( $data['content'], 'on_import' );
 

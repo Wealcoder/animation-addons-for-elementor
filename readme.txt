@@ -1,11 +1,11 @@
 === Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates ===
-Contributors: wealcoder, wcrayhan, jhshakil, devmizan, ahsanriad
+Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website template
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.5
+Stable tag: 2.3.6
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -419,6 +419,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.6 – 01 july 2025 =
+  - 🆕 **Added:** New title show control in meta widget 
+  - 🎨 **Fixed:** Change template library icon
+  - 🎨 **Update:** Community group link update
 
 = Animation Addons for Elementor v2.3.5 – 19 june 2025 =
   - 🆕 **optimize:** Optimize Hotspot widget  

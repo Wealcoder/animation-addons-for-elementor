@@ -28,7 +28,7 @@ if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 		$user = wp_get_current_user();
 		$allowed_roles = array( 'editor', 'administrator', 'author' );
 		
-		if ( array_intersect( $allowed_roles, $user->roles ) ) {
+		if ( array_intersect( $allowed_roles, $user->roles ) || is_super_admin() ) {
 		
 			$defaults = array(
 				'post_type'   => 'elementor_library',
@@ -157,7 +157,6 @@ if ( ! function_exists( 'wcf_addons_get_active_widgets_count' ) ) :
 		return get_option( 'wcf_save_widgets' ) ? count( get_option( 'wcf_save_widgets' ) ) : 0;
 	}
 endif;
-
 /**
  * Get inactive widgets count
  *
@@ -165,7 +164,6 @@ endif;
  */
 if ( ! function_exists( 'wcf_addons_get_inactive_widgets_count' ) ) :
 	function wcf_addons_get_inactive_widgets_count() {
-
 		return wcf_addons_get_all_widgets_count() - wcf_addons_get_active_widgets_count();
 	}
 endif;
@@ -182,7 +180,6 @@ if ( ! function_exists( 'wcf_addons_get_all_extensions_count' ) ) :
 		foreach ( $widgets as $group ) {
 			$total = $total + count( $group['elements'] );
 		}
-
 		return $total;
 	}
 endif;
@@ -223,13 +220,11 @@ if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
 	 */
 	function wcf_addons_get_settings( $option_name, $element = null ) {
 		$elements = get_option( $option_name );
-
 		return ( isset( $element ) ? ( isset( $elements[ $element ] ) ? $elements[ $element ] : 0 ) : array_keys( array_filter( $elements ) ) );
 	}
 }
 
 if ( ! function_exists( 'wcf_set_postview' ) ) {
-
 	/**
 	 * save single post view count
 	 *

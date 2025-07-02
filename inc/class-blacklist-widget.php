@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 } // Exit if accessed directly
 
 class BlackList_Widget extends \Elementor\Widget_Base {
+    
     public $custom_name = '';
     public $custom_heading = '';
     public function get_name() {
