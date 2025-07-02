@@ -506,6 +506,13 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
+            'clickdrop' => [
+				'handler' => 'aae-clickdrop',
+				'src'     => 'widgets/clickdrop.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 		];
 	}
 

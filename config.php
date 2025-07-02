@@ -446,6 +446,22 @@ $config = [
 						'youtube_url'  => '',
 						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.'
 					],
+					'clickdrop'            => [
+						'label'        => 'Clickdrop',
+						'location'     => [
+							'cTab' => 'all'
+						],
+						'is_active'    => false,
+						'is_pro'       => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'setup'        => [ 'basic' ],
+						'icon'         => "wcf-icon-Countdown",
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.'
+					],
 				]
 			],
 			'animation-elements' => [
