@@ -16,14 +16,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.reinitSelect2();
       //open popup onclick
       $(document).on('click', '#wcf-addons-archive-display-type', this.specificsDisplay);
+      $(document).on('click', '#wcf-addons-single-display-type', this.postFormatDisplay);
       $('body.post-type-wcf-addons-template #wpcontent').on('click', '.page-title-action, .row-title, .row-actions .edit > a', this.openPopup);
       $(document).on('click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup).on('click', ".wcf-addons-tmp-save", this.savePost).on('click', '.wcf-addons-tmp-elementor', this.redirectEditPage).on('wcf_template_edit_popup_open', this.displayLocation).on('change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
       $('#wcf-addons-hf-s-display-type').on('select2:select', function (e) {
         // Get the selected data
-        var selectedItems = $(this).val(); // Get the selected values
-
-        var uniqueItems = _toConsumableArray(new Set(selectedItems)); // Remove duplicates
-
+        var selectedItems = $(this).val(); // Get the selected values             
+        var uniqueItems = _toConsumableArray(new Set(selectedItems)); // Remove duplicates                
         // Update the Select2 element with unique values
         $(this).val(uniqueItems).trigger('change');
       });
@@ -35,6 +34,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         $('.single-category-location').removeClass('hidden');
       } else {
         $('.single-category-location').addClass('hidden');
+      }
+    },
+    postFormatDisplay: function postFormatDisplay(event) {
+      event.preventDefault();
+      var type = $(this).val();
+      if (type == 'post-singular') {
+        $('.single-postformat-location').removeClass('hidden');
+      } else {
+        $('.single-postformat-location').addClass('hidden');
       }
     },
     reinitSelect2: function reinitSelect2() {
@@ -149,6 +157,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 var newOption = new Option(data.text, data.id, true, true);
                 // Append it to the select
                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
+                if (response.responseJSON.data.tmpLocation === 'post-singular' && $('#wcf-addons-single-postformat-display-type').length) {
+                  $('#wcf-addons-single-postformat-display-type').find("option[value='" + i + "']")[0].selected = "true";
+                  $('#wcf-addons-single-postformat-display-type').trigger('change');
+                  $('.single-postformat-location').removeClass('hidden');
+                  console.log('post format display type', response.responseJSON.data.tmpSpLocation);
+                }
               });
             }
             $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
@@ -162,7 +176,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         $(document).trigger('wcf_template_edit_popup_open');
         $('.wcf-addons-tmp-elementor').addClass('button disabled').attr('disabled', 'disabled');
         $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
+        if (WCFThemeBuilder.getParam('template_type')) {
+          $('#wcf-addons-template-type').val(WCFThemeBuilder.getParam('template_type')).trigger('change');
+        }
       }
+    },
+    getParam: function getParam(key) {
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window.location.href;
+      return new URL(url).searchParams.get(key);
     },
     // Close Popup
     closePopup: function closePopup(event) {
@@ -184,6 +205,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if ("specifics_cat" == temDisplay) {
         specificsDisplay = [];
         specificsDisplay.push($('#wcf-addons-single-category-display-type').val());
+      }
+      if (temDisplay == 'post-singular' && $('#wcf-addons-single-postformat-display-type.hidden').length == 0) {
+        specificsDisplay = [];
+        specificsDisplay.push($('#wcf-addons-single-postformat-display-type').val());
       }
       $.ajax({
         url: WCF_Theme_Builder.ajaxurl,
@@ -233,6 +258,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     displayLocation: function displayLocation(event) {
       var type = $('#wcf-addons-template-type').val();
+      $('.single-postformat-location').addClass('hidden');
       $('.hf-s-location').addClass('hidden');
       if ('archive' === type) {
         $('.archive-location').removeClass('hidden');
@@ -240,6 +266,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       } else if ('single' === type) {
         $('.single-location').removeClass('hidden');
         $('.hf-location, .archive-location').addClass('hidden');
+        if ($('#wcf-addons-single-display-type').val() === 'post-singular') {
+          $('.single-postformat-location').removeClass('hidden');
+        }
       } else {
         $('.hf-location').removeClass('hidden');
         $('.single-location, .archive-location').addClass('hidden');
