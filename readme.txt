@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website templ
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.6
+Stable tag: 2.3.7
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -419,6 +419,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.7 – 03 july 2025 =
+  - 🆕 **Added:** PopUp Builder Option
+  - 🎨 **Fixed:** Dashboard name issue
+  - 🎨 **Update:** meta style option
 
 = Animation Addons for Elementor v2.3.6 – 01 july 2025 =
   - 🆕 **Added:** New title show control in meta widget 
