@@ -132,14 +132,19 @@ class ClickDrop extends Widget_Base
                 ],
                 'default' => [
                     [
-                        'list_title' => esc_html__('https://crowdytheme.com', 'animation-addons-for-elementor'),
-                        'list_icon' => [
+                        'menu_title' => esc_html__('Saved', 'animation-addons-for-elementor'),
+                        'menu_link' => [
+                            'url' => 'https://crowdytheme.com',
+                            'is_external' => true,
+                            'nofollow' => true,
+                        ],
+                        'menu_icon' => [
                             'value' => 'fas fa-circle',
                             'library' => 'fa-solid',
                         ],
                     ],
                 ],
-                'title_field' => '{{{ list_title }}}',
+                'title_field' => '{{{ menu_title }}}',
             ]
         );
         $this->end_controls_section();
@@ -351,9 +356,10 @@ class ClickDrop extends Widget_Base
         $this->end_controls_section();
     }
 
-    protected function render()
-    {
+    protected function render() {
         $settings = $this->get_settings_for_display();
+        $widget_id = $this->get_id(); // Unique ID for each widget instance
+
         if (!is_user_logged_in()) {
             ?>
             <a href="<?php echo esc_url(wp_login_url()); ?>"
@@ -361,48 +367,59 @@ class ClickDrop extends Widget_Base
             <?php
         } else {
             ?>
-            <div class="aae-clickdrop-wrapper">
+            <div class="aae-clickdrop-wrapper elementor-element-<?php echo esc_attr($widget_id); ?>">
                 <div class="aae-clickdrop-inner">
-                    <button class="aae-clickdrop-btn"><?php echo $settings['logged_label']; ?></button>
-                    <div class="aae-clickdrop-modal">
+                    <button class="aae-clickdrop-btn"><?php echo esc_html($settings['logged_label']); ?></button>
+                    <div class="aae-clickdrop-modal" style="display: none;">
                         <ul>
                             <?php
-                            foreach ($settings['menus_url'] as $item) {
-                                ?>
-                                <li>
-                                    <?php
+                            if (!empty($settings['menus_url']) && is_array($settings['menus_url'])) {
+                                foreach ($settings['menus_url'] as $item) {
                                     $url = !empty($item['menu_link']['url']) ? $item['menu_link']['url'] : '#';
                                     $is_external = !empty($item['menu_link']['is_external']) ? ' target="_blank"' : '';
                                     $nofollow = !empty($item['menu_link']['nofollow']) ? ' rel="nofollow"' : '';
                                     ?>
-                                    <a href="<?php echo esc_url($url); ?>"<?php echo $is_external . $nofollow; ?>>
-                                        <?php
-                                        if (!empty($item['menu_icon']['value'])) {
-                                            \Elementor\Icons_Manager::render_icon($item['menu_icon'], ['aria-hidden' => 'true']);
-                                        }
-                                        ?>
-                                        <span><?php echo esc_html($item['menu_title']); ?></span>
-                                    </a>
-                                </li>
-
-                                <?php
+                                    <li>
+                                        <a href="<?php echo esc_url($url); ?>"<?php echo esc_attr($is_external . $nofollow); ?>>
+                                            <?php
+                                            if (!empty($item['menu_icon']['value'])) {
+                                                \Elementor\Icons_Manager::render_icon($item['menu_icon'], ['aria-hidden' => 'true']);
+                                            }
+                                            ?>
+                                            <span><?php echo esc_html($item['menu_title']); ?></span>
+                                        </a>
+                                    </li>
+                                    <?php
+                                }
                             }
                             ?>
                         </ul>
                     </div>
                 </div>
             </div>
+            <script>
+                (function ($) {
+                    $(document).ready(function () {
+                        let $wrapper = $(".elementor-element-<?php echo esc_js($widget_id); ?>");
+                        let $btn = $wrapper.find(".aae-clickdrop-btn");
+                        let $modal = $wrapper.find(".aae-clickdrop-modal");
+
+                        $btn.on("click", function (e) {
+                            e.stopPropagation();
+                            $modal.slideToggle();
+                        });
+
+                        // Click outside to close
+                        $(document).on("click", function (e) {
+                            if (!$wrapper.is(e.target) && $wrapper.has(e.target).length === 0) {
+                                $modal.slideUp();
+                            }
+                        });
+                    });
+                })(jQuery);
+            </script>
             <?php
         }
-        ?>
-
-        <script>
-            (function ($) {
-                $(".aae-clickdrop-btn").click(function () {
-                    $(".aae-clickdrop-modal").slideToggle();
-                });
-            })(jQuery);
-        </script>
-        <?php
     }
+
 }
