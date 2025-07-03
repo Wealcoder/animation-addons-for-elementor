@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\Widgets;
 
 use Elementor\Controls_Manager;
+use Elementor\Repeater;
 use Elementor\Plugin;
 use Elementor\Utils;
 use Elementor\Group_Control_Text_Stroke;
@@ -19,7 +20,7 @@ class ClickDrop extends Widget_Base
 
     public function get_name()
     {
-        return 'wcf--clickdrop';
+        return 'aae--clickdrop';
     }
 
     public function get_title()
@@ -85,51 +86,120 @@ class ClickDrop extends Widget_Base
                 'placeholder' => esc_html__('Your Account', 'animation-addons-for-elementor'),
             ]
         );
+
+        $repeater = new Repeater();
+
+        $repeater->start_controls_tabs('repeater_tabs');
+
+        $repeater->start_controls_tab(
+            'content_tab',
+            [
+                'label' => esc_html__('Content', 'animation-addons-for-elementor'),
+            ]
+        );
+        $repeater->add_control(
+            'menu_title',
+            [
+                'label' => esc_html__('Menu title', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::TEXT,
+                'default' => esc_html__('Saved', 'animation-addons-for-elementor'),
+                'label_block' => true,
+            ]
+        );
+        $repeater->add_control(
+            'menu_link',
+            [
+                'label' => esc_html__('Menu URL', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::URL,
+                'default' => [
+                    'url' => 'https://crowdytheme.com',
+                    'is_external' => true,
+                    'nofollow' => true,
+                ],
+                'label_block' => true,
+            ]
+        );
+        $repeater->add_control(
+            'menu_icon',
+            [
+                'label' => esc_html__('Menu Icon', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::ICONS,
+                'default' => [
+                    'value' => 'fas fa-circle',
+                    'library' => 'fa-solid',
+                ],
+                'recommended' => [
+                    'fa-solid' => [
+                        'circle',
+                        'dot-circle',
+                        'square-full',
+                    ],
+                    'fa-regular' => [
+                        'circle',
+                        'dot-circle',
+                        'square-full',
+                    ],
+                ],
+            ]
+        );
+
+        $repeater->end_controls_tab();
+
+        $repeater->start_controls_tab(
+            'style_tab',
+            [
+                'label' => esc_html__('Style', 'animation-addons-for-elementor'),
+            ]
+        );
+        $repeater->add_control(
+            'rep_label_color',
+            [
+                'label' => esc_html__('Menu Color', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::COLOR,
+                'default' => '#000000',
+            ]
+        );
+        $repeater->add_control(
+            'rep_icon_color',
+            [
+                'label' => esc_html__('Icon Color', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::COLOR,
+                'default' => '#000000',
+            ]
+        );
+        $repeater->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'rep_border',
+                'fields_options' => [
+                    'border' => [
+                        'default' => 'solid',
+                    ],
+                    'width' => [
+                        'default' => [
+                            'top' => '1',
+                            'right' => '1',
+                            'bottom' => '1',
+                            'left' => '1',
+                            'isLinked' => true,
+                        ],
+                    ],
+                    'color' => [
+                        'default' => '#000000',
+                    ],
+                ],
+            ]
+        );
+
+        $repeater->end_controls_tab();
+        $repeater->end_controls_tabs();
+
         $this->add_control(
             'menus_url',
             [
+                'label' => esc_html__('Menu Items', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::REPEATER,
-                'fields' => [
-                    [
-                        'name' => 'menu_title',
-                        'label' => esc_html__('Menu title', 'animation-addons-for-elementor'),
-                        'type' => Controls_Manager::TEXT,
-                        'default' => esc_html__('Saved', 'animation-addons-for-elementor'),
-                        'label_block' => true,
-                    ],
-                    [
-                        'name' => 'menu_link',
-                        'label' => esc_html__('Menu URL', 'animation-addons-for-elementor'),
-                        'type' => Controls_Manager::URL,
-                        'default' => [
-                            'url' => 'https://crowdytheme.com',
-                            'is_external' => true,
-                            'nofollow' => true,
-                        ],
-                        'label_block' => true,
-                    ],
-                    [
-                        'name' => 'menu_icon',
-                        'label' => esc_html__('Menu Icon', 'animation-addons-for-elementor'),
-                        'type' => Controls_Manager::ICONS,
-                        'default' => [
-                            'value' => 'fas fa-circle',
-                            'library' => 'fa-solid',
-                        ],
-                        'recommended' => [
-                            'fa-solid' => [
-                                'circle',
-                                'dot-circle',
-                                'square-full',
-                            ],
-                            'fa-regular' => [
-                                'circle',
-                                'dot-circle',
-                                'square-full',
-                            ],
-                        ],
-                    ],
-                ],
+                'fields' => $repeater->get_controls(),
                 'default' => [
                     [
                         'menu_title' => esc_html__('Saved', 'animation-addons-for-elementor'),
@@ -144,6 +214,7 @@ class ClickDrop extends Widget_Base
                         ],
                     ],
                 ],
+                'render_type' => 'template',
                 'title_field' => '{{{ menu_title }}}',
             ]
         );
@@ -356,7 +427,8 @@ class ClickDrop extends Widget_Base
         $this->end_controls_section();
     }
 
-    protected function render() {
+    protected function render()
+    {
         $settings = $this->get_settings_for_display();
         $widget_id = $this->get_id(); // Unique ID for each widget instance
 
@@ -374,19 +446,51 @@ class ClickDrop extends Widget_Base
                         <ul>
                             <?php
                             if (!empty($settings['menus_url']) && is_array($settings['menus_url'])) {
-                                foreach ($settings['menus_url'] as $item) {
+                                foreach ($settings['menus_url'] as $index => $item) {
+
                                     $url = !empty($item['menu_link']['url']) ? $item['menu_link']['url'] : '#';
                                     $is_external = !empty($item['menu_link']['is_external']) ? ' target="_blank"' : '';
                                     $nofollow = !empty($item['menu_link']['nofollow']) ? ' rel="nofollow"' : '';
+
+                                    // Generate unique class for each repeater item
+                                    $item_class = 'aae-clickdrop-item-' . $index;
+
+                                    // Inline styles for individual item
+                                    $label_color = !empty($item['rep_label_color']) ? 'color: ' . esc_attr($item['rep_label_color']) . ';' : '';
+                                    $icon_color = !empty($item['rep_icon_color']) ? 'fill: ' . esc_attr($item['rep_icon_color']) . ';' : '';
+
+                                    // Border styles
+                                    $border_style = '';
+                                    if (!empty($item['rep_border_border'])) {
+                                        if (!empty($item['rep_border_width']) && is_array($item['rep_border_width'])) {
+                                            $top = isset($item['rep_border_width']['top']) ? esc_attr($item['rep_border_width']['top']) . 'px' : '0';
+                                            $right = isset($item['rep_border_width']['right']) ? esc_attr($item['rep_border_width']['right']) . 'px' : '0';
+                                            $bottom = isset($item['rep_border_width']['bottom']) ? esc_attr($item['rep_border_width']['bottom']) . 'px' : '0';
+                                            $left = isset($item['rep_border_width']['left']) ? esc_attr($item['rep_border_width']['left']) . 'px' : '0';
+
+                                            $border_style .= "border-style: " . esc_attr($item['rep_border_border']) . ";";
+                                            $border_style .= "border-color: " . (!empty($item['rep_border_color']) ? esc_attr($item['rep_border_color']) : '#000') . ";";
+                                            $border_style .= "border-width: {$top} {$right} {$bottom} {$left};";
+                                        }
+                                    } else {
+                                        $border_style = 'border: none;';
+                                    }
+
                                     ?>
-                                    <li>
+
+                                    <li class="<?php echo esc_attr($item_class); ?>"
+                                        style="<?php echo esc_attr($border_style); ?>">
                                         <a href="<?php echo esc_url($url); ?>"<?php echo esc_attr($is_external . $nofollow); ?>>
                                             <?php
                                             if (!empty($item['menu_icon']['value'])) {
+                                                echo '<span style="' . esc_attr($icon_color) . '">';
                                                 \Elementor\Icons_Manager::render_icon($item['menu_icon'], ['aria-hidden' => 'true']);
+                                                echo '</span>';
                                             }
                                             ?>
-                                            <span><?php echo esc_html($item['menu_title']); ?></span>
+                                            <span style="<?php echo esc_attr($label_color); ?>">
+            <?php echo esc_html($item['menu_title']); ?>
+        </span>
                                         </a>
                                     </li>
                                     <?php
@@ -397,27 +501,6 @@ class ClickDrop extends Widget_Base
                     </div>
                 </div>
             </div>
-            <script>
-                (function ($) {
-                    $(document).ready(function () {
-                        let $wrapper = $(".elementor-element-<?php echo esc_js($widget_id); ?>");
-                        let $btn = $wrapper.find(".aae-clickdrop-btn");
-                        let $modal = $wrapper.find(".aae-clickdrop-modal");
-
-                        $btn.on("click", function (e) {
-                            e.stopPropagation();
-                            $modal.slideToggle();
-                        });
-
-                        // Click outside to close
-                        $(document).on("click", function (e) {
-                            if (!$wrapper.is(e.target) && $wrapper.has(e.target).length === 0) {
-                                $modal.slideUp();
-                            }
-                        });
-                    });
-                })(jQuery);
-            </script>
             <?php
         }
     }

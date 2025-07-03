@@ -104,7 +104,26 @@
 
         });
 
+
+        const ClickDrop = function ($scope) {
+            let $btn = $scope.find(".aae-clickdrop-btn");
+            let $modal = $scope.find(".aae-clickdrop-modal");
+
+            $btn.on("click", function (e) {
+                e.stopPropagation();
+                $modal.slideToggle();
+            });
+
+            // Click outside to close
+            $(document).on("click", function (e) {
+                if (!$scope.is(e.target) && $scope.has(e.target).length === 0) {
+                    $modal.slideUp();
+                }
+            });
+        };
+
         elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--contact-form-7.default`, contact_form_7);
+        elementorFrontend.hooks.addAction(`frontend/element_ready/aae--clickdrop.default`, ClickDrop);
 
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--countdown.default', function ($scope) {
             elementorFrontend.elementsHandler.addHandler(Countdown, {
