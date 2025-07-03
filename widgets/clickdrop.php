@@ -284,6 +284,25 @@ class ClickDrop extends Widget_Base
                 'selector' => '{{WRAPPER}} .aae-clickdrop-btn',
             ]
         );
+        $this->add_control(
+            'label_padding',
+            [
+                'label' => esc_html__('Padding', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem', 'custom'],
+                'default' => [
+                    'top' => 2,
+                    'right' => 0,
+                    'bottom' => 2,
+                    'left' => 0,
+                    'unit' => 'px',
+                    'isLinked' => false,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .aae-clickdrop-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
         // text menu style
         $this->add_control(
             'menu_text',
