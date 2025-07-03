@@ -161,7 +161,7 @@ class Post_Meta_Info extends Widget_Base {
 			'reading_time' => esc_html__( 'Reading Time', 'animation-addons-for-elementor' ),
 			'comment'      => esc_html__( 'Comment', 'animation-addons-for-elementor' ),
 			'review'       => esc_html__( 'Review', 'animation-addons-for-elementor' ),
-			'read-later'   => esc_html__( 'Read Later', 'animation-addons-for-elementor' ),
+			'read-later'   => esc_html__( 'Save', 'animation-addons-for-elementor' ),
 			'time-ago'     => esc_html__( 'Post Time Ago', 'animation-addons-for-elementor' ),
 			'last-update'  => esc_html__( 'Last Updated', 'animation-addons-for-elementor' ),
 		];
@@ -2492,7 +2492,7 @@ class Post_Meta_Info extends Widget_Base {
                     <?php } ?>
 					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                     <span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
-                        <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
+                        <?php echo esc_html__( 'Save', 'animation-addons-for-elementor' ); ?>
                     </span>
                 </li>
 			<?php endif; ?>
@@ -2505,7 +2505,7 @@ class Post_Meta_Info extends Widget_Base {
                     </div>
                     <div class="wcf--meta-view">
 						<span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
-                            <?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
+                            <?php echo esc_html__( 'Save', 'animation-addons-for-elementor' ); ?>
                         </span>
                     </div>
                 </li>
