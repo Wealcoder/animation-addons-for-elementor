@@ -163,11 +163,7 @@
                                 let data = {id: i, text: item};
                                 let newOption = new Option(data.text, data.id, true, true);
                                 // Append it to the select
-                                $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
-                                if(response.responseJSON.data.tmpLocation === 'post-singular' && $('#wcf-addons-single-postformat-display-type').length){
-                                    $('#wcf-addons-single-postformat-display-type').find("option[value='"+i+"']")[0].selected = "true";
-                                    $('#wcf-addons-single-postformat-display-type').trigger('change');                                                                  
-                                }
+                                $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');                               
                             });
                         }
 
@@ -218,17 +214,12 @@
                   title            = $('#wcf-addons-template-title').val(),
                   tmpType          = $('#wcf-addons-template-type').val(),
                   temDisplay       = $('.hf-location:visible select, .archive-location:visible select, .single-location:visible select').val();
-            let   specificsDisplay = $('.hf-s-location:visible select').val();
+            let specificsDisplay = $('.hf-s-location:visible select').val();
 
                 if("specifics_cat" == temDisplay){
                     specificsDisplay = [];
                     specificsDisplay.push( $('#wcf-addons-single-category-display-type').val() );
-                }
-
-                if(temDisplay == 'post-singular' && $('#wcf-addons-single-postformat-display-type.hidden').length == 0){
-                    specificsDisplay = [];                   
-                    specificsDisplay.push( $('#wcf-addons-single-postformat-display-type').val() );    
-                }                            
+                }                                         
                 
                 $.ajax({
                 url: WCF_Theme_Builder.ajaxurl,
