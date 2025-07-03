@@ -1,24 +1,10 @@
-.aae-clickdrop-wrapper{
-
+.aae-clickdrop-btn{
+  cursor: pointer;
 }
-.aae-clickdrop-inner{
-  position: relative;
-  &:hover .aae-clickdrop-modal{
-    //opacity: 1;
-    //visibility: visible;
-  }
-}
-//.aae-clickdrop-modal{
-//  position: absolute;
-//  top: 100%;
-//  left: 0;
-//  opacity: 0;
-//  visibility: hidden;
-//}
-
 .aae-clickdrop-modal{
   width: 150px;
   display: none;
+  background-color: rgb(0, 0, 0);
   ul{
     li{
       a{
@@ -35,7 +21,6 @@
         text-transform: none;
         text-decoration: none;
         letter-spacing: 0px;
-        background-color: rgb(0, 0, 0);
         color: white;
         svg{
           fill: #f00;

@@ -1,9 +1,11 @@
-.aae-clickdrop-inner {
-  position: relative;
+.aae-clickdrop-btn {
+  cursor: pointer;
 }
+
 .aae-clickdrop-modal {
   width: 150px;
   display: none;
+  background-color: rgb(0, 0, 0);
 }
 .aae-clickdrop-modal ul li a {
   display: grid;
@@ -19,7 +21,6 @@
   text-transform: none;
   text-decoration: none;
   letter-spacing: 0px;
-  background-color: rgb(0, 0, 0);
   color: white;
 }
 .aae-clickdrop-modal ul li a svg {
