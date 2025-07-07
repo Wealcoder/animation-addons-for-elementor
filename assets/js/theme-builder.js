@@ -20,10 +20,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       $(document).on('click', '.wcf-addons-body-overlay,.wcf-addons-template-edit-cross', this.closePopup).on('click', ".wcf-addons-tmp-save", this.savePost).on('click', '.wcf-addons-tmp-elementor', this.redirectEditPage).on('wcf_template_edit_popup_open', this.displayLocation).on('change', '#wcf-addons-template-type, #wcf-addons-hf-display-type', this.displayLocation);
       $('#wcf-addons-hf-s-display-type').on('select2:select', function (e) {
         // Get the selected data
-        var selectedItems = $(this).val(); // Get the selected values
-
-        var uniqueItems = _toConsumableArray(new Set(selectedItems)); // Remove duplicates
-
+        var selectedItems = $(this).val(); // Get the selected values             
+        var uniqueItems = _toConsumableArray(new Set(selectedItems)); // Remove duplicates                
         // Update the Select2 element with unique values
         $(this).val(uniqueItems).trigger('change');
       });
@@ -162,7 +160,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         $(document).trigger('wcf_template_edit_popup_open');
         $('.wcf-addons-tmp-elementor').addClass('button disabled').attr('disabled', 'disabled');
         $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
+        if (WCFThemeBuilder.getParam('template_type')) {
+          $('#wcf-addons-template-type').val(WCFThemeBuilder.getParam('template_type')).trigger('change');
+        }
       }
+    },
+    getParam: function getParam(key) {
+      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window.location.href;
+      return new URL(url).searchParams.get(key);
     },
     // Close Popup
     closePopup: function closePopup(event) {

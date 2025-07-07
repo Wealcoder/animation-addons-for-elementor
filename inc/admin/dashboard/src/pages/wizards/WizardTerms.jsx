@@ -53,7 +53,7 @@ const WizardTerms = () => {
           <div className="mt-[40px] w-[600px] rounded-3xl mx-auto border-[10px] border-white overflow-hidden">
             <div className="bg-[linear-gradient(180deg,#F0F4F8_0%,#FEF3EC_100%)] p-6">
               <p className="text-base text-text-secondary text-center mt-[7px] mb-6">
-                Thank you for choosing Essential Addons for Elementor. Follow
+                Thank you for choosing Animation Addons for Elementor. Follow
                 these simple steps of easy setup wizard & enjoy your Elementor
                 web-building experience now!
               </p>

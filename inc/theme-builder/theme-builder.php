@@ -459,7 +459,40 @@ class WCF_Theme_Builder {
 
 		//check for singular
 		if ( is_singular() ) {
+			// check for specific post format current post format 	
 
+		
+			if(is_singular('post') && isset($templates['post-singular']) && is_numeric($templates['post-singular'])){
+				// get category slug
+				
+				$get_queried_object = get_queried_object();			
+						
+				$query_args['meta_query'][] = array(
+					'key'   => self::CPT_META . '_location',
+					'value' => 'post-singular',
+					'compare' => 'LIKE'
+				);	
+						
+				$query     = new \WP_Query( $query_args );					
+				$cat_id    = null;
+				foreach ( $query->posts as $key => $post_id ) {
+					$format  = get_post_format( $post_id ) ?: 'standard';
+					$location   = get_post_meta( absint( $post_id ), self::CPT_META . '_location', true );
+					$splocation = json_decode( get_post_meta( absint( $post_id ), self::CPT_META . '_splocation', true ) );					
+					if ( ! empty( $location ) && ! empty( $splocation ) ) {		
+						//aae_print($splocation);						
+											
+						if ( 'post-singular' === $location && $splocation[0] === $get_queried_object->slug ) {							
+							$cat_id = $post_id;
+						} 
+					}					
+				}			
+				wp_reset_postdata();
+				if(is_numeric($cat_id)){
+					return $cat_id;			
+				}
+				
+			}
 			//if template type single ignore post type page
 			if ( ( 'page' === get_post_type() || self::CPTTYPE === get_post_type() ) && 'single' === $tmpType ) {
 				return false;
@@ -575,8 +608,6 @@ class WCF_Theme_Builder {
 			echo self::render_build_content( $archive_template_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
-	///template///
-
 
 	/**
 	 * Print Admin Tab
@@ -937,7 +968,36 @@ class WCF_Theme_Builder {
 		 */
 		return apply_filters( 'wcf_display_taxonomy_list', $selection_options );
 	}
+	
+	/**
+	 * Get single location selection options.
+	 *
+	 * @return array
+	 */
+	public static function get_postformat_location_selections() {
+		// 1. Which formats does the theme actually support?
+		$formats = get_theme_support( 'post-formats' );
+		$supported = is_array( $formats ) && isset( $formats[0] ) ? $formats[0] : [];
 
+		$options = [];
+
+		// 2. Convert each slug (aside, gallery…) into a neat label.
+		foreach ( $supported as $slug ) {
+			$label = get_post_format_string( $slug );            // e.g. "Gallery"
+			$options[ $label ] = [
+				'label' => esc_html( $label ),
+				'value' => [
+					"post-format-$slug" => esc_html( "$label post_format" ),
+				],
+			];
+		}
+
+		/**
+		 * Let other plugins tweak, merge, or translate the list.
+		 * Hook name: my_display_post_format_list
+		 */
+		return apply_filters( 'aae_display_post_format_list', $options );
+	}
 	/**
 	 * Register Builder Custom post
 	 *
@@ -1150,6 +1210,18 @@ class WCF_Theme_Builder {
                                 </select>
                             </div>
 
+							<div class="wcf-addons-template-edit-field single-postformat-location hidden">
+                                <label class="wcf-addons-template-edit-label">{{{data.heading.fields.postFormat}}}</label>
+                                <select class="wcf-addons-template-edit-input" name="wcf-addons-single-postformat-display-type"
+                                        id="wcf-addons-single-postformat-display-type">
+										<option value="">None</option>
+										<?php foreach(self::get_postformat_location_selections() as $item){ ?>
+											<?php $key = key($item['value']); ?>
+											<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($item['label']); ?></option>
+										<?php } ?>								           
+                                </select>
+                            </div>
+
                         </div>
 
                         <div class="wcf-addons-template-edit-footer">
@@ -1206,7 +1278,7 @@ class WCF_Theme_Builder {
 			$tmpType          = ! empty( $_POST['tmpType'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpType'] ) ) : 'single';
 			$tmplocation      = ! empty( $_POST['tmpDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpDisplay'] ) ) : '';
 			$specificsDisplay = ! empty( $_POST['specificsDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['specificsDisplay'] ) ) : '';
-
+			
 			$data = [
 				'title'         => $title,
 				'id'            => $tmpid,
@@ -1250,7 +1322,7 @@ class WCF_Theme_Builder {
 
 			if ( ! wp_verify_nonce( $nonce, 'wcf_tmp_nonce' ) ) {
 				$errormessage = array(
-					'message' => esc_html__( 'Nonce Varification Faild !', 'animation-addons-for-elementor' )
+					'message' => esc_html__( 'Nonce Varification Failed !', 'animation-addons-for-elementor' )
 				);
 				wp_send_json_error( $errormessage );
 			}
@@ -1441,6 +1513,10 @@ class WCF_Theme_Builder {
 				update_post_meta( $new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation'] );
 			}
 
+			if ( 'post-singular' === $data['tmplocation'] && 'single' === $data['tmptype'] ) {
+				update_post_meta( $new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation'] );
+			}
+
 			wp_send_json_success( $return );
 
 		} else {
@@ -1482,6 +1558,10 @@ class WCF_Theme_Builder {
 				update_post_meta( $data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation'] );				
 		}
 
+		if ( 'post-singular' === $data['tmplocation'] && 'single' === $data['tmptype'] ) {
+				update_post_meta( $data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation'] );				
+		}
+		
 		$return = array(
 			'message' => esc_html__( 'Template has been updated', 'animation-addons-for-elementor' ),
 			'id'      => $data['id']			
@@ -1520,6 +1600,7 @@ class WCF_Theme_Builder {
 				'archivelocation' => self::get_archive_location_selections(),
 				'singlelocation'  => self::get_single_location_selections(),
 				'postcategory'  => self::get_category_location_selections(),
+				'postformat'  => self::get_postformat_location_selections(),
 				'templatetype'    => self::get_template_type(),
 				'labels'          => [
 					'fields'  => [
@@ -1530,6 +1611,7 @@ class WCF_Theme_Builder {
 						'type'    => esc_html__( 'Type', 'animation-addons-for-elementor' ),
 						'display' => esc_html__( 'Display', 'animation-addons-for-elementor' ),
 						'category' => esc_html__( 'Category', 'animation-addons-for-elementor' ),
+						'postFormat' => esc_html__( 'Post Format', 'animation-addons-for-elementor' ),
 					],
 					'head'    => esc_html__( 'Template Settings', 'animation-addons-for-elementor' ),
 					'buttons' => [
