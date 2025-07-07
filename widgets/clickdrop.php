@@ -177,15 +177,15 @@ class ClickDrop extends Widget_Base
                     ],
                     'width' => [
                         'default' => [
-                            'top' => '1',
-                            'right' => '1',
-                            'bottom' => '1',
-                            'left' => '1',
+                            'top' => '0',
+                            'right' => '0',
+                            'bottom' => '0',
+                            'left' => '0',
                             'isLinked' => true,
                         ],
                     ],
                     'color' => [
-                        'default' => '#000000',
+                            'default' => '#000000',
                     ],
                 ],
             ]
@@ -439,10 +439,10 @@ class ClickDrop extends Widget_Base
             <?php
         } else {
             ?>
-            <div class="aae-clickdrop-wrapper elementor-element-<?php echo esc_attr($widget_id); ?>">
+            <div class="aae-clickdrop-wrapper">
                 <div class="aae-clickdrop-inner">
                     <button class="aae-clickdrop-btn"><?php echo esc_html($settings['logged_label']); ?></button>
-                    <div class="aae-clickdrop-modal" style="display: none;">
+                    <div class="aae-clickdrop-modal">
                         <ul>
                             <?php
                             if (!empty($settings['menus_url']) && is_array($settings['menus_url'])) {
@@ -478,14 +478,17 @@ class ClickDrop extends Widget_Base
 
                                     ?>
 
-                                    <li class="<?php echo esc_attr($item_class); ?>"
-                                        style="<?php echo esc_attr($border_style); ?>">
-                                        <a href="<?php echo esc_url($url); ?>"<?php echo esc_attr($is_external . $nofollow); ?>>
+                                    <li class="<?php echo esc_attr($item_class); ?>" style="<?php echo esc_attr($border_style); ?>">
+                                        <a href="<?php echo esc_url($url); ?>"<?php echo $is_external . $nofollow; ?>>
                                             <?php
                                             if (!empty($item['menu_icon']['value'])) {
-                                                echo '<span style="' . esc_attr($icon_color) . '">';
-                                                \Elementor\Icons_Manager::render_icon($item['menu_icon'], ['aria-hidden' => 'true']);
-                                                echo '</span>';
+                                                \Elementor\Icons_Manager::render_icon(
+                                                    $item['menu_icon'],
+                                                    [
+                                                        'aria-hidden' => 'true',
+                                                        'style' => $icon_color, // ✅ Apply icon color properly
+                                                    ]
+                                                );
                                             }
                                             ?>
                                             <span style="<?php echo esc_attr($label_color); ?>">
@@ -493,6 +496,7 @@ class ClickDrop extends Widget_Base
         </span>
                                         </a>
                                     </li>
+
                                     <?php
                                 }
                             }
