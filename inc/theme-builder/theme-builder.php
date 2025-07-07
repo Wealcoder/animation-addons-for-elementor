@@ -306,7 +306,7 @@ class WCF_Theme_Builder {
 		$query_args         = [
 			'post_type'      => self::CPTTYPE,
 			'fields'         => 'ids',
-			'posts_per_page' => - 1,
+			'posts_per_page' => -1,
 			'order'          => 'ASC',
 			'orderby'        => 'date',
 			'meta_query'     => array(
@@ -500,6 +500,7 @@ class WCF_Theme_Builder {
 
 			//check for custom post type singular
 			$custom_single = get_post_type() . '-singular';
+			
 			if ( array_key_exists( $custom_single, $templates ) ) {
 				return $templates[ $custom_single ];
 			}
@@ -967,37 +968,8 @@ class WCF_Theme_Builder {
 		 * @since 1.0.0
 		 */
 		return apply_filters( 'wcf_display_taxonomy_list', $selection_options );
-	}
-	
-	/**
-	 * Get single location selection options.
-	 *
-	 * @return array
-	 */
-	public static function get_postformat_location_selections() {
-		// 1. Which formats does the theme actually support?
-		$formats = get_theme_support( 'post-formats' );
-		$supported = is_array( $formats ) && isset( $formats[0] ) ? $formats[0] : [];
+	}	
 
-		$options = [];
-
-		// 2. Convert each slug (aside, gallery…) into a neat label.
-		foreach ( $supported as $slug ) {
-			$label = get_post_format_string( $slug );            // e.g. "Gallery"
-			$options[ $label ] = [
-				'label' => esc_html( $label ),
-				'value' => [
-					"post-format-$slug" => esc_html( "$label post_format" ),
-				],
-			];
-		}
-
-		/**
-		 * Let other plugins tweak, merge, or translate the list.
-		 * Hook name: my_display_post_format_list
-		 */
-		return apply_filters( 'aae_display_post_format_list', $options );
-	}
 	/**
 	 * Register Builder Custom post
 	 *
@@ -1210,16 +1182,11 @@ class WCF_Theme_Builder {
                                 </select>
                             </div>
 
-							<div class="wcf-addons-template-edit-field single-postformat-location hidden">
-                                <label class="wcf-addons-template-edit-label">{{{data.heading.fields.postFormat}}}</label>
-                                <select class="wcf-addons-template-edit-input" name="wcf-addons-single-postformat-display-type"
-                                        id="wcf-addons-single-postformat-display-type">
-										<option value="">None</option>
-										<?php foreach(self::get_postformat_location_selections() as $item){ ?>
-											<?php $key = key($item['value']); ?>
-											<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($item['label']); ?></option>
-										<?php } ?>								           
-                                </select>
+							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+                                <label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
+                                <input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
+									   name="aae-popup-builder-delay"
+									   placeholder="{{ data.heading.fields.delay.placeholder }}">
                             </div>
 
                         </div>
@@ -1278,6 +1245,7 @@ class WCF_Theme_Builder {
 			$tmpType          = ! empty( $_POST['tmpType'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpType'] ) ) : 'single';
 			$tmplocation      = ! empty( $_POST['tmpDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpDisplay'] ) ) : '';
 			$specificsDisplay = ! empty( $_POST['specificsDisplay'] ) ? sanitize_text_field( wp_unslash( $_POST['specificsDisplay'] ) ) : '';
+			$popupDelay = ! empty( $_POST['tmpDelay'] ) ? sanitize_text_field( wp_unslash( $_POST['tmpDelay'] ) ) : 0;
 			
 			$data = [
 				'title'         => $title,
@@ -1285,6 +1253,7 @@ class WCF_Theme_Builder {
 				'tmptype'       => $tmpType,
 				'tmplocation'   => $tmplocation,
 				'tmpSpLocation' => $specificsDisplay,
+				'tmpDelay'      => $popupDelay,
 			];
 
 
@@ -1332,6 +1301,7 @@ class WCF_Theme_Builder {
 			$tmpType          = ! empty( get_post_meta( $tmpid, self::CPT_META . '_type', true ) ) ? get_post_meta( $tmpid, self::CPT_META . '_type', true ) : 'single';
 			$tmpLocation      = ! empty( get_post_meta( $tmpid, self::CPT_META . '_location', true ) ) ? get_post_meta( $tmpid, self::CPT_META . '_location', true ) : '';
 			$specificsDisplay = ! empty( get_post_meta( $tmpid, self::CPT_META . '_splocation', true ) ) ? get_post_meta( $tmpid, self::CPT_META . '_splocation', true ) : '';
+			$tmpDelay         = ! empty( get_post_meta( $tmpid, 'delayTime', true ) ) ? get_post_meta( $tmpid, 'delayTime', true ) : 0;
 			$spLocations      = [];
 
 			if ( ! empty( $specificsDisplay ) ) {
@@ -1346,6 +1316,7 @@ class WCF_Theme_Builder {
 				'tmpType'       => $tmpType,
 				'tmpLocation'   => $tmpLocation,
 				'tmpSpLocation' => $spLocations,
+				'tmpDelay'      => $tmpDelay,
 			];
 			wp_send_json_success( $data );
 
@@ -1517,6 +1488,10 @@ class WCF_Theme_Builder {
 				update_post_meta( $new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation'] );
 			}
 
+			if ( 'popup' === $data['tmptype'] ) {
+				update_post_meta( $new_post_id, 'delayTime', $data['tmpDelay'] );				
+			}
+
 			wp_send_json_success( $return );
 
 		} else {
@@ -1562,9 +1537,12 @@ class WCF_Theme_Builder {
 				update_post_meta( $data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation'] );				
 		}
 		
+		if ( 'popup' === $data['tmptype'] ) {
+			update_post_meta( $data['id'], 'delayTime', $data['tmpDelay'] );				
+		}
+
 		$return = array(
-			'message' => esc_html__( 'Template has been updated', 'animation-addons-for-elementor' ),
-			'id'      => $data['id']			
+			'message' => esc_html__( 'Template has been updated', 'animation-addons-for-elementor' )					
 		);
 		wp_send_json_success( $return );
 
@@ -1599,8 +1577,7 @@ class WCF_Theme_Builder {
 				'hflocation'      => self::get_hf_location_selections(),
 				'archivelocation' => self::get_archive_location_selections(),
 				'singlelocation'  => self::get_single_location_selections(),
-				'postcategory'  => self::get_category_location_selections(),
-				'postformat'  => self::get_postformat_location_selections(),
+				'postcategory'  => self::get_category_location_selections(),				
 				'templatetype'    => self::get_template_type(),
 				'labels'          => [
 					'fields'  => [
@@ -1611,7 +1588,7 @@ class WCF_Theme_Builder {
 						'type'    => esc_html__( 'Type', 'animation-addons-for-elementor' ),
 						'display' => esc_html__( 'Display', 'animation-addons-for-elementor' ),
 						'category' => esc_html__( 'Category', 'animation-addons-for-elementor' ),
-						'postFormat' => esc_html__( 'Post Format', 'animation-addons-for-elementor' ),
+						'delay' => esc_html__( 'Delay', 'animation-addons-for-elementor' ),
 					],
 					'head'    => esc_html__( 'Template Settings', 'animation-addons-for-elementor' ),
 					'buttons' => [

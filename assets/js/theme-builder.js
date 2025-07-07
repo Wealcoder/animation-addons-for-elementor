@@ -148,6 +148,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 // Append it to the select
                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');
               });
+
+              //aae-popup-builder-location
+              if (response.responseJSON.data.tmpType && response.responseJSON.data.tmpType === 'popup') {
+                $('#aae-popup-builder-delay').val(response.responseJSON.data.tmpDelay);
+                $('.aae-popup-builder-location').removeClass('hidden');
+              } else {
+                $('.aae-popup-builder-location').addClass('hidden');
+              }
             }
             $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
           },
@@ -190,17 +198,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         specificsDisplay = [];
         specificsDisplay.push($('#wcf-addons-single-category-display-type').val());
       }
+      var data = {
+        'action': 'wcf_save_template',
+        'nonce': WCF_Theme_Builder.nonce,
+        'tmpId': tmpId,
+        'title': title,
+        'tmpType': tmpType,
+        'tmpDisplay': temDisplay,
+        'specificsDisplay': (_JSON$stringify = JSON.stringify(specificsDisplay)) !== null && _JSON$stringify !== void 0 ? _JSON$stringify : null
+      };
+      if (tmpType === 'popup') {
+        data['tmpDelay'] = $('#aae-popup-builder-delay').val() ? $('#aae-popup-builder-delay').val() : 0;
+      }
       $.ajax({
         url: WCF_Theme_Builder.ajaxurl,
-        data: {
-          'action': 'wcf_save_template',
-          'nonce': WCF_Theme_Builder.nonce,
-          'tmpId': tmpId,
-          'title': title,
-          'tmpType': tmpType,
-          'tmpDisplay': temDisplay,
-          'specificsDisplay': (_JSON$stringify = JSON.stringify(specificsDisplay)) !== null && _JSON$stringify !== void 0 ? _JSON$stringify : null
-        },
+        data: data,
         type: 'POST',
         beforeSend: function beforeSend() {
           $this.text(WCF_Theme_Builder.labels.buttons.save.saving);
@@ -254,6 +266,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             $('.hf-s-location').removeClass('hidden');
           }
         }, 100);
+      }
+      if (type === 'popup') {
+        $('.aae-popup-builder-location').removeClass('hidden');
+      } else {
+        $('.aae-popup-builder-location').addClass('hidden');
       }
     }
   };
