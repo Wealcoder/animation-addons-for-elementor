@@ -78,6 +78,14 @@ class ClickDrop extends Widget_Base
             ]
         );
         $this->add_control(
+            'login_url',
+            [
+                'label' => esc_html__('Login Link', 'animation-addons-for-elementor'),
+                'type' => Controls_Manager::TEXT,
+                'placeholder' => esc_html__('https://crowdytheme.com/login', 'animation-addons-for-elementor'),
+            ]
+        );
+        $this->add_control(
             'logged_label',
             [
                 'label' => esc_html__('Logged label', 'animation-addons-for-elementor'),
@@ -185,7 +193,7 @@ class ClickDrop extends Widget_Base
                         ],
                     ],
                     'color' => [
-                            'default' => '#000000',
+                        'default' => '#000000',
                     ],
                 ],
             ]
@@ -434,8 +442,10 @@ class ClickDrop extends Widget_Base
 
         if (!is_user_logged_in()) {
             ?>
-            <a href="<?php echo esc_url(wp_login_url()); ?>"
-               class="aae-clickdrop-btn"><?php echo esc_html($settings['login_label']); ?></a>
+            <a href="<?php echo esc_url( !empty($settings['login_url']) ? $settings['login_url'] : wp_login_url() ); ?>"
+               class="aae-clickdrop-btn">
+                <?php echo esc_html($settings['login_label']); ?>
+            </a>
             <?php
         } else {
             ?>
@@ -478,7 +488,8 @@ class ClickDrop extends Widget_Base
 
                                     ?>
 
-                                    <li class="<?php echo esc_attr($item_class); ?>" style="<?php echo esc_attr($border_style); ?>">
+                                    <li class="<?php echo esc_attr($item_class); ?>"
+                                        style="<?php echo esc_attr($border_style); ?>">
                                         <a href="<?php echo esc_url($url); ?>"<?php echo $is_external . $nofollow; ?>>
                                             <?php
                                             if (!empty($item['menu_icon']['value'])) {
