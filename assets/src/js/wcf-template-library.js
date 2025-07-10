@@ -8,10 +8,23 @@
 /* global jQuery, WCF_Template_library_Editor*/
 
 (function ($, window, document, config) {
-  let Template_Library_data = {};
-  let Template_Library_Chunk_data = [];
+  let storeCategory;
+  let currentPage = 1;
+  let currentCategory = "";
+  let currentType = "";
+  let allCategory = async () => {
+    await fetch(
+      "https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        storeCategory = res;
+      });
+  };
+
+  allCategory();
   // API for get requests
-  let fetchRes = fetch("https://www.themecrowdy.com/wp-json/api/v2/list");
+
   let aae_domain =
     "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
   const activePlugin = async () => {
@@ -38,34 +51,8 @@
         }
       });
   };
+
   // FetchRes is the promise to resolve
-  fetchRes
-    .then((res) => res.json())
-    .then((d) => {
-      Template_Library_data = d.library;
-
-      Template_Library_data["template_types"] =
-        WCF_TEMPLATE_LIBRARY.template_types;
-    });
-
-  //get type specific templates
-  const get_type_templates = function (type) {
-    let templates = [];
-    if (Template_Library_data["templates"] !== undefined) {
-      Template_Library_data["templates"].forEach((template, index) => {
-        if (type === template.type) {
-          if (
-            WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
-            WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true
-          ) {
-            template["valid"] = "yes";
-          }
-          templates.push(template);
-        }
-      });
-    }
-    return templates.reverse();
-  };
 
   const templates_validate = function (remotetemplates) {
     let templates = [];
@@ -87,12 +74,9 @@
   const get_category_templates = async function (
     category = "",
     type,
-    load = 0
+    page = 1
   ) {
     let result = [];
-    if (load) {
-      return result;
-    }
 
     let query_domain = new URL(aae_domain);
     if (type) {
@@ -100,6 +84,11 @@
     }
     if (category && "" !== category) {
       query_domain.searchParams.set("cat", category);
+    }
+
+    if (page) {
+      query_domain.searchParams.set("page", page);
+      currentPage = page;
     }
     try {
       const response = await fetch(query_domain);
@@ -147,37 +136,6 @@
   };
 
   //get specific categories
-  const get_categories = function (type) {
-    let type_categories = new Set();
-    let all_categories = [];
-    const type_templates = get_type_templates(type);
-
-    if (type_templates.length) {
-      for (let template of type_templates) {
-        //if template has no category
-        if ("" === template.subtype) {
-          continue;
-        }
-
-        const categories = template.subtype.split(",");
-
-        categories.forEach((sca) => {
-          type_categories.add(parseInt(sca));
-        });
-      }
-    }
-
-    for (let item of Template_Library_data.categories) {
-      for (let category of type_categories) {
-        if (item.id === category) {
-          all_categories.push(item);
-          break;
-        }
-      }
-    }
-
-    return all_categories;
-  };
 
   $("document").ready(function () {
     let templateAddSection = $("#tmpl-elementor-add-section");
@@ -209,7 +167,7 @@
                 this.getElements("message").remove();
                 this.getElements("buttonsWrapper").remove();
                 let t = this.getElements("widgetContent");
-
+                //fixed modal position
                 render_popup(t);
               },
               onHide: function () {
@@ -225,13 +183,14 @@
           $(window).trigger("resize"); //fixed modal position
 
           let active_menu_first_load = 0;
+          let active_resize_first_load = 0;
 
           function render_popup(t) {
             let tmpTypes = wp.template("wcf-templates-header");
             content = null;
 
             content = tmpTypes({
-              template_types: Template_Library_data.template_types,
+              template_types: WCF_TEMPLATE_LIBRARY.template_types,
             });
 
             t.html(content);
@@ -254,26 +213,29 @@
             contents = null;
             let is_loading = true;
             loading(is_loading);
-            // if ($(t).find(".dialog-message").length > 1) {
-            //   $(t).find(".dialog-message")[1].remove();
-            // }
+
             contents = await templates({
-              templates: await get_category_templates(category, activeMenu, 1),
-              categories: get_categories(activeMenu),
+              templates: [],
+              categories: storeCategory,
             });
 
             t.append(contents);
-            // aaeadddon_run_lazy_load();
             const container = document.querySelector(".wcf-library-templates");
-            const currentchunk = await get_category_templates(
+            currentCategory = category;
+            currentType = activeMenu;
+            if (active_resize_first_load === 0) {
+              $(window).trigger("resize");
+              active_resize_first_load++;
+            }
+            const getTemplate = await get_category_templates(
               category,
-              activeMenu,
-              0
+              activeMenu
             );
-            currentchunk.forEach((item) => {
+            getTemplate.forEach((item) => {
               const templateHtml = generateTemplate(item);
               container.innerHTML += templateHtml;
             });
+            aaeadddon_run_lazy_load();
 
             $($(".wcf-library-template").last())
               .find("img")
@@ -521,6 +483,7 @@
 
   function aaeadddon_run_lazy_load() {
     const listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
+    if (!(listItems && listItems.length)) return;
     const lastItem = listItems[listItems.length - 1];
 
     const observerOptions = {
@@ -530,9 +493,13 @@
     };
 
     const observerCallback = (entries, observer) => {
-      entries.forEach((entry) => {
+      entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
-          let currentchunk = Template_Library_Chunk_data.shift();
+          let currentchunk = await get_category_templates(
+            currentCategory,
+            currentType,
+            currentPage + 1
+          );
           const container = document.querySelector(".wcf-library-templates");
           if (currentchunk) {
             currentchunk.forEach((item) => {
@@ -545,18 +512,13 @@
     };
 
     const observer = new IntersectionObserver(
-      observerCallback,
+      debounceAsync(observerCallback),
       observerOptions
     );
     observer.observe(lastItem);
   }
 
-  const generateTemplate = (
-    item,
-    pluginSlug = "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
-    allPlugins = [],
-    activePlugins = []
-  ) => {
+  const generateTemplate = (item) => {
     return `
             <div class="wcf-library-template" data-id="${item.id}" data-url="${
       item.template_demo_url
@@ -619,4 +581,23 @@
             </div>
         `;
   };
+
+  function debounceAsync(fn, delay = 300) {
+    let timeoutId = null;
+
+    return (...args) => {
+      return new Promise((resolve, reject) => {
+        if (timeoutId) clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(async () => {
+          try {
+            const result = await fn(...args);
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        }, delay);
+      });
+    };
+  }
 })(jQuery, window, document);
