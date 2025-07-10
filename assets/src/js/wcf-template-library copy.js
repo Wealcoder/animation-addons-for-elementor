@@ -1,4 +1,3 @@
-/* eslint-disable semi */
 /* eslint-disable arrow-parens */
 /**
  * WCF Template Library Editor Core
@@ -12,8 +11,7 @@
   let Template_Library_Chunk_data = [];
   // API for get requests
   let fetchRes = fetch("https://www.themecrowdy.com/wp-json/api/v2/list");
-  let aae_domain =
-    "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
+
   const activePlugin = async () => {
     await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
       method: "POST",
@@ -67,83 +65,63 @@
     return templates.reverse();
   };
 
-  const templates_validate = function (remotetemplates) {
-    let templates = [];
-
-    remotetemplates.forEach((template, index) => {
-      if (
-        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
-        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true
-      ) {
-        template["valid"] = "yes";
+  //get specific category templates
+  const get_category_templates = function (category = "", type) {
+    const type_templates = get_type_templates(type);
+    let templates = type_templates;
+    if (type_templates.length && "" !== category) {
+      templates = [];
+      for (let template of type_templates) {
+        //if template has no category
+        if ("" === template.subtype) {
+          continue;
+        }
+        const categories = template.subtype.split(",");
+        if (categories.includes(category)) {
+          templates.push(template);
+        }
       }
-      templates.push(template);
-    });
+    }
+    Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
 
-    return templates.reverse();
+    return Template_Library_Chunk_data.shift();
   };
 
   //get specific category templates
-  const get_category_templates = async function (
-    category = "",
-    type,
-    load = 0
-  ) {
-    let result = [];
-    if (load) {
-      return result;
-    }
-
-    let query_domain = new URL(aae_domain);
-    if (type) {
-      query_domain.searchParams.set("subtype", type);
-    }
-    if (category && "" !== category) {
-      query_domain.searchParams.set("cat", category);
-    }
-    try {
-      const response = await fetch(query_domain);
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      const data = await response.json();
-      result = data.templates || [];
-    } catch (error) {
-      console.error("Fetch Error:", error);
-    }
-
-    return templates_validate(result);
-  };
-
-  //get specific category templates
-  const search_category_templates = async function (text = "") {
-    let type =
+  const search_category_templates = function (text = "", type) {
+    let types =
       $("#elementor-template-library-header-menu .elementor-active").attr(
         "data-tab"
       ) || "block";
-    let result = [];
-    let query_domain = new URL(aae_domain);
-    if (type) {
-      query_domain.searchParams.set("subtype", type);
-    }
-    if (text && "" !== text) {
-      query_domain.searchParams.set("s", text);
-    }
-    const cat = $("wcf-template-library-filter-subtype").val();
-    if (cat && "" !== cat) {
-      query_domain.searchParams.set("cat", cat);
-    }
+    const type_templates = get_type_templates(types);
+    let templates = type_templates;
 
-    try {
-      const response = await fetch(query_domain);
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      const data = await response.json();
-      result = data.templates || [];
-    } catch (error) {
-      console.error("Fetch Error:", error);
-    }
+    if (type_templates.length && "" !== text) {
+      templates = [];
 
-    return templates_validate(result);
+      for (let template of type_templates) {
+        //if template has no category
+        if ("" === template.subtype) {
+          continue;
+        }
+        text = text.toLowerCase();
+
+        if (template.title.toLowerCase().includes(text)) {
+          templates.push(template);
+        }
+      }
+    }
+    Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
+
+    return Template_Library_Chunk_data.shift();
+  };
+
+  const aaetemplate_chunkArray = function (array, chunkSize) {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   };
 
   //get specific categories
@@ -209,7 +187,6 @@
                 this.getElements("message").remove();
                 this.getElements("buttonsWrapper").remove();
                 let t = this.getElements("widgetContent");
-
                 render_popup(t);
               },
               onHide: function () {
@@ -249,50 +226,29 @@
             template_import();
           }
 
-          async function render_templates(t, activeMenu, category = "") {
+          function render_templates(t, activeMenu, category = "") {
             let templates = wp.template("wcf-templates");
             contents = null;
-            let is_loading = true;
-            loading(is_loading);
-            // if ($(t).find(".dialog-message").length > 1) {
-            //   $(t).find(".dialog-message")[1].remove();
-            // }
-            contents = await templates({
-              templates: await get_category_templates(category, activeMenu, 1),
+            contents = templates({
+              templates: get_category_templates(category, activeMenu),
               categories: get_categories(activeMenu),
             });
 
             t.append(contents);
-            // aaeadddon_run_lazy_load();
-            const container = document.querySelector(".wcf-library-templates");
-            const currentchunk = await get_category_templates(
-              category,
-              activeMenu,
-              0
-            );
-            currentchunk.forEach((item) => {
-              const templateHtml = generateTemplate(item);
-              container.innerHTML += templateHtml;
-            });
+            aaeadddon_run_lazy_load();
+            let is_loading = true;
+            loading(is_loading);
 
             $($(".wcf-library-template").last())
               .find("img")
               .on("load", function () {
                 is_loading = false;
                 loading(is_loading);
-                $(window).trigger("resize"); //fixed modal position
               });
-            if (category) {
-              $(
-                "#wcf-template-library-filter-subtype option[value='" +
-                  category +
-                  "']"
-              ).attr("selected", "selected");
-            }
-            //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
           }
 
           function render_single_template(t) {
+            
             // let template = $('.thumbnail');
             const backContent = $(
               "#wcf-template-library .dialog-widget-content"
@@ -324,10 +280,6 @@
             });
 
             //single back
-            $(document).off(
-              "click",
-              "#wcf-template-library-header-preview-back"
-            );
             $(document).on(
               "click",
               "#wcf-template-library-header-preview-back",
@@ -338,6 +290,14 @@
                 loading(false);
                 //active menu
                 active_menu(t);
+                //category select
+                selected_category(t);
+
+                render_single_template(t);
+
+                search_function();
+
+                template_import();
               }
             );
 
@@ -356,6 +316,7 @@
             const menu_item = $(
               ".wcf-template-library--header .elementor-template-library-menu-item"
             );
+
             menu_item.click(function () {
               if ($(this).hasClass("elementor-active")) {
                 return;
@@ -372,13 +333,13 @@
               render_templates(t, activeMenu);
 
               //category select ensure dom selections
-              // selected_category(t);
+              selected_category(t);
 
-              //   render_single_template(t);
+              render_single_template(t);
 
-              // search_function();
+              search_function();
 
-              // template_import();
+              template_import();
             });
 
             //hide modal
@@ -389,9 +350,9 @@
               }
             );
 
-            // if (active_menu_first_load >= 1){
-            //     return;
-            // }
+            if (active_menu_first_load >= 1) {
+              return;
+            }
 
             let activeMenu = $(
               ".wcf-template-library--header .elementor-active"
@@ -400,63 +361,59 @@
           }
 
           function selected_category(t) {
-            $(document).on(
+            $("#wcf-template-library-filter-subtype").on(
               "change",
-              "#wcf-template-library-filter-subtype",
               function (e) {
                 let activeMenu = $(
                   ".wcf-template-library--header .elementor-active"
                 ).attr("data-tab");
                 let valueSelected = this.value;
+
                 $(t).find(".dialog-message").remove();
                 render_templates(t, activeMenu, valueSelected);
+
+                //selected
+                $(
+                  "#wcf-template-library-filter-subtype option[value='" +
+                    valueSelected +
+                    "']"
+                ).attr("selected", "selected");
+
+                selected_category(t);
+                render_single_template(t);
+                search_function();
                 template_import();
               }
             );
           }
 
           function search_function() {
-            function debounce(func, delay) {
-              let timeout;
-              return function (...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
-              };
-            }
+            $("#wcf-template-library-filter-text").on("keyup", function () {
+              let filter = this.value;
+              const container = document.querySelector(
+                ".wcf-library-templates"
+              );
+              let currentchunk = search_category_templates(filter);
+              container.innerHTML = "";
+              currentchunk.forEach((item) => {
+                const templateHtml = generateTemplate(item);
+                container.innerHTML += templateHtml; // Add each generated HTML to the container
+              });
 
-            $(document).on(
-              "keyup",
-              "#wcf-template-library-filter-text",
-              debounce(async function () {
-                const filter = this.value.toLowerCase();
-                const container = document.querySelector(
-                  ".wcf-library-templates"
-                );
-
-                const currentchunk = await search_category_templates(filter);
-                container.innerHTML = "";
-
-                currentchunk.forEach((item) => {
-                  const templateHtml = generateTemplate(item);
-                  container.innerHTML += templateHtml;
+              setTimeout(function () {
+                let elements = $(".wcf-library-template");
+                let re = new RegExp(filter, "i");
+                elements.each((x, element) => {
+                  let title = $(element).find(".title")[0];
+                  if (re.test(title.textContent)) {
+                    title.innerHTML = title.textContent.replace(
+                      re,
+                      "<b>$&</b>"
+                    );
+                  }
                 });
-
-                setTimeout(() => {
-                  const elements = $(".wcf-library-template");
-                  const re = new RegExp(filter, "i");
-
-                  elements.each((_, element) => {
-                    const title = $(element).find(".title")[0];
-                    if (re.test(title.textContent)) {
-                      title.innerHTML = title.textContent.replace(
-                        re,
-                        "<b>$&</b>"
-                      );
-                    }
-                  });
-                }, 100);
-              }, 300)
-            );
+              }, 100);
+            });
           }
 
           function template_import(id = null) {
@@ -559,10 +516,10 @@
   ) => {
     return `
             <div class="wcf-library-template" data-id="${item.id}" data-url="${
-      item.template_demo_url
+      item.url
     }">
                 <div class="thumbnail">
-                    <img src="${item.preview.url}" alt="${item.title}">
+                    <img src="${item.thumbnail}" alt="${item.title}">
                 </div>
                 
                 ${
