@@ -52,8 +52,10 @@
   color: #f12529;
 }
 .library--action.insert {
-  color: #39b54a;
-  background-color: #fff;
+  color: black;
+  background-color: orange;
+  padding: 7px;
+  border-radius: 5px;
 }
 
 #wcf-template-library .dialog-message {
