@@ -91,7 +91,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.3.6';
+	const VERSION = '2.3.7';
 
 	/**
 	 * Minimum Elementor Version

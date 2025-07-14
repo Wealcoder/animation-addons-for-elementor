@@ -26,7 +26,7 @@
   // API for get requests
 
   let aae_domain =
-    "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
+    "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
   const activePlugin = async () => {
     await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
       method: "POST",
