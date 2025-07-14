@@ -41,7 +41,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   allCategory();
   // API for get requests
 
-  var aae_domain = "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
+  var aae_domain = "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
   var activePlugin = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {

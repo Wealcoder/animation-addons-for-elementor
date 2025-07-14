@@ -356,8 +356,12 @@ if(!function_exists('wcfaddon_get_current_user_roles')) {
 		if( is_user_logged_in() ) {
 	  
 		  $user = wp_get_current_user();
-	  
+	   
 		  $roles = ( array ) $user->roles;
+
+		  if(is_super_admin()){
+			$roles[] = 'administrator'; // Add administrator role for super admins
+		  }
 	  
 		  return $roles; // This will returns an array
 	  

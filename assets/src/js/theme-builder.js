@@ -158,6 +158,7 @@
 
                         //display specific locations
                         if (response.responseJSON.data.tmpSpLocation) {
+                            
                             $.each(response.responseJSON.data.tmpSpLocation, function (i, item) {
                                 // Create a DOM Option and pre-select by default
                                 let data = {id: i, text: item};
