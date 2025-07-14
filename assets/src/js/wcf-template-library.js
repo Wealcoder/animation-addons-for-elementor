@@ -12,6 +12,7 @@
   let currentPage = 1;
   let currentCategory = "";
   let currentType = "";
+  let currentColorType = "";
   let allCategory = async () => {
     await fetch(
       "https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
@@ -74,7 +75,8 @@
   const get_category_templates = async function (
     category = "",
     type,
-    page = 1
+    page = 1,
+    color_type = ""
   ) {
     let result = [];
 
@@ -89,6 +91,9 @@
     if (page) {
       query_domain.searchParams.set("page", page);
       currentPage = page;
+    }
+    if (color_type) {
+      query_domain.searchParams.set("color_type", color_type);
     }
     try {
       const response = await fetch(query_domain);
@@ -200,6 +205,7 @@
 
             //category select
             selected_category(t);
+            selected_color_type(t);
 
             render_single_template(t);
 
@@ -208,7 +214,12 @@
             template_import();
           }
 
-          async function render_templates(t, activeMenu, category = "") {
+          async function render_templates(
+            t,
+            activeMenu,
+            category = "",
+            color_type = ""
+          ) {
             let templates = wp.template("wcf-templates");
             contents = null;
             let is_loading = true;
@@ -223,13 +234,16 @@
             const container = document.querySelector(".wcf-library-templates");
             currentCategory = category;
             currentType = activeMenu;
+            currentColorType = color_type;
             if (active_resize_first_load === 0) {
               $(window).trigger("resize");
               active_resize_first_load++;
             }
             const getTemplate = await get_category_templates(
               category,
-              activeMenu
+              activeMenu,
+              1,
+              color_type
             );
             getTemplate.forEach((item) => {
               const templateHtml = generateTemplate(item);
@@ -248,6 +262,13 @@
               $(
                 "#wcf-template-library-filter-subtype option[value='" +
                   category +
+                  "']"
+              ).attr("selected", "selected");
+            }
+            if (color_type) {
+              $(
+                "#wcf-template-library-color-subtype option[value='" +
+                  color_type +
                   "']"
               ).attr("selected", "selected");
             }
@@ -371,7 +392,28 @@
                 ).attr("data-tab");
                 let valueSelected = this.value;
                 $(t).find(".dialog-message").remove();
-                render_templates(t, activeMenu, valueSelected);
+                render_templates(
+                  t,
+                  activeMenu,
+                  valueSelected,
+                  currentColorType
+                );
+                template_import();
+              }
+            );
+          }
+
+          function selected_color_type(t) {
+            $(document).on(
+              "change",
+              "#wcf-template-library-color-subtype",
+              function (e) {
+                let activeMenu = $(
+                  ".wcf-template-library--header .elementor-active"
+                ).attr("data-tab");
+                let valueSelected = this.value;
+                $(t).find(".dialog-message").remove();
+                render_templates(t, activeMenu, currentCategory, valueSelected);
                 template_import();
               }
             );
@@ -498,7 +540,8 @@
           let currentchunk = await get_category_templates(
             currentCategory,
             currentType,
-            currentPage + 1
+            currentPage + 1,
+            currentColorType
           );
           const container = document.querySelector(".wcf-library-templates");
           if (currentchunk) {
