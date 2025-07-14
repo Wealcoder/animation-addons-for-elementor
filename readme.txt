@@ -1,7 +1,7 @@
 === Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
-Tags: Elementor, Elementor Addons, Elementor Templates, Animation, website template
+Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4

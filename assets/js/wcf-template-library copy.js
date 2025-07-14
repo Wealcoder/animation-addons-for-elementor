@@ -436,7 +436,8 @@ function _asyncToGenerator(fn) {
 	var Template_Library_data = {};
 	var Template_Library_Chunk_data = [];
 	// API for get requests
-	var fetchRes = fetch("https://block.animation-addons.com/wp-json/api/v2/list");
+	var fetchRes = fetch("https://www.themecrowdy.com/wp-json/api/v2/list");
+	var aae_domain = 'https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block';
 	var activePlugin = /*#__PURE__*/ function() {
 		var _ref = _asyncToGenerator( /*#__PURE__*/ _regeneratorRuntime().mark(function _callee() {
 			return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -495,15 +496,157 @@ function _asyncToGenerator(fn) {
 		}
 		return templates.reverse();
 	};
+	var templates_validate = function templates_validate(remotetemplates) {
+		var templates = [];
+		remotetemplates.forEach(function(template, index) {
+			var _WCF_TEMPLATE_LIBRARY3, _WCF_TEMPLATE_LIBRARY4;
+			if ((_WCF_TEMPLATE_LIBRARY3 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY3 !== void 0 && (_WCF_TEMPLATE_LIBRARY3 = _WCF_TEMPLATE_LIBRARY3.config) !== null && _WCF_TEMPLATE_LIBRARY3 !== void 0 && _WCF_TEMPLATE_LIBRARY3.wcf_valid && ((_WCF_TEMPLATE_LIBRARY4 = WCF_TEMPLATE_LIBRARY) === null || _WCF_TEMPLATE_LIBRARY4 === void 0 || (_WCF_TEMPLATE_LIBRARY4 = _WCF_TEMPLATE_LIBRARY4.config) === null || _WCF_TEMPLATE_LIBRARY4 === void 0 ? void 0 : _WCF_TEMPLATE_LIBRARY4.wcf_valid) === true) {
+				template['valid'] = 'yes';
+			}
+			templates.push(template);
+		});
+		return templates.reverse();
+	};
 
 	//get specific category templates
-	var get_category_templates = function get_category_templates() {
-		var category = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-		var type = arguments.length > 1 ? arguments[1] : undefined;
+	var get_category_templates = /*#__PURE__*/ function() {
+		var _ref2 = _asyncToGenerator( /*#__PURE__*/ _regeneratorRuntime().mark(function _callee2() {
+			var category,
+				type,
+				load,
+				result,
+				query_domain,
+				response,
+				data,
+				_args2 = arguments;
+			return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+				while (1) switch (_context2.prev = _context2.next) {
+					case 0:
+						category = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : '';
+						type = _args2.length > 1 ? _args2[1] : undefined;
+						load = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : 0;
+						result = [];
+						if (!load) {
+							_context2.next = 6;
+							break;
+						}
+						return _context2.abrupt("return", result);
+					case 6:
+						query_domain = new URL(aae_domain);
+						if (type) {
+							query_domain.searchParams.set('subtype', type);
+						}
+						if (category && '' !== category) {
+							query_domain.searchParams.set('cat', category);
+						}
+						_context2.prev = 9;
+						_context2.next = 12;
+						return fetch(query_domain);
+					case 12:
+						response = _context2.sent;
+						if (response.ok) {
+							_context2.next = 15;
+							break;
+						}
+						throw new Error("HTTP error! Status: ".concat(response.status));
+					case 15:
+						_context2.next = 17;
+						return response.json();
+					case 17:
+						data = _context2.sent;
+						result = data.templates || [];
+						_context2.next = 24;
+						break;
+					case 21:
+						_context2.prev = 21;
+						_context2.t0 = _context2["catch"](9);
+						console.error("Fetch Error:", _context2.t0);
+					case 24:
+						return _context2.abrupt("return", templates_validate(result));
+					case 25:
+					case "end":
+						return _context2.stop();
+				}
+			}, _callee2, null, [
+				[9, 21]
+			]);
+		}));
+		return function get_category_templates() {
+			return _ref2.apply(this, arguments);
+		};
+	}();
+
+	//get specific category templates
+	var search_category_templates = /*#__PURE__*/ function() {
+		var _ref3 = _asyncToGenerator( /*#__PURE__*/ _regeneratorRuntime().mark(function _callee3() {
+			var text,
+				type,
+				result,
+				query_domain,
+				cat,
+				response,
+				data,
+				_args3 = arguments;
+			return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+				while (1) switch (_context3.prev = _context3.next) {
+					case 0:
+						text = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : '';
+						type = $('#elementor-template-library-header-menu .elementor-active').attr('data-tab') || 'block';
+						result = [];
+						query_domain = new URL(aae_domain);
+						if (type) {
+							query_domain.searchParams.set('subtype', type);
+						}
+						if (text && '' !== text) {
+							query_domain.searchParams.set('s', text);
+						}
+						cat = $('wcf-template-library-filter-subtype').val();
+						if (cat && '' !== cat) {
+							query_domain.searchParams.set('cat', cat);
+						}
+						_context3.prev = 8;
+						_context3.next = 11;
+						return fetch(query_domain);
+					case 11:
+						response = _context3.sent;
+						if (response.ok) {
+							_context3.next = 14;
+							break;
+						}
+						throw new Error("HTTP error! Status: ".concat(response.status));
+					case 14:
+						_context3.next = 16;
+						return response.json();
+					case 16:
+						data = _context3.sent;
+						result = data.templates || [];
+						_context3.next = 23;
+						break;
+					case 20:
+						_context3.prev = 20;
+						_context3.t0 = _context3["catch"](8);
+						console.error("Fetch Error:", _context3.t0);
+					case 23:
+						return _context3.abrupt("return", templates_validate(result));
+					case 24:
+					case "end":
+						return _context3.stop();
+				}
+			}, _callee3, null, [
+				[8, 20]
+			]);
+		}));
+		return function search_category_templates() {
+			return _ref3.apply(this, arguments);
+		};
+	}();
+
+	//get specific categories
+	var get_categories = function get_categories(type) {
+		var type_categories = new Set();
+		var all_categories = [];
 		var type_templates = get_type_templates(type);
-		var templates = type_templates;
-		if (type_templates.length && '' !== category) {
-			templates = [];
+		if (type_templates.length) {
 			var _iterator = _createForOfIteratorHelper(type_templates),
 				_step;
 			try {
@@ -514,9 +657,9 @@ function _asyncToGenerator(fn) {
 						continue;
 					}
 					var categories = template.subtype.split(",");
-					if (categories.includes(category)) {
-						templates.push(template);
-					}
+					categories.forEach(function(sca) {
+						type_categories.add(parseInt(sca));
+					});
 				}
 			} catch (err) {
 				_iterator.e(err);
@@ -524,101 +667,31 @@ function _asyncToGenerator(fn) {
 				_iterator.f();
 			}
 		}
-		Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
-		return Template_Library_Chunk_data.shift();
-	};
-
-	//get specific category templates
-	var search_category_templates = function search_category_templates() {
-		var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-		var type = arguments.length > 1 ? arguments[1] : undefined;
-		var types = $('#elementor-template-library-header-menu .elementor-active').attr('data-tab') || 'block';
-		var type_templates = get_type_templates(types);
-		var templates = type_templates;
-		if (type_templates.length && '' !== text) {
-			templates = [];
-			var _iterator2 = _createForOfIteratorHelper(type_templates),
-				_step2;
-			try {
-				for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-					var template = _step2.value;
-					//if template has no category
-					if ('' === template.subtype) {
-						continue;
-					}
-					text = text.toLowerCase();
-					if (template.title.toLowerCase().includes(text)) {
-						templates.push(template);
-					}
-				}
-			} catch (err) {
-				_iterator2.e(err);
-			} finally {
-				_iterator2.f();
-			}
-		}
-		Template_Library_Chunk_data = aaetemplate_chunkArray(templates, 30);
-		return Template_Library_Chunk_data.shift();
-	};
-	var aaetemplate_chunkArray = function aaetemplate_chunkArray(array, chunkSize) {
-		var result = [];
-		for (var i = 0; i < array.length; i += chunkSize) {
-			result.push(array.slice(i, i + chunkSize));
-		}
-		return result;
-	};
-
-	//get specific categories
-	var get_categories = function get_categories(type) {
-		var type_categories = new Set();
-		var all_categories = [];
-		var type_templates = get_type_templates(type);
-		if (type_templates.length) {
-			var _iterator3 = _createForOfIteratorHelper(type_templates),
-				_step3;
-			try {
-				for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-					var template = _step3.value;
-					//if template has no category
-					if ('' === template.subtype) {
-						continue;
-					}
-					var categories = template.subtype.split(",");
-					categories.forEach(function(sca) {
-						type_categories.add(parseInt(sca));
-					});
-				}
-			} catch (err) {
-				_iterator3.e(err);
-			} finally {
-				_iterator3.f();
-			}
-		}
-		var _iterator4 = _createForOfIteratorHelper(Template_Library_data.categories),
-			_step4;
+		var _iterator2 = _createForOfIteratorHelper(Template_Library_data.categories),
+			_step2;
 		try {
-			for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-				var item = _step4.value;
-				var _iterator5 = _createForOfIteratorHelper(type_categories),
-					_step5;
+			for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+				var item = _step2.value;
+				var _iterator3 = _createForOfIteratorHelper(type_categories),
+					_step3;
 				try {
-					for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-						var category = _step5.value;
+					for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+						var category = _step3.value;
 						if (item.id === category) {
 							all_categories.push(item);
 							break;
 						}
 					}
 				} catch (err) {
-					_iterator5.e(err);
+					_iterator3.e(err);
 				} finally {
-					_iterator5.f();
+					_iterator3.f();
 				}
 			}
 		} catch (err) {
-			_iterator4.e(err);
+			_iterator2.e(err);
 		} finally {
-			_iterator4.f();
+			_iterator2.f();
 		}
 		return all_categories;
 	};
@@ -670,22 +743,67 @@ function _asyncToGenerator(fn) {
 					template_import();
 				}
 
-				function render_templates(t, activeMenu) {
-					var category = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-					var templates = wp.template('wcf-templates');
-					contents = null;
-					contents = templates({
-						templates: get_category_templates(category, activeMenu),
-						categories: get_categories(activeMenu)
-					});
-					t.append(contents);
-					aaeadddon_run_lazy_load();
-					var is_loading = true;
-					loading(is_loading);
-					$($('.wcf-library-template').last()).find('img').on('load', function() {
-						is_loading = false;
-						loading(is_loading);
-					});
+				function render_templates(_x, _x2) {
+					return _render_templates.apply(this, arguments);
+				}
+
+				function _render_templates() {
+					_render_templates = _asyncToGenerator( /*#__PURE__*/ _regeneratorRuntime().mark(function _callee5(t, activeMenu) {
+						var category,
+							templates,
+							is_loading,
+							container,
+							currentchunk,
+							_args5 = arguments;
+						return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+							while (1) switch (_context5.prev = _context5.next) {
+								case 0:
+									category = _args5.length > 2 && _args5[2] !== undefined ? _args5[2] : '';
+									templates = wp.template('wcf-templates');
+									contents = null;
+									is_loading = true;
+									loading(is_loading);
+									if ($(t).find('.dialog-message').length > 1) {
+										$(t).find('.dialog-message')[1].remove();
+									}
+									_context5.t0 = templates;
+									_context5.next = 9;
+									return get_category_templates(category, activeMenu, 1);
+								case 9:
+									_context5.t1 = _context5.sent;
+									_context5.t2 = get_categories(activeMenu);
+									_context5.t3 = {
+										templates: _context5.t1,
+										categories: _context5.t2
+									};
+									_context5.next = 14;
+									return (0, _context5.t0)(_context5.t3);
+								case 14:
+									contents = _context5.sent;
+									t.append(contents);
+									// aaeadddon_run_lazy_load();   
+									container = document.querySelector('.wcf-library-templates');
+									_context5.next = 19;
+									return get_category_templates(category, activeMenu, 0);
+								case 19:
+									currentchunk = _context5.sent;
+									currentchunk.forEach(function(item) {
+										var templateHtml = generateTemplate(item);
+										container.innerHTML += templateHtml;
+									});
+									$($('.wcf-library-template').last()).find('img').on('load', function() {
+										is_loading = false;
+										loading(is_loading);
+										$(window).trigger("resize"); //fixed modal position
+									});
+									//window.backContent = $('#wcf-template-library .dialog-widget-content').html();
+								case 22:
+								case "end":
+									return _context5.stop();
+							}
+						}, _callee5);
+					}));
+					return _render_templates.apply(this, arguments);
 				}
 
 				function render_single_template(t) {
@@ -695,20 +813,25 @@ function _asyncToGenerator(fn) {
 						var _that = $(this);
 						var template_id = _that.closest('.wcf-library-template').data('id');
 						var template_url = _that.closest('.wcf-library-template').data('url');
+						var url = new URL(template_url);
+						url.search = ""; // This clears all query parameters
+						var cleanedUrl = url.toString();
 						var singleTmp = wp.template('wcf-templates-single');
 						content_single = null;
 						content_single = singleTmp({
-							template_link: template_url
+							template_link: cleanedUrl
 						});
-						t.html(content_single);
+						// console.log(content_single);        
+						//t.html(content_single);
 						//iframe is loaded
 						var is_loading = true;
 						loading(is_loading);
-						$('#wcf-template-library iframe').on('load', function() {
+						$('.wcf-library-templates').html("<iframe src=\"".concat(cleanedUrl, "\"></iframe>"));
+						$('.wcf-library-templates iframe').on('load', function() {
 							is_loading = false;
 							loading(is_loading);
 						});
-						template_import(template_id);
+						// template_import(template_id);
 					});
 
 					//single back                   
@@ -754,23 +877,23 @@ function _asyncToGenerator(fn) {
 					$('.elementor-templates-modal__header__close').on('click', function() {
 						window.wcftmLibrary.hide();
 					});
-					if (active_menu_first_load >= 1) {
-						return;
-					}
+
+					// if (active_menu_first_load >= 1){
+					//     return;
+					// }
+
 					var activeMenu = $('.wcf-template-library--header .elementor-active').attr('data-tab');
 					render_templates(t, activeMenu);
 				}
 
 				function selected_category(t) {
-					$('#wcf-template-library-filter-subtype').on('change', function(e) {
+					$(document).on('change', '#wcf-template-library-filter-subtype', function(e) {
 						var activeMenu = $('.wcf-template-library--header .elementor-active').attr('data-tab');
 						var valueSelected = this.value;
 						$(t).find('.dialog-message').remove();
 						render_templates(t, activeMenu, valueSelected);
-
 						//selected
 						$("#wcf-template-library-filter-subtype option[value='" + valueSelected + "']").attr("selected", "selected");
-						selected_category(t);
 						render_single_template(t);
 						search_function();
 						template_import();
@@ -778,27 +901,51 @@ function _asyncToGenerator(fn) {
 				}
 
 				function search_function() {
-					$('#wcf-template-library-filter-text').on('keyup', function() {
-						var filter = this.value;
-						var container = document.querySelector('.wcf-library-templates');
-						var currentchunk = search_category_templates(filter);
-						container.innerHTML = '';
-						currentchunk.forEach(function(item) {
-							var templateHtml = generateTemplate(item);
-							container.innerHTML += templateHtml; // Add each generated HTML to the container
-						});
-
-						setTimeout(function() {
-							var elements = $('.wcf-library-template');
-							var re = new RegExp(filter, 'i');
-							elements.each(function(x, element) {
-								var title = $(element).find('.title')[0];
-								if (re.test(title.textContent)) {
-									title.innerHTML = title.textContent.replace(re, '<b>$&</b>');
-								}
-							});
-						}, 100);
-					});
+					function debounce(func, delay) {
+						var timeout;
+						return function() {
+							var _this = this;
+							for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+								args[_key] = arguments[_key];
+							}
+							clearTimeout(timeout);
+							timeout = setTimeout(function() {
+								return func.apply(_this, args);
+							}, delay);
+						};
+					}
+					$(document).on('keyup', '#wcf-template-library-filter-text', debounce( /*#__PURE__*/ _asyncToGenerator( /*#__PURE__*/ _regeneratorRuntime().mark(function _callee4() {
+						var filter, container, currentchunk;
+						return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+							while (1) switch (_context4.prev = _context4.next) {
+								case 0:
+									filter = this.value.toLowerCase();
+									container = document.querySelector('.wcf-library-templates');
+									_context4.next = 4;
+									return search_category_templates(filter);
+								case 4:
+									currentchunk = _context4.sent;
+									container.innerHTML = '';
+									currentchunk.forEach(function(item) {
+										var templateHtml = generateTemplate(item);
+										container.innerHTML += templateHtml;
+									});
+									setTimeout(function() {
+										var elements = $('.wcf-library-template');
+										var re = new RegExp(filter, 'i');
+										elements.each(function(_, element) {
+											var title = $(element).find('.title')[0];
+											if (re.test(title.textContent)) {
+												title.innerHTML = title.textContent.replace(re, '<b>$&</b>');
+											}
+										});
+									}, 100);
+								case 8:
+								case "end":
+									return _context4.stop();
+							}
+						}, _callee4, this);
+					})), 300));
 				}
 
 				function template_import() {
@@ -881,11 +1028,11 @@ function _asyncToGenerator(fn) {
 		observer.observe(lastItem);
 	};
 	var generateTemplate = function generateTemplate(item) {
-		var _WCF_TEMPLATE_LIBRARY3, _WCF_TEMPLATE_LIBRARY4, _WCF_TEMPLATE_LIBRARY5, _WCF_TEMPLATE_LIBRARY6, _WCF_TEMPLATE_LIBRARY7, _WCF_TEMPLATE_LIBRARY8;
+		var _WCF_TEMPLATE_LIBRARY5, _WCF_TEMPLATE_LIBRARY6, _WCF_TEMPLATE_LIBRARY7, _WCF_TEMPLATE_LIBRARY8, _WCF_TEMPLATE_LIBRARY9, _WCF_TEMPLATE_LIBRARY10;
 		var pluginSlug = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		var allPlugins = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 		var activePlugins = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-		return "\n            <div class=\"wcf-library-template\" data-id=\"".concat(item.id, "\" data-url=\"").concat(item.url, "\">\n                <div class=\"thumbnail\">\n                    <img src=\"").concat(item.thumbnail, "\" alt=\"").concat(item.title, "\">\n                </div>\n                \n                ").concat(item !== null && item !== void 0 && item.valid && item.valid ? "\n                    <!-- Show the 'Insert' button if the template is valid -->\n                    <button class=\"library--action insert\">\n                        <i class=\"eicon-file-download\"></i>\n                        Insert\n                    </button>\n                " : "\n                    <!-- Show premium or activation buttons based on plugin status -->\n                    ".concat(!((_WCF_TEMPLATE_LIBRARY3 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY3 !== void 0 && _WCF_TEMPLATE_LIBRARY3.pro_installed) ? "\n                        <!-- Show 'Go Premium' button if the plugin is not installed -->\n                        <a href=\"https://animation-addons.com\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Go Premium\n                        </a>\n                    " : '', "\n                    ").concat((_WCF_TEMPLATE_LIBRARY4 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY4 !== void 0 && _WCF_TEMPLATE_LIBRARY4.pro_installed && (_WCF_TEMPLATE_LIBRARY5 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY5 !== void 0 && _WCF_TEMPLATE_LIBRARY5.pro_active && !((_WCF_TEMPLATE_LIBRARY6 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY6 !== void 0 && (_WCF_TEMPLATE_LIBRARY6 = _WCF_TEMPLATE_LIBRARY6.config) !== null && _WCF_TEMPLATE_LIBRARY6 !== void 0 && _WCF_TEMPLATE_LIBRARY6.wcf_valid) ? "\n                        <!-- Show 'Pro' button if the plugin is installed and active -->\n                        <a href=\"".concat(WCF_TEMPLATE_LIBRARY.dashboard_link, "\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate License\n                        </a>\n                    ") : '', "\n                    ").concat((_WCF_TEMPLATE_LIBRARY7 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY7 !== void 0 && _WCF_TEMPLATE_LIBRARY7.pro_installed && !((_WCF_TEMPLATE_LIBRARY8 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY8 !== void 0 && _WCF_TEMPLATE_LIBRARY8.pro_active) ? "\n                        <!-- Show 'Activate' button if the plugin is installed but not active -->\n                        <button class=\"library--action pro aaeplugin-activate\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate\n                        </button>\n                    " : '', "\n                "), "\n                \n                <p class=\"title\">").concat(item.title, "</p>\n            </div>\n        ");
+		return "\n            <div class=\"wcf-library-template\" data-id=\"".concat(item.id, "\" data-url=\"").concat(item.template_demo_url, "\">\n                <div class=\"thumbnail\">\n                    <img src=\"").concat(item.preview.url, "\" alt=\"").concat(item.title, "\">\n                </div>\n                \n                ").concat(item !== null && item !== void 0 && item.valid && item.valid ? "\n                    <!-- Show the 'Insert' button if the template is valid -->\n                    <button class=\"library--action insert\">\n                        <i class=\"eicon-file-download\"></i>\n                        Insert\n                    </button>\n                " : "\n                    <!-- Show premium or activation buttons based on plugin status -->\n                    ".concat(!((_WCF_TEMPLATE_LIBRARY5 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY5 !== void 0 && _WCF_TEMPLATE_LIBRARY5.pro_installed) ? "\n                        <!-- Show 'Go Premium' button if the plugin is not installed -->\n                        <a href=\"https://animation-addons.com\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Go Premium\n                        </a>\n                    " : '', "\n                    ").concat((_WCF_TEMPLATE_LIBRARY6 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY6 !== void 0 && _WCF_TEMPLATE_LIBRARY6.pro_installed && (_WCF_TEMPLATE_LIBRARY7 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY7 !== void 0 && _WCF_TEMPLATE_LIBRARY7.pro_active && !((_WCF_TEMPLATE_LIBRARY8 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY8 !== void 0 && (_WCF_TEMPLATE_LIBRARY8 = _WCF_TEMPLATE_LIBRARY8.config) !== null && _WCF_TEMPLATE_LIBRARY8 !== void 0 && _WCF_TEMPLATE_LIBRARY8.wcf_valid) ? "\n                        <!-- Show 'Pro' button if the plugin is installed and active -->\n                        <a href=\"".concat(WCF_TEMPLATE_LIBRARY.dashboard_link, "\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate License\n                        </a>\n                    ") : '', "\n                    ").concat((_WCF_TEMPLATE_LIBRARY9 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY9 !== void 0 && _WCF_TEMPLATE_LIBRARY9.pro_installed && !((_WCF_TEMPLATE_LIBRARY10 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY10 !== void 0 && _WCF_TEMPLATE_LIBRARY10.pro_active) ? "\n                        <!-- Show 'Activate' button if the plugin is installed but not active -->\n                        <button class=\"library--action pro aaeplugin-activate\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate\n                        </button>\n                    " : '', "\n                "), "\n                \n                <p class=\"title\">").concat(item.title, "</p>\n            </div>\n        ");
 	};
 })(jQuery, window, document);
-//# sourceMappingURL=wcf-template-library.js.map
+//# sourceMappingURL=wcf-template-library copy.js.map
