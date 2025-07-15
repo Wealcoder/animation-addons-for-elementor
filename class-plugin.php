@@ -742,11 +742,12 @@ class Plugin
                                 <div id="elementor-template-library-color">
                                     <select id="wcf-template-library-color-subtype" class="elementor-template-library-color-select"  tabindex="-1">
 																			<option value="">All</option>
-                                        <option value="light">Light</option>
+                                        <option value="lite">Light</option>
                                         <option value="dark">Dark</option>
                                     </select>
                                 </div>
                             	</div>
+														
 														</div>
                             <div id="elementor-template-library-filter-text-wrapper">
                                 <label for="wcf-template-library-filter-text" class="elementor-screen-only"><?php echo esc_html__('Search Templates:', 'animation-addons-for-elementor'); ?></label>

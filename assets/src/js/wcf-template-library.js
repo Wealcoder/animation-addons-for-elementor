@@ -272,6 +272,7 @@
                   "']"
               ).attr("selected", "selected");
             }
+
             //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
           }
 

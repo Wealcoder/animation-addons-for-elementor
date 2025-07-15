@@ -332,6 +332,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   if (color_type) {
                     $("#wcf-template-library-color-subtype option[value='" + color_type + "']").attr("selected", "selected");
                   }
+
                   //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
                 case 23:
                 case "end":
