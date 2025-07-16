@@ -644,11 +644,11 @@ class Plugin
 	{
 
 		require_once WCF_ADDONS_PATH . 'config.php';
-
-		if (is_admin()) {
-
-			require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-
+		
+		if (is_admin()) {		
+			if(get_option( 'wcf_addons_setup_wizard' ) !== 'complete' ){
+				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
+			}	
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
 
