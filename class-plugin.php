@@ -723,7 +723,8 @@ class Plugin
                     <div class="elementor-template-library-templates">
                         <!--toolbar-->
                         <div id="elementor-template-library-toolbar">
-                            <div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
+                            <div style="display: flex; align-items: center; gap: 10px">
+															<div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
                                 <div id="elementor-template-library-filter">
                                     <select id="wcf-template-library-filter-subtype" class="elementor-template-library-filter-select"  tabindex="-1">
                                         <option value=""><?php echo esc_html__('Category', 'animation-addons-for-elementor'); ?></option>
@@ -736,13 +737,24 @@ class Plugin
                                         #>
                                     </select>
                                 </div>
-                            </div>
+                            	</div>
+                            	<div id="elementor-template-library-color-toolbar-remote" class="elementor-template-library-color-toolbar">
+                                <div id="elementor-template-library-color">
+                                    <select id="wcf-template-library-color-subtype" class="elementor-template-library-color-select"  tabindex="-1">
+																			<option value="">All</option>
+                                        <option value="lite">Light</option>
+                                        <option value="dark">Dark</option>
+                                    </select>
+                                </div>
+                            	</div>
+														
+														</div>
                             <div id="elementor-template-library-filter-text-wrapper">
                                 <label for="wcf-template-library-filter-text" class="elementor-screen-only"><?php echo esc_html__('Search Templates:', 'animation-addons-for-elementor'); ?></label>
                                 <input id="wcf-template-library-filter-text" placeholder="Search">
                                 <i class="eicon-search"></i>
                             </div>
-                        </div>
+                        </div> 
 
                         <!--templates -->
                         <div class="wcf-library-templates">

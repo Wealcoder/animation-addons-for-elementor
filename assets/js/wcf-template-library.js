@@ -16,6 +16,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   var currentPage = 1;
   var currentCategory = "";
   var currentType = "";
+  var currentColorType = "";
   var allCategory = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -96,6 +97,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var category,
         type,
         page,
+        color_type,
         result,
         query_domain,
         response,
@@ -107,6 +109,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             category = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : "";
             type = _args3.length > 1 ? _args3[1] : undefined;
             page = _args3.length > 2 && _args3[2] !== undefined ? _args3[2] : 1;
+            color_type = _args3.length > 3 && _args3[3] !== undefined ? _args3[3] : "";
             result = [];
             query_domain = new URL(aae_domain);
             if (type) {
@@ -119,35 +122,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               query_domain.searchParams.set("page", page);
               currentPage = page;
             }
-            _context3.prev = 8;
-            _context3.next = 11;
+            if (color_type) {
+              query_domain.searchParams.set("color_type", color_type);
+            }
+            _context3.prev = 10;
+            _context3.next = 13;
             return fetch(query_domain);
-          case 11:
+          case 13:
             response = _context3.sent;
             if (response.ok) {
-              _context3.next = 14;
+              _context3.next = 16;
               break;
             }
             throw new Error("HTTP error! Status: ".concat(response.status));
-          case 14:
-            _context3.next = 16;
-            return response.json();
           case 16:
+            _context3.next = 18;
+            return response.json();
+          case 18:
             data = _context3.sent;
             result = data.templates || [];
-            _context3.next = 23;
+            _context3.next = 25;
             break;
-          case 20:
-            _context3.prev = 20;
-            _context3.t0 = _context3["catch"](8);
+          case 22:
+            _context3.prev = 22;
+            _context3.t0 = _context3["catch"](10);
             console.error("Fetch Error:", _context3.t0);
-          case 23:
+          case 25:
             return _context3.abrupt("return", templates_validate(result));
-          case 24:
+          case 26:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[8, 20]]);
+      }, _callee3, null, [[10, 22]]);
     }));
     return function get_category_templates() {
       return _ref3.apply(this, arguments);
@@ -263,6 +269,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           //category select
           selected_category(t);
+          selected_color_type(t);
           render_single_template(t);
           search_function();
           template_import();
@@ -273,6 +280,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         function _render_templates() {
           _render_templates = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(t, activeMenu) {
             var category,
+              color_type,
               templates,
               is_loading,
               container,
@@ -282,28 +290,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               while (1) switch (_context6.prev = _context6.next) {
                 case 0:
                   category = _args6.length > 2 && _args6[2] !== undefined ? _args6[2] : "";
+                  color_type = _args6.length > 3 && _args6[3] !== undefined ? _args6[3] : "";
                   templates = wp.template("wcf-templates");
                   contents = null;
                   is_loading = true;
                   loading(is_loading);
-                  _context6.next = 7;
+                  _context6.next = 8;
                   return templates({
                     templates: [],
                     categories: storeCategory
                   });
-                case 7:
+                case 8:
                   contents = _context6.sent;
                   t.append(contents);
                   container = document.querySelector(".wcf-library-templates");
                   currentCategory = category;
                   currentType = activeMenu;
+                  currentColorType = color_type;
                   if (active_resize_first_load === 0) {
                     $(window).trigger("resize");
                     active_resize_first_load++;
                   }
-                  _context6.next = 15;
-                  return get_category_templates(category, activeMenu);
-                case 15:
+                  _context6.next = 17;
+                  return get_category_templates(category, activeMenu, 1, color_type);
+                case 17:
                   getTemplate = _context6.sent;
                   getTemplate.forEach(function (item) {
                     var templateHtml = generateTemplate(item);
@@ -319,8 +329,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   if (category) {
                     $("#wcf-template-library-filter-subtype option[value='" + category + "']").attr("selected", "selected");
                   }
+                  if (color_type) {
+                    $("#wcf-template-library-color-subtype option[value='" + color_type + "']").attr("selected", "selected");
+                  }
+
                   //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
-                case 20:
+                case 23:
                 case "end":
                   return _context6.stop();
               }
@@ -405,7 +419,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             var activeMenu = $(".wcf-template-library--header .elementor-active").attr("data-tab");
             var valueSelected = this.value;
             $(t).find(".dialog-message").remove();
-            render_templates(t, activeMenu, valueSelected);
+            render_templates(t, activeMenu, valueSelected, currentColorType);
+            template_import();
+          });
+        }
+        function selected_color_type(t) {
+          $(document).on("change", "#wcf-template-library-color-subtype", function (e) {
+            var activeMenu = $(".wcf-template-library--header .elementor-active").attr("data-tab");
+            var valueSelected = this.value;
+            $(t).find(".dialog-message").remove();
+            render_templates(t, activeMenu, currentCategory, valueSelected);
             template_import();
           });
         }
@@ -528,7 +551,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
                 _context7.next = 3;
-                return get_category_templates(currentCategory, currentType, currentPage + 1);
+                return get_category_templates(currentCategory, currentType, currentPage + 1, currentColorType);
               case 3:
                 currentchunk = _context7.sent;
                 container = document.querySelector(".wcf-library-templates");

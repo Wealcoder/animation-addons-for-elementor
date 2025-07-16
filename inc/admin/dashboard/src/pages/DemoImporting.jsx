@@ -182,7 +182,8 @@ const DemoImporting = () => {
               : "Creating your website..."}{" "}
           </h3>
           <p className="mt-1.5 text-text-secondary">
-            Please wait, your website is being created.
+            Please wait, your website is being created. It will take upto 10
+            minute. Do not reload.
           </p>
         </div>
         <div className="mb-8">
