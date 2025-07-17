@@ -7,6 +7,7 @@ const FailImport = () => {
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
   const theme = url.searchParams.get("theme");
+  const msg = url.searchParams.get("msg");
 
   const changeRoute = (value) => {
     const pageQuery = url.searchParams.get("page");
@@ -30,7 +31,7 @@ const FailImport = () => {
         <div className="mb-6">
           <h3 className="text-2xl font-medium">Fail to Import</h3>
           <p className="mt-1.5 text-text-secondary">
-            An issue occurred while importing
+            An issue occurred while importing {msg? `: ${msg}` : "" }
           </p>
         </div>
         <div className="mb-6">

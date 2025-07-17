@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Animation Addons for Elementor
+ * Plugin Name: Animation Addons
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://animation-addons.com/
  * Version:     2.3.8

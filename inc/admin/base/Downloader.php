@@ -60,7 +60,7 @@ class Downloader {
 		// Get file content from the server.
 		$response = wp_remote_get(
 			$url,
-			array( 'timeout' => Helpers::apply_filters( 'aaeaddon/timeout_for_downloading_import_file', 20 ) )
+			array( 'timeout' => Helpers::apply_filters( 'aaeaddon/timeout_for_downloading_import_file', 45 ) )
 		);
 
 		// Test if the get request was not successful.
