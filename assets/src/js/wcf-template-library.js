@@ -13,7 +13,11 @@
   let currentCategory = "";
   let currentType = "";
   let currentColorType = "";
+  let active_menu_first_load = 0;
+  let active_resize_first_load = 0;
   let allCategory = async () => {
+    //https://block.animation-addons.com/wp-json/templates/v2/wcf-tpl-category
+    //"https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
     await fetch(
       "https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
     )
@@ -25,9 +29,9 @@
 
   allCategory();
   // API for get requests
-
+ // https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block
   let aae_domain =
-    "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
+    "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
   const activePlugin = async () => {
     await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
       method: "POST",
@@ -187,9 +191,6 @@
 
           $(window).trigger("resize"); //fixed modal position
 
-          let active_menu_first_load = 0;
-          let active_resize_first_load = 0;
-
           function render_popup(t) {
             let tmpTypes = wp.template("wcf-templates-header");
             content = null;
@@ -247,7 +248,10 @@
             );
             getTemplate.forEach((item) => {
               const templateHtml = generateTemplate(item);
-              container.innerHTML += templateHtml;
+              if(container){
+                container.innerHTML += templateHtml;
+              }
+             
             });
             aaeadddon_run_lazy_load();
 
@@ -568,7 +572,7 @@
       item.template_demo_url
     }">
                 <div class="thumbnail">
-                    <img src="${item.preview.url}" alt="${item.title}">
+                    <img src="${item?.preview?.url}" alt="${item.title}">
                 </div>
                 
                 ${

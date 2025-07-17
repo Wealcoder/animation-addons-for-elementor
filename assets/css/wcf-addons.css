@@ -349,3 +349,7 @@
   margin-top: 15px;
   margin-bottom: 12px;
 }
+
+.wcf--countdown .timer-content {
+  display: flex;
+}

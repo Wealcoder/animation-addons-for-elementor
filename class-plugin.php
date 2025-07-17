@@ -41,7 +41,8 @@ class Plugin
 	 *
 	 * @var string API URL.
 	 */
-	public $api_url = 'https://block.animation-addons.com/wp-json/api/v2/list';
+	//public $api_url = 'https://block.animation-addons.com/wp-json/api/v2/list';
+	public $api_url = 'https://crowdytheme.com/elementor/info-templates/wp-json/api/v2/list';
 
 	/**
 	 * Instance

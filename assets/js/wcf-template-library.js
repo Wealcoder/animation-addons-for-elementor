@@ -1,7 +1,3 @@
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw new Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw new Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 /* eslint-disable semi */
 /* eslint-disable arrow-parens */
 /**
@@ -12,605 +8,643 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* global jQuery, WCF_Template_library_Editor*/
 
 (function ($, window, document, config) {
-  var storeCategory;
-  var currentPage = 1;
-  var currentCategory = "";
-  var currentType = "";
-  var currentColorType = "";
-  var allCategory = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return fetch("https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category").then(function (res) {
-              return res.json();
-            }).then(function (res) {
-              storeCategory = res;
-            });
-          case 2:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function allCategory() {
-      return _ref.apply(this, arguments);
-    };
-  }();
+  let storeCategory;
+  let currentPage = 1;
+  let currentCategory = "";
+  let currentType = "";
+  let currentColorType = "";
+  let active_menu_first_load = 0;
+  let active_resize_first_load = 0;
+  let allCategory = async () => {
+    //https://block.animation-addons.com/wp-json/templates/v2/wcf-tpl-category
+    //"https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
+    await fetch(
+      "https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        storeCategory = res;
+      });
+  };
+
   allCategory();
   // API for get requests
+ // https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block
+  let aae_domain =
+    "https://crowdytheme.com/elementor/info-templates/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
+  const activePlugin = async () => {
+    await fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
 
-  var aae_domain = "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block";
-  var activePlugin = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return fetch(WCF_TEMPLATE_LIBRARY.ajaxurl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Accept: "application/json"
-              },
-              body: new URLSearchParams({
-                action: "activate_from_editor_plugin",
-                action_base: "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
-                nonce: WCF_TEMPLATE_LIBRARY.nonce
-              })
-            }).then(function (response) {
-              return response.json();
-            }).then(function (return_content) {
-              if (return_content !== null && return_content !== void 0 && return_content.success) {
-                window.location.reload();
-              }
-            });
-          case 2:
-          case "end":
-            return _context2.stop();
+      body: new URLSearchParams({
+        action: "activate_from_editor_plugin",
+        action_base:
+          "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
+        nonce: WCF_TEMPLATE_LIBRARY.nonce,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {
+        if (return_content?.success) {
+          window.location.reload();
         }
-      }, _callee2);
-    }));
-    return function activePlugin() {
-      return _ref2.apply(this, arguments);
-    };
-  }();
+      });
+  };
 
   // FetchRes is the promise to resolve
 
-  var templates_validate = function templates_validate(remotetemplates) {
-    var templates = [];
-    remotetemplates.forEach(function (template, index) {
-      var _WCF_TEMPLATE_LIBRARY, _WCF_TEMPLATE_LIBRARY2;
-      if ((_WCF_TEMPLATE_LIBRARY = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY !== void 0 && (_WCF_TEMPLATE_LIBRARY = _WCF_TEMPLATE_LIBRARY.config) !== null && _WCF_TEMPLATE_LIBRARY !== void 0 && _WCF_TEMPLATE_LIBRARY.wcf_valid && ((_WCF_TEMPLATE_LIBRARY2 = WCF_TEMPLATE_LIBRARY) === null || _WCF_TEMPLATE_LIBRARY2 === void 0 || (_WCF_TEMPLATE_LIBRARY2 = _WCF_TEMPLATE_LIBRARY2.config) === null || _WCF_TEMPLATE_LIBRARY2 === void 0 ? void 0 : _WCF_TEMPLATE_LIBRARY2.wcf_valid) === true) {
+  const templates_validate = function (remotetemplates) {
+    let templates = [];
+
+    remotetemplates.forEach((template, index) => {
+      if (
+        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
+        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true
+      ) {
         template["valid"] = "yes";
       }
       templates.push(template);
     });
+
     return templates.reverse();
   };
 
   //get specific category templates
-  var get_category_templates = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var category,
-        type,
-        page,
-        color_type,
-        result,
-        query_domain,
-        response,
-        data,
-        _args3 = arguments;
-      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-        while (1) switch (_context3.prev = _context3.next) {
-          case 0:
-            category = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : "";
-            type = _args3.length > 1 ? _args3[1] : undefined;
-            page = _args3.length > 2 && _args3[2] !== undefined ? _args3[2] : 1;
-            color_type = _args3.length > 3 && _args3[3] !== undefined ? _args3[3] : "";
-            result = [];
-            query_domain = new URL(aae_domain);
-            if (type) {
-              query_domain.searchParams.set("subtype", type);
-            }
-            if (category && "" !== category) {
-              query_domain.searchParams.set("cat", category);
-            }
-            if (page) {
-              query_domain.searchParams.set("page", page);
-              currentPage = page;
-            }
-            if (color_type) {
-              query_domain.searchParams.set("color_type", color_type);
-            }
-            _context3.prev = 10;
-            _context3.next = 13;
-            return fetch(query_domain);
-          case 13:
-            response = _context3.sent;
-            if (response.ok) {
-              _context3.next = 16;
-              break;
-            }
-            throw new Error("HTTP error! Status: ".concat(response.status));
-          case 16:
-            _context3.next = 18;
-            return response.json();
-          case 18:
-            data = _context3.sent;
-            result = data.templates || [];
-            _context3.next = 25;
-            break;
-          case 22:
-            _context3.prev = 22;
-            _context3.t0 = _context3["catch"](10);
-            console.error("Fetch Error:", _context3.t0);
-          case 25:
-            return _context3.abrupt("return", templates_validate(result));
-          case 26:
-          case "end":
-            return _context3.stop();
-        }
-      }, _callee3, null, [[10, 22]]);
-    }));
-    return function get_category_templates() {
-      return _ref3.apply(this, arguments);
-    };
-  }();
+  const get_category_templates = async function (
+    category = "",
+    type,
+    page = 1,
+    color_type = ""
+  ) {
+    let result = [];
+
+    let query_domain = new URL(aae_domain);
+    if (type) {
+      query_domain.searchParams.set("subtype", type);
+    }
+    if (category && "" !== category) {
+      query_domain.searchParams.set("cat", category);
+    }
+
+    if (page) {
+      query_domain.searchParams.set("page", page);
+      currentPage = page;
+    }
+    if (color_type) {
+      query_domain.searchParams.set("color_type", color_type);
+    }
+    try {
+      const response = await fetch(query_domain);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await response.json();
+      result = data.templates || [];
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+
+    return templates_validate(result);
+  };
 
   //get specific category templates
-  var search_category_templates = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-      var text,
-        type,
-        result,
-        query_domain,
-        cat,
-        response,
-        data,
-        _args4 = arguments;
-      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-        while (1) switch (_context4.prev = _context4.next) {
-          case 0:
-            text = _args4.length > 0 && _args4[0] !== undefined ? _args4[0] : "";
-            type = $("#elementor-template-library-header-menu .elementor-active").attr("data-tab") || "block";
-            result = [];
-            query_domain = new URL(aae_domain);
-            if (type) {
-              query_domain.searchParams.set("subtype", type);
-            }
-            if (text && "" !== text) {
-              query_domain.searchParams.set("s", text);
-            }
-            cat = $("wcf-template-library-filter-subtype").val();
-            if (cat && "" !== cat) {
-              query_domain.searchParams.set("cat", cat);
-            }
-            _context4.prev = 8;
-            _context4.next = 11;
-            return fetch(query_domain);
-          case 11:
-            response = _context4.sent;
-            if (response.ok) {
-              _context4.next = 14;
-              break;
-            }
-            throw new Error("HTTP error! Status: ".concat(response.status));
-          case 14:
-            _context4.next = 16;
-            return response.json();
-          case 16:
-            data = _context4.sent;
-            result = data.templates || [];
-            _context4.next = 23;
-            break;
-          case 20:
-            _context4.prev = 20;
-            _context4.t0 = _context4["catch"](8);
-            console.error("Fetch Error:", _context4.t0);
-          case 23:
-            return _context4.abrupt("return", templates_validate(result));
-          case 24:
-          case "end":
-            return _context4.stop();
-        }
-      }, _callee4, null, [[8, 20]]);
-    }));
-    return function search_category_templates() {
-      return _ref4.apply(this, arguments);
-    };
-  }();
+  const search_category_templates = async function (text = "") {
+    let type =
+      $("#elementor-template-library-header-menu .elementor-active").attr(
+        "data-tab"
+      ) || "block";
+    let result = [];
+    let query_domain = new URL(aae_domain);
+    if (type) {
+      query_domain.searchParams.set("subtype", type);
+    }
+    if (text && "" !== text) {
+      query_domain.searchParams.set("s", text);
+    }
+    const cat = $("wcf-template-library-filter-subtype").val();
+    if (cat && "" !== cat) {
+      query_domain.searchParams.set("cat", cat);
+    }
+
+    try {
+      const response = await fetch(query_domain);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await response.json();
+      result = data.templates || [];
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+
+    return templates_validate(result);
+  };
 
   //get specific categories
 
   $("document").ready(function () {
-    var templateAddSection = $("#tmpl-elementor-add-section");
+    let templateAddSection = $("#tmpl-elementor-add-section");
     if (0 < templateAddSection.length) {
       var oldTemplateButton = templateAddSection.html();
-      oldTemplateButton = oldTemplateButton.replace('<div class="elementor-add-section-drag-title', '<div class="elementor-add-section-area-button elementor-add-wcf-template-button"></div><div class="elementor-add-section-drag-title');
+      oldTemplateButton = oldTemplateButton.replace(
+        '<div class="elementor-add-section-drag-title',
+        '<div class="elementor-add-section-area-button elementor-add-wcf-template-button"></div><div class="elementor-add-section-drag-title'
+      );
       templateAddSection.html(oldTemplateButton);
     }
+
     elementor.on("preview:loaded", function () {
-      $(elementor.$previewContents[0].body).on("click", ".elementor-add-wcf-template-button", function (event) {
-        event.preventDefault();
-        window.wcftmLibrary = elementorCommon.dialogsManager.createWidget("lightbox", {
-          id: "wcf-template-library",
-          onShow: function onShow() {
-            this.getElements("widget").addClass("elementor-templates-modal");
-            this.getElements("header").remove();
-            this.getElements("message").remove();
-            this.getElements("buttonsWrapper").remove();
-            var t = this.getElements("widgetContent");
-            //fixed modal position
-            render_popup(t);
-          },
-          onHide: function onHide() {
-            window.wcftmLibrary.destroy();
-          }
-        });
-        window.wcftmLibrary.getElements("header").remove();
-        window.wcftmLibrary.show();
-        $(window).trigger("resize"); //fixed modal position
+      $(elementor.$previewContents[0].body).on(
+        "click",
+        ".elementor-add-wcf-template-button",
+        function (event) {
+          event.preventDefault();
 
-        var active_menu_first_load = 0;
-        var active_resize_first_load = 0;
-        function render_popup(t) {
-          var tmpTypes = wp.template("wcf-templates-header");
-          content = null;
-          content = tmpTypes({
-            template_types: WCF_TEMPLATE_LIBRARY.template_types
-          });
-          t.html(content);
+          window.wcftmLibrary = elementorCommon.dialogsManager.createWidget(
+            "lightbox",
+            {
+              id: "wcf-template-library",
+              onShow: function () {
+                this.getElements("widget").addClass(
+                  "elementor-templates-modal"
+                );
+                this.getElements("header").remove();
+                this.getElements("message").remove();
+                this.getElements("buttonsWrapper").remove();
+                let t = this.getElements("widgetContent");
+                //fixed modal position
+                render_popup(t);
+              },
+              onHide: function () {
+                window.wcftmLibrary.destroy();
+              },
+            }
+          );
 
-          //active menu
-          active_menu(t);
+          window.wcftmLibrary.getElements("header").remove();
 
-          //category select
-          selected_category(t);
-          selected_color_type(t);
-          render_single_template(t);
-          search_function();
-          template_import();
-        }
-        function render_templates(_x, _x2) {
-          return _render_templates.apply(this, arguments);
-        }
-        function _render_templates() {
-          _render_templates = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(t, activeMenu) {
-            var category,
-              color_type,
-              templates,
-              is_loading,
-              container,
-              getTemplate,
-              _args6 = arguments;
-            return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-              while (1) switch (_context6.prev = _context6.next) {
-                case 0:
-                  category = _args6.length > 2 && _args6[2] !== undefined ? _args6[2] : "";
-                  color_type = _args6.length > 3 && _args6[3] !== undefined ? _args6[3] : "";
-                  templates = wp.template("wcf-templates");
-                  contents = null;
-                  is_loading = true;
-                  loading(is_loading);
-                  _context6.next = 8;
-                  return templates({
-                    templates: [],
-                    categories: storeCategory
-                  });
-                case 8:
-                  contents = _context6.sent;
-                  t.append(contents);
-                  container = document.querySelector(".wcf-library-templates");
-                  currentCategory = category;
-                  currentType = activeMenu;
-                  currentColorType = color_type;
-                  if (active_resize_first_load === 0) {
-                    $(window).trigger("resize");
-                    active_resize_first_load++;
-                  }
-                  _context6.next = 17;
-                  return get_category_templates(category, activeMenu, 1, color_type);
-                case 17:
-                  getTemplate = _context6.sent;
-                  getTemplate.forEach(function (item) {
-                    var templateHtml = generateTemplate(item);
-                    container.innerHTML += templateHtml;
-                  });
-                  aaeadddon_run_lazy_load();
-                  $($(".wcf-library-template").last()).find("img").on("load", function () {
-                    is_loading = false;
-                    loading(is_loading);
-                    $(window).trigger("resize"); //fixed modal position
-                  });
+          window.wcftmLibrary.show();
 
-                  if (category) {
-                    $("#wcf-template-library-filter-subtype option[value='" + category + "']").attr("selected", "selected");
-                  }
-                  if (color_type) {
-                    $("#wcf-template-library-color-subtype option[value='" + color_type + "']").attr("selected", "selected");
-                  }
+          $(window).trigger("resize"); //fixed modal position
 
-                  //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
-                case 23:
-                case "end":
-                  return _context6.stop();
-              }
-            }, _callee6);
-          }));
-          return _render_templates.apply(this, arguments);
-        }
-        function render_single_template(t) {
-          // let template = $('.thumbnail');
-          var backContent = $("#wcf-template-library .dialog-widget-content").html();
-          $(document).on("click", ".thumbnail", function () {
-            var _that = $(this);
-            var template_id = _that.closest(".wcf-library-template").data("id");
-            var template_url = _that.closest(".wcf-library-template").data("url");
-            var singleTmp = wp.template("wcf-templates-single");
-            content_single = null;
-            content_single = singleTmp({
-              template_link: template_url
+          function render_popup(t) {
+            let tmpTypes = wp.template("wcf-templates-header");
+            content = null;
+
+            content = tmpTypes({
+              template_types: WCF_TEMPLATE_LIBRARY.template_types,
             });
-            t.html(content_single);
-            //iframe is loaded
-            var is_loading = true;
-            loading(is_loading);
-            $("#wcf-template-library iframe").on("load", function () {
-              is_loading = false;
-              loading(is_loading);
-            });
-            template_import(template_id);
-          });
 
-          //single back
-          $(document).off("click", "#wcf-template-library-header-preview-back");
-          $(document).on("click", "#wcf-template-library-header-preview-back", function () {
-            $("#wcf-template-library .dialog-widget-content").html(backContent);
-            loading(false);
+            t.html(content);
+
             //active menu
             active_menu(t);
-          });
 
-          //hide modal
-          $(document).on("click", ".elementor-templates-modal__header__close", function () {
-            window.wcftmLibrary.hide();
-          });
-        }
-        function active_menu(t) {
-          active_menu_first_load++;
-          var menu_item = $(".wcf-template-library--header .elementor-template-library-menu-item");
-          menu_item.click(function () {
-            if ($(this).hasClass("elementor-active")) {
-              return;
-            }
-            menu_item.removeClass("elementor-active");
-            $(this).addClass("elementor-active");
-            activeMenu = $(this).attr("data-tab");
-            $(t).find(".dialog-message").remove();
-            render_templates(t, activeMenu);
+            //category select
+            selected_category(t);
+            selected_color_type(t);
 
-            //category select ensure dom selections
-            // selected_category(t);
+            render_single_template(t);
 
-            //   render_single_template(t);
+            search_function();
 
-            // search_function();
-
-            // template_import();
-          });
-
-          //hide modal
-          $(".elementor-templates-modal__header__close").on("click", function () {
-            window.wcftmLibrary.hide();
-          });
-
-          // if (active_menu_first_load >= 1){
-          //     return;
-          // }
-
-          var activeMenu = $(".wcf-template-library--header .elementor-active").attr("data-tab");
-          render_templates(t, activeMenu);
-        }
-        function selected_category(t) {
-          $(document).on("change", "#wcf-template-library-filter-subtype", function (e) {
-            var activeMenu = $(".wcf-template-library--header .elementor-active").attr("data-tab");
-            var valueSelected = this.value;
-            $(t).find(".dialog-message").remove();
-            render_templates(t, activeMenu, valueSelected, currentColorType);
             template_import();
-          });
-        }
-        function selected_color_type(t) {
-          $(document).on("change", "#wcf-template-library-color-subtype", function (e) {
-            var activeMenu = $(".wcf-template-library--header .elementor-active").attr("data-tab");
-            var valueSelected = this.value;
-            $(t).find(".dialog-message").remove();
-            render_templates(t, activeMenu, currentCategory, valueSelected);
-            template_import();
-          });
-        }
-        function search_function() {
-          function debounce(func, delay) {
-            var timeout;
-            return function () {
-              var _this = this;
-              for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-              }
-              clearTimeout(timeout);
-              timeout = setTimeout(function () {
-                return func.apply(_this, args);
-              }, delay);
-            };
           }
-          $(document).on("keyup", "#wcf-template-library-filter-text", debounce( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-            var filter, container, currentchunk;
-            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-              while (1) switch (_context5.prev = _context5.next) {
-                case 0:
-                  filter = this.value.toLowerCase();
-                  container = document.querySelector(".wcf-library-templates");
-                  _context5.next = 4;
-                  return search_category_templates(filter);
-                case 4:
-                  currentchunk = _context5.sent;
-                  container.innerHTML = "";
-                  currentchunk.forEach(function (item) {
-                    var templateHtml = generateTemplate(item);
-                    container.innerHTML += templateHtml;
-                  });
-                  setTimeout(function () {
-                    var elements = $(".wcf-library-template");
-                    var re = new RegExp(filter, "i");
-                    elements.each(function (_, element) {
-                      var title = $(element).find(".title")[0];
-                      if (re.test(title.textContent)) {
-                        title.innerHTML = title.textContent.replace(re, "<b>$&</b>");
-                      }
-                    });
-                  }, 100);
-                case 8:
-                case "end":
-                  return _context5.stop();
-              }
-            }, _callee5, this);
-          })), 300));
-        }
-        function template_import() {
-          var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-          var is_loading = true;
-          $(document).on("click", ".library--action.insert", function () {
-            var _that = $(this);
-            var template_id = id;
-            if (null === template_id) {
-              template_id = $(this).closest(".wcf-library-template").data("id");
-            }
+
+          async function render_templates(
+            t,
+            activeMenu,
+            category = "",
+            color_type = ""
+          ) {
+            let templates = wp.template("wcf-templates");
+            contents = null;
+            let is_loading = true;
             loading(is_loading);
-            _that.hide();
-            window.wcftmLibrary.currentRequest = elementorCommon.ajax.addRequest("get_wcf_template_data", {
-              unique_id: template_id,
-              data: {
-                edit_mode: !0,
-                display: !0,
-                template_id: template_id
-              },
-              success: function success(e) {
-                $e.run("document/elements/import", {
-                  model: window.elementor.elementsModel,
-                  data: e
-                });
+
+            contents = await templates({
+              templates: [],
+              categories: storeCategory,
+            });
+
+            t.append(contents);
+            const container = document.querySelector(".wcf-library-templates");
+            currentCategory = category;
+            currentType = activeMenu;
+            currentColorType = color_type;
+            if (active_resize_first_load === 0) {
+              $(window).trigger("resize");
+              active_resize_first_load++;
+            }
+            const getTemplate = await get_category_templates(
+              category,
+              activeMenu,
+              1,
+              color_type
+            );
+            getTemplate.forEach((item) => {
+              const templateHtml = generateTemplate(item);
+              if(container){
+                container.innerHTML += templateHtml;
+              }
+             
+            });
+            aaeadddon_run_lazy_load();
+
+            $($(".wcf-library-template").last())
+              .find("img")
+              .on("load", function () {
                 is_loading = false;
+                loading(is_loading);
+                $(window).trigger("resize"); //fixed modal position
+              });
+            if (category) {
+              $(
+                "#wcf-template-library-filter-subtype option[value='" +
+                  category +
+                  "']"
+              ).attr("selected", "selected");
+            }
+            if (color_type) {
+              $(
+                "#wcf-template-library-color-subtype option[value='" +
+                  color_type +
+                  "']"
+              ).attr("selected", "selected");
+            }
+
+            //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
+          }
+
+          function render_single_template(t) {
+            // let template = $('.thumbnail');
+            const backContent = $(
+              "#wcf-template-library .dialog-widget-content"
+            ).html();
+            $(document).on("click", ".thumbnail", function () {
+              let _that = $(this);
+              const template_id = _that
+                .closest(".wcf-library-template")
+                .data("id");
+              const template_url = _that
+                .closest(".wcf-library-template")
+                .data("url");
+
+              let singleTmp = wp.template("wcf-templates-single");
+              content_single = null;
+              content_single = singleTmp({
+                template_link: template_url,
+              });
+
+              t.html(content_single);
+              //iframe is loaded
+              let is_loading = true;
+              loading(is_loading);
+              $("#wcf-template-library iframe").on("load", function () {
+                is_loading = false;
+                loading(is_loading);
+              });
+              template_import(template_id);
+            });
+
+            //single back
+            $(document).off(
+              "click",
+              "#wcf-template-library-header-preview-back"
+            );
+            $(document).on(
+              "click",
+              "#wcf-template-library-header-preview-back",
+              function () {
+                $("#wcf-template-library .dialog-widget-content").html(
+                  backContent
+                );
+                loading(false);
+                //active menu
+                active_menu(t);
+              }
+            );
+
+            //hide modal
+            $(document).on(
+              "click",
+              ".elementor-templates-modal__header__close",
+              function () {
                 window.wcftmLibrary.hide();
               }
-            }).fail(function () {});
-          });
-        }
-        function loading(is_loading) {
-          var loading = $(".wcf-template-library--loading");
-          if (!is_loading) {
-            loading.hide();
-            loading.attr("hidden");
-          } else {
-            loading.show();
-            loading.removeAttr("hidden");
+            );
+          }
+
+          function active_menu(t) {
+            active_menu_first_load++;
+            const menu_item = $(
+              ".wcf-template-library--header .elementor-template-library-menu-item"
+            );
+            menu_item.click(function () {
+              if ($(this).hasClass("elementor-active")) {
+                return;
+              }
+
+              menu_item.removeClass("elementor-active");
+
+              $(this).addClass("elementor-active");
+
+              activeMenu = $(this).attr("data-tab");
+
+              $(t).find(".dialog-message").remove();
+
+              render_templates(t, activeMenu);
+
+              //category select ensure dom selections
+              // selected_category(t);
+
+              //   render_single_template(t);
+
+              // search_function();
+
+              // template_import();
+            });
+
+            //hide modal
+            $(".elementor-templates-modal__header__close").on(
+              "click",
+              function () {
+                window.wcftmLibrary.hide();
+              }
+            );
+
+            // if (active_menu_first_load >= 1){
+            //     return;
+            // }
+
+            let activeMenu = $(
+              ".wcf-template-library--header .elementor-active"
+            ).attr("data-tab");
+            render_templates(t, activeMenu);
+          }
+
+          function selected_category(t) {
+            $(document).on(
+              "change",
+              "#wcf-template-library-filter-subtype",
+              function (e) {
+                let activeMenu = $(
+                  ".wcf-template-library--header .elementor-active"
+                ).attr("data-tab");
+                let valueSelected = this.value;
+                $(t).find(".dialog-message").remove();
+                render_templates(
+                  t,
+                  activeMenu,
+                  valueSelected,
+                  currentColorType
+                );
+                template_import();
+              }
+            );
+          }
+
+          function selected_color_type(t) {
+            $(document).on(
+              "change",
+              "#wcf-template-library-color-subtype",
+              function (e) {
+                let activeMenu = $(
+                  ".wcf-template-library--header .elementor-active"
+                ).attr("data-tab");
+                let valueSelected = this.value;
+                $(t).find(".dialog-message").remove();
+                render_templates(t, activeMenu, currentCategory, valueSelected);
+                template_import();
+              }
+            );
+          }
+
+          function search_function() {
+            function debounce(func, delay) {
+              let timeout;
+              return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+              };
+            }
+
+            $(document).on(
+              "keyup",
+              "#wcf-template-library-filter-text",
+              debounce(async function () {
+                const filter = this.value.toLowerCase();
+                const container = document.querySelector(
+                  ".wcf-library-templates"
+                );
+
+                const currentchunk = await search_category_templates(filter);
+                container.innerHTML = "";
+
+                currentchunk.forEach((item) => {
+                  const templateHtml = generateTemplate(item);
+                  container.innerHTML += templateHtml;
+                });
+
+                setTimeout(() => {
+                  const elements = $(".wcf-library-template");
+                  const re = new RegExp(filter, "i");
+
+                  elements.each((_, element) => {
+                    const title = $(element).find(".title")[0];
+                    if (re.test(title.textContent)) {
+                      title.innerHTML = title.textContent.replace(
+                        re,
+                        "<b>$&</b>"
+                      );
+                    }
+                  });
+                }, 100);
+              }, 300)
+            );
+          }
+
+          function template_import(id = null) {
+            let is_loading = true;
+            $(document).on("click", ".library--action.insert", function () {
+              let _that = $(this);
+              let template_id = id;
+              if (null === template_id) {
+                template_id = $(this)
+                  .closest(".wcf-library-template")
+                  .data("id");
+              }
+              loading(is_loading);
+              _that.hide();
+
+              window.wcftmLibrary.currentRequest = elementorCommon.ajax
+                .addRequest("get_wcf_template_data", {
+                  unique_id: template_id,
+                  data: {
+                    edit_mode: !0,
+                    display: !0,
+                    template_id: template_id,
+                  },
+                  success: function (e) {
+                    $e.run("document/elements/import", {
+                      model: window.elementor.elementsModel,
+                      data: e,
+                    });
+                    is_loading = false;
+                    window.wcftmLibrary.hide();
+                  },
+                })
+                .fail(function () {});
+            });
+          }
+
+          function loading(is_loading) {
+            let loading = $(".wcf-template-library--loading");
+
+            if (!is_loading) {
+              loading.hide();
+              loading.attr("hidden");
+            } else {
+              loading.show();
+              loading.removeAttr("hidden");
+            }
           }
         }
-      });
+      );
     });
   });
+
   $(document).on("click", ".aaeplugin-activate", function (e) {
     e.preventDefault();
-    var userConfirmed = confirm("Are you sure you want to activate plugin? Any unsaved changes will be lost. Please Save change.");
+    var userConfirmed = confirm(
+      "Are you sure you want to activate plugin? Any unsaved changes will be lost. Please Save change."
+    );
     if (userConfirmed) {
       activePlugin();
     }
   });
+
   function aaeadddon_run_lazy_load() {
-    var listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
+    const listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
     if (!(listItems && listItems.length)) return;
-    var lastItem = listItems[listItems.length - 1];
-    var observerOptions = {
-      root: null,
-      // Uses the viewport as the root
+    const lastItem = listItems[listItems.length - 1];
+
+    const observerOptions = {
+      root: null, // Uses the viewport as the root
       rootMargin: "0px",
-      threshold: 0.1 // Trigger when 10% of the element is visible
+      threshold: 0.1, // Trigger when 10% of the element is visible
     };
 
-    var observerCallback = function observerCallback(entries, observer) {
-      entries.forEach( /*#__PURE__*/function () {
-        var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(entry) {
-          var currentchunk, container;
-          return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-            while (1) switch (_context7.prev = _context7.next) {
-              case 0:
-                if (!entry.isIntersecting) {
-                  _context7.next = 6;
-                  break;
-                }
-                _context7.next = 3;
-                return get_category_templates(currentCategory, currentType, currentPage + 1, currentColorType);
-              case 3:
-                currentchunk = _context7.sent;
-                container = document.querySelector(".wcf-library-templates");
-                if (currentchunk) {
-                  currentchunk.forEach(function (item) {
-                    var templateHtml = generateTemplate(item);
-                    container.innerHTML += templateHtml; // Add each generated HTML to the container
-                  });
-                }
-              case 6:
-              case "end":
-                return _context7.stop();
-            }
-          }, _callee7);
-        }));
-        return function (_x3) {
-          return _ref6.apply(this, arguments);
-        };
-      }());
+    const observerCallback = (entries, observer) => {
+      entries.forEach(async (entry) => {
+        if (entry.isIntersecting) {
+          let currentchunk = await get_category_templates(
+            currentCategory,
+            currentType,
+            currentPage + 1,
+            currentColorType
+          );
+          const container = document.querySelector(".wcf-library-templates");
+          if (currentchunk) {
+            currentchunk.forEach((item) => {
+              const templateHtml = generateTemplate(item);
+              container.innerHTML += templateHtml; // Add each generated HTML to the container
+            });
+          }
+        }
+      });
     };
-    var observer = new IntersectionObserver(debounceAsync(observerCallback), observerOptions);
+
+    const observer = new IntersectionObserver(
+      debounceAsync(observerCallback),
+      observerOptions
+    );
     observer.observe(lastItem);
   }
-  var generateTemplate = function generateTemplate(item) {
-    var _WCF_TEMPLATE_LIBRARY3, _WCF_TEMPLATE_LIBRARY4, _WCF_TEMPLATE_LIBRARY5, _WCF_TEMPLATE_LIBRARY6, _WCF_TEMPLATE_LIBRARY7, _WCF_TEMPLATE_LIBRARY8;
-    return "\n            <div class=\"wcf-library-template\" data-id=\"".concat(item.id, "\" data-url=\"").concat(item.template_demo_url, "\">\n                <div class=\"thumbnail\">\n                    <img src=\"").concat(item.preview.url, "\" alt=\"").concat(item.title, "\">\n                </div>\n                \n                ").concat(item !== null && item !== void 0 && item.valid && item.valid ? "\n                    <!-- Show the 'Insert' button if the template is valid -->\n                    <button class=\"library--action insert\">\n                        <i class=\"eicon-file-download\"></i>\n                        Insert\n                    </button>\n                " : "\n                    <!-- Show premium or activation buttons based on plugin status -->\n                    ".concat(!((_WCF_TEMPLATE_LIBRARY3 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY3 !== void 0 && _WCF_TEMPLATE_LIBRARY3.pro_installed) ? "\n                        <!-- Show 'Go Premium' button if the plugin is not installed -->\n                        <a href=\"https://animation-addons.com\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Go Premium\n                        </a>\n                    " : "", "\n                    ").concat((_WCF_TEMPLATE_LIBRARY4 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY4 !== void 0 && _WCF_TEMPLATE_LIBRARY4.pro_installed && (_WCF_TEMPLATE_LIBRARY5 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY5 !== void 0 && _WCF_TEMPLATE_LIBRARY5.pro_active && !((_WCF_TEMPLATE_LIBRARY6 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY6 !== void 0 && (_WCF_TEMPLATE_LIBRARY6 = _WCF_TEMPLATE_LIBRARY6.config) !== null && _WCF_TEMPLATE_LIBRARY6 !== void 0 && _WCF_TEMPLATE_LIBRARY6.wcf_valid) ? "\n                        <!-- Show 'Pro' button if the plugin is installed and active -->\n                        <a href=\"".concat(WCF_TEMPLATE_LIBRARY.dashboard_link, "\" class=\"library--action pro\" target=\"_blank\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate License\n                        </a>\n                    ") : "", "\n                    ").concat((_WCF_TEMPLATE_LIBRARY7 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY7 !== void 0 && _WCF_TEMPLATE_LIBRARY7.pro_installed && !((_WCF_TEMPLATE_LIBRARY8 = WCF_TEMPLATE_LIBRARY) !== null && _WCF_TEMPLATE_LIBRARY8 !== void 0 && _WCF_TEMPLATE_LIBRARY8.pro_active) ? "\n                        <!-- Show 'Activate' button if the plugin is installed but not active -->\n                        <button class=\"library--action pro aaeplugin-activate\">\n                            <i class=\"eicon-external-link-square\"></i>\n                            Activate\n                        </button>\n                    " : "", "\n                "), "\n                \n                <p class=\"title\">").concat(item.title, "</p>\n            </div>\n        ");
+
+  const generateTemplate = (item) => {
+    return `
+            <div class="wcf-library-template" data-id="${item.id}" data-url="${
+      item.template_demo_url
+    }">
+                <div class="thumbnail">
+                    <img src="${item?.preview?.url}" alt="${item.title}">
+                </div>
+                
+                ${
+                  item?.valid && item.valid
+                    ? `
+                    <!-- Show the 'Insert' button if the template is valid -->
+                    <button class="library--action insert">
+                        <i class="eicon-file-download"></i>
+                        Insert
+                    </button>
+                `
+                    : `
+                    <!-- Show premium or activation buttons based on plugin status -->
+                    ${
+                      !WCF_TEMPLATE_LIBRARY?.pro_installed
+                        ? `
+                        <!-- Show 'Go Premium' button if the plugin is not installed -->
+                        <a href="https://animation-addons.com" class="library--action pro" target="_blank">
+                            <i class="eicon-external-link-square"></i>
+                            Go Premium
+                        </a>
+                    `
+                        : ""
+                    }
+                    ${
+                      WCF_TEMPLATE_LIBRARY?.pro_installed &&
+                      WCF_TEMPLATE_LIBRARY?.pro_active &&
+                      !WCF_TEMPLATE_LIBRARY?.config?.wcf_valid
+                        ? `
+                        <!-- Show 'Pro' button if the plugin is installed and active -->
+                        <a href="${WCF_TEMPLATE_LIBRARY.dashboard_link}" class="library--action pro" target="_blank">
+                            <i class="eicon-external-link-square"></i>
+                            Activate License
+                        </a>
+                    `
+                        : ""
+                    }
+                    ${
+                      WCF_TEMPLATE_LIBRARY?.pro_installed &&
+                      !WCF_TEMPLATE_LIBRARY?.pro_active
+                        ? `
+                        <!-- Show 'Activate' button if the plugin is installed but not active -->
+                        <button class="library--action pro aaeplugin-activate">
+                            <i class="eicon-external-link-square"></i>
+                            Activate
+                        </button>
+                    `
+                        : ""
+                    }
+                `
+                }
+                
+                <p class="title">${item.title}</p>
+            </div>
+        `;
   };
-  function debounceAsync(fn) {
-    var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
-    var timeoutId = null;
-    return function () {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-      return new Promise(function (resolve, reject) {
+
+  function debounceAsync(fn, delay = 300) {
+    let timeoutId = null;
+
+    return (...args) => {
+      return new Promise((resolve, reject) => {
         if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
-          var result;
-          return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-            while (1) switch (_context8.prev = _context8.next) {
-              case 0:
-                _context8.prev = 0;
-                _context8.next = 3;
-                return fn.apply(void 0, args);
-              case 3:
-                result = _context8.sent;
-                resolve(result);
-                _context8.next = 10;
-                break;
-              case 7:
-                _context8.prev = 7;
-                _context8.t0 = _context8["catch"](0);
-                reject(_context8.t0);
-              case 10:
-              case "end":
-                return _context8.stop();
-            }
-          }, _callee8, null, [[0, 7]]);
-        })), delay);
+
+        timeoutId = setTimeout(async () => {
+          try {
+            const result = await fn(...args);
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        }, delay);
       });
     };
   }

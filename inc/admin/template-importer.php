@@ -221,7 +221,7 @@ class AAEAddon_Importer {
 				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
 					$this->install_options($template_data['wp_options']);
 				}	
-									
+				do_action('aaeaddon/starter-template/import/step/wp_options');					
 				update_option('aaeaddon_template_import_state', 'done');			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
