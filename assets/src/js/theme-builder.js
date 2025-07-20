@@ -31,7 +31,7 @@
         specificsDisplay: function (event) {
             event.preventDefault(); 
             let type = $(this).val(); 
-          
+        
             if('specifics_cat' == type){
                 $('.single-category-location').removeClass('hidden');    
             }else{
@@ -158,6 +158,7 @@
 
                         //display specific locations
                         if (response.responseJSON.data.tmpSpLocation) {
+                            
                             $.each(response.responseJSON.data.tmpSpLocation, function (i, item) {
                                 // Create a DOM Option and pre-select by default
                                 let data = {id: i, text: item};
@@ -165,10 +166,18 @@
                                 // Append it to the select
                                 $('#wcf-addons-hf-s-display-type').append(newOption).trigger('change');                               
                             });
+
+                            //aae-popup-builder-location
+                            if (response.responseJSON.data.tmpType && response.responseJSON.data.tmpType === 'popup') {
+                                $('#aae-popup-builder-delay').val(response.responseJSON.data.tmpDelay);
+                                $('.aae-popup-builder-location').removeClass('hidden');
+                            } else {
+                                $('.aae-popup-builder-location').addClass('hidden');
+                            } 
+
                         }
 
                         $('.wcf-addons-template-edit-popup-area').addClass('open-popup');
-
                       
                     },
 
@@ -219,11 +228,9 @@
                 if("specifics_cat" == temDisplay){
                     specificsDisplay = [];
                     specificsDisplay.push( $('#wcf-addons-single-category-display-type').val() );
-                }                                         
+                }
                 
-                $.ajax({
-                url: WCF_Theme_Builder.ajaxurl,
-                data: {
+                let data = {
                     'action': 'wcf_save_template',
                     'nonce': WCF_Theme_Builder.nonce,
                     'tmpId': tmpId,
@@ -231,9 +238,16 @@
                     'tmpType': tmpType,
                     'tmpDisplay': temDisplay,
                     'specificsDisplay': JSON.stringify(specificsDisplay) ?? null,
-                },
-                type: 'POST',
+                }; 
 
+                if(tmpType === 'popup'){
+                    data['tmpDelay'] = $('#aae-popup-builder-delay').val() ? $('#aae-popup-builder-delay').val() : 0;
+                }
+                
+                $.ajax({
+                url: WCF_Theme_Builder.ajaxurl,
+                data: data,
+                type: 'POST',
                 beforeSend: function () {
                     $this.text(WCF_Theme_Builder.labels.buttons.save.saving);
                     $this.addClass('updating-message');
@@ -303,6 +317,12 @@
                         $('.hf-s-location').removeClass('hidden');
                     }
                 }, 100);
+            }
+
+            if(type === 'popup') {
+                $('.aae-popup-builder-location').removeClass('hidden');
+            }else{
+                 $('.aae-popup-builder-location').addClass('hidden');  
             }
            
         }

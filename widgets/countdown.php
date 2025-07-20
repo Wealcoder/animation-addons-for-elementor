@@ -243,6 +243,7 @@ class Countdown extends Widget_Base {
 				'toggle'    => true,
 				'selectors' => [
 					'{{WRAPPER}} .timer-content' => 'flex-direction: {{VALUE}};',
+					'{{WRAPPER}} .wcf--countdown' => 'display: flex;',
 				],
 			]
 		);
@@ -281,7 +282,7 @@ class Countdown extends Widget_Base {
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
-					'{{WRAPPER}}  .timer-content' => 'gap: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .timer-content' => 'gap: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);

@@ -4,7 +4,7 @@ namespace WCF_ADDONS;
 
 use Elementor\Plugin as ElementorPlugin;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 } // Exit if accessed directly
 
@@ -15,7 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.2.0
  */
-class Plugin {
+class Plugin
+{
 	/**
 	 * Plugin version.
 	 *
@@ -27,7 +28,7 @@ class Plugin {
 	 * @var string Plugin version.
 	 */
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
-	
+
 	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
 
 	/**
@@ -40,7 +41,8 @@ class Plugin {
 	 *
 	 * @var string API URL.
 	 */
-	public $api_url = 'https://www.themecrowdy.com/wp-json/api/v2/list';
+	//public $api_url = 'https://block.animation-addons.com/wp-json/api/v2/list';
+	public $api_url = 'https://crowdytheme.com/elementor/info-templates/wp-json/api/v2/list';
 
 	/**
 	 * Instance
@@ -62,8 +64,9 @@ class Plugin {
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public static function instance() {
-		if ( is_null( self::$instance ) ) {
+	public static function instance()
+	{
+		if (is_null(self::$instance)) {
 			self::$instance = new self();
 		}
 
@@ -78,44 +81,45 @@ class Plugin {
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public function widget_scripts() {
-		
+	public function widget_scripts()
+	{
+
 		$scripts = [
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
 				'src'     => 'wcf-addons.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 		];
 
-		foreach ( $scripts as $key => $script ) {
-			wp_register_script( $script['handler'], plugins_url( '/assets/js/' . $script['src'], __FILE__ ), $script['dep'], $script['version'], $script['arg'] );
+		foreach ($scripts as $key => $script) {
+			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
 		}
 
-		$data = apply_filters( 'wcf-addons/js/data', [
-			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
-			'_wpnonce'       => wp_create_nonce( 'wcf-addons-frontend' ),
+		$data = apply_filters('wcf-addons/js/data', [
+			'ajaxUrl'        => admin_url('admin-ajax.php'),
+			'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
 			'post_id'        => get_the_ID(),
 			'i18n'           => [
-				'okay'    => esc_html__( 'Okay', 'animation-addons-for-elementor' ),
-				'cancel'  => esc_html__( 'Cancel', 'animation-addons-for-elementor' ),
-				'submit'  => esc_html__( 'Submit', 'animation-addons-for-elementor' ),
-				'success' => esc_html__( 'Success', 'animation-addons-for-elementor' ),
-				'warning' => esc_html__( 'Warning', 'animation-addons-for-elementor' ),
+				'okay'    => esc_html__('Okay', 'animation-addons-for-elementor'),
+				'cancel'  => esc_html__('Cancel', 'animation-addons-for-elementor'),
+				'submit'  => esc_html__('Submit', 'animation-addons-for-elementor'),
+				'success' => esc_html__('Success', 'animation-addons-for-elementor'),
+				'warning' => esc_html__('Warning', 'animation-addons-for-elementor'),
 			],
-			'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
+			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
 			'mode'			 => \Elementor\Plugin::$instance->editor->is_edit_mode(),
-		] );
-	
-		wp_localize_script( 'wcf--addons', 'WCF_ADDONS_JS', $data );
+		]);
 
-		wp_enqueue_script( 'wcf--addons' );
+		wp_localize_script('wcf--addons', 'WCF_ADDONS_JS', $data);
+
+		wp_enqueue_script('wcf--addons');
 
 		//widget scripts
-		foreach ( self::get_widget_scripts() as $key => $script ) {
-			wp_register_script( $script['handler'], plugins_url( '/assets/js/' . $script['src'], __FILE__ ), $script['dep'], $script['version'], $script['arg'] );
+		foreach (self::get_widget_scripts() as $key => $script) {
+			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
 		}
 	}
 
@@ -127,7 +131,8 @@ class Plugin {
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public static function widget_styles() {
+	public static function widget_styles()
+	{
 		$styles = [
 			'wcf-addons-core' => [
 				'handler' => 'wcf--addons',
@@ -138,15 +143,15 @@ class Plugin {
 			],
 		];
 
-		foreach ( $styles as $key => $style ) {
-			wp_register_style( $style['handler'], plugins_url( '/assets/css/' . $style['src'], __FILE__ ), $style['dep'], $style['version'], $style['media'] );
+		foreach ($styles as $key => $style) {
+			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], $style['version'], $style['media']);
 		}
 
-		wp_enqueue_style( 'wcf--addons' );
+		wp_enqueue_style('wcf--addons');
 
 		//widget style
-		foreach ( self::get_widget_style() as $key => $style ) {
-			wp_register_style( $style['handler'], plugins_url( '/assets/css/' . $style['src'], __FILE__ ), $style['dep'], $style['version'], $style['media'] );
+		foreach (self::get_widget_style() as $key => $style) {
+			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], $style['version'], $style['media']);
 		}
 	}
 
@@ -158,38 +163,39 @@ class Plugin {
 	 * @since 1.2.1
 	 * @access public
 	 */
-	public function editor_scripts() {
-		wp_enqueue_script( 'wcf-editor', plugins_url( '/assets/js/editor.min.js', __FILE__ ), [
+	public function editor_scripts()
+	{
+		wp_enqueue_script('wcf-editor', plugins_url('/assets/js/editor.min.js', __FILE__), [
 			'elementor-editor',
-		], WCF_ADDONS_VERSION, true );
+		], WCF_ADDONS_VERSION, true);
 
-		$data = apply_filters( 'wcf-addons-editor/js/data', [
-			'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-			'_wpnonce' => wp_create_nonce( 'wcf-addons-editor' ),			
-		] );
+		$data = apply_filters('wcf-addons-editor/js/data', [
+			'ajaxUrl'  => admin_url('admin-ajax.php'),
+			'_wpnonce' => wp_create_nonce('wcf-addons-editor'),
+		]);
 
-		wp_localize_script( 'wcf-editor', 'WCF_Addons_Editor', $data );
-		
+		wp_localize_script('wcf-editor', 'WCF_Addons_Editor', $data);
+
 		// templates Library
-		if(class_exists('\WCF_ADDONS\Library_Source')){
-			wp_enqueue_script( 'wcf-template-library', plugins_url( '/assets/js/wcf-template-library.js', __FILE__ ), [
+		if (class_exists('\WCF_ADDONS\Library_Source')) {
+			wp_enqueue_script('wcf-template-library', plugins_url('/assets/js/wcf-template-library.js', __FILE__), [
 				'jquery',
-	            'wp-util',
-			], WCF_ADDONS_VERSION, true );
-	
-			wp_localize_script( 'wcf-template-library', 'WCF_TEMPLATE_LIBRARY', [
-				'ajaxurl'        => admin_url( 'admin-ajax.php' ),				
+				'wp-util',
+			], WCF_ADDONS_VERSION, true);
+
+			wp_localize_script('wcf-template-library', 'WCF_TEMPLATE_LIBRARY', [
+				'ajaxurl'        => admin_url('admin-ajax.php'),
 				'template_types' => self::get_template_types(),
-				'nonce'          => wp_create_nonce( 'wcf-template-library' ),
-				'dashboard_link'          => admin_url( 'admin.php?page=wcf_addons_settings' ),
+				'nonce'          => wp_create_nonce('wcf-template-library'),
+				'dashboard_link'          => admin_url('admin.php?page=wcf_addons_settings'),
 				'config' => apply_filters('wcf_addons_editor_config', []),
-				'pro_installed' => array_key_exists( 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins() ),
-				'pro_active' => class_exists( '\AAE_ADDONS_Plugin_Pro' ) && array_key_exists( 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins() ),
-			] );
-			
+				'pro_installed' => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+				'pro_active' => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+			]);
+
 			wp_enqueue_style(
 				'wcf-template-library',
-				plugins_url( '/assets/css/wcf-template-library.css', __FILE__ ),
+				plugins_url('/assets/css/wcf-template-library.css', __FILE__),
 				[],
 				WCF_ADDONS_VERSION
 			);
@@ -204,8 +210,9 @@ class Plugin {
 	 * @since 1.2.1
 	 * @access public
 	 */
-	public function editor_styles() {
-		wp_enqueue_style( 'wcf--editor', plugins_url( '/assets/css/editor.min.css', __FILE__ ), [], WCF_ADDONS_VERSION, 'all' );
+	public function editor_styles()
+	{
+		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), [], WCF_ADDONS_VERSION, 'all');
 	}
 
 	/**
@@ -216,15 +223,16 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public static function get_widget_scripts() {
-		return apply_filters('aae/lite/widgets/scripts',[
+	public static function get_widget_scripts()
+	{
+		return apply_filters('aae/lite/widgets/scripts', [
 			'typed'            => [
 				'handler' => 'typed',
 				'src'     => 'typed.min.js',
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
-			],			
+			],
 			'ProgressBar'      => [
 				'handler' => 'progressbar',
 				'src'     => 'progressbar.min.js',
@@ -242,85 +250,85 @@ class Plugin {
 			'typewriter'       => [
 				'handler' => 'wcf--typewriter',
 				'src'     => 'widgets/typewriter.min.js',
-				'dep'     => [ 'typed', 'jquery' ],
+				'dep'     => ['typed', 'jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'text-hover-image' => [
 				'handler' => 'wcf--text-hover-image',
 				'src'     => 'widgets/text-hover-image.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'counter'          => [
 				'handler' => 'wcf--counter',
 				'src'     => 'widgets/counter.min.js',
-				'dep'     => [ 'jquery-numerator' ],
+				'dep'     => ['jquery-numerator'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'socials-shares'          => [
 				'handler' => 'wcf--socials-share',
 				'src'     => 'widgets/social-share.min.js',
-				'dep'     => [ ],
+				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
 			],
 			'progressbar'      => [
 				'handler' => 'wcf--progressbar',
 				'src'     => 'widgets/progressbar.min.js',
-				'dep'     => [ 'progressbar' ],
+				'dep'     => ['progressbar'],
 				'version' => false,
 				'arg'     => true,
-			],		
-			
+			],
+
 			'tabs'             => [
 				'handler' => 'wcf--tabs',
 				'src'     => 'widgets/tabs.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'nav-menu'         => [
 				'handler' => 'wcf--nav-menu',
 				'src'     => 'widgets/nav-menu.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'animated-heading' => [
 				'handler' => 'wcf--animated-heading',
 				'src'     => 'widgets/animated-heading.min.js',
-				'dep'     => [ 'jquery', 'gsap' ],
+				'dep'     => ['jquery', 'gsap'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'video-posts-tab'             => [
 				'handler' => 'aae-video-posts-tab',
 				'src'     => 'widgets/video-posts-tab.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'search'             => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'contact-form-7'             => [
 				'handler' => 'aae--contact-form',
 				'src'     => 'widgets/contact-form.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
 			'image-hotspot' => [
 				'handler' => 'aae-image-hotspot',
 				'src'     => 'widgets/image-hotspot.min.js',
-				'dep'     => [ 'jquery' ],
+				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
 			],
@@ -335,7 +343,8 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public static function get_widget_style() {
+	public static function get_widget_style()
+	{
 		return [
 			'icon-box'         => [
 				'handler' => 'wcf--icon-box',
@@ -393,7 +402,7 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-		
+
 			'brand-slider'     => [
 				'handler' => 'wcf--brand-slider',
 				'src'     => 'widgets/brand-slider.min.css',
@@ -506,7 +515,7 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			],
-            'clickdrop' => [
+			'clickdrop' => [
 				'handler' => 'aae-clickdrop',
 				'src'     => 'widgets/clickdrop.min.css',
 				'dep'     => [],
@@ -524,35 +533,34 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function register_widgets() {
-		
-		foreach ( self::get_widgets() as $slug => $data ) {
+	public function register_widgets()
+	{
+
+		foreach (self::get_widgets() as $slug => $data) {
 
 			// If upcoming don't register.
-			if ( $data['is_upcoming'] ) {
+			if ($data['is_upcoming']) {
 				continue;
 			}
-			
-			if($data['is_pro']){
+
+			if ($data['is_pro']) {
 				continue;
 			}
-			
-			if(file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php'))
-			{
-				if ( ! $data['is_pro'] && ! $data['is_extension'] )
-				{
-					if ( is_dir( __DIR__ . '/widgets/' . $slug ) ) {					
-						require_once( __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php' );
+
+			if (file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php')) {
+				if (! $data['is_pro'] && ! $data['is_extension']) {
+					if (is_dir(__DIR__ . '/widgets/' . $slug)) {
+						require_once(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php');
 					} else {
-						require_once( __DIR__ . '/widgets/' . $slug . '.php' );
+						require_once(__DIR__ . '/widgets/' . $slug . '.php');
 					}
-	
-	
-					$class = explode( '-', $slug );
-					$class = array_map( 'ucfirst', $class );
-					$class = implode( '_', $class );
+
+
+					$class = explode('-', $slug);
+					$class = array_map('ucfirst', $class);
+					$class = implode('_', $class);
 					$class = 'WCF_ADDONS\\Widgets\\' . $class;
-					ElementorPlugin::instance()->widgets_manager->register( new $class() );
+					ElementorPlugin::instance()->widgets_manager->register(new $class());
 				}
 			}
 		}
@@ -566,16 +574,17 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function register_extensions() {
-		
-		foreach ( self::get_extensions() as $slug => $data ) {
+	public function register_extensions()
+	{
+
+		foreach (self::get_extensions() as $slug => $data) {
 
 			// If upcoming don't register.
-			if ( $data['is_upcoming'] ) {
+			if ($data['is_upcoming']) {
 				continue;
 			}
-			
-			if (! $data['is_pro'] && ! $data['is_extension'] ) {
+
+			if (! $data['is_pro'] && ! $data['is_extension']) {
 
 				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 			}
@@ -588,42 +597,43 @@ class Plugin {
 	 *
 	 * @param $elements_manager
 	 */
-	public function widget_categories( $elements_manager ) {
+	public function widget_categories($elements_manager)
+	{
 		$categories = [];
 
 		$categories['weal-coder-addon'] = [
-			'title' => esc_html__( 'AAE', 'animation-addons-for-elementor' ),
+			'title' => esc_html__('AAE', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-hf-addon'] = [
-			'title' => __( 'AAE Header & Footer', 'animation-addons-for-elementor' ),
+			'title' => __('AAE Header & Footer', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-archive-addon'] = [
-			'title' => esc_html__( 'AAE Archive', 'animation-addons-for-elementor' ),
+			'title' => esc_html__('AAE Archive', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-search-addon'] = [
-			'title' => esc_html__( 'AAE Search', 'animation-addons-for-elementor' ),
+			'title' => esc_html__('AAE Search', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$categories['wcf-single-addon'] = [
-			'title' => esc_html__( 'AAE Single', 'animation-addons-for-elementor' ),
+			'title' => esc_html__('AAE Single', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		];
 
 		$old_categories = $elements_manager->get_categories();
-		$categories     = array_merge( $categories, $old_categories );
+		$categories     = array_merge($categories, $old_categories);
 
-		$set_categories = function ( $categories ) {
+		$set_categories = function ($categories) {
 			$this->categories = $categories;
 		};
 
-		$set_categories->call( $elements_manager, $categories );
+		$set_categories->call($elements_manager, $categories);
 	}
 
 	/**
@@ -631,21 +641,22 @@ class Plugin {
 	 *
 	 * @access private
 	 */
-	private function include_files() {
+	private function include_files()
+	{
 
 		require_once WCF_ADDONS_PATH . 'config.php';
-
-		if ( is_admin() ) {		
-			
-			require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';			
-
+		
+		if (is_admin()) {		
+			if(get_option( 'wcf_addons_setup_wizard' ) !== 'complete' ){
+				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
+			}	
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
 
-		require_once( WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php' );
+		require_once(WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php');
 
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
-		require_once WCF_ADDONS_PATH . 'inc/hook.php';		
+		require_once WCF_ADDONS_PATH . 'inc/hook.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
@@ -655,30 +666,32 @@ class Plugin {
 		//extensions
 		$this->register_extensions();
 	}
-	
-	public function elementor_editor_url( $url ){
+
+	public function elementor_editor_url($url)
+	{
 		$args = [
 			'numberposts' => 1,
 			'post_type'   => 'post',
 			'orderby'     => 'menu_order',
 			'order'       => 'ASC',
-		]; 
-		$latest_posts = get_posts($args);      
-		if (!is_wp_error( $latest_posts ) && !empty($latest_posts) && isset($latest_posts[0])) {  
-			return add_query_arg( 'aaeid', $latest_posts[0]->ID ,  $url ); 
+		];
+		$latest_posts = get_posts($args);
+		if (!is_wp_error($latest_posts) && !empty($latest_posts) && isset($latest_posts[0])) {
+			return add_query_arg('aaeid', $latest_posts[0]->ID,  $url);
 		}
-		return add_query_arg( 'aaeid', 1 , $url ); 
+		return add_query_arg('aaeid', 1, $url);
 	}
-	
-	
-	public function print_templates() {
+
+
+	public function print_templates()
+	{
 		$all_plugins = get_plugins();
 		$plugin_slug = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
-		$active_plugins = get_option( 'active_plugins' );
-		$dahsboard_link = admin_url( 'admin.php?page=wcf_addons_settings' );
-		?>
-        <script type="text/template" id="tmpl-wcf-templates-header">
-            <div class="dialog-header dialog-lightbox-header">
+		$active_plugins = get_option('active_plugins');
+		$dahsboard_link = admin_url('admin.php?page=wcf_addons_settings');
+?>
+		<script type="text/template" id="tmpl-wcf-templates-header">
+			<div class="dialog-header dialog-lightbox-header">
                 <div class="elementor-templates-modal__header wcf-template-library--header">
                     <div class="elementor-templates-modal__header__logo-area"></div>
                     <div class="elementor-templates-modal__header__menu-area" data-disabled="false">
@@ -699,38 +712,50 @@ class Plugin {
                     <div class="elementor-templates-modal__header__items-area">
                         <div class="elementor-templates-modal__header__close elementor-templates-modal__header__close--normal elementor-templates-modal__header__item">
                             <i class="eicon-close" aria-hidden="true" title="Close"></i>
-                            <span class="elementor-screen-only"><?php echo esc_html__( 'Close', 'animation-addons-for-elementor' ); ?></span>
+                            <span class="elementor-screen-only"><?php echo esc_html__('Close', 'animation-addons-for-elementor'); ?></span>
                         </div>
                     </div>
                 </div>
             </div>
         </script>
-        <script type="text/template" id="tmpl-wcf-templates">
-            <div class="dialog-message dialog-lightbox-message">
+		<script type="text/template" id="tmpl-wcf-templates">
+			<div class="dialog-message dialog-lightbox-message">
                 <div class="dialog-content dialog-lightbox-content">
                     <div class="elementor-template-library-templates">
                         <!--toolbar-->
                         <div id="elementor-template-library-toolbar">
-                            <div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
+                            <div style="display: flex; align-items: center; gap: 10px">
+															<div id="elementor-template-library-filter-toolbar-remote" class="elementor-template-library-filter-toolbar">
                                 <div id="elementor-template-library-filter">
                                     <select id="wcf-template-library-filter-subtype" class="elementor-template-library-filter-select"  tabindex="-1">
-                                        <option value=""><?php echo esc_html__( 'Category', 'animation-addons-for-elementor' ); ?></option>
+                                        <option value=""><?php echo esc_html__('Category', 'animation-addons-for-elementor'); ?></option>
                                         <#
                                         _.each( data.categories, function( item, key ) {
                                         #>
-                                        <option value="{{item.id}}">{{{item.title}}}</option>
+                                        <option value="{{item.id}}">{{{item.name}}}</option>
                                         <#
                                         } );
                                         #>
                                     </select>
                                 </div>
-                            </div>
+                            	</div>
+                            	<div id="elementor-template-library-color-toolbar-remote" class="elementor-template-library-color-toolbar">
+                                <div id="elementor-template-library-color">
+                                    <select id="wcf-template-library-color-subtype" class="elementor-template-library-color-select"  tabindex="-1">
+																			<option value="">All</option>
+                                        <option value="lite">Light</option>
+                                        <option value="dark">Dark</option>
+                                    </select>
+                                </div>
+                            	</div>
+														
+														</div>
                             <div id="elementor-template-library-filter-text-wrapper">
-                                <label for="wcf-template-library-filter-text" class="elementor-screen-only"><?php echo esc_html__( 'Search Templates:', 'animation-addons-for-elementor' ); ?></label>
+                                <label for="wcf-template-library-filter-text" class="elementor-screen-only"><?php echo esc_html__('Search Templates:', 'animation-addons-for-elementor'); ?></label>
                                 <input id="wcf-template-library-filter-text" placeholder="Search">
                                 <i class="eicon-search"></i>
                             </div>
-                        </div>
+                        </div> 
 
                         <!--templates -->
                         <div class="wcf-library-templates">
@@ -749,20 +774,20 @@ class Plugin {
                                 <#
                                 } else {
                                 #>
-								<?php if ( !class_exists( 'AAE_ADDONS_Plugin_Pro' ) && !array_key_exists( $plugin_slug, $all_plugins )) { ?>
+								<?php if (!class_exists('AAE_ADDONS_Plugin_Pro') && !array_key_exists($plugin_slug, $all_plugins)) { ?>
 	                                <a href="https://animation-addons.com" class="library--action pro" target="_blank">
 	                                    <i class="eicon-external-link-square"></i>
-	                                    <?php echo esc_html__( 'Go Premium', 'animation-addons-for-elementor' ); ?>
+	                                    <?php echo esc_html__('Go Premium', 'animation-addons-for-elementor'); ?>
 	                                </a>
-	                                <?php }elseif(class_exists( 'AAE_ADDONS_Plugin_Pro' ) && in_array( $plugin_slug, $active_plugins ) && get_option('aae_sc_error_status_current_support') !== 'active'){ ?>
+	                                <?php } elseif (class_exists('AAE_ADDONS_Plugin_Pro') && in_array($plugin_slug, $active_plugins) && get_option('aae_sc_error_status_current_support') !== 'active') { ?>
 										<a href="<?php echo esc_url($dahsboard_link); ?>" class="library--action pro" target="_blank">
 	                                        <i class="eicon-external-link-square"></i>
-	                                        	<?php echo esc_html__( 'Activate License', 'animation-addons-for-elementor' ); ?>
+	                                        	<?php echo esc_html__('Activate License', 'animation-addons-for-elementor'); ?>
 											</a>                
-	                                <?php }elseif(array_key_exists( $plugin_slug, $all_plugins )){ ?>
+	                                <?php } elseif (array_key_exists($plugin_slug, $all_plugins)) { ?>
 										<button class="library--action pro aaeplugin-activate">
 	                                        <i class="eicon-external-link-square"></i>
-	                                        <?php echo esc_html__( 'Activate', 'animation-addons-for-elementor' ); ?>
+	                                        <?php echo esc_html__('Activate', 'animation-addons-for-elementor'); ?>
 									</button>
 	                                <?php } ?>                                									
                                 <# } #>
@@ -786,25 +811,25 @@ class Plugin {
                                     <div class="elementor-loader-box"></div>
                                 </div>
                             </div>
-                            <div class="elementor-loading-title"><?php echo esc_html__( 'Loading', 'animation-addons-for-elementor' ); ?></div>
+                            <div class="elementor-loading-title"><?php echo esc_html__('Loading', 'animation-addons-for-elementor'); ?></div>
                         </div>
                     </div>
                 </div>
             </div>
         </script>
-        <script type="text/template" id="tmpl-wcf-templates-single">
-            <div class="dialog-header dialog-lightbox-header">
+		<script type="text/template" id="tmpl-wcf-templates-single">
+			<div class="dialog-header dialog-lightbox-header">
                 <div class="elementor-templates-modal__header">
                     <div id="wcf-template-library-header-preview-back">
                             <i class="eicon-" aria-hidden="true"></i>
-                            <span><?php echo esc_html__( 'Back to Library', 'animation-addons-for-elementor' ); ?></span>
+                            <span><?php echo esc_html__('Back to Library', 'animation-addons-for-elementor'); ?></span>
                         </div>
                     <div class="elementor-templates-modal__header__menu-area"></div>
                     <div class="elementor-templates-modal__header__items-area">
                         <div class="elementor-templates-modal__header__close elementor-templates-modal__header__close--normal elementor-templates-modal__header__item">
 
                             <i class="eicon-close" aria-hidden="true"></i>
-                            <span class="elementor-screen-only"><?php echo esc_html__( 'Close', 'animation-addons-for-elementor' ); ?></span>
+                            <span class="elementor-screen-only"><?php echo esc_html__('Close', 'animation-addons-for-elementor'); ?></span>
                         </div>
                         <div id="elementor-template-library-header-tools">
                             <div id="elementor-template-library-header-preview">
@@ -812,7 +837,7 @@ class Plugin {
 									<# if(WCF_TEMPLATE_LIBRARY?.config?.wcf_valid && WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true){ #> 
 	                                    <button class="library--action insert">
 	                                        <i class="eicon-file-download"></i>
-	                                         <?php echo esc_html__( 'Insert', 'animation-addons-for-elementor' ); ?>
+	                                         <?php echo esc_html__('Insert', 'animation-addons-for-elementor'); ?>
 	                                    </button>
                                     <# } #>
                                 </div>
@@ -838,30 +863,32 @@ class Plugin {
                                     <div class="elementor-loader-box"></div>
                                 </div>
                             </div>
-                            <div class="elementor-loading-title"><?php echo esc_html__( 'Loading', 'animation-addons-for-elementor' ); ?></div>
+                            <div class="elementor-loading-title"><?php echo esc_html__('Loading', 'animation-addons-for-elementor'); ?></div>
                         </div>
                     </div>
                 </div>
             </div>
         </script>
-		<?php
+<?php
 	}
-	public function preview_styles() {
+	public function preview_styles()
+	{
 
 		wp_enqueue_style(
 			'wcf-template-library-preview',
-			plugins_url( '/assets/css/preview.css', __FILE__ ),
+			plugins_url('/assets/css/preview.css', __FILE__),
 			[],
 			WCF_ADDONS_VERSION
 		);
 	}
-	public static function get_template_types() {
+	public static function get_template_types()
+	{
 		$template_type = [
 			'block' => [
-				'label' => esc_html__( 'Block', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Block', 'animation-addons-for-elementor'),
 			],
 			'page'  => [
-				'label' => esc_html__( 'Page', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Page', 'animation-addons-for-elementor'),
 			],
 		];
 
@@ -880,44 +907,45 @@ class Plugin {
 	 * @access private
 	 * @static
 	 */
-	private static function get_templates_data( $force_update = false ) {
+	private static function get_templates_data($force_update = false)
+	{
 
 		$cache_key      = 'aae_templates_data_' . 3.1;
-		$templates_data = get_transient( $cache_key );
+		$templates_data = get_transient($cache_key);
 
-		if ( $force_update || false === $templates_data ) {
+		if ($force_update || false === $templates_data) {
 
-			$timeout = ( $force_update ) ? 30 : 45;
+			$timeout = ($force_update) ? 30 : 45;
 
-			$response = wp_remote_get( esc_url_raw( self::$instance->api_url ), [
+			$response = wp_remote_get(esc_url_raw(self::$instance->api_url), [
 				'timeout'   => $timeout,
 				'sslverify' => false,
 				'body'      => [
 					// Which API version is used.
 					'api_version' => 1.1,
 					// Which language to return.
-					'site_lang'   => get_bloginfo( 'language' ),
+					'site_lang'   => get_bloginfo('language'),
 				],
-			] );
+			]);
 
-			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-				set_transient( $cache_key, [], 1 * HOUR_IN_SECONDS );
+			if (is_wp_error($response) || 200 !== (int) wp_remote_retrieve_response_code($response)) {
+				set_transient($cache_key, [], 1 * HOUR_IN_SECONDS);
 				return false;
 			}
 
-			$templates_data = json_decode( wp_remote_retrieve_body( $response ), true );
+			$templates_data = json_decode(wp_remote_retrieve_body($response), true);
 
-			if ( empty( $templates_data ) || ! is_array( $templates_data ) ) {
-				set_transient( $cache_key, [], 1 * HOUR_IN_SECONDS );
+			if (empty($templates_data) || ! is_array($templates_data)) {
+				set_transient($cache_key, [], 1 * HOUR_IN_SECONDS);
 
 				return false;
 			}
 
-			if ( isset( $templates_data['library'] ) ) {
-				update_option( self::LIBRARY_OPTION_KEY, $templates_data['library'], 'no' );
-				unset( $templates_data['library'] );
+			if (isset($templates_data['library'])) {
+				update_option(self::LIBRARY_OPTION_KEY, $templates_data['library'], 'no');
+				unset($templates_data['library']);
 			}
-			set_transient( $cache_key, $templates_data, 1 * HOUR_IN_SECONDS );
+			set_transient($cache_key, $templates_data, 1 * HOUR_IN_SECONDS);
 		}
 
 		return $templates_data;
@@ -931,38 +959,37 @@ class Plugin {
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public function __construct() {
-		
-		add_action( 'elementor/elements/categories_registered', [ $this, 'widget_categories' ] );
+	public function __construct()
+	{
+
+		add_action('elementor/elements/categories_registered', [$this, 'widget_categories']);
 
 		// Register widget scripts
-		add_action( 'wp_enqueue_scripts', [ $this, 'widget_scripts' ],29 );
+		add_action('wp_enqueue_scripts', [$this, 'widget_scripts'], 29);
 
 		// Register widget style
-		add_action( 'wp_enqueue_scripts', [ $this, 'widget_styles' ] );
+		add_action('wp_enqueue_scripts', [$this, 'widget_styles']);
 
 		// Register widgets
-		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );	
+		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 
 		// Register editor scripts
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'editor_scripts' ] );
+		add_action('elementor/editor/after_enqueue_scripts', [$this, 'editor_scripts']);
 
 		// Register editor style
-		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'editor_styles' ] );
-		add_filter( 'elementor/document/urls/preview' , [ $this, 'elementor_editor_url' ] , 4 );
-		add_filter( 'elementor/document/urls/wp_preview' , [ $this, 'elementor_editor_url' ] , 4 );
-	
+		add_action('elementor/editor/after_enqueue_styles', [$this, 'editor_styles']);
+		add_filter('elementor/document/urls/preview', [$this, 'elementor_editor_url'], 4);
+		add_filter('elementor/document/urls/wp_preview', [$this, 'elementor_editor_url'], 4);
+
 		$this->include_files();
-		
-		if(class_exists('\WCF_ADDONS\Library_Source')){
-						
-			add_action( 'elementor/editor/footer', [ $this, 'print_templates' ] );
+
+		if (class_exists('\WCF_ADDONS\Library_Source')) {
+
+			add_action('elementor/editor/footer', [$this, 'print_templates']);
 			// enqueue modal's preview css.
-			add_action( 'elementor/preview/enqueue_styles', array( $this, 'preview_styles' ) );
+			add_action('elementor/preview/enqueue_styles', array($this, 'preview_styles'));
 		}
 	}
-	
-	
 }
 
 // Instantiate Plugin Class

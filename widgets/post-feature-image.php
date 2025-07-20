@@ -405,7 +405,7 @@ class Post_Feature_Image extends Widget_Base
                 $link = get_post_meta(get_the_ID(), '_audio_url', true);
                 ?>
                 <div class="wcf-f-image-wrapper audio">
-                    <?php echo wp_oembed_get($link); ?>
+                    <?php echo wp_kses_post( wp_oembed_get($link) ); ?>
                 </div>
                 <?php
             } elseif ('gallery' === $post_format) {

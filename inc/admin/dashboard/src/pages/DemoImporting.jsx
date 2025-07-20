@@ -96,6 +96,7 @@ const DemoImporting = () => {
         delete tpldata.is_pro;
         delete tpldata.excerpt;
         setTempState(tpldata);
+        
         const formData = new URLSearchParams();
 
         if (tpldata?.next_step && tpldata.next_step == "download-xml-file") {
@@ -140,7 +141,7 @@ const DemoImporting = () => {
                 : prevProgress
             );
           }
-
+        
           if (data?.template) {
             const completed =
               data.template.next_step?.trim().toLowerCase() === "done";
@@ -164,8 +165,13 @@ const DemoImporting = () => {
           runImport(tpldata);
         }
       } catch (error) {
+       console.error("Fetch failed:", error.message);
+     
+       setMsg(error.message);
         if (tempstate) {
           runImport(tempstate);
+        }else{
+          changeRoute("fail-import", { plugins, theme, attachment , msg: error.message });
         }
       }
     }, 300),
@@ -182,7 +188,8 @@ const DemoImporting = () => {
               : "Creating your website..."}{" "}
           </h3>
           <p className="mt-1.5 text-text-secondary">
-            Please wait, your website is being created.
+            Please wait, your website is being created. It will take upto 10
+            minute. Do not reload.
           </p>
         </div>
         <div className="mb-8">

@@ -29,6 +29,10 @@
   min-width: 150px;
 }
 
+#wcf-template-library-color-subtype {
+  min-width: 150px;
+}
+
 #wcf-template-library-header-preview-back {
   padding: 15px;
   border-inline-end: 1px solid #e6e8ea;
@@ -52,8 +56,10 @@
   color: #f12529;
 }
 .library--action.insert {
-  color: #39b54a;
-  background-color: #fff;
+  color: black;
+  background-color: orange;
+  padding: 7px;
+  border-radius: 5px;
 }
 
 #wcf-template-library .dialog-message {

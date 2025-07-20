@@ -300,7 +300,7 @@ class ClickDrop extends Widget_Base
         $this->add_control(
             'icon_color',
             [
-                'label' => esc_html__('Color', 'textdomain'),
+                'label' => esc_html__('Color', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .aae-clickdrop-modal ul li a svg' => 'fill: {{VALUE}}',

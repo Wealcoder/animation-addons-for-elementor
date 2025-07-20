@@ -27,7 +27,7 @@ gulp.task('compile:js', () => {
         .pipe(mode.development(sourcemaps.init({largeFile: true})))
         .pipe(eslint())
         .pipe(mode.development(eslint.format()))
-        .pipe(babel({ presets: [['@babel/preset-env', {modules: false}]] }))
+       // .pipe(babel({ presets: [['@babel/preset-env', {modules: false}]] }))
         // .pipe(mode.production(terser()))
         .pipe(mode.development(prettify({"indent_with_tabs": true,})))
         .pipe(mode.development(sourcemaps.write('/.')))
