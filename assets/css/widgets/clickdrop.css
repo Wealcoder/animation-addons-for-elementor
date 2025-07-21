@@ -11,6 +11,7 @@
   position: absolute;
   top: 100%;
 }
+
 .aae-clickdrop-modal ul li a {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -27,6 +28,7 @@
   letter-spacing: 0px;
   color: white;
 }
+
 .aae-clickdrop-modal ul li a svg {
   fill: #f00;
   height: 16px;
@@ -37,4 +39,3 @@
   opacity: 1;
   visibility: visible;
 }
-/*# sourceMappingURL=clickdrop.css.map */

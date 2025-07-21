@@ -56,7 +56,7 @@ class ClickDrop extends Widget_Base
 
     public function get_script_depends()
     {
-        return ['aae-clickdrop'];
+        return ['wcf-addons-core'];
     }
 
     protected function register_controls()
