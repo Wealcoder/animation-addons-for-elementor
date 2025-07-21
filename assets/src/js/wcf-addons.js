@@ -105,22 +105,46 @@
         });
 
 
-        const ClickDrop = function ($scope) {
-            let $btn = $scope.find(".aae-clickdrop-btn");
-            let $modal = $scope.find(".aae-clickdrop-modal");
+        // const ClickDrop = function ($scope) {
+        //     let $btn = $scope.find(".aae-clickdrop-btn");
+        //     let $modal = $scope.find(".aae-clickdrop-modal");
+        //
+        //     $btn.on("click", function (e) {
+        //         e.stopPropagation();
+        //         $modal.slideToggle();
+        //     });
+        //
+        //     // Click outside to close
+        //     $(document).on("click", function (e) {
+        //         if (!$scope.is(e.target) && $scope.has(e.target).length === 0) {
+        //             $modal.slideUp();
+        //         }
+        //     });
+        // };
 
-            $btn.on("click", function (e) {
+        const ClickDrop = function ($scope) {
+            // Convert jQuery object to native DOM element
+            const scopeEl = $scope[0]; // or $scope.get(0)
+
+            const btn = scopeEl.querySelector(".aae-clickdrop-btn");
+            const modal = scopeEl.querySelector(".aae-clickdrop-modal");
+
+            if (!btn || !modal) return;
+
+            // Toggle modal visibility
+            btn.addEventListener("click", function (e) {
                 e.stopPropagation();
-                $modal.slideToggle();
+                modal.classList.toggle("visible");
             });
 
-            // Click outside to close
-            $(document).on("click", function (e) {
-                if (!$scope.is(e.target) && $scope.has(e.target).length === 0) {
-                    $modal.slideUp();
+            // Click outside to hide modal
+            document.addEventListener("click", function (e) {
+                if (!scopeEl.contains(e.target)) {
+                    modal.classList.remove("visible");
                 }
             });
         };
+
 
         elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--contact-form-7.default`, contact_form_7);
         elementorFrontend.hooks.addAction(`frontend/element_ready/aae--clickdrop.default`, ClickDrop);

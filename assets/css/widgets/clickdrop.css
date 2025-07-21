@@ -4,9 +4,14 @@
 
 .aae-clickdrop-modal {
   width: 150px;
-  display: none;
   background-color: rgb(0, 0, 0);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  position: absolute;
+  top: 100%;
 }
+
 .aae-clickdrop-modal ul li a {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -23,8 +28,14 @@
   letter-spacing: 0px;
   color: white;
 }
+
 .aae-clickdrop-modal ul li a svg {
   fill: #f00;
   height: 16px;
   width: 16px;
+}
+
+.aae-clickdrop-modal.visible {
+  opacity: 1;
+  visibility: visible;
 }
