@@ -494,13 +494,7 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			],
-			'company-profile'        => [
-				'handler' => 'company-profile',
-				'src'     => 'widgets/company-profile.min.css',
-				'dep'     => [],
-				'version' => false,
-				'media'   => 'all',
-			],
+			
 			'search'        => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.css',
