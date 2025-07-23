@@ -170,6 +170,7 @@
                             //aae-popup-builder-location
                             if (response.responseJSON.data.tmpType && response.responseJSON.data.tmpType === 'popup') {
                                 $('#aae-popup-builder-delay').val(response.responseJSON.data.tmpDelay);
+                                $('#wcf-addons--popup--builder-trigger').val(response.responseJSON.data?.tmpTrigger).trigger('change');                           
                                 $('.aae-popup-builder-location').removeClass('hidden');
                             } else {
                                 $('.aae-popup-builder-location').addClass('hidden');
@@ -242,6 +243,7 @@
 
                 if(tmpType === 'popup'){
                     data['tmpDelay'] = $('#aae-popup-builder-delay').val() ? $('#aae-popup-builder-delay').val() : 0;
+                    data['tmpTrigger'] = $('#wcf-addons--popup--builder-trigger').val() ? $('#wcf-addons--popup--builder-trigger').val() : 'pageloaded';
                 }
                 
                 $.ajax({
