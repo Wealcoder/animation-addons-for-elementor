@@ -1858,6 +1858,22 @@ $config = [
 								'doc_url'      => '',
 								'youtube_url'  => '',
 							],
+							'scrollto' => [
+								'label'        => 'ScrollTo',
+								'location'     => [
+									'cTab'     => 'gsap',
+									'pluginId' => 'scroll-trigger'
+								],
+								'is_pro'       => true,
+								'is_active'    => false,
+								'is_extension' => false,
+								'is_upcoming'  => false,
+								'setup'        => [ 'basic' ],
+								'icon'         => "wcf-icon-Horizontal",
+								'demo_url'     => '',
+								'doc_url'      => '',
+								'youtube_url'  => '',
+							],
 						]
 					],
 					'draw-svg'            => [
