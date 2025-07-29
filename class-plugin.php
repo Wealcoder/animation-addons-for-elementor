@@ -402,7 +402,6 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			],
-
 			'brand-slider'     => [
 				'handler' => 'wcf--brand-slider',
 				'src'     => 'widgets/brand-slider.min.css',
@@ -494,7 +493,7 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			],
-			
+
 			'search'        => [
 				'handler' => 'aae--search',
 				'src'     => 'widgets/search.min.css',
@@ -512,6 +511,13 @@ class Plugin
 			'clickdrop' => [
 				'handler' => 'aae-clickdrop',
 				'src'     => 'widgets/clickdrop.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'author-box'                         => [
+				'handler' => 'wcf--author-box',
+				'src'     => 'widgets/author-box.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
@@ -536,17 +542,19 @@ class Plugin
 			if ($data['is_upcoming']) {
 				continue;
 			}
-
+			
 			if ($data['is_pro']) {
 				continue;
 			}
 
 			if (file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php')) {
+				
 				if (! $data['is_pro'] && ! $data['is_extension']) {
 					if (is_dir(__DIR__ . '/widgets/' . $slug)) {
 						require_once(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php');
 					} else {
-						require_once(__DIR__ . '/widgets/' . $slug . '.php');
+						require_once(__DIR__ . '/widgets/' . $slug . '.php');				
+		
 					}
 
 
@@ -558,6 +566,7 @@ class Plugin
 				}
 			}
 		}
+		
 	}
 
 	/**
@@ -639,11 +648,11 @@ class Plugin
 	{
 
 		require_once WCF_ADDONS_PATH . 'config.php';
-		
-		if (is_admin()) {		
-			if(get_option( 'wcf_addons_setup_wizard' ) !== 'complete' ){
+
+		if (is_admin()) {
+			if (get_option('wcf_addons_setup_wizard') !== 'complete') {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
-			}	
+			}
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 		}
 
@@ -684,8 +693,8 @@ class Plugin
 		$active_plugins = get_option('active_plugins');
 		$dahsboard_link = admin_url('admin.php?page=wcf_addons_settings');
 ?>
-		<script type="text/template" id="tmpl-wcf-templates-header">
-			<div class="dialog-header dialog-lightbox-header">
+<script type="text/template" id="tmpl-wcf-templates-header">
+    <div class="dialog-header dialog-lightbox-header">
                 <div class="elementor-templates-modal__header wcf-template-library--header">
                     <div class="elementor-templates-modal__header__logo-area"></div>
                     <div class="elementor-templates-modal__header__menu-area" data-disabled="false">
@@ -712,8 +721,8 @@ class Plugin
                 </div>
             </div>
         </script>
-		<script type="text/template" id="tmpl-wcf-templates">
-			<div class="dialog-message dialog-lightbox-message">
+<script type="text/template" id="tmpl-wcf-templates">
+    <div class="dialog-message dialog-lightbox-message">
                 <div class="dialog-content dialog-lightbox-content">
                     <div class="elementor-template-library-templates">
                         <!--toolbar-->
@@ -811,8 +820,8 @@ class Plugin
                 </div>
             </div>
         </script>
-		<script type="text/template" id="tmpl-wcf-templates-single">
-			<div class="dialog-header dialog-lightbox-header">
+<script type="text/template" id="tmpl-wcf-templates-single">
+    <div class="dialog-header dialog-lightbox-header">
                 <div class="elementor-templates-modal__header">
                     <div id="wcf-template-library-header-preview-back">
                             <i class="eicon-" aria-hidden="true"></i>
