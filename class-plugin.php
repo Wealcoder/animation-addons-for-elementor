@@ -331,7 +331,28 @@ class Plugin
 				'dep'     => ['jquery'],
 				'version' => false,
 				'arg'     => true,
-			]
+			],
+			'wcf-posts'           => [
+				'handler' => 'wcf--posts',
+				'src'     => 'widgets/post-pro.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
+			'button-pro'           => [
+				'handler' => 'aae--button-pro',
+				'src'     => 'widgets/button-pro.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
+			'category-slider'     => [
+				'handler' => 'wcf--category-slider',
+				'src'     => 'widgets/category-slider.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -521,7 +542,28 @@ class Plugin
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
-			]
+			],
+			'posts-pro'                          => [
+				'handler' => 'wcf--post-pro',
+				'src'     => 'widgets/posts-pro.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'button-pro'                          => [
+				'handler' => 'aae--button-pro',
+				'src'     => 'widgets/button-pro.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'category-showcase'                  => [
+				'handler' => 'wcf--category-showcase',
+				'src'     => 'widgets/category-showcase.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 		];
 	}
 

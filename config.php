@@ -253,7 +253,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Button-Pro",
@@ -669,7 +669,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Content-Slider",
@@ -1008,7 +1008,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Category-Showcase",
