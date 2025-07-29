@@ -353,6 +353,13 @@ class Plugin
 				'version' => false,
 				'arg'     => true,
 			],
+			'feature-posts'           => [
+				'handler' => 'wcf--posts',
+				'src'     => 'widgets/post.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -560,6 +567,13 @@ class Plugin
 			'category-showcase'                  => [
 				'handler' => 'wcf--category-showcase',
 				'src'     => 'widgets/category-showcase.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'feature-posts' => [
+				'handler' => 'wcf--post-pro',
+				'src'     => 'widgets/posts.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
