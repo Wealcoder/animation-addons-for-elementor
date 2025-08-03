@@ -367,6 +367,13 @@ class Plugin
 				'version' => false,
 				'arg'     => true,
 			],
+			'filterable-slider'   => [
+				'handler' => 'wcf--filterable-slider',
+				'src'     => 'widgets/filterable-slider.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -605,6 +612,13 @@ class Plugin
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
+			],
+			'filterable-slider'   => [
+				'handler' => 'wcf--filterable-slider',
+				'src'     => 'widgets/filterable-slider.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'     => 'all',
 			],
 		];
 	}
