@@ -1,0 +1,300 @@
+.aae--a-testimonial {
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  svg {
+    width: 1em;
+    height: 1em;
+    transition: all 0.3s;
+  }
+
+  .rating {
+    position: relative;
+    display: inline-block;
+  }
+
+  .stars-outer {
+    display: inline-block;
+    color: #ccc;
+
+    &::before {
+      content: "★★★★★";
+      font-size: 24px;
+    }
+  }
+
+  .stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #f5b301;
+
+    &::before {
+      content: "★★★★★";
+      font-size: 24px;
+    }
+  }
+
+  img {
+    object-fit: cover;
+    width: 100px;
+  }
+
+  .wcf-arrow {
+    line-height: 0;
+    cursor: pointer;
+  }
+
+  .swiper-pagination {
+    gap: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+  }
+
+  .swiper-pagination-bullet {
+    margin: 0 !important;
+  }
+
+  .swiper-pagination-bullet-active {
+    border-radius: 5px;
+  }
+
+  .swiper-pagination {
+    position: static;
+    z-index: -1;
+  }
+
+  .swiper-pagination-fraction {
+    .mid-line {
+      width: 100px;
+      display: inline-block;
+      height: 1px;
+      background: #D9D9D9;
+    }
+  }
+
+  .ts-navigation {
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    z-index: 1;
+    position: relative;
+  }
+
+  .wcf-arrow {
+    position: relative;
+    z-index: 1;
+    aspect-ratio: 1/1;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .author {
+    display: flex;
+    align-items: center;
+  }
+
+  .image {
+    position: relative;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  .feedback {
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+  }
+
+  .info {
+    text-align: left;
+    border-left: 1px solid #E9EAEB;
+  }
+
+  .swiper-slide::after {
+    position: absolute;
+    content: "";
+    width: 1px;
+    height: 100%;
+    right: -10px;
+    top: 0;
+    background: #ddd;
+  }
+
+  .name,
+  .designation,
+  .reason {
+    font-size: 18px;
+  }
+
+
+  // Style One
+  &.style-1 {
+    .image {
+      display: flex;
+      margin-right: 15px;
+
+      img {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .info {
+      padding-left: 15px;
+    }
+  }
+
+  //Style Two
+  &.style-2 {
+    .slide {
+      display: flex;
+      align-items: center;
+
+      @media (max-width: 767px) {
+        flex-direction: column;
+      }
+    }
+
+    .info {
+      padding-left: 15px;
+    }
+
+    .image {
+      flex: 400px 0 0;
+      margin-right: 100px;
+    }
+
+    .content {
+      flex: 1 1 auto;
+    }
+
+  }
+
+  // Style Three
+  &.style-3 {
+    .slide {
+      background: #FAFAFA;
+      border-radius: 15px;
+      padding: 30px;
+    }
+
+    .swiper-slide::after {
+      background: transparent;
+    }
+
+    .image {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .quote {
+      margin-top: 30px;
+    }
+
+    .info {
+      border-color: transparent;
+    }
+
+
+  }
+
+  // Style Four
+  &.style-4 {
+    .slide {
+      background: #FAFAFA;
+      padding: 30px;
+    }
+
+    .swiper-slide::after {
+      background: transparent;
+    }
+
+    .image {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .info {
+      border-color: transparent;
+    }
+
+    .reason {
+      margin-bottom: 60px;
+    }
+
+  }
+
+  // Style Five
+  &.style-5 {
+    .slide {
+      border-radius: 15px;
+      background: #E0EAFA;
+      padding: 30px;
+    }
+
+    .swiper-slide::after {
+      background: transparent;
+    }
+
+    .image {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .info {
+      border-color: transparent;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+  }
+
+  // Style Six
+  &.style-6 {
+    .slide {
+      padding: 30px;
+    }
+
+    .image {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .info {
+      border-color: transparent;
+    }
+
+  }
+
+}
+
+
+
+
+

@@ -599,6 +599,13 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			],
+			'aae-a-testimonial' => [
+				'handler' => 'aae-a-testimonial',
+				'src'     => 'widgets/advanced-testimonial.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 		];
 	}
 
