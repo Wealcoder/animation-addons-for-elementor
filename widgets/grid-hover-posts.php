@@ -99,21 +99,6 @@ class Grid_Hover_Posts extends Widget_Base
 	}
 
 	/**
-	 * Retrieve the list of scripts the widget depended on.
-	 *
-	 * Used to set scripts dependencies required to run the widget.
-	 *
-	 * @return array Widget scripts dependencies.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
-	public function get_script_depends()
-	{
-		return ['wcf--grid-hover-posts'];
-	}
-
-	/**
 	 * Requires css files.
 	 *
 	 * @return array

@@ -360,6 +360,13 @@ class Plugin
 				'version' => false,
 				'arg'     => true,
 			],
+			'wcf--a-accordion'           => [
+				'handler' => 'wcf--a-accordion',
+				'src'     => 'widgets/advance-accordion.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -581,6 +588,13 @@ class Plugin
 			'grid-hover-posts' => [
 				'handler' => 'grid-hover-posts',
 				'src'     => 'widgets/grid-hover-posts.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'wcf--a-accordion' => [
+				'handler' => 'wcf--a-accordion',
+				'src'     => 'widgets/advance-accordion.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',

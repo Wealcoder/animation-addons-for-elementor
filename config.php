@@ -1449,7 +1449,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Advanced-Accordion",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-accordion',
