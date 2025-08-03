@@ -620,6 +620,13 @@ class Plugin
 				'version' => false,
 				'media'     => 'all',
 			],
+			'filterable-gallery'   => [
+				'handler' => 'wcf--filterable-gallery',
+				'src'     => 'widgets/filterable-gallery.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'     => 'all',
+			],
 		];
 	}
 

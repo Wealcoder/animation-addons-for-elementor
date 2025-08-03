@@ -1359,7 +1359,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Filterable-Gallery",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery',
