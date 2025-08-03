@@ -578,6 +578,13 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			],
+			'grid-hover-posts' => [
+				'handler' => 'grid-hover-posts',
+				'src'     => 'widgets/grid-hover-posts.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
 		];
 	}
 
