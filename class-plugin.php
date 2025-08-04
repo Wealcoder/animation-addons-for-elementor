@@ -374,6 +374,27 @@ class Plugin
 				'version' => false,
 				'arg'     => true,
 			],
+			'notification'         => [
+				'handler' => 'aae-notification',
+				'src'     => 'widgets/notification.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
+			'post-rating'          => [
+				'handler' => 'aae-post-rating',
+				'src'     => 'widgets/post-rating.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
+			'post-reactions-js'          => [
+				'handler' => 'wcf--post-reactions',
+				'src'     => 'widgets/post-reactions.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
 		]);
 	}
 
@@ -626,6 +647,41 @@ class Plugin
 				'dep'     => [],
 				'version' => false,
 				'media'     => 'all',
+			],
+			'image-accordion'                    => [
+				'handler' => 'wcf--image-accordion',
+				'src'     => 'widgets/image-accordion.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'notification'                       => [
+				'handler' => 'aae-notification',
+				'src'     => 'widgets/notification.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'post-rating'                        => [
+				'handler' => 'aae-post-rating',
+				'src'     => 'widgets/post-rating.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'post-reactions-css' => [
+				'handler' => 'wcf--post-reactions',
+				'src'     => 'widgets/post-reaction.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'post-timeline' => [
+				'handler' => 'aae-post-timeline',
+				'src'     => 'widgets/post-timeline.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
 			],
 		];
 	}

@@ -1,0 +1,157 @@
+// Post Rating Form CSS
+.aae--post-rating-form {
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  .rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    color: #ddd;
+    fill: #ddd;
+    margin-bottom: 15px;
+    margin-top: 15px;
+
+    input {
+      display: none;
+    }
+
+    label {
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+  }
+
+  .rating label:hover,
+  .rating label:hover ~ label,
+  .rating input:checked + label,
+  .rating input:checked + label ~ label {
+    fill: #ffc107;
+    color: #ffc107;
+  }
+
+  .review-message {
+    margin-top: 15px;
+  }
+
+  .review {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  .submit-btn {
+    color: #fff;
+    background: #121212;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .anon-fields {
+    gap: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      outline: none;
+    }
+
+  }
+
+
+}
+
+
+// Post Rating CSS
+.aae--post-rating {
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  &.average-rating {
+    .rating {
+      width: 80px;
+      height: 80px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border-radius: 100%;
+    }
+  }
+
+  &.list {
+    display: grid;
+    gap: 15px;
+
+    .rating-item {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 3px;
+    }
+
+    .content {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      @media (max-width: 767px) {
+        flex-direction: column-reverse;
+      }
+    }
+
+    .name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dash {
+      width: 10px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .review {
+      margin: 0;
+    }
+
+    .stars {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+  }
+
+
+}
+
+@media (max-width: 767px) {
+  .align-dir-start .aae--post-rating.list .content {
+    align-items: flex-start;
+  }
+  .align-dir-center .aae--post-rating.list .content {
+    align-items: center;
+  }
+  .align-dir-end .aae--post-rating.list .content {
+    align-items: flex-end;
+  }
+}
