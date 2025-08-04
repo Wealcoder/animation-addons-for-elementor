@@ -28,7 +28,7 @@ class Post_Rating extends Widget_Base
 
 	public function get_title()
 	{
-		return esc_html__('Post Rating', 'animation-addons-for-elementor-pro');
+		return esc_html__('Post Rating', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -38,7 +38,7 @@ class Post_Rating extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_keywords()
@@ -83,19 +83,19 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'section_rating_layout',
 			[
-				'label' => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Layout', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'rating_layout',
 			[
-				'label'   => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'average-rating',
 				'options' => [
-					'list'           => esc_html__('List View', 'animation-addons-for-elementor-pro'),
-					'average-rating' => esc_html__('Average Rating', 'animation-addons-for-elementor-pro'),
+					'list'           => esc_html__('List View', 'animation-addons-for-elementor'),
+					'average-rating' => esc_html__('Average Rating', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -103,7 +103,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'rating_icon',
 			[
-				'label'       => esc_html__('Rating Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Rating Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -117,20 +117,20 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'alignment',
 			[
-				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'prefix_class' => 'align-dir-',
 				'options'      => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -150,7 +150,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_layout',
 			[
-				'label' => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -166,7 +166,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'avg_rating_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -178,7 +178,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'avg_rating_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -190,7 +190,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'avg_circle_size',
 			[
-				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -209,7 +209,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'avg_rating_icon_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -233,7 +233,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_avg_rating',
 			[
-				'label'     => esc_html__('Average Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Average Rating', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_layout' => 'average-rating'],
 			]
@@ -242,7 +242,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'avg_rating_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .rating' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -261,7 +261,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'avg_rating_icon_heading',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -270,7 +270,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'avg_rating_icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .rating .icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -281,7 +281,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'avg_rating_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -304,7 +304,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_name',
 			[
-				'label'     => esc_html__('Name', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Name', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_layout' => 'list'],
 			]
@@ -313,7 +313,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'name_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .name' => 'color: {{VALUE}}',
@@ -332,7 +332,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'separator_heading',
 			[
-				'label'     => esc_html__('Separator', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Separator', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -341,7 +341,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'dash_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .dash' => 'color: {{VALUE}}',
@@ -352,7 +352,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'dash_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -370,7 +370,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'dash_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -393,7 +393,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_date',
 			[
-				'label'     => esc_html__('Date', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Date', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_layout' => 'list'],
 			]
@@ -402,7 +402,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'date_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .date' => 'color: {{VALUE}}',
@@ -426,7 +426,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_review',
 			[
-				'label'     => esc_html__('Review', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Review', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_layout' => 'list'],
 			]
@@ -435,7 +435,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'review_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .review' => 'color: {{VALUE}}',
@@ -454,7 +454,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'review_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -471,7 +471,7 @@ class Post_Rating extends Widget_Base
 		$this->start_controls_section(
 			'style_stars',
 			[
-				'label'     => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Rating', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_layout' => 'list'],
 			]
@@ -480,7 +480,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'star_color',
 			[
-				'label' => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::COLOR,
 			]
 		);
@@ -488,7 +488,7 @@ class Post_Rating extends Widget_Base
 		$this->add_control(
 			'star_active_color',
 			[
-				'label'   => esc_html__('Active Color', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Active Color', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::COLOR,
 				'default' => '#ffc107',
 			]
@@ -497,7 +497,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'star_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -515,7 +515,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'stars_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -533,7 +533,7 @@ class Post_Rating extends Widget_Base
 		$this->add_responsive_control(
 			'stars_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -597,7 +597,7 @@ class Post_Rating extends Widget_Base
 					<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 				</div>
 				<p>
-					<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor-pro'); ?>
+					<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
 				</p>
 			</div>
 		</div>

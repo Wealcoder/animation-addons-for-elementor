@@ -1,6 +1,12 @@
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.10 – 04 auguest 2025 =
+  - 🆕 **Added:** Date and category filter in search widgets  
+  - 🆕 **Added:** 10 new pre built template 
+  - 🎨 **Updated:** Optimize js , css
+  - 🎨 **optimize:** Improve asset on demand in search widget
+
 = Animation Addons for Elementor v2.3.3 – 02 june 2025 =
   - 🆕 **Added:** Date and category filter in search widgets  
   - 🆕 **Added:** 10 new pre built template 

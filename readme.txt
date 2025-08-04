@@ -78,7 +78,7 @@ Once your website is designed with all the essential elements, enhance its funct
 
 **Smooth Scroller**: Allow users to navigate web pages more smoothly and naturally.
 **Animation**: Implement diverse, advanced animations for a visually appealing website.
-**Pin Element**: Fix elements in a specific space during scrolling to keep them always visible.
+**[Pin Element](https://animation-addons.com/extensions/pin-element/)**: Fix elements in a specific space during scrolling to keep them always visible.
 **Text Animation**: Create smooth text effects to make headings and content more engaging.
 **Image Animation**: Add dynamic animations to images to capture the user's attention.
 **Cursor Hover Effect**: Add unique hover animations based on the cursor to increase interactivity.
@@ -420,9 +420,15 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.10 – 08 august 2025 = 
+  - 🆕 **Added:** 15+ premium widgets — now completely free for all users!
+  - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
+  - 🆕 **Added:** New Popup trigger — show popups on mouse leave to boost conversions
+  - ✏️ **Improved** Renamed “Pin” extension to “Sticky” for clearer usability and better user understanding
+
 = Animation Addons for Elementor v2.3.9 – 18 july 2025 = 
   - 🎨 **Update:** docs updated
-  - 🎨 **Optiize:** js optimize
+  - 🎨 **Optimize:** js optimize
 
 = Animation Addons for Elementor v2.3.8 – 17 july 2025 =
   - 🆕 **Added:** ClickPop Widget for header

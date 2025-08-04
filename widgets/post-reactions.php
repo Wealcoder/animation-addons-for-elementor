@@ -19,7 +19,7 @@ class Post_Reactions extends Widget_Base
 
     public function get_title()
     {
-        return __('Post Reactions', 'animation-addons-for-elementor-pro');
+        return __('Post Reactions', 'animation-addons-for-elementor');
     }
 
     public function get_icon()
@@ -43,7 +43,7 @@ class Post_Reactions extends Widget_Base
 
     public function get_categories()
     {
-        return ['animation-addons-for-elementor-pro'];
+        return ['animation-addons-for-elementor'];
     }
 
     protected function register_controls()
@@ -51,7 +51,7 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_section(
             'content_section',
             [
-                'label' => __('Reactions', 'animation-addons-for-elementor-pro'),
+                'label' => __('Reactions', 'animation-addons-for-elementor'),
                 'tab'   => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -61,9 +61,9 @@ class Post_Reactions extends Widget_Base
         $repeater->add_control(
             'reaction_label',
             [
-                'label'       => __('Reaction Label', 'animation-addons-for-elementor-pro'),
+                'label'       => __('Reaction Label', 'animation-addons-for-elementor'),
                 'type'        => Controls_Manager::TEXT,
-                'default'     => __('👍 Like', 'animation-addons-for-elementor-pro'),
+                'default'     => __('👍 Like', 'animation-addons-for-elementor'),
                 'label_block' => true,
             ]
         );
@@ -71,13 +71,13 @@ class Post_Reactions extends Widget_Base
         $repeater->add_control(
             'reaction_icon_type',
             [
-                'label'   => __('Icon Type', 'animation-addons-for-elementor-pro'),
+                'label'   => __('Icon Type', 'animation-addons-for-elementor'),
                 'type'    => Controls_Manager::SELECT,
                 'default' => 'emoji',
                 'options' => [
-                    'emoji'  => __('Emoji', 'animation-addons-for-elementor-pro'),
-                    'custom' => __('Custom Icon', 'animation-addons-for-elementor-pro'),
-                    'icon'   => __('Font Icon', 'animation-addons-for-elementor-pro'),
+                    'emoji'  => __('Emoji', 'animation-addons-for-elementor'),
+                    'custom' => __('Custom Icon', 'animation-addons-for-elementor'),
+                    'icon'   => __('Font Icon', 'animation-addons-for-elementor'),
                 ],
             ]
         );
@@ -85,18 +85,18 @@ class Post_Reactions extends Widget_Base
         $repeater->add_control(
             'reaction_type',
             [
-                'label'   => __('Type', 'animation-addons-for-elementor-pro'),
+                'label'   => __('Type', 'animation-addons-for-elementor'),
                 'type'    => Controls_Manager::SELECT,
                 'default' => 'emoji',
 
                 'options' => [
-                    'like'  => __('Like', 'animation-addons-for-elementor-pro'),
-                    'dislike' => __('Dislike', 'animation-addons-for-elementor-pro'),
-                    'funny'   => __('Funny', 'animation-addons-for-elementor-pro'),
-                    'wow'   => __('Wow', 'animation-addons-for-elementor-pro'),
-                    'love'   => __('Love', 'animation-addons-for-elementor-pro'),
-                    'sad'   => __('Sad', 'animation-addons-for-elementor-pro'),
-                    'angry'   => __('Angry', 'animation-addons-for-elementor-pro'),
+                    'like'  => __('Like', 'animation-addons-for-elementor'),
+                    'dislike' => __('Dislike', 'animation-addons-for-elementor'),
+                    'funny'   => __('Funny', 'animation-addons-for-elementor'),
+                    'wow'   => __('Wow', 'animation-addons-for-elementor'),
+                    'love'   => __('Love', 'animation-addons-for-elementor'),
+                    'sad'   => __('Sad', 'animation-addons-for-elementor'),
+                    'angry'   => __('Angry', 'animation-addons-for-elementor'),
                 ],
             ]
         );
@@ -107,7 +107,7 @@ class Post_Reactions extends Widget_Base
         $repeater->add_control(
             'reaction_icon',
             [
-                'label'       => __('Reaction Icon', 'animation-addons-for-elementor-pro'),
+                'label'       => __('Reaction Icon', 'animation-addons-for-elementor'),
                 'type'        => \Elementor\Controls_Manager::ICONS,
                 'default'     => [
                     'value' => 'fa fa-thumbs-up', // Default icon value (Font Awesome)
@@ -123,7 +123,7 @@ class Post_Reactions extends Widget_Base
         $repeater->add_control(
             'reaction_custom_icon',
             [
-                'label'       => __('Custom Icon', 'animation-addons-for-elementor-pro'),
+                'label'       => __('Custom Icon', 'animation-addons-for-elementor'),
                 'type'        => Controls_Manager::MEDIA,
                 'default'     => [
                     'url' => '',
@@ -138,7 +138,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'reactions_list',
             [
-                'label'       => __('Reactions', 'animation-addons-for-elementor-pro'),
+                'label'       => __('Reactions', 'animation-addons-for-elementor'),
                 'type'        => Controls_Manager::REPEATER,
                 'fields'      => $repeater->get_controls(),
                 'default'     => [
@@ -157,10 +157,10 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'show_title',
             [
-                'label' => esc_html__('Show Level ?', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Show Level ?', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor-pro'),
-                'label_off' => esc_html__('No', 'animation-addons-for-elementor-pro'),
+                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor'),
+                'label_off' => esc_html__('No', 'animation-addons-for-elementor'),
                 'return_value' => 'yes',
                 'default' => 'yes',
             ]
@@ -170,10 +170,10 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'reaction_count',
             [
-                'label' => esc_html__('Reaction Count?', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Reaction Count?', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor-pro'),
-                'label_off' => esc_html__('No', 'animation-addons-for-elementor-pro'),
+                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor'),
+                'label_off' => esc_html__('No', 'animation-addons-for-elementor'),
                 'return_value' => 'yes',
                 'default' => 'yes',
             ]
@@ -182,10 +182,10 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'reaction_separator',
             [
-                'label' => esc_html__('Separator ?', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Separator ?', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor-pro'),
-                'label_off' => esc_html__('No', 'animation-addons-for-elementor-pro'),
+                'label_on' => esc_html__('Yes', 'animation-addons-for-elementor'),
+                'label_off' => esc_html__('No', 'animation-addons-for-elementor'),
                 'return_value' => 'yes',
                 'default' => 'no',
             ]
@@ -194,7 +194,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'separator_icon',
             [
-                'label' => esc_html__('Separator Icon', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Separator Icon', 'animation-addons-for-elementor'),
                 'type' => \Elementor\Controls_Manager::ICONS,
                 'condition'   => [
                     'reaction_separator' => 'yes', // Only show if icon type is selected
@@ -209,7 +209,7 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_section(
             'style_section',
             [
-                'label' => __('Reactions Button', 'animation-addons-for-elementor-pro'),
+                'label' => __('Reactions Button', 'animation-addons-for-elementor'),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -225,15 +225,15 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'flex_dir',
             [
-                'label' => esc_html__('Display Direction', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Display Direction', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::CHOOSE,
                 'options' => [
                     'row' => [
-                        'title' => esc_html__('row', 'animation-addons-for-elementor-pro'),
+                        'title' => esc_html__('row', 'animation-addons-for-elementor'),
                         'icon' => 'eicon-ellipsis-h',
                     ],
                     'column' => [
-                        'title' => esc_html__('column', 'animation-addons-for-elementor-pro'),
+                        'title' => esc_html__('column', 'animation-addons-for-elementor'),
                         'icon' => 'eicon-ellipsis-v',
                     ],
                 ],
@@ -248,7 +248,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'reaction_gap',
             [
-                'label'     => __('Gap', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Gap', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'em'],
                 'range'     => [
@@ -270,7 +270,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'reaction_btn_bg_color',
             [
-                'label'     => __('Background', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Background', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#f1f1f1',
                 'selectors' => [
@@ -282,7 +282,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'reaction_btn_padding',
             [
-                'label'     => __('Padding', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Padding', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'em'],
                 'selectors' => [
@@ -303,7 +303,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'reaction_btn_border_radius',
             [
-                'label'     => __('Border Radius', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Border Radius', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
                 'selectors' => [
@@ -320,14 +320,14 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_tab(
             'tab_react_more_normal',
             [
-                'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
             ]
         );
 
         $this->add_control(
             'reaction_btn_color',
             [
-                'label'     => __('Text Color', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Text Color', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#000',
                 'selectors' => [
@@ -341,14 +341,14 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_tab(
             'tab_load_more_hover',
             [
-                'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+                'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
             ]
         );
 
         $this->add_control(
             'reaction_btn_hover_bg_color',
             [
-                'label'     => __('Background Color', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Background Color', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#e1e1e1',
                 'selectors' => [
@@ -360,7 +360,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'reaction_btn_hover_color',
             [
-                'label'     => __('Text Color', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Text Color', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#000',
                 'selectors' => [
@@ -372,7 +372,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'load_more_hover_border_color',
             [
-                'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+                'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .aaeaddon-reaction-btn:hover' => 'border-color: {{VALUE}};',
@@ -391,7 +391,7 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_section(
             'reaction_icon_style',
             [
-                'label' => __('Reaction Icon', 'animation-addons-for-elementor-pro'),
+                'label' => __('Reaction Icon', 'animation-addons-for-elementor'),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -399,7 +399,7 @@ class Post_Reactions extends Widget_Base
             Group_Control_Typography::get_type(),
             [
                 'name' => 'content_typography',
-                'label'     => __('Label Size', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Label Size', 'animation-addons-for-elementor'),
                 'selector' => '{{WRAPPER}} .aaeaddon-reaction-btn span.aae-reaction-label',
             ]
         );
@@ -407,14 +407,14 @@ class Post_Reactions extends Widget_Base
             Group_Control_Typography::get_type(),
             [
                 'name' => 'counter_typography',
-                'label'     => __('Counter Size', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Counter Size', 'animation-addons-for-elementor'),
                 'selector' => '{{WRAPPER}} .aaeaddon-reaction-btn span.aae-reaction-count',
             ]
         );
         $this->add_responsive_control(
             'reaction_icon_size',
             [
-                'label'     => __('Icon Size', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Icon Size', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'em'],
                 'range'     => [
@@ -437,7 +437,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'reaction_icon_margin',
             [
-                'label'     => __('Margin', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Margin', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'em'],
                 'selectors' => [
@@ -453,7 +453,7 @@ class Post_Reactions extends Widget_Base
         $this->start_controls_section(
             'separator_icon_style',
             [
-                'label' => __('Separator Icon', 'animation-addons-for-elementor-pro'),
+                'label' => __('Separator Icon', 'animation-addons-for-elementor'),
                 'tab'   => Controls_Manager::TAB_STYLE,
                 'condition' => [
                     'reaction_separator' => 'yes',
@@ -464,7 +464,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'separator_icon_size',
             [
-                'label'     => __('Icon Size', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Icon Size', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'em'],
                 'range'     => [
@@ -486,7 +486,7 @@ class Post_Reactions extends Widget_Base
         $this->add_control(
             'separator_icon_color',
             [
-                'label'     => __('Color', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Color', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#000',
                 'selectors' => [
@@ -498,7 +498,7 @@ class Post_Reactions extends Widget_Base
         $this->add_responsive_control(
             'separator_icon_margin',
             [
-                'label'     => __('Margin', 'animation-addons-for-elementor-pro'),
+                'label'     => __('Margin', 'animation-addons-for-elementor'),
                 'type'      => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'em'],
                 'selectors' => [

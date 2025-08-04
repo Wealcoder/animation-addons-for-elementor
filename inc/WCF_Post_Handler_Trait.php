@@ -159,7 +159,7 @@ trait WCF_Post_Handler_Trait {
 						<?php foreach ( $gallery_images as $img ) { ?>
 							<div class="swiper-slide">
 								<img src="<?php echo esc_url( $img ); ?>"
-									alt="<?php echo esc_attr__( 'Gallery Image', 'animation-addons-for-elementor-pro' ); ?>">
+									alt="<?php echo esc_attr__( 'Gallery Image', 'animation-addons-for-elementor' ); ?>">
 							</div>
 						<?php } ?>
 					</div>
@@ -172,7 +172,7 @@ trait WCF_Post_Handler_Trait {
 			<?php } ?>
 
 			<button data-src="<?php echo esc_url( $link ); ?>" class="wcf-post-popup play <?php echo esc_attr( $format ); ?>">
-				<span class="screen-reader-text"><?php echo esc_html__( 'play', 'animation-addons-for-elementor-pro' ); ?></span>
+				<span class="screen-reader-text"><?php echo esc_html__( 'play', 'animation-addons-for-elementor' ); ?></span>
 				<?php
 				if ( 'gallery' === $format ) {
 					Icons_Manager::render_icon( $this->get_settings( 'gallery_icon' ), array( 'aria-hidden' => 'true' ) );
@@ -194,7 +194,7 @@ trait WCF_Post_Handler_Trait {
 		$read_more       = $this->get_settings( 'read_more_text' );
 		$aria_label_text = sprintf(
 			/* translators: %s: Post title. */
-			esc_attr__( 'Read more about %s', 'animation-addons-for-elementor-pro' ),
+			esc_attr__( 'Read more about %s', 'animation-addons-for-elementor' ),
 			get_the_title()
 		);
 		?>
@@ -216,7 +216,7 @@ trait WCF_Post_Handler_Trait {
 		$read_more       = $this->get_settings( 'read_more_text' );
 		$aria_label_text = sprintf(
 			/* translators: %s: Post title. */
-			esc_attr__( 'Read more about %s', 'animation-addons-for-elementor-pro' ),
+			esc_attr__( 'Read more about %s', 'animation-addons-for-elementor' ),
 			get_the_title()
 		);
 		?>
@@ -242,7 +242,7 @@ trait WCF_Post_Handler_Trait {
 				<div class="author-bio">
 					<p>
 						<?php
-						esc_html_e( 'Written by ', 'animation-addons-for-elementor-pro' );
+						esc_html_e( 'Written by ', 'animation-addons-for-elementor' );
 						$this->render_author();
 						?>
 					</p>
@@ -546,7 +546,7 @@ trait WCF_Post_Handler_Trait {
 			<span class="post-review">
 				<?php $this->render_meta_icon( $meta ); ?>
 				<?php echo $total_ratings; ?>
-				<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor-pro' ); ?>
+				<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
 			</span>
 		<?php
 	}
@@ -556,7 +556,7 @@ trait WCF_Post_Handler_Trait {
 		?>
 			<span class="aae-post-read-later" data-post-id="<?php echo esc_attr( $post_id ); ?>">
 				<?php $this->render_meta_icon( $meta ); ?>
-				<?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor-pro' ); ?>
+				<?php echo esc_html__( 'Read Later', 'animation-addons-for-elementor' ); ?>
 			</span>
 		<?php
 	}
@@ -566,7 +566,7 @@ trait WCF_Post_Handler_Trait {
 			<span class="post-views">
 				<?php $this->render_meta_icon( $meta ); ?>
 				<?php echo esc_html( get_post_meta( get_the_id(), 'wcf_post_views_count', true ) ); ?>
-				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor-pro' ); ?>
+				<?php echo esc_html__( 'Views', 'animation-addons-for-elementor' ); ?>
 			</span>
 			<?php
 	}
@@ -669,7 +669,7 @@ trait WCF_Post_Handler_Trait {
 					'total'              => $page_limit,
 					'prev_next'          => false,
 					'show_all'           => 'yes' !== $settings['pagination_numbers_shorten'],
-					'before_page_number' => '<span class="elementor-screen-only">' . esc_html__( 'Page', 'animation-addons-for-elementor-pro' ) . '</span>',
+					'before_page_number' => '<span class="elementor-screen-only">' . esc_html__( 'Page', 'animation-addons-for-elementor' ) . '</span>',
 				);
 
 				$links = paginate_links( $paginate_args );
@@ -682,7 +682,7 @@ trait WCF_Post_Handler_Trait {
 			}
 			?>
 				<nav class="wcf-post-pagination"
-					aria-label="<?php esc_attr_e( 'Pagination', 'animation-addons-for-elementor-pro' ); ?>">
+					aria-label="<?php esc_attr_e( 'Pagination', 'animation-addons-for-elementor' ); ?>">
 				<?php echo implode( PHP_EOL, $links ); ?>
 				</nav>
 			<?php

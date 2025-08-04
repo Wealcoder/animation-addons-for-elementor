@@ -47,7 +47,7 @@ class Button_Pro extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Advanced Button', 'animation-addons-for-elementor-pro');
+		return esc_html__('Advanced Button', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -78,7 +78,7 @@ class Button_Pro extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_style_depends()
@@ -105,25 +105,25 @@ class Button_Pro extends Widget_Base
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Button', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_style',
 			[
-				'label'     => esc_html__('Style', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Style', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => '1',
 				'options'   => [
-					'1' => esc_html__('1', 'animation-addons-for-elementor-pro'),
-					'2' => esc_html__('2', 'animation-addons-for-elementor-pro'),
-					'3' => esc_html__('3', 'animation-addons-for-elementor-pro'),
-					'4' => esc_html__('4', 'animation-addons-for-elementor-pro'),
-					'5' => esc_html__('5', 'animation-addons-for-elementor-pro'),
-					'6' => esc_html__('6', 'animation-addons-for-elementor-pro'),
-					'7' => esc_html__('7', 'animation-addons-for-elementor-pro'),
-					'8' => esc_html__('8', 'animation-addons-for-elementor-pro'),
+					'1' => esc_html__('1', 'animation-addons-for-elementor'),
+					'2' => esc_html__('2', 'animation-addons-for-elementor'),
+					'3' => esc_html__('3', 'animation-addons-for-elementor'),
+					'4' => esc_html__('4', 'animation-addons-for-elementor'),
+					'5' => esc_html__('5', 'animation-addons-for-elementor'),
+					'6' => esc_html__('6', 'animation-addons-for-elementor'),
+					'7' => esc_html__('7', 'animation-addons-for-elementor'),
+					'8' => esc_html__('8', 'animation-addons-for-elementor'),
 				],
 				'separator' => 'after',
 			]
@@ -132,16 +132,16 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_text',
 			[
-				'label'   => esc_html__('Text', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Text', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('Discover More', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Discover More', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_icon',
 			[
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -156,12 +156,12 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_icon_position',
 			[
-				'label'     => esc_html__('Icon Position', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon Position', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'row',
 				'options'   => [
-					'row'         => esc_html__('After', 'animation-addons-for-elementor-pro'),
-					'row-reverse' => esc_html__('Before', 'animation-addons-for-elementor-pro'),
+					'row'         => esc_html__('After', 'animation-addons-for-elementor'),
+					'row-reverse' => esc_html__('Before', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .aae--btn-pro' => 'flex-direction: {{VALUE}};',
@@ -175,7 +175,7 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_link',
 			[
-				'label'   => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::URL,
 				'options' => ['url', 'is_external', 'nofollow'],
 				'default' => [
@@ -189,7 +189,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_outline_gap',
 			[
-				'label'      => esc_html__('Outline Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Outline Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -208,19 +208,19 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -246,7 +246,7 @@ class Button_Pro extends Widget_Base
 		$this->start_controls_section(
 			'style_button',
 			[
-				'label' => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Button', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -295,7 +295,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_border_height',
 			[
-				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -314,7 +314,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%'],
 				'selectors'  => [
@@ -326,7 +326,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%'],
 				'selectors'  => [
@@ -340,7 +340,7 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_icon_heading',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -349,7 +349,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -367,7 +367,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_icon_size_width',
 			[
-				'label'      => esc_html__('Icon Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -386,7 +386,7 @@ class Button_Pro extends Widget_Base
 		$this->add_responsive_control(
 			'btn_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -410,14 +410,14 @@ class Button_Pro extends Widget_Base
 		$this->start_controls_tab(
 			'btn_normal_tab',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae--btn-pro, {{WRAPPER}} .btn-text-flip span, {{WRAPPER}} .g-btn-text' => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -429,7 +429,7 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_br_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .btn-border-divide .text, {{WRAPPER}} .btn-border-divide .icon' => 'border-color: {{VALUE}}',
@@ -444,14 +444,14 @@ class Button_Pro extends Widget_Base
 		$this->start_controls_tab(
 			'btn_hover_tab',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae--btn-pro:hover, {{WRAPPER}} .aae--btn-pro:hover .icon'      => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -467,7 +467,7 @@ class Button_Pro extends Widget_Base
 		$this->add_control(
 			'btn_h_border',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae--btn-pro:hover, {{WRAPPER}} .g-btn-text:hover, {{WRAPPER}} .aae-btn-pro-group:hover span' => 'border-color: {{VALUE}}',

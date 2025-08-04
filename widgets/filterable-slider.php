@@ -54,7 +54,7 @@ class Filterable_Slider extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Filterable Slider', 'animation-addons-for-elementor-pro');
+		return esc_html__('Filterable Slider', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Filterable_Slider extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	/**
@@ -137,17 +137,17 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_slider_options',
 			[
-				'label' => esc_html__('Slider Options', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Slider Options', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->register_slider_controls(['slides_to_show' => 3]);
 
 		$pagination_type['options'] = [
-			'bullets'     => esc_html__('Bullets', 'animation-addons-for-elementor-pro'),
-			'fraction'    => esc_html__('Fraction', 'animation-addons-for-elementor-pro'),
-			'progressbar' => esc_html__('Progressbar', 'animation-addons-for-elementor-pro'),
-			'custom'      => esc_html__('Fraction Progress', 'animation-addons-for-elementor-pro'),
+			'bullets'     => esc_html__('Bullets', 'animation-addons-for-elementor'),
+			'fraction'    => esc_html__('Fraction', 'animation-addons-for-elementor'),
+			'progressbar' => esc_html__('Progressbar', 'animation-addons-for-elementor'),
+			'custom'      => esc_html__('Fraction Progress', 'animation-addons-for-elementor'),
 		];
 
 		$this->update_control('pagination_type', $pagination_type);
@@ -158,30 +158,30 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_settings',
 			[
-				'label' => __('Settings', 'animation-addons-for-elementor-pro'),
+				'label' => __('Settings', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_responsive_control(
 			'filter_direction',
 			[
-				'label'        => esc_html__('Direction', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Direction', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'options'      => [
 					'column'         => [
-						'title' => esc_html__('Above', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Above', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'column-reverse' => [
-						'title' => esc_html__('Below', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Below', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-bottom',
 					],
 					'row-reverse'    => [
-						'title' => esc_html__('After', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('After', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-' . $end,
 					],
 					'row'            => [
-						'title' => esc_html__('Before', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Before', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-' . $start,
 					],
 				],
@@ -196,12 +196,12 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					''       => esc_html__('Start', 'animation-addons-for-elementor-pro'),
-					'center' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
-					'end'    => esc_html__('End', 'animation-addons-for-elementor-pro'),
+					''       => esc_html__('Start', 'animation-addons-for-elementor'),
+					'center' => esc_html__('Center', 'animation-addons-for-elementor'),
+					'end'    => esc_html__('End', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .slide-filter' => 'justify-content: {{VALUE}}',
@@ -212,7 +212,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -224,7 +224,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'slider_width',
 			[
-				'label'      => esc_html__('Slider Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Slider Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%'],
 				'range'      => [
@@ -257,7 +257,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_slider_navigation_style',
 			[
-				'label'     => esc_html__('Slider Navigation', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Slider Navigation', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['navigation' => 'yes'],
 			]
@@ -271,7 +271,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_slider_pagination_style',
 			[
-				'label'     => esc_html__('Slider Pagination', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Slider Pagination', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['pagination' => 'yes'],
 			]
@@ -282,7 +282,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'pagination_spacing',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination' => 'bottom: {{SIZE}}{{UNIT}};',
@@ -294,7 +294,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'pagination_width',
 			[
-				'label'     => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination .paginate-fill' => 'width: {{SIZE}}{{UNIT}};',
@@ -306,7 +306,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'pagination_height',
 			[
-				'label'     => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -324,7 +324,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'paginate_color',
 			[
-				'label'     => esc_html__('Paginate Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Paginate Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination .paginate-fill' => 'background: {{VALUE}};',
@@ -336,7 +336,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'paginate_active_color',
 			[
-				'label'     => esc_html__('Paginate Active Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Paginate Active Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination .paginate-fill:after' => 'background: {{VALUE}};',
@@ -357,7 +357,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'paginate_count_color',
 			[
-				'label'     => esc_html__('Count Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Count Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination' => 'color: {{VALUE}}',
@@ -374,17 +374,17 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_filter',
 			[
-				'label' => __('Filter', 'animation-addons-for-elementor-pro'),
+				'label' => __('Filter', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'enable_filter',
 			[
-				'label'        => esc_html__('Enable Filter', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Enable Filter', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -393,9 +393,9 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'filter_all_label',
 			[
-				'label'     => esc_html__('Filter All Labels', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Filter All Labels', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__('All', 'animation-addons-for-elementor-pro'),
+				'default'   => esc_html__('All', 'animation-addons-for-elementor'),
 				'condition' => ['enable_filter' => 'yes'],
 			]
 		);
@@ -403,7 +403,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'filter_all_count',
 			[
-				'label'   => esc_html__('All Count', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('All Count', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => 1,
 				'default' => 10,
@@ -415,9 +415,9 @@ class Filterable_Slider extends Widget_Base
 		$filter_repeater->add_control(
 			'filter_title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Filter Item', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Filter Item', 'animation-addons-for-elementor'),
 				'label_block' => true,
 				'dynamic'     => [
 					'active' => true,
@@ -428,7 +428,7 @@ class Filterable_Slider extends Widget_Base
 		$filter_repeater->add_control(
 			'filter_count',
 			[
-				'label'   => esc_html__('Count', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Count', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => 1,
 				'default' => 2,
@@ -438,13 +438,13 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'filter_items',
 			[
-				'label'       => esc_html__('Filter Items', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Filter Items', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $filter_repeater->get_controls(),
 				'condition'   => ['enable_filter' => 'yes'],
 				'default'     => [
 					[
-						'filter_title' => esc_html__('Filter Item 1', 'animation-addons-for-elementor-pro'),
+						'filter_title' => esc_html__('Filter Item 1', 'animation-addons-for-elementor'),
 					],
 				],
 				'title_field' => '{{{ filter_title }}}',
@@ -457,7 +457,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_filter_style',
 			[
-				'label' => __('Filter', 'animation-addons-for-elementor-pro'),
+				'label' => __('Filter', 'animation-addons-for-elementor'),
 				'tab'        => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -465,7 +465,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_item_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -477,7 +477,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_item_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -501,14 +501,14 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_tab(
 			'style_normal_tab',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'filter_text_color',
 			[
-				'label' => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .slide-filter li' => 'color: {{VALUE}}',
@@ -521,14 +521,14 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_tab(
 			'style_hover_tab',
 			[
-				'label' => esc_html__('Active', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Active', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'filter_hover_text_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .slide-filter li.active' => 'color: {{VALUE}}',
@@ -544,7 +544,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'filter_count_heading',
 			[
-				'label'     => esc_html__('Count', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Count', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -553,7 +553,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_count_size',
 			[
-				'label'      => esc_html__('Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -565,13 +565,13 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'filter_count_align',
 			[
-				'label'     => esc_html__('Vertical Align', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Vertical Align', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'inherit',
 				'options'   => [
-					'inherit' => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'sub'     => esc_html__('Sub', 'animation-addons-for-elementor-pro'),
-					'super'   => esc_html__('Super', 'animation-addons-for-elementor-pro'),
+					'inherit' => esc_html__('Default', 'animation-addons-for-elementor'),
+					'sub'     => esc_html__('Sub', 'animation-addons-for-elementor'),
+					'super'   => esc_html__('Super', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .slide-filter .count' => 'vertical-align: {{VALUE}};',
@@ -582,7 +582,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'filter_count_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -599,7 +599,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_slides',
 			[
-				'label' => __('Slides', 'animation-addons-for-elementor-pro'),
+				'label' => __('Slides', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -608,10 +608,10 @@ class Filterable_Slider extends Widget_Base
 		$project_repeater->add_control(
 			'project_item_filter_name',
 			[
-				'label'       => esc_html__('Filter name', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Filter name', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Filter Item 1', 'animation-addons-for-elementor-pro'),
-				'description' => __('Use the filter name. Separate multiple items with comma (e.g. <strong>Project Item, Project Item 2</strong>)', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Filter Item 1', 'animation-addons-for-elementor'),
+				'description' => __('Use the filter name. Separate multiple items with comma (e.g. <strong>Project Item, Project Item 2</strong>)', 'animation-addons-for-elementor'),
 				'separator'   => 'after',
 				'label_block' => true,
 				'dynamic'     => [
@@ -623,7 +623,7 @@ class Filterable_Slider extends Widget_Base
 		$project_repeater->add_control(
 			'project_image',
 			[
-				'label'   => esc_html__('Choose Image', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Choose Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -635,10 +635,10 @@ class Filterable_Slider extends Widget_Base
 		$project_repeater->add_control(
 			'title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Alexa Complex', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your title', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Alexa Complex', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your title', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -646,10 +646,10 @@ class Filterable_Slider extends Widget_Base
 		$project_repeater->add_control(
 			'subtitle',
 			[
-				'label'       => esc_html__('Sub Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Sub Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Construction', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your sub title', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Construction', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your sub title', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -657,30 +657,30 @@ class Filterable_Slider extends Widget_Base
 		$project_repeater->add_control(
 			'description',
 			[
-				'label'       => esc_html__('Description', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Description', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::WYSIWYG,
 				'rows'        => 10,
-				'default'     => esc_html__('Default description', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your description', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Default description', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your description', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$project_repeater->add_control(
 			'link',
 			[
-				'label'       => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
 				'dynamic'     => [
 					'active' => true,
 				],
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor-pro'),
+				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'project_items',
 			[
-				'label'       => esc_html__('Slides', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Slides', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $project_repeater->get_controls(),
 				'default'     => [
@@ -696,7 +696,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'title_tag',
 			[
-				'label'   => esc_html__('Title HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Title HTML Tag', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'h1'   => 'H1',
@@ -737,7 +737,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_content_style',
 			[
-				'label' => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -754,7 +754,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'content_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -767,7 +767,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'title_heading',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -776,7 +776,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'title_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -793,7 +793,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -814,7 +814,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'subtitle_heading',
 			[
-				'label'     => esc_html__('Sub Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Sub Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -823,7 +823,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'subtitle_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -840,7 +840,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'subtitle_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -861,7 +861,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'desc_heading',
 			[
-				'label'     => esc_html__('Description', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Description', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -870,7 +870,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'desc_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -887,7 +887,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_control(
 			'desc_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -913,7 +913,7 @@ class Filterable_Slider extends Widget_Base
 		$this->start_controls_section(
 			'section_image_style',
 			[
-				'label' => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Image', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -921,7 +921,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'img_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -944,7 +944,7 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'img_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -967,16 +967,16 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'object_fit',
 			[
-				'label'     => esc_html__('Object Fit', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Object Fit', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'condition' => [
 					'img_height[size]!' => '',
 				],
 				'options'   => [
-					''        => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'fill'    => esc_html__('Fill', 'animation-addons-for-elementor-pro'),
-					'cover'   => esc_html__('Cover', 'animation-addons-for-elementor-pro'),
-					'contain' => esc_html__('Contain', 'animation-addons-for-elementor-pro'),
+					''        => esc_html__('Default', 'animation-addons-for-elementor'),
+					'fill'    => esc_html__('Fill', 'animation-addons-for-elementor'),
+					'cover'   => esc_html__('Cover', 'animation-addons-for-elementor'),
+					'contain' => esc_html__('Contain', 'animation-addons-for-elementor'),
 				],
 				'default'   => '',
 				'selectors' => [
@@ -988,18 +988,18 @@ class Filterable_Slider extends Widget_Base
 		$this->add_responsive_control(
 			'object_position',
 			[
-				'label'     => esc_html__('Object Position', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Object Position', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					'center center' => esc_html__('Center Center', 'animation-addons-for-elementor-pro'),
-					'center left'   => esc_html__('Center Left', 'animation-addons-for-elementor-pro'),
-					'center right'  => esc_html__('Center Right', 'animation-addons-for-elementor-pro'),
-					'top center'    => esc_html__('Top Center', 'animation-addons-for-elementor-pro'),
-					'top left'      => esc_html__('Top Left', 'animation-addons-for-elementor-pro'),
-					'top right'     => esc_html__('Top Right', 'animation-addons-for-elementor-pro'),
-					'bottom center' => esc_html__('Bottom Center', 'animation-addons-for-elementor-pro'),
-					'bottom left'   => esc_html__('Bottom Left', 'animation-addons-for-elementor-pro'),
-					'bottom right'  => esc_html__('Bottom Right', 'animation-addons-for-elementor-pro'),
+					'center center' => esc_html__('Center Center', 'animation-addons-for-elementor'),
+					'center left'   => esc_html__('Center Left', 'animation-addons-for-elementor'),
+					'center right'  => esc_html__('Center Right', 'animation-addons-for-elementor'),
+					'top center'    => esc_html__('Top Center', 'animation-addons-for-elementor'),
+					'top left'      => esc_html__('Top Left', 'animation-addons-for-elementor'),
+					'top right'     => esc_html__('Top Right', 'animation-addons-for-elementor'),
+					'bottom center' => esc_html__('Bottom Center', 'animation-addons-for-elementor'),
+					'bottom left'   => esc_html__('Bottom Left', 'animation-addons-for-elementor'),
+					'bottom right'  => esc_html__('Bottom Right', 'animation-addons-for-elementor'),
 				],
 				'default'   => 'center center',
 				'selectors' => [

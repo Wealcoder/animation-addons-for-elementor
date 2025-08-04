@@ -26,7 +26,7 @@ class Author_Box extends Widget_Base
 
 	public function get_title()
 	{
-		return esc_html__('Author Box', 'animation-addons-for-elementor-pro');
+		return esc_html__('Author Box', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -36,7 +36,7 @@ class Author_Box extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_keywords()
@@ -59,19 +59,19 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'section_author_info',
 			[
-				'label' => esc_html__('Author Info', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Author Info', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'source',
 			[
-				'label'   => esc_html__('Source', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Source', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'current',
 				'options' => [
-					'current' => esc_html__('Current Author', 'animation-addons-for-elementor-pro'),
-					'custom'  => esc_html__('Custom', 'animation-addons-for-elementor-pro'),
+					'current' => esc_html__('Current Author', 'animation-addons-for-elementor'),
+					'custom'  => esc_html__('Custom', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -79,19 +79,19 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'layout',
 			[
-				'label'        => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'options'      => [
 					'left'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'above' => [
-						'title' => esc_html__('Above', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Above', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'right' => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -103,19 +103,19 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'alignment',
 			[
-				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'options'      => [
 					'left'   => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'  => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -126,11 +126,11 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_avatar',
 			[
-				'label'        => esc_html__('Profile Picture', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Profile Picture', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
 				'prefix_class' => 'wcf-author-box--avatar-',
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'      => 'yes',
 				'separator'    => 'before',
 				'condition'    => [
@@ -144,7 +144,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'avatar_size',
 			[
-				'label'     => esc_html__('Picture Size', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Picture Size', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::NUMBER,
 				'default'   => 300,
 				'condition' => [
@@ -158,7 +158,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'author_avatar',
 			[
-				'label'     => esc_html__('Profile Picture', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Profile Picture', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::MEDIA,
 				'default'   => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -177,11 +177,11 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_name',
 			[
-				'label'        => esc_html__('Display Name', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Display Name', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
 				'prefix_class' => 'wcf-author-box--name-',
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'      => 'yes',
 				'condition'    => [
 					'source!' => 'custom',
@@ -195,9 +195,9 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'author_name',
 			[
-				'label'     => esc_html__('Name', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Name', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__('John Doe', 'animation-addons-for-elementor-pro'),
+				'default'   => esc_html__('John Doe', 'animation-addons-for-elementor'),
 				'condition' => [
 					'source' => 'custom',
 				],
@@ -212,7 +212,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'author_name_tag',
 			[
-				'label'   => esc_html__('HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('HTML Tag', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'h1'   => 'H1',
@@ -231,27 +231,27 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'link_to',
 			[
-				'label'       => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::SELECT,
 				'options'     => [
-					''              => esc_html__('None', 'animation-addons-for-elementor-pro'),
-					'website'       => esc_html__('Website', 'animation-addons-for-elementor-pro'),
-					'posts_archive' => esc_html__('Posts Archive', 'animation-addons-for-elementor-pro'),
+					''              => esc_html__('None', 'animation-addons-for-elementor'),
+					'website'       => esc_html__('Website', 'animation-addons-for-elementor'),
+					'posts_archive' => esc_html__('Posts Archive', 'animation-addons-for-elementor'),
 				],
 				'condition'   => [
 					'source!' => 'custom',
 				],
-				'description' => esc_html__('Link for the Author Name and Image', 'animation-addons-for-elementor-pro'),
+				'description' => esc_html__('Link for the Author Name and Image', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'show_meta',
 			[
-				'label'        => esc_html__('Author Meta', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Author Meta', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => '',
 				'condition'    => [
@@ -265,11 +265,11 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_biography',
 			[
-				'label'        => esc_html__('Biography', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Biography', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
 				'prefix_class' => 'wcf-author-box--biography-',
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'      => 'yes',
 				'condition'    => [
 					'source!' => 'custom',
@@ -281,11 +281,11 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_link',
 			[
-				'label'        => esc_html__('Archive Button', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Archive Button', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
 				'prefix_class' => 'wcf-author-box--link-',
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'      => 'no',
 				'condition'    => [
 					'source!' => 'custom',
@@ -298,22 +298,22 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'author_website',
 			[
-				'label'       => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor-pro'),
+				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'source' => 'custom',
 				],
-				'description' => esc_html__('Link for the Author Name and Image', 'animation-addons-for-elementor-pro'),
+				'description' => esc_html__('Link for the Author Name and Image', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'author_bio',
 			[
-				'label'     => esc_html__('Biography', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Biography', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::TEXTAREA,
-				'default'   => esc_html__('Lorem ipsum dolor sit amet consectetur adipiscing elit dolor', 'animation-addons-for-elementor-pro'),
+				'default'   => esc_html__('Lorem ipsum dolor sit amet consectetur adipiscing elit dolor', 'animation-addons-for-elementor'),
 				'rows'      => 3,
 				'condition' => [
 					'source' => 'custom',
@@ -328,9 +328,9 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'posts_url',
 			[
-				'label'       => esc_html__('Archive Button', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Archive Button', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor-pro'),
+				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
 				'dynamic'     => [
 					'active' => true,
 				],
@@ -343,9 +343,9 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'link_text',
 			[
-				'label'   => esc_html__('Archive Text', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Archive Text', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('All Posts', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('All Posts', 'animation-addons-for-elementor'),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -355,10 +355,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_contact',
 			[
-				'label'        => esc_html__('Contact Info', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Contact Info', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => '',
 				'condition'    => [
@@ -372,10 +372,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'contact_title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Contact:', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your title here', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Contact:', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your title here', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'source'       => 'current',
 					'show_contact' => 'yes',
@@ -386,10 +386,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'email_label',
 			[
-				'label'       => esc_html__('Email Label', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Email Label', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Email', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your label here', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Email', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your label here', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'source'       => 'current',
 					'show_contact' => 'yes',
@@ -400,10 +400,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'phone_label',
 			[
-				'label'       => esc_html__('Phone Label', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Phone Label', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Phone', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your label here', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Phone', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your label here', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'source'       => 'current',
 					'show_contact' => 'yes',
@@ -414,10 +414,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'show_social_media',
 			[
-				'label'        => esc_html__('Social Profile', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Social Profile', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => '',
 				'condition'    => [
@@ -431,10 +431,10 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Socials:', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your title here', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Socials:', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your title here', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'source'            => 'current',
 					'show_social_media' => 'yes',
@@ -447,7 +447,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'section_image_style',
 			[
-				'label' => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Image', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -455,15 +455,15 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'image_vertical_align',
 			[
-				'label'        => esc_html__('Vertical Align', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Vertical Align', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'options'      => [
 					'top'    => [
-						'title' => esc_html__('Top', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Top', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'middle' => [
-						'title' => esc_html__('Middle', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Middle', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-middle',
 					],
 				],
@@ -477,7 +477,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'image_size',
 			[
-				'label'      => esc_html__('Image Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Image Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -495,7 +495,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'image_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -519,7 +519,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'image_border',
 			[
-				'label'     => esc_html__('Border', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-author-box__avatar img' => 'border-style: solid',
@@ -530,7 +530,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'image_border_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#000',
 				'selectors' => [
@@ -545,7 +545,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'image_border_width',
 			[
-				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'range'      => [
@@ -568,7 +568,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'image_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -595,7 +595,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'section_text_style',
 			[
-				'label' => esc_html__('Text', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Text', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -603,7 +603,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'heading_name_style',
 			[
-				'label'     => esc_html__('Name', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Name', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -612,7 +612,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'name_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'global'    => [
 					'default' => Global_Colors::COLOR_SECONDARY,
@@ -637,7 +637,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'name_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -655,7 +655,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'heading_bio_style',
 			[
-				'label'     => esc_html__('Biography', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Biography', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -664,7 +664,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'bio_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'global'    => [
 					'default' => Global_Colors::COLOR_TEXT,
@@ -689,7 +689,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'bio_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -719,14 +719,14 @@ class Author_Box extends Widget_Base
 		$this->start_controls_tab(
 			'tab_button_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'button_text_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'global'    => [
 					'default' => Global_Colors::COLOR_SECONDARY,
@@ -741,7 +741,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_background_color',
 			[
-				'label'     => esc_html__('Background Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Background Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-author-box__button' => 'background-color: {{VALUE}}',
@@ -765,14 +765,14 @@ class Author_Box extends Widget_Base
 		$this->start_controls_tab(
 			'tab_button_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'button_hover_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'global'    => [
 					'default' => Global_Colors::COLOR_SECONDARY,
@@ -786,7 +786,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_background_hover_color',
 			[
-				'label'     => esc_html__('Background Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Background Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-author-box__button:hover' => 'background-color: {{VALUE}};',
@@ -797,7 +797,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_hover_animation',
 			[
-				'label' => esc_html__('Animation', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Animation', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::HOVER_ANIMATION,
 			]
 		);
@@ -809,7 +809,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_border_width',
 			[
-				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'range'      => [
@@ -833,7 +833,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -855,7 +855,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'button_text_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -895,7 +895,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'meta_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-meta li' => 'color: {{VALUE}}',
@@ -914,7 +914,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'meta_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -944,7 +944,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'con_info_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-contact a, {{WRAPPER}} .wcf--author-contact span' => 'color: {{VALUE}}',
@@ -963,7 +963,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'con_info_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -976,7 +976,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'contact_label_heading',
 			[
-				'label'     => esc_html__('Label', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Label', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -985,7 +985,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'con_label_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-contact .label' => 'color: {{VALUE}}',
@@ -1004,7 +1004,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'con_label_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1017,7 +1017,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'contact_title_heading',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1026,7 +1026,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'con_title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-contact .title' => 'color: {{VALUE}}',
@@ -1045,7 +1045,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'con_title_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1057,7 +1057,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'contact_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1071,7 +1071,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'contact_hover_heading',
 			[
-				'label'     => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Hover', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1080,7 +1080,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'contact_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-contact a:hover' => 'color: {{VALUE}}',
@@ -1097,7 +1097,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'style_social',
 			[
-				'label'     => esc_html__('Social Profile', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Social Profile', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_social_media' => 'yes',
@@ -1110,7 +1110,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_icon_heading',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1119,7 +1119,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'social_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -1137,7 +1137,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'social_icon_circle',
 			[
-				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -1163,7 +1163,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'social_b_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1176,7 +1176,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'follower_heading',
 			[
-				'label'     => esc_html__('Follower', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Follower', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1185,7 +1185,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'follower_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .follower' => 'color: {{VALUE}}',
@@ -1205,7 +1205,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_title_heading',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1214,7 +1214,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-media .title' => 'color: {{VALUE}}',
@@ -1233,7 +1233,7 @@ class Author_Box extends Widget_Base
 		$this->add_responsive_control(
 			'social_title_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1246,7 +1246,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_hover_heading',
 			[
-				'label'     => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Hover', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1255,7 +1255,7 @@ class Author_Box extends Widget_Base
 		$this->add_control(
 			'social_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--author-media a:hover .icon'     => 'border-color: {{VALUE}}',
@@ -1367,7 +1367,7 @@ class Author_Box extends Widget_Base
 				'avatar',
 				[
 					'src'     => esc_url($author['avatar']),
-					'alt'     => (! empty($author['display_name'])) ? $author['display_name'] : esc_html__('Author picture', 'animation-addons-for-elementor-pro'),
+					'alt'     => (! empty($author['display_name'])) ? $author['display_name'] : esc_html__('Author picture', 'animation-addons-for-elementor'),
 					'loading' => 'lazy',
 				]
 			);
@@ -1405,11 +1405,11 @@ class Author_Box extends Widget_Base
 						<ul class="wcf--author-meta">
 							<li class="total-posts">
 								<?php echo $post_count;
-								echo esc_html__(' articles', 'animation-addons-for-elementor-pro'); ?>
+								echo esc_html__(' articles', 'animation-addons-for-elementor'); ?>
 							</li>
 							<li class="total-comments">
 								<?php echo $comments;
-								echo esc_html__(' comments', 'animation-addons-for-elementor-pro'); ?>
+								echo esc_html__(' comments', 'animation-addons-for-elementor'); ?>
 							</li>
 						</ul>
 				<?php

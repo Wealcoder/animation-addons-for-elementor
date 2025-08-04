@@ -43,7 +43,7 @@ class Current_Date extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Current Date', 'animation-addons-for-elementor-pro');
+		return esc_html__('Current Date', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Current_Date extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	/**
@@ -91,7 +91,7 @@ class Current_Date extends Widget_Base
 		$this->start_controls_section(
 			'section_current_date',
 			[
-				'label' => esc_html__('Current Date', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Current Date', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -99,15 +99,15 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'date_format',
 			[
-				'label'   => esc_html__('Date Format', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Date Format', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'F j, Y',
 				'options' => [
-					'F j, Y' => esc_html__('F j, Y', 'animation-addons-for-elementor-pro'),
-					'Y-m-d'  => esc_html__('Y-m-d', 'animation-addons-for-elementor-pro'),
-					'm/d/Y'  => esc_html__('m/d/Y', 'animation-addons-for-elementor-pro'),
-					'd/m/Y'  => esc_html__('d/m/Y', 'animation-addons-for-elementor-pro'),
-					'custom' => esc_html__('Custom', 'animation-addons-for-elementor-pro'),
+					'F j, Y' => esc_html__('F j, Y', 'animation-addons-for-elementor'),
+					'Y-m-d'  => esc_html__('Y-m-d', 'animation-addons-for-elementor'),
+					'm/d/Y'  => esc_html__('m/d/Y', 'animation-addons-for-elementor'),
+					'd/m/Y'  => esc_html__('d/m/Y', 'animation-addons-for-elementor'),
+					'custom' => esc_html__('Custom', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -115,10 +115,10 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'custom_date_format',
 			[
-				'label'       => esc_html__('Custom Format', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Custom Format', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('F j, Y', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('F j, Y', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('F j, Y', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('F j, Y', 'animation-addons-for-elementor'),
 				'condition'   => ['date_format' => 'custom']
 			]
 		);
@@ -126,10 +126,10 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'show_day',
 			[
-				'label'        => esc_html__('Show Day', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Show Day', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 			]
 		);
@@ -137,10 +137,10 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'day_separator',
 			[
-				'label'       => esc_html__('Separator', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Separator', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('/', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('/', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('/', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('/', 'animation-addons-for-elementor'),
 				'condition'   => ['show_day' => 'yes']
 			]
 		);
@@ -148,7 +148,7 @@ class Current_Date extends Widget_Base
 		$this->add_responsive_control(
 			'separator_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -171,12 +171,12 @@ class Current_Date extends Widget_Base
 		$this->add_responsive_control(
 			'day_direction',
 			[
-				'label'     => esc_html__('Direction', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Direction', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'row',
 				'options'   => [
-					'row'    => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'column' => esc_html__('Column', 'animation-addons-for-elementor-pro'),
+					'row'    => esc_html__('Default', 'animation-addons-for-elementor'),
+					'column' => esc_html__('Column', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .wcf__current_date' => 'flex-direction: {{VALUE}};',
@@ -188,20 +188,20 @@ class Current_Date extends Widget_Base
 		$this->add_responsive_control(
 			'text_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'separator' => 'before',
 				'options'   => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -218,7 +218,7 @@ class Current_Date extends Widget_Base
 		$this->start_controls_section(
 			'section_style_current_date',
 			[
-				'label' => __('Current Date', 'animation-addons-for-elementor-pro'),
+				'label' => __('Current Date', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -226,7 +226,7 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'date_text_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .today-date' => 'color: {{VALUE}}',
@@ -245,7 +245,7 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'day_options_heading',
 			[
-				'label'     => esc_html__('Day', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Day', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => ['show_day' => 'yes']
@@ -255,7 +255,7 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'day_text_color',
 			[
-				'label'     => esc_html__('Day Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Day Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .today' => 'color: {{VALUE}}',
@@ -276,7 +276,7 @@ class Current_Date extends Widget_Base
 		$this->add_responsive_control(
 			'day_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -289,7 +289,7 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'separator_heading',
 			[
-				'label'     => esc_html__('Separator', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Separator', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => ['show_day' => 'yes'],
@@ -299,7 +299,7 @@ class Current_Date extends Widget_Base
 		$this->add_control(
 			'separator_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .separator' => 'color: {{VALUE}}',

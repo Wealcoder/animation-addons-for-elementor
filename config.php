@@ -1744,7 +1744,7 @@ $config = [
 								'is_upcoming'  => false,
 								'setup'        => ['basic', 'advance'],
 								'icon'         => "wcf-icon-Pin-Elements",
-								'demo_url'     => '',
+								'demo_url'     => 'https://animation-addons.com/extensions/pin-element/',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/pin-elements/',
 								'youtube_url'  => '',
 							],

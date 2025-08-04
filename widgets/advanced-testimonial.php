@@ -52,7 +52,7 @@ class Advanced_Testimonial extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Advanced Testimonial', 'animation-addons-for-elementor-pro');
+		return esc_html__('Advanced Testimonial', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -83,7 +83,7 @@ class Advanced_Testimonial extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_style_depends()
@@ -149,23 +149,23 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'section_layout',
 			[
-				'label' => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Layout', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'element_list',
 			[
-				'label'   => esc_html__('Testimonial Style', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Testimonial Style', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => '1',
 				'options' => [
-					'1' => esc_html__('One', 'animation-addons-for-elementor-pro'),
-					'2' => esc_html__('Two', 'animation-addons-for-elementor-pro'),
-					'3' => esc_html__('Three', 'animation-addons-for-elementor-pro'),
-					'4' => esc_html__('Four', 'animation-addons-for-elementor-pro'),
-					'5' => esc_html__('Five', 'animation-addons-for-elementor-pro'),
-					'6' => esc_html__('Six', 'animation-addons-for-elementor-pro'),
+					'1' => esc_html__('One', 'animation-addons-for-elementor'),
+					'2' => esc_html__('Two', 'animation-addons-for-elementor'),
+					'3' => esc_html__('Three', 'animation-addons-for-elementor'),
+					'4' => esc_html__('Four', 'animation-addons-for-elementor'),
+					'5' => esc_html__('Five', 'animation-addons-for-elementor'),
+					'6' => esc_html__('Six', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -173,19 +173,19 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'tsm_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -206,7 +206,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -215,20 +215,20 @@ class Advanced_Testimonial extends Widget_Base
 		$repeater->add_control(
 			'tsm_content',
 			[
-				'label'   => esc_html__('Feedback', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Feedback', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXTAREA,
 				'dynamic' => [
 					'active' => true,
 				],
 				'rows'    => '7',
-				'default' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'tsm_quote',
 			[
-				'label'   => esc_html__('Quote/Image', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Quote/Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'dynamic' => [
 					'active' => true,
@@ -242,16 +242,16 @@ class Advanced_Testimonial extends Widget_Base
 		$repeater->add_control(
 			'tsm_reason',
 			[
-				'label'   => esc_html__('Feedback Reason', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Feedback Reason', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('Flexibility', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Flexibility', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'tsm_rating',
 			[
-				'label'   => __('Rating', 'animation-addons-for-elementor-pro'),
+				'label'   => __('Rating', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => 1,
 				'max'     => 5,
@@ -263,7 +263,7 @@ class Advanced_Testimonial extends Widget_Base
 		$repeater->add_control(
 			'tsm_name',
 			[
-				'label'       => esc_html__('Client Name', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Client Name', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
 				'label_block' => true,
 				'dynamic'     => [
@@ -276,7 +276,7 @@ class Advanced_Testimonial extends Widget_Base
 		$repeater->add_control(
 			'tsm_role',
 			[
-				'label'       => esc_html__('Designation', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Designation', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
 				'label_block' => true,
 				'dynamic'     => [
@@ -289,7 +289,7 @@ class Advanced_Testimonial extends Widget_Base
 		$repeater->add_control(
 			'tsm_image',
 			[
-				'label'   => esc_html__('Client Image', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Client Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'dynamic' => [
 					'active' => true,
@@ -312,7 +312,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'testimonials',
 			[
-				'label'   => esc_html__('Testimonials', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Testimonials', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::REPEATER,
 				'fields'  => $repeater->get_controls(),
 				'default' => [[], [], [], [], []],
@@ -327,17 +327,17 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'section_settings',
 			[
-				'label' => esc_html__('Settings', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Settings', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'quote_show',
 			[
-				'label'        => esc_html__('Show Quote/Image', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Show Quote/Image', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -346,10 +346,10 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'client_img_show',
 			[
-				'label'        => esc_html__('Show Client Image', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Show Client Image', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -358,10 +358,10 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'rating_show',
 			[
-				'label'        => esc_html__('Show Rating Image', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Show Rating Image', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => 'no',
 			]
@@ -370,10 +370,10 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'reason_show',
 			[
-				'label'        => esc_html__('Show Feedback Reason', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Show Feedback Reason', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 				'default'      => 'no',
 			]
@@ -382,23 +382,23 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'client_content_direction',
 			[
-				'label'     => esc_html__('Client Content Direction', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Client Content Direction', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'row'            => [
-						'title' => esc_html__('Row - Horizontal', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Row - Horizontal', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-arrow-right',
 					],
 					'column'         => [
-						'title' => esc_html__('Column - Vertical', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Column - Vertical', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-arrow-down',
 					],
 					'row-reverse'    => [
-						'title' => esc_html__('Row - Reversed', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Row - Reversed', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-arrow-left',
 					],
 					'column-reverse' => [
-						'title' => esc_html__('Column - Reversed', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Column - Reversed', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-arrow-up',
 					],
 				],
@@ -418,7 +418,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_slide',
 			[
-				'label' => esc_html__('Slide', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Slide', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -443,7 +443,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'slide_b_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -455,7 +455,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'slide_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -467,7 +467,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'slide_sep_color',
 			[
-				'label'     => esc_html__('Separator Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Separator Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .swiper-slide::after' => 'background-color: {{VALUE}};',
@@ -479,7 +479,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'slide_sep_right',
 			[
-				'label'      => esc_html__('Separator Position', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Separator Position', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -502,7 +502,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_tsm_feedback',
 			[
-				'label' => esc_html__('Feedback', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Feedback', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -510,7 +510,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'feedback_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -530,7 +530,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'feedback_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -542,7 +542,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'feedback_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -567,7 +567,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_tsm_rating',
 			[
-				'label'     => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Rating', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['rating_show' => 'yes'],
 			]
@@ -576,7 +576,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'rating_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .stars-outer, {{WRAPPER}} .stars-inner' => 'color: {{VALUE}}',
@@ -587,7 +587,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'rating_size',
 			[
-				'label'      => esc_html__('Stars Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Stars Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -605,7 +605,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'rating_gap',
 			[
-				'label'      => esc_html__('Stars Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Stars Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -623,7 +623,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'rating_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -640,7 +640,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_quote_img',
 			[
-				'label'     => esc_html__('Quote/Image', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Quote/Image', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['quote_show' => 'yes'],
 			]
@@ -649,7 +649,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'quote_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -671,7 +671,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'quote_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -693,7 +693,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'quote_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -710,7 +710,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_tsm_reason',
 			[
-				'label'     => esc_html__('Reason/Text', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Reason/Text', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['reason_show' => 'yes'],
 			]
@@ -719,7 +719,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'reason_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .reason' => 'color: {{VALUE}};',
@@ -738,7 +738,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'reason_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -755,7 +755,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_client_content',
 			[
-				'label' => esc_html__('Client Content', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Client Content', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -763,7 +763,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'separator_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .info' => 'border-color: {{VALUE}};',
@@ -774,7 +774,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'separator_padding',
 			[
-				'label'      => esc_html__('Border Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -792,7 +792,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'name_heading',
 			[
-				'label'     => esc_html__('Name', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Name', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -801,19 +801,19 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'tsm_name_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -827,7 +827,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'name_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -847,7 +847,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'name_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'separator'  => 'before',
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
@@ -860,7 +860,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'role_heading',
 			[
-				'label'     => esc_html__('Designation', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Designation', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -869,7 +869,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'role_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -889,7 +889,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'role_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'separator'  => 'before',
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
@@ -903,7 +903,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_control(
 			'client_img_heading',
 			[
-				'label'     => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Image', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => ['client_img_show' => 'yes'],
@@ -913,7 +913,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'client_img_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -937,7 +937,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'client_img_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem'],
 				'range'      => [
@@ -960,7 +960,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'client_img_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -973,7 +973,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->add_responsive_control(
 			'client_img_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -991,7 +991,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'sec_slider_options',
 			[
-				'label' => esc_html__('Slider Options', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Slider Options', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -1005,7 +1005,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_navigation',
 			[
-				'label'     => esc_html__('Navigation', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Navigation', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['navigation' => 'yes'],
 			]
@@ -1021,7 +1021,7 @@ class Advanced_Testimonial extends Widget_Base
 		$this->start_controls_section(
 			'style_pagination',
 			[
-				'label'     => esc_html__('Pagination', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Pagination', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['pagination' => 'yes'],
 			]

@@ -23,7 +23,7 @@ class Breadcrumbs extends Widget_Base
 
 	public function get_title()
 	{
-		return esc_html__('Breadcrumbs', 'animation-addons-for-elementor-pro');
+		return esc_html__('Breadcrumbs', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -33,7 +33,7 @@ class Breadcrumbs extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_script_depends()
@@ -52,7 +52,7 @@ class Breadcrumbs extends Widget_Base
 		$this->start_controls_section(
 			'section_breadcrumbs_content',
 			[
-				'label' => esc_html__('Breadcrumbs', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Breadcrumbs', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -63,7 +63,7 @@ class Breadcrumbs extends Widget_Base
 				[
 					'type'       => Controls_Manager::ALERT,
 					'alert_type' => 'warning',
-					'content'    => __('<strong>Yoast SEO</strong> is not installed/activated on your site. Please install and activate <a href="plugin-install.php?s=wordpress-seo&tab=search&type=term" target="_blank">Yoast SEO</a> first.', 'animation-addons-for-elementor-pro'),
+					'content'    => __('<strong>Yoast SEO</strong> is not installed/activated on your site. Please install and activate <a href="plugin-install.php?s=wordpress-seo&tab=search&type=term" target="_blank">Yoast SEO</a> first.', 'animation-addons-for-elementor'),
 				]
 			);
 
@@ -75,19 +75,19 @@ class Breadcrumbs extends Widget_Base
 		$this->add_responsive_control(
 			'align',
 			[
-				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::CHOOSE,
 				'options'      => [
 					'left'   => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'  => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -98,10 +98,10 @@ class Breadcrumbs extends Widget_Base
 		$this->add_control(
 			'html_tag',
 			[
-				'label'   => esc_html__('HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('HTML Tag', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					''     => esc_html__('Default', 'animation-addons-for-elementor-pro'),
+					''     => esc_html__('Default', 'animation-addons-for-elementor'),
 					'p'    => 'p',
 					'div'  => 'div',
 					'nav'  => 'nav',
@@ -116,7 +116,7 @@ class Breadcrumbs extends Widget_Base
 			[
 				'raw'             => sprintf(
 					/* translators: 1: Link opening tag, 2: Link closing tag. */
-					esc_html__('Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor-pro'),
+					esc_html__('Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor'),
 					sprintf('<a href="%s" target="_blank">', admin_url('admin.php?page=wpseo_titles#top#breadcrumbs')),
 					'</a>'
 				),
@@ -130,7 +130,7 @@ class Breadcrumbs extends Widget_Base
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => esc_html__('Breadcrumbs', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Breadcrumbs', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -149,7 +149,7 @@ class Breadcrumbs extends Widget_Base
 		$this->add_control(
 			'text_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -163,14 +163,14 @@ class Breadcrumbs extends Widget_Base
 		$this->start_controls_tab(
 			'tab_color_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'link_color',
 			[
-				'label'     => esc_html__('Link Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Link Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -184,14 +184,14 @@ class Breadcrumbs extends Widget_Base
 		$this->start_controls_tab(
 			'tab_color_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'link_hover_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} a:hover' => 'color: {{VALUE}};',

@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Event_slider extends Widget_Base {
-	use  WCF_Button_Trait;
+	use WCF_Button_Trait;
 	use WCF_Slider_Trait;
 
 	/**

@@ -52,7 +52,7 @@ class Notification extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Notification', 'animation-addons-for-elementor-pro');
+		return esc_html__('Notification', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -83,7 +83,7 @@ class Notification extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	public function get_style_depends()
@@ -110,16 +110,16 @@ class Notification extends Widget_Base
 		$this->start_controls_section(
 			'section_notify',
 			[
-				'label' => esc_html__('Notification', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Notification', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'notify_text',
 			[
-				'label'       => esc_html__('Text', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Text', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXTAREA,
-				'default'     => esc_html__('All plans have 30% OFF For this week.', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('All plans have 30% OFF For this week.', 'animation-addons-for-elementor'),
 				'description' => 'For Highlight, keep text in [ ]. Ex. [ Text ]',
 				'dynamic'     => [
 					'active' => true,
@@ -130,9 +130,9 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'btn_text',
 			[
-				'label'   => esc_html__('Button Text', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Button Text', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('Claim', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Claim', 'animation-addons-for-elementor'),
 				'dynamic'     => [
 					'active' => true,
 				],
@@ -142,7 +142,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'btn_link',
 			[
-				'label'       => esc_html__('Button Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Button Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
 				'options'     => ['url', 'is_external', 'nofollow'],
 				'label_block' => true,
@@ -155,19 +155,19 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'notify_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'left'   => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'  => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -181,7 +181,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'close_icon',
 			[
-				'label'       => esc_html__('Close Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Close Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -195,13 +195,13 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'close_icon_pos',
 			[
-				'label'        => esc_html__('Icon Position', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Icon Position', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SELECT,
 				'default'      => 'right',
 				'prefix_class' => 'notify-icon-pos-',
 				'options'      => [
-					'left'  => esc_html__('Left', 'animation-addons-for-elementor-pro'),
-					'right' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+					'left'  => esc_html__('Left', 'animation-addons-for-elementor'),
+					'right' => esc_html__('Right', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -213,7 +213,7 @@ class Notification extends Widget_Base
 		$this->start_controls_section(
 			'sec_style_notify',
 			[
-				'label' => esc_html__('Notification', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Notification', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -230,7 +230,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'notify_padding',
 			[
-				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -245,7 +245,7 @@ class Notification extends Widget_Base
 		$this->start_controls_section(
 			'sec_style_text',
 			[
-				'label' => esc_html__('Text', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Text', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -253,7 +253,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'text_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .text' => 'color: {{VALUE}}',
@@ -272,7 +272,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'text_margin',
 			[
-				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -284,7 +284,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'text_highlight',
 			[
-				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -293,7 +293,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'highlight_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .highlight' => 'color: {{VALUE}}',
@@ -329,7 +329,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'highlight_b_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -341,7 +341,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'highlight_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -356,7 +356,7 @@ class Notification extends Widget_Base
 		$this->start_controls_section(
 			'sec_style_button',
 			[
-				'label' => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Button', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -364,13 +364,13 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'btn_type',
 			[
-				'label'        => esc_html__('Button Type', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Button Type', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SELECT,
 				'default'      => 'inline-block',
 				'prefix_class' => 'notify-icon-pos-',
 				'options'      => [
-					'inline-block' => esc_html__('Inline', 'animation-addons-for-elementor-pro'),
-					'block'        => esc_html__('Block', 'animation-addons-for-elementor-pro'),
+					'inline-block' => esc_html__('Inline', 'animation-addons-for-elementor'),
+					'block'        => esc_html__('Block', 'animation-addons-for-elementor'),
 				],
 				'selectors'    => [
 					'{{WRAPPER}} .text' => 'display: {{VALUE}};',
@@ -406,7 +406,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'btn_b_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -418,7 +418,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'btn_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -435,14 +435,14 @@ class Notification extends Widget_Base
 		$this->start_controls_tab(
 			'btn_style_normal_tab',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .notify-btn' => 'color: {{VALUE}}',
@@ -456,14 +456,14 @@ class Notification extends Widget_Base
 		$this->start_controls_tab(
 			'btn_style_hover_tab',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'btn_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .notify-btn:hover' => 'color: {{VALUE}}',
@@ -474,7 +474,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'btn_b_h_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .notify-btn:hover' => 'border-color: {{VALUE}}',
@@ -501,7 +501,7 @@ class Notification extends Widget_Base
 		$this->start_controls_section(
 			'style_close_icon',
 			[
-				'label' => esc_html__('Close Icon', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Close Icon', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -509,7 +509,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .close-icon' => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -520,7 +520,7 @@ class Notification extends Widget_Base
 		$this->add_control(
 			'icon_h_color',
 			[
-				'label'     => esc_html__('Hover Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Hover Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .close-icon:hover' => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -531,7 +531,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -549,7 +549,7 @@ class Notification extends Widget_Base
 		$this->add_responsive_control(
 			'close_icon_space',
 			[
-				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px'],
 				'selectors'  => [

@@ -401,6 +401,8 @@
     };
 
     WCFAdmin.init();
-
+   
+    // Post rating handler
+   
 
 })(jQuery);

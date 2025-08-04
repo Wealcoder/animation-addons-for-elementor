@@ -55,7 +55,7 @@ class Advance_Accordion extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Advanced Accordion', 'animation-addons-for-elementor-pro');
+		return esc_html__('Advanced Accordion', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Advance_Accordion extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	/**
@@ -128,19 +128,19 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_title',
 			[
-				'label' => esc_html__('Accordion', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Accordion', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'accordion_style',
 			[
-				'label' => esc_html__('Accordion Style', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Accordion Style', 'animation-addons-for-elementor'),
 				'type' => Controls_Manager::SELECT,
 				'default' => '',
 				'options' => [
-					'' => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'2' => esc_html__('Two', 'animation-addons-for-elementor-pro'),
+					'' => esc_html__('Default', 'animation-addons-for-elementor'),
+					'2' => esc_html__('Two', 'animation-addons-for-elementor'),
 				],
 				'separator' => 'after',
 			]
@@ -151,9 +151,9 @@ class Advance_Accordion extends Widget_Base
 		$repeater->add_control(
 			'tab_count',
 			[
-				'label'       => esc_html__('Number', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Number', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('O1', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('O1', 'animation-addons-for-elementor'),
 				'dynamic'     => [
 					'active' => true,
 				],
@@ -164,9 +164,9 @@ class Advance_Accordion extends Widget_Base
 		$repeater->add_control(
 			'tab_title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Accordion Title', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Accordion Title', 'animation-addons-for-elementor'),
 				'dynamic'     => [
 					'active' => true,
 				],
@@ -177,16 +177,16 @@ class Advance_Accordion extends Widget_Base
 		$repeater->add_control(
 			'tab_content',
 			[
-				'label'   => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Content', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::WYSIWYG,
-				'default' => esc_html__('Accordion Content', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Accordion Content', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'tab_image',
 			[
-				'label'   => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -197,17 +197,17 @@ class Advance_Accordion extends Widget_Base
 		$repeater->add_control(
 			'tab_btn_text',
 			[
-				'label'       => esc_html__('Button Text', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Button Text', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Read more', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type Button Text', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Read more', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type Button Text', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'tab_btn_link',
 			[
-				'label'       => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
 				'options'     => ['url', 'is_external', 'nofollow'],
 				'default'     => [
@@ -222,17 +222,17 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'tabs',
 			[
-				'label'       => esc_html__('Accordion Items', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Accordion Items', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
 				'default'     => [
 					[
-						'tab_title'   => esc_html__('Accordion #1', 'animation-addons-for-elementor-pro'),
-						'tab_content' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor-pro'),
+						'tab_title'   => esc_html__('Accordion #1', 'animation-addons-for-elementor'),
+						'tab_content' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor'),
 					],
 					[
-						'tab_title'   => esc_html__('Accordion #2', 'animation-addons-for-elementor-pro'),
-						'tab_content' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor-pro'),
+						'tab_title'   => esc_html__('Accordion #2', 'animation-addons-for-elementor'),
+						'tab_content' => esc_html__('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor'),
 					],
 				],
 				'title_field' => '{{{ tab_title }}}',
@@ -242,7 +242,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'selected_icon',
 			[
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'separator'   => 'before',
 				'default'     => [
@@ -269,7 +269,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'selected_active_icon',
 			[
-				'label'       => esc_html__('Active Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Active Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'default'     => [
 					'value'   => 'fas fa-minus',
@@ -298,7 +298,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'title_html_tag',
 			[
-				'label'     => esc_html__('Title HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title HTML Tag', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
 					'h1'  => 'H1',
@@ -317,7 +317,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'first_item_open',
 			[
-				'label'        => esc_html__('First Item Opened', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('First Item Opened', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
 				'render_type'  => 'template',
 				'prefix_class' => 'accordion-first-item-',
@@ -327,7 +327,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'faq_schema',
 			[
-				'label'     => esc_html__('FAQ Schema', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('FAQ Schema', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
 				'separator' => 'before',
 			]
@@ -340,7 +340,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_title_style',
 			[
-				'label' => esc_html__('Accordion', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Accordion', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -348,7 +348,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'border_width',
 			[
-				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'range'      => [
@@ -370,7 +370,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'border_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .accordion-item'                           => 'border-color: {{VALUE}};',
@@ -383,7 +383,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -395,7 +395,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'item_gap',
 			[
-				'label'      => esc_html__('Item Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Item Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -409,7 +409,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_style_count',
 			[
-				'label' => esc_html__('Count', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Count', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -417,7 +417,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'count_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .count' => 'color: {{VALUE}};',
@@ -440,7 +440,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'count_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -455,7 +455,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_toggle_style_title',
 			[
-				'label' => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Title', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -463,15 +463,15 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'title_align',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'left'  => [
-						'title' => esc_html__('Start', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Start', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'right' => [
-						'title' => esc_html__('End', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('End', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -486,7 +486,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'title_background',
 			[
-				'label'     => esc_html__('Background', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Background', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .tab-title' => 'background-color: {{VALUE}};',
@@ -497,7 +497,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .accordion-icon, {{WRAPPER}} .accordion-title' => 'color: {{VALUE}};',
@@ -509,7 +509,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'tab_active_color',
 			[
-				'label'     => esc_html__('Active Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Active Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .element-active .accordion-icon, {{WRAPPER}} .element-active .accordion-title' => 'color: {{VALUE}};',
@@ -548,7 +548,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'title_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -562,7 +562,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_toggle_style_icon',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'selected_icon[value]!' => '',
@@ -574,7 +574,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'icon_size',
 			[
-				'label'      => esc_html__('Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -597,15 +597,15 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'icon_align',
 			[
-				'label'   => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::CHOOSE,
 				'options' => [
 					'left'  => [
-						'title' => esc_html__('Start', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Start', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'right' => [
-						'title' => esc_html__('End', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('End', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -617,7 +617,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .accordion-icon i:before' => 'color: {{VALUE}};',
@@ -629,7 +629,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'icon_active_color',
 			[
-				'label'     => esc_html__('Active Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Active Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .element-active .accordion-icon i:before' => 'color: {{VALUE}};',
@@ -641,7 +641,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'icon_space',
 			[
-				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -667,7 +667,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_toggle_style_content',
 			[
-				'label' => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -675,7 +675,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'content_background_color',
 			[
-				'label'     => esc_html__('Background', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Background', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .tab-content' => 'background-color: {{VALUE}};',
@@ -686,7 +686,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_control(
 			'content_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .tab-content' => 'color: {{VALUE}};',
@@ -713,7 +713,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'content_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -728,7 +728,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'style_tab_image',
 			[
-				'label' => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Image', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 				'condition' => ['accordion_style' => '2'],
 			]
@@ -737,7 +737,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'tab_img_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%'],
 				'range'      => [
@@ -759,7 +759,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'tab_img_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%'],
 				'range'      => [
@@ -781,7 +781,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'tab_img_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -797,7 +797,7 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'acc_btn_style',
 			[
-				'label' => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Button', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 				'condition' => ['accordion_style' => '2'],
 			]
@@ -814,7 +814,7 @@ class Advance_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'acc_btn_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -831,14 +831,14 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_tab(
 			'acc_btn_normal_tab',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'acc_btn_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .acc-btn' => 'color: {{VALUE}}',
@@ -853,14 +853,14 @@ class Advance_Accordion extends Widget_Base
 		$this->start_controls_tab(
 			'acc_btn_hover_tab',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'acc_btn_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .acc-btn:hover' => 'color: {{VALUE}}',

@@ -62,7 +62,7 @@ class Grid_Hover_Posts extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Grid Hover Posts', 'animation-addons-for-elementor-pro');
+		return esc_html__('Grid Hover Posts', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Grid_Hover_Posts extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro', 'wcf-archive-addon'];
+		return ['animation-addons-for-elementor', 'wcf-archive-addon'];
 	}
 
 	/**
@@ -159,7 +159,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_settings',
 			[
-				'label' => esc_html__('Settings', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Settings', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -167,7 +167,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'columns',
 			[
-				'label'          => esc_html__('Columns', 'animation-addons-for-elementor-pro'),
+				'label'          => esc_html__('Columns', 'animation-addons-for-elementor'),
 				'type'           => Controls_Manager::SELECT,
 				'render_type'    => 'template',
 				'default'        => '3',
@@ -190,7 +190,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'posts_per_page',
 			[
-				'label'   => esc_html__('Posts Per Page', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Posts Per Page', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::NUMBER,
 				'default' => 3,
 			]
@@ -199,11 +199,11 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_thumb',
 			[
-				'label'     => esc_html__('Show Thumb', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Thumb', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
 				'default'   => 'yes',
-				'label_off' => esc_html__('Off', 'animation-addons-for-elementor-pro'),
-				'label_on'  => esc_html__('On', 'animation-addons-for-elementor-pro'),
+				'label_off' => esc_html__('Off', 'animation-addons-for-elementor'),
+				'label_on'  => esc_html__('On', 'animation-addons-for-elementor'),
 				'condition' => [
 					'show_thumb' => 'yes',
 				],
@@ -225,21 +225,21 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_title',
 			[
-				'label'     => esc_html__('Show Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
 				'default'   => 'yes',
-				'label_off' => esc_html__('Off', 'animation-addons-for-elementor-pro'),
-				'label_on'  => esc_html__('On', 'animation-addons-for-elementor-pro'),
+				'label_off' => esc_html__('Off', 'animation-addons-for-elementor'),
+				'label_on'  => esc_html__('On', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'show_excerpt',
 			[
-				'label'     => esc_html__('Show Excerpt', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Excerpt', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			]
 		);
@@ -247,10 +247,10 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_taxonomy',
 			[
-				'label'     => esc_html__('Show Taxonomy', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Taxonomy', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			]
 		);
@@ -258,10 +258,10 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_meta',
 			[
-				'label'     => esc_html__('Show Meta', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Meta', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			]
 		);
@@ -269,10 +269,10 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_rating',
 			[
-				'label'     => esc_html__('Show Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Show Rating', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'no',
 			]
 		);
@@ -280,10 +280,10 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_read_more',
 			[
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			]
 		);
@@ -296,7 +296,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_layout',
 			[
-				'label' => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -305,11 +305,11 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_layout',
 			[
-				'label'   => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'layout-normal' => [
-						'title' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Normal', 'animation-addons-for-elementor'),
 						'url'   => WCF_ADDONS_URL . '/assets/image/post-layout-2.jpg',
 					],
 				],
@@ -320,22 +320,22 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'layout-aside-position',
 			[
-				'label'          => esc_html__('Aside Position', 'animation-addons-for-elementor-pro'),
+				'label'          => esc_html__('Aside Position', 'animation-addons-for-elementor'),
 				'type'           => Controls_Manager::CHOOSE,
 				'toggle'         => false,
 				'default'        => 'row',
 				'mobile_default' => 'column',
 				'options'        => [
 					'row'         => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'column'      => [
-						'title' => esc_html__('Top', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Top', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'row-reverse' => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -353,7 +353,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'type'       => Controls_Manager::ALERT,
 				'alert_type' => 'info',
-				'content'    => esc_html__('This is only for audio type posts.', 'animation-addons-for-elementor-pro'),
+				'content'    => esc_html__('This is only for audio type posts.', 'animation-addons-for-elementor'),
 				'condition'  => ['post_layout' => 'layout-audio'],
 			]
 		);
@@ -364,16 +364,16 @@ class Grid_Hover_Posts extends Widget_Base
 		$layout_one->add_control(
 			'post_item',
 			[
-				'label'   => esc_html__('Item', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Item', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'title',
 				'options' => [
-					'title'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
-					'taxonomy'  => esc_html__('Taxonomy', 'animation-addons-for-elementor-pro'),
-					'excerpt'   => esc_html__('Excerpt', 'animation-addons-for-elementor-pro'),
-					'meta'      => esc_html__('Meta', 'animation-addons-for-elementor-pro'),
-					'rating'    => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
-					'read_more' => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+					'title'     => esc_html__('Title', 'animation-addons-for-elementor'),
+					'taxonomy'  => esc_html__('Taxonomy', 'animation-addons-for-elementor'),
+					'excerpt'   => esc_html__('Excerpt', 'animation-addons-for-elementor'),
+					'meta'      => esc_html__('Meta', 'animation-addons-for-elementor'),
+					'rating'    => esc_html__('Rating', 'animation-addons-for-elementor'),
+					'read_more' => esc_html__('Read More', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -384,17 +384,17 @@ class Grid_Hover_Posts extends Widget_Base
 		$layout_two->add_control(
 			'post_item',
 			[
-				'label'   => esc_html__('Item', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Item', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'title',
 				'options' => [
-					'thumb'     => esc_html__('Thumbnail', 'animation-addons-for-elementor-pro'),
-					'title'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
-					'taxonomy'  => esc_html__('Taxonomy', 'animation-addons-for-elementor-pro'),
-					'excerpt'   => esc_html__('Excerpt', 'animation-addons-for-elementor-pro'),
-					'meta'      => esc_html__('Meta', 'animation-addons-for-elementor-pro'),
-					'rating'    => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
-					'read_more' => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+					'thumb'     => esc_html__('Thumbnail', 'animation-addons-for-elementor'),
+					'title'     => esc_html__('Title', 'animation-addons-for-elementor'),
+					'taxonomy'  => esc_html__('Taxonomy', 'animation-addons-for-elementor'),
+					'excerpt'   => esc_html__('Excerpt', 'animation-addons-for-elementor'),
+					'meta'      => esc_html__('Meta', 'animation-addons-for-elementor'),
+					'rating'    => esc_html__('Rating', 'animation-addons-for-elementor'),
+					'read_more' => esc_html__('Read More', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -402,7 +402,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_layout_one',
 			[
-				'label'        => esc_html__('Layout Normal', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Layout Normal', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::REPEATER,
 				'fields'       => $layout_two->get_controls(),
 				'item_actions' => [
@@ -447,7 +447,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_design_layout',
 			[
-				'label' => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -455,7 +455,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'column_gap',
 			[
-				'label'      => esc_html__('Columns Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Columns Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'default'    => [
@@ -476,7 +476,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'row_gap',
 			[
-				'label'      => esc_html__('Rows Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Rows Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'default'    => [
@@ -506,7 +506,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'post_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -518,7 +518,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'post_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -540,16 +540,16 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'el_hover_effects',
 			[
-				'label'        => esc_html__('Hover Effect', 'animation-addons-for-elementor-pro'),
-				'description'  => esc_html__('This effect will work only on image tags.', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Hover Effect', 'animation-addons-for-elementor'),
+				'description'  => esc_html__('This effect will work only on image tags.', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SELECT,
 				'default'      => 'effect-zoom-in',
 				'options'      => [
-					''                => esc_html__('None', 'animation-addons-for-elementor-pro'),
-					'effect-zoom-in'  => esc_html__('Zoom In', 'animation-addons-for-elementor-pro'),
-					'effect-zoom-out' => esc_html__('Zoom Out', 'animation-addons-for-elementor-pro'),
-					'left-move'       => esc_html__('Left Move', 'animation-addons-for-elementor-pro'),
-					'right-move'      => esc_html__('Right Move', 'animation-addons-for-elementor-pro'),
+					''                => esc_html__('None', 'animation-addons-for-elementor'),
+					'effect-zoom-in'  => esc_html__('Zoom In', 'animation-addons-for-elementor'),
+					'effect-zoom-out' => esc_html__('Zoom Out', 'animation-addons-for-elementor'),
+					'left-move'       => esc_html__('Left Move', 'animation-addons-for-elementor'),
+					'right-move'      => esc_html__('Right Move', 'animation-addons-for-elementor'),
 				],
 				'prefix_class' => 'wcf--image-',
 			]
@@ -558,21 +558,21 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'alignment',
 			[
-				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'toggle'    => false,
 				'default'   => 'start',
 				'options'   => [
 					'start'  => [
-						'title' => esc_html__('Left', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__('Center', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'end'    => [
-						'title' => esc_html__('Right', 'animation-addons-for-elementor-pro'),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -593,7 +593,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_style_post_image',
 			[
-				'label'     => esc_html__('Thumbnail', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Thumbnail', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_thumb'   => 'yes',
@@ -605,7 +605,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'thumb_width',
 			[
-				'label'      => esc_html__('Width', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vh', 'custom'],
 				'range'      => [
@@ -627,7 +627,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'thumb_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vh', 'custom'],
 				'range'      => [
@@ -649,7 +649,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'masonry_thumb_height',
 			[
-				'label'      => esc_html__('Masonry Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Masonry Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'vh', 'custom'],
 				'range'      => [
@@ -678,7 +678,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'thumb_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -690,7 +690,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'thumb_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -707,7 +707,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_style_post_content',
 			[
-				'label'     => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Content', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['post_layout!' => 'layout-normal']
 			]
@@ -727,7 +727,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'content_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -739,7 +739,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'content_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -756,7 +756,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_title',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'show_title' => 'yes',
@@ -767,7 +767,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_length',
 			[
-				'label' => esc_html__('Title Length', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Title Length', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::NUMBER,
 				'min'   => 2,
 				'max'   => 100,
@@ -777,7 +777,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_tag',
 			[
-				'label'     => esc_html__('Title HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title HTML Tag', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
 					'h1'   => 'H1',
@@ -800,11 +800,11 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'show_title_highlight',
 			[
-				'label'              => esc_html__('Show Highlight', 'animation-addons-for-elementor-pro'),
+				'label'              => esc_html__('Show Highlight', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::SWITCHER,
 				'separator'          => 'before',
-				'label_on'           => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'          => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'           => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'          => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value'       => 'yes',
 				'frontend_available' => true,
 			]
@@ -813,7 +813,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'highlight_title_length',
 			[
-				'label'              => esc_html__('Highlight Length', 'animation-addons-for-elementor-pro'),
+				'label'              => esc_html__('Highlight Length', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::NUMBER,
 				'default'            => 5,
 				'min'                => 2,
@@ -831,7 +831,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_title_style',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_title' => 'yes',
@@ -845,7 +845,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_title_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -860,7 +860,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-title' => 'color: {{VALUE}};',
@@ -873,7 +873,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_tile_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -888,7 +888,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_color_hover',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-title:hover, .item-masonry .wcf-post-title a:hover' => 'color: {{VALUE}};',
@@ -903,7 +903,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'title_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -915,7 +915,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'heading_highlight',
 			[
-				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -927,7 +927,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_h_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-title .highlight' => 'color: {{VALUE}};',
@@ -954,7 +954,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'heading_masonry',
 			[
-				'label'     => esc_html__('Masonry Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Masonry Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -966,7 +966,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_masonry_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .item-masonry .wcf-post-title' => 'color: {{VALUE}};',
@@ -991,7 +991,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'title_masonry_h_color',
 			[
-				'label'     => esc_html__('Highlight Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Highlight Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .item-masonry .wcf-post-title .highlight' => 'color: {{VALUE}};',
@@ -1016,7 +1016,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'masonry_title_margin',
 			[
-				'label'      => esc_html__('Masonry Title Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Masonry Title Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1037,7 +1037,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_post_excerpt',
 			[
-				'label'     => esc_html__('Excerpt', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Excerpt', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'show_excerpt' => 'yes',
@@ -1048,7 +1048,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'excerpt_length',
 			[
-				'label'     => esc_html__('Excerpt Length', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Excerpt Length', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 5,
 				'max'       => 100,
@@ -1065,7 +1065,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_style_post_excerpt',
 			[
-				'label'     => esc_html__('Excerpt', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Excerpt', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_excerpt' => 'yes',
@@ -1076,7 +1076,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'excerpt_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-excerpt' => 'color: {{VALUE}};',
@@ -1095,7 +1095,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'excerpt_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1113,7 +1113,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_taxonomy',
 			[
-				'label'     => esc_html__('Taxonomy', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Taxonomy', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'show_taxonomy' => 'yes',
@@ -1124,7 +1124,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_taxonomy',
 			[
-				'label'       => esc_html__('Taxonomy', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Taxonomy', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::SELECT2,
 				'label_block' => true,
 				'default'     => 'category',
@@ -1135,7 +1135,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'taxonomy_limit',
 			[
-				'label'   => esc_html__('Limit', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Limit', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => -1,
 				'max'     => 5,
@@ -1149,7 +1149,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_taxonomy_style',
 			[
-				'label'     => esc_html__('Taxonomy', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Taxonomy', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_taxonomy' => 'yes',
@@ -1168,7 +1168,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'taxonomy_spacing',
 			[
-				'label'      => esc_html__('Space Between', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Space Between', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -1187,14 +1187,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_taxonomy_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'taxonomy_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-taxonomy a' => 'color: {{VALUE}};',
@@ -1216,14 +1216,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_taxonomy_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'taxonomy_hover_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-taxonomy a:hover' => 'color: {{VALUE}};',
@@ -1256,7 +1256,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'taxonomy_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1276,7 +1276,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'taxonomy_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'separator'  => 'before',
 				'size_units' => ['px', 'em', 'rem', 'custom'],
@@ -1290,12 +1290,12 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'taxonomy_position',
 			[
-				'label'     => esc_html__('Position', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Position', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => '',
 				'options'   => [
-					''         => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'absolute' => esc_html__('Absolute', 'animation-addons-for-elementor-pro'),
+					''         => esc_html__('Default', 'animation-addons-for-elementor'),
+					'absolute' => esc_html__('Absolute', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-taxonomy' => 'position: {{VALUE}}',
@@ -1307,7 +1307,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'taxonomy_offset_x',
 			[
-				'label'      => esc_html__('Offset X', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Offset X', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'range'      => [
 					'px' => [
@@ -1342,7 +1342,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'taxonomy_offset_y',
 			[
-				'label'      => esc_html__('Offset Y', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Offset Y', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'range'      => [
 					'px' => [
@@ -1376,7 +1376,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'masonry_taxonomy_offset_x',
 			[
-				'label'      => esc_html__('Masonry Offset X', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Masonry Offset X', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'range'      => [
 					'px' => [
@@ -1411,7 +1411,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'masonry_taxonomy_offset_y',
 			[
-				'label'      => esc_html__('Masonry Offset Y', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Masonry Offset Y', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'range'      => [
 					'px' => [
@@ -1452,7 +1452,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta',
 			[
-				'label'     => esc_html__('Meta', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Meta', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'show_meta' => 'yes',
@@ -1465,18 +1465,18 @@ class Grid_Hover_Posts extends Widget_Base
 		$repeater->add_control(
 			'post_meta',
 			[
-				'label'   => esc_html__('Meta', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Meta', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'comments',
 				'options' => [
-					'author'     => esc_html__('Author', 'animation-addons-for-elementor-pro'),
-					'view'       => esc_html__('View', 'animation-addons-for-elementor-pro'),
-					'date'       => esc_html__('Date', 'animation-addons-for-elementor-pro'),
-					'time'       => esc_html__('Time', 'animation-addons-for-elementor-pro'),
-					'time-ago'   => esc_html__('Time Ago', 'animation-addons-for-elementor-pro'),
-					'comments'   => esc_html__('Comments', 'animation-addons-for-elementor-pro'),
-					'reviews'    => esc_html__('Reviews', 'animation-addons-for-elementor-pro'),
-					'read-later' => esc_html__('Read Later', 'animation-addons-for-elementor-pro'),
+					'author'     => esc_html__('Author', 'animation-addons-for-elementor'),
+					'view'       => esc_html__('View', 'animation-addons-for-elementor'),
+					'date'       => esc_html__('Date', 'animation-addons-for-elementor'),
+					'time'       => esc_html__('Time', 'animation-addons-for-elementor'),
+					'time-ago'   => esc_html__('Time Ago', 'animation-addons-for-elementor'),
+					'comments'   => esc_html__('Comments', 'animation-addons-for-elementor'),
+					'reviews'    => esc_html__('Reviews', 'animation-addons-for-elementor'),
+					'read-later' => esc_html__('Read Later', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -1484,7 +1484,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$repeater->add_control(
 			'meta_icon',
 			[
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1498,7 +1498,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_meta_data',
 			[
-				'label'       => esc_html__('Meta Data', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Meta Data', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
 				'default'     => [
@@ -1516,7 +1516,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'meta_separator',
 			[
-				'label'     => esc_html__('Separator Between', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Separator Between', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::TEXT,
 				'default'   => '///',
 				'ai'        => [
@@ -1534,20 +1534,20 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_by',
 			[
-				'label'   => esc_html__('Author By', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Author By', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('By', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('By', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'show_avatar',
 			[
-				'label'        => esc_html__('Author Avatar', 'animation-addons-for-elementor-pro'),
-				'description'  => esc_html__('If you want to use the author avatar, you must chose "Author" in the meta data.', 'animation-addons-for-elementor-pro'),
+				'label'        => esc_html__('Author Avatar', 'animation-addons-for-elementor'),
+				'description'  => esc_html__('If you want to use the author avatar, you must chose "Author" in the meta data.', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor-pro'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor-pro'),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'separator'    => 'before',
 				'return_value' => 'yes',
 			]
@@ -1556,7 +1556,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'avatar_size',
 			[
-				'label'      => esc_html__('Avatar Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Avatar Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -1572,7 +1572,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta_style',
 			[
-				'label'     => esc_html__('Meta', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Meta', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_meta' => 'yes',
@@ -1583,7 +1583,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1596,7 +1596,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'meta_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-meta' => 'color: {{VALUE}};',
@@ -1615,7 +1615,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1627,7 +1627,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_icon',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'separator'  => 'before',
 				'size_units' => ['px'],
@@ -1640,7 +1640,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'meta_icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-meta .meta-icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -1651,7 +1651,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_icon_gap',
 			[
-				'label'      => esc_html__('Icon Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'selectors'  => [
@@ -1666,7 +1666,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta_admin_style',
 			[
-				'label'     => esc_html__('Meta Admin', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Meta Admin', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_meta' => 'yes',
@@ -1677,7 +1677,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'author_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => \Elementor\Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1689,7 +1689,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'author_by_heading',
 			[
-				'label' => esc_html__('Author By', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Author By', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::HEADING,
 			]
 		);
@@ -1697,7 +1697,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'admin_by_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-meta .post-by' => 'color: {{VALUE}};',
@@ -1716,7 +1716,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'author_heading',
 			[
-				'label'     => esc_html__('Author', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Author', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -1735,14 +1735,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_author_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'author_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .post-author a' => 'color: {{VALUE}};',
@@ -1755,14 +1755,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_author_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'author_color_hover',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .post-author a:hover' => 'color: {{VALUE}};',
@@ -1783,7 +1783,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_post_read_more',
 			[
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'show_read_more' => 'yes',
@@ -1794,19 +1794,19 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'read_more_text',
 			[
-				'label'   => esc_html__('Read More Text', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Read More Text', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
 				'dynamic' => [
 					'active' => true,
 				],
-				'default' => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+				'default' => esc_html__('Read More', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'selected_icon',
 			[
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1816,12 +1816,12 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'icon_align',
 			[
-				'label'   => esc_html__('Icon Position', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Icon Position', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'left',
 				'options' => [
-					'left'  => esc_html__('Before', 'animation-addons-for-elementor-pro'),
-					'right' => esc_html__('After', 'animation-addons-for-elementor-pro'),
+					'left'  => esc_html__('Before', 'animation-addons-for-elementor'),
+					'right' => esc_html__('After', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -1829,7 +1829,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'icon_indend',
 			[
-				'label'     => esc_html__('Icon Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -1848,7 +1848,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'style_post_read_more',
 			[
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_read_more' => 'yes',
@@ -1867,7 +1867,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%'],
 				'range'      => [
@@ -1895,14 +1895,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_read_more_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'read_more_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -1926,14 +1926,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_read-more_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'read_more_text_hover_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-link:hover' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -1954,7 +1954,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'read_more_hover_border_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-link:hover' => 'border-color: {{VALUE}};',
@@ -1981,7 +1981,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -1993,7 +1993,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -2014,7 +2014,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2031,7 +2031,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_load_more',
 			[
-				'label'     => esc_html__('Load More', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Load More', 'animation-addons-for-elementor'),
 				'condition' => [
 					'pagination_type' => [
 						'load_on_click',
@@ -2044,7 +2044,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'load_more_spinner',
 			[
-				'label'                  => esc_html__('Spinner', 'animation-addons-for-elementor-pro'),
+				'label'                  => esc_html__('Spinner', 'animation-addons-for-elementor'),
 				'type'                   => Controls_Manager::ICONS,
 				'default'                => [
 					'value'   => 'fas fa-spinner',
@@ -2069,7 +2069,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'load_more_spinner_size',
 			[
-				'label'      => esc_html__('Spinner Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Spinner Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2081,7 +2081,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'heading_load_more_button',
 			[
-				'label'     => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Button', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -2093,10 +2093,10 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'load_more_btn_text',
 			[
-				'label'       => esc_html__('Text', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Text', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Load More', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Load More', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Load More', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Load More', 'animation-addons-for-elementor'),
 				'condition'   => [
 					'pagination_type' => 'load_on_click',
 				],
@@ -2106,7 +2106,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'load_more_btn_icon',
 			[
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -2119,12 +2119,12 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'btn_icon_position',
 			[
-				'label'     => esc_html__('Icon Position', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon Position', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'row',
 				'options'   => [
-					'row'         => esc_html__('After', 'animation-addons-for-elementor-pro'),
-					'row-reverse' => esc_html__('Before', 'animation-addons-for-elementor-pro'),
+					'row'         => esc_html__('After', 'animation-addons-for-elementor'),
+					'row-reverse' => esc_html__('Before', 'animation-addons-for-elementor'),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .wcf__posts-pro .wcf-post-load-more .load-more-text' => 'flex-direction: {{VALUE}};',
@@ -2141,7 +2141,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_load_more_style',
 			[
-				'label'     => esc_html__('Load More', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Load More', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'pagination_type' => ['load_on_click'],
@@ -2160,7 +2160,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'load_more_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%'],
 				'range'      => [
@@ -2188,14 +2188,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_load_more_normal',
 			[
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'load_more_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -2219,14 +2219,14 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_load_more_hover',
 			[
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'load_more_text_hover_color',
 			[
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-load-more:hover' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -2247,7 +2247,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'load_more_hover_border_color',
 			[
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf-post-load-more:hover' => 'border-color: {{VALUE}};',
@@ -2274,7 +2274,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'load_more_border_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2286,7 +2286,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'load_more_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
 				'selectors'  => [
@@ -2307,7 +2307,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'load_more_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2333,7 +2333,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'style_audio_gallery',
 			[
-				'label'     => __('Audio Gallery', 'animation-addons-for-elementor-pro'),
+				'label'     => __('Audio Gallery', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['post_layout' => 'layout-audio'],
 			]
@@ -2342,7 +2342,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'audio_play_icon',
 			[
-				'label'       => esc_html__('Play Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Play Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -2356,7 +2356,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'audio_pause_icon',
 			[
-				'label'       => esc_html__('Pause Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Pause Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -2370,7 +2370,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'duration_icon_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2388,7 +2388,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'duration_icon_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2401,7 +2401,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'duration_heading',
 			[
-				'label'     => esc_html__('Duration', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Duration', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -2410,7 +2410,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'a_duration_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .audio-duration' => 'color: {{VALUE}}',
@@ -2438,7 +2438,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'a_duration_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2451,7 +2451,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'a_icon_heading',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -2460,7 +2460,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'a_icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .audio-icon' => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -2480,7 +2480,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'a_icon_size',
 			[
-				'label'      => esc_html__('Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2498,7 +2498,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'a_icon_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2516,7 +2516,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_post_rating',
 			[
-				'label'     => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Rating', 'animation-addons-for-elementor'),
 				'condition' => ['show_rating' => 'yes'],
 			]
 		);
@@ -2524,12 +2524,12 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'post_rating_style',
 			[
-				'label'   => esc_html__('Style', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Style', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'default',
 				'options' => [
-					'default' => esc_html__('Default', 'animation-addons-for-elementor-pro'),
-					'circle'  => esc_html__('Circle', 'animation-addons-for-elementor-pro'),
+					'default' => esc_html__('Default', 'animation-addons-for-elementor'),
+					'circle'  => esc_html__('Circle', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -2537,7 +2537,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'rating_icon',
 			[
-				'label'       => esc_html__('Rating Icon', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Rating Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -2554,7 +2554,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->start_controls_section(
 			'style_post_rating',
 			[
-				'label'     => esc_html__('Rating', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Rating', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => ['show_rating' => 'yes'],
 			]
@@ -2563,7 +2563,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'rating_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .rating, {{WRAPPER}} .no-rating' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -2591,7 +2591,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'rating_b_radius',
 			[
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2604,7 +2604,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'rating_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -2616,7 +2616,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'circle_size',
 			[
-				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Circle Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2635,7 +2635,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'rating_icon_gap',
 			[
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2654,7 +2654,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'Rating_icon_heading',
 			[
-				'label'     => esc_html__('Icon', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -2663,7 +2663,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_control(
 			'rating_icon_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .rating .icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -2674,7 +2674,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'rating_icon_size',
 			[
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2692,7 +2692,7 @@ class Grid_Hover_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'rating_icon_margin',
 			[
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px'],
 				'range'      => [
@@ -2828,7 +2828,7 @@ class Grid_Hover_Posts extends Widget_Base
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</div>
 						<p>
-							<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor-pro'); ?>
+							<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
 						</p>
 					<?php
 					} else {
@@ -2845,7 +2845,7 @@ class Grid_Hover_Posts extends Widget_Base
 			<?php
 			} else {
 			?>
-				<p class="no-rating"><?php echo esc_html__('No ratings yet.', 'animation-addons-for-elementor-pro'); ?></p>
+				<p class="no-rating"><?php echo esc_html__('No ratings yet.', 'animation-addons-for-elementor'); ?></p>
 			<?php
 			}
 			?>

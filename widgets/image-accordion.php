@@ -54,7 +54,7 @@ class Image_Accordion extends Widget_Base
 	 */
 	public function get_title()
 	{
-		return esc_html__('Image Accordion', 'animation-addons-for-elementor-pro');
+		return esc_html__('Image Accordion', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Image_Accordion extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor-pro'];
+		return ['animation-addons-for-elementor'];
 	}
 
 	/**
@@ -114,7 +114,7 @@ class Image_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_image_accordion',
 			[
-				'label' => esc_html__('Image Accordion', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Image Accordion', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -133,7 +133,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'title_tag',
 			[
-				'label'   => esc_html__('Title HTML Tag', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Title HTML Tag', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'h1'   => 'H1',
@@ -153,13 +153,13 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'link_type',
 			[
-				'label'     => esc_html__('Link Type', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Link Type', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'button',
 				'separator' => 'before',
 				'options'   => [
-					'none'   => esc_html__('None', 'animation-addons-for-elementor-pro'),
-					'button' => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+					'none'   => esc_html__('None', 'animation-addons-for-elementor'),
+					'button' => esc_html__('Button', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -167,19 +167,19 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'accordion_layout',
 			[
-				'label'       => esc_html__('Layout', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Layout', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::SELECT,
 				'label_block' => false,
 				'options'     => [
-					'horizontal' => esc_html__('Horizontal', 'animation-addons-for-elementor-pro'),
-					'vertical'   => esc_html__('Vertical', 'animation-addons-for-elementor-pro'),
+					'horizontal' => esc_html__('Horizontal', 'animation-addons-for-elementor'),
+					'vertical'   => esc_html__('Vertical', 'animation-addons-for-elementor'),
 				],
 				'default'     => 'horizontal',
 			]
 		);
 
 		$dropdown_options = [
-			'' => esc_html__('None', 'animation-addons-for-elementor-pro'),
+			'' => esc_html__('None', 'animation-addons-for-elementor'),
 		];
 
 		$excluded_breakpoints = [
@@ -194,7 +194,7 @@ class Image_Accordion extends Widget_Base
 
 			$dropdown_options[$breakpoint_key] = sprintf(
 				/* translators: 1: Breakpoint label, 2: `>` character, 3: Breakpoint value. */
-				esc_html__('%1$s (%2$s %3$dpx)', 'animation-addons-for-elementor-pro'),
+				esc_html__('%1$s (%2$s %3$dpx)', 'animation-addons-for-elementor'),
 				$breakpoint_instance->get_label(),
 				'>',
 				$breakpoint_instance->get_value()
@@ -204,10 +204,10 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'mobile_breakpoint',
 			[
-				'label'              => esc_html__('Breakpoint', 'animation-addons-for-elementor-pro'),
+				'label'              => esc_html__('Breakpoint', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::SELECT,
 				'separator'          => 'before',
-				'description'        => esc_html__('Note: Choose at which breakpoint it will behave across devices or viewport sizes.', 'animation-addons-for-elementor-pro'),
+				'description'        => esc_html__('Note: Choose at which breakpoint it will behave across devices or viewport sizes.', 'animation-addons-for-elementor'),
 				'options'            => $dropdown_options,
 				'default'            => 'mobile',
 				'condition'          => ['accordion_layout' => 'horizontal']
@@ -217,13 +217,13 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'expand_style',
 			[
-				'label'              => esc_html__('Expand On', 'animation-addons-for-elementor-pro'),
+				'label'              => esc_html__('Expand On', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::SELECT,
 				'default'            => 'hover',
 				'frontend_available' => true,
 				'options'            => [
-					'hover' => esc_html__('Hover', 'animation-addons-for-elementor-pro'),
-					'click' => esc_html__('Click', 'animation-addons-for-elementor-pro'),
+					'hover' => esc_html__('Hover', 'animation-addons-for-elementor'),
+					'click' => esc_html__('Click', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -231,7 +231,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'accordion_height',
 			[
-				'label'      => esc_html__('Height', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
@@ -257,7 +257,7 @@ class Image_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_button_content',
 			[
-				'label'     => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Button', 'animation-addons-for-elementor'),
 				'condition' => [
 					'link_type' => 'button',
 				],
@@ -276,7 +276,7 @@ class Image_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_btn_style',
 			[
-				'label'     => esc_html__('Button', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Button', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'link_type' => 'button',
@@ -296,7 +296,7 @@ class Image_Accordion extends Widget_Base
 		$repeater->add_control(
 			'image',
 			[
-				'label'   => esc_html__('Image', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -308,10 +308,10 @@ class Image_Accordion extends Widget_Base
 		$repeater->add_control(
 			'title',
 			[
-				'label'       => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Siyantika Glory', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your title', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Siyantika Glory', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your title', 'animation-addons-for-elementor'),
 			]
 		);
 
@@ -319,40 +319,40 @@ class Image_Accordion extends Widget_Base
 		$repeater->add_control(
 			'subtitle',
 			[
-				'label'       => esc_html__('Sub Title', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Sub Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__('Modelling - 2012', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your sub title', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Modelling - 2012', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your sub title', 'animation-addons-for-elementor'),
 			]
 		);
 		// Description
 		$repeater->add_control(
 			'description',
 			[
-				'label'       => esc_html__('Description', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Description', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXTAREA,
 				'rows'        => 10,
-				'default'     => esc_html__('Hatha yoga built on a harmonious balance between body strength and softness', 'animation-addons-for-elementor-pro'),
-				'placeholder' => esc_html__('Type your description', 'animation-addons-for-elementor-pro'),
+				'default'     => esc_html__('Hatha yoga built on a harmonious balance between body strength and softness', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your description', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'details_link',
 			[
-				'label'       => esc_html__('Link', 'animation-addons-for-elementor-pro'),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
 				'dynamic'     => [
 					'active' => true,
 				],
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor-pro'),
+				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'accordions',
 			[
-				'label'   => esc_html__('Accordions', 'animation-addons-for-elementor-pro'),
+				'label'   => esc_html__('Accordions', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::REPEATER,
 				'fields'  => $repeater->get_controls(),
 				'default' => [[], [], [], [], []],
@@ -366,7 +366,7 @@ class Image_Accordion extends Widget_Base
 		$this->start_controls_section(
 			'section_content_style',
 			[
-				'label' => esc_html__('Content', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -374,7 +374,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'overlay_color',
 			[
-				'label' => esc_html__('Overlay Color', 'animation-addons-for-elementor-pro'),
+				'label' => esc_html__('Overlay Color', 'animation-addons-for-elementor'),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .accordion-item:after' => 'background-color: {{VALUE}}',
@@ -385,7 +385,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'content_padding',
 			[
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor-pro'),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
@@ -398,7 +398,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'title_heading',
 			[
-				'label'     => esc_html__('Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -407,7 +407,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'title_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -424,7 +424,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'title_hover_space',
 			[
-				'label'     => esc_html__('Hover Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Hover Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -444,7 +444,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -465,7 +465,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'subtitle_heading',
 			[
-				'label'     => esc_html__('Sub Title', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Sub Title', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -474,7 +474,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'subtitle_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -491,7 +491,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'subtitle_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -512,7 +512,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'desc_heading',
 			[
-				'label'     => esc_html__('Description', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Description', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -521,7 +521,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_responsive_control(
 			'desc_space',
 			[
-				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -538,7 +538,7 @@ class Image_Accordion extends Widget_Base
 		$this->add_control(
 			'desc_color',
 			[
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor-pro'),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
