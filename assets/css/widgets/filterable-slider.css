@@ -1,0 +1,74 @@
+.wcf--filterable-slider {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 30px;
+}
+.wcf--filterable-slider svg {
+  width: 1em;
+  height: 1em;
+}
+.wcf--filterable-slider .slide-filter {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+.wcf--filterable-slider .slide-filter li {
+  cursor: pointer;
+}
+.wcf--filterable-slider .slide-filter .count {
+  font-size: 12px;
+  vertical-align: top;
+  display: inline-block;
+  line-height: 1;
+}
+.wcf--filterable-slider .paginate-fill {
+  display: inline-block;
+  width: 100px;
+  height: 3px;
+  background: rgba(15, 15, 15, 0.12);
+  position: relative;
+  vertical-align: middle;
+}
+.wcf--filterable-slider .paginate-fill:after {
+  content: "";
+  width: var(--width, 100%);
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgb(15, 15, 15);
+}
+.wcf--filterable-slider .thumb {
+  line-height: 0;
+}
+.wcf--filterable-slider .wcf-arrow {
+  cursor: pointer;
+  color: #666666;
+  position: absolute;
+  padding: 15px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s;
+  z-index: 9;
+}
+.wcf--filterable-slider .wcf-arrow:hover {
+  color: #1C1D20;
+}
+.wcf--filterable-slider .wcf-arrow-prev {
+  left: 0;
+}
+.wcf--filterable-slider .wcf-arrow-next {
+  right: 0;
+}
+
+.elementor-widget-wcf--filterable-slider.filter-direction-row-reverse .slide-filter, .elementor-widget-wcf--filterable-slider.filter-direction-row .slide-filter {
+  flex-direction: column;
+}
