@@ -526,7 +526,7 @@ class WCF_Theme_Builder {
 	 *
 	 * @return boolean | int
 	 */
-	public function get_template_popup_id( $tmpType = '' , $meta = [] ) {
+	public function get_template_popup_id( $tmpType , $meta = [] ) {
 		$template_ID = self::get_current_popup_by_condition( $tmpType, $meta );
 
 		if ( $template_ID ) {
@@ -536,7 +536,7 @@ class WCF_Theme_Builder {
 		return false;
 	}
 
-	public function get_current_popup_by_condition( $tmpType = '' , $extraConditions) {
+	public function get_current_popup_by_condition( $tmpType , $extraConditions) {
 		$typeCondition = [
 			[
 				'key'   => self::CPT_META . '_type',
