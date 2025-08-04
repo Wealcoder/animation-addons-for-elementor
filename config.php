@@ -1733,7 +1733,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'pin-element'             => [
-								'label'        => 'Pin Elements',
+								'label'        => 'Sticky Elements',
 								'location'     => [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'

@@ -21,7 +21,6 @@ class Downloader {
 		$this->set_download_directory_path( $download_directory_path );
 	}
 
-
 	/**
 	 * Download file from a given URL.
 	 *

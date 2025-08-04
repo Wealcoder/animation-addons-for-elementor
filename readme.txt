@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.9
+Stable tag: 2.3.10
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,7 +31,7 @@ https://youtu.be/NS0TGy8A_tU
 🎬 Preset Animation
 ⚡ Smooth Scrolling
 🌐 Horizontal Scrolling
-📌 Pinning Elements
+📌 Sticky Elements
 ⏳ Timeline-Based Animation
 ✂️ Split Text Animation
 🔄 Flip Animation
