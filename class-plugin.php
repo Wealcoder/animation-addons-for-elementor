@@ -867,6 +867,7 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
 		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
+		include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
 
 		//extensions
 		$this->register_extensions();
