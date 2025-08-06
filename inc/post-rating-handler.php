@@ -156,16 +156,16 @@ function aaeaddon_lite_save_review_meta_box($post_id)
 	}
 
 	if (isset($_POST['aae_review'])) {
-		update_post_meta($post_id, 'review', sanitize_text_field($_POST['aae_review']));
+		update_post_meta($post_id, 'review', sanitize_text_field(wp_unslash($_POST['aae_review'])));
 	}
 
 	$user_id = get_post_meta($post_id, 'user_id', true);
 	if (! $user_id) {
 		if (isset($_POST['aae_name'])) {
-			update_post_meta($post_id, 'name', sanitize_text_field($_POST['aae_name']));
+			update_post_meta($post_id, 'name', sanitize_text_field(wp_unslash($_POST['aae_name'])));
 		}
 		if (isset($_POST['aae_email'])) {
-			update_post_meta($post_id, 'email', sanitize_email($_POST['aae_email']));
+			update_post_meta($post_id, 'email', sanitize_email(wp_unslash($_POST['aae_email'])));
 		}
 	}
 }
@@ -178,9 +178,10 @@ add_action('wp_ajax_nopriv_aaeaddon_submit_post_review_rating', 'handle_lite_pos
 
 function handle_lite_post_rating_submission()
 {
-	if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
+	if (! isset($_REQUEST['nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['nonce'])), 'wcf-addons-frontend')) {
 		wp_send_json_error(['message' => 'Security check failed.']);
 	}
+
 
 	if (function_exists('aaeaddon_register_post_rating_cpt')) {
 		return;
@@ -190,13 +191,23 @@ function handle_lite_post_rating_submission()
 		wp_send_json_error(['message' => 'Invalid data.']);
 	}
 
-	$post_id     = sanitize_text_field(intval($_POST['post_id']));
-	$rating      = sanitize_text_field(intval($_POST['rating']));
-	$review_text = sanitize_text_field($_POST['review']);
+	$post_id     = sanitize_text_field(wp_unslash($_POST['post_id']));
+	$rating      = sanitize_text_field(wp_unslash($_POST['rating']));
+	$review_text = sanitize_text_field(wp_unslash($_POST['review']));
+
 	$user_id     = get_current_user_id();
 
-	$name  = $user_id ? get_the_author_meta('display_name', $user_id) : sanitize_text_field($_POST['name'] ?? '');
-	$email = $user_id ? get_the_author_meta('user_email', $user_id) : sanitize_email($_POST['email'] ?? '');
+	$name  = '';
+	$email = '';
+
+	if ($user_id) {
+		$name  = get_the_author_meta('display_name', $user_id);
+		$email = get_the_author_meta('user_email', $user_id);
+	} else {
+		$name  = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+		$email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+	}
+
 
 	$require_approval = isset($_POST['require_approval']) && $_POST['require_approval'] === 'yes';
 	$post_status      = $require_approval ? 'pending' : 'publish';
