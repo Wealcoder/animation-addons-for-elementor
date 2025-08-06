@@ -36,7 +36,7 @@ class Author_Box extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	public function get_keywords()
@@ -709,7 +709,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'section_style_button',
 			[
-				'label' => 'Button',
+				'label' => esc_html__('Button', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -883,7 +883,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'style_author_meta',
 			[
-				'label'     => 'Meta',
+				'label'     => esc_html__('Meta', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_meta' => 'yes',
@@ -932,7 +932,7 @@ class Author_Box extends Widget_Base
 		$this->start_controls_section(
 			'style_contact',
 			[
-				'label'     => 'Contact',
+				'label'     => esc_html__('Contact', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_contact' => 'yes',
@@ -1280,9 +1280,7 @@ class Author_Box extends Widget_Base
 		$custom_src = ('custom' === $settings['source']);
 
 		if ('current' === $settings['source']) {
-
-			$avatar_args['size'] = $settings['avatar_size'];
-
+			$avatar_args['size'] 	= absint($settings['avatar_size']);
 			$user_id                = get_the_author_meta('ID');
 			$author['avatar']       = get_avatar_url($user_id, $avatar_args);
 			$author['display_name'] = get_the_author_meta('display_name');
@@ -1292,10 +1290,10 @@ class Author_Box extends Widget_Base
 		} elseif ($custom_src) {
 
 			if (! empty($settings['author_avatar']['url'])) {
-				$avatar_src = $settings['author_avatar']['url'];
+				$avatar_src = esc_url_raw($settings['author_avatar']['url']);
 
-				if ($settings['author_avatar']['id']) {
-					$attachment_image_src = wp_get_attachment_image_src($settings['author_avatar']['id'], 'medium');
+				if (absint($settings['author_avatar']['id'])) {
+					$attachment_image_src = wp_get_attachment_image_src(absint($settings['author_avatar']['id']), 'medium');
 
 					if (! empty($attachment_image_src[0])) {
 						$avatar_src = $attachment_image_src[0];
@@ -1305,10 +1303,10 @@ class Author_Box extends Widget_Base
 				$author['avatar'] = $avatar_src;
 			}
 
-			$author['display_name'] = $settings['author_name'];
-			$author['website']      = $settings['author_website']['url'];
-			$author['bio']          = wpautop($settings['author_bio']);
-			$author['posts_url']    = $settings['posts_url']['url'];
+			$author['display_name'] = sanitize_text_field($settings['author_name']);
+			$author['website']      = esc_url_raw($settings['author_website']['url']);
+			$author['bio']          = wp_kses_post(wpautop($settings['author_bio']));
+			$author['posts_url']    = esc_url_raw($settings['posts_url']['url']);
 		}
 
 		$print_avatar = ((! $custom_src && 'yes' === $settings['show_avatar']) || ($custom_src && ! empty($author['avatar'])));
@@ -1404,11 +1402,11 @@ class Author_Box extends Widget_Base
 				?>
 						<ul class="wcf--author-meta">
 							<li class="total-posts">
-								<?php echo $post_count;
+								<?php echo intval($post_count);
 								echo esc_html__(' articles', 'animation-addons-for-elementor'); ?>
 							</li>
 							<li class="total-comments">
-								<?php echo $comments;
+								<?php echo intval($comments);
 								echo esc_html__(' comments', 'animation-addons-for-elementor'); ?>
 							</li>
 						</ul>
@@ -1445,9 +1443,10 @@ class Author_Box extends Widget_Base
 								?>
 									<li>
 										<?php if (! empty($settings['email_label'])) { ?>
-											<span class="label"><?php echo $settings['email_label']; ?></span>
+											<span
+												class="label"><?php echo esc_html($settings['email_label'], 'animation-addons-for-elementor'); ?></span>
 										<?php } ?>
-										<a href="mailto:<?php echo $email; ?>"><?php echo $email; ?></a>
+										<a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_attr($email); ?></a>
 									</li>
 								<?php
 								}
@@ -1455,9 +1454,10 @@ class Author_Box extends Widget_Base
 								?>
 									<li>
 										<?php if (! empty($settings['phone_label'])) { ?>
-											<span class="label"><?php echo $settings['phone_label']; ?></span>
+											<span
+												class="label"><?php echo esc_html($settings['phone_label'], 'animation-addons-for-elementor'); ?></span>
 										<?php } ?>
-										<a href="tel:<?php echo $phone; ?>"><?php echo $phone; ?></a>
+										<a href="tel:<?php echo esc_attr($phone); ?>"><?php echo esc_attr($phone); ?></a>
 									</li>
 								<?php
 								}
