@@ -92,7 +92,7 @@ class Floating_Elements extends Widget_Base {
 		$this->start_controls_section(
 			'floating_elements_section',
 			[
-				'label' => esc_html__( 'WCF Floating Elements', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'AAE Floating Elements', 'animation-addons-for-elementor' ),
 			]
 		);
 

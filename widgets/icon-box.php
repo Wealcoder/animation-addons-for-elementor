@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Icon_Box extends Widget_Base {
+	
 	use WCF_Button_Trait;	
 	public function get_name() {
 		return 'wcf--icon-box';
