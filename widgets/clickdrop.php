@@ -41,7 +41,7 @@ class ClickDrop extends Widget_Base
 
     public function get_categories()
     {
-        return ['wcf-single-addon'];
+        return ['weal-coder-addon'];
     }
 
     public function get_keywords()
@@ -441,14 +441,14 @@ class ClickDrop extends Widget_Base
         $widget_id = $this->get_id(); // Unique ID for each widget instance
 
         if (!is_user_logged_in()) {
-            ?>
-            <a href="<?php echo esc_url( !empty($settings['login_url']) ? $settings['login_url'] : wp_login_url() ); ?>"
-               class="aae-clickdrop-btn">
+?>
+            <a href="<?php echo esc_url(!empty($settings['login_url']) ? $settings['login_url'] : wp_login_url()); ?>"
+                class="aae-clickdrop-btn">
                 <?php echo esc_html($settings['login_label']); ?>
             </a>
-            <?php
+        <?php
         } else {
-            ?>
+        ?>
             <div class="aae-clickdrop-wrapper">
                 <div class="aae-clickdrop-inner">
                     <button class="aae-clickdrop-btn"><?php echo esc_html($settings['logged_label']); ?></button>
@@ -459,38 +459,43 @@ class ClickDrop extends Widget_Base
                                 foreach ($settings['menus_url'] as $index => $item) {
 
                                     $url = !empty($item['menu_link']['url']) ? $item['menu_link']['url'] : '#';
-                                    $is_external = !empty($item['menu_link']['is_external']) ? ' target="_blank"' : '';
-                                    $nofollow = !empty($item['menu_link']['nofollow']) ? ' rel="nofollow"' : '';
+                                    $is_external = filter_var($item['menu_link']['is_external'], FILTER_VALIDATE_BOOLEAN) ? ' target="_blank"' : '';
+                                    $nofollow    = filter_var($item['menu_link']['nofollow'], FILTER_VALIDATE_BOOLEAN) ? ' rel="nofollow"' : '';
 
                                     // Generate unique class for each repeater item
                                     $item_class = 'aae-clickdrop-item-' . $index;
 
                                     // Inline styles for individual item
-                                    $label_color = !empty($item['rep_label_color']) ? 'color: ' . esc_attr($item['rep_label_color']) . ';' : '';
+                                    $label_color = !empty($item['rep_label_color']) ? 'color: ' . esc_attr($item['rep_label_color']) . ';' :
+                                        '';
                                     $icon_color = !empty($item['rep_icon_color']) ? 'fill: ' . esc_attr($item['rep_icon_color']) . ';' : '';
 
                                     // Border styles
                                     $border_style = '';
                                     if (!empty($item['rep_border_border'])) {
                                         if (!empty($item['rep_border_width']) && is_array($item['rep_border_width'])) {
-                                            $top = isset($item['rep_border_width']['top']) ? esc_attr($item['rep_border_width']['top']) . 'px' : '0';
-                                            $right = isset($item['rep_border_width']['right']) ? esc_attr($item['rep_border_width']['right']) . 'px' : '0';
-                                            $bottom = isset($item['rep_border_width']['bottom']) ? esc_attr($item['rep_border_width']['bottom']) . 'px' : '0';
-                                            $left = isset($item['rep_border_width']['left']) ? esc_attr($item['rep_border_width']['left']) . 'px' : '0';
+                                            $top = isset($item['rep_border_width']['top']) ? esc_attr($item['rep_border_width']['top']) . 'px' :
+                                                '0';
+                                            $right = isset($item['rep_border_width']['right']) ? esc_attr($item['rep_border_width']['right']) . 'px'
+                                                : '0';
+                                            $bottom = isset($item['rep_border_width']['bottom']) ? esc_attr($item['rep_border_width']['bottom']) .
+                                                'px' : '0';
+                                            $left = isset($item['rep_border_width']['left']) ? esc_attr($item['rep_border_width']['left']) . 'px' :
+                                                '0';
 
                                             $border_style .= "border-style: " . esc_attr($item['rep_border_border']) . ";";
-                                            $border_style .= "border-color: " . (!empty($item['rep_border_color']) ? esc_attr($item['rep_border_color']) : '#000') . ";";
+                                            $border_style .= "border-color: " . (!empty($item['rep_border_color']) ?
+                                                esc_attr($item['rep_border_color']) : '#000') . ";";
                                             $border_style .= "border-width: {$top} {$right} {$bottom} {$left};";
                                         }
                                     } else {
                                         $border_style = 'border: none;';
                                     }
 
-                                    ?>
+                            ?>
 
-                                    <li class="<?php echo esc_attr($item_class); ?>"
-                                        style="<?php echo esc_attr($border_style); ?>">
-                                        <a href="<?php echo esc_url($url); ?>"<?php echo $is_external . $nofollow; ?>>
+                                    <li class="<?php echo esc_attr($item_class); ?>" style="<?php echo esc_attr($border_style); ?>">
+                                        <a href="<?php echo esc_url($url); ?>" <?php echo esc_attr($is_external . $nofollow); ?>>
                                             <?php
                                             if (!empty($item['menu_icon']['value'])) {
                                                 \Elementor\Icons_Manager::render_icon(
@@ -503,12 +508,12 @@ class ClickDrop extends Widget_Base
                                             }
                                             ?>
                                             <span style="<?php echo esc_attr($label_color); ?>">
-            <?php echo esc_html($item['menu_title']); ?>
-        </span>
+                                                <?php echo esc_html($item['menu_title']); ?>
+                                            </span>
                                         </a>
                                     </li>
 
-                                    <?php
+                            <?php
                                 }
                             }
                             ?>
@@ -516,8 +521,7 @@ class ClickDrop extends Widget_Base
                     </div>
                 </div>
             </div>
-            <?php
+<?php
         }
     }
-
 }
