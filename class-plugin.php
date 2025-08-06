@@ -395,6 +395,20 @@ class Plugin
 				'version' => false,
 				'arg'     => true,
 			],
+			'team-slider'          => [
+				'handler' => 'wcf--team-slider',
+				'src'     => 'widgets/team-slider.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			],
+			'image-compare'          => [
+				'handler' => 'wcf--image-compare',
+				'src'     => 'widgets/image-compare.min.js',
+				'dep'     => [],
+				'version' => false,
+				'arg'     => true,
+			]
 		]);
 	}
 
@@ -679,6 +693,34 @@ class Plugin
 			'post-timeline' => [
 				'handler' => 'aae-post-timeline',
 				'src'     => 'widgets/post-timeline.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'table-of-content' => [
+				'handler' => 'wcf--table-of-content',
+				'src'     => 'widgets/table-of-content.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'team-slider' => [
+				'handler' => 'wcf--team-slider',
+				'src'     => 'widgets/team-slider.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'toggle-switch' => [
+				'handler' => 'wcf--toggle-switch',
+				'src'     => 'widgets/toggle-switch.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'image-compare' => [
+				'handler' => 'wcf--image-compare',
+				'src'     => 'widgets/image-compare.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',

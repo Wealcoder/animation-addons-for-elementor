@@ -268,7 +268,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Image-Compare",
@@ -1299,7 +1299,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Toggle-Switch",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-toggle-switch',
@@ -1389,7 +1389,7 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'icon'         => "wcf-icon-Table-Of-Content",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content',

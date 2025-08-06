@@ -444,3 +444,100 @@ function filter_search_by_date_and_category( $query ) {
 
 add_action( 'pre_get_posts', 'filter_search_by_date_and_category' );
 
+if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
+	
+	function aae_addon_breadcrumbs() {
+		global $post;
+
+		$separator = ' &raquo; ';
+		echo '<div class="aae-breadcrumbs"><a href="' . home_url() . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
+
+		if (is_front_page()) {
+			echo '</div>';
+			return;
+		}
+
+		echo $separator;
+
+		if (is_category() || (is_single() && get_post_type() === 'post')) {
+			$cat = get_the_category();
+			if (!empty($cat)) {
+				$category = $cat[0];
+				$parents = get_category_parents($category, true, $separator);
+				echo wp_kses_post($parents);
+			}
+
+			if (is_single()) {
+				echo esc_html(get_the_title());
+			}
+
+		} elseif (is_page()) {
+			if ($post->post_parent) {
+				$parent_id = $post->post_parent;
+				$breadcrumbs = [];
+
+				while ($parent_id) {
+					$page = get_post($parent_id);
+					$breadcrumbs[] = '<a href="' . esc_url(get_permalink($page->ID)) . '">' . esc_html(get_the_title($page->ID)) . '</a>';
+					$parent_id = $page->post_parent;
+				}
+
+				echo implode($separator, array_reverse($breadcrumbs)) . $separator;
+			}
+
+			echo esc_html(get_the_title());
+
+		} elseif (is_singular() && !is_page()) {
+			$post_type = get_post_type_object(get_post_type());
+
+			if ($post_type && $post_type->has_archive) {
+				echo '<a href="' . esc_url(get_post_type_archive_link(get_post_type())) . '">' . esc_html($post_type->labels->name) . '</a>' . $separator;
+			}
+
+			$taxonomies = get_object_taxonomies(get_post_type());
+			foreach ($taxonomies as $taxonomy) {
+				$terms = get_the_terms(get_the_ID(), $taxonomy);
+				if (!empty($terms) && !is_wp_error($terms)) {
+					$term = current($terms);
+					echo '<a href="' . esc_url(get_term_link($term)) . '">' . esc_html($term->name) . '</a>' . $separator;
+					break;
+				}
+			}
+
+			echo esc_html(get_the_title());
+
+		} elseif (is_archive()) {
+			if (is_post_type_archive()) {
+				echo esc_html(post_type_archive_title('', false));
+			} elseif (is_tax() || is_tag() || is_category()) {
+				$term = get_queried_object();
+				if ($term->parent) {
+					$parent_term = get_term($term->parent, $term->taxonomy);
+					echo '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . $separator;
+				}
+				echo esc_html($term->name);
+			} elseif (is_day()) {
+				echo esc_html(get_the_date('F j, Y'));
+			} elseif (is_month()) {
+				echo esc_html(get_the_date('F Y'));
+			} elseif (is_year()) {
+				echo esc_html(get_the_date('Y'));
+			} elseif (is_author()) {
+				echo esc_html__('Author: ', 'animation-addons-for-elementor') . esc_html(get_the_author());
+			} else {
+				echo esc_html__('Archives', 'animation-addons-for-elementor');
+			}
+
+		} elseif (is_search()) {
+			echo esc_html__('Search Results for: ', 'animation-addons-for-elementor') . esc_html(get_search_query());
+
+		} elseif (is_404()) {
+			echo esc_html__('404 - Page not found', 'animation-addons-for-elementor');
+		}
+
+		echo '</div>';
+	}
+
+}
+
+
