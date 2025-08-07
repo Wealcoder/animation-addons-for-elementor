@@ -465,10 +465,14 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 	{
 		global $post;
 
-		echo '<' . $tag . ' class="aae-breadcrumbs"><a href="' . esc_url(home_url()) . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
+		// Fallback for separator
+		$separator = $separator ?? ' &raquo; ';
+
+		echo '<' . esc_html($tag) . ' class="aae-breadcrumbs">';
+		echo '<a href="' . esc_url(home_url()) . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
 
 		if (is_front_page()) {
-			echo '</div>';
+			echo '</' . esc_html($tag) . '>';
 			return;
 		}
 
@@ -478,7 +482,8 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 			$cat = get_the_category();
 			if (!empty($cat)) {
 				$category = $cat[0];
-				$parents = get_category_parents($category, true, $separator);
+				// Avoid deprecated warning
+				$parents = get_category_parents($category, true, wp_kses_post($separator));
 				echo wp_kses_post($parents);
 			}
 
@@ -492,11 +497,17 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 
 				while ($parent_id) {
 					$page = get_post($parent_id);
-					$breadcrumbs[] = '<a href="' . esc_url(get_permalink($page->ID)) . '">' . esc_html(get_the_title($page->ID)) . '</a>';
-					$parent_id = $page->post_parent;
+					if ($page) {
+						$breadcrumbs[] = '<a href="' . esc_url(get_permalink($page->ID)) . '">' . esc_html(get_the_title($page->ID)) . '</a>';
+						$parent_id = $page->post_parent;
+					} else {
+						break;
+					}
 				}
 
-				echo wp_kses_post(implode($separator, array_reverse($breadcrumbs)) . $separator);
+				if (!empty($breadcrumbs)) {
+					echo wp_kses_post(implode(wp_kses_post($separator), array_reverse($breadcrumbs)) . wp_kses_post($separator));
+				}
 			}
 
 			echo esc_html(get_the_title());
@@ -523,11 +534,15 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 				echo esc_html(post_type_archive_title('', false));
 			} elseif (is_tax() || is_tag() || is_category()) {
 				$term = get_queried_object();
-				if ($term->parent) {
+				if (!empty($term) && property_exists($term, 'parent') && $term->parent) {
 					$parent_term = get_term($term->parent, $term->taxonomy);
-					echo '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . wp_kses_post($separator);
+					if (!is_wp_error($parent_term)) {
+						echo '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . wp_kses_post($separator);
+					}
 				}
-				echo esc_html($term->name);
+				if (!empty($term) && property_exists($term, 'name')) {
+					echo esc_html($term->name);
+				}
 			} elseif (is_day()) {
 				echo esc_html(get_the_date('F j, Y'));
 			} elseif (is_month()) {
@@ -545,6 +560,6 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 			echo esc_html__('404 - Page not found', 'animation-addons-for-elementor');
 		}
 
-		echo '</' . $tag . '>';
+		echo '</' . esc_html($tag) . '>';
 	}
 }
