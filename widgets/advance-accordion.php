@@ -140,7 +140,7 @@ class Advance_Accordion extends Widget_Base
 				'default' => '',
 				'options' => [
 					'' => esc_html__('Default', 'animation-addons-for-elementor'),
-					'2' => esc_html__('Two', 'animation-addons-for-elementor'),
+					'2' => esc_html__('One', 'animation-addons-for-elementor'),
 				],
 				'separator' => 'after',
 			]
