@@ -56,6 +56,18 @@ class Breadcrumbs extends Widget_Base
 			]
 		);
 
+		$this->add_control(
+			'yoast_seo',
+			[
+				'label' => esc_html__('Enable Yoast', 'animation-addons-for-elementor'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__('Yes', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('No', 'animation-addons-for-elementor'),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+
 		if (! class_exists('\WPSEO_Breadcrumbs')) {
 
 			$this->add_control(
@@ -68,8 +80,6 @@ class Breadcrumbs extends Widget_Base
 			);
 
 			$this->end_controls_section();
-
-			return;
 		}
 
 		$this->add_responsive_control(
@@ -124,6 +134,37 @@ class Breadcrumbs extends Widget_Base
 				'content_classes' => 'elementor-descriptor',
 			]
 		);
+
+		$this->add_control(
+			'br_separator',
+			[
+				'label' => esc_html__('Seprator Text', 'animation-addons-for-elementor'),
+				'type' => Controls_Manager::TEXT,
+				'default' => ' &raquo; ',
+				'placeholder' => esc_html__('Seprator text', 'animation-addons-for-elementor'),
+				'condition' => [
+					'yoast_seo!' => 'yes'
+				]
+			]
+		);
+
+		$this->add_control(
+			'sep_description',
+			[
+				'raw'             => sprintf(
+					/* translators: 1: Link opening tag, 2: Link closing tag. */
+					esc_html__('You can use HTML entities as separators. Check out %1$sHTML Symbols%2$s for examples.', 'animation-addons-for-elementor'),
+					sprintf('<a href="%s" target="_blank">', 'https://www.toptal.com/designers/htmlarrows/symbols/'),
+					'</a>'
+				),
+				'type'            => Controls_Manager::RAW_HTML,
+				'content_classes' => 'elementor-descriptor',
+				'condition' => [
+					'yoast_seo!' => 'yes'
+				]
+			]
+		);
+
 
 		$this->end_controls_section();
 
@@ -207,7 +248,7 @@ class Breadcrumbs extends Widget_Base
 		$html_tag = $this->get_settings('html_tag');
 
 		if (empty($html_tag)) {
-			$html_tag = 'p';
+			$html_tag = 'div';
 		}
 
 		return Utils::validate_html_tag($html_tag);
@@ -215,9 +256,12 @@ class Breadcrumbs extends Widget_Base
 
 	protected function render()
 	{
-		if (class_exists('\WPSEO_Breadcrumbs')) {
-			$html_tag = $this->get_html_tag();
+		$settings = $this->get_settings_for_display();
+		$html_tag = $this->get_html_tag();
+		if (class_exists('\WPSEO_Breadcrumbs') && $settings['yoast_seo'] == 'yes') {
 			WPSEO_Breadcrumbs::breadcrumb('<' . $html_tag . ' id="breadcrumbs">', '</' . $html_tag . '>');
+		} else {
+			aae_addon_breadcrumbs($html_tag, $settings['br_separator']);
 		}
 	}
 }

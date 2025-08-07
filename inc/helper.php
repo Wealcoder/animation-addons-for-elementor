@@ -461,12 +461,11 @@ add_action('pre_get_posts', 'filter_search_by_date_and_category');
 
 if (! function_exists('aae_addon_breadcrumbs')) {
 
-	function aae_addon_breadcrumbs()
+	function aae_addon_breadcrumbs($tag = 'div', $separator = ' &raquo; ')
 	{
 		global $post;
 
-		$separator = ' &raquo; ';
-		echo '<div class="aae-breadcrumbs"><a href="' . esc_url(home_url()) . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
+		echo '<' . $tag . ' class="aae-breadcrumbs"><a href="' . esc_url(home_url()) . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
 
 		if (is_front_page()) {
 			echo '</div>';
@@ -546,6 +545,6 @@ if (! function_exists('aae_addon_breadcrumbs')) {
 			echo esc_html__('404 - Page not found', 'animation-addons-for-elementor');
 		}
 
-		echo '</div>';
+		echo '</' . $tag . '>';
 	}
 }
