@@ -48,7 +48,7 @@ class CodeSnippet {
 		add_action( 'init', array( $this, 'register_code_snippet_post_type' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 225 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'admin_post_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
+		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
 	}
 
 	/**
@@ -145,17 +145,15 @@ class CodeSnippet {
 	 * @return void
 	 */
 	public function code_snippet_page_admin_page() {
-		// $page_hook = 'wcf-code-snippet';
-		// include __DIR__ . '/views/admin-page.php';
 		$add_new_tab     = isset( $_GET['new'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$code_snippet_id = isset( $_GET['edit'] ) ? absint( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( $add_new_tab ) {
-			// $tab_details = Helpers::get_tab_settings();
+			$snippet_details = aae_get_code_snippet_settings();
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} elseif ( $code_snippet_id ) {
-			// $tab_details = Helpers::get_tab_settings( $code_snippet_id );
-			// include __DIR__ . '/views/edit-code-snippet.php';
+			$snippet_details = aae_get_code_snippet_settings( $code_snippet_id );
+			include __DIR__ . '/views/edit-code-snippet.php';
 		} else {
 			include __DIR__ . '/views/code-snippet-list.php';
 		}
@@ -164,20 +162,149 @@ class CodeSnippet {
 	/**
 	 * Enqueue Scripts.
 	 *
+	 * @param string $hook Current page hook.
+	 *
+	 * @since 2.3.10
 	 * @return void
 	 */
-	public function enqueue_scripts() {
-		wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css' );
+	public function enqueue_scripts( $hook ) {
+		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
+			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, time(), 'all' );
+			wp_enqueue_script(
+				'codemirror-editor',
+				WCF_ADDONS_URL . 'assets/js/code-snippet.min.js',
+				array(),
+				'1.0.0',
+				true
+			);
+
+			// code mirror.
+			wp_enqueue_style(
+				'codemirror-core',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css',
+				array(),
+				'5.65.16'
+			);
+			wp_enqueue_style(
+				'codemirror-theme-material',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css',
+				array( 'codemirror-core' ),
+				'5.65.16'
+			);
+			wp_enqueue_style(
+				'codemirror-theme-default',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/default.min.css',
+				array( 'codemirror-core' ),
+				'5.65.16'
+			);
+			wp_enqueue_style(
+				'codemirror-foldgutter',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css',
+				array( 'codemirror-core' ),
+				'5.65.16'
+			);
+			wp_enqueue_script(
+				'codemirror-core',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js',
+				array(),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-htmlmixed',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-css',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-javascript',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-php',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-xml',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-mode-clike',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-closebrackets',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-closetag',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-foldcode',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-foldgutter',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-brace-fold',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+			wp_enqueue_script(
+				'codemirror-addon-xml-fold',
+				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js',
+				array( 'codemirror-core' ),
+				'5.65.16',
+				true
+			);
+		}
 	}
 
 
 	/**
-	 * Add product tabs data.
+	 * Add code snippet data.
 	 *
-	 * @since 1.0.0
+	 * @since 2.3.10
 	 * @return void
 	 */
-	public static function handle_add_product_tabs_data() {
+	public function handle_add_wcf_code_snippet() {
 		check_admin_referer( 'wcf_code_snippet' );
 		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : '';
 		$referer    = wp_get_referer();
@@ -198,12 +325,31 @@ class CodeSnippet {
 			exit();
 		}
 
+		$settings = aae_get_code_snippet_settings();
+		foreach ( $settings as $key => $default_value ) {
+			if ( isset( $_POST[ $key ] ) ) {
+				if ( 'code_content' === $key ) {
+                    $meta_value = wp_unslash( $_POST[ $key ] ); // phpcs:ignore
+				} else {
+					$meta_value = is_scalar( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : map_deep( wp_unslash( $_POST[ $key ] ), 'sanitize_text_field' );
+				}
+				if ( 'is_active' === $key && empty( $meta_value ) ) {
+					update_post_meta( $snippet_id, $key, 'no' );
+					continue;
+				}
+				update_post_meta( $snippet_id, $key, $meta_value );
+
+			} else {
+				update_post_meta( $snippet_id, $key, $meta_value );
+			}
+		}
+
 		/**
-		 * Action hook to add product tabs data.
+		 * Action hook to add code snippet data.
 		 *
 		 * @param int $snippet_id Post ID.
 		 *
-		 * @since 1.0.0
+		 * @since 2.3.10
 		 */
 		do_action( 'after_update_code_snippet_post_data', $snippet_id );
 

@@ -318,4 +318,139 @@ input:checked + .slider:before {
     padding: 20px;
   }
 }
-/*# sourceMappingURL=code-snippet.css.map */
+.form-group {
+  margin-bottom: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+select {
+  width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.code-editor-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.CodeMirror {
+  height: 300px;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.CodeMirror.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh !important;
+  z-index: 9999;
+  background: white;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.button {
+  padding: 6px 12px;
+  background: #0073aa;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #005a87;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.editor-stats {
+  font-size: 12px;
+  color: #666;
+  padding: 8px 0;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+.help-text {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+  z-index: 10000;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.language-indicator {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .editor-toolbar {
+    flex-direction: column;
+  }
+  .button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+.CodeMirror {
+  min-height: 500px;
+}
+
+.notification {
+  top: 50px;
+}

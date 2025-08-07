@@ -107,9 +107,10 @@ class CodeSnippetListTable extends AbstractListTable {
 			'name'            => __( 'Title', 'animation-addons-for-elementor' ),
 			'snippet_type'    => __( 'Snippet Type', 'animation-addons-for-elementor' ),
 			'visibility_list' => __( 'Visibility List', 'animation-addons-for-elementor' ),
-			'date_created'    => __( 'Date Modified', 'animation-addons-for-elementor' ),
+			'load_location'   => __( 'Load Location', 'animation-addons-for-elementor' ),
 			'priority'        => __( 'Priority', 'animation-addons-for-elementor' ),
 			'snippet_status'  => __( 'Status', 'animation-addons-for-elementor' ),
+			'date_created'    => __( 'Date Modified', 'animation-addons-for-elementor' ),
 		);
 	}
 
@@ -124,6 +125,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			'name'           => array( 'post_title', true ),
 			'date_created'   => array( 'date_created', true ),
 			'snippet_type'   => array( 'snippet_type', true ),
+			'load_location'  => array( 'load_location', true ),
 			'priority'       => array( 'priority', true ),
 			'snippet_status' => array( 'snippet_status', true ),
 		);
@@ -246,19 +248,33 @@ class CodeSnippetListTable extends AbstractListTable {
 		$value = '&mdash;';
 		switch ( $column_name ) {
 			case 'snippet_type':
-				$id = $item->ID;
+				$id    = $item->ID;
+				$value = strtoupper( str_replace( '-', ' ', esc_html( get_post_meta( $id, 'code_type', true ) ) ) );
 				break;
 			case 'visibility_list':
 				$id = $item->ID;
 				break;
+			case 'load_location':
+				$id    = $item->ID;
+				$value = strtoupper( str_replace( '-', ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
+				break;
 			case 'date_created':
-				$date = $item->post_date;
+				$date = $item->post_modified;
+				if ( $date ) {
+					$value = sprintf( '<time datetime="%s">%s</time>', esc_attr( $date ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $date ) ) ) );
+				}
 				break;
 			case 'priority':
-				$id = $item->ID;
+				$id    = $item->ID;
+				$value = strtoupper( str_replace( '-', ' ', absint( get_post_meta( $id, 'priority', true ) ) ) );
 				break;
 			case 'snippet_status':
-				$id = $item->ID;
+				$id        = $item->ID;
+				$is_active = get_post_meta( $id, 'is_active', true );
+				$value     = '<label class="toggle-switch">
+                            <input type="checkbox" id="active-toggle" name="is_active" value="yes" ' . ( ( 'yes' === $is_active ) ? 'checked' : '' ) . '>
+                            <span class="slider"></span>
+                        </label>';
 				break;
 			default:
 				$value = parent::column_default( $item, $column_name );

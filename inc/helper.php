@@ -541,7 +541,7 @@ if ( ! function_exists( 'aae_get_list_table' ) ) {
 	 *
 	 * @param string $type Type of list table to get.
 	 *
-	 * @since 1.0.0
+	 * @since 2.3.10
 	 * @return object
 	 */
 	function aae_get_list_table( $type ) {
@@ -553,5 +553,65 @@ if ( ! function_exists( 'aae_get_list_table' ) ) {
 		}
 
 		return $list_table;
+	}
+}
+
+if ( ! function_exists( 'aae_get_code_snippet_settings' ) ) {
+	/**
+	 * Add code snippet data settings.
+	 *
+	 * @param int $id Post ID.
+	 *
+	 * @since 2.3.10
+	 * @return array
+	 */
+	function aae_get_code_snippet_settings( $id = null ) {
+		$defaults = array(
+			'code_type'     => '',
+			'load_location' => '',
+			'code_content'  => '',
+			'is_active'     => 'no',
+			'priority'      => '10',
+			'visibility'    => array(),
+		);
+
+		/**
+		 * Filter the default code snippet settings.
+		 *
+		 * @since 2.3.10
+		 *
+		 * @param array $defaults The default settings.
+		 */
+		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults );
+
+		$settings = array();
+		if ( ! empty( $id ) ) {
+			$metadata                  = get_post_meta( $id );
+			$settings['snippet_id']    = $id;
+			$settings['snippet_title'] = get_the_title( $id );
+
+			foreach ( $metadata as $key => $value ) {
+				$value = maybe_unserialize( is_array( $value ) ? $value[0] : $value );
+				if ( ! empty( $value ) ) {
+					$settings[ $key ] = $value;
+				} else {
+					$settings[ $key ] = $defaults[ $key ];
+				}
+			}
+		} else {
+			foreach ( $defaults as $key => $value ) {
+				$settings[ $key ] = $value;
+			}
+		}
+
+		/**
+		 * Filter the code snippet settings.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $settings The code snippet settings.
+		 * @param array $defaults The default settings.
+		 */
+		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults );
 	}
 }
