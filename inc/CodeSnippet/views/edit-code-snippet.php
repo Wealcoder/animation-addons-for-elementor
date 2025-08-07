@@ -6,8 +6,17 @@
  * @package WCF_ADDONS
  */
 
+use WCF_ADDONS\WCF_Theme_Builder;
+
 defined( 'ABSPATH' ) || exit;
 
+?>
+<?php
+echo '<pre>';
+// var_dump(WCF_Theme_Builder::get_hf_location_selections());
+
+$locations = WCF_Theme_Builder::get_hf_location_selections();
+echo '</pre>';
 ?>
 <div class="container">
 	<div class="header">
@@ -113,37 +122,26 @@ defined( 'ABSPATH' ) || exit;
 				<div class="sidebar-section">
 					<h3><?php esc_html_e( 'Page Visibility', 'animation-addons-for-elementor' ); ?></h3>
 					<div class="form-group">
-						<label><?php esc_html_e( 'Where should this snippet appear?', 'animation-addons-for-elementor' ); ?></label>
-						<div class="checkbox-group">
-							<div class="checkbox-item">
-								<input type="checkbox" id="front-page" name="visibility[]" value="front_page" checked>
-								<label for="front-page">Front Page</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="all-posts" name="visibility[]" value="posts">
-								<label for="all-posts">All Posts</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="all-pages" name="visibility[]" value="pages">
-								<label for="all-pages">All Pages</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="archives" name="visibility[]" value="archives">
-								<label for="archives">Archive Pages</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="search" name="visibility[]" value="search">
-								<label for="search">Search Results</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="404" name="visibility[]" value="404">
-								<label for="404">404 Pages</label>
-							</div>
-							<div class="checkbox-item">
-								<input type="checkbox" id="admin" name="visibility[]" value="admin">
-								<label for="admin">Admin Area</label>
-							</div>
+						<label for="visibility-page"><?php esc_html_e( 'Where should this snippet appear?', 'animation-addons-for-elementor' ); ?></label>
+						<select id="visibility-page" name="visibility_page">
+							<?php foreach ( $locations as $group_key => $group ) : ?>
+								<optgroup label="<?php echo esc_attr( $group['label'] ); ?>">
+									<?php foreach ( $group['value'] as $key => $label ) : ?>
+										<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $snippet_details['visibility_page'], $key ); ?>>
+											<?php echo esc_html( $label ); ?>
+										</option>
+									<?php endforeach; ?>
+								</optgroup>
+							<?php endforeach; ?>
+						</select>
+
+						<div class="form-subgroup">
+							<label for="visibility-page-list" class="visibility-page-list">Add Specific Pages</label>
+							<select class="visibility-page-list" name="visibility_page_list[]"
+									id="visibility-page-list" multiple="multiple">
+							</select>
 						</div>
+
 						<div class="help-text"><?php esc_html_e( 'Select where this code snippet should be loaded', 'animation-addons-for-elementor' ); ?></div>
 					</div>
 				</div>

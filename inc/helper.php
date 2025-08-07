@@ -567,12 +567,13 @@ if ( ! function_exists( 'aae_get_code_snippet_settings' ) ) {
 	 */
 	function aae_get_code_snippet_settings( $id = null ) {
 		$defaults = array(
-			'code_type'     => '',
-			'load_location' => '',
-			'code_content'  => '',
-			'is_active'     => 'no',
-			'priority'      => '10',
-			'visibility'    => array(),
+			'code_type'            => '',
+			'load_location'        => '',
+			'code_content'         => '',
+			'is_active'            => 'no',
+			'priority'             => '10',
+			'visibility_page'      => '',
+			'visibility_page_list' => array(),
 		);
 
 		/**
