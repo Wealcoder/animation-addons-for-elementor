@@ -38,7 +38,7 @@ class Post_Rating extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	public function get_keywords()
@@ -597,7 +597,7 @@ class Post_Rating extends Widget_Base
 					<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 				</div>
 				<p>
-					<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
+					<span><?php echo esc_html($average_rating); ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
 				</p>
 			</div>
 		</div>

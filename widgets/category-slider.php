@@ -86,7 +86,7 @@ class Category_Slider extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -1244,7 +1244,7 @@ class Category_Slider extends Widget_Base
 					if ('icon' === $item['content_type'] && 'yes' === $settings['show_icon']) {
 				?>
 						<div class="icon">
-							<img src="<?php echo esc_url($icon_url); ?>" alt="<?php echo $cat->name; ?>">
+							<img src="<?php echo esc_url($icon_url); ?>" alt="<?php echo esc_attr($cat->name); ?>">
 						</div>
 					<?php
 					}
@@ -1252,7 +1252,7 @@ class Category_Slider extends Widget_Base
 					if ('title' === $item['content_type']) {
 					?>
 						<a class="name" href="<?php echo esc_url(get_term_link($cat->slug, 'category')); ?>">
-							<?php echo $cat->name; ?>
+							<?php echo esc_html($cat->name); ?>
 						</a>
 					<?php
 					}
@@ -1298,12 +1298,12 @@ class Category_Slider extends Widget_Base
 						<div class="thumb-wrap">
 							<?php if ('yes' === $settings['show_thumb']) { ?>
 								<div class="thumb">
-									<img src="<?php echo esc_url($image_url); ?>" alt="<?php echo $cat->name; ?>">
+									<img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($cat->name); ?>">
 								</div>
 							<?php } ?>
 							<?php if ('yes' === $settings['show_icon']) { ?>
 								<div class="icon">
-									<img src="<?php echo esc_url($icon_url); ?>" alt="<?php echo $cat->name; ?>">
+									<img src="<?php echo esc_url($icon_url); ?>" alt="<?php echo esc_attr($cat->name); ?>">
 								</div>
 							<?php } ?>
 						</div>
@@ -1313,7 +1313,7 @@ class Category_Slider extends Widget_Base
 					if ('title' === $item['content_type']) {
 					?>
 						<a class="name" href="<?php echo esc_url(get_term_link($cat->slug, 'category')); ?>">
-							<?php echo $cat->name; ?>
+							<?php echo esc_html($cat->name); ?>
 						</a>
 					<?php
 					}

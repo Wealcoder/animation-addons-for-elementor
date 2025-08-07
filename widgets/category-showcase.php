@@ -42,7 +42,7 @@ class Category_Showcase extends Widget_Base
 	// Widget Category
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor', 'wcf-archive-addon'];
+		return ['weal-coder-addon', 'wcf-archive-addon'];
 	}
 
 	/**git s
@@ -1980,15 +1980,15 @@ class Category_Showcase extends Widget_Base
 					$background_style = ('yes' === $show_thumb && 'normal' !== $image_display_type && $image_url) ? 'style="background-image: url(' . $image_url . ');"' : '';
 
 					// Open the category item div with the optional background style
-					echo '<div class="wcf-category-showcase-item" ' . $background_style . '>';
+					echo '<div class="wcf-category-showcase-item" ' . esc_attr($background_style) . '>';
 
 					// Thumbnail and icon
 					echo '<div class="wcf-cs-thumb">';
 					if ('yes' === $show_thumb && 'normal' === $image_display_type && $image_url) {
-						echo '<img class="wcf-cs-main-image" src="' . $image_url . '" alt="' . esc_html($category->name) . '" >';
+						echo '<img class="wcf-cs-main-image" src="' . esc_attr($image_url) . '" alt="' . esc_html($category->name) . '" >';
 					}
 					if ('yes' === $show_thumb_icon && $icon_url) {
-						echo '<div class="wcf-cs-icon"><img src="' . $icon_url . '" alt="' . esc_html($category->name) . '"></div>';
+						echo '<div class="wcf-cs-icon"><img src="' . esc_attr($icon_url) . '" alt="' . esc_html($category->name) . '"></div>';
 					}
 					echo '</div>'; // End .wcf-cs-thumb
 

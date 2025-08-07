@@ -43,7 +43,7 @@ class Post_Reactions extends Widget_Base
 
     public function get_categories()
     {
-        return ['animation-addons-for-elementor'];
+        return ['weal-coder-addon'];
     }
 
     protected function register_controls()
@@ -553,20 +553,20 @@ class Post_Reactions extends Widget_Base
                 // Display the reaction button
                 if ($reaction_count == 'yes') {
                     echo '<button class="aaeaddon-reaction-btn" data-reaction="' . esc_attr($reaction['reaction_label']) . '" data-rtype="' . esc_attr($reaction['reaction_type']) . '">';
-                    //                    echo $icon;
-                    echo "<span>$icon</span>";
+                    // echo $icon;
+                    echo "<span>" . wp_kses_post($icon) . "</span>";
 
                     echo '<span class="aae-reaction-label">' . esc_html($level_name) . '</span>';
 
                     if ($reaction_separator) {
-                        echo '<span class="aae-reaction-separator">' . $sep . '</span>';
+                        echo '<span class="aae-reaction-separator">' . esc_html($sep) . '</span>';
                     }
 
                     echo '<span class="aae-reaction-count">' . esc_html($count) . '</span>';
                     echo '</button>';
                 } else {
                     echo '<button class="aaeaddon-reaction-btn" data-reaction="' . esc_attr($reaction['reaction_label']) . '" data-rtype="' . esc_attr($reaction['reaction_type']) . '">';
-                    echo $icon . esc_html($reaction['reaction_label']);
+                    echo wp_kses_post($icon) . esc_html($reaction['reaction_label']);
                     echo '</button>';
                 }
             }

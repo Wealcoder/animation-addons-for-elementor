@@ -95,7 +95,7 @@ class Post_Timeline extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -3330,215 +3330,215 @@ class Post_Timeline extends Widget_Base
 			$settings['post_layout'],
 		]);
 
-	?>
+?>
 		<div <?php $this->print_render_attribute_string('wrapper'); ?>><?php
 
-			$this->render_loop_header();
-			$prev_date  = '';
-			$prev_month = '';
+																		$this->render_loop_header();
+																		$prev_date  = '';
+																		$prev_month = '';
 
-			while ($query->have_posts()) {
-				$query->the_post();
+																		while ($query->have_posts()) {
+																			$query->the_post();
 
-				if ('layout-normal' === $settings['post_layout']) {
-					$this->render_post_layout_normal($settings, $prev_date, $prev_month);
-				} else {
-					$this->render_post_layout_side_overlay($settings, $prev_date, $prev_month);
-				}
-			}
+																			if ('layout-normal' === $settings['post_layout']) {
+																				$this->render_post_layout_normal($settings, $prev_date, $prev_month);
+																			} else {
+																				$this->render_post_layout_side_overlay($settings, $prev_date, $prev_month);
+																			}
+																		}
 
-			$this->render_loop_footer();
+																		$this->render_loop_footer();
 
-			?></div><?php
+																		?></div><?php
 
-			wp_reset_postdata();
-			}
+																				wp_reset_postdata();
+																			}
 
-			protected function render_loop_header()
-			{
-		?>
+																			protected function render_loop_header()
+																			{
+																				?>
 		<div class="wcf-posts">
 		<?php
-		}
+																			}
 
-		protected function render_loop_footer()
-		{
+																			protected function render_loop_footer()
+																			{
 		?></div><?php
-			$this->render_pagination();
-		}
+																				$this->render_pagination();
+																			}
 
-		protected function render_post_layout_normal($settings, &$prev_date, &$prev_month)
-		{
-			$post_classes  = ['wcf-post'];
-			$current_date  = get_the_date('Y-m-d');
-			$display_date  = get_the_date('M j, Y');
-			$current_month = get_the_date('Y-m');
-			$display_month = get_the_date('M y');
+																			protected function render_post_layout_normal($settings, &$prev_date, &$prev_month)
+																			{
+																				$post_classes  = ['wcf-post'];
+																				$current_date  = get_the_date('Y-m-d');
+																				$display_date  = get_the_date('M j, Y');
+																				$current_month = get_the_date('Y-m');
+																				$display_month = get_the_date('M y');
 				?>
 		<article <?php post_class($post_classes); ?>>
 			<?php
-			if ($current_month !== $prev_month) {
-				echo '<div class="tl-month">' . esc_html($display_month) . '</div>';
-			}
+																				if ($current_month !== $prev_month) {
+																					echo '<div class="tl-month">' . esc_html($display_month) . '</div>';
+																				}
 
-			if ($current_date !== $prev_date) {
-				echo '<div class="tl-date">' . esc_html($display_date) . ' <span></span></div>';
-			}
+																				if ($current_date !== $prev_date) {
+																					echo '<div class="tl-date">' . esc_html($display_date) . ' <span></span></div>';
+																				}
 
-			$prev_date  = $current_date;
-			$prev_month = $current_month;
+																				$prev_date  = $current_date;
+																				$prev_month = $current_month;
 
-			foreach ($settings['post_layout_two'] as $item) {
-				if ('thumb' === $item['post_item']) {
-					$this->render_thumbnail($settings);
-				}
+																				foreach ($settings['post_layout_two'] as $item) {
+																					if ('thumb' === $item['post_item']) {
+																						$this->render_thumbnail($settings);
+																					}
 
-				if ('rating' === $item['post_item']) {
-					$this->render_post_rating($settings);
-				}
+																					if ('rating' === $item['post_item']) {
+																						$this->render_post_rating($settings);
+																					}
 
-				if ('taxonomy' === $item['post_item']) {
-					$this->render_post_taxonomy();
-				}
+																					if ('taxonomy' === $item['post_item']) {
+																						$this->render_post_taxonomy();
+																					}
 
-				if ('title' === $item['post_item']) {
-					$this->render_title();
-				}
+																					if ('title' === $item['post_item']) {
+																						$this->render_title();
+																					}
 
-				if ('excerpt' === $item['post_item']) {
-					$this->render_excerpt();
-				}
+																					if ('excerpt' === $item['post_item']) {
+																						$this->render_excerpt();
+																					}
 
-				if ('meta' === $item['post_item']) {
-					$this->render_meta_data();
-				}
+																					if ('meta' === $item['post_item']) {
+																						$this->render_meta_data();
+																					}
 
-				if ('read_more' === $item['post_item']) {
-					$this->render_read_more();
-				}
-			}
+																					if ('read_more' === $item['post_item']) {
+																						$this->render_read_more();
+																					}
+																				}
 			?>
 		</article>
 	<?php
-		}
+																			}
 
-		protected function render_post_layout_side_overlay($settings, &$prev_date, &$prev_month)
-		{
-			$post_classes  = ['wcf-post'];
-			$current_date  = get_the_date('Y-m-d');
-			$display_date  = get_the_date('M j, Y');
-			$current_month = get_the_date('Y-m');
-			$display_month = get_the_date('M y');
+																			protected function render_post_layout_side_overlay($settings, &$prev_date, &$prev_month)
+																			{
+																				$post_classes  = ['wcf-post'];
+																				$current_date  = get_the_date('Y-m-d');
+																				$display_date  = get_the_date('M j, Y');
+																				$current_month = get_the_date('Y-m');
+																				$display_month = get_the_date('M y');
 
-			if ($current_month !== $prev_month) {
-				echo '<div class="tl-month">' . esc_html($display_month) . '</div>';
-			}
+																				if ($current_month !== $prev_month) {
+																					echo '<div class="tl-month">' . esc_html($display_month) . '</div>';
+																				}
 
-			if ($current_date !== $prev_date) {
-				echo '<div class="tl-date">' . esc_html($display_date) . ' <span></span></div>';
-			}
+																				if ($current_date !== $prev_date) {
+																					echo '<div class="tl-date">' . esc_html($display_date) . ' <span></span></div>';
+																				}
 	?>
 		<article <?php post_class($post_classes); ?>>
 			<?php
 
-			$prev_date  = $current_date;
-			$prev_month = $current_month;
+																				$prev_date  = $current_date;
+																				$prev_month = $current_month;
 
-			$this->render_thumbnail($settings);
+																				$this->render_thumbnail($settings);
 			?>
 			<div class="content">
 				<?php
-					foreach ($settings['post_layout_one'] as $item) {
-						if ('rating' === $item['post_item']) {
-							$this->render_post_rating($settings);
-						}
+																				foreach ($settings['post_layout_one'] as $item) {
+																					if ('rating' === $item['post_item']) {
+																						$this->render_post_rating($settings);
+																					}
 
-						if ('taxonomy' === $item['post_item']) {
-							$this->render_post_taxonomy();
-						}
+																					if ('taxonomy' === $item['post_item']) {
+																						$this->render_post_taxonomy();
+																					}
 
-						if ('title' === $item['post_item']) {
-							$this->render_title();
-						}
+																					if ('title' === $item['post_item']) {
+																						$this->render_title();
+																					}
 
-						if ('excerpt' === $item['post_item']) {
-							$this->render_excerpt();
-						}
+																					if ('excerpt' === $item['post_item']) {
+																						$this->render_excerpt();
+																					}
 
-						if ('meta' === $item['post_item']) {
-							$this->render_meta_data();
-						}
+																					if ('meta' === $item['post_item']) {
+																						$this->render_meta_data();
+																					}
 
-						if ('read_more' === $item['post_item']) {
-							$this->render_read_more();
-						}
-					}
+																					if ('read_more' === $item['post_item']) {
+																						$this->render_read_more();
+																					}
+																				}
 				?>
 			</div>
 		</article>
 	<?php
-		}
+																			}
 
-		protected function render_post_rating($settings)
-		{
-			if (! $this->get_settings('show_rating')) {
-				return;
-			}
+																			protected function render_post_rating($settings)
+																			{
+																				if (! $this->get_settings('show_rating')) {
+																					return;
+																				}
 
-			$post_id = get_the_ID();
+																				$post_id = get_the_ID();
 
-			$ratings = get_posts([
-				'post_type'  => 'aaeaddon_post_rating',
-				'meta_query' => [
-					[
-						'key'   => 'post_id',
-						'value' => $post_id,
-					]
-				]
-			]);
+																				$ratings = get_posts([
+																					'post_type'  => 'aaeaddon_post_rating',
+																					'meta_query' => [
+																						[
+																							'key'   => 'post_id',
+																							'value' => $post_id,
+																						]
+																					]
+																				]);
 
-			$total_ratings = count($ratings);
-			$total_stars   = 0;
+																				$total_ratings = count($ratings);
+																				$total_stars   = 0;
 
-			foreach ($ratings as $rating) {
-				$total_stars += get_post_meta($rating->ID, 'rating', true);
-			}
+																				foreach ($ratings as $rating) {
+																					$total_stars += get_post_meta($rating->ID, 'rating', true);
+																				}
 	?>
-		<div class="post-rating <?php echo $settings['post_rating_style']; ?>">
+		<div class="post-rating <?php echo esc_attr($settings['post_rating_style']); ?>">
 			<?php
-			if ($total_ratings > 0) {
-				$average_rating = round($total_stars / $total_ratings, 1);
+																				if ($total_ratings > 0) {
+																					$average_rating = round($total_stars / $total_ratings, 1);
 			?>
 				<div class="rating">
 					<?php
-					if ('circle' === $settings['post_rating_style']) {
+																					if ('circle' === $settings['post_rating_style']) {
 					?>
 						<div class="icon">
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</div>
 						<p>
-							<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
+							<span><?php echo esc_html($average_rating); ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
 						</p>
 					<?php
-					} else {
+																					} else {
 					?>
-						<?php echo $average_rating; ?>
+						<?php echo esc_html($average_rating); ?>
 						<span class="icon">
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</span>
-						(<?php echo $total_ratings; ?>)
+						(<?php echo esc_html($total_ratings); ?>)
 					<?php
-					}
+																					}
 					?>
 				</div>
 			<?php
-			} else {
+																				} else {
 			?>
 				<p class="no-rating"><?php echo esc_html__('No ratings yet.', 'animation-addons-for-elementor'); ?></p>
 			<?php
-			}
+																				}
 			?>
 		</div>
 <?php
-		}
-}
+																			}
+																		}

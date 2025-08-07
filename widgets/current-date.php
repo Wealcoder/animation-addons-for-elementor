@@ -74,7 +74,7 @@ class Current_Date extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -343,7 +343,7 @@ class Current_Date extends Widget_Base
 		<div <?php $this->print_render_attribute_string('wrapper'); ?>>
 			<?php if (! empty($settings['show_day'])) : ?>
 				<div class="today">
-					<?php echo date('l'); ?>
+					<?php echo esc_html(wp_date('l')); ?>
 				</div>
 				<?php
 				if (! empty($settings['day_separator'])) {
@@ -355,9 +355,9 @@ class Current_Date extends Widget_Base
 			<div class="today-date">
 				<?php
 				if ('custom' === $settings['date_format'] && ! empty($settings['custom_date_format'])) {
-					echo date($settings['custom_date_format']);
+					echo esc_html(wp_date($settings['custom_date_format']));
 				} else {
-					echo date($settings['date_format']);
+					echo esc_html(wp_date($settings['date_format']));
 				}
 				?>
 			</div>
