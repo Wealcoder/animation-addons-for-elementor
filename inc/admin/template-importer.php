@@ -52,7 +52,10 @@ class AAEAddon_Importer {
 
 	public function heartbeat_data(){
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
-        $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => get_option('aaeaddon_template_import_state')]);        
+        $return_data = apply_filters('aaeaddon_heartbeat_data', [
+			'import_state' => get_option('aaeaddon_template_import_state'),
+			'import_porgress' => get_option('aaeaddon_template_import_progress')
+		]);        
 		wp_send_json($return_data);		
 	}
 
@@ -319,9 +322,7 @@ class AAEAddon_Importer {
 				}
 			}
 		}
-	}
-	
-	
+	}	
 
 	public function installElementorKit($elementor){
 		$activeKitId = get_option( 'elementor_active_kit' );
@@ -477,7 +478,6 @@ class AAEAddon_Importer {
 		}
 		return $msg;
 	}
-	
 	
 }
 
