@@ -1,5 +1,9 @@
 <?php
 
+if(defined('WCF_ADDONS_PRO_WIDGETS_PATH')) {
+    return; // Prevents redeclaration if already defined
+}
+
 add_action('category_add_form_fields', 'aae_add_category_light_custom_fields');
 add_action('category_edit_form_fields', 'aae_edit_category_light_custom_fields');
 
@@ -114,75 +118,108 @@ function aae_edit_category_light_custom_fields($term)
     </tr>
 <?php
 }
+ 
 
-add_action('edited_category', 'aae_save_category_light_custom_fields');
-add_action('create_category', 'aae_save_category_light_custom_fields');
+// Print nonce field in the category forms (add + edit).
+add_action('category_add_form_fields', 'aae_category_meta_nonce_field');
+add_action('category_edit_form_fields', 'aae_category_meta_nonce_field');
 
-function aae_save_category_light_custom_fields($term_id)
-{
-    if (isset($_POST['aae_cate_additional_text'])) {
-        update_term_meta($term_id, 'aae_cate_additional_text', sanitize_textarea_field($_POST['aae_cate_additional_text']));
-    }
-    if (isset($_POST['aae_category_image'])) {
-        update_term_meta($term_id, 'aae_category_image', esc_url_raw($_POST['aae_category_image']));
-    }
-    if (isset($_POST['aae_category_icon'])) {
-        update_term_meta($term_id, 'aae_category_icon', esc_url_raw($_POST['aae_category_icon']));
-    }
-    if (isset($_POST['aae_cat_color'])) {
-        update_term_meta($term_id, 'aae_cat_color', esc_url_raw($_POST['aae_cat_color']));
-    }
-    if (isset($_POST['aae_cat_bg_color'])) {
-        update_term_meta($term_id, 'aae_cat_bg_color', esc_url_raw($_POST['aae_cat_bg_color']));
-    }
+function aae_category_meta_nonce_field( $term = null ) {
+    wp_nonce_field( 'aae_category_meta_action', 'aae_category_meta_nonce' );
 }
 
 
-add_action('admin_head', 'aae_inline_category_light_media_uploader');
-function aae_inline_category_light_media_uploader()
-{
-    if (! isset($_GET['taxonomy']) || $_GET['taxonomy'] !== 'category') {
-        return; // Only load on the category taxonomy pages
+add_action( 'edited_category', 'aae_save_category_light_custom_fields', 10, 2 );
+add_action( 'create_category', 'aae_save_category_light_custom_fields', 10, 2 );
+
+function aae_save_category_light_custom_fields( $term_id, $tt_id = null ) {
+    // 1) Nonce check
+    if ( ! isset( $_POST['aae_category_meta_nonce'] ) || 
+         ! wp_verify_nonce( wp_unslash($_POST['aae_category_meta_nonce']), 'aae_category_meta_action' ) ) {
+        return;
     }
+
+    // 2) Capability check
+    if ( ! current_user_can( 'edit_term', $term_id ) ) {
+        return;
+    }
+
+    // 3) (Optional) Ensure we're handling categories
+    if ( empty( $_POST['taxonomy'] ) || 'category' !== $_POST['taxonomy'] ) {
+        return;
+    }
+
+    // 4) Sanitize & save (delete when empty to keep DB clean)
+    $additional = isset( $_POST['aae_cate_additional_text'] )
+        ? sanitize_textarea_field( wp_unslash( $_POST['aae_cate_additional_text'] ) )
+        : '';
+
+    $image = isset( $_POST['aae_category_image'] )
+        ? esc_url_raw( wp_unslash( $_POST['aae_category_image'] ) )
+        : '';
+
+    $icon = isset( $_POST['aae_category_icon'] )
+        ? esc_url_raw( wp_unslash( $_POST['aae_category_icon'] ) )
+        : '';
+
+    // If your color pickers store hex (#fff / #ffffff), use sanitize_hex_color.
+    // Fallback to sanitize_text_field for non-hex values (e.g., CSS vars).
+    $color_raw = isset( $_POST['aae_cat_color'] ) ? sanitize_text_field( wp_unslash( $_POST['aae_cat_color'] ) ) : '';
+    $bg_raw    = isset( $_POST['aae_cat_bg_color'] ) ? sanitize_text_field( wp_unslash( $_POST['aae_cat_bg_color'] ) ) : '';
+
+    $color = sanitize_hex_color( $color_raw );
+    if ( null === $color ) { $color = sanitize_text_field( $color_raw ); }
+
+    $bg_color = sanitize_hex_color( $bg_raw );
+    if ( null === $bg_color ) { $bg_color = sanitize_text_field( $bg_raw ); }
+
+    // Save or delete when empty
+    $additional !== '' ? update_term_meta( $term_id, 'aae_cate_additional_text', $additional ) : delete_term_meta( $term_id, 'aae_cate_additional_text' );
+    $image      !== '' ? update_term_meta( $term_id, 'aae_category_image', $image )             : delete_term_meta( $term_id, 'aae_category_image' );
+    $icon       !== '' ? update_term_meta( $term_id, 'aae_category_icon', $icon )               : delete_term_meta( $term_id, 'aae_category_icon' );
+    $color      !== '' ? update_term_meta( $term_id, 'aae_cat_color', $color )                  : delete_term_meta( $term_id, 'aae_cat_color' );
+    $bg_color   !== '' ? update_term_meta( $term_id, 'aae_cat_bg_color', $bg_color )            : delete_term_meta( $term_id, 'aae_cat_bg_color' );
+}
+
+add_action( 'admin_enqueue_scripts', 'aae_inline_category_light_media_uploader', 10, 1 );
+
+function aae_inline_category_light_media_uploader( $hook_suffix ) {
+    // Only load on term screens.
+    if ( ! in_array( $hook_suffix, [ 'edit-tags.php', 'term.php' ], true ) ) {
+        return;
+    }
+
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+    if ( ! $screen || empty( $screen->taxonomy ) || 'category' !== $screen->taxonomy ) {
+        return; // Only on the Category taxonomy screens
+    }
+
+    // Enqueue the WP media modal (required for wp.media)
     wp_enqueue_media();
-?>
-    <script>
-        jQuery(document).ready(function($) {
-            var mediaUploader;
 
-            function openMediaUploader(button, inputField, previewContainer) {
-                mediaUploader = wp.media({
-                    title: 'Choose Image',
-                    button: {
-                        text: 'Use this image'
-                    },
-                    multiple: false
-                });
+    // Enqueue your script
+    wp_enqueue_script(
+        'aae-category-media',
+        WCF_ADDONS_URL . 'assets/js/category-filter.js',
+        [ 'jquery' ],
+        file_exists( WCF_ADDONS_PATH . 'assets/js/category-filter.js' )
+            ? filemtime( WCF_ADDONS_PATH . 'assets/js/category-filter.js' )
+            : '1.1',
+        true
+    );
 
-                mediaUploader.on('select', function() {
-                    var attachment = mediaUploader.state().get('selection').first().toJSON();
-                    $(inputField).val(attachment.url);
-                    $(previewContainer).html('<img src="' + attachment.url + '" style="max-width: 100px;">');
-                });
-
-                mediaUploader.open();
-            }
-
-            // Image Upload
-            $('.aae-category-image-upload').click(function(e) {
-                e.preventDefault();
-                openMediaUploader(this, '#aae_category_image', '#aae_category_image_preview');
-            });
-
-            // Icon Upload
-            $('.aae-category-icon-upload').click(function(e) {
-                e.preventDefault();
-                openMediaUploader(this, '#aae_category_icon', '#aae_category_icon_preview');
-            });
-        });
-    </script>
-<?php
+    // (Optional) Pass data / i18n / nonce to JS
+    wp_localize_script( 'aae-category-media', 'AAECategoryMedia', [
+        'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+        'nonce'   => wp_create_nonce( 'aae_category_media' ),
+        'i18n'    => [
+            'choose' => __( 'Choose image', 'animation-addons-for-elementor' ),
+            'use'    => __( 'Use this image', 'animation-addons-for-elementor' ),
+            'remove' => __( 'Remove', 'animation-addons-for-elementor' ),
+        ],
+    ] );
 }
+
 
 
 function aae_addon_tax_category_light_styles()

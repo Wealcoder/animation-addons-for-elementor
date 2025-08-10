@@ -101,12 +101,12 @@ add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page')
 if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
     function aaeaddon_post_lite_reaction_ajax()
     {
-        if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
+        if (! wp_verify_nonce(wp_unslash( $_REQUEST['nonce'] ), 'wcf-addons-frontend')) {
             exit('No naughty business please');
         }
 
-        $post_id = absint($_POST['post_id']);
-        $reaction = sanitize_text_field($_POST['reaction']);
+        $post_id = absint(wp_unslash( $_POST['post_id'] ));
+        $reaction = sanitize_text_field(wp_unslash( $_POST['reaction'] ));
 
         if (! $post_id || ! $reaction) {
             wp_send_json_error('Invalid data');

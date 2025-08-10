@@ -5,7 +5,6 @@ namespace WCF_ADDONS;
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;
 use Elementor\Utils;
-use CSF;
 
 if (! defined('ABSPATH')) {
 	exit;

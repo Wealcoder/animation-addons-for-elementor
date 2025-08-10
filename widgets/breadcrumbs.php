@@ -121,14 +121,20 @@ class Breadcrumbs extends Widget_Base
 			]
 		);
 
+		$yoast_url = admin_url( 'admin.php?page=wpseo_titles#top#breadcrumbs' );
+
+		
+		$desc_html = sprintf(
+			// translators: 1: opening <a> tag linking to Yoast SEO Breadcrumbs settings; 2: closing </a> tag.
+			__( 'Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor' ),
+			'<a href="' . esc_url( $yoast_url ) . '" target="_blank" rel="noopener noreferrer">',
+			'</a>'
+		);
+
 		$this->add_control(
 			'html_description',
 			[
-				'raw'             => sprintf(
-					esc_html__('Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor'),
-					sprintf('<a href="%s" target="_blank">', admin_url('admin.php?page=wpseo_titles#top#breadcrumbs')),
-					'</a>'
-				),
+				'raw'             => wp_kses_post( $desc_html ),
 				'type'            => Controls_Manager::RAW_HTML,
 				'content_classes' => 'elementor-descriptor',
 			]
@@ -147,21 +153,33 @@ class Breadcrumbs extends Widget_Base
 			]
 		);
 
+		$url = 'https://www.toptal.com/designers/htmlarrows/symbols/';
+
+		$link = sprintf(
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			esc_url( $url ),
+			esc_html__( 'HTML Symbols', 'animation-addons-for-elementor' )
+		);
+
+		
+		$desc_html = sprintf(
+			// translators: %s is a clickable "HTML Symbols" link to an external reference page.
+			__( 'You can use HTML entities as separators. Check out %s for examples.', 'animation-addons-for-elementor' ),
+			$link
+		);
+
 		$this->add_control(
 			'sep_description',
 			[
-				'raw'             => sprintf(
-					esc_html__('You can use HTML entities as separators. Check out %1$sHTML Symbols%2$s for examples.', 'animation-addons-for-elementor'),
-					sprintf('<a href="%s" target="_blank">', 'https://www.toptal.com/designers/htmlarrows/symbols/'),
-					'</a>'
-				),
+				'raw'             => wp_kses_post( $desc_html ),
 				'type'            => Controls_Manager::RAW_HTML,
 				'content_classes' => 'elementor-descriptor',
 				'condition'       => [
-					'yoast_seo!' => 'yes'
-				]
+					'yoast_seo!' => 'yes',
+				],
 			]
 		);
+
 
 		$this->end_controls_section(); // END CONTENT SECTION
 
