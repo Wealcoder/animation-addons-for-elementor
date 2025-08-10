@@ -552,7 +552,7 @@ class Plugin
 			'countdown'        => [
 				'handler' => 'wcf--countdown',
 				'src'     => 'widgets/countdown.min.css',
-				'dep'     => ['wcf-addons-core'],
+				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
 			],
