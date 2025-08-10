@@ -8,39 +8,37 @@ function aae_add_category_light_custom_fields($taxonomy)
 ?>
     <div class="form-field">
         <label
-            for="aae_cate_additional_text"><?php echo esc_html__('Additional Text', 'animation-addons-for-elementor-pro'); ?></label>
+            for="aae_cate_additional_text"><?php echo esc_html__('Additional Text', 'animation-addons-for-elementor'); ?></label>
         <textarea name="aae_cate_additional_text" id="aae_cate_additional_text" rows="2"></textarea>
         <p class="description">
-            <?php echo esc_html__('Enter additional information for this category.', 'animation-addons-for-elementor-pro'); ?>
+            <?php echo esc_html__('Enter additional information for this category.', 'animation-addons-for-elementor'); ?>
         </p>
     </div>
     <div class="form-field">
-        <label
-            for="aae_category_image"><?php echo esc_html__('Upload Image', 'animation-addons-for-elementor-pro'); ?></label>
+        <label for="aae_category_image"><?php echo esc_html__('Upload Image', 'animation-addons-for-elementor'); ?></label>
         <input type="button" class="button aae-category-image-upload" value="Upload Image">
         <input type="hidden" name="aae_category_image" id="aae_category_image" value="">
         <div id="aae_category_image_preview"></div>
         <p class="description">
-            <?php echo esc_html__('Upload an image for this category.', 'animation-addons-for-elementor-pro'); ?></p>
+            <?php echo esc_html__('Upload an image for this category.', 'animation-addons-for-elementor'); ?></p>
     </div>
     <div class="form-field">
-        <label
-            for="aae_category_icon"><?php echo esc_html__('Upload Icon', 'animation-addons-for-elementor-pro'); ?></label>
+        <label for="aae_category_icon"><?php echo esc_html__('Upload Icon', 'animation-addons-for-elementor'); ?></label>
         <input type="button" class="button aae-category-icon-upload" value="Upload Icon">
         <input type="hidden" name="aae_category_icon" id="aae_category_icon" value="">
         <div id="aae_category_icon_preview"></div>
         <p class="description">
-            <?php echo esc_html__('Upload an image as a icon for this category.', 'animation-addons-for-elementor-pro'); ?>
+            <?php echo esc_html__('Upload an image as a icon for this category.', 'animation-addons-for-elementor'); ?>
         </p>
     </div>
     <div class="form-field">
-        <label for="aae_cat_color"><?php echo esc_html__('Color', 'animation-addons-for-elementor-pro'); ?></label>
+        <label for="aae_cat_color"><?php echo esc_html__('Color', 'animation-addons-for-elementor'); ?></label>
         <input type="color" class="cat-color-picker" data-default-color="#ffffff">
         <input type="hidden" name="aae_cat_color" id="aae_cat_color" value="">
     </div>
     <div class="form-field">
         <label
-            for="aae_cat_bg_color"><?php echo esc_html__('Background Color', 'animation-addons-for-elementor-pro'); ?></label>
+            for="aae_cat_bg_color"><?php echo esc_html__('Background Color', 'animation-addons-for-elementor'); ?></label>
         <input type="color" class="color-picker" data-default-color="#ffffff">
         <input type="hidden" name="aae_cat_bg_color" id="aae_cat_bg_color" value="">
     </div>
@@ -61,13 +59,13 @@ function aae_edit_category_light_custom_fields($term)
             <textarea name="aae_cate_additional_text" id="aae_cate_additional_text"
                 rows="2"><?php echo esc_textarea($category_text); ?></textarea>
             <p class="description">
-                <?php echo esc_html__('Enter additional information for this category.', 'animation-addons-for-elementor-pro'); ?>
+                <?php echo esc_html__('Enter additional information for this category.', 'animation-addons-for-elementor'); ?>
             </p>
         </td>
     </tr>
     <tr class="form-field">
         <th scope="row" valign="top"><label
-                for="aae_category_image"><?php echo esc_html__('Upload Image', 'animation-addons-for-elementor-pro'); ?></label>
+                for="aae_category_image"><?php echo esc_html__('Upload Image', 'animation-addons-for-elementor'); ?></label>
         </th>
         <td>
             <input type="button" class="button aae-category-image-upload" value="Upload Image">
@@ -79,12 +77,12 @@ function aae_edit_category_light_custom_fields($term)
                 <?php endif; ?>
             </div>
             <p class="description">
-                <?php echo esc_html__('Update the image for this category.', 'animation-addons-for-elementor-pro'); ?></p>
+                <?php echo esc_html__('Update the image for this category.', 'animation-addons-for-elementor'); ?></p>
         </td>
     </tr>
     <tr class="form-field">
         <th scope="row" valign="top"><label
-                for="aae_category_icon"><?php echo esc_html__('Upload Icon', 'animation-addons-for-elementor-pro'); ?></label>
+                for="aae_category_icon"><?php echo esc_html__('Upload Icon', 'animation-addons-for-elementor'); ?></label>
         </th>
         <td>
             <input type="button" class="button aae-category-icon-upload" value="Upload Icon">
@@ -96,21 +94,22 @@ function aae_edit_category_light_custom_fields($term)
                 <?php endif; ?>
             </div>
             <p class="description">
-                <?php echo esc_html__('Update the icon for this category.', 'animation-addons-for-elementor-pro'); ?></p>
+                <?php echo esc_html__('Update the icon for this category.', 'animation-addons-for-elementor'); ?></p>
         </td>
     </tr>
 
     <tr class="form-field">
         <th scope="row" valign="top"><label for="aae_cat_color">Color</label></th>
         <td>
-            <input type="color" name="aae_cat_color" id="aae_cat_color" value="<?php echo $cat_color; ?>">
+            <input type="color" name="aae_cat_color" id="aae_cat_color" value="<?php echo esc_attr($cat_color); ?>">
         </td>
     </tr>
 
     <tr class="form-field">
         <th scope="row" valign="top"><label for="aae_cat_bg_color">Background Color</label></th>
         <td>
-            <input type="color" name="aae_cat_bg_color" id="aae_cat_bg_color" value="<?php echo $background_color; ?>">
+            <input type="color" name="aae_cat_bg_color" id="aae_cat_bg_color"
+                value="<?php echo esc_attr($background_color); ?>">
         </td>
     </tr>
 <?php
