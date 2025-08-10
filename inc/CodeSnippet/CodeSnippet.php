@@ -52,7 +52,7 @@ class CodeSnippet {
 	}
 
 	/**
-	 * Register Code Snippet Post Type.
+	 * Register Code Snippet Post-Type.
 	 *
 	 * @since 2.3.10
 	 * @return void
