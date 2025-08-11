@@ -13,7 +13,7 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 
 == Description ==
 
-**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 86+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
+**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 96+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
 
 As the **No.1 animation plugin for Elementor**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
@@ -102,7 +102,7 @@ Once your website is designed with all the essential elements, enhance its funct
 
 
 ## Animation Addons For Elementor Widget List
-Take your website design to the next level with 86+ Elementor widgets. Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, or excerpts, Animation Addons got you covered.
+Take your website design to the next level with 96+ Elementor widgets. Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, or excerpts, Animation Addons got you covered.
 
 ### Header and Footer Widgets;
 **Site Logo**: Display the website’s logo prominently to establish brand identity and recognition.
@@ -266,7 +266,7 @@ This template library is specifically crafted for developers, designers, and age
 💡 Unlock next-level animations with **Animation Addons for Elementor!**
 
 ### 97+ Elementor Widgets:
-Unlock endless design possibilities with 86+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
+Unlock endless design possibilities with 96+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
 
 ### Custom Animation Builder:
 The Custom Animation Builder is a powerful tool that allows WordPress users to create stunning GSAP-powered animations without any coding. This intuitive builder integrates the full potential of GSAP (GreenSock Animation Platform), enabling you to craft smooth transitions, complex timelines, and advanced animations like never before. Key features include ScrollTrigger for scroll-based animations, MorphSVG for shape transformations, DrawSVG for dynamic SVG animations, SplitText for text effects, ScrambleText for engaging typography, ScrollSmoother for smooth page scrolling, and 3D Transformations for depth and perspective adjustments. With easy-to-use controls, the Custom Animation Builder gives you complete creative freedom to elevate your website’s design and interactivity without writing a single line of code.

@@ -232,7 +232,7 @@ class Plugin
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
-			],
+			],		
 			'ProgressBar'      => [
 				'handler' => 'progressbar',
 				'src'     => 'progressbar.min.js',

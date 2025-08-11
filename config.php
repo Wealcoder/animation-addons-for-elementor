@@ -1389,7 +1389,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_upcoming'  => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
 						'icon'         => 'wcf-icon-Table-Of-Content',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content',

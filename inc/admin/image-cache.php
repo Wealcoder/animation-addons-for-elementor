@@ -24,6 +24,7 @@ class Editor_Image_Preload {
     public function permission($hook) {
           // Allowlist of admin pages where script should run
         $allowed_hooks = [
+            'plugins.php',                     // Dashboard
             'index.php',                     // Dashboard
             'edit.php',                      // Posts & Pages list
             'post.php',                      // Post/Page editor
