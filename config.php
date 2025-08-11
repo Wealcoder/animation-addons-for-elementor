@@ -1813,7 +1813,7 @@ $config = array(
 								'is_upcoming'  => false,
 								'setup'        => array( 'basic' ),
 								'icon'         => 'wcf-icon-Image-Hover-Effect',
-								'demo_url'     => 'https://animation-addons.com/image-hover-effect',
+								'demo_url'     => 'https://animation-addons.com/extensions/image-hover-effect/',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/image-hover-effect-extensions/',
 								'youtube_url'  => '',
 							),

@@ -1,11 +1,44 @@
 
 == Changelog ==
 
-= Animation Addons for Elementor v2.3.10 – 04 auguest 2025 =
-  - 🆕 **Added:** Date and category filter in search widgets  
-  - 🆕 **Added:** 10 new pre built template 
-  - 🎨 **Updated:** Optimize js , css
-  - 🎨 **optimize:** Improve asset on demand in search widget
+= Animation Addons for Elementor v2.3.10 – 11 august 2025 = 
+  - 🆕 **Added:** 20+ premium widgets — now completely free for all users!
+  - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
+  - 🆕 **Added:** New Popup trigger — show popups on mouse leave to boost conversions
+  - ✏️ **Improved** Renamed “Pin” extension to “Sticky” for clearer usability and better user understanding
+
+= Animation Addons for Elementor v2.3.9 – 18 july 2025 = 
+  - 🎨 **Update:** Documentation with setup and usage guides for the new widgets.
+  - 🎨 **Optimize:** Faster, leaner JavaScript for both editor and frontend.
+  - 🆕 **Added:** Rating widget to showcase reviews and user feedback.
+  - 🆕 **Added:** Breadcrumbs widget for better site navigation in Elementor.
+
+= Animation Addons for Elementor v2.3.8 – 17 july 2025 =
+  - 🆕 **Added:** ClickPop Widget for header
+  - 🎨 **Fixed:** Starter Templates step  
+  - 🎨 **Update:** Countdown widget css
+
+= Animation Addons for Elementor v2.3.7 – 03 july 2025 =
+  - 🆕 **Added:** PopUp Builder Option
+  - 🎨 **Fixed:** Dashboard name issue
+  - 🎨 **Update:** meta style option
+
+= Animation Addons for Elementor v2.3.6 – 01 july 2025 =
+  - 🆕 **Added:** New title show control in meta widget 
+  - 🎨 **Fixed:** Change template library icon
+  - 🎨 **Update:** Community group link update
+
+= Animation Addons for Elementor v2.3.5 – 19 june 2025 =
+  - 🆕 **optimize:** Optimize Hotspot widget  
+  - 🎨 **Fixed:** Icon Box
+
+
+= Animation Addons for Elementor v2.3.4 – 19 june 2025 =
+  - 🆕 **Added:** Meta type review, read later, updated date 
+  - 🎨 **Fixed:** Template Library Cors 
+  - 🆕 **Added:** Image Hotspot widget
+  - 🆕 **Added:** Single Category Template Builder Capability
+  - 🎨 **Fixed:** Image Lazyload ScrollTrigger
 
 = Animation Addons for Elementor v2.3.3 – 02 june 2025 =
   - 🆕 **Added:** Date and category filter in search widgets  
@@ -24,88 +57,92 @@
   - 🆕 **Added:** optin popup
   - 🎨 **Fixed:** animation library dependancy
 
- = v2.2 – 06 may 2025 =
+ = Animation Addons for Elementor v2.3 – 07 may 2025 =
+  - ❌ **Removed:** remote request of chnagelog
+  - 🎨 **Fixed:** template library store process
+
+ = Animation Addons for Elementor v2.2 – 06 may 2025 =
   - ❌ **Removed:** Draggable js
   - 🎨 **Fixed:** user data security issue
   - 🆕 **Added:** Added 5 website templates
 
- = v2.1.9 – 05 may 2025 =
+ = Animation Addons for Elementor v2.1.9 – 05 may 2025 =
   - 🆕 **Added:** Added notice for pro element
   - 🆕 **Added:** Responsive control to hide onepage nav title
  
- = v2.1.8 – 22 April 2025 =
+ = Animation Addons for Elementor v2.1.8 – 22 April 2025 =
   - 🆕 **Added:** Scroll Smother option
   - 🎨 **Fixed:** Table of content icon in dashboard
   - 🆕 **Added:** One Page Nav svg size 
 
- = v2.1.7 – 16 April 2025 =
+ = Animation Addons for Elementor v2.1.7 – 16 April 2025 =
   - 🎨 **Fixed:** Text Domain Translation Issue
   - 🎨 **Fixed:** Fix  Pre Built Template Dashboard
 
- = v2.1.5 – 08 April 2025 =
+ = Animation Addons for Elementor v2.1.5 – 08 April 2025 =
   - 🎨 **Fixed:** Pre Built Template SSL issue 
   - 🎨 **Fixed:** Fix Toast Color Issue
   - ✅ **Compatibility:** Optimized Markup compatibility with **Elementor core** for Animation.
 
- = v2.1.4 – 06 April 2025 =
+ = Animation Addons for Elementor v2.1.4 – 06 April 2025 =
   - 🎨 **Fixed:** Slider animation issue
   - 🎨 **Fixed:** Gallery Issue
 
- = v2.1.2 – 25 March 2025 =
+ = Animation Addons for Elementor v2.1.2 – 25 March 2025 =
   - 🔄 **Updated:** Banner and dashboard updated
   - 🔄 **Updated:** Live Copy Support current container index
 
-= v2.1.1 – 20 March 2025 =
+= Animation Addons for Elementor v2.1.1 – 20 March 2025 =
   - 🔄 **Updated:** intro video and price tab
   - 🔄 **Updated:** Update template Library vps path
 
- = v2.0 – 13 March 2025 =
+ =  Animation Addons for Elementorv2.0 – 13 March 2025 =
   - ❌ **Removed:** GoodShare Library from social share widget
   - 🔄 **Updated:** Updated Dashboard UI
   - 🆕 **New Feature:** Added **Template Library**
   - 🆕 **New Feature:** Added **Live Copy Paste**
   - 🆕 **New Feature:** Added **Dynamic Tags**
 
- = v1.1.9 – 20 February 2025 =
+ = Animation Addons for Elementor v1.1.9 – 20 February 2025 =
   - 🔄 **Updated:** Upgraded `SweetAlert.js` and `Typed.js` to the latest versions for improved performance and security.
   - ✅ **Compatibility:** Verified full compatibility with **Elementor core**.
   - ❌ **Removed:** Deprecated donation link for a cleaner user experience.
   - 🔒 **Fixed:** Resolved **nonce security vulnerabilities** to enhance website security.
 
- = v1.1.8 – 17 December 2024 =
+ = Animation Addons for Elementor v1.1.8 – 17 December 2024 =
   - 🎨 **Fixed:** Resolved **Swiper slider styling issues** for better mobile and desktop responsiveness.
   - ✅ **Compatibility:** Ensured smooth integration with **Elementor core**.
 
- = v1.1.7 – 10 December 2024 =
+ = Animation Addons for Elementor v1.1.7 – 10 December 2024 =
   - 🔒 **Security Fixes:**
     - Patched security vulnerabilities in **Tab Widget** and **Content Slider Widget**.
     - Implemented additional security layers for safer user interaction.
   - 🆕 **New Feature:** Added **role-based access control** for **template selection** in Tab and Content Slider Widgets.
 
- = v1.1.6 – 27 November 2024 =
+ = Animation Addons for Elementor v1.1.6 – 27 November 2024 =
   - 🛠️ **Fixed:** Corrected **text domain issues** for better multilingual support.
   - ✅ **Tested:** Conducted compatibility tests with WordPress and Elementor updates.
 
-= v1.1.5 – 22 October 2024 =
+= Animation Addons for Elementor v1.1.5 – 22 October 2024 =
   - 🚀 **Performance Boost:** Optimized **Social Share Widget** for **faster loading speed** and **improved SEO performance**.
 
-=v1.1.4 – 22 October 2024 =
+= Animation Addons for Elementor v1.1.4 – 22 October 2024 =
   - 🆕 **New Addition:** Added a **download link** for the **"Extension for Animation Addons" plugin**, enabling **GSAP animation features**.
 
-= v1.1.3 – 21 October 2024 =
+= Animation Addons for Elementor v1.1.3 – 21 October 2024 =
   - 🎨 **UI Enhancements:**
     - Introduced **responsive title margin controls** in the **Counter Widget** for improved layout customization.
   - 🔄 **Bug Fixes:**
     - Resolved **meta description duplication** issue for better SEO indexing.
     - Fixed **GoodShare console errors** to prevent script conflicts.
 
-= v1.1.2 – 22 September 2024 =
+= Animation Addons for Elementor v1.1.2 – 22 September 2024 =
   - 🎨 **UI Enhancement:** Added **responsive input field height controls** in the **Contact Form 7 Widget** for better mobile optimization.
 
-= v1.1.1 – 14 September 2024 =
+= Animation Addons for Elementor v1.1.1 – 14 September 2024 =
   - ⚡ **Performance Upgrade:**
     - Replaced the outdated `Waypoints.js` library with the **native Intersection Observer API** for **faster and more efficient animations**.
   - 🛠️ **Fixed:** **Progress Bar Widget** issue where progress was not displaying correctly.
 
-= v1.0.0 – 1 April 2024 =
+= Animation Addons for Elementor v1.0.0 – 1 April 2024 =
 - 🚀 **Initial Release**

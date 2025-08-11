@@ -10,8 +10,8 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages 
- * Elementor tested up to: 3.30.2
- * Elementor Pro tested up to: 3.30.0
+ * Elementor tested up to: 3.31.1
+ * Elementor Pro tested up to: 3.31.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -98,7 +98,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string Minimum Elementor version required to run the plugin.
 	 */
-	const MINIMUM_ELEMENTOR_VERSION = '3.27.0';
+	const MINIMUM_ELEMENTOR_VERSION = '3.28.0';
 
 	/**
 	 * Minimum PHP Version
