@@ -24,7 +24,7 @@ function aaeaddonlite_register_post_rating_cpt()
 		'public'    => false,
 		'show_ui'   => true,
 		'menu_icon' => 'dashicons-star-filled',
-		'supports'  => ['title'],
+		'supports'  => ['title']		
 	]);
 }
 
@@ -33,13 +33,6 @@ add_action('init', 'aaeaddonlite_register_post_rating_cpt');
 // Remove "Add New" from admin menu
 add_action('admin_menu', function () {
 	remove_submenu_page('edit.php?post_type=aaeaddon_post_rating', 'post-new.php?post_type=aaeaddon_post_rating');
-});
-
-// Prevent direct access to new post creation URL
-add_action('load-post-new.php', function () {
-	if (isset($_GET['post_type']) && $_GET['post_type'] === 'aaeaddon_post_rating') {
-		wp_die(esc_html__('You are not allowed to create a new post rating manually.', 'animation-addons-for-elementor'));
-	}
 });
 
 // Admin Columns
@@ -136,6 +129,7 @@ function aaeaddon_lite_save_review_meta_box($post_id)
 	if (function_exists('aaeaddon_register_post_rating_cpt')) {
 		return;
 	}
+	
 	$nonce = isset($_POST['aaeaddon_review_meta_box_nonce']) ? sanitize_text_field(wp_unslash($_POST['aaeaddon_review_meta_box_nonce'])) : '';
 
 	if (! $nonce || ! wp_verify_nonce($nonce, 'aaeaddon_review_meta_box')) {

@@ -134,8 +134,14 @@ add_action( 'create_category', 'aae_save_category_light_custom_fields', 10, 2 );
 
 function aae_save_category_light_custom_fields( $term_id, $tt_id = null ) {
     // 1) Nonce check
-    if ( ! isset( $_POST['aae_category_meta_nonce'] ) || 
-         ! wp_verify_nonce( wp_unslash($_POST['aae_category_meta_nonce']), 'aae_category_meta_action' ) ) {
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    if ( ! isset( $_POST['aae_category_meta_nonce'] ) ) {
+        return;
+    }
+
+    $nonce =  sanitize_text_field( wp_unslash( $_POST['aae_category_meta_nonce'] ) ); // Input comes from $_POST, so unslash
+
+    if ( ! wp_verify_nonce( $nonce, 'aae_category_meta_action' ) ) {
         return;
     }
 

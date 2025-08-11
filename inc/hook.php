@@ -93,20 +93,25 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
     }
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
-
-
-
 // post reaction ajax handeler
 
 if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
     function aaeaddon_post_lite_reaction_ajax()
     {
-        if (! wp_verify_nonce(wp_unslash( $_REQUEST['nonce'] ), 'wcf-addons-frontend')) {
-            exit('No naughty business please');
+        
+        $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['nonce']) ) : '';
+
+        if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wcf-addons-frontend' ) ) {
+            // For JSON endpoints:
+            if ( defined('DOING_AJAX') && DOING_AJAX ) {
+                wp_send_json_error(['message' => __('Invalid request.', 'animation-addons-for-elementor')], 403);
+            }
+            // For normal requests:
+            wp_die( esc_html__('Invalid request.', 'animation-addons-for-elementor'), 403 );
         }
 
-        $post_id = absint(wp_unslash( $_POST['post_id'] ));
-        $reaction = sanitize_text_field(wp_unslash( $_POST['reaction'] ));
+        $post_id = isset($_POST['post_id']) ? absint(sanitize_text_field( wp_unslash( $_POST['post_id'] ) )) : '';
+        $reaction = isset($_POST['reaction']) ? sanitize_text_field(wp_unslash( $_POST['reaction'] )) : [];
 
         if (! $post_id || ! $reaction) {
             wp_send_json_error('Invalid data');
@@ -126,7 +131,7 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
         $reactions_count = array_sum(array_values($reactions));
 
         foreach ($reactions as $k => $single) {
-            update_post_meta($post_id, 'aaeaddon_post_reactions_' . $k, $single);
+            update_post_meta( $post_id, 'aaeaddon_post_reactions_' . $k, $single);
         }
         update_post_meta($post_id, 'aaeaddon_post_reactions', $reactions);
         update_post_meta($post_id, 'aaeaddon_post_total_reactions', $reactions_count);
