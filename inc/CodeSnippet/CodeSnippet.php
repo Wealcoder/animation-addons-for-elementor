@@ -22,6 +22,7 @@ class CodeSnippet {
 	/**
 	 * [$_instance]
 	 *
+	 * @since 2.3.10
 	 * @var null
 	 */
 	public static $_instance = null;
@@ -29,7 +30,8 @@ class CodeSnippet {
 	/**
 	 * [instance] Initializes a singleton instance
 	 *
-	 * @return [_Admin_Init]
+	 * @since 2.3.10
+	 * @return CodeSnippet|null [_Admin_Init]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -49,6 +51,7 @@ class CodeSnippet {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 225 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
+		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
 	}
 
 	/**
@@ -169,131 +172,42 @@ class CodeSnippet {
 	 */
 	public function enqueue_scripts( $hook ) {
 		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
-			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, time(), 'all' );
+			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'select2', WCF_ADDONS_URL . 'assets/css/select2.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'codemirror-core', WCF_ADDONS_URL . 'assets/css/cs-css/codemirror.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'foldgutter', WCF_ADDONS_URL . 'assets/css/cs-css/foldgutter.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'material', WCF_ADDONS_URL . 'assets/css/cs-css/material.min.css', null, WCF_ADDONS_VERSION, 'all' );
+
+			// code mirror.
+			wp_enqueue_script( 'codemirror-core', WCF_ADDONS_URL . 'assets/js/cs-js/codemirror.min.js', array(), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-htmlmixed', WCF_ADDONS_URL . 'assets/js/cs-js/htmlmixed.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-js-css', WCF_ADDONS_URL . 'assets/js/cs-js/css.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-javascript', WCF_ADDONS_URL . 'assets/js/cs-js/javascript.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-php', WCF_ADDONS_URL . 'assets/js/cs-js/php.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-xml', WCF_ADDONS_URL . 'assets/js/cs-js/xml.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-mode-clike', WCF_ADDONS_URL . 'assets/js/cs-js/clike.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-closebrackets', WCF_ADDONS_URL . 'assets/js/cs-js/closebrackets.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-closetag', WCF_ADDONS_URL . 'assets/js/cs-js/closetag.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-foldcode', WCF_ADDONS_URL . 'assets/js/cs-js/foldcode.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-foldgutter', WCF_ADDONS_URL . 'assets/js/cs-js/foldgutter.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-brace-fold', WCF_ADDONS_URL . 'assets/js/cs-js/brace-fold.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-addon-xml-fold', WCF_ADDONS_URL . 'assets/js/cs-js/xml-fold.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
+
+			// Custom Code Editor.
 			wp_enqueue_script(
 				'codemirror-editor',
 				WCF_ADDONS_URL . 'assets/js/code-snippet.min.js',
-				array(),
+				array( 'jquery', 'select2', 'codemirror-core' ),
 				'1.0.0',
 				true
 			);
-
-			// code mirror.
-			wp_enqueue_style(
-				'codemirror-core',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css',
-				array(),
-				'5.65.16'
+			$localize_data = array(
+				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'wcf_custom_code_security' ),
+				'adminURL' => admin_url(),
 			);
-			wp_enqueue_style(
-				'codemirror-theme-material',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css',
-				array( 'codemirror-core' ),
-				'5.65.16'
-			);
-			wp_enqueue_style(
-				'codemirror-theme-default',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/default.min.css',
-				array( 'codemirror-core' ),
-				'5.65.16'
-			);
-			wp_enqueue_style(
-				'codemirror-foldgutter',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css',
-				array( 'codemirror-core' ),
-				'5.65.16'
-			);
-			wp_enqueue_script(
-				'codemirror-core',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js',
-				array(),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-htmlmixed',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-css',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-javascript',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-php',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-xml',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-mode-clike',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-closebrackets',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-closetag',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-foldcode',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-foldgutter',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-brace-fold',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
-			wp_enqueue_script(
-				'codemirror-addon-xml-fold',
-				'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js',
-				array( 'codemirror-core' ),
-				'5.65.16',
-				true
-			);
+			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
+			wp_enqueue_script( 'select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 		}
 	}
 
@@ -361,6 +275,124 @@ class CodeSnippet {
 		}
 		wp_safe_redirect( $redirect_to );
 		exit;
+	}
+
+	/**
+	 * Ajax handler to return the posts based on the search query.
+	 * When searching for the post/pages, only titles are searched for.
+	 *
+	 * @since  1.0.0
+	 */
+	public function add_custom_page() {
+
+		if ( isset( $_POST ) ) {
+
+			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
+			if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
+				$errormessage = array(
+					'message' => esc_html__( 'Nonce Varification Failed!', 'animation-addons-for-elementor' ),
+				);
+				wp_send_json_error( $errormessage );
+			}
+
+			$search_string = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
+			$data          = array();
+			$result        = array();
+
+			$args = array(
+				'public'   => true,
+				'_builtin' => false,
+			);
+
+			$output     = 'names'; // names or objects, note names is the default.
+			$operator   = 'and'; // also supports 'or'.
+			$post_types = get_post_types( $args, $output, $operator );
+
+			unset( $post_types[ self::CPTTYPE ] ); // Exclude wcf post type templates.
+
+			$post_types['Posts'] = 'post';
+			$post_types['Pages'] = 'page';
+
+			foreach ( $post_types as $key => $post_type ) {
+				$data = array();
+
+				add_filter( 'posts_search', array( $this, 'search_only_titles' ), 10, 2 );
+
+				$query = new \WP_Query(
+					array(
+						's'              => $search_string,
+						'post_type'      => $post_type,
+						'posts_per_page' => - 1,
+					)
+				);
+
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						$query->the_post();
+						$title  = get_the_title();
+						$title .= ( 0 !== $query->post->post_parent ) ? ' (' . get_the_title( $query->post->post_parent ) . ')' : '';
+						$id     = get_the_id();
+						$data[] = array(
+							'id'   => $id,
+							'text' => $title,
+						);
+					}
+				}
+
+				if ( is_array( $data ) && ! empty( $data ) ) {
+					$result[] = array(
+						'text'     => $key,
+						'children' => $data,
+					);
+				}
+			}
+
+			$data = array();
+
+			wp_reset_postdata();
+
+			// return the result in json.
+			wp_send_json( $result );
+		} else {
+			$errormessage = array(
+				'message' => esc_html__( 'Some thing is wrong!', 'animation-addons-for-elementor' ),
+			);
+			wp_send_json_error( $errormessage );
+		}
+	}
+
+	/**
+	 * Return search results only by post title.
+	 * This is only run from hfe_get_posts_by_query()
+	 *
+	 * @param  (string)    $search   Search SQL for WHERE clause.
+	 * @param  (\WP_Query) $wp_query The current WP_Query object.
+	 *
+	 * @since 2.3.10
+	 * @return (string) The Modified Search SQL for WHERE clause.
+	 */
+	public function search_only_titles( $search, $wp_query ) {
+		if ( ! empty( $search ) && ! empty( $wp_query->query_vars['search_terms'] ) ) {
+			global $wpdb;
+
+			$q = $wp_query->query_vars;
+			$n = ! empty( $q['exact'] ) ? '' : '%';
+
+			$search = array();
+
+			foreach ( (array) $q['search_terms'] as $term ) {
+				$search[] = $wpdb->prepare( "$wpdb->posts.post_title LIKE %s", $n . $wpdb->esc_like( $term ) . $n );
+			}
+
+			if ( ! is_user_logged_in() ) {
+				$search[] = "$wpdb->posts.post_password = ''";
+			}
+
+			$search = ' AND ' . implode( ' AND ', $search );
+		}
+
+		return $search;
 	}
 }
 

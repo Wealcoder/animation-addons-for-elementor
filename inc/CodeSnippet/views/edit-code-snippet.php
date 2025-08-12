@@ -12,11 +12,10 @@ defined( 'ABSPATH' ) || exit;
 
 ?>
 <?php
-echo '<pre>';
-// var_dump(WCF_Theme_Builder::get_hf_location_selections());
-
+//echo '<pre>';
+// var_dump($snippet_details['visibility_page_list']);
+//echo '</pre>';
 $locations = WCF_Theme_Builder::get_hf_location_selections();
-echo '</pre>';
 ?>
 <div class="container">
 	<div class="header">
@@ -60,11 +59,11 @@ echo '</pre>';
 					<div class="form-group">
 						<label for="load-location"><?php esc_html_e( 'Load Location', 'animation-addons-for-elementor' ); ?></label>
 						<select id="load-location" name="load_location">
-							<option value="head" <?php selected( $snippet_details['code_type'], 'head' ); ?>>Head Section</option>
-							<option value="footer" <?php selected( $snippet_details['code_type'], 'footer' ); ?>>Footer</option>
-							<option value="body_start" <?php selected( $snippet_details['code_type'], 'body_start' ); ?>>After Body Open</option>
-							<option value="content_before" <?php selected( $snippet_details['code_type'], 'content_before' ); ?>>Before Content</option>
-							<option value="content_after" <?php selected( $snippet_details['code_type'], 'content_after' ); ?>>After Content</option>
+							<option value="head" <?php selected( $snippet_details['load_location'], 'head' ); ?>>Head Section</option>
+							<option value="footer" <?php selected( $snippet_details['load_location'], 'footer' ); ?>>Footer</option>
+							<option value="body_start" <?php selected( $snippet_details['load_location'], 'body_start' ); ?>>After Body Open</option>
+							<option value="content_before" <?php selected( $snippet_details['load_location'], 'content_before' ); ?>>Before Content</option>
+							<option value="content_after" <?php selected( $snippet_details['load_location'], 'content_after' ); ?>>After Content</option>
 						</select>
 					</div>
 				</div>
@@ -137,8 +136,12 @@ echo '</pre>';
 
 						<div class="form-subgroup">
 							<label for="visibility-page-list" class="visibility-page-list">Add Specific Pages</label>
-							<select class="visibility-page-list" name="visibility_page_list[]"
-									id="visibility-page-list" multiple="multiple">
+							<select class="visibility-page-list" name="visibility_page_list[]" id="visibility-page-list" multiple="multiple">
+								<?php foreach ( $snippet_details['visibility_page_list'] as $page ) : ?>
+									<option value="<?php echo esc_attr( $page ); ?>" selected="selected">
+										<?php echo esc_html( get_the_title( $page ) ); ?>
+									</option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 

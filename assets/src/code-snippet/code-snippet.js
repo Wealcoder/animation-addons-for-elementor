@@ -281,3 +281,67 @@ document.addEventListener('DOMContentLoaded', function () {
     // On change
     codeTypeSelect.addEventListener('change', toggleLoadLocation);
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const codeTypeSelect = document.getElementById('visibility-page');
+    const loadLocationField = document.getElementById('visibility-page-list').closest('.form-subgroup');
+
+    function toggleLoadLocation() {
+        if (codeTypeSelect.value !== 'specifics') {
+            loadLocationField.style.display = 'none';
+        } else {
+            loadLocationField.style.display = '';
+        }
+    }
+
+    // Initial check
+    toggleLoadLocation();
+
+    // On change
+    codeTypeSelect.addEventListener('change', toggleLoadLocation);
+});
+
+/// Ajax Call for page select
+(function($){
+    "use strict";
+    const WCFCustomCode = {
+        init: function() {
+            $('#visibility-page-list').select2({
+                ajax: {
+                    url: ajaxurl,
+                    dataType: 'json',
+                    method: 'post',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1,
+                            action: 'add_custom_page',
+                            nonce: WCFCustomCodeVars.nonce,
+                        };
+                    },
+                    processResults: function (data) {
+
+                        let uniqueData = [];
+                        let seen = new Set();
+                        data.forEach(item => {
+                            if (!seen.has(item.id)) {
+                                seen.add(item.id);
+                                uniqueData.push(item);
+                            }
+                        });
+                        return {
+                            results: uniqueData
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Search and select an option',
+                allowClear: true
+            });
+        },
+    };
+
+    WCFCustomCode.init();
+})(jQuery);

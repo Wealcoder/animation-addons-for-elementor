@@ -524,8 +524,12 @@ select {
 
 //Code mirror code
 .CodeMirror {
-  min-height: 500px;
+  min-height: 400px;
 }
 .notification {
   top: 50px
+}
+
+.visibility-list-item {
+  padding: 4px 10px;
 }

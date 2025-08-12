@@ -186,7 +186,8 @@ class CodeSnippetListTable extends AbstractListTable {
 					}
 					break;
 			}
-			// translators: %d: number of things deleted.
+			// translators: %d: number of snippets deleted.
+			wp_admin_notice( sprintf( _n( '%d item deleted.', '%d items deleted.', $deleted_count, 'animation-addons-for-elementor' ), $deleted_count ) );
 			wp_safe_redirect( admin_url( 'admin.php?page=wcf-code-snippet' ) );
 			exit();
 		}
@@ -229,7 +230,7 @@ class CodeSnippetListTable extends AbstractListTable {
 		$id_url    = add_query_arg( 'id', $item->ID, $admin_url );
 		$actions   = array(
 			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( 'edit', $item->ID, $admin_url ) ), __( 'Edit', 'animation-addons-for-elementor' ) ),
-			'delete' => sprintf( '<a href="%s">%s</a>', wp_nonce_url( add_query_arg( 'action', 'delete', $id_url ), 'bulk-tabs' ), __( 'Delete', 'animation-addons-for-elementor' ) ),
+			'delete' => sprintf( '<a href="%s">%s</a>', wp_nonce_url( add_query_arg( 'action', 'delete', $id_url ), 'bulk-snippets' ), __( 'Delete', 'animation-addons-for-elementor' ) ),
 		);
 
 		return sprintf( '<a href="%s">%s</a> %s', esc_url( add_query_arg( 'edit', $item->ID, $admin_url ) ), esc_html( $item->post_title ), $this->row_actions( $actions ) );
@@ -252,7 +253,15 @@ class CodeSnippetListTable extends AbstractListTable {
 				$value = strtoupper( str_replace( '-', ' ', esc_html( get_post_meta( $id, 'code_type', true ) ) ) );
 				break;
 			case 'visibility_list':
-				$id = $item->ID;
+				$id              = $item->ID;
+				$visibility_list = get_post_meta( $id, 'visibility_page_list', true );
+				if ( ! empty( $visibility_list ) && is_array( $visibility_list ) ) {
+					$value = '';
+					foreach ( $visibility_list as $visibility ) {
+						$value .= '<span class="visibility-list-item">' . esc_html( get_the_title( $visibility ) ) . '</span>,';
+					}
+					$value = rtrim( $value, ',' );
+				}
 				break;
 			case 'load_location':
 				$id    = $item->ID;
