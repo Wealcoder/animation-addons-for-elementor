@@ -52,6 +52,7 @@ class CodeSnippet {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
 		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
+		add_action( 'wp_ajax_toggle_snippet_status', array( $this, 'handle_toggle_snippet_status' ) );
 	}
 
 	/**
@@ -397,6 +398,89 @@ class CodeSnippet {
 		}
 
 		return $search;
+	}
+
+	/**
+	 * Retrieve the count of code snippets based on specified criteria.
+	 *
+	 * @param array $args Optional. Associative array of arguments to filter the snippets. Default empty array.
+	 *
+	 * @since 2.3.10
+	 * @return int
+	 */
+	public static function get_snippet_count( $args = array() ) {
+		$default_args = array(
+			'post_type'      => self::CPTTYPE,
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		);
+
+		$args = wp_parse_args( $args, $default_args );
+
+		// Handle code_type filtering.
+		if ( ! empty( $args['code_type'] ) && 'all' !== $args['code_type'] ) {
+			$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				array(
+					'key'     => 'code_type',
+					'value'   => $args['code_type'],
+					'compare' => '=',
+				),
+			);
+		}
+
+		// Remove code_type from args as it's handled by meta_query.
+		unset( $args['code_type'] );
+
+		$query = new \WP_Query( $args );
+		return $query->found_posts;
+	}
+
+	/**
+	 * Handle AJAX request to toggle snippet status.
+	 *
+	 * @since 2.3.10
+	 * @return void
+	 */
+	public function handle_toggle_snippet_status() {
+		// Verify nonce.
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'animation-addons-for-elementor' ) ) );
+		}
+
+		// Check permissions.
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
+		}
+
+		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : '';
+		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+
+		// Validate snippet exists and is of correct post type.
+		$snippet = get_post( $snippet_id );
+		if ( ! $snippet || self::CPTTYPE !== $snippet->post_type ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid snippet.', 'animation-addons-for-elementor' ) ) );
+		}
+
+		// Update the status.
+		$updated = update_post_meta( $snippet_id, 'is_active', $status );
+
+		if ( $updated ) {
+			$status_text = ( 'yes' === $status ) ? __( 'Activated', 'animation-addons-for-elementor' ) : __( 'Aeactivated', 'animation-addons-for-elementor' );
+			wp_send_json_success(
+				array(
+					'message' => sprintf(
+						/* translators: %s: snippet status text. */
+						__( 'Snippet %s successfully.', 'animation-addons-for-elementor' ),
+						$status_text
+					),
+					'status'  => $status,
+				)
+			);
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to update snippet status.', 'animation-addons-for-elementor' ) ) );
+		}
 	}
 }
 

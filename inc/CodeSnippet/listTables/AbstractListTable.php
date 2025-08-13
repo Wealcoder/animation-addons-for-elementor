@@ -17,6 +17,13 @@ if ( ! class_exists( '\WP_List_Table' ) ) {
  */
 abstract class AbstractListTable extends \WP_List_Table {
 	/**
+	 * Current page URL.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	protected $base_url;
+	/**
 	 * Get a request var, or return the default if not set.
 	 *
 	 * @param string $param Request var name.
@@ -71,5 +78,20 @@ abstract class AbstractListTable extends \WP_List_Table {
 		}
 
 		return '&mdash;';
+	}
+
+	/**
+	 * Return the status filter for this request, if any.
+	 *
+	 * @param string $fallback Default status.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	protected function get_request_status( $fallback = null ) {
+		wp_verify_nonce( '_wpnonce' );
+		$status = ( ! empty( $_GET['code_type'] ) ) ? sanitize_text_field( wp_unslash( $_GET['code_type'] ) ) : '';
+
+		return empty( $status ) ? $fallback : $status;
 	}
 }
