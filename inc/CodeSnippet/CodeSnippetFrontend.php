@@ -41,7 +41,7 @@ class CodeSnippetFrontend {
 	}
 
 	/**
-	 * Get singleton instance
+	 * Get a singleton instance
 	 *
 	 * @since 2.3.10
 	 * @return CodeSnippetFrontend
@@ -60,7 +60,8 @@ class CodeSnippetFrontend {
 	 */
 	private function init_hooks() {
 		// Load snippets at different locations.
-		add_action( 'wp_loaded', array( $this, 'run_php_code_snippets' ) );
+		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
+		add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -88,41 +89,61 @@ class CodeSnippetFrontend {
 	 * @return void
 	 */
 	public function run_php_code_snippets() {
-		$snippets = $this->get_active_snippets();
+		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
-			$this->execute_snippet( $snippet );
+			$snippet_data = aae_get_code_snippet_settings( $snippet->ID );
+			if ( $this->check_visibility_conditions( $snippet_data ) ) {
+				$this->execute_snippet( $snippet_data );
+			}
 		}
 	}
 
 	/**
 	 * Get all active code snippets
 	 *
+	 * @param string $code_type Code type.
+	 *
 	 * @since 2.3.10
 	 * @return array
 	 */
-	private function get_active_snippets() {
+	private function get_active_snippets( $code_type = null ) {
 		if ( ! empty( $this->active_snippets ) ) {
 			return $this->active_snippets;
+		}
+
+		$meta_query = array(
+			array(
+				'key'     => 'is_active',
+				'value'   => 'yes',
+				'compare' => '=',
+			),
+		);
+
+		if ( 'php' === $code_type ) {
+			$meta_query[] =
+				array(
+					'key'     => 'code_type',
+					'value'   => 'php',
+					'compare' => '=',
+				);
 		}
 
 		$args = array(
 			'post_type'      => 'wcf-code-snippet',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'     => 'is_active',
-					'value'   => 'yes',
-					'compare' => '=',
-				),
-			),
+			'meta_query'     => $meta_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_key'       => 'priority', // phpcs:ignore
 			'order'          => 'DESC',
 		);
 
 		$snippets        = get_posts( $args );
 		$active_snippets = array();
+
+		if ( 'php' === $code_type ) {
+			return $snippets;
+		}
 
 		foreach ( $snippets as $snippet ) {
 			$snippet_data = aae_get_code_snippet_settings( $snippet->ID );
@@ -182,7 +203,10 @@ class CodeSnippetFrontend {
 
 		// Check a specific page list first.
 		if ( ! empty( $visibility_page_list ) && is_array( $visibility_page_list ) ) {
-			$current_post_id = get_the_ID();
+			$current_post_id = function_exists( 'get_queried_object_id' ) ? get_queried_object_id() : 0;
+			if ( empty( $current_post_id ) ) {
+				$current_post_id = get_the_ID();
+			}
 			if ( in_array( $current_post_id, $visibility_page_list, false ) ) {
 				return true;
 			}
@@ -288,7 +312,7 @@ class CodeSnippetFrontend {
 				return is_admin();
 
 			default:
-				// Check for custom post types
+				// Check for custom post-types.
 				if ( strpos( $visibility_condition, 'singular_' ) === 0 ) {
 					$post_type = str_replace( 'singular_', '', $visibility_condition );
 					return is_singular( $post_type );
@@ -497,21 +521,18 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_php_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			// Only allow PHP execution for users with appropriate capabilities.
-			if ( current_user_can( 'edit_posts' ) || current_user_can( 'manage_options' ) ) {
-				// Use output buffering to capture any output.
-				ob_start();
-				try {
-					eval( $content ); // phpcs:ignore
-				} catch ( \Exception $e ) {
-					// Log error if debugging is enabled.
-					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-						error_log( 'Code Snippet PHP Error: ' . $e->getMessage() ); // phpcs:ignore
-					}
+			// Use output buffering to capture any output.
+			ob_start();
+			try {
+                eval( $content ); // phpcs:ignore
+			} catch ( \Exception $e ) {
+				// Log error if debugging is enabled.
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( 'Code Snippet PHP Error: ' . $e->getMessage() ); // phpcs:ignore
 				}
-				$output = ob_get_clean();
-				echo wp_kses_post( $output );
 			}
+			$output = ob_get_clean();
+			echo wp_kses_post( $output );
 		}
 	}
 }

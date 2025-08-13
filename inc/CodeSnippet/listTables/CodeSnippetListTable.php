@@ -264,8 +264,10 @@ class CodeSnippetListTable extends AbstractListTable {
 				}
 				break;
 			case 'load_location':
-				$id    = $item->ID;
-				$value = strtoupper( str_replace( '-', ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
+				$id = $item->ID;
+				if ( ! empty( get_post_meta( $id, 'load_location', true ) ) ) {
+					$value = strtoupper( str_replace( '-', ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
+				}
 				break;
 			case 'date_created':
 				$date = $item->post_modified;
