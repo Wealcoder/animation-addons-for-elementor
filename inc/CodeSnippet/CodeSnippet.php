@@ -179,7 +179,7 @@ class CodeSnippet {
 			wp_enqueue_style( 'material', WCF_ADDONS_URL . 'assets/css/cs-css/material.min.css', null, WCF_ADDONS_VERSION, 'all' );
 
 			// code mirror.
-			wp_enqueue_script( 'codemirror-core', WCF_ADDONS_URL . 'assets/js/cs-js/codemirror.min.js', array(), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'codemirror-core', WCF_ADDONS_URL . 'assets/js/cs-js/custom-code.min.js', array(), WCF_ADDONS_VERSION, true );
 			wp_enqueue_script( 'codemirror-mode-htmlmixed', WCF_ADDONS_URL . 'assets/js/cs-js/htmlmixed.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
 			wp_enqueue_script( 'codemirror-mode-js-css', WCF_ADDONS_URL . 'assets/js/cs-js/css.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
 			wp_enqueue_script( 'codemirror-mode-javascript', WCF_ADDONS_URL . 'assets/js/cs-js/javascript.min.js', array( 'codemirror-core' ), WCF_ADDONS_VERSION, true );
@@ -251,6 +251,10 @@ class CodeSnippet {
 					update_post_meta( $snippet_id, $key, 'no' );
 					continue;
 				}
+				if ( isset( $_POST['code_type'] ) && 'php' === $_POST['code_type'] && 'load_location' === $key ) {
+					update_post_meta( $snippet_id, $key, '' );
+					continue;
+				}
 				update_post_meta( $snippet_id, $key, $meta_value );
 
 			} else {
@@ -269,9 +273,9 @@ class CodeSnippet {
 
 		$redirect_to = admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id );
 		if ( isset( $_POST['snippet_id'] ) && ! empty( $_POST['snippet_id'] ) ) {
-
+			wp_admin_notice( esc_html__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ), 'success' );
 		} else {
-
+			wp_admin_notice( 'Code Snippet Added Successfully!', 'success' );
 		}
 		wp_safe_redirect( $redirect_to );
 		exit;
@@ -352,7 +356,7 @@ class CodeSnippet {
 
 			wp_reset_postdata();
 
-			// return the result in json.
+			// return the result in JSON.
 			wp_send_json( $result );
 		} else {
 			$errormessage = array(
@@ -363,10 +367,10 @@ class CodeSnippet {
 	}
 
 	/**
-	 * Return search results only by post title.
+	 * Return search results only by post-title.
 	 * This is only run from hfe_get_posts_by_query()
 	 *
-	 * @param  (string)    $search   Search SQL for WHERE clause.
+	 * @param  (string)    $search   Search SQL for the WHERE clause.
 	 * @param  (\WP_Query) $wp_query The current WP_Query object.
 	 *
 	 * @since 2.3.10

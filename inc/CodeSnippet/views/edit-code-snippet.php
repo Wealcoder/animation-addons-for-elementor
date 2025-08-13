@@ -10,11 +10,6 @@ use WCF_ADDONS\WCF_Theme_Builder;
 
 defined( 'ABSPATH' ) || exit;
 
-?>
-<?php
-//echo '<pre>';
-// var_dump($snippet_details['visibility_page_list']);
-//echo '</pre>';
 $locations = WCF_Theme_Builder::get_hf_location_selections();
 ?>
 <div class="container">
@@ -49,21 +44,22 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 					<div class="form-group">
 						<label for="code-type"><?php esc_html_e( 'Code Type', 'animation-addons-for-elementor' ); ?></label>
 						<select id="code-type" name="code_type">
-							<option value="html" <?php selected( $snippet_details['code_type'], 'html' ); ?>>HTML</option>
-							<option value="css" <?php selected( $snippet_details['code_type'], 'css' ); ?>>CSS</option>
-							<option value="javascript" <?php selected( $snippet_details['code_type'], 'javascript' ); ?>>JavaScript</option>
-							<option value="php" <?php selected( $snippet_details['code_type'], 'php' ); ?>>PHP</option>
+							<option value="html" <?php selected( $snippet_details['code_type'], 'html' ); ?>><?php echo esc_html( 'HTML' ); ?></option>
+							<option value="css" <?php selected( $snippet_details['code_type'], 'css' ); ?>><?php echo esc_html( 'CSS' ); ?></option>
+							<option value="javascript" <?php selected( $snippet_details['code_type'], 'javascript' ); ?>><?php echo esc_html( 'Java Script' ); ?></option>
+							<option value="php" <?php selected( $snippet_details['code_type'], 'php' ); ?>><?php echo esc_html( 'PHP' ); ?></option>
 						</select>
 					</div>
 
 					<div class="form-group">
 						<label for="load-location"><?php esc_html_e( 'Load Location', 'animation-addons-for-elementor' ); ?></label>
 						<select id="load-location" name="load_location">
-							<option value="head" <?php selected( $snippet_details['load_location'], 'head' ); ?>>Head Section</option>
-							<option value="footer" <?php selected( $snippet_details['load_location'], 'footer' ); ?>>Footer</option>
-							<option value="body_start" <?php selected( $snippet_details['load_location'], 'body_start' ); ?>>After Body Open</option>
-							<option value="content_before" <?php selected( $snippet_details['load_location'], 'content_before' ); ?>>Before Content</option>
-							<option value="content_after" <?php selected( $snippet_details['load_location'], 'content_after' ); ?>>After Content</option>
+							<option value=""><?php echo esc_html( 'Select Location' ); ?></option>
+							<option value="head" <?php selected( $snippet_details['load_location'], 'head' ); ?>><?php echo esc_html( 'Head Section' ); ?></option>
+							<option value="footer" <?php selected( $snippet_details['load_location'], 'footer' ); ?>><?php echo esc_html( 'Footer' ); ?></option>
+							<option value="body_start" <?php selected( $snippet_details['load_location'], 'body_start' ); ?>><?php echo esc_html( 'After Body Open' ); ?></option>
+							<option value="content_before" <?php selected( $snippet_details['load_location'], 'content_before' ); ?>><?php echo esc_html( 'Before Content' ); ?></option>
+							<option value="content_after" <?php selected( $snippet_details['load_location'], 'content_after' ); ?>><?php echo esc_html( 'After Content' ); ?></option>
 						</select>
 					</div>
 				</div>
@@ -135,13 +131,19 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 						</select>
 
 						<div class="form-subgroup">
-							<label for="visibility-page-list" class="visibility-page-list">Add Specific Pages</label>
+							<label for="visibility-page-list" class="visibility-page-list"><?php esc_html_e( 'Add Specific Pages', 'animation-addons-for-elementor' ); ?></label>
 							<select class="visibility-page-list" name="visibility_page_list[]" id="visibility-page-list" multiple="multiple">
-								<?php foreach ( $snippet_details['visibility_page_list'] as $page ) : ?>
+								<?php
+								if ( ! empty( $snippet_details['visibility_page_list'] ) && is_array( $snippet_details['visibility_page_list'] ) ) {
+									foreach ( $snippet_details['visibility_page_list'] as $page ) :
+										?>
 									<option value="<?php echo esc_attr( $page ); ?>" selected="selected">
 										<?php echo esc_html( get_the_title( $page ) ); ?>
 									</option>
-								<?php endforeach; ?>
+										<?php
+								endforeach;
+								}
+								?>
 							</select>
 						</div>
 

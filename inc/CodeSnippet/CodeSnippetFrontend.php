@@ -60,6 +60,7 @@ class CodeSnippetFrontend {
 	 */
 	private function init_hooks() {
 		// Load snippets at different locations.
+		add_action( 'wp_loaded', array( $this, 'run_php_code_snippets' ) );
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -78,6 +79,19 @@ class CodeSnippetFrontend {
 		if ( class_exists( '\Elementor\Plugin' ) ) {
 			add_action( 'elementor/frontend/before_render', array( $this, 'execute_content_before_snippets' ) );
 			add_action( 'elementor/frontend/after_render', array( $this, 'execute_content_after_snippets' ) );
+		}
+	}
+
+	/**
+	 * Run PHP code snippets.
+	 *
+	 * @return void
+	 */
+	public function run_php_code_snippets() {
+		$snippets = $this->get_active_snippets();
+
+		foreach ( $snippets as $snippet ) {
+			$this->execute_snippet( $snippet );
 		}
 	}
 
@@ -131,6 +145,7 @@ class CodeSnippetFrontend {
 	 * @return bool
 	 */
 	private function should_load_snippet( $snippet_data ) {
+
 		// Check if snippet is active.
 		if ( empty( $snippet_data['is_active'] ) || 'yes' !== $snippet_data['is_active'] ) {
 			return false;
@@ -191,8 +206,41 @@ class CodeSnippetFrontend {
 	 */
 	private function check_page_visibility( $visibility_condition ) {
 		switch ( $visibility_condition ) {
-			case 'entire_site':
+			case 'global':
 				return true;
+
+			case 'singulars':
+				return is_singular();
+
+			case 'archives':
+				return is_archive();
+
+			case '404':
+				return is_404();
+
+			case 'search':
+				return is_search();
+
+			case 'blog':
+				return is_home();
+
+			case 'front':
+				return is_front_page();
+
+			case 'date':
+				return is_date();
+
+			case 'author':
+				return is_author();
+
+			case 'post-archive':
+				return is_home() || is_archive();
+
+			case 'post-singulars':
+				return is_single();
+
+			case 'allpage':
+				return is_page();
 
 			case 'singular':
 				return is_singular();
@@ -212,9 +260,6 @@ class CodeSnippetFrontend {
 			case 'archive_post':
 				return is_home() || is_archive();
 
-			case 'search':
-				return is_search();
-
 			case 'not_found':
 				return is_404();
 
@@ -226,12 +271,6 @@ class CodeSnippetFrontend {
 
 			case 'privacy_policy':
 				return is_privacy_policy();
-
-			case 'date':
-				return is_date();
-
-			case 'author':
-				return is_author();
 
 			case 'category':
 				return is_category();
@@ -249,7 +288,7 @@ class CodeSnippetFrontend {
 				return is_admin();
 
 			default:
-				// Check for custom post types.
+				// Check for custom post types
 				if ( strpos( $visibility_condition, 'singular_' ) === 0 ) {
 					$post_type = str_replace( 'singular_', '', $visibility_condition );
 					return is_singular( $post_type );
@@ -452,8 +491,8 @@ class CodeSnippetFrontend {
 	 * Execute PHP snippet
 	 *
 	 * @param string $content PHP content.
-     *
-     * @since 2.3.10
+	 *
+	 * @since 2.3.10
 	 * @return void
 	 */
 	private function execute_php_snippet( $content ) {

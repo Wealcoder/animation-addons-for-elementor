@@ -39,7 +39,7 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 400px;
   gap: 30px;
 }
 
@@ -65,7 +65,6 @@
   background: #f8f9fa;
   padding: 25px;
   border-radius: 8px;
-  border-left: 4px solid #ff6b35;
 }
 
 .sidebar-section {
@@ -106,6 +105,7 @@
   font-size: 14px;
   transition: all 0.3s ease;
   font-family: inherit;
+  width: 100%;
 }
 .form-group input:focus,
 .form-group select:focus,
