@@ -233,57 +233,65 @@ class CodeSnippetListTable extends AbstractListTable {
 	 *
 	 * @since 1.0.0
 	 */
+	/**
+	 * Process bulk action.
+	 *
+	 * @param string $doaction Action name.
+	 *
+	 * @since 1.0.0
+	 */
 	public function process_bulk_action( $doaction ) {
-		if ( ! empty( $doaction ) && check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
-			$id  = filter_input( INPUT_GET, 'id' );
-			$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		if ( empty( $doaction ) || ! check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
+			parent::process_bulk_actions( $doaction );
+			return;
+		}
 
-			// Handle single item deletion.
-			if ( ! empty( $id ) ) {
-				$ids = wp_parse_id_list( $id );
-			} elseif ( ! empty( $ids ) ) {
-				$ids = array_map( 'absint', $ids );
-			} else {
-				// No valid IDs found, redirect back.
-				$redirect_url = remove_query_arg(
-					array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
-					wp_get_referer()
-				);
-				wp_safe_redirect( $redirect_url );
-				exit;
-			}
+		$id  = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
-			$deleted_count = 0;
-			switch ( $doaction ) {
-				case 'delete':
-					if ( ! empty( $ids ) ) {
-						foreach ( $ids as $snippet_id ) {
-							if ( wp_delete_post( $snippet_id, true ) ) {
-								++$deleted_count;
-							}
-						}
+		// Handle single item deletion.
+		if ( ! empty( $id ) ) {
+			$ids = array( absint( $id ) );
+		} elseif ( ! empty( $ids ) ) {
+			$ids = array_map( 'absint', $ids );
+		}
+
+		// If no valid IDs found, return without redirect.
+		if ( empty( $ids ) ) {
+			return;
+		}
+
+		$deleted_count = 0;
+
+		switch ( $doaction ) {
+			case 'delete':
+				foreach ( $ids as $snippet_id ) {
+					if ( wp_delete_post( $snippet_id, true ) ) {
+						++$deleted_count;
 					}
-					break;
-			}
+				}
+				break;
+		}
 
-			// Redirect back to the list page with status parameter
-			$redirect_url = remove_query_arg(
-				array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
-				wp_get_referer()
-			);
-			
-			// Add status parameters for notice display
-			if ( $deleted_count > 0 ) {
-				$redirect_url = add_query_arg( 'deleted', $deleted_count, $redirect_url );
-			} else {
-				$redirect_url = add_query_arg( 'deleted', '0', $redirect_url );
+		// Prepare redirect URL.
+		$redirect_url = remove_query_arg(
+			array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
+			wp_get_referer()
+		);
+
+		// Add status parameters for notice display.
+		if ( $deleted_count > 0 ) {
+			$redirect_url = add_query_arg( 'deleted', $deleted_count, $redirect_url );
+		}
+
+		// Clean any output and redirect.
+		if ( ! headers_sent() ) {
+			if ( ob_get_level() ) {
+				ob_clean();
 			}
-			
 			wp_safe_redirect( $redirect_url );
 			exit();
 		}
-
-		parent::process_bulk_actions( $doaction );
 	}
 
 	/**
@@ -309,9 +317,9 @@ class CodeSnippetListTable extends AbstractListTable {
 	}
 
 	/**
-	 * Renders the name column in the items list table.
+	 * Renders the name column in the item list table.
 	 *
-	 * @param object $item The current post tab object.
+	 * @param object $item The current post-tab object.
 	 *
 	 * @since  1.0.0
 	 * @return string Displays the tab name.

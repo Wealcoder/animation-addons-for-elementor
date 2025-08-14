@@ -252,6 +252,12 @@ class CodeSnippet {
 					update_post_meta( $snippet_id, $key, 'no' );
 					continue;
 				}
+
+				if ( ( isset( $_POST['visibility_page'] ) || 'specifics' !== $_POST['visibility_page'] ) && 'visibility_page_list' === $key ) {
+					update_post_meta( $snippet_id, $key, array() );
+					continue;
+				}
+
 				if ( isset( $_POST['code_type'] ) && 'php' === $_POST['code_type'] && 'load_location' === $key ) {
 					update_post_meta( $snippet_id, $key, '' );
 					continue;
@@ -457,7 +463,7 @@ class CodeSnippet {
 		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : '';
 		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
 
-		// Validate snippet exists and is of correct post type.
+		// Validate snippet exists and is of correct post-type.
 		$snippet = get_post( $snippet_id );
 		if ( ! $snippet || self::CPTTYPE !== $snippet->post_type ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid snippet.', 'animation-addons-for-elementor' ) ) );

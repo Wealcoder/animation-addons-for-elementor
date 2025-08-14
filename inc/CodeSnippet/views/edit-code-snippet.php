@@ -158,7 +158,7 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 					<?php esc_html_e( 'Back', 'animation-addons-for-elementor' ); ?>
 				</a>
 				<?php if ( ! isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-					<button class="button button-primary"><?php esc_html_e( 'Add Code Snippet', 'animation-addons-for-elementor' ); ?></button>
+					<button class="btn btn-primary"><?php esc_html_e( 'Add Code Snippet', 'animation-addons-for-elementor' ); ?></button>
 				<?php } else { ?>
 					<input type="hidden" name="snippet_id" value="<?php echo absint( $code_snippet_id ); ?>">
 					<a class="del btn btn-primary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'action', 'delete', admin_url( 'admin.php?page=wcf-code-snippet&id=' . absint( $code_snippet_id ) ) ), 'bulk-snippets' ) ); ?>"><?php esc_html_e( 'Delete', 'animation-addons-for-elementor' ); ?></a>
