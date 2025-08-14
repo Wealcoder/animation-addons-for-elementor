@@ -215,6 +215,9 @@ class WCF_Plugin_Installer {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
 
+        delete_option('aaeaddon_template_import_progress');
+        delete_option('aaeaddon_template_import_state');
+
         // Ensure $_POST['dependencies'] exists
         if (!isset($_POST['dependencies'])) {
             wp_send_json_error(__('Missing dependencies data', 'animation-addons-for-elementor'));

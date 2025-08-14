@@ -25,7 +25,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Image_Box extends Widget_Base {
 	use  WCF_Button_Trait;
-
 	/**
 	 * Retrieve the widget name.
 	 *

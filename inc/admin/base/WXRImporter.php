@@ -251,7 +251,7 @@ class WXRImporter extends \WP_Importer
 					break;
 			}
 		}
-
+		
 		$data->version = $this->version;
 
 		return $data;
@@ -325,6 +325,8 @@ class WXRImporter extends \WP_Importer
 		return $authors;
 	}
 
+
+
 	/**
 	 * The main controller for the actual import stage.
 	 *
@@ -350,18 +352,27 @@ class WXRImporter extends \WP_Importer
 		if (is_wp_error($result)) {
 			return $result;
 		}
-
+		$data = (array) $this->get_preliminary_information($file);
+		$total_init = 0;
+		$temp_title = '';
+		if (!is_wp_error($data)) {	
+			$total_init = $data['post_count'] + $data['media_count'] + $data['comment_count'] + $data['term_count'];
+			$temp_title = isset($data['title']) ? $data['title'] : '';
+		}		
+		
 		// Let's run the actual importer now, woot
 		$reader = $this->get_reader($file);
 		if (is_wp_error($reader)) {
 			return $reader;
 		}
-
+	
 		// Set the version to compatibility mode first
 		$this->version = '1.0';
 
 		// Reset other variables
 		$this->base_url = '';
+	
+		$aae_counter_progress = 0;	
 
 		// Start parsing!
 		while ($reader->read()) {
@@ -369,7 +380,7 @@ class WXRImporter extends \WP_Importer
 			if ($reader->nodeType !== XMLReader::ELEMENT) {
 				continue;
 			}
-
+          
 			switch ($reader->name) {
 				case 'wp:wxr_version':
 					// Upgrade to the correct version
@@ -399,9 +410,18 @@ class WXRImporter extends \WP_Importer
 				case 'item':
 					$node = $reader->expand();
 					$parsed = $this->parse_post_node($node);
+					$aae_counter_progress += 1;
+					update_option('aaeaddon_template_import_progress', [
+						'type' => 'single',
+						'total_items' => $total_init,
+						 'title' => $temp_title,
+						'progress' => $aae_counter_progress,
+						'data' => [						
+							'📝 Posts: ' . $aae_counter_progress,		
+						]
+					]);
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
-
 						// Skip the rest of this post
 						$reader->next();
 						break;
@@ -417,6 +437,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_author_node($node);
+					$aae_counter_progress += 1;
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -424,7 +445,15 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-
+					update_option('aaeaddon_template_import_progress', [
+						'type' => 'single',
+						'total_items' => $total_init,
+						'title' => $temp_title,
+						'progress' => $aae_counter_progress,
+						'data' => [						
+							'📝 Posts: ' . $aae_counter_progress,		
+						]
+					]);
 					$status = $this->process_author($parsed['data'], $parsed['meta']);
 					if (is_wp_error($status)) {
 						$this->log_error($status);
@@ -445,7 +474,16 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-
+					$aae_counter_progress += 1;
+					update_option('aaeaddon_template_import_progress', [
+						'type' => 'single',
+						'total_items' => $total_init,
+						'title' => $temp_title,
+						'progress' => $aae_counter_progress,
+						'data' => [						
+							'📝 Category: ' . $aae_counter_progress,		
+						]
+					]);
 					$status = $this->process_term($parsed['data'], $parsed['meta']);
 
 					// Handled everything in this node, move on to the next
@@ -456,6 +494,16 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_term_node($node, 'tag');
+					$aae_counter_progress += 1;
+					update_option('aaeaddon_template_import_progress', [
+						'type' => 'single',
+						 'total_items' => $total_init,
+						 'title' => $temp_title,
+						'progress' => $aae_counter_progress,
+						'data' => [						
+							'📝 Terms: ' . $aae_counter_progress,		
+						]
+					]);
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -474,6 +522,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_term_node($node);
+					$aae_counter_progress += 1;
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -481,7 +530,15 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-
+					update_option('aaeaddon_template_import_progress', [
+						'type' => 'single',
+						'progress' => $aae_counter_progress,
+						'title' => $temp_title,
+						'total_items' => $total_init,
+						'data' => [						
+							'📝 Terms: ' . $aae_counter_progress,		
+						]
+					]);
 					$status = $this->process_term($parsed['data'], $parsed['meta']);
 
 					// Handled everything in this node, move on to the next
@@ -496,14 +553,13 @@ class WXRImporter extends \WP_Importer
 
 		// Now that we've done the main processing, do any required
 		// post-processing and remapping.
-		$this->post_process();
+		$this->post_process();		
 
 		if ($this->options['aggressive_url_search']) {
 			$this->replace_attachment_urls_in_content();
-		}
-
+			$aae_counter_progress += 1;
+		}		
 		$this->remap_featured_images();
-
 		$this->import_end();
 	}
 
@@ -2248,6 +2304,7 @@ class WXRImporter extends \WP_Importer
 	 */
 	function remap_featured_images()
 	{
+	
 		if (empty($this->featured_images)) {
 			return;
 		}
