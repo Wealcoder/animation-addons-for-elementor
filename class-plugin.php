@@ -232,7 +232,7 @@ class Plugin
 				'dep'     => [],
 				'version' => false,
 				'arg'     => true,
-			],		
+			],
 			'ProgressBar'      => [
 				'handler' => 'progressbar',
 				'src'     => 'progressbar.min.js',
@@ -721,6 +721,13 @@ class Plugin
 			'image-compare' => [
 				'handler' => 'wcf--image-compare',
 				'src'     => 'widgets/image-compare.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+			'post-comment' => [
+				'handler' => 'wcf--post-comment',
+				'src'     => 'widgets/post-comment.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
