@@ -42,18 +42,47 @@ class Post_Comment extends Widget_Base {
 
 	protected function register_controls() {
 
-		$author = [ 'Crowdyflow', 'CrowdyTheme' ];
-		if ( ! in_array( wp_get_theme()->get( 'Author' ), $author ) ) {
-			return;
+		$author = [ 'Crowdyflow', 'CrowdyTheme', 'wealcoder' ];
+		$default = 'yes';
+		if (  in_array( wp_get_theme()->get( 'Author' ), $author ) ) {
+			$default = 'no';
 		}
+		
+		$this->start_controls_section(
+			'element_aae_fo_section',
+			[
+				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,				
+			]
+		);
+
+			$this->add_control(
+				'theme_comment_style',
+				[
+					'label' => esc_html__( 'Theme Comment Style', 'animation-addons-for-elementor' ),
+					'type' => \Elementor\Controls_Manager::SWITCHER,
+					'label_on' => esc_html__( 'yes', 'animation-addons-for-elementor' ),
+					'label_off' => esc_html__( 'No', 'animation-addons-for-elementor' ),
+					'return_value' => 'yes',
+					'default' => $default,
+					'description' => esc_html__( 'Enable this option to use the active theme comment style.', 'animation-addons-for-elementor' ),
+					
+				]
+			);
+
+		$this->end_controls_section();
+
 
 		$this->start_controls_section(
-			'element_ready_form_con_section',
+			'aawmenteady_form_con_section',
 			[
 				'label' => esc_html__( 'Container', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
-		);
+		);	
 
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
@@ -92,10 +121,13 @@ class Post_Comment extends Widget_Base {
 		$this->end_controls_section();
 
 		$this->start_controls_section(
-			'element_ready_comment_area_section',
+			'aaeelement_y_comment_area_section',
 			[
 				'label' => esc_html__( 'Comment Area', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -274,6 +306,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Avator Images', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -344,10 +379,13 @@ class Post_Comment extends Widget_Base {
 		$this->end_controls_section();
 
 		$this->start_controls_section(
-			'element_ready_form_general_section',
+			'eaae_ready_form_general_section',
 			[
 				'label' => esc_html__( 'Comment Form', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -388,10 +426,13 @@ class Post_Comment extends Widget_Base {
 
 
 		$this->start_controls_section(
-			'element_ready_form_heading_section',
+			'eaae_ready_form_heading_section',
 			[
 				'label' => esc_html__( 'Comment Box Title', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -423,6 +464,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Comment Notes', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -513,10 +557,13 @@ class Post_Comment extends Widget_Base {
 		LABEL STYLE
 	------------------------------*/
 		$this->start_controls_section(
-			'element_ready_form_label_style_section',
+			'aae_ready_form_label_style_section',
 			[
 				'label' => esc_html__( 'Label', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 
@@ -640,10 +687,13 @@ class Post_Comment extends Widget_Base {
 			INPUT STYLE START
 		----------------------------*/
 		$this->start_controls_section(
-			'element_ready_form_input_style_section',
+			'aae_ready_form_input_style_section',
 			[
 				'label' => esc_html__( 'Input', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 		$this->start_controls_tabs( 'input_box_tabs' );
@@ -986,6 +1036,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Input Radio / Checkbox', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 		$this->start_controls_tabs( 'input_radio_checkbox_tabs' );
@@ -1230,6 +1283,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Select', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 		$this->start_controls_tabs( 'select_box_tabs' );
@@ -1464,6 +1520,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Textarea', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 		$this->start_controls_tabs( 'textarea_box_tabs' );
@@ -1699,6 +1758,9 @@ class Post_Comment extends Widget_Base {
 			[
 				'label' => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'theme_comment_style!' => 'yes',
+				],
 			]
 		);
 		$this->start_controls_tabs( 'submit_style_tabs' );
@@ -1979,7 +2041,7 @@ class Post_Comment extends Widget_Base {
 	}
 
 	protected function render() {
-
+		$settings = $this->get_settings_for_display();
 		$this->switch_post();
 
 		if ( ! comments_open() && ( Plugin::$instance->preview->is_preview_mode() || Plugin::$instance->editor->is_edit_mode() ) ) :
@@ -1994,7 +2056,22 @@ class Post_Comment extends Widget_Base {
             </div>
 		<?php
 		else :
-			comments_template();
+			if($settings['theme_comment_style'] ==='yes') {
+				comments_template(); // Call without custom path
+			}else{
+			$plugin_comments_template = wp_normalize_path( WCF_ADDONS_PATH . 'templates/comments.php' );
+
+			add_filter( 'comments_template', function( $theme_template ) use ( $plugin_comments_template ) {
+				if ( file_exists( $plugin_comments_template ) ) {
+					return $plugin_comments_template;
+				}
+				return $theme_template;
+			}, 0 );
+
+			comments_template(); // Call without custom path
+			remove_all_filters( 'comments_template', 0 ); // Clean up
+			}
+			
 		endif;
 
 		Plugin::$instance->db->restore_current_post();
