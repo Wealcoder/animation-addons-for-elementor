@@ -62,6 +62,10 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 							<option value="content_after" <?php selected( $snippet_details['load_location'], 'content_after' ); ?>><?php echo esc_html( 'After Content' ); ?></option>
 						</select>
 					</div>
+
+					<div id="php-version-notice" class="form-group">
+						
+					</div>
 				</div>
 
 				<div class="form-group">
@@ -76,7 +80,7 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 
 					<!-- Add toolbar buttons -->
 					<div class="editor-toolbar">
-						<button type="button" id="theme-toggle-btn" class="button"><?php esc_html_e( 'Toggle Theme', 'animation-addons-for-elementor' ); ?></button>
+						<button type="button" id="theme-toggle-btn" class="button"><?php esc_html_e( 'Toggle Dark / Light', 'animation-addons-for-elementor' ); ?></button>
 						<button type="button" id="fullscreen-btn" class="button"><?php esc_html_e( 'Fullscreen', 'animation-addons-for-elementor' ); ?></button>
 						<button type="button" id="copy-code-btn" class="button"><?php esc_html_e( 'Copy', 'animation-addons-for-elementor' ); ?></button>
 						<button type="button" id="download-code-btn" class="button"><?php esc_html_e( 'Download', 'animation-addons-for-elementor' ); ?></button>
@@ -108,7 +112,7 @@ $locations = WCF_Theme_Builder::get_hf_location_selections();
 					<h3><?php esc_html_e( 'Priority', 'animation-addons-for-elementor' ); ?></h3>
 					<div class="form-group">
 						<label for="priority-slider"><?php esc_html_e( 'Execution Priority', 'animation-addons-for-elementor' ); ?></label>
-						<input type="range" id="priority-slider" name="priority" min="1" max="100" value="<?php echo esc_attr( $snippet_details['priority'] ); ?>" class="priority-slider" oninput="updatePriorityValue(this.value)">
+						<input type="range" id="priority-slider" name="priority" min="1" max="999" value="<?php echo esc_attr( $snippet_details['priority'] ); ?>" class="priority-slider" oninput="updatePriorityValue(this.value)">
 						<div class="priority-value" id="priority-value"><?php echo absint( $snippet_details['priority'] ); ?></div>
 						<div class="help-text"><?php esc_html_e( 'Higher numbers = higher priority', 'animation-addons-for-elementor' ); ?></div>
 					</div>

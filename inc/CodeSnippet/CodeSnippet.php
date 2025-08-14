@@ -203,9 +203,14 @@ class CodeSnippet {
 				true
 			);
 			$localize_data = array(
-				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'wcf_custom_code_security' ),
-				'adminURL' => admin_url(),
+				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( 'wcf_custom_code_security' ),
+				'adminURL'      => admin_url(),
+				'serverDetails' => array(
+					'currentVersion' => PHP_VERSION,
+					'majorVersion'   => PHP_MAJOR_VERSION,
+					'minorVersion'   => PHP_MINOR_VERSION,
+				),
 			);
 			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
 			wp_enqueue_script( 'select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
@@ -250,11 +255,6 @@ class CodeSnippet {
 				}
 				if ( 'is_active' === $key && empty( $meta_value ) ) {
 					update_post_meta( $snippet_id, $key, 'no' );
-					continue;
-				}
-
-				if ( ( isset( $_POST['visibility_page'] ) || 'specifics' !== $_POST['visibility_page'] ) && 'visibility_page_list' === $key ) {
-					update_post_meta( $snippet_id, $key, array() );
 					continue;
 				}
 

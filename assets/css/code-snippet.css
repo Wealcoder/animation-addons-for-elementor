@@ -458,3 +458,38 @@ select {
 .visibility-list-item {
   padding: 4px 10px;
 }
+
+.CodeMirror-fullscreen {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+  z-index: 9999;
+}
+
+.fullscreen-esc-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  display: none;
+  transition: background-color 0.2s;
+}
+
+.fullscreen-esc-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.fullscreen-esc-button.show {
+  display: block;
+}

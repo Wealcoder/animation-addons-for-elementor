@@ -32,7 +32,6 @@ $list_table->prepare_items();
 		$list_table->search_box( __( 'Search', 'animation-addons-for-elementor' ), 'key' );
 		$list_table->display();
 		?>
-		<input type="hidden" name="status" value="<?php echo esc_attr( $status ); ?>">
 		<input type="hidden" name="page" value="wcf-code-snippet">
 	</form>
 </div>
