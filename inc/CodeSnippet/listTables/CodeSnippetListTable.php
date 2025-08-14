@@ -289,17 +289,10 @@ class CodeSnippetListTable extends AbstractListTable {
 			if ( ob_get_level() ) {
 				ob_clean();
 			}
-			wp_admin_notice(
-				sprintf(
-					/* translators: %s: number of snippets deleted */
-					__( '%s snippet(s) deleted successfully.', 'animation-addons-for-elementor' ),
-					number_format_i18n( $deleted_count )
-				),
-				'success'
-			);
-			wp_safe_redirect( $redirect_url );
-			exit();
 		}
+
+		wp_safe_redirect( $redirect_url );
+		exit();
 	}
 
 	/**

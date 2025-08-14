@@ -47,12 +47,27 @@ class CodeSnippet {
 	 * @since 2.3.10
 	 */
 	public function __construct() {
+		add_action( 'admin_init', array( $this, 'remove_query_vars' ) );
 		add_action( 'init', array( $this, 'register_code_snippet_post_type' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 225 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
 		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
 		add_action( 'wp_ajax_toggle_snippet_status', array( $this, 'handle_toggle_snippet_status' ) );
+	}
+
+	/**
+	 * Remove Query Var.
+	 *
+	 * @since 2.3.10
+	 * @return void
+	 */
+	public function remove_query_vars() {
+		if ( isset( $_GET['page'] ) && 'wcf-code-snippet' === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$redirect = remove_query_arg( array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ), );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
 	}
 
 	/**
