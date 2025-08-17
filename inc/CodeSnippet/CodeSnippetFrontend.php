@@ -59,14 +59,13 @@ class CodeSnippetFrontend {
 	 * @return void
 	 */
 	private function init_hooks() {
-		// Load snippets at different locations.
 		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
 		add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
-		add_action( 'elementor/page_templates/canvas/before_content', array( $this, 'execute_content_before_snippets' ) );
-		add_action( 'elementor/page_templates/canvas/after_content', array( $this, 'execute_content_after_snippets' ) );
+		add_action( 'elementor/frontend/before_get_content', array( $this, 'execute_content_before_snippets' ) );
+		add_action( 'elementor/frontend/after_get_content', array( $this, 'execute_content_after_snippets' ) );
 
 		// Fallback hooks for themes that don't support wp_body_open.
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -75,12 +74,6 @@ class CodeSnippetFrontend {
 		// Content hooks.
 		add_action( 'loop_start', array( $this, 'execute_content_before_snippets' ) );
 		add_action( 'loop_end', array( $this, 'execute_content_after_snippets' ) );
-
-		// Elementor specific hooks.
-		if ( class_exists( '\Elementor\Plugin' ) ) {
-			add_action( 'elementor/frontend/before_render', array( $this, 'execute_content_before_snippets' ) );
-			add_action( 'elementor/frontend/after_render', array( $this, 'execute_content_after_snippets' ) );
-		}
 	}
 
 	/**

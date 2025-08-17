@@ -22,7 +22,6 @@ class CodeSnippetCompatibility {
 		add_action( 'wp_body_open', array( $this, 'code_snippet_body_start_fallback' ), 999 );
 		add_action( 'init', array( $this, 'code_snippet_woocommerce_hooks' ) );
 		add_action( 'init', array( $this, 'code_snippet_buddypress_hooks' ) );
-		add_action( 'wp_head', array( $this, 'code_snippet_debug_info' ), 1 );
 	}
 
 	/**
@@ -118,36 +117,6 @@ class CodeSnippetCompatibility {
 				},
 				15
 			);
-		}
-	}
-
-	/**
-	 * Outputs debugging information for code snippets if debugging is enabled,
-	 * the current user has appropriate permissions, and the debug parameter is set.
-	 *
-	 * @return void
-	 */
-	public function code_snippet_debug_info() {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && current_user_can( 'manage_options' ) ) {
-			if ( isset( $_GET['debug_snippets'] ) && '1' === $_GET['debug_snippets'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				echo '<!-- Code Snippet Debug Info -->' . "\n";
-				echo '<!-- Active Snippets: ' . count(
-					get_posts(
-						array(
-							'post_type'      => 'wcf-code-snippet',
-							'post_status'    => 'publish',
-							'posts_per_page' => -1,
-							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-								array(
-									'key'     => 'is_active',
-									'value'   => 'yes',
-									'compare' => '=',
-								),
-							),
-						)
-					)
-				) . ' -->' . "\n";
-			}
 		}
 	}
 }
