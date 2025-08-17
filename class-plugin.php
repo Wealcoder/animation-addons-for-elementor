@@ -742,8 +742,15 @@ class Plugin {
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
-			),
-		);
+            ),
+			'post-comment' => array(
+				'handler' => 'wcf--post-comment',
+				'src'     => 'widgets/post-comment.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+            ),
+        );
 	}
 
 	/**
@@ -889,6 +896,8 @@ class Plugin {
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
 		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
+		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
+		include_once WCF_ADDONS_PATH . 'inc/admin/image-cache.php';
 
 		// extensions.
 		$this->register_extensions();
@@ -980,12 +989,12 @@ class Plugin {
 								<input id="wcf-template-library-filter-text" placeholder="Search">
 								<i class="eicon-search"></i>
 							</div>
-						</div> 
+						</div>
 
 						<!--templates -->
 						<div class="wcf-library-templates">
 							<#
-							_.each( data.templates, function( item, key ) {                          
+							_.each( data.templates, function( item, key ) {
 							#>
 							<div class="wcf-library-template" data-id="{{item.id}}" data-url="{{item.url}}">
 								<div class="thumbnail">
@@ -1014,7 +1023,7 @@ class Plugin {
 											<i class="eicon-external-link-square"></i>
 											<?php echo esc_html__( 'Activate', 'animation-addons-for-elementor' ); ?>
 									</button>
-									<?php } ?>                                									
+									<?php } ?>
 								<# } #>
 								<p class="title">{{{ item.title }}}</p>
 							</div>

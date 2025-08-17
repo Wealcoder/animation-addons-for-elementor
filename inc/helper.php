@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * {@link https://developer.wordpress.org/reference/classes/wp_query/
  * WP_Query} documentation in the Developer Handbook.
  *
+ *
  * @param array $args
  *
  * @return WP_Post[]|int[] Array of post objects or post IDs.
@@ -23,8 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 	function wcf_addons_get_saved_template_list( $args = null ) {
 
-		$post_list     = array();
-		$user          = wp_get_current_user();
+		$post_list = [];
+		$user = wp_get_current_user();
 		$allowed_roles = array( 'editor', 'administrator', 'author' );
 
 		if ( array_intersect( $allowed_roles, $user->roles ) || is_super_admin() ) {
@@ -36,7 +37,7 @@ if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 			);
 
 			$parsed_args              = wp_parse_args( $args, $defaults );
-			$parsed_args['post_type'] = 'elementor_library'; // don't overwrite post type
+			$parsed_args['post_type'] = 'elementor_library'; //don't overwrite post type
 			$posts                    = get_posts( $parsed_args );
 			if ( $posts ) {
 				foreach ( $posts as $post ) {
@@ -189,18 +190,18 @@ endif;
  *  @return false|mixed|numeric
  */
 if ( ! function_exists( 'wcf_addons_element_status' ) ) :
-	function wcf_addons_element_status( $option_name, $key, $element = null ) {
+	function wcf_addons_element_status($option_name, $key, $element = null ) {
 		$status = checked( 1, wcf_addons_get_settings( $option_name, $key ), false );
 
 		if ( ! is_null( $element ) ) {
 			if ( $element['is_pro'] || $element['is_extension'] ) {
 
-				// pro elements
+				//pro elements
 				if ( $element['is_pro'] && ! defined( 'WCF_ADDONS_PRO_VERSION' ) ) {
 					$status = 'disabled';
 				}
 
-				// extension elements
+				//extension elements
 				if ( $element['is_extension'] && ! defined( 'WCF_ADDONS_EX_VERSION' ) ) {
 					$status = 'disabled';
 				}
@@ -215,6 +216,7 @@ if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
 
 	/**
 	 * Return saved settings
+	 *
 	 */
 	function wcf_addons_get_settings( $option_name, $element = null ) {
 		$elements = get_option( $option_name );
@@ -225,21 +227,22 @@ if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
 if ( ! function_exists( 'wcf_set_postview' ) ) {
 	/**
 	 * save single post view count
+	 *
 	 */
 	function wcf_set_postview( $template ) {
-		if ( ! is_singular() ) {
+		if(!is_singular()){
 			return;
 		}
-		$postID    = get_the_ID();
-		$count_key = 'wcf_post_views_count';
-		$count     = get_post_meta( $postID, $count_key, true );
+		$postID     = get_the_ID();
+		$count_key  = 'wcf_post_views_count';
+		$count      = get_post_meta( $postID, $count_key, true );
 
 		if ( $count == '' ) {
 			$count = 0;
 			delete_post_meta( $postID, $count_key );
 			add_post_meta( $postID, $count_key, '0' );
 		} else {
-			++$count;
+			$count ++;
 			delete_post_meta( $postID, $count_key );
 			update_post_meta( $postID, $count_key, $count );
 		}
@@ -248,42 +251,42 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	}
 }
 
-if ( ! function_exists( 'wcf_get_nested_config_keys' ) ) {
-	function wcf_get_nested_config_keys( $array, &$foundKeys, &$active ) {
-		foreach ( $array as $key => $value ) {
+if( !function_exists('wcf_get_nested_config_keys') ) {
+	function wcf_get_nested_config_keys($array, &$foundKeys, &$active) {
+		foreach ($array as $key => $value) {
 			// Check if the current key is one we're looking for
-			if ( isset( $value['is_active'] ) && $value['is_active'] == true ) {
+			if (isset($value['is_active']) && $value['is_active'] == true) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active
-				$active[ $key ] = true;
+				$active[$key] = true;
 			}
 
 			// If value is an array, recurse into it
-			if ( is_array( $value ) ) {
-				wcf_get_nested_config_keys( $value, $foundKeys, $active );
+			if (is_array($value)) {
+				wcf_get_nested_config_keys($value,$foundKeys, $active);
 			}
 		}
 	}
 }
 
-if ( ! function_exists( 'wcf_get_db_updated_config' ) ) {
+if( !function_exists('wcf_get_db_updated_config') ) {
 
-	function wcf_get_db_updated_config( array &$configs, array $dbActiveElements ) {
+	function wcf_get_db_updated_config(array &$configs, array $dbActiveElements) {
 		// Loop through each item in the configs array
-		foreach ( $configs as $key => &$element ) {
+		foreach ($configs as $key => &$element) {
 
 			// Check if the current element is an array and has an 'is_active' field
-			if ( is_array( $element ) && isset( $element['is_active'] ) ) {
+			if (is_array($element) && isset($element['is_active'])) {
 				// If the current key is in the dbActiveElements array, update is_active to true
-				if ( in_array( $key, $dbActiveElements ) ) {
+				if (in_array($key, $dbActiveElements)) {
 					$element['is_active'] = true;
 				}
 			}
 
 			// Recursively call the function for any nested elements
-			if ( is_array( $element ) ) {
-				wcf_get_db_updated_config( $element, $dbActiveElements );
+			if (is_array($element) ) {
+				wcf_get_db_updated_config($element, $dbActiveElements);
 			}
 		}
 	}
@@ -291,54 +294,54 @@ if ( ! function_exists( 'wcf_get_db_updated_config' ) ) {
 }
 
 
-if ( ! function_exists( 'wcf_get_total_config_elements_by_key' ) ) {
-	function wcf_get_total_config_elements_by_key( $array, &$foundKeys = 0 ) {
-		foreach ( $array as $key => $value ) {
+if( !function_exists('wcf_get_total_config_elements_by_key') ) {
+	function wcf_get_total_config_elements_by_key($array, &$foundKeys=0) {
+		foreach ($array as $key => $value) {
 			// Check if the current key is one we're looking for
-			if ( isset( $value['is_active'] ) && isset( $value['is_extension'] ) && isset( $value['is_pro'] ) ) {
+			if (isset($value['is_active']) && isset($value['is_extension']) && isset($value['is_pro'])) {
 				++$foundKeys;
 			}
 
 			// If value is an array, recurse into it
-			if ( is_array( $value ) ) {
-				wcf_get_total_config_elements_by_key( $value, $foundKeys );
+			if (is_array($value)) {
+				wcf_get_total_config_elements_by_key($value,$foundKeys);
 			}
 		}
 	}
 }
 
 
-if ( ! function_exists( 'wcf_get_search_active_keys' ) ) {
-	function wcf_get_search_active_keys( $array, $keysToFind, &$foundKeys, &$active ) {
-		foreach ( $array as $key => $value ) {
+if( !function_exists('wcf_get_search_active_keys') ) {
+	function wcf_get_search_active_keys($array, $keysToFind, &$foundKeys, &$active) {
+		foreach ($array as $key => $value) {
 			// Check if the current key is one we're looking for
-			if ( in_array( $key, $keysToFind ) && is_array( $value ) && array_key_exists( 'is_extension', $value ) ) {
+			if (in_array($key, $keysToFind) && is_array($value) && array_key_exists('is_extension', $value)) {
 				// Add to found keys list
-				$foundKeys[] = sanitize_text_field( $key );
+				$foundKeys[] = sanitize_text_field($key);
 				// Store the entire element in $active
 				$value['is_active'] = 1;
-				$active[ $key ]     = $value;
+				$active[$key] = $value;
 			}
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			if ( is_array( $value ) ) {
-				wcf_get_search_active_keys( $value, $keysToFind, $foundKeys, $active );
+			if (is_array($value)) {
+				wcf_get_search_active_keys($value, $keysToFind, $foundKeys, $active);
 			}
 		}
 	}
 }
 
-if ( ! function_exists( 'wcf_get_addon_active_extension_by_key' ) ) {
+if(!function_exists('wcf_get_addon_active_extension_by_key')) {
 
-	function wcf_get_addon_active_extension_by_key( $search ) {
+	function wcf_get_addon_active_extension_by_key($search){
 
 		$ext = get_option( 'wcf_save_extensions' );
-		if ( is_array( $ext ) ) {
-			$saved_ext = array_keys( $ext );
-			$found_key = array_search( $search, $saved_ext );
-			if ( $found_key !== false ) {
+		if(is_array($ext)){
+			$saved_ext  = array_keys( $ext );
+			$found_key = array_search($search, $saved_ext);
+			if($found_key !==false){
 				return true;
 			}
-		} else {
+		}else{
 			return true;
 		}
 
@@ -347,34 +350,35 @@ if ( ! function_exists( 'wcf_get_addon_active_extension_by_key' ) ) {
 
 }
 
-if ( ! function_exists( 'wcfaddon_get_current_user_roles' ) ) {
+if(!function_exists('wcfaddon_get_current_user_roles')) {
 	function wcfaddon_get_current_user_roles() {
 
-		if ( is_user_logged_in() ) {
+		if( is_user_logged_in() ) {
 
-			$user = wp_get_current_user();
+		  $user = wp_get_current_user();
 
-			$roles = (array) $user->roles;
+		  $roles = ( array ) $user->roles;
 
-			if ( is_super_admin() ) {
-				$roles[] = 'administrator'; // Add administrator role for super admins
-			}
+		  if(is_super_admin()){
+			$roles[] = 'administrator'; // Add administrator role for super admins
+		  }
 
-			return $roles; // This will returns an array
+		  return $roles; // This will returns an array
 
 		} else {
 
-			return array();
+		  return [];
 
 		}
+
 	}
 
 }
 
-if ( ! function_exists( 'wcfaddon_get_pronotice_html' ) ) {
+if(!function_exists('wcfaddon_get_pronotice_html')){
 	function wcfaddon_get_pronotice_html() {
-		$img_src     = esc_url( WCF_ADDONS_URL . 'assets/images/get-pro.png' ); // Replace '#' with the actual URL or dynamic value
-		$upgrade_url = esc_url( 'https://animation-addons.com/' ); // Replace '#' with the actual upgrade URL
+		$img_src = esc_url(WCF_ADDONS_URL.'assets/images/get-pro.png'); // Replace '#' with the actual URL or dynamic value
+		$upgrade_url = esc_url('https://animation-addons.com/'); // Replace '#' with the actual upgrade URL
 
 		return sprintf(
 			'<div class="wcfaddon-pro-notice">
@@ -386,23 +390,23 @@ if ( ! function_exists( 'wcfaddon_get_pronotice_html' ) ) {
 				</div>
 			</div>',
 			$img_src,
-			esc_attr( __( 'Upgrade Notice', 'animation-addons-for-elementor' ) ),
-			__( 'Upgrade to premium plan and unlock every feature!', 'animation-addons-for-elementor' ),
-			__( 'Upgrade and get access to every feature.', 'animation-addons-for-elementor' ),
+			esc_attr(__('Upgrade Notice', 'animation-addons-for-elementor')),
+			__('Upgrade to premium plan and unlock every feature!', 'animation-addons-for-elementor'),
+			__('Upgrade and get access to every feature.', 'animation-addons-for-elementor'),
 			$upgrade_url,
-			__( 'Upgrade Animation Addon', 'animation-addons-for-elementor' )
+			__('Upgrade Animation Addon', 'animation-addons-for-elementor')
 		);
 	}
 }
 
-if ( ! function_exists( 'aaeaddon_format_number_count' ) ) {
-	function aaeaddon_format_number_count( $count ) {
-		if ( $count >= 1000000000 ) {
-			return number_format( $count / 1000000000, 1 ) . esc_html__( 'b', 'animation-addons-for-elementor' ); // Billion
-		} elseif ( $count >= 1000000 ) {
-			return number_format( $count / 1000000, 1 ) . esc_html__( 'm', 'animation-addons-for-elementor' ); // Million
-		} elseif ( $count >= 1000 ) {
-			return number_format( $count / 1000, 1 ) . esc_html__( 'k', 'animation-addons-for-elementor' ); // Thousand
+if(!function_exists('aaeaddon_format_number_count')) {
+	function aaeaddon_format_number_count($count) {
+		if ($count >= 1000000000) {
+			return number_format($count / 1000000000, 1) . esc_html__('b','animation-addons-for-elementor'); // Billion
+		} elseif ($count >= 1000000) {
+			return number_format($count / 1000000, 1) . esc_html__('m','animation-addons-for-elementor'); // Million
+		} elseif ($count >= 1000) {
+			return number_format($count / 1000, 1) . esc_html__('k','animation-addons-for-elementor'); // Thousand
 		}
 		return $count; // Less than 1000, return the count as is
 	}
@@ -417,14 +421,14 @@ function filter_search_by_date_and_category( $query ) {
 		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( wp_unslash( $_GET['to_date'] ) ) : '';
 
 		if ( $from_date || $to_date ) {
-			$date_query = array( 'inclusive' => true );
+			$date_query = [ 'inclusive' => true ];
 			if ( $from_date ) {
 				$date_query['after'] = $from_date;
 			}
 			if ( $to_date ) {
 				$date_query['before'] = $to_date;
 			}
-			$query->set( 'date_query', array( $date_query ) );
+			$query->set( 'date_query', [ $date_query ] );
 		}
 
 		// ==== Category filter ====
@@ -440,93 +444,95 @@ function filter_search_by_date_and_category( $query ) {
 
 add_action( 'pre_get_posts', 'filter_search_by_date_and_category' );
 
-if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
+if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 
 	function aae_addon_breadcrumbs() {
 		global $post;
 
 		$separator = ' &raquo; ';
-		echo '<div class="aae-breadcrumbs"><a href="' . home_url() . '">' . esc_html__( 'Home', 'animation-addons-for-elementor' ) . '</a>';
+		echo '<div class="aae-breadcrumbs"><a href="' . home_url() . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
 
-		if ( is_front_page() ) {
+		if (is_front_page()) {
 			echo '</div>';
 			return;
 		}
 
 		echo $separator;
 
-		if ( is_category() || ( is_single() && get_post_type() === 'post' ) ) {
+		if (is_category() || (is_single() && get_post_type() === 'post')) {
 			$cat = get_the_category();
-			if ( ! empty( $cat ) ) {
+			if (!empty($cat)) {
 				$category = $cat[0];
-				$parents  = get_category_parents( $category, true, $separator );
-				echo wp_kses_post( $parents );
+				$parents = get_category_parents($category, true, $separator);
+				echo wp_kses_post($parents);
 			}
 
-			if ( is_single() ) {
-				echo esc_html( get_the_title() );
+			if (is_single()) {
+				echo esc_html(get_the_title());
 			}
-		} elseif ( is_page() ) {
-			if ( $post->post_parent ) {
-				$parent_id   = $post->post_parent;
-				$breadcrumbs = array();
 
-				while ( $parent_id ) {
-					$page          = get_post( $parent_id );
-					$breadcrumbs[] = '<a href="' . esc_url( get_permalink( $page->ID ) ) . '">' . esc_html( get_the_title( $page->ID ) ) . '</a>';
-					$parent_id     = $page->post_parent;
+		} elseif (is_page()) {
+			if ($post->post_parent) {
+				$parent_id = $post->post_parent;
+				$breadcrumbs = [];
+
+				while ($parent_id) {
+					$page = get_post($parent_id);
+					$breadcrumbs[] = '<a href="' . esc_url(get_permalink($page->ID)) . '">' . esc_html(get_the_title($page->ID)) . '</a>';
+					$parent_id = $page->post_parent;
 				}
 
-				echo implode( $separator, array_reverse( $breadcrumbs ) ) . $separator;
+				echo implode($separator, array_reverse($breadcrumbs)) . $separator;
 			}
 
-			echo esc_html( get_the_title() );
+			echo esc_html(get_the_title());
 
-		} elseif ( is_singular() && ! is_page() ) {
-			$post_type = get_post_type_object( get_post_type() );
+		} elseif (is_singular() && !is_page()) {
+			$post_type = get_post_type_object(get_post_type());
 
-			if ( $post_type && $post_type->has_archive ) {
-				echo '<a href="' . esc_url( get_post_type_archive_link( get_post_type() ) ) . '">' . esc_html( $post_type->labels->name ) . '</a>' . $separator;
+			if ($post_type && $post_type->has_archive) {
+				echo '<a href="' . esc_url(get_post_type_archive_link(get_post_type())) . '">' . esc_html($post_type->labels->name) . '</a>' . $separator;
 			}
 
-			$taxonomies = get_object_taxonomies( get_post_type() );
-			foreach ( $taxonomies as $taxonomy ) {
-				$terms = get_the_terms( get_the_ID(), $taxonomy );
-				if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-					$term = current( $terms );
-					echo '<a href="' . esc_url( get_term_link( $term ) ) . '">' . esc_html( $term->name ) . '</a>' . $separator;
+			$taxonomies = get_object_taxonomies(get_post_type());
+			foreach ($taxonomies as $taxonomy) {
+				$terms = get_the_terms(get_the_ID(), $taxonomy);
+				if (!empty($terms) && !is_wp_error($terms)) {
+					$term = current($terms);
+					echo '<a href="' . esc_url(get_term_link($term)) . '">' . esc_html($term->name) . '</a>' . $separator;
 					break;
 				}
 			}
 
-			echo esc_html( get_the_title() );
+			echo esc_html(get_the_title());
 
-		} elseif ( is_archive() ) {
-			if ( is_post_type_archive() ) {
-				echo esc_html( post_type_archive_title( '', false ) );
-			} elseif ( is_tax() || is_tag() || is_category() ) {
+		} elseif (is_archive()) {
+			if (is_post_type_archive()) {
+				echo esc_html(post_type_archive_title('', false));
+			} elseif (is_tax() || is_tag() || is_category()) {
 				$term = get_queried_object();
-				if ( $term->parent ) {
-					$parent_term = get_term( $term->parent, $term->taxonomy );
-					echo '<a href="' . esc_url( get_term_link( $parent_term ) ) . '">' . esc_html( $parent_term->name ) . '</a>' . $separator;
+				if ($term->parent) {
+					$parent_term = get_term($term->parent, $term->taxonomy);
+					echo '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . $separator;
 				}
-				echo esc_html( $term->name );
-			} elseif ( is_day() ) {
-				echo esc_html( get_the_date( 'F j, Y' ) );
-			} elseif ( is_month() ) {
-				echo esc_html( get_the_date( 'F Y' ) );
-			} elseif ( is_year() ) {
-				echo esc_html( get_the_date( 'Y' ) );
-			} elseif ( is_author() ) {
-				echo esc_html__( 'Author: ', 'animation-addons-for-elementor' ) . esc_html( get_the_author() );
+				echo esc_html($term->name);
+			} elseif (is_day()) {
+				echo esc_html(get_the_date('F j, Y'));
+			} elseif (is_month()) {
+				echo esc_html(get_the_date('F Y'));
+			} elseif (is_year()) {
+				echo esc_html(get_the_date('Y'));
+			} elseif (is_author()) {
+				echo esc_html__('Author: ', 'animation-addons-for-elementor') . esc_html(get_the_author());
 			} else {
-				echo esc_html__( 'Archives', 'animation-addons-for-elementor' );
+				echo esc_html__('Archives', 'animation-addons-for-elementor');
 			}
-		} elseif ( is_search() ) {
-			echo esc_html__( 'Search Results for: ', 'animation-addons-for-elementor' ) . esc_html( get_search_query() );
 
-		} elseif ( is_404() ) {
-			echo esc_html__( '404 - Page not found', 'animation-addons-for-elementor' );
+		} elseif (is_search()) {
+			echo esc_html__('Search Results for: ', 'animation-addons-for-elementor') . esc_html(get_search_query());
+
+		} elseif (is_404()) {
+			echo esc_html__('404 - Page not found', 'animation-addons-for-elementor');
 		}
 
 		echo '</div>';
@@ -534,24 +540,23 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 
 }
 
-
 if ( ! function_exists( 'aae_get_list_table' ) ) {
-	/**
-	 * Get list table class.
-	 *
-	 * @param string $type Type of list table to get.
-	 *
-	 * @since 2.3.10
-	 * @return object
-	 */
-	function aae_get_list_table( $type ) {
-		switch ( $type ) {
-			case 'wcf-code-snippet':
-			default:
-				$list_table = new \WCF_ADDONS\CodeSnippet\listTables\CodeSnippetListTable();
-				break;
-		}
+    /**
+     * Get list table class.
+     *
+     * @param string $type Type of list table to get.
+     *
+     * @since 2.3.10
+     * @return object
+     */
+    function aae_get_list_table( $type ) {
+        switch ( $type ) {
+            case 'wcf-code-snippet':
+            default:
+                $list_table = new \WCF_ADDONS\CodeSnippet\listTables\CodeSnippetListTable();
+                break;
+        }
 
-		return $list_table;
-	}
+        return $list_table;
+    }
 }

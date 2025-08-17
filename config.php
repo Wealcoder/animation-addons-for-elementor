@@ -4,2200 +4,2213 @@ if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
 
-$config = [
-	'widgets'            => [
+$config = array(
+	'widgets'            => array(
 		'is_active' => false,
-		'elements'  => [
-			'general-elements'   => [
+		'elements'  => array(
+			'general-elements'   => array(
 				'title'     => 'General Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'image-box'            => [
+				'elements'  => array(
+					'image-box'            => array(
 						'label'        => 'Image Box',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Image-Box",
+						'icon'         => 'wcf-icon-Image-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-box/',
 						'youtube_url'  => '',
-						'description'  => 'Create graceful image sections with animations, refined content placement, and thoughtful design.'
-					],
-					'image-box-slider'     => [
+						'description'  => 'Create graceful image sections with animations, refined content placement, and thoughtful design.',
+					),
+					'image-box-slider'     => array(
 						'label'        => 'Image Box Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Image-Box-Slider",
+						'icon'         => 'wcf-icon-Image-Box-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-box-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-box-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Craft graceful image sliders with custom styles, animations, and smooth transitions for a polished presentation.'
-					],
-					'image-hotspot'        => [
+						'description'  => 'Craft graceful image sliders with custom styles, animations, and smooth transitions for a polished presentation.',
+					),
+					'image-hotspot'        => array(
 						'label'        => 'Image Hotspot',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
-					'social-icons'         => [
+						'description'  => '',
+					),
+					'social-icons'         => array(
 						'label'        => 'Social Icons',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Social-Icons",
+						'icon'         => 'wcf-icon-Social-Icons',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-social-icons',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/social-icons/',
 						'youtube_url'  => '',
-						'description'  => 'Link your social accounts and customize the look to perfectly match your branding.'
-					],
-					'image'                => [
+						'description'  => 'Link your social accounts and customize the look to perfectly match your branding.',
+					),
+					'image'                => array(
 						'label'        => 'Image',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Image",
+						'icon'         => 'wcf-icon-Image',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image',
 						'doc_url'      => 'https://animation-addons.com/docs/docs/general/image-widget/',
 						'youtube_url'  => '',
-						'description'  => 'Use this widget to display and animate images with precise control and styling options.'
-					],
-					'image-gallery'        => [
+						'description'  => 'Use this widget to display and animate images with precise control and styling options.',
+					),
+					'image-gallery'        => array(
 						'label'        => 'Image Gallery',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Image-Gallery",
+						'icon'         => 'wcf-icon-Image-Gallery',
 						'demo_url'     => 'https://animation-addons.com/widgets/image-gallery-widget',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-gallery/',
 						'youtube_url'  => '',
-						'description'  => 'Create an engaging image gallery that fits perfectly with your site’s design and style.'
-					],
-					'text-hover-image'     => [
+						'description'  => 'Create an engaging image gallery that fits perfectly with your site’s design and style.',
+					),
+					'text-hover-image'     => array(
 						'label'        => 'Text Hover Image',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Text-Hover-Image",
+						'icon'         => 'wcf-icon-Text-Hover-Image',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-text-hover-image',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/text-hover-image/',
 						'youtube_url'  => '',
-						'description'  => 'Hover over text and reveal images for an interactive, engaging visual surprise!'
-					],
-					'brand-slider'         => [
+						'description'  => 'Hover over text and reveal images for an interactive, engaging visual surprise!',
+					),
+					'brand-slider'         => array(
 						'label'        => 'Brand Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Brand-Slider",
+						'icon'         => 'wcf-icon-Brand-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-brand-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/brand-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Boost credibility and visibility by highlighting trusted logos with a smooth, auto-scrolling slider.'
-					],
-					'counter'              => [
+						'description'  => 'Boost credibility and visibility by highlighting trusted logos with a smooth, auto-scrolling slider.',
+					),
+					'counter'              => array(
 						'label'        => 'Counter',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Counter",
+						'icon'         => 'wcf-icon-Counter',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-counter',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/counter/',
 						'youtube_url'  => '',
-						'description'  => 'Impress visitors with live stats and milestones using fully animated number counters.'
-					],
-					'icon-box'             => [
+						'description'  => 'Impress visitors with live stats and milestones using fully animated number counters.',
+					),
+					'icon-box'             => array(
 						'label'        => 'Icon Box',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Icon-Box",
+						'icon'         => 'wcf-icon-Icon-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-icon-box',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/icon-box/',
 						'youtube_url'  => '',
-						'description'  => 'Refine your content presentation with flexible icon styling, typography, and layout options.'
-					],
-					'testimonial'          => [
+						'description'  => 'Refine your content presentation with flexible icon styling, typography, and layout options.',
+					),
+					'testimonial'          => array(
 						'label'        => 'Testimonial',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Testimonial",
+						'icon'         => 'wcf-icon-Testimonial',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-testimonial',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/testimonial/',
 						'youtube_url'  => '',
-						'description'  => 'Share real stories and success quotes using animated testimonial sliders and flexible content settings.'
-					],
-					'testimonial2'         => [
+						'description'  => 'Share real stories and success quotes using animated testimonial sliders and flexible content settings.',
+					),
+					'testimonial2'         => array(
 						'label'        => 'Classic Testimonial',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Testimonial-2",
+						'icon'         => 'wcf-icon-Testimonial-2',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-classic-testimonial',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/classic-testimonial/',
 						'youtube_url'  => '',
-						'description'  => 'Showcase real stories and client praise with a sleek, responsive testimonial carousel.'
-					],
-					'testimonial3'         => [
+						'description'  => 'Showcase real stories and client praise with a sleek, responsive testimonial carousel.',
+					),
+					'testimonial3'         => array(
 						'label'        => 'Modern Testimonial',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Testimonial-3",
+						'icon'         => 'wcf-icon-Testimonial-3',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-modern-testimonial',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/modern-testimonial/',
 						'youtube_url'  => '',
-						'description'  => 'Highlight customer feedback with modern layouts, smooth sliders, and customizable design elements.'
-					],
-					'advanced-testimonial' => [
+						'description'  => 'Highlight customer feedback with modern layouts, smooth sliders, and customizable design elements.',
+					),
+					'advanced-testimonial' => array(
 						'label'        => 'Advanced Testimonial',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Testimonial-3",
+						'icon'         => 'wcf-icon-Testimonial-3',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-testimonial',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-testimonial-3/',
 						'youtube_url'  => '',
-						'description'  => 'Create a stunning, responsive testimonial section with smooth transitions and customization options.'
-					],
-					'button'               => [
+						'description'  => 'Create a stunning, responsive testimonial section with smooth transitions and customization options.',
+					),
+					'button'               => array(
 						'label'        => 'Button',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Button",
+						'icon'         => 'wcf-icon-Button',
 						'demo_url'     => 'https://animation-addons.com/aae-button',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/button/',
 						'youtube_url'  => '',
-						'description'  => 'Create bold, clickable buttons with text, icons, alignment, and hover animation options.'
-					],
-					'button-pro'           => [
+						'description'  => 'Create bold, clickable buttons with text, icons, alignment, and hover animation options.',
+					),
+					'button-pro'           => array(
 						'label'        => 'Advanced Button',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Button-Pro",
+						'icon'         => 'wcf-icon-Button-Pro',
 						'demo_url'     => 'https://animation-addons.com/aae-advanced-button',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/advanced-button/',
 						'youtube_url'  => '',
-						'description'  => 'Advanced Button lets you tweak padding, border radius, typography, and interactive hover styles'
-					],
-					'image-compare'        => [
+						'description'  => 'Advanced Button lets you tweak padding, border radius, typography, and interactive hover styles',
+					),
+					'image-compare'        => array(
 						'label'        => 'Image Comparison',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Image-Compare",
+						'icon'         => 'wcf-icon-Image-Compare',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-comparison',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-comparison/',
 						'youtube_url'  => '',
-						'description'  => 'This widget renders two images with synchronized alignment, interactive drag, and responsive customization options.'
-					],
-					'progressbar'          => [
+						'description'  => 'This widget renders two images with synchronized alignment, interactive drag, and responsive customization options.',
+					),
+					'progressbar'          => array(
 						'label'        => 'Progress Bar',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Progress-Bar",
+						'icon'         => 'wcf-icon-Progress-Bar',
 						'demo_url'     => 'https://animation-addons.com/aae-progress-bar',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/progress-bar/',
 						'youtube_url'  => '',
-						'description'  => 'Add a clean progress bar that reflects achievements using smooth transitions and clear text labels.'
-					],
-					'team'                 => [
+						'description'  => 'Add a clean progress bar that reflects achievements using smooth transitions and clear text labels.',
+					),
+					'team'                 => array(
 						'label'        => 'Team',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Team",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Team',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-team',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/team/',
 						'youtube_url'  => '',
-						'description'  => 'Help visitors meet your team with photos, job titles, and clickable social media icons.'
-					],
-					'notification'         => [
+						'description'  => 'Help visitors meet your team with photos, job titles, and clickable social media icons.',
+					),
+					'notification'         => array(
 						'label'        => 'Notification',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Notification",
+						'icon'         => 'wcf-icon-Notification',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-notification',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/widgets/wcf-widgets/wcf-notification/',
 						'youtube_url'  => '',
-						'description'  => 'Inform users instantly with attention-grabbing notifications, designed to blend seamlessly with your site.'
-					],
-					'one-page-nav'         => [
+						'description'  => 'Inform users instantly with attention-grabbing notifications, designed to blend seamlessly with your site.',
+					),
+					'one-page-nav'         => array(
 						'label'        => 'One Page Nav',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-One-Page-Nav",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-One-Page-Nav',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-one-page-nav',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/one-page-nav/',
 						'youtube_url'  => '',
-						'description'  => 'Hover to preview section names and smoothly swipe between sections on your one-page layout.'
-					],
-					'timeline'             => [
+						'description'  => 'Hover to preview section names and smoothly swipe between sections on your one-page layout.',
+					),
+					'timeline'             => array(
 						'label'        => 'Timeline',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Timeline",
+						'icon'         => 'wcf-icon-Timeline',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-timeline',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/timeline/',
 						'youtube_url'  => '',
-						'description'  => 'Use animated timelines to present events or project stages in a clear, organized progression.'
-					],
-					'tabs'                 => [
+						'description'  => 'Use animated timelines to present events or project stages in a clear, organized progression.',
+					),
+					'tabs'                 => array(
 						'label'        => 'Tabs',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Tabs",
+						'icon'         => 'wcf-icon-Tabs',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-tabs',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/tabs/',
 						'youtube_url'  => '',
-						'description'  => 'Customize your tabs with various icons, titles, and styles for a tailored design approach.'
-					],
-					'services-tab'         => [
+						'description'  => 'Customize your tabs with various icons, titles, and styles for a tailored design approach.',
+					),
+					'services-tab'         => array(
 						'label'        => 'Services Tabs',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Services-Tabs",
+						'icon'         => 'wcf-icon-Services-Tabs',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-services-tabs',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/services-tabs/',
 						'youtube_url'  => '',
-						'description'  => 'Display your services in an attractive, tabbed layout that keeps your visitors engaged.'
-					],
-					'floating-elements'    => [
+						'description'  => 'Display your services in an attractive, tabbed layout that keeps your visitors engaged.',
+					),
+					'floating-elements'    => array(
 						'label'        => 'Floating Elements',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Floating-Elements",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Floating-Elements',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-floating-elements',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/floating-elements/',
 						'youtube_url'  => '',
-						'description'  => 'Add floating items to your page, such as buttons or icons, that stay in view as users scroll'
-					],
-					'event-slider'         => [
+						'description'  => 'Add floating items to your page, such as buttons or icons, that stay in view as users scroll',
+					),
+					'event-slider'         => array(
 						'label'        => 'Event Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Event-Slider",
+						'icon'         => 'wcf-icon-Event-Slider',
 						'demo_url'     => 'https://animation-addons.com/aae-event-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/event-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Organize your events beautifully with image, date, and text in a refined carousel format.'
-					],
-					'content-slider'       => [
+						'description'  => 'Organize your events beautifully with image, date, and text in a refined carousel format.',
+					),
+					'content-slider'       => array(
 						'label'        => 'Content Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Content-Slider",
+						'icon'         => 'wcf-icon-Content-Slider',
 						'demo_url'     => 'https://animation-addons.com/aae-content-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/content-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Showcase dynamic content in a responsive slider with full layout and animation.'
-					],
-					'countdown'            => [
+						'description'  => 'Showcase dynamic content in a responsive slider with full layout and animation.',
+					),
+					'countdown'            => array(
 						'label'        => 'Countdown',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Countdown",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Countdown',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-countdown/',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/countdown/',
 						'youtube_url'  => '',
-						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.'
-					],
-					'clickdrop'            => [
+						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.',
+					),
+					'clickdrop'            => array(
 						'label'        => 'Clickdrop',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Countdown",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Countdown',
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.'
-					],
-				]
-			],
-			'animation-elements' => [
+						'description'  => 'Create anticipation for your next event by adding a friendly and customizable countdown.',
+					),
+				),
+			),
+			'animation-elements' => array(
 				'title'     => 'Animations',
 				'is_active' => false,
-				'elements'  => [
-					'typewriter'       => [
+				'elements'  => array(
+					'typewriter'       => array(
 						'label'        => 'Typewriter',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Typewriter",
+						'icon'         => 'wcf-icon-Typewriter',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-typewriter/',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/typewriter/',
 						'youtube_url'  => '',
-						'description'  => 'Bring back the charm of typing, minus the clunky keys and ink ribbons.'
-					],
-					'animated-heading' => [
+						'description'  => 'Bring back the charm of typing, minus the clunky keys and ink ribbons.',
+					),
+					'animated-heading' => array(
 						'label'        => 'Animated Heading',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Animated-Heading",
+						'icon'         => 'wcf-icon-Animated-Heading',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-heading/',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/animated-heading/',
 						'youtube_url'  => '',
-						'description'  => 'Add stunning movement to your headlines and capture attention in just a second.'
-					],
-					'animated-title'   => [
+						'description'  => 'Add stunning movement to your headlines and capture attention in just a second.',
+					),
+					'animated-title'   => array(
 						'label'        => 'Animated Title',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Animated-Title",
+						'icon'         => 'wcf-icon-Animated-Title',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-title',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/animated-title/',
 						'youtube_url'  => '',
-						'description'  => 'Use this widget to animate titles by character, word, or full text block.'
-					],
-					'animated-text'    => [
+						'description'  => 'Use this widget to animate titles by character, word, or full text block.',
+					),
+					'animated-text'    => array(
 						'label'        => 'Animated Text',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Animated-Text",
+						'icon'         => 'wcf-icon-Animated-Text',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-text',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/animated-text/',
 						'youtube_url'  => '',
-						'description'  => 'Explore text animation styles and transform static text into dynamic, engaging visual content.'
-					],
-					'lottie'           => [
+						'description'  => 'Explore text animation styles and transform static text into dynamic, engaging visual content.',
+					),
+					'lottie'           => array(
 						'label'        => 'Lottie',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Lottie",
+						'icon'         => 'wcf-icon-Lottie',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-lottie',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/lottie/',
 						'youtube_url'  => '',
-						'description'  => 'Grab attention with elegant Lottie motion effects that boost engagement and brand appeal instantly.'
-					],
-					'draw-svg'         => [
+						'description'  => 'Grab attention with elegant Lottie motion effects that boost engagement and brand appeal instantly.',
+					),
+					'draw-svg'         => array(
 						'label'        => 'GSAP DrawSvg',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-GSAP-DrawSvg",
+						'icon'         => 'wcf-icon-GSAP-DrawSvg',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-gsap-drawsvg',
 						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/gsap-drawsvg/',
 						'youtube_url'  => '',
-						'description'  => 'Animate SVG paths with precision using GSAP’s smooth drawing effect, enhancing your web visuals.'
-					],
-				]
-			],
-			'hf-elements'        => [
+						'description'  => 'Animate SVG paths with precision using GSAP’s smooth drawing effect, enhancing your web visuals.',
+					),
+				),
+			),
+			'hf-elements'        => array(
 				'title'     => 'Header & Footer Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'animated-offcanvas' => [
+				'elements'  => array(
+					'animated-offcanvas' => array(
 						'label'        => 'Animated Off-Canvas',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Animated-Off-Canvas",
+						'icon'         => 'wcf-icon-Animated-Off-Canvas',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-animated-off-canvas/',
 						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/animated-off-canvas/',
 						'youtube_url'  => '',
-						'description'  => 'Captivate your audience with stunning off-canvas reveals that keep users engaged longer on site!'
-					],
-					'site-logo'          => [
+						'description'  => 'Captivate your audience with stunning off-canvas reveals that keep users engaged longer on site!',
+					),
+					'site-logo'          => array(
 						'label'        => 'Site Logo',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Site-Logo",
+						'icon'         => 'wcf-icon-Site-Logo',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-site-logo',
 						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/site-logo/',
 						'youtube_url'  => '',
-						'description'  => 'Add your website logo with full customization options here and make your site instantly recognizable.'
-					],
-					'nav-menu'           => [
+						'description'  => 'Add your website logo with full customization options here and make your site instantly recognizable.',
+					),
+					'nav-menu'           => array(
 						'label'        => 'Nav Menu',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Nav-Menu",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Nav-Menu',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu',
 						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/nav-menu/',
 						'youtube_url'  => '',
-						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
-					],
-					'mega-menu'          => [
+						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.',
+					),
+					'mega-menu'          => array(
 						'label'        => 'Mega Menu',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => true,
-						'icon'         => "wcf-icon-Nav-Menu",
+						'icon'         => 'wcf-icon-Nav-Menu',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-nav-menu',
 						'doc_url'      => 'https://animation-addons.com/docs/header-footer-widgets/nav-menu/',
 						'youtube_url'  => '',
-						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.'
-					],
-				]
-			],
-			'slider'             => [
+						'description'  => 'Enhance your site’s usability by creating responsive, stylish, and fully customizable navigation menus.',
+					),
+				),
+			),
+			'slider'             => array(
 				'title'     => 'Slider',
 				'is_active' => false,
-				'elements'  => [
-					'posts-slider'         => [
+				'elements'  => array(
+					'posts-slider'         => array(
 						'label'        => 'Posts Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Post-Slider",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Post-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/posts-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Create a dynamic, engaging post slider with custom settings for a polished website experience.'
-					],
-					'breaking-news-slider' => [
+						'description'  => 'Create a dynamic, engaging post slider with custom settings for a polished website experience.',
+					),
+					'breaking-news-slider' => array(
 						'label'        => 'Breaking News Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Brand-Slider",
+						'icon'         => 'wcf-icon-Brand-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breaking-news-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/breaking-news-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Show updates in a sleek, customizable slider with dynamic animation effects.'
-					],
-					'category-slider'      => [
+						'description'  => 'Show updates in a sleek, customizable slider with dynamic animation effects.',
+					),
+					'category-slider'      => array(
 						'label'        => 'Category Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Content-Slider",
+						'icon'         => 'wcf-icon-Content-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-slider',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Create an interactive category display with a stylish slider for improved user navigation.'
-					],
-					'video-box-slider'     => [
+						'description'  => 'Create an interactive category display with a stylish slider for improved user navigation.',
+					),
+					'video-box-slider'     => array(
 						'label'        => 'Video Box Slider',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Box-Slider",
+						'icon'         => 'wcf-icon-Video-Box-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/slider-widgets/video-box-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Create a visually appealing video slider that perfectly fits your site’s design with this widget.'
-					],
-					'filterable-slider'    => [
+						'description'  => 'Create a visually appealing video slider that perfectly fits your site’s design with this widget.',
+					),
+					'filterable-slider'    => array(
 						'label'        => 'Filterable Slider',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Filterable-Slider",
+						'icon'         => 'wcf-icon-Filterable-Slider',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-slider',
 						'doc_url'      => 'https://animation-addons.com/docs/slider-widgets/filterable-slider/',
 						'youtube_url'  => '',
-						'description'  => 'Organize content effortlessly with a filterable slider that’s easy to customize and navigate.'
-					],
-				]
-			],
-			'dynamic-elements'   => [
+						'description'  => 'Organize content effortlessly with a filterable slider that’s easy to customize and navigate.',
+					),
+				),
+			),
+			'dynamic-elements'   => array(
 				'title'     => 'Dynamic Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'post-title'         => [
+				'elements'  => array(
+					'post-title'         => array(
 						'label'        => 'Post Title',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Post-Title",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Post-Title',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-title',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-title/',
 						'youtube_url'  => '',
-						'description'  => 'Present your post titles with refined style, precise alignment, and fully customizable typography settings.'
-					],
-					'post-feature-image' => [
+						'description'  => 'Present your post titles with refined style, precise alignment, and fully customizable typography settings.',
+					),
+					'post-feature-image' => array(
 						'label'        => 'Post Featured Image',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Post-Featured-Image",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Post-Featured-Image',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-featured-image/',
 						'youtube_url'  => '',
-						'description'  => 'Customize the featured image of any post for a perfect fit across all device screens.'
-					],
-					'post-excerpt'       => [
+						'description'  => 'Customize the featured image of any post for a perfect fit across all device screens.',
+					),
+					'post-excerpt'       => array(
 						'label'        => 'Post Excerpt',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Excerpt",
+						'icon'         => 'wcf-icon-Post-Excerpt',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-excerpt/',
 						'youtube_url'  => '',
-						'description'  => 'Use the Post Excerpt Widget to keep layouts clean and boost user engagement.'
-					],
-					'post-content'       => [
+						'description'  => 'Use the Post Excerpt Widget to keep layouts clean and boost user engagement.',
+					),
+					'post-content'       => array(
 						'label'        => 'Post Content',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Post-Content",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Post-Content',
 						'demo_url'     => '#',
 						'doc_url'      => '#',
 						'youtube_url'  => '',
-						'description'  => 'Showcase your blog’s latest posts with this widget, perfectly styled for Elementor.'
-					],
-					'post-comment'       => [
+						'description'  => 'Showcase your blog’s latest posts with this widget, perfectly styled for Elementor.',
+					),
+					'post-comment'       => array(
 						'label'        => 'Post Comments',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Content",
+						'icon'         => 'wcf-icon-Post-Content',
 						'demo_url'     => '#',
 						'doc_url'      => '#',
 						'youtube_url'  => '',
-						'description'  => 'Enable seamless comment integration, enhancing community interaction on your blog or articles.'
-					],
-					'post-reactions'     => [
+						'description'  => 'Enable seamless comment integration, enhancing community interaction on your blog or articles.',
+					),
+					'post-reactions'     => array(
 						'label'        => 'Post Reactions',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Content",
+						'icon'         => 'wcf-icon-Post-Content',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-post-reactions/',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/post-reactions/',
 						'youtube_url'  => '',
-						'description'  => 'Customize reaction button styles and separator icons to seamlessly fit your website’s design.'
-					],
-					'post-meta-info'     => [
+						'description'  => 'Customize reaction button styles and separator icons to seamlessly fit your website’s design.',
+					),
+					'post-meta-info'     => array(
 						'label'        => 'Post Meta Info',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Meta-Info",
+						'icon'         => 'wcf-icon-Post-Meta-Info',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-meta-info/',
 						'youtube_url'  => '',
-						'description'  => 'Use Post Meta Info to keep your readers informed without cluttering your beautiful layout.'
-					],
-					'post-paginate'      => [
+						'description'  => 'Use Post Meta Info to keep your readers informed without cluttering your beautiful layout.',
+					),
+					'post-paginate'      => array(
 						'label'        => 'Post Pagination',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Paginate",
+						'icon'         => 'wcf-icon-Post-Paginate',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/post-pagination/',
 						'youtube_url'  => '',
-						'description'  => 'Customize the pagination with icons, text, and animations to create a unique navigation experience.'
-					],
-					'post-social-share'  => [
+						'description'  => 'Customize the pagination with icons, text, and animations to create a unique navigation experience.',
+					),
+					'post-social-share'  => array(
 						'label'        => 'Social Share',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Social-Share",
+						'icon'         => 'wcf-icon-Post-Social-Share',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/social-share/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/social-share/',
 						'youtube_url'  => '',
-						'description'  => 'Customize social share icons to match your design and encourage content sharing with ease.'
-					],
-					'posts'              => [
+						'description'  => 'Customize social share icons to match your design and encourage content sharing with ease.',
+					),
+					'posts'              => array(
 						'label'        => 'Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Posts",
+						'icon'         => 'wcf-icon-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/posts/',
 						'youtube_url'  => '',
-						'description'  => 'Create a dynamic blog section by customizing the layout, images, and post metadata display.'
-					],
-					'posts-pro'          => [
+						'description'  => 'Create a dynamic blog section by customizing the layout, images, and post metadata display.',
+					),
+					'posts-pro'          => array(
 						'label'        => 'Advanced Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Posts-Pro",
+						'icon'         => 'wcf-icon-Posts-Pro',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/advanced-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.'
-					],
-					'post-timeline'      => [
+						'description'  => 'Add the Advanced Posts Widget to your Elementor page to showcase blog posts with rich filters.',
+					),
+					'post-timeline'      => array(
 						'label'        => 'Posts Timeline',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Posts-Pro",
+						'icon'         => 'wcf-icon-Posts-Pro',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-timeline/',
 						'doc_url'      => 'https://animation-addons.com/docs/#',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
-					'posts-read-later'   => [
+						'description'  => '',
+					),
+					'posts-read-later'   => array(
 						'label'        => 'Posts Read Later',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Posts",
+						'icon'         => 'wcf-icon-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-read-later/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.'
-					],
-					'video-story'        => [
+						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.',
+					),
+					'video-story'        => array(
 						'label'        => 'Video Story',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Box",
+						'icon'         => 'wcf-icon-Video-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-story',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/video-story/',
 						'youtube_url'  => '',
-						'description'  => 'Share engaging video content with smooth transitions to tell your story effectively.'
-					],
-					'video-posts-tab'    => [
+						'description'  => 'Share engaging video content with smooth transitions to tell your story effectively.',
+					),
+					'video-posts-tab'    => array(
 						'label'        => 'Video Posts Tab',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Posts-Tab",
+						'icon'         => 'wcf-icon-Posts-Tab',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-tabs',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/video-posts-tab/',
 						'youtube_url'  => '',
-						'description'  => 'Enhance your site with organized video posts displayed in engaging, user-friendly tabbed format.'
-					],
-					'posts-filter'       => [
+						'description'  => 'Enhance your site with organized video posts displayed in engaging, user-friendly tabbed format.',
+					),
+					'posts-filter'       => array(
 						'label'        => 'Filterable Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Filterable-Posts",
+						'icon'         => 'wcf-icon-Filterable-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/filterable-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Display posts in filterable categories, offering visitors a seamless navigation and content sorting experience.'
-					],
-					'post-rating-form'   => [
+						'description'  => 'Display posts in filterable categories, offering visitors a seamless navigation and content sorting experience.',
+					),
+					'post-rating-form'   => array(
 						'label'        => 'Post Rating Form',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Rating",
+						'icon'         => 'wcf-icon-Post-Rating',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-posts-rating-form',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Integrate a user-friendly post rating form to gather valuable feedback from your audience.'
-					],
-					'post-rating'        => [
+						'description'  => 'Integrate a user-friendly post rating form to gather valuable feedback from your audience.',
+					),
+					'post-rating'        => array(
 						'label'        => 'Post Rating',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Post-Rating",
+						'icon'         => 'wcf-icon-Post-Rating',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-post-rating',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Add an intuitive rating system to your posts, allowing users to share their opinions easily.'
-					],
-					'grid-hover-posts'   => [
+						'description'  => 'Add an intuitive rating system to your posts, allowing users to share their opinions easily.',
+					),
+					'grid-hover-posts'   => array(
 						'label'        => 'Grid Hover Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Grid-Hover-Posts",
+						'icon'         => 'wcf-icon-Grid-Hover-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-hover-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/grid-hover-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Use the Grid Hover Posts Widget to display posts in a visually appealing, interactive grid.'
-					],
-					'category-showcase'  => [
+						'description'  => 'Use the Grid Hover Posts Widget to display posts in a visually appealing, interactive grid.',
+					),
+					'category-showcase'  => array(
 						'label'        => 'Category Showcase',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Category-Showcase",
+						'icon'         => 'wcf-icon-Category-Showcase',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-category-showcase',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/category-showcase/',
 						'youtube_url'  => '',
-						'description'  => 'Category Showcase helps create a professional layout for showcasing your post categories.'
-					],
-					'banner-posts'       => [
+						'description'  => 'Category Showcase helps create a professional layout for showcasing your post categories.',
+					),
+					'banner-posts'       => array(
 						'label'        => 'Banner Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Banner-Posts",
+						'icon'         => 'wcf-icon-Banner-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-banner-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/banner-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Use the Banner Posts Widget to add styled, customizable banners to elevate your post visibility.'
-					],
-					'current-date'       => [
+						'description'  => 'Use the Banner Posts Widget to add styled, customizable banners to elevate your post visibility.',
+					),
+					'current-date'       => array(
 						'label'        => 'Current Date',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Current-Date",
+						'icon'         => 'wcf-icon-Current-Date',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-current-date',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/current-date-widget/',
 						'youtube_url'  => '',
-						'description'  => 'The Current Date Widget helps keep your content relevant by displaying the live date.'
-					],
-					'feature-posts'      => [
+						'description'  => 'The Current Date Widget helps keep your content relevant by displaying the live date.',
+					),
+					'feature-posts'      => array(
 						'label'        => 'Featured Posts',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Featured-Posts",
+						'icon'         => 'wcf-icon-Featured-Posts',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-featured-posts',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/featured-posts/',
 						'youtube_url'  => '',
-						'description'  => 'Featured Posts allows you to showcase important posts with fully customizable design options.'
-					],
-					'archive-title'      => [
+						'description'  => 'Featured Posts allows you to showcase important posts with fully customizable design options.',
+					),
+					'archive-title'      => array(
 						'label'        => 'Archive Title',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Archive-Title",
+						'icon'         => 'wcf-icon-Archive-Title',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/archive-title/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/archive-title/',
 						'youtube_url'  => '',
-						'description'  => 'The Archive Title Widget lets you tailor archive page titles, improving clarity and user experience.'
-					],
-					'portfolio'          => [
+						'description'  => 'The Archive Title Widget lets you tailor archive page titles, improving clarity and user experience.',
+					),
+					'portfolio'          => array(
 						'label'        => 'Portfolio',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Portfolio",
+						'icon'         => 'wcf-icon-Portfolio',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-portfolio',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/portfolio/',
 						'youtube_url'  => '',
-						'description'  => 'Enhance your website by featuring your work with the Portfolio Widget’s flexible layout and design options.'
-					],
-					'search-form'        => [
+						'description'  => 'Enhance your website by featuring your work with the Portfolio Widget’s flexible layout and design options.',
+					),
+					'search-form'        => array(
 						'label'        => 'Search Form',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Search-Form",
+						'icon'         => 'wcf-icon-Search-Form',
 						'demo_url'     => 'https://animation-addons.com/wcf-template/search-form',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-form/',
 						'youtube_url'  => '',
-						'description'  => 'Add a search form widget for users to efficiently locate content across your website.'
-					],
-					'search-query'       => [
+						'description'  => 'Add a search form widget for users to efficiently locate content across your website.',
+					),
+					'search-query'       => array(
 						'label'        => 'Search Query',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Search-Query",
+						'icon'         => 'wcf-icon-Search-Query',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-search-query',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-query/',
 						'youtube_url'  => '',
-						'description'  => 'Create a more intuitive search experience by customizing the Search Query Widgets content and style.'
-					],
-					'search-no-result'   => [
+						'description'  => 'Create a more intuitive search experience by customizing the Search Query Widgets content and style.',
+					),
+					'search-no-result'   => array(
 						'label'        => 'Search No Result',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Search-No-Result",
+						'icon'         => 'wcf-icon-Search-No-Result',
 						'demo_url'     => 'https://animation-addons.com/docs/dynamic-widgets/search-no-result/',
 						'doc_url'      => 'https://animation-addons.com/docs/dynamic-widgets/search-no-result/',
 						'youtube_url'  => '',
-						'description'  => 'Customize the "no results" message with rich text, media, or links for better user direction.'
-					],
-					'live-events'        => [
+						'description'  => 'Customize the "no results" message with rich text, media, or links for better user direction.',
+					),
+					'live-events'        => array(
 						'label'        => 'Live Events',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Search-No-Result",
+						'icon'         => 'wcf-icon-Search-No-Result',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-live-events/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
-				]
-			],
-			'form-elements'      => [
+						'description'  => '',
+					),
+				),
+			),
+			'form-elements'      => array(
 				'title'     => 'Form Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'contact-form-7'     => [
+				'elements'  => array(
+					'contact-form-7'     => array(
 						'label'        => 'Contact Form 7',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Contact-Form-7",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Contact-Form-7',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-contact-form-7',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/contact-form-7/',
 						'youtube_url'  => '',
-						'description'  => 'With the Contact Form 7 Widget, you can create secure, user-friendly forms for your site.'
-					],
-					'mailchimp'          => [
+						'description'  => 'With the Contact Form 7 Widget, you can create secure, user-friendly forms for your site.',
+					),
+					'mailchimp'          => array(
 						'label'        => 'Mailchimp',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Mailchimp",
+						'icon'         => 'wcf-icon-Mailchimp',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-mailchimp',
 						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/mailchimp/',
 						'youtube_url'  => '',
-						'description'  => 'Grow your email list effortlessly by adding and customizing Mailchimp forms with this widget.'
-					],
-					'advanced-mailchimp' => [
+						'description'  => 'Grow your email list effortlessly by adding and customizing Mailchimp forms with this widget.',
+					),
+					'advanced-mailchimp' => array(
 						'label'        => 'Advanced Mailchimp',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Mailchimp",
+						'icon'         => 'wcf-icon-Mailchimp',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-mailchimp',
 						'doc_url'      => 'https://animation-addons.com/docs/form-widgets/advanced-mailchimp/',
 						'youtube_url'  => '',
-						'description'  => 'Easily integrate and customize Mailchimp sign-up forms for a seamless email list growth experience.'
-					],
-				]
-			],
-			'video-elements'     => [
+						'description'  => 'Easily integrate and customize Mailchimp sign-up forms for a seamless email list growth experience.',
+					),
+				),
+			),
+			'video-elements'     => array(
 				'title'     => 'Video Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'video-popup'   => [
+				'elements'  => array(
+					'video-popup'      => array(
 						'label'        => 'Video Popup',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'setup'        => ['basic'],
-						'icon'         => "wcf-icon-Video-Popup",
+						'setup'        => array('basic'),
+						'icon'         => 'wcf-icon-Video-Popup',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-popup',
 						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-popup/',
 						'youtube_url'  => '',
-						'description'  => 'Use the Video Popup Widget to display videos in popups, making content more engaging.'
-					],
-					'video-box'     => [
+						'description'  => 'Use the Video Popup Widget to display videos in popups, making content more engaging.',
+					),
+					'video-box'        => array(
 						'label'        => 'Video Box',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Box",
+						'icon'         => 'wcf-icon-Video-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-box',
 						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-box/',
 						'youtube_url'  => '',
-						'description'  => 'Elevate your website’s look by incorporating a video box that blends seamlessly with your style.'
-					],
-					'video-mask'    => [
+						'description'  => 'Elevate your website’s look by incorporating a video box that blends seamlessly with your style.',
+					),
+					'video-mask'       => array(
 						'label'        => 'Video Mask',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Mask",
+						'icon'         => 'wcf-icon-Video-Mask',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-video-mask',
 						'doc_url'      => 'https://animation-addons.com/docs/video-widgets/video-mask/',
 						'youtube_url'  => '',
-						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.'
-					],
-					'youtube-video' => [
+						'description'  => 'Use the Video Mask Widget to bring artistic, interactive flair to your sites videos.',
+					),
+					'youtube-video'    => array(
 						'label'        => 'Youtube Video',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Mask",
+						'icon'         => 'wcf-icon-Video-Mask',
 						'demo_url'     => 'https://animation-addons.com/widgets/youtube-video-widget-for-elementor/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Use the Youtube Video Widget to bring artistic, interactive flair to your sites videos.'
-					],
-					'scrollable-video' => [
+						'description'  => 'Use the Youtube Video Widget to bring artistic, interactive flair to your sites videos.',
+					),
+					'scrollable-video' => array(
 						'label'        => 'Scrollable Video',
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_active'    => false,
 						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Video-Box",
+						'icon'         => 'wcf-icon-Video-Box',
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
-				]
-			],
-			'advanced-elements'  => [
+						'description'  => '',
+					),
+				),
+			),
+			'advanced-elements'  => array(
 				'title'     => 'Advanced Widgets',
 				'is_active' => false,
-				'elements'  => [
-					'toggle-switcher'       => [
+				'elements'  => array(
+					'toggle-switcher'       => array(
 						'label'        => 'Toggle Switch',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Toggle-Switch",
+						'icon'         => 'wcf-icon-Toggle-Switch',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-toggle-switch',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Customize the Toggle Switcher to fit your design and create seamless user interactions.'
-					],
-					'advance-pricing-table' => [
+						'description'  => 'Customize the Toggle Switcher to fit your design and create seamless user interactions.',
+					),
+					'advance-pricing-table' => array(
 						'label'        => 'Advanced Pricing Table',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Pricing-Table",
+						'icon'         => 'wcf-icon-Advanced-Pricing-Table',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-pricing-table',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-pricing-table/',
 						'youtube_url'  => '',
-						'description'  => 'Create bold, interactive pricing tables to present your services with clarity and professionalism.'
-					],
-					'scroll-elements'       => [
+						'description'  => 'Create bold, interactive pricing tables to present your services with clarity and professionalism.',
+					),
+					'scroll-elements'       => array(
 						'label'        => 'Scroll Elements',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Scroll-Elements",
+						'icon'         => 'wcf-icon-Scroll-Elements',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-scroll-elements/',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/scroll-elements/',
 						'youtube_url'  => '',
-						'description'  => 'Turn static content into a visual journey with smart, responsive scroll element animations.'
-					],
-					'advance-portfolio'     => [
+						'description'  => 'Turn static content into a visual journey with smart, responsive scroll element animations.',
+					),
+					'advance-portfolio'     => array(
 						'label'        => 'Advanced Portfolio',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Portfolio",
+						'icon'         => 'wcf-icon-Advanced-Portfolio',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-portfolio',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-portfolio/',
 						'youtube_url'  => '',
-						'description'  => 'Make your portfolio shine with tailored layouts, animated sliders, and customized design elements.'
-					],
-					'filterable-gallery'    => [
+						'description'  => 'Make your portfolio shine with tailored layouts, animated sliders, and customized design elements.',
+					),
+					'filterable-gallery'    => array(
 						'label'        => 'Filterable Gallery',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Filterable-Gallery",
+						'icon'         => 'wcf-icon-Filterable-Gallery',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/filterable-gallery/',
 						'youtube_url'  => '',
-						'description'  => 'Craft engaging galleries where visitors can filter, view, and enjoy your creative work.'
-					],
-					'breadcrumbs'           => [
+						'description'  => 'Craft engaging galleries where visitors can filter, view, and enjoy your creative work.',
+					),
+					'breadcrumbs'           => array(
 						'label'        => 'Breadcrumbs',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Breadcrumbs",
+						'icon'         => 'wcf-icon-Breadcrumbs',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-breadcrumbs',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/breadcrumbs/',
 						'youtube_url'  => '',
-						'description'  => 'Show users exactly where they are with minimal, modern breadcrumbs built for any layout.'
-					],
-					'table-of-contents'     => [
+						'description'  => 'Show users exactly where they are with minimal, modern breadcrumbs built for any layout.',
+					),
+					'table-of-contents'     => array(
 						'label'        => 'Table Of Content',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Table-Of-Content",
+						'icon'         => 'wcf-icon-Table-Of-Content',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/table-of-content/',
 						'youtube_url'  => '',
-						'description'  => 'Structure your headings into a clear, clickable table and keep your readers engaged longer.'
-					],
-					'image-accordion'       => [
+						'description'  => 'Structure your headings into a clear, clickable table and keep your readers engaged longer.',
+					),
+					'image-accordion'       => array(
 						'label'        => 'Image Accordion',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Image-Accordion",
+						'icon'         => 'wcf-icon-Image-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-image-accordion',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/image-accordion/',
 						'youtube_url'  => '',
-						'description'  => 'Present images creatively with collapsible sections, enhancing user experience and saving screen space.'
-					],
-					'author-box'            => [
+						'description'  => 'Present images creatively with collapsible sections, enhancing user experience and saving screen space.',
+					),
+					'author-box'            => array(
 						'label'        => 'Author Box',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Author-Box",
+						'icon'         => 'wcf-icon-Author-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-author-box',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/author-box/',
 						'youtube_url'  => '',
-						'description'  => 'Create a visually appealing author box with a photo, bio, and social media links.'
-					],
-					'flip-box'              => [
+						'description'  => 'Create a visually appealing author box with a photo, bio, and social media links.',
+					),
+					'flip-box'              => array(
 						'label'        => 'Flip Box',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Flip-Box",
+						'icon'         => 'wcf-icon-Flip-Box',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-flip-box',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/flip-box/',
 						'youtube_url'  => '',
-						'description'  => 'Create interactive, animated flip boxes that grab attention and highlight your key messages instantly'
-					],
-					'advance-accordion'     => [
+						'description'  => 'Create interactive, animated flip boxes that grab attention and highlight your key messages instantly',
+					),
+					'advance-accordion'     => array(
 						'label'        => 'Advanced Accordion',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => false,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-accordion',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-accordion/',
 						'youtube_url'  => '',
-						'description'  => 'Keep your pages clean and visitors happy with smart, collapsible advanced accordion designs.'
-					],
-					'nested-slider'         => [
+						'description'  => 'Keep your pages clean and visitors happy with smart, collapsible advanced accordion designs.',
+					),
+					'nested-slider'         => array(
 						'label'        => 'Nested Slider',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/nested-slider-widget-for-elementor/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.'
-					],
-					'weather'               => [
+						'description'  => 'Design with the CMS Fill design with text, images, videos, more CMS.',
+					),
+					'weather'               => array(
 						'label'        => 'Weather',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-weather-widget/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Display real-time weather information on your website using OpenWeather API'
-					],
-					'tiktok-feed'           => [
+						'description'  => 'Display real-time weather information on your website using OpenWeather API',
+					),
+					'tiktok-feed'           => array(
 						'label'        => 'TikTok Feed',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/tiktok-feed-video-widget-for-elementor/',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.'
-					],
-					'stacked-cards'         => [
+						'description'  => 'Embed trending TikTok videos on your website to keep your content fresh and engaging.',
+					),
+					'stacked-cards'         => array(
 						'label'        => 'Stacked Cards',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
-					'vertical-marquee' => [
+						'description'  => '',
+					),
+					'scrollmotion-cards'         => array(
+						'label'        => 'Scrollmotion Cards',
+						'is_active'    => false,
+						'location'     => array(
+							'cTab' => 'all',
+						),
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'icon'         => 'wcf-icon-Advanced-Accordion',
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => '',
+					),
+					'vertical-marquee'      => array(
 						'label'        => 'Vertical Marquee',
 						'is_active'    => false,
-						'location'     => [
-							'cTab' => 'all'
-						],
+						'location'     => array(
+							'cTab' => 'all',
+						),
 						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
-						'icon'         => "wcf-icon-Advanced-Accordion",
+						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-						'description'  => ''
-					],
+						'description'  => '',
+					),
 
-				]
-			]
-		]
-	],
-	'extensions'         => [
+				),
+			),
+		),
+	),
+	'extensions'         => array(
 		'is_active' => false,
-		'elements'  => [
-			'general-extensions' => [
+		'elements'  => array(
+			'general-extensions' => array(
 				'title'     => 'General Extensions',
 				'is_active' => false,
-				'elements'  => [
-
-					'custom-css'       => [
+				'elements'  => array(
+					'custom-css'       => array(
 						'label'        => 'Custom CSS',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => false,
 						'is_active'    => false,
-						'setup'        => ['basic'],
+						'setup'        => array('basic'),
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Custom-CSS",
+						'icon'         => 'wcf-icon-Custom-CSS',
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'youtube_url'  => '',
-					],
-					'dynamic-tags'     => [
+					),
+					'dynamic-tags'     => array(
 						'label'        => 'Dynamic Tags',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Dynamic-Tags",
+						'icon'         => 'wcf-icon-Dynamic-Tags',
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/dynamic-tags/',
 						'youtube_url'  => '',
-					],
-					'template-library' => [
+					),
+					'template-library' => array(
 						'label'        => 'Template library',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => false,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic', 'advance'],
-						'icon'         => "wcf-icon-Template-library",
+						'setup'        => array('basic', 'advance'),
+						'icon'         => 'wcf-icon-Template-library',
 						'demo_url'     => '',
 						'doc_url'      => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/dynamic-tags/',
 						'youtube_url'  => '',
-					],
-					'wrapper-link'     => [
+					),
+					'wrapper-link'     => array(
 						'label'        => 'Wrapper Link',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Wrapper-Link",
+						'icon'         => 'wcf-icon-Wrapper-Link',
 						'demo_url'     => '',
 						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/wrapper-link/',
 						'youtube_url'  => '',
-					],
-					'popup'            => [
+					),
+					'popup'            => array(
 						'label'        => 'Popup',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => false,
 						'is_active'    => false,
 						'is_extension' => true,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Popup",
-						'demo_url'     => '',
+						'icon'         => 'wcf-icon-Popup',
+						'demo_url'     => 'https://animation-addons.com/extensions/pop-up/',
 						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/pop-up-extensions/',
 						'youtube_url'  => '',
-					],
-					'tilt-effect'      => [
+					),
+					'tilt-effect'      => array(
 						'label'        => 'Tilt Effect',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Tilt-Effect",
+						'icon'         => 'wcf-icon-Tilt-Effect',
 						'demo_url'     => '',
 						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/tilt-effect-extensions/',
 						'youtube_url'  => '',
-					],
-					'advanced-tooltip' => [
+					),
+					'advanced-tooltip' => array(
 						'label'        => 'Advanced Tooltip',
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_pro'       => true,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
-						'icon'         => "wcf-icon-Advanced-Tooltip",
-						'demo_url'     => '',
+						'icon'         => 'wcf-icon-Advanced-Tooltip',
+						'demo_url'     => 'https://animation-addons.com/extensions/advanced-tooltip/',
 						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/advanced-tooltip-extensions/',
 						'youtube_url'  => '',
-					],
-					'custom-fonts'     => [
+					),
+					'custom-fonts'     => array(
 						'label'        => 'Custom Fonts',
 						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_extension' => false,
 						'is_active'    => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic', 'advance'],
+						'setup'        => array('basic', 'advance'),
+						'icon'         => 'wcf-icon-Custom-Fonts',
 						'demo_url'     => '',
-						'icon'         => "wcf-icon-Custom-Fonts",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-					],
-					'custom-cpt'       => [
+					),
+					'custom-cpt'       => array(
 						'label'        => 'Post Type Builder',
 						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_extension' => false,
 						'is_active'    => false,
 						'is_upcoming'  => false,
-						'setup'        => ['basic', 'advance'],
+						'setup'        => array('basic', 'advance'),
+						'icon'         => 'wcf-icon-Custom-Post-Type',
 						'demo_url'     => '',
-						'icon'         => "wcf-icon-Custom-Post-Type",
 						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
 						'youtube_url'  => '',
-					],
-					'custom-icon'      => [
+					),
+					'custom-icon'      => array(
 						'label'        => 'Custom Icon',
 						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
+						'location'     => array(
+							'cTab' => 'general',
+						),
 						'is_extension' => false,
 						'is_active'    => false,
 						'is_upcoming'  => false,
+						'icon'         => 'wcf-icon-Custom-Icons',
 						'demo_url'     => '',
-						'icon'         => "wcf-icon-Custom-Icons",
 						'doc_url'      => '',
 						'youtube_url'  => '',
-					],
+					),
 
-					'restrict-content' => [
+					'restrict-content' => array(
 						'label'        => 'Content Protection',
 						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
-						'icon'         => "wcf-icon-Content-Protection",
+						'location'     => array(
+							'cTab' => 'general',
+						),
+						'icon'         => 'wcf-icon-Content-Protection',
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-					],
-				]
-			],
-			'gsap-extensions'    => [
+					),
+				),
+			),
+			'gsap-extensions'    => array(
 				'title'     => 'GSAP Extensions',
 				'is_active' => false,
-				'elements'  => [
-					'wcf-smooth-scroller' => [
+				'elements'  => array(
+					'wcf-smooth-scroller' => array(
 						'title'     => 'Scroll Smoother',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => [
-							'animation-effects'       => [
+						'elements'  => array(
+							'animation-effects'       => array(
 								'label'        => 'Animation',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'wcf-smooth-scroller'
-								],
+									'pluginId' => 'wcf-smooth-scroller',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'setup'        => ['basic', 'advance'],
-								'icon'         => "wcf-icon-Animation",
+								'setup'        => array('basic', 'advance'),
+								'icon'         => 'wcf-icon-Animation',
 								'demo_url'     => '',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/animation-extension-for-elementor/',
 								'youtube_url'  => '',
-							],
-							'pin-element'             => [
+							),
+							'pin-element'             => array(
 								'label'        => 'Sticky Elements',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'wcf-smooth-scroller'
-								],
+									'pluginId' => 'wcf-smooth-scroller',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'setup'        => ['basic', 'advance'],
-								'icon'         => "wcf-icon-Pin-Elements",
+								'setup'        => array('basic', 'advance'),
+								'icon'         => 'wcf-icon-Pin-Elements',
 								'demo_url'     => 'https://animation-addons.com/extensions/pin-element/',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/pin-elements/',
 								'youtube_url'  => '',
-							],
-							'text-animation-effects'  => [
+							),
+							'text-animation-effects'  => array(
 								'label'        => 'Text Animation',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'wcf-smooth-scroller'
-								],
+									'pluginId' => 'wcf-smooth-scroller',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'icon'         => "wcf-icon-Text-Animation",
-								'demo_url'     => '',
+								'icon'         => 'wcf-icon-Text-Animation',
+								'demo_url'     => 'https://animation-addons.com/extensions/text-animation/',
 								'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/text-animation/',
 								'youtube_url'  => '',
-							],
-							'image-animation-effects' => [
+							),
+							'image-animation-effects' => array(
 								'label'        => 'Image Animation',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'wcf-smooth-scroller'
-								],
+									'pluginId' => 'wcf-smooth-scroller',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'icon'         => "wcf-icon-Image-Animation",
-								'demo_url'     => '',
+								'icon'         => 'wcf-icon-Image-Animation',
+								'demo_url'     => 'https://animation-addons.com/extensions/image-animation/',
 								'doc_url'      => 'https://support.crowdytheme.com/docs/animation/animation/image-animation/',
 								'youtube_url'  => '',
-							],
-						]
-					],
-					'effect'              => [
+							),
+						),
+					),
+					'effect'              => array(
 						'title'     => 'Effects',
 						'doc_url'   => '#',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => [
-							'cursor-hover-effect' => [
+						'elements'  => array(
+							'cursor-hover-effect' => array(
 								'label'        => 'Cursor Hover Effect',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'effect'
-								],
+									'pluginId' => 'effect',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'setup'        => ['basic'],
-								'icon'         => "wcf-icon-Cursor-Hover-Effect",
-								'demo_url'     => '',
+								'setup'        => array('basic'),
+								'icon'         => 'wcf-icon-Cursor-Hover-Effect',
+								'demo_url'     => 'https://animation-addons.com/extensions/cursor-hover-effect/',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/cursor-hover-effect-extensions/',
 								'youtube_url'  => '',
-							],
-							'hover-effect-image'  => [
+							),
+							'hover-effect-image'  => array(
 								'label'        => 'Image Hover Effect',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'effect'
-								],
+									'pluginId' => 'effect',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'setup'        => ['basic'],
-								'icon'         => "wcf-icon-Image-Hover-Effect",
-								'demo_url'     => '',
+								'setup'        => array('basic'),
+								'icon'         => 'wcf-icon-Image-Hover-Effect',
+								'demo_url'     => 'https://animation-addons.com/extensions/image-hover-effect/',
 								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/image-hover-effect-extensions/',
 								'youtube_url'  => '',
-							],
-							'cursor-move-effect'  => [
+							),
+							'cursor-move-effect'  => array(
 								'label'        => 'Cursor Move Effect',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'effect'
-								],
+									'pluginId' => 'effect',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'setup'        => ['basic'],
-								'icon'         => "wcf-icon-Cursor-Move-Effect",
-								'demo_url'     => '',
-								'doc_url'      => '',
+								'setup'        => array('basic'),
+								'icon'         => 'wcf-icon-Cursor-Move-Effect',
+								'demo_url'     => 'https://animation-addons.com/extensions/cursor-move-effect/',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/cursor-move-effect/',
 								'youtube_url'  => '',
-							],
-						]
-					],
-					'scroll-trigger'      => [
+							),
+						),
+					),
+					'scroll-trigger'      => array(
 						'title'     => 'ScrollTrigger',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => [
-							'horizontal-scroll' => [
+						'elements'  => array(
+							'horizontal-scroll' => array(
 								'label'        => 'Horizontal',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'scroll-trigger'
-								],
+									'pluginId' => 'scroll-trigger',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'setup'        => ['basic'],
-								'icon'         => "wcf-icon-Horizontal",
-								'demo_url'     => '',
-								'doc_url'      => '',
+								'setup'        => array('basic'),
+								'icon'         => 'wcf-icon-Horizontal',
+								'demo_url'     => 'https://animation-addons.com/extensions/horizontal-scroll/',
+								'doc_url'      => 'https://animation-addons.com/docs/gsap-extensions/horizontal-scroll/',
 								'youtube_url'  => '',
-							],
-							'scrollto' => [
+							),
+							'scrollto'          => array(
 								'label'        => 'ScrollTo',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'scroll-trigger'
-								],
+									'pluginId' => 'scroll-trigger',
+								),
 								'is_pro'       => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'setup'        => ['basic'],
-								'icon'         => "wcf-icon-Horizontal",
+								'setup'        => array('basic'),
+								'icon'         => 'wcf-icon-Horizontal',
 								'demo_url'     => '',
 								'doc_url'      => '',
 								'youtube_url'  => '',
-							],
-						]
-					],
-					'draw-svg'            => [
+							),
+						),
+					),
+					'draw-svg'            => array(
 						'title'     => 'DrawSVG',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => []
-					],
-					'flip'                => [
+						'elements'  => array(),
+					),
+					'flip'                => array(
 						'title'     => 'Flips',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => [
-							'portfolio-filter' => [
+						'elements'  => array(
+							'portfolio-filter' => array(
 								'label'        => 'Portfolio Filter',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'flip'
-								],
+									'pluginId' => 'flip',
+								),
 								'is_pro'       => true,
 								'is_active'    => true,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'icon'         => "wcf-icon-Portfolio-Filter",
+								'icon'         => 'wcf-icon-Portfolio-Filter',
 								'demo_url'     => '',
 								'doc_url'      => '',
 								'youtube_url'  => '',
-							],
-
-							'gallery-filter' => [
+							),
+							'gallery-filter'   => array(
 								'label'        => 'Gallery Filter',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'flip'
-								],
+									'pluginId' => 'flip',
+								),
 								'is_pro'       => true,
 								'is_active'    => true,
 								'is_extension' => true,
 								'is_upcoming'  => false,
-								'icon'         => "wcf-icon-Gallery-Filter",
+								'icon'         => 'wcf-icon-Gallery-Filter',
 								'demo_url'     => '',
 								'doc_url'      => '',
 								'youtube_url'  => '',
-							],
+							),
 
-						]
-					],
-					'gsap-builder'        => [
+						),
+					),
+					'gsap-builder'        => array(
 						'title'     => 'Builders',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
 						'is_pro'    => true,
 						'is_active' => false,
-						'elements'  => [
-							'animation-builder' => [
+						'elements'  => array(
+							'animation-builder' => array(
 								'label'        => 'Animation Builder',
-								'location'     => [
+								'location'     => array(
 									'cTab'     => 'gsap',
-									'pluginId' => 'gsap-builder'
-								],
+									'pluginId' => 'gsap-builder',
+								),
 								'is_pro'       => true,
 								'pro_only'     => true,
 								'is_active'    => false,
 								'is_extension' => false,
 								'is_upcoming'  => false,
-								'icon'         => "wcf-icon-Animation-Builder",
+								'icon'         => 'wcf-icon-Animation-Builder',
 								'demo_url'     => '',
 								'doc_url'      => '',
 								'youtube_url'  => '',
-							],
-						]
-					],
-				]
-			],
-		]
-	],
-	'integrations'       => [
-		'plugins' => [
+							),
+						),
+					),
+				),
+			),
+		),
+	),
+	'integrations'       => array(
+		'plugins' => array(
 			'title'    => 'Plugins',
-			'elements' => [
-				'animation-addon-for-elementorpro' => [
+			'elements' => array(
+				'animation-addon-for-elementorpro' => array(
 					'label'        => 'Animation Addon Pro',
 					'basename'     => 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php',
 					'source'       => 'custom',
 					'is_pro'       => true,
 					'slug'         => '',
-					'download_url' => "",
-				],
-			]
-		],
-		'library' => [
+					'download_url' => '',
+				),
+			),
+		),
+		'library' => array(
 			'title'    => 'Library',
-			'elements' => [
-				'gsap-library' => [
+			'elements' => array(
+				'gsap-library' => array(
 					'title'     => 'GSAP Library',
 					'is_pro'    => true,
 					'is_active' => false,
-					'elements'  => [
-						'draggable'          => [
+					'elements'  => array(
+						'draggable'          => array(
 							'label'     => 'Draggable',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/Draggable',
-						],
-						'easel'              => [
+						),
+						'easel'              => array(
 							'label'     => 'Easel',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/EaselPlugin',
-						],
-						'flip'               => [
+						),
+						'flip'               => array(
 							'label'     => 'Flip',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/Flip',
-						],
-						'motion-path'        => [
+						),
+						'motion-path'        => array(
 							'label'     => 'MotionPath',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/MotionPathPlugin',
-						],
-						'observer'           => [
+						),
+						'observer'           => array(
 							'label'     => 'Observer',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/Observer',
-						],
-						'pixi'               => [
+						),
+						'pixi'               => array(
 							'label'     => 'Pixi',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/PixiPlugin',
-						],
-						'scroll-to'          => [
+						),
+						'scroll-to'          => array(
 							'label'     => 'ScrollTo',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/ScrollToPlugin',
-						],
-						'scroll-trigger'     => [
+						),
+						'scroll-trigger'     => array(
 							'label'     => 'ScrollTrigger',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/ScrollTrigger/?page=1',
-						],
-						'text'               => [
+						),
+						'text'               => array(
 							'label'     => 'Text',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/TextPlugin',
-						],
-						'draw-svg'           => [
+						),
+						'draw-svg'           => array(
 							'label'     => 'DrawSVG',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/DrawSVGPlugin',
-						],
-						'physics-2d'         => [
+						),
+						'physics-2d'         => array(
 							'label'     => 'Physics2D',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/Physics2DPlugin',
-						],
-						'physics-props'      => [
+						),
+						'physics-props'      => array(
 							'label'     => 'PhysicsProps',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/PhysicsPropsPlugin',
-						],
-						'scramble-text'      => [
+						),
+						'scramble-text'      => array(
 							'label'     => 'ScrambleText',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/ScrambleTextPlugin',
-						],
-						'gs-dev-tools'       => [
+						),
+						'gs-dev-tools'       => array(
 							'label'     => 'GSDevTools',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/GSDevTools',
-						],
-						'inertia'            => [
+						),
+						'inertia'            => array(
 							'label'     => 'Inertia',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/InertiaPlugin',
-						],
-						'morph-svg'          => [
+						),
+						'morph-svg'          => array(
 							'label'     => 'MorphSVG',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/MorphSVGPlugin',
-						],
-						'motion-path-helper' => [
+						),
+						'motion-path-helper' => array(
 							'label'     => 'MotionPathHelper',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/MotionPathHelper',
-						],
-						'scroll-smoother'    => [
+						),
+						'scroll-smoother'    => array(
 							'label'     => 'ScrollSmoother',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/ScrollSmoother',
-						],
-						'split-text'         => [
+						),
+						'split-text'         => array(
 							'label'     => 'SplitText',
 							'is_pro'    => true,
 							'is_active' => false,
-							'icon'      => "wcf-icon-Animation-Builder",
+							'icon'      => 'wcf-icon-Animation-Builder',
 							'doc_url'   => 'https://gsap.com/docs/v3/Plugins/SplitText',
-						],
-					]
-				],
-			]
-		]
-	],
-	'dashboardProWidget' => [
-		'advance-portfolio'  => [
+						),
+					),
+				),
+			),
+		),
+	),
+	'dashboardProWidget' => array(
+		'advance-portfolio'  => array(
 			'label'        => 'Advanced Portfolio',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Advanced-Portfolio",
+			'icon'         => 'wcf-icon-Advanced-Portfolio',
 			'demo_url'     => '',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
-		'filterable-gallery' => [
+		),
+		'filterable-gallery' => array(
 			'label'        => 'Filterable Gallery',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Filterable-Gallery",
+			'icon'         => 'wcf-icon-Filterable-Gallery',
 			'demo_url'     => '',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
-		'breadcrumbs'        => [
+		),
+		'breadcrumbs'        => array(
 			'label'        => 'Breadcrumbs',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Breadcrumbs",
+			'icon'         => 'wcf-icon-Breadcrumbs',
 			'demo_url'     => '',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
-		'table-of-contents'  => [
+		),
+		'table-of-contents'  => array(
 			'label'        => 'Table Of Content',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Table-Of-Content",
+			'icon'         => 'wcf-icon-Table-Of-Content',
 			'demo_url'     => '',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
-		'image-accordion'    => [
+		),
+		'image-accordion'    => array(
 			'label'        => 'Image Accordion',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'demo_url'     => '',
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Image-Accordion",
+			'icon'         => 'wcf-icon-Image-Accordion',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
-		'author-box'         => [
+		),
+		'author-box'         => array(
 			'label'        => 'Author Box',
 			'is_active'    => false,
-			'location'     => [
-				'cTab' => 'all'
-			],
+			'location'     => array(
+				'cTab' => 'all',
+			),
 			'is_upcoming'  => false,
 			'demo_url'     => '',
 			'is_pro'       => true,
 			'is_extension' => false,
-			'icon'         => "wcf-icon-Author-Box",
+			'icon'         => 'wcf-icon-Author-Box',
 			'doc_url'      => '',
 			'youtube_url'  => '',
-		],
+		),
 
-	]
-];
+	),
+);
 
 $GLOBALS['wcf_addons_config'] = $config;

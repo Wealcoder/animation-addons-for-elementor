@@ -85,7 +85,7 @@ class Filterable_Slider extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -1136,7 +1136,7 @@ class Filterable_Slider extends Widget_Base
 				<?php endif; ?>
 
 				<?php if (! empty($item['description'])) : ?>
-					<div class="description"><?php echo $this->parse_text_editor($item['description']); ?></div>
+					<div class="description"><?php echo wp_kses_post($this->parse_text_editor($item['description'])); ?></div>
 				<?php endif; ?>
 			</div>
 		</div>

@@ -85,7 +85,7 @@ class Image_Accordion extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	/**

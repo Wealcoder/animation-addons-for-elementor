@@ -1329,7 +1329,7 @@ class Team_Slider extends Widget_Base
 		);
 
 ?>
-		<div class="team--main-wrapper helo--team-slider-<?php echo $settings['slider_style']; ?>">
+		<div class="team--main-wrapper helo--team-slider-<?php echo esc_attr($settings['slider_style']); ?>">
 			<div <?php $this->print_render_attribute_string('wrapper'); ?>>
 				<div <?php $this->print_render_attribute_string('carousel-wrapper'); ?>>
 					<div class="swiper-wrapper">

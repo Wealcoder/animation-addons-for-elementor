@@ -95,7 +95,7 @@ class Grid_Hover_Posts extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor', 'wcf-archive-addon'];
+		return ['weal-coder-addon', 'wcf-archive-addon'];
 	}
 
 	/**
@@ -2815,7 +2815,7 @@ class Grid_Hover_Posts extends Widget_Base
 			$total_stars += get_post_meta($rating->ID, 'rating', true);
 		}
 	?>
-		<div class="post-rating <?php echo $settings['post_rating_style']; ?>">
+		<div class="post-rating <?php echo esc_attr($settings['post_rating_style']); ?>">
 			<?php
 			if ($total_ratings > 0) {
 				$average_rating = round($total_stars / $total_ratings, 1);
@@ -2828,16 +2828,16 @@ class Grid_Hover_Posts extends Widget_Base
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</div>
 						<p>
-							<span><?php echo $average_rating; ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
+							<span><?php echo esc_html($average_rating); ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
 						</p>
 					<?php
 					} else {
 					?>
-						<?php echo $average_rating; ?>
+						<?php echo esc_html($average_rating); ?>
 						<span class="icon">
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</span>
-						(<?php echo $total_ratings; ?>)
+						(<?php echo esc_html($total_ratings); ?>)
 					<?php
 					}
 					?>
