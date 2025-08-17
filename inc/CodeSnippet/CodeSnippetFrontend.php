@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package WCF_ADDONS\CodeSnippet
  */
 class CodeSnippetFrontend {
+	use CodeSnippetSettingsTrait;
+
 	/**
 	 * Instance of the class
 	 *
@@ -60,7 +62,7 @@ class CodeSnippetFrontend {
 	 */
 	private function init_hooks() {
 		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
-		add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
+		$this->run_php_code_snippets();
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -85,7 +87,7 @@ class CodeSnippetFrontend {
 		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
-			$snippet_data = aae_get_code_snippet_settings( $snippet->ID );
+			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
 			if ( $this->check_visibility_conditions( $snippet_data ) ) {
 				$this->execute_snippet( $snippet_data );
 			}
@@ -139,7 +141,7 @@ class CodeSnippetFrontend {
 		}
 
 		foreach ( $snippets as $snippet ) {
-			$snippet_data = aae_get_code_snippet_settings( $snippet->ID );
+			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
 			if ( $this->should_load_snippet( $snippet_data ) ) {
 				$active_snippets[] = $snippet_data;
 			}

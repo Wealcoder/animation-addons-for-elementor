@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package WCF_ADDONS\CodeSnippet
  */
 class CodeSnippet {
+	use CodeSnippetSettingsTrait;
+
 	/**
 	 * PostType name.
 	 *
@@ -168,10 +170,10 @@ class CodeSnippet {
 		$code_snippet_id = isset( $_GET['edit'] ) ? absint( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( $add_new_tab ) {
-			$snippet_details = aae_get_code_snippet_settings();
+			$snippet_details = $this->aae_get_code_snippet_settings();
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} elseif ( $code_snippet_id ) {
-			$snippet_details = aae_get_code_snippet_settings( $code_snippet_id );
+			$snippet_details = $this->aae_get_code_snippet_settings($code_snippet_id);
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} else {
 			include __DIR__ . '/views/code-snippet-list.php';
@@ -260,7 +262,7 @@ class CodeSnippet {
 			exit();
 		}
 
-		$settings = aae_get_code_snippet_settings();
+		$settings = $this->aae_get_code_snippet_settings();
 		foreach ( $settings as $key => $default_value ) {
 			if ( isset( $_POST[ $key ] ) ) {
 				if ( 'code_content' === $key ) {
@@ -488,7 +490,7 @@ class CodeSnippet {
 		$updated = update_post_meta( $snippet_id, 'is_active', $status );
 
 		if ( $updated ) {
-			$status_text = ( 'yes' === $status ) ? __( 'Activated', 'animation-addons-for-elementor' ) : __( 'Aeactivated', 'animation-addons-for-elementor' );
+			$status_text = ( 'yes' === $status ) ? __( 'Activated', 'animation-addons-for-elementor' ) : __( 'Deactivated', 'animation-addons-for-elementor' );
 			wp_send_json_success(
 				array(
 					'message' => sprintf(
