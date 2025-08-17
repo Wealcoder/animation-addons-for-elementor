@@ -520,18 +520,26 @@ class CodeSnippetFrontend {
 	 * @return void
 	 */
 	private function execute_php_snippet( $content ) {
+		$content = preg_replace( '/^\s*<\?(php|PHP)?/i', '', $content );
+		$content = preg_replace( '/\?>\s*$/', '', $content );
 		if ( ! empty( $content ) ) {
-			// Use output buffering to capture any output.
 			ob_start();
+
 			try {
-                eval( $content ); // phpcs:ignore
-			} catch ( \Exception $e ) {
-				// Log error if debugging is enabled.
+				$wrapped = 'return function() { ' . $content . ' };';
+                $func    = eval( $wrapped ); // phpcs:ignore
+
+				if ( is_callable( $func ) ) {
+					$func();
+				}
+			} catch ( \Throwable $e ) {
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( 'Code Snippet PHP Error: ' . $e->getMessage() ); // phpcs:ignore
+					error_log( 'Code Snippet Error: ' . $e->getMessage() );
 				}
 			}
+
 			$output = ob_get_clean();
+
 			echo wp_kses_post( $output );
 		}
 	}
