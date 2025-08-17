@@ -39,7 +39,7 @@ class AAEAddon_Importer {
 		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] ); 
 	
 		$this->plugin_installer = new WCF_Plugin_Installer(true);     
-		add_filter('wcf_addons_dashboard_config', [ $this, 'include_user_wishlist']);
+		add_filter('wcf_addons_dashboard_config', [ $this, 'include_user_wishlist']);		
 	}
 
 	public function include_user_wishlist($config) {
@@ -52,7 +52,10 @@ class AAEAddon_Importer {
 
 	public function heartbeat_data(){
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
-        $return_data = apply_filters('aaeaddon_heartbeat_data', ['msg' => get_option('aaeaddon_template_import_state')]);        
+        $return_data = apply_filters('aaeaddon_heartbeat_data', [
+			'import_state' => get_option('aaeaddon_template_import_state'),
+			'import_porgress' => get_option('aaeaddon_template_import_progress')
+		]);        
 		wp_send_json($return_data);		
 	}
 
@@ -127,7 +130,7 @@ class AAEAddon_Importer {
 			    // Include the necessary plugin.php file
 				$progress                   = '20';	
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
+				do_action('aaeaddon/starter-template/import/before/wp_options');	
 				if(is_array($user_plugins) && $user_plugins){
 					if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){	
 							if ( current_user_can( 'install_plugins' ) ) {				
@@ -151,7 +154,7 @@ class AAEAddon_Importer {
 								}
 							}					
 							update_option('aaeaddon_template_import_state', esc_html__( 'Plugin Installation Done' , 'animation-addons-for-elementor' ));
-						}
+					}
 				}
 				$template_data['next_step'] = 'install-wp-options';					
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){					
@@ -217,12 +220,12 @@ class AAEAddon_Importer {
 
 				$template_data['next_step'] = 'check-template-status';
 				$progress                   = '30';
-				$msg                        =  esc_html__('Checking Template Content', 'animation-addons-for-elementor');
+				$msg                        =  esc_html__('Downloading Template', 'animation-addons-for-elementor');
 				if(isset($template_data['wp_options']) && is_array($template_data['wp_options'])){
 					$this->install_options($template_data['wp_options']);
 				}	
 				do_action('aaeaddon/starter-template/import/step/wp_options');					
-				update_option('aaeaddon_template_import_state', 'done');			
+				update_option('aaeaddon_template_import_state', $msg);			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
 			}else{
@@ -298,7 +301,15 @@ class AAEAddon_Importer {
 					foreach ( $xml->option as $opt ) {
 						$option_name     = sanitize_text_field( (string) $opt->name );
 						$serialized_data = sanitize_text_field( (string) $opt->value );
-	
+						if (preg_match('/^aae_cpts_(\d{6})$/', $option_name, $m)) {
+							$cpts = get_option($option_name);
+							if (is_array($cpts)) {
+								$cpts[] = $serialized_data;
+								$serialized_data = serialize($cpts);
+							} else {
+								$serialized_data = serialize([$serialized_data]);
+							}
+						}
 						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 						$wpdb->update(
 							$wpdb->options,
@@ -322,7 +333,6 @@ class AAEAddon_Importer {
 	}
 	
 	
-
 	public function installElementorKit($elementor){
 		$activeKitId = get_option( 'elementor_active_kit' );
 		$kit_data    = json_decode( $elementor, true );
@@ -477,7 +487,6 @@ class AAEAddon_Importer {
 		}
 		return $msg;
 	}
-	
 	
 }
 
