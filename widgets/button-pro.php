@@ -78,7 +78,7 @@ class Button_Pro extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	public function get_style_depends()

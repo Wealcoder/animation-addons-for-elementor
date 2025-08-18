@@ -30,7 +30,7 @@
     "phpcbf": "@php ./vendor/bin/phpcbf --colors --extensions=php .",
     "analyze": "@php ./vendor/bin/phpstan analyze ./",
     "build": "@composer install --no-dev"
-  },
+  }, 
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,

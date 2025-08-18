@@ -570,7 +570,11 @@ class Plugin {
 			'countdown'          => array(
 				'handler' => 'wcf--countdown',
 				'src'     => 'widgets/countdown.min.css',
+<<<<<<< HEAD
 				'dep'     => array( 'wcf-addons-core' ),
+=======
+				'dep'     => [],
+>>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
 				'version' => false,
 				'media'   => 'all',
 			),
@@ -742,8 +746,20 @@ class Plugin {
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
+<<<<<<< HEAD
 			),
 		);
+=======
+			],
+			'post-comment' => [
+				'handler' => 'wcf--post-comment',
+				'src'     => 'widgets/post-comment.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			],
+		];
+>>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
 	}
 
 	/**
@@ -889,6 +905,8 @@ class Plugin {
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
 		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
+		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
+		include_once WCF_ADDONS_PATH . 'inc/admin/image-cache.php';
 
 		// extensions.
 		$this->register_extensions();

@@ -92,7 +92,7 @@ class Banner_Posts extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return array('animation-addons-for-elementor');
+		return array('weal-coder-addon');
 	}
 
 	/**
@@ -156,7 +156,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_query',
 			array(
-				'label' => esc_html__('Query', 'animation-addons-for-elementor'),
+				'label' => __('Query', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			)
 		);
@@ -210,7 +210,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_settings',
 			array(
-				'label' => esc_html__('Settings', 'animation-addons-for-elementor'),
+				'label' => __('Settings', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			)
 		);
@@ -230,10 +230,10 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'show_taxonomy',
 			array(
-				'label'     => esc_html__('Show Taxonomy', 'animation-addons-for-elementor'),
+				'label'     => __('Show Taxonomy', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'label_on'  => __('Show', 'animation-addons-for-elementor'),
+				'label_off' => __('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			)
 		);
@@ -241,10 +241,10 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'show_meta',
 			array(
-				'label'     => esc_html__('Show Meta', 'animation-addons-for-elementor'),
+				'label'     => __('Show Meta', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'label_on'  => __('Show', 'animation-addons-for-elementor'),
+				'label_off' => __('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			)
 		);
@@ -252,10 +252,10 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'show_read_more',
 			array(
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
+				'label'     => __('Read More', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__('Show', 'animation-addons-for-elementor'),
-				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'label_on'  => __('Show', 'animation-addons-for-elementor'),
+				'label_off' => __('Hide', 'animation-addons-for-elementor'),
 				'default'   => 'yes',
 			)
 		);
@@ -264,10 +264,10 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'post_format_a_v',
 			array(
-				'label'        => esc_html__('Post Audio, Video & Gallery', 'animation-addons-for-elementor'),
+				'label'        => __('Post Audio, Video & Gallery', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_off'    => esc_html__('Off', 'animation-addons-for-elementor'),
-				'label_on'     => esc_html__('On', 'animation-addons-for-elementor'),
+				'label_off'    => __('Off', 'animation-addons-for-elementor'),
+				'label_on'     => __('On', 'animation-addons-for-elementor'),
 				'separator'    => 'before',
 				'return_value' => 'yes',
 			)
@@ -281,7 +281,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_title',
 			array(
-				'label' => esc_html__('Title', 'animation-addons-for-elementor'),
+				'label' => __('Title', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			)
 		);
@@ -289,7 +289,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'title_length',
 			array(
-				'label' => esc_html__('Title Length', 'animation-addons-for-elementor'),
+				'label' => __('Title Length', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::NUMBER,
 				'min'   => 2,
 				'max'   => 100,
@@ -299,7 +299,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'title_tag',
 			array(
-				'label'     => esc_html__('Title HTML Tag', 'animation-addons-for-elementor'),
+				'label'     => __('Title HTML Tag', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => array(
 					'h1'   => 'H1',
@@ -322,11 +322,11 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'show_title_highlight',
 			array(
-				'label'              => esc_html__('Show Highlight', 'animation-addons-for-elementor'),
+				'label'              => __('Show Highlight', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::SWITCHER,
 				'separator'          => 'before',
-				'label_on'           => esc_html__('Show', 'animation-addons-for-elementor'),
-				'label_off'          => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'label_on'           => __('Show', 'animation-addons-for-elementor'),
+				'label_off'          => __('Hide', 'animation-addons-for-elementor'),
 				'return_value'       => 'yes',
 				'frontend_available' => true,
 			)
@@ -335,7 +335,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'highlight_title_length',
 			array(
-				'label'              => esc_html__('Highlight Length', 'animation-addons-for-elementor'),
+				'label'              => __('Highlight Length', 'animation-addons-for-elementor'),
 				'type'               => Controls_Manager::NUMBER,
 				'default'            => 5,
 				'min'                => 2,
@@ -353,7 +353,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_title_style',
 			array(
-				'label' => esc_html__('Title', 'animation-addons-for-elementor'),
+				'label' => __('Title', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			)
 		);
@@ -371,14 +371,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_title_normal',
 			array(
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
+				'label' => __('Normal', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'title_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-title' => 'color: {{VALUE}};',
@@ -391,14 +391,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_tile_hover',
 			array(
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
+				'label' => __('Hover', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'title_color_hover',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-title:hover' => 'color: {{VALUE}};',
@@ -413,7 +413,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'title_margin',
 			array(
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
+				'label'      => __('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array('px', 'em', 'rem', 'custom'),
 				'selectors'  => array(
@@ -425,7 +425,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'heading_highlight',
 			array(
-				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor'),
+				'label'     => __('Highlight', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => array(
@@ -437,7 +437,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'title_h_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-title .highlight' => 'color: {{VALUE}};',
@@ -468,7 +468,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta',
 			array(
-				'label'     => esc_html__('Meta', 'animation-addons-for-elementor'),
+				'label'     => __('Meta', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => array(
 					'show_meta' => 'yes',
@@ -481,18 +481,18 @@ class Banner_Posts extends Widget_Base
 		$repeater->add_control(
 			'post_meta',
 			array(
-				'label'   => esc_html__('Meta', 'animation-addons-for-elementor'),
+				'label'   => __('Meta', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'comments',
 				'options' => array(
-					'author'     => esc_html__('Author', 'animation-addons-for-elementor'),
-					'view'       => esc_html__('View', 'animation-addons-for-elementor'),
-					'date'       => esc_html__('Date', 'animation-addons-for-elementor'),
-					'time'       => esc_html__('Time', 'animation-addons-for-elementor'),
-					'time-ago'   => esc_html__('Time Ago', 'animation-addons-for-elementor'),
-					'comments'   => esc_html__('Comments', 'animation-addons-for-elementor'),
-					'reviews'    => esc_html__('Reviews', 'animation-addons-for-elementor'),
-					'read-later' => esc_html__('Read Later', 'animation-addons-for-elementor'),
+					'author'     => __('Author', 'animation-addons-for-elementor'),
+					'view'       => __('View', 'animation-addons-for-elementor'),
+					'date'       => __('Date', 'animation-addons-for-elementor'),
+					'time'       => __('Time', 'animation-addons-for-elementor'),
+					'time-ago'   => __('Time Ago', 'animation-addons-for-elementor'),
+					'comments'   => __('Comments', 'animation-addons-for-elementor'),
+					'reviews'    => __('Reviews', 'animation-addons-for-elementor'),
+					'read-later' => __('Read Later', 'animation-addons-for-elementor'),
 				),
 			)
 		);
@@ -500,7 +500,7 @@ class Banner_Posts extends Widget_Base
 		$repeater->add_control(
 			'meta_icon',
 			array(
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
+				'label'       => __('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -514,7 +514,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'post_meta_data',
 			array(
-				'label'       => esc_html__('Meta Data', 'animation-addons-for-elementor'),
+				'label'       => __('Meta Data', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
 				'default'     => array(
@@ -532,7 +532,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'meta_separator',
 			array(
-				'label'     => esc_html__('Separator Between', 'animation-addons-for-elementor'),
+				'label'     => __('Separator Between', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::TEXT,
 				'default'   => '///',
 				'ai'        => array(
@@ -550,20 +550,20 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'post_by',
 			array(
-				'label'   => esc_html__('Author By', 'animation-addons-for-elementor'),
+				'label'   => __('Author By', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__('By', 'animation-addons-for-elementor'),
+				'default' => __('By', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'show_avatar',
 			array(
-				'label'        => esc_html__('Author Avatar', 'animation-addons-for-elementor'),
-				'description'  => esc_html__('If you want to use the author avatar, you must chose "Author" in the meta data.', 'animation-addons-for-elementor'),
+				'label'        => __('Author Avatar', 'animation-addons-for-elementor'),
+				'description'  => __('If you want to use the author avatar, you must chose "Author" in the meta data.', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
-				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'label_on'     => __('Show', 'animation-addons-for-elementor'),
+				'label_off'    => __('Hide', 'animation-addons-for-elementor'),
 				'separator'    => 'before',
 				'return_value' => 'yes',
 			)
@@ -572,7 +572,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'avatar_size',
 			array(
-				'label'      => esc_html__('Avatar Size', 'animation-addons-for-elementor'),
+				'label'      => __('Avatar Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px'),
 				'selectors'  => array(
@@ -588,7 +588,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta_style',
 			array(
-				'label'     => esc_html__('Meta', 'animation-addons-for-elementor'),
+				'label'     => __('Meta', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => array(
 					'show_meta' => 'yes',
@@ -599,7 +599,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_gap',
 			array(
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
+				'label'      => __('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px', '%', 'em', 'rem', 'custom'),
 				'selectors'  => array(
@@ -612,7 +612,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'meta_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-meta' => 'color: {{VALUE}};',
@@ -631,7 +631,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_margin',
 			array(
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
+				'label'      => __('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array('px', 'em', 'rem', 'custom'),
 				'selectors'  => array(
@@ -643,7 +643,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_icon',
 			array(
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
+				'label'      => __('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'separator'  => 'before',
 				'size_units' => array('px'),
@@ -656,7 +656,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'meta_icon_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-meta .meta-icon' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -667,7 +667,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'meta_icon_gap',
 			array(
-				'label'      => esc_html__('Icon Gap', 'animation-addons-for-elementor'),
+				'label'      => __('Icon Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px'),
 				'selectors'  => array(
@@ -682,7 +682,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_meta_admin_style',
 			array(
-				'label'     => esc_html__('Meta Admin', 'animation-addons-for-elementor'),
+				'label'     => __('Meta Admin', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => array(
 					'show_meta' => 'yes',
@@ -693,8 +693,8 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'author_gap',
 			array(
-				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
-				'type'       => \Elementor\Controls_Manager::SLIDER,
+				'label'      => __('Gap', 'animation-addons-for-elementor'),
+				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px', '%', 'em', 'rem', 'custom'),
 				'selectors'  => array(
 					'{{WRAPPER}} .post-author' => 'gap: {{SIZE}}{{UNIT}};',
@@ -705,7 +705,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'author_by_heading',
 			array(
-				'label' => esc_html__('Author By', 'animation-addons-for-elementor'),
+				'label' => __('Author By', 'animation-addons-for-elementor'),
 				'type'  => Controls_Manager::HEADING,
 			)
 		);
@@ -713,7 +713,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'admin_by_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-meta .post-by' => 'color: {{VALUE}};',
@@ -732,7 +732,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'author_heading',
 			array(
-				'label'     => esc_html__('Author', 'animation-addons-for-elementor'),
+				'label'     => __('Author', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			)
@@ -751,14 +751,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_author_normal',
 			array(
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
+				'label' => __('Normal', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'author_color',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .post-author a' => 'color: {{VALUE}};',
@@ -771,14 +771,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_author_hover',
 			array(
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
+				'label' => __('Hover', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'author_color_hover',
 			array(
-				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
+				'label'     => __('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .post-author a:hover' => 'color: {{VALUE}};',
@@ -799,7 +799,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_post_read_more',
 			array(
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
+				'label'     => __('Read More', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => array(
 					'show_read_more' => 'yes',
@@ -810,19 +810,19 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'read_more_text',
 			array(
-				'label'   => esc_html__('Read More Text', 'animation-addons-for-elementor'),
+				'label'   => __('Read More Text', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::TEXT,
 				'dynamic' => array(
 					'active' => true,
 				),
-				'default' => esc_html__('Read More', 'animation-addons-for-elementor'),
+				'default' => __('Read More', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'selected_icon',
 			array(
-				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
+				'label'       => __('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -832,12 +832,12 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'icon_align',
 			array(
-				'label'   => esc_html__('Icon Position', 'animation-addons-for-elementor'),
+				'label'   => __('Icon Position', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'left',
 				'options' => array(
-					'left'  => esc_html__('Before', 'animation-addons-for-elementor'),
-					'right' => esc_html__('After', 'animation-addons-for-elementor'),
+					'left'  => __('Before', 'animation-addons-for-elementor'),
+					'right' => __('After', 'animation-addons-for-elementor'),
 				),
 			)
 		);
@@ -845,7 +845,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'icon_indend',
 			array(
-				'label'     => esc_html__('Icon Spacing', 'animation-addons-for-elementor'),
+				'label'     => __('Icon Spacing', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => array(
 					'px' => array(
@@ -864,7 +864,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'style_post_read_more',
 			array(
-				'label'     => esc_html__('Read More', 'animation-addons-for-elementor'),
+				'label'     => __('Read More', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => array(
 					'show_read_more' => 'yes',
@@ -883,7 +883,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_icon_size',
 			array(
-				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
+				'label'      => __('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px', '%'),
 				'range'      => array(
@@ -911,14 +911,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_read_more_normal',
 			array(
-				'label' => esc_html__('Normal', 'animation-addons-for-elementor'),
+				'label' => __('Normal', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'read_more_color',
 			array(
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
+				'label'     => __('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => array(
@@ -942,14 +942,14 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_tab(
 			'tab_read-more_hover',
 			array(
-				'label' => esc_html__('Hover', 'animation-addons-for-elementor'),
+				'label' => __('Hover', 'animation-addons-for-elementor'),
 			)
 		);
 
 		$this->add_control(
 			'read_more_text_hover_color',
 			array(
-				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
+				'label'     => __('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-link:hover' => 'color: {{VALUE}}; fill: {{VALUE}};',
@@ -970,7 +970,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'read_more_hover_border_color',
 			array(
-				'label'     => esc_html__('Border Color', 'animation-addons-for-elementor'),
+				'label'     => __('Border Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf-post-link:hover' => 'border-color: {{VALUE}};',
@@ -997,7 +997,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_border_radius',
 			array(
-				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
+				'label'      => __('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array('px', '%', 'em', 'rem', 'custom'),
 				'selectors'  => array(
@@ -1009,7 +1009,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_padding',
 			array(
-				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
+				'label'      => __('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array('px', '%', 'em', 'rem', 'vw', 'custom'),
 				'selectors'  => array(
@@ -1030,7 +1030,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'read_more_margin',
 			array(
-				'label'      => esc_html__('Margin', 'animation-addons-for-elementor'),
+				'label'      => __('Margin', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array('px', 'em', 'rem', 'custom'),
 				'selectors'  => array(
@@ -1047,7 +1047,7 @@ class Banner_Posts extends Widget_Base
 		$this->start_controls_section(
 			'section_audio_video_play',
 			array(
-				'label'     => esc_html__('Post Popup', 'animation-addons-for-elementor'),
+				'label'     => __('Post Popup', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => array('post_format_a_v' => 'yes'),
 			)
@@ -1056,7 +1056,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'audio_video_play',
 			array(
-				'label'       => esc_html__('Video Icon', 'animation-addons-for-elementor'),
+				'label'       => __('Video Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1070,7 +1070,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'audio_icon',
 			array(
-				'label'       => esc_html__('Audio Icon', 'animation-addons-for-elementor'),
+				'label'       => __('Audio Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1084,7 +1084,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'gallery_icon',
 			array(
-				'label'       => esc_html__('Gallery Icon', 'animation-addons-for-elementor'),
+				'label'       => __('Gallery Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1098,7 +1098,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'audio_video_play_size',
 			array(
-				'label'      => esc_html__('Play Icon Size', 'animation-addons-for-elementor'),
+				'label'      => __('Play Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px'),
 				'default'    => array(
@@ -1114,7 +1114,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_control(
 			'audio_video_play_color',
 			array(
-				'label'     => esc_html__('Play Icon Color', 'animation-addons-for-elementor'),
+				'label'     => __('Play Icon Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .play' => 'color: {{VALUE}}; fill: {{VALUE}}',
@@ -1125,7 +1125,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'audio_video_play_offset_x',
 			array(
-				'label'      => esc_html__('Offset X', 'animation-addons-for-elementor'),
+				'label'      => __('Offset X', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px', '%', 'em', 'rem', 'custom'),
 				'range'      => array(
@@ -1151,7 +1151,7 @@ class Banner_Posts extends Widget_Base
 		$this->add_responsive_control(
 			'audio_video_play_offset_y',
 			array(
-				'label'      => esc_html__('Offset Y', 'animation-addons-for-elementor'),
+				'label'      => __('Offset Y', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => array('px', '%', 'em', 'rem', 'custom'),
 				'range'      => array(

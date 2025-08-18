@@ -13,7 +13,7 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 
 == Description ==
 
-**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 86+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
+**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 96+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 150+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
 
 As the **No.1 animation plugin for Elementor**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
@@ -79,13 +79,13 @@ Once your website is designed with all the essential elements, enhance its funct
 **Smooth Scroller**: Allow users to navigate web pages more smoothly and naturally.
 **Animation**: Implement diverse, advanced animations for a visually appealing website.
 **[Pin Element](https://animation-addons.com/extensions/pin-element/)**: Fix elements in a specific space during scrolling to keep them always visible.
-**Text Animation**: Create smooth text effects to make headings and content more engaging.
-**Image Animation**: Add dynamic animations to images to capture the user's attention.
-**Cursor Hover Effect**: Add unique hover animations based on the cursor to increase interactivity.
-**Hover Effect Image**: Implement hover-specific image transformations for a modern touch.
-**Cursor Move Effect**: Add immersive animations based on cursor movement.
-**Horizontal ScrollTrigger**: Create animations when the user performs horizontal scrolling.
-**DrawSVG**: Reveal or hide the stroke of an SVG progressively.
+**[Text Animation](https://animation-addons.com/extensions/text-animation/)**: Create smooth text effects to make headings and content more engaging.
+**[Image Animation](https://animation-addons.com/extensions/image-animation/)**: Add dynamic animations to images to capture the user's attention.
+**[Cursor Hover Effect](https://animation-addons.com/extensions/cursor-hover-effect/)**: Add unique hover animations based on the cursor to increase interactivity.
+**[Hover Effect Image](https://animation-addons.com/extensions/image-hover-effect/)**: Implement hover-specific image transformations for a modern touch.
+**[Cursor Move Effect](https://animation-addons.com/extensions/cursor-move-effect/)**: Add immersive animations based on cursor movement.
+**[Horizontal ScrollTrigger](https://animation-addons.com/extensions/horizontal-scroll/)**: Create animations when the user performs horizontal scrolling.
+**[DrawSVG](https://animation-addons.com/widgets/aae-gsap-drawsvg/)**: Reveal or hide the stroke of an SVG progressively.
 **Portfolio Filter**: Implement animated filters to organize and showcase portfolio items.
 **Animation Builder**: Create and customize animations with an intuitive, user-friendly interface.
 
@@ -94,7 +94,7 @@ Once your website is designed with all the essential elements, enhance its funct
 
 **Custom CSS**: Add custom CSS styles directly within Elementor for precise design control.
 **Wrapper Link**: Transform entire container sections into clickable links for seamless navigation.
-**Popup**: Create engaging popups to enhance user interaction and showcase important content.
+**[Popup](https://animation-addons.com/extensions/pop-up/)**: Create engaging popups to enhance user interaction and showcase important content.
 **Tilt Effect**: Tilt an element based on the visitor’s mouse movement for a dynamic visual experience.
 **Advanced Tooltip**: Display additional information about elements when users hover over them.
 **Custom Fonts**: Integrate unique custom fonts to maintain a consistent brand identity.
@@ -102,7 +102,7 @@ Once your website is designed with all the essential elements, enhance its funct
 
 
 ## Animation Addons For Elementor Widget List
-Take your website design to the next level with 86+ Elementor widgets. Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, or excerpts, Animation Addons got you covered.
+Take your website design to the next level with 96+ Elementor widgets. Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, or excerpts, Animation Addons got you covered.
 
 ### Header and Footer Widgets;
 **Site Logo**: Display the website’s logo prominently to establish brand identity and recognition.
@@ -117,7 +117,7 @@ Take your website design to the next level with 86+ Elementor widgets. Whether y
 **Post Comments**: Enable users to leave comments, feedback, and engage in discussions on individual posts or pages.
 **Post Meta Info**: Provide supplementary details about individual posts or pages.
 **Post Pagination**: Break down content into manageable pages, allowing users to browse multiple posts.
-**Post Social Share**: Enable social media sharing of individual posts or articles to expand reach and visibility.
+**[Post Social Share](https://animation-addons.com/widgets/aae-social-share/)**: Enable social media sharing of individual posts or articles to expand reach and visibility.
 
 **[Posts](https://animation-addons.com/widgets/aae-posts/)**: Showcase a list of blog posts or custom post types in multiple unique styles.
 
@@ -265,8 +265,8 @@ This template library is specifically crafted for developers, designers, and age
 
 💡 Unlock next-level animations with **Animation Addons for Elementor!**
 
-### 90+ Elementor Widgets:
-Unlock endless design possibilities with 86+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
+### 97+ Elementor Widgets:
+Unlock endless design possibilities with 96+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
 
 ### Custom Animation Builder:
 The Custom Animation Builder is a powerful tool that allows WordPress users to create stunning GSAP-powered animations without any coding. This intuitive builder integrates the full potential of GSAP (GreenSock Animation Platform), enabling you to craft smooth transitions, complex timelines, and advanced animations like never before. Key features include ScrollTrigger for scroll-based animations, MorphSVG for shape transformations, DrawSVG for dynamic SVG animations, SplitText for text effects, ScrambleText for engaging typography, ScrollSmoother for smooth page scrolling, and 3D Transformations for depth and perspective adjustments. With easy-to-use controls, the Custom Animation Builder gives you complete creative freedom to elevate your website’s design and interactivity without writing a single line of code.
@@ -312,9 +312,9 @@ This plugin using the modified version of [WP import 2.0] (https://github.com/hu
 
 = Recommended Requirements =
 
-* PHP version 8.1 or greater
-* MySQL version 5.6 or greater
-* WordPress Memory limit of 128 MB or greater (512 MB or higher is preferred)
+* PHP version 8.3 or greater
+* MySQL version 5.7 or greater
+* WordPress Memory limit of 128 MB or greater (1024 MB or higher is preferred)
 = Installation =
 Note: This plugin requires Elementor to function. Please ensure Elementor is installed and activated before proceeding.
 
@@ -420,15 +420,17 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= Animation Addons for Elementor v2.3.10 – 08 august 2025 = 
-  - 🆕 **Added:** 15+ premium widgets — now completely free for all users!
+= Animation Addons for Elementor v2.3.10 – 11 august 2025 = 
+  - 🆕 **Added:** 20+ premium widgets — now completely free for all users!
   - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
   - 🆕 **Added:** New Popup trigger — show popups on mouse leave to boost conversions
   - ✏️ **Improved** Renamed “Pin” extension to “Sticky” for clearer usability and better user understanding
 
 = Animation Addons for Elementor v2.3.9 – 18 july 2025 = 
-  - 🎨 **Update:** docs updated
-  - 🎨 **Optimize:** js optimize
+  - 🎨 **Update:** Documentation with setup and usage guides for the new widgets.
+  - 🎨 **Optimize:** Faster, leaner JavaScript for both editor and frontend.
+  - 🆕 **Added:** Rating widget to showcase reviews and user feedback.
+  - 🆕 **Added:** Breadcrumbs widget for better site navigation in Elementor.
 
 = Animation Addons for Elementor v2.3.8 – 17 july 2025 =
   - 🆕 **Added:** ClickPop Widget for header

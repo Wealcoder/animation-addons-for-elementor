@@ -13,7 +13,7 @@ use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
@@ -24,7 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Image_Hotspot extends Widget_Base {
+class Image_Hotspot extends Widget_Base
+{
 
 	/**
 	 * Retrieve the widget name.
@@ -35,7 +36,8 @@ class Image_Hotspot extends Widget_Base {
 	 * @access public
 	 *
 	 */
-	public function get_name() {
+	public function get_name()
+	{
 		return 'aae--image-hotspot';
 	}
 
@@ -48,8 +50,9 @@ class Image_Hotspot extends Widget_Base {
 	 * @access public
 	 *
 	 */
-	public function get_title() {
-		return esc_html__( 'Image Hotspot', 'animation-addons-for-elementor' );
+	public function get_title()
+	{
+		return esc_html__('Image Hotspot', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -61,7 +64,8 @@ class Image_Hotspot extends Widget_Base {
 	 * @access public
 	 *
 	 */
-	public function get_icon() {
+	public function get_icon()
+	{
 		return 'wcf eicon-image-hotspot';
 	}
 
@@ -79,8 +83,9 @@ class Image_Hotspot extends Widget_Base {
 	 * @access public
 	 *
 	 */
-	public function get_categories() {
-		return [ 'weal-coder-addon' ];
+	public function get_categories()
+	{
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -88,12 +93,14 @@ class Image_Hotspot extends Widget_Base {
 	 *
 	 * @return array
 	 */
-	public function get_style_depends() {
-		return [ 'aae-image-hotspot' ];
+	public function get_style_depends()
+	{
+		return ['aae-image-hotspot'];
 	}
 
-	public function get_script_depends() {
-		return [ 'aae-image-hotspot' ];
+	public function get_script_depends()
+	{
+		return ['aae-image-hotspot'];
 	}
 
 	/**
@@ -105,7 +112,8 @@ class Image_Hotspot extends Widget_Base {
 	 *
 	 * @access protected
 	 */
-	protected function register_controls() {
+	protected function register_controls()
+	{
 		$this->register_hotspot_image();
 
 		$this->register_hotspot_content();
@@ -119,11 +127,12 @@ class Image_Hotspot extends Widget_Base {
 		$this->style_hotspot_tooltip();
 	}
 
-	protected function register_hotspot_image() {
+	protected function register_hotspot_image()
+	{
 		$this->start_controls_section(
 			'section_image',
 			[
-				'label' => esc_html__( 'Image', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Image', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -131,7 +140,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'hsp_image',
 			[
-				'label'   => esc_html__( 'Image', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('Image', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::MEDIA,
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
@@ -144,7 +153,7 @@ class Image_Hotspot extends Widget_Base {
 			[
 				'name'    => 'hsp_img_size',
 				// Usage: `{name}_size` and `{name}_custom_dimension`, in this case `thumbnail_size` and `thumbnail_custom_dimension`.
-				'exclude' => [ 'custom' ],
+				'exclude' => ['custom'],
 				'include' => [],
 				'default' => 'full',
 			]
@@ -153,11 +162,12 @@ class Image_Hotspot extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	protected function register_hotspot_content() {
+	protected function register_hotspot_content()
+	{
 		$this->start_controls_section(
 			'section_hotspot',
 			[
-				'label' => esc_html__( 'Hotspot', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Hotspot', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -165,27 +175,27 @@ class Image_Hotspot extends Widget_Base {
 		$repeater = new Repeater();
 
 		// Start Tabs
-		$repeater->start_controls_tabs( 'hotspot_tabs' );
+		$repeater->start_controls_tabs('hotspot_tabs');
 
 		// Tab 1: Content
 		$repeater->start_controls_tab(
 			'hsp_content_tab',
 			[
-				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_control(
 			'hsp_layout',
 			[
-				'label'   => esc_html__( 'Hotspot Layout', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('Hotspot Layout', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'dot',
 				'options' => [
-					'dot'       => esc_html__( 'Default', 'animation-addons-for-elementor' ),
-					'icon'      => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
-					'text'      => esc_html__( 'Text', 'animation-addons-for-elementor' ),
-					'icon-text' => esc_html__( 'Icon + Text', 'animation-addons-for-elementor' ),
+					'dot'       => esc_html__('Default', 'animation-addons-for-elementor'),
+					'icon'      => esc_html__('Icon', 'animation-addons-for-elementor'),
+					'text'      => esc_html__('Text', 'animation-addons-for-elementor'),
+					'icon-text' => esc_html__('Icon + Text', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -193,12 +203,12 @@ class Image_Hotspot extends Widget_Base {
 		$repeater->add_control(
 			'tooltip_type',
 			[
-				'label'   => esc_html__( 'Tooltip Type', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('Tooltip Type', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'tooltip',
 				'options' => [
-					'tooltip' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
-					'link'    => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+					'tooltip' => esc_html__('Content', 'animation-addons-for-elementor'),
+					'link'    => esc_html__('Link', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -206,7 +216,7 @@ class Image_Hotspot extends Widget_Base {
 		$repeater->add_control(
 			'hsp_icon',
 			[
-				'label'       => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -214,44 +224,44 @@ class Image_Hotspot extends Widget_Base {
 					'value'   => 'fas fa-circle',
 					'library' => 'fa-solid',
 				],
-				'condition'   => [ 'hsp_layout' => [ 'icon', 'icon-text' ] ],
+				'condition'   => ['hsp_layout' => ['icon', 'icon-text']],
 			]
 		);
 
 		$repeater->add_control(
 			'hsp_text',
 			[
-				'label'       => esc_html__( 'Text', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Text', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
-				'placeholder' => esc_html__( 'Type your text here', 'animation-addons-for-elementor' ),
-				'condition'   => [ 'hsp_layout' => [ 'text', 'icon-text' ] ],
+				'placeholder' => esc_html__('Type your text here', 'animation-addons-for-elementor'),
+				'condition'   => ['hsp_layout' => ['text', 'icon-text']],
 			]
 		);
 
 		$repeater->add_control(
 			'tlp_content',
 			[
-				'label'       => esc_html__( 'Tooltip Content', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Tooltip Content', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::WYSIWYG,
-				'default'     => esc_html__( 'Tooltip content', 'animation-addons-for-elementor' ),
-				'placeholder' => esc_html__( 'Type your content here', 'animation-addons-for-elementor' ),
-				'condition'   => [ 'tooltip_type' => 'tooltip' ],
+				'default'     => esc_html__('Tooltip content', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Type your content here', 'animation-addons-for-elementor'),
+				'condition'   => ['tooltip_type' => 'tooltip'],
 			]
 		);
 
 		$repeater->add_control(
 			'tlp_link',
 			[
-				'label'       => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'options'     => [ 'url', 'is_external', 'nofollow' ],
+				'options'     => ['url', 'is_external', 'nofollow'],
 				'default'     => [
 					'url'         => '',
 					'is_external' => false,
 					'nofollow'    => false,
 				],
 				'label_block' => true,
-				'condition'   => [ 'tooltip_type' => 'link' ],
+				'condition'   => ['tooltip_type' => 'link'],
 			]
 		);
 
@@ -261,16 +271,16 @@ class Image_Hotspot extends Widget_Base {
 		$repeater->start_controls_tab(
 			'hsp_position_tab',
 			[
-				'label' => esc_html__( 'Position', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Position', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$repeater->add_responsive_control(
 			'position_left',
 			[
-				'label'      => esc_html__( 'Horizontal Offset', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Horizontal Offset', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -294,9 +304,9 @@ class Image_Hotspot extends Widget_Base {
 		$repeater->add_responsive_control(
 			'position_top',
 			[
-				'label'      => esc_html__( 'Vertical Offset', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Vertical Offset', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -325,10 +335,10 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'hsp_list',
 			[
-				'label'       => esc_html__( 'Hotspot Lists', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Hotspot Lists', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'default'     => [ [] ],
+				'default'     => [[]],
 				'title_field' => '{{{ hsp_text }}}',
 			]
 		);
@@ -336,13 +346,13 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'hsp_animation',
 			[
-				'label'   => esc_html__( 'Animation', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('Animation', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'pulse',
 				'options' => [
-					'beat'  => esc_html__( 'Soft Beat', 'animation-addons-for-elementor' ),
-					'pulse' => esc_html__( 'Pulse', 'animation-addons-for-elementor' ),
-					'none'  => esc_html__( 'None', 'animation-addons-for-elementor' ),
+					'beat'  => esc_html__('Soft Beat', 'animation-addons-for-elementor'),
+					'pulse' => esc_html__('Pulse', 'animation-addons-for-elementor'),
+					'none'  => esc_html__('None', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -350,7 +360,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'animation_speed',
 			[
-				'label'     => esc_html__( 'Animation Speed', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Animation Speed', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 0.1,
 				'max'       => 10,
@@ -359,30 +369,31 @@ class Image_Hotspot extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .hotspot-icon' => '--anim-speed: {{SIZE}}s;',
 				],
-				'condition' => [ 'hsp_animation' => [ 'beat', 'pulse' ] ]
+				'condition' => ['hsp_animation' => ['beat', 'pulse']]
 			]
 		);
 
 		$this->add_control(
 			'pulse_color',
 			[
-				'label'     => esc_html__( 'Pulse Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Pulse Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .hotspot-icon' => '--pulse-color: {{VALUE}}',
 				],
-				'condition' => [ 'hsp_animation' => 'pulse' ]
+				'condition' => ['hsp_animation' => 'pulse']
 			]
 		);
 
 		$this->end_controls_section();
 	}
 
-	protected function register_hotspot_tooltip() {
+	protected function register_hotspot_tooltip()
+	{
 		$this->start_controls_section(
 			'section_tooltip',
 			[
-				'label' => esc_html__( 'Tooltip', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Tooltip', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -390,13 +401,13 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'trigger_type',
 			[
-				'label'   => esc_html__( 'Trigger Type', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('Trigger Type', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'hover',
 				'options' => [
-					'hover' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
-					'click' => esc_html__( 'Click', 'animation-addons-for-elementor' ),
-					'none'  => esc_html__( 'None', 'animation-addons-for-elementor' ),
+					'hover' => esc_html__('Hover', 'animation-addons-for-elementor'),
+					'click' => esc_html__('Click', 'animation-addons-for-elementor'),
+					'none'  => esc_html__('None', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -404,15 +415,15 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'tlp_position',
 			[
-				'label'        => esc_html__( 'Position', 'animation-addons-for-elementor' ),
+				'label'        => esc_html__('Position', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SELECT,
 				'prefix_class' => 'aae--tlp-position-',
 				'default'      => 'bottom',
 				'options'      => [
-					'top'    => esc_html__( 'Top', 'animation-addons-for-elementor' ),
-					'bottom' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
-					'left'   => esc_html__( 'Left', 'animation-addons-for-elementor' ),
-					'right'  => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+					'top'    => esc_html__('Top', 'animation-addons-for-elementor'),
+					'bottom' => esc_html__('Bottom', 'animation-addons-for-elementor'),
+					'left'   => esc_html__('Left', 'animation-addons-for-elementor'),
+					'right'  => esc_html__('Right', 'animation-addons-for-elementor'),
 				],
 			]
 		);
@@ -420,9 +431,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'tlp_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -438,19 +449,19 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'tooltip_align',
 			[
-				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'left'   => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'  => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -464,11 +475,12 @@ class Image_Hotspot extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	protected function style_hotspot_image() {
+	protected function style_hotspot_image()
+	{
 		$this->start_controls_section(
 			'style_hsp_image',
 			[
-				'label' => esc_html__( 'Image', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Image', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -476,9 +488,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'img_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -498,9 +510,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'img_height',
 			[
-				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -520,9 +532,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'img_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
 					'{{WRAPPER}} .aae--image-hotspot img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
@@ -532,11 +544,12 @@ class Image_Hotspot extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	protected function style_hotspot_content() {
+	protected function style_hotspot_content()
+	{
 		$this->start_controls_section(
 			'style_hsp_content',
 			[
-				'label' => esc_html__( 'Hotspot', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Hotspot', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -545,7 +558,7 @@ class Image_Hotspot extends Widget_Base {
 			Group_Control_Background::get_type(),
 			[
 				'name'     => 'hsp_bg',
-				'types'    => [ 'classic', 'gradient' ],
+				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .hotspot-icon',
 			]
 		);
@@ -561,9 +574,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'hsp_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'selectors'  => [
 					'{{WRAPPER}} .hotspot-icon, {{WRAPPER}} .pulse .hotspot-icon::after, {{WRAPPER}} .pulse .hotspot-icon::before' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
@@ -573,9 +586,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'hsp_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'selectors'  => [
 					'{{WRAPPER}} .hotspot-icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
@@ -586,7 +599,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'dot_heading',
 			[
-				'label'     => esc_html__( 'Dot', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Dot', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -595,9 +608,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'dot_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -613,9 +626,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'dot_height',
 			[
-				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -631,7 +644,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'text_heading',
 			[
-				'label'     => esc_html__( 'Text', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Text', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -640,7 +653,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'text_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .text, {{WRAPPER}} .icon-text' => 'fill: {{VALUE}}; color: {{VALUE}}',
@@ -659,7 +672,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'icon_heading',
 			[
-				'label'     => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -668,7 +681,7 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_control(
 			'icon_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .icon' => 'fill: {{VALUE}}; color: {{VALUE}}',
@@ -679,9 +692,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_size',
 			[
-				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Icon Size', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -697,9 +710,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_gap',
 			[
-				'label'      => esc_html__( 'Icon Gap', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Icon Gap', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
+				'size_units' => ['px'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -715,11 +728,12 @@ class Image_Hotspot extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	protected function style_hotspot_tooltip() {
+	protected function style_hotspot_tooltip()
+	{
 		$this->start_controls_section(
 			'style_hsp_tooltip',
 			[
-				'label' => esc_html__( 'Tooltip', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Tooltip', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -728,7 +742,7 @@ class Image_Hotspot extends Widget_Base {
 			Group_Control_Background::get_type(),
 			[
 				'name'     => 'tlp_bg',
-				'types'    => [ 'classic', 'gradient' ],
+				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .tooltip-content, {{WRAPPER}} .tooltip-content::after',
 			]
 		);
@@ -736,9 +750,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'tlp_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'range'      => [
 					'px' => [
 						'min' => 0,
@@ -758,9 +772,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'tlp_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
 					'{{WRAPPER}} .tooltip-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
@@ -770,9 +784,9 @@ class Image_Hotspot extends Widget_Base {
 		$this->add_responsive_control(
 			'tlp_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
 				'selectors'  => [
 					'{{WRAPPER}} .tooltip-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
@@ -792,68 +806,71 @@ class Image_Hotspot extends Widget_Base {
 	 *
 	 * @access protected
 	 */
-	protected function render() {
+	protected function render()
+	{
 		$settings = $this->get_settings_for_display();
 
-		if ( empty( $settings['hsp_list'] ) ) {
+		if (empty($settings['hsp_list'])) {
 			return;
 		}
-		?>
-        <div class="aae--image-hotspot <?php echo esc_attr($settings['hsp_animation']); ?>">
+?>
+		<div class="aae--image-hotspot <?php echo esc_attr($settings['hsp_animation']); ?>">
+
 			<?php
-			echo Group_Control_Image_Size::get_attachment_image_html(
-				$settings,
-				'hsp_img_size',
-				'hsp_image',
+			echo wp_kses_post(
+				Group_Control_Image_Size::get_attachment_image_html($settings, 'hsp_img_size', 'hsp_image')
 			);
 			?>
 
+
 			<?php
-			foreach ( $settings['hsp_list'] as $index => $item ) {
-				if ( 'link' === $item['tooltip_type'] ) {
+			foreach ($settings['hsp_list'] as $index => $item) {
+				if ('link' === $item['tooltip_type']) {
 					$link_id = 'link_id_' . $index;
 
-					if ( ! empty( $item['tlp_link']['url'] ) ) {
-						$this->add_link_attributes( $link_id, $item['tlp_link'] );
+					if (! empty($item['tlp_link']['url'])) {
+						$this->add_link_attributes($link_id, $item['tlp_link']);
 					}
 
-					?>
-                    <a class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . esc_attr($settings['trigger_type']); ?>" <?php $this->print_render_attribute_string( $link_id ); ?>>
-                        <div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
-							<?php $this->render_hotspot_layout( $item ); ?>
-                        </div>
-                    </a>
-					<?php
+			?>
+					<a class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr($item['_id']) . ' ' . esc_attr($settings['trigger_type']); ?>"
+						<?php $this->print_render_attribute_string($link_id); ?>>
+						<div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
+							<?php $this->render_hotspot_layout($item); ?>
+						</div>
+					</a>
+				<?php
 				} else {
-					?>
-                    <div class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ) . ' ' . esc_attr($settings['trigger_type']); ?>">
-                        <div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
-							<?php $this->render_hotspot_layout( $item ); ?>
-                        </div>
+				?>
+					<div
+						class="aae--hotspot-item elementor-repeater-item-<?php echo esc_attr($item['_id']) . ' ' . esc_attr($settings['trigger_type']); ?>">
+						<div class="hotspot-icon <?php echo esc_attr($item['hsp_layout']); ?>">
+							<?php $this->render_hotspot_layout($item); ?>
+						</div>
 
-                        <div class="tooltip-content">
-							<?php echo wp_kses_post( $item['tlp_content'] ); ?>
-                        </div>
-                    </div>
-					<?php
+						<div class="tooltip-content">
+							<?php echo wp_kses_post($item['tlp_content']); ?>
+						</div>
+					</div>
+			<?php
 				}
 			}
 			?>
-        </div>
-		<?php
+		</div>
+<?php
 	}
 
-	protected function render_hotspot_layout( $item ) {
-		if ( 'text' === $item['hsp_layout'] ) {
-			echo esc_html( $item['hsp_text'] );
-		} elseif ( 'icon' === $item['hsp_layout'] ) {
-			Icons_Manager::render_icon( $item['hsp_icon'], [ 'aria-hidden' => 'true' ] );
-		} elseif ( 'icon-text' === $item['hsp_layout'] ) {
-			echo esc_html( $item['hsp_text'] );
-			Icons_Manager::render_icon( $item['hsp_icon'], [ 'aria-hidden' => 'true' ] );
+	protected function render_hotspot_layout($item)
+	{
+		if ('text' === $item['hsp_layout']) {
+			echo esc_html($item['hsp_text']);
+		} elseif ('icon' === $item['hsp_layout']) {
+			Icons_Manager::render_icon($item['hsp_icon'], ['aria-hidden' => 'true']);
+		} elseif ('icon-text' === $item['hsp_layout']) {
+			echo esc_html($item['hsp_text']);
+			Icons_Manager::render_icon($item['hsp_icon'], ['aria-hidden' => 'true']);
 		} else {
 			echo '';
 		}
 	}
-
 }

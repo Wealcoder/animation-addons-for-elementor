@@ -29,13 +29,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Services_Tab extends Widget_Base {
+
 	use  WCF_Button_Trait;
 
 	/**
-	 * Get widget name.
-	 *
-	 * Retrieve tabs widget name.
-	 *
+	 * Get widget name.	 
+	 * Retrieve tabs widget name.	 
 	 * @return string Widget name.
 	 * @since 1.0.0
 	 * @access public

@@ -38,7 +38,7 @@ class Post_Rating_Form extends Widget_Base
 
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	public function get_keywords()
@@ -918,7 +918,7 @@ class Post_Rating_Form extends Widget_Base
 		}
 		?>
 
-		<div class="aae--post-rating-form" data-require-approval=<?php echo $settings['require_approval']; ?>>
+		<div class="aae--post-rating-form" data-require-approval=<?php echo esc_attr($settings['require_approval']); ?>>
 			<<?php Utils::print_validated_html_tag($settings['title_tag']); ?> class="title">
 				<?php echo esc_html($settings['title']); ?>
 			</<?php Utils::print_validated_html_tag($settings['title_tag']); ?>>
@@ -930,8 +930,9 @@ class Post_Rating_Form extends Widget_Base
 
 				<div class="rating">
 					<?php for ($i = 5; $i >= 1; $i--) : ?>
-						<input id="rating-<?php echo $i; ?>" type="radio" name="rating" value="<?php echo $i; ?>">
-						<label for="rating-<?php echo $i; ?>">
+						<input id="rating-<?php echo esc_attr($i); ?>" type="radio" name="rating"
+							value="<?php echo esc_attr($i); ?>">
+						<label for="rating-<?php echo esc_attr($i); ?>">
 							<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 						</label>
 					<?php endfor; ?>

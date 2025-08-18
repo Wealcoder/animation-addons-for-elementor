@@ -83,7 +83,7 @@ class Advanced_Testimonial extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return ['animation-addons-for-elementor'];
+		return ['weal-coder-addon'];
 	}
 
 	public function get_style_depends()
@@ -1103,7 +1103,7 @@ class Advanced_Testimonial extends Widget_Base
 		<div class="slide elementor-repeater-item-<?php echo esc_attr($item['_id']) ?>">
 			<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 				<div class="quote">
-					<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+					<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 				</div>
 			<?php } ?>
 			<?php if ('yes' === $settings['rating_show']) {
@@ -1127,7 +1127,7 @@ class Advanced_Testimonial extends Widget_Base
 				<div class="author">
 					<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 						<div class="image">
-							<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+							<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 						</div>
 					<?php } ?>
 					<div class="info">
@@ -1146,13 +1146,13 @@ class Advanced_Testimonial extends Widget_Base
 		<div class="slide elementor-repeater-item-<?php echo esc_attr($item['_id']) ?>">
 			<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 				<div class="image">
-					<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+					<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 				</div>
 			<?php } ?>
 			<div class="content">
 				<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 					<div class="quote">
-						<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+						<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 					</div>
 				<?php } ?>
 				<?php if ('yes' === $settings['rating_show']) {
@@ -1195,7 +1195,7 @@ class Advanced_Testimonial extends Widget_Base
 				<div class="author">
 					<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 						<div class="image">
-							<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+							<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 						</div>
 					<?php } ?>
 					<div class="info">
@@ -1207,7 +1207,7 @@ class Advanced_Testimonial extends Widget_Base
 			</div>
 			<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 				<div class="quote">
-					<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+					<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 				</div>
 			<?php } ?>
 			<p class="feedback">
@@ -1237,7 +1237,7 @@ class Advanced_Testimonial extends Widget_Base
 		<div class="slide elementor-repeater-item-<?php echo esc_attr($item['_id']) ?>">
 			<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 				<div class="quote">
-					<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+					<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 				</div>
 			<?php } ?>
 			<p class="feedback">
@@ -1261,7 +1261,7 @@ class Advanced_Testimonial extends Widget_Base
 				<div class="author">
 					<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 						<div class="image">
-							<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+							<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 						</div>
 					<?php } ?>
 					<div class="info">
@@ -1302,7 +1302,7 @@ class Advanced_Testimonial extends Widget_Base
 				<div class="author">
 					<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 						<div class="image">
-							<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+							<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 						</div>
 					<?php } ?>
 					<div class="info">
@@ -1313,7 +1313,7 @@ class Advanced_Testimonial extends Widget_Base
 				</div>
 				<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 					<div class="quote">
-						<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+						<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 					</div>
 				<?php } ?>
 			</div>
@@ -1327,7 +1327,7 @@ class Advanced_Testimonial extends Widget_Base
 		<div class="slide six elementor-repeater-item-<?php echo esc_attr($item['_id']) ?>">
 			<?php if ($item['tsm_quote']['url'] && 'yes' === $settings['quote_show']) { ?>
 				<div class="quote">
-					<img src="<?php echo $item['tsm_quote']['url']; ?>" alt="Quote">
+					<img src="<?php echo esc_url($item['tsm_quote']['url']); ?>" alt="Quote">
 				</div>
 			<?php } ?>
 			<p class="feedback">
@@ -1337,7 +1337,7 @@ class Advanced_Testimonial extends Widget_Base
 				<div class="author">
 					<?php if ($item['tsm_image']['url'] && 'yes' === $settings['client_img_show']) { ?>
 						<div class="image">
-							<img src="<?php echo $item['tsm_image']['url']; ?>" alt="Image">
+							<img src="<?php echo esc_url($item['tsm_image']['url']); ?>" alt="Image">
 						</div>
 					<?php } ?>
 					<div class="info">
