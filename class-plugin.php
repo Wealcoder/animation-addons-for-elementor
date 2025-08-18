@@ -570,15 +570,7 @@ class Plugin {
 			'countdown'          => array(
 				'handler' => 'wcf--countdown',
 				'src'     => 'widgets/countdown.min.css',
-<<<<<<< HEAD
-<<<<<<< HEAD
-				'dep'     => array( 'wcf-addons-core' ),
-=======
-				'dep'     => [],
->>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
-=======
-				'dep'     => array( 'wcf-addons-core' ),
->>>>>>> f9817d0874edf7712899710f99a4485851af5a59
+				'dep'     => array( 'wcf-addons-core' ),			
 				'version' => false,
 				'media'   => 'all',
 			),
@@ -750,30 +742,15 @@ class Plugin {
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
-<<<<<<< HEAD
-<<<<<<< HEAD
-			),
-		);
-=======
-			],
-			'post-comment' => [
-=======
-            ),
+			),				
 			'post-comment' => array(
->>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 				'handler' => 'wcf--post-comment',
 				'src'     => 'widgets/post-comment.min.css',
 				'dep'     => [],
 				'version' => false,
-				'media'   => 'all',
-<<<<<<< HEAD
-			],
-		];
->>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
-=======
-            ),
+				'media'   => 'all',	
+		    ),
         );
->>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 	}
 
 	/**

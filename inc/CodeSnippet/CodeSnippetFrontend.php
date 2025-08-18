@@ -63,10 +63,6 @@ class CodeSnippetFrontend {
 	private function init_hooks() {
 		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
 		$this->run_php_code_snippets();
-<<<<<<< HEAD
-		// add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
-=======
->>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -91,11 +87,7 @@ class CodeSnippetFrontend {
 		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
-<<<<<<< HEAD
-			$snippet_data = $this->get_code_snippet_settings( $snippet->ID );
-=======
 			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
->>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 			if ( $this->check_visibility_conditions( $snippet_data ) ) {
 				$this->execute_snippet( $snippet_data );
 			}
