@@ -150,7 +150,7 @@ const useMainContext = (state) => {
       activeWidgetFn(mainState.allWidgets, data, dispatch);
     },
     [mainState.allWidgets]
-  );
+  ); 
 
   const updateActiveGroupWidget = useCallback(
     (data) => {
