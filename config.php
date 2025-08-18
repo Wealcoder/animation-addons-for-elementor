@@ -1718,6 +1718,21 @@ $config = array(
 						'doc_url'      => '',
 						'youtube_url'  => '',
 					),
+
+					'code-snippet' => array(
+						'label'        => 'Code Snippet',
+						'is_pro'       => true,
+						'location'     => array(
+							'cTab' => 'general',
+						),
+						'icon'         => 'wcf-icon-Content-Protection',
+						'is_active'    => false,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+					),
 				),
 			),
 			'gsap-extensions'    => array(
