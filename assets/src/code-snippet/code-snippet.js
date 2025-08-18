@@ -13,17 +13,7 @@ const languageModes = {
 
 // Example code snippets
 const exampleCode = {
-    html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Example Page</title>
-</head>
-<body>
-    <h1>Code is Poetry.</h1>
-</body>
-</html>`,
+    html: `<h1>Code is Poetry.</h1>`,
     css: `/* CSS Example */
 .container {
     max-width: 1200px;
@@ -129,7 +119,15 @@ function createEscButton() {
 
 // Initialize editor
 function initializeEditor() {
-    editor = CodeMirror(document.getElementById('wp-code-editor-container'), {
+    const editorContainer = document.getElementById('wp-code-editor-container');
+    const hiddenField = document.getElementById('code-content-hidden');
+
+    if (!editorContainer) {
+        console.warn('Editor container not found');
+        return;
+    }
+
+    editor = CodeMirror(editorContainer, {
         lineNumbers: true,
         mode: languageModes.html,
         theme: 'default',
@@ -204,14 +202,16 @@ function initializeEditor() {
             completeSingle: false,
             alignWithWord: true,
         },
-        value: document.getElementById('code-content-hidden').value || '',
+        value: hiddenField ? hiddenField.value || '' : '',
     });
 
     // Update hidden field on change
-    editor.on('change', function() {
-        document.getElementById('code-content-hidden').value = editor.getValue();
-        updateStats();
-    });
+    if (hiddenField) {
+        editor.on('change', function() {
+            hiddenField.value = editor.getValue();
+            updateStats();
+        });
+    }
 
     // Initial stats update
     updateStats();
@@ -219,6 +219,8 @@ function initializeEditor() {
 
 // Change language mode
 function changeLanguageMode(language) {
+    if (!editor) return;
+
     const mode = languageModes[language];
     editor.setOption('mode', mode);
 
@@ -232,17 +234,23 @@ function changeLanguageMode(language) {
 
 // Update editor stats
 function updateStats() {
+    if (!editor) return;
+
     const content = editor.getValue();
     const lines = editor.lineCount();
     const chars = content.length;
     const words = content.trim() ? content.trim().split(/\s+/).length : 0;
 
-    document.getElementById('editor-stats').innerHTML =
-        `Lines: ${lines} | Characters: ${chars} | Words: ${words}`;
+    const statsElement = document.getElementById('editor-stats');
+    if (statsElement) {
+        statsElement.innerHTML = `Lines: ${lines} | Characters: ${chars} | Words: ${words}`;
+    }
 }
 
 // Toggle theme
 function toggleTheme() {
+    if (!editor) return;
+
     isDarkTheme = !isDarkTheme;
     const theme = isDarkTheme ? 'material' : 'default';
     editor.setOption('theme', theme);
@@ -251,13 +259,17 @@ function toggleTheme() {
 
 // Toggle fullscreen
 function toggleFullscreen() {
+    if (!editor) return;
+
     isFullscreen = !isFullscreen;
     const wrapper = editor.getWrapperElement();
 
     if (isFullscreen) {
         wrapper.classList.add('fullscreen');
         editor.setSize('100%', '100vh');
-        escButton.classList.add('show'); // Show ESC button
+        if (escButton) {
+            escButton.classList.add('show'); // Show ESC button
+        }
         editor.focus(); // Focus the editor
     } else {
         exitFullscreen();
@@ -269,19 +281,23 @@ function toggleFullscreen() {
 
 // Exit fullscreen
 function exitFullscreen() {
-    if (isFullscreen) {
-        isFullscreen = false;
-        const wrapper = editor.getWrapperElement();
-        wrapper.classList.remove('fullscreen');
-        editor.setSize('100%', '300px');
+    if (!editor || !isFullscreen) return;
+
+    isFullscreen = false;
+    const wrapper = editor.getWrapperElement();
+    wrapper.classList.remove('fullscreen');
+    editor.setSize('100%', '300px');
+    if (escButton) {
         escButton.classList.remove('show'); // Hide ESC button
-        editor.refresh();
-        showNotification('Exited fullscreen mode');
     }
+    editor.refresh();
+    showNotification('Exited fullscreen mode');
 }
 
 // Copy code to clipboard
 async function copyCode() {
+    if (!editor) return;
+
     const content = editor.getValue();
     try {
         await navigator.clipboard.writeText(content);
@@ -300,8 +316,13 @@ async function copyCode() {
 
 // Download code as file
 function downloadCode() {
+    if (!editor) return;
+
     const content = editor.getValue();
-    const codeType = document.getElementById('code-type').value;
+    const codeTypeElement = document.getElementById('code-type');
+    if (!codeTypeElement) return;
+
+    const codeType = codeTypeElement.value;
     const extensions = {
         html: 'html',
         css: 'css',
@@ -324,7 +345,12 @@ function downloadCode() {
 
 // Insert example code
 function insertExample() {
-    const codeType = document.getElementById('code-type').value;
+    if (!editor) return;
+
+    const codeTypeElement = document.getElementById('code-type');
+    if (!codeTypeElement) return;
+
+    const codeType = codeTypeElement.value;
     let example = exampleCode[codeType];
     if (codeType === 'php' && !example.trim().startsWith('<?php')) {
         example = `<?php\n` + example;
@@ -340,8 +366,8 @@ function showNotification(message) {
     notification.textContent = message;
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: 40px;
+        right: 24%;
         background: #333;
         color: white;
         padding: 10px 16px;
@@ -358,7 +384,11 @@ function showNotification(message) {
 
     setTimeout(() => {
         notification.style.opacity = '0';
-        setTimeout(() => document.body.removeChild(notification), 300);
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
     }, 3000);
 }
 
@@ -371,27 +401,55 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEditor();
 
     // Code type change listener
-    document.getElementById('code-type').addEventListener('change', function() {
-        const confirmClear = confirm('Switching code type will clear the editor. Continue?');
-        if (confirmClear) {
-            changeLanguageMode(this.value);
-            if ( this.value === 'php' ) {
-                editor.setValue('<?php\n\n');
+    const codeTypeElement = document.getElementById('code-type');
+    if (codeTypeElement) {
+        codeTypeElement.addEventListener('change', function() {
+            const confirmClear = confirm('Switching code type will clear the editor. Continue?');
+            if (confirmClear) {
+                changeLanguageMode(this.value);
+                if (this.value === 'php') {
+                    if (editor) {
+                        editor.setValue('<?php\n\n');
+                    }
+                } else {
+                    if (editor) {
+                        editor.setValue('');
+                    }
+                }
+                showNotification(`Editor cleared for ${this.value.toUpperCase()} mode`);
             } else {
-                editor.setValue('');
+                if (editor) {
+                    this.value = editor.getOption('mode');
+                }
             }
-            showNotification(`Editor cleared for ${this.value.toUpperCase()} mode`);
-        } else {
-            this.value = editor.getOption('mode');
-        }
-    });
+        });
+    }
 
     // Toolbar button listeners
-    document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
-    document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
-    document.getElementById('copy-code-btn').addEventListener('click', copyCode);
-    document.getElementById('download-code-btn').addEventListener('click', downloadCode);
-    document.getElementById('insert-example-btn').addEventListener('click', insertExample);
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+    }
+
+    const copyCodeBtn = document.getElementById('copy-code-btn');
+    if (copyCodeBtn) {
+        copyCodeBtn.addEventListener('click', copyCode);
+    }
+
+    const downloadCodeBtn = document.getElementById('download-code-btn');
+    if (downloadCodeBtn) {
+        downloadCodeBtn.addEventListener('click', downloadCode);
+    }
+
+    const insertExampleBtn = document.getElementById('insert-example-btn');
+    if (insertExampleBtn) {
+        insertExampleBtn.addEventListener('click', insertExample);
+    }
 
     // Enhanced keyboard shortcuts
     document.addEventListener('keydown', function(e) {
@@ -409,8 +467,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // Show Hide location fields.
 document.addEventListener('DOMContentLoaded', function () {
     const codeTypeSelect = document.getElementById('code-type');
-    const loadLocationField = document.getElementById('load-location').closest('.form-group');
+    const loadLocationElement = document.getElementById('load-location');
     const loadNotice = document.getElementById('php-version-notice');
+
+    if (!codeTypeSelect || !loadLocationElement || !loadNotice) return;
+
+    const loadLocationField = loadLocationElement.closest('.form-group');
+    if (!loadLocationField) return;
 
     function toggleLoadLocation() {
         if (codeTypeSelect.value === 'php') {
@@ -431,7 +494,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     const codeTypeSelect = document.getElementById('visibility-page');
-    const loadLocationField = document.getElementById('visibility-page-list').closest('.form-subgroup');
+    const loadLocationElement = document.getElementById('visibility-page-list');
+
+    if (!codeTypeSelect || !loadLocationElement) return;
+
+    const loadLocationField = loadLocationElement.closest('.form-subgroup');
+    if (!loadLocationField) return;
 
     function toggleLoadLocation() {
         if (codeTypeSelect.value !== 'specifics') {
@@ -449,11 +517,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function updatePriorityValue(value) {
-    document.getElementById('priority-value').textContent = value;
+    const priorityValueElement = document.getElementById('priority-value');
+    if (priorityValueElement) {
+        priorityValueElement.textContent = value;
+    }
 }
+
 document.addEventListener('DOMContentLoaded', function () {
-    var slider = document.getElementById('priority-slider');
-    var valueDisplay = document.getElementById('priority-value');
+    const slider = document.getElementById('priority-slider');
+    const valueDisplay = document.getElementById('priority-value');
 
     if (slider && valueDisplay) {
         valueDisplay.textContent = slider.value;
@@ -467,12 +539,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const codeTypeSelect = document.querySelector('[name="code_type"]');
     const codeTextarea = document.querySelector('[name="code_content"]');
 
+    if (!codeTypeSelect || !codeTextarea) return;
+
+    // Check if WCFCustomCodeVars exists and has the required property
+    if (typeof WCFCustomCodeVars === 'undefined' ||
+        !WCFCustomCodeVars.serverDetails ||
+        !WCFCustomCodeVars.serverDetails.currentVersion) {
+        console.warn('WCFCustomCodeVars not found or missing serverDetails');
+        return;
+    }
+
     const phpVersion = WCFCustomCodeVars.serverDetails.currentVersion;
 
     function checkPHPVersion() {
         if (codeTypeSelect && codeTypeSelect.value === 'php') {
             let notice = document.getElementById('php-version-notice');
-            notice.innerHTML = `Server is running <strong>PHP ${phpVersion}</strong>. Please ensure your code is compatible.`;
+            if (notice) {
+                notice.innerHTML = `Server is running <strong>PHP ${phpVersion}</strong>. Please ensure your code is compatible.`;
+            }
         }
     }
 
@@ -624,6 +708,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     success: function(response) {
                         if (response.success) {
                             // Show success message
+                            showNotification(response.data.message);
                             if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
                                 wp.data.dispatch('core/notices').createSuccessNotice(
                                     response.data.message || 'Status updated successfully.',

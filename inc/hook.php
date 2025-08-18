@@ -7,6 +7,7 @@ if (! defined('ABSPATH')) {
 use Elementor\Plugin;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 if ( function_exists( 'wcf_set_postview' ) ) {
 	add_action( 'wp_head', 'wcf_set_postview' );
 }
@@ -17,6 +18,8 @@ function aaeaddonlight_hk_allow_svg_uploads( $mimes ) {
 	$mimes['svgz'] = 'image/svg+xml'; // Compressed SVG
 	return $mimes;
 =======
+=======
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 if (function_exists('wcf_set_postview')) {
     add_action('wp_head', 'wcf_set_postview');
 }
@@ -27,6 +30,7 @@ function aaeaddonlight_hk_allow_svg_uploads($mimes)
     $mimes['svg']  = 'image/svg+xml';
     $mimes['svgz'] = 'image/svg+xml'; // Compressed SVG
     return $mimes;
+<<<<<<< HEAD
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
 }
 
@@ -77,6 +81,12 @@ function aae_handle_aae_post_shares_count() {
 		wp_send_json_error( 'Invalid post ID' );
 	}
 =======
+=======
+}
+
+add_filter('upload_mimes', 'aaeaddonlight_hk_allow_svg_uploads');
+
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 function aae_handle_aae_post_shares_count()
 {
     if (!isset($_POST['nonce'])) {
@@ -119,11 +129,15 @@ function aae_handle_aae_post_shares_count()
     } else {
         wp_send_json_error('Invalid post ID');
     }
+<<<<<<< HEAD
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
+=======
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 }
 add_action('wp_ajax_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For logged-in users
 add_action('wp_ajax_nopriv_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For non-logged-in users
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 function aaeaddon_disable_comments_for_custom_post_type() {
 	remove_post_type_support( 'wcf-addons-template', 'comments' );
@@ -142,6 +156,8 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page() {
 		'animation-addon_page_wcf_addons_setup_page',
 	);
 =======
+=======
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 function aaeaddon_disable_comments_for_custom_post_type()
 {
     remove_post_type_support('wcf-addons-template', 'comments');
@@ -160,6 +176,7 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
         'animation-addon_page_wcf_addons_settings',
         'animation-addon_page_wcf_addons_setup_page'
     );
+<<<<<<< HEAD
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
 
 	// Check if current screen ID matches any in the list
@@ -172,6 +189,16 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
 <<<<<<< HEAD
 add_action( 'admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page' );
 =======
+=======
+
+    // Check if current screen ID matches any in the list
+    if (in_array($screen->id, $pages_to_hide_notices)) {
+        // Remove core and plugin notices
+        remove_all_actions('admin_notices');
+        remove_all_actions('all_admin_notices');
+    }
+}
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 // post reaction ajax handeler
 
@@ -220,4 +247,7 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
     add_action('wp_ajax_nopriv_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
     add_action('wp_ajax_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
 }
+<<<<<<< HEAD
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
+=======
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59

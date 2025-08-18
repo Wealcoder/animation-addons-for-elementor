@@ -571,10 +571,14 @@ class Plugin {
 				'handler' => 'wcf--countdown',
 				'src'     => 'widgets/countdown.min.css',
 <<<<<<< HEAD
+<<<<<<< HEAD
 				'dep'     => array( 'wcf-addons-core' ),
 =======
 				'dep'     => [],
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
+=======
+				'dep'     => array( 'wcf-addons-core' ),
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 				'version' => false,
 				'media'   => 'all',
 			),
@@ -747,19 +751,29 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 <<<<<<< HEAD
+<<<<<<< HEAD
 			),
 		);
 =======
 			],
 			'post-comment' => [
+=======
+            ),
+			'post-comment' => array(
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 				'handler' => 'wcf--post-comment',
 				'src'     => 'widgets/post-comment.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',
+<<<<<<< HEAD
 			],
 		];
 >>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
+=======
+            ),
+        );
+>>>>>>> f9817d0874edf7712899710f99a4485851af5a59
 	}
 
 	/**
@@ -998,12 +1012,12 @@ class Plugin {
 								<input id="wcf-template-library-filter-text" placeholder="Search">
 								<i class="eicon-search"></i>
 							</div>
-						</div> 
+						</div>
 
 						<!--templates -->
 						<div class="wcf-library-templates">
 							<#
-							_.each( data.templates, function( item, key ) {                          
+							_.each( data.templates, function( item, key ) {
 							#>
 							<div class="wcf-library-template" data-id="{{item.id}}" data-url="{{item.url}}">
 								<div class="thumbnail">
@@ -1032,7 +1046,7 @@ class Plugin {
 											<i class="eicon-external-link-square"></i>
 											<?php echo esc_html__( 'Activate', 'animation-addons-for-elementor' ); ?>
 									</button>
-									<?php } ?>                                									
+									<?php } ?>
 								<# } #>
 								<p class="title">{{{ item.title }}}</p>
 							</div>

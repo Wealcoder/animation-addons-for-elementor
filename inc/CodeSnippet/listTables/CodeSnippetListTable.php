@@ -355,18 +355,21 @@ class CodeSnippetListTable extends AbstractListTable {
 			case 'visibility_list':
 				$id              = $item->ID;
 				$visibility_list = get_post_meta( $id, 'visibility_page_list', true );
-				if ( ! empty( $visibility_list ) && is_array( $visibility_list ) ) {
+				$visibility_page = get_post_meta( $id, 'visibility_page', true );
+				if ( ! empty( $visibility_list ) && is_array( $visibility_list ) && 'specifics' === $visibility_page ) {
 					$value = '';
 					foreach ( $visibility_list as $visibility ) {
 						$value .= '<a href="' . get_the_permalink( $visibility ) . '"><span class="visibility-list-item">' . esc_html( get_the_title( $visibility ) ) . '</span></a>,';
 					}
 					$value = rtrim( $value, ',' );
+				} else {
+					$value = ucwords( $visibility_page );
 				}
 				break;
 			case 'load_location':
 				$id = $item->ID;
 				if ( ! empty( get_post_meta( $id, 'load_location', true ) ) ) {
-					$value = strtoupper( str_replace( '-', ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
+					$value = strtoupper( str_replace( array( '-', '_' ), ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
 				}
 				break;
 			case 'date_created':
