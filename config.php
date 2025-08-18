@@ -1717,32 +1717,25 @@ $config = array(
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-<<<<<<< HEAD
-					],
+					),
 
-					'code-snippet' => [
+					'code-snippet' => array(
 						'label'        => 'Code Snippet',
 						'is_pro'       => true,
-						'location'     => [
-							'cTab' => 'general'
-						],
-						'icon'         => "wcf-icon-Content-Protection",
+						'location'     => array(
+							'cTab' => 'general',
+						),
+						'icon'         => 'wcf-icon-Content-Protection',
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
-					],
-				]
-			],
-			'gsap-extensions'    => [
-=======
 					),
 				),
 			),
 			'gsap-extensions'    => array(
->>>>>>> cbe273f5e8d98e77474f37520e56e4629e40dc13
 				'title'     => 'GSAP Extensions',
 				'is_active' => false,
 				'elements'  => array(
