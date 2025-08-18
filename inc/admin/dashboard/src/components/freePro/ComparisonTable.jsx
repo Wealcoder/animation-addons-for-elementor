@@ -17,22 +17,12 @@ const ComparisonTable = () => {
         <div className="w-[464px] p-6 border-r border-border">
           <h3 className="text-xl font-medium">Feature</h3>
         </div>
-        <div className="w-[196px] p-6 border-r border-border">
+        <div className="w-[400px] p-6 border-r border-border">
           <h3 className="text-xl font-medium">Free Site</h3>
         </div>
-        <div className="w-[196px] p-6 border-r border-border">
+        <div className="w-[400px] p-6">
           <h3 className="text-xl font-medium flex gap-2.5 items-center">
-            1 Sites
-          </h3>
-        </div>
-        <div className="w-[196px] p-6 border-r border-border">
-          <h3 className="text-xl font-medium flex gap-2.5 items-center">
-            5 Sites
-          </h3>
-        </div>
-        <div className="w-[196px] p-6">
-          <h3 className="text-xl font-medium flex gap-2.5 items-center">
-            100 Sites
+            Pro Sites
           </h3>
         </div>
       </div>
@@ -63,28 +53,16 @@ const ComparisonTable = () => {
               ""
             )}
           </div>
-          <div className="w-[196px] px-6 py-[18px] border-r border-border">
+          <div className="w-[400px] px-6 py-[18px] border-r border-border">
             <p className="text-[15px] text-text-secondary leading-6 flex items-center gap-2.5">
               {item?.free?.icon || ""}
               {item?.free?.text}
             </p>
           </div>
-          <div className="w-[196px] px-6 py-[18px] border-r border-border">
+          <div className="w-[400px] px-6 py-[18px]">
             <p className="text-[15px] text-text-secondary leading-6 flex items-center gap-2.5">
               {item?.pro1?.icon || ""}
               {item?.pro1?.text}
-            </p>
-          </div>
-          <div className="w-[196px] px-6 py-[18px] border-r border-border">
-            <p className="text-[15px] text-text-secondary leading-6 flex items-center gap-2.5">
-              {item?.pro2?.icon || ""}
-              {item?.pro2?.text}
-            </p>
-          </div>
-          <div className="w-[196px] px-6 py-[18px]">
-            <p className="text-[15px] text-text-secondary leading-6 flex items-center gap-2.5">
-              {item?.pro3?.icon || ""}
-              {item?.pro3?.text}
             </p>
           </div>
         </div>

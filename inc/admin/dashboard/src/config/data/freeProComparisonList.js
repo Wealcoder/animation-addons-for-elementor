@@ -2,22 +2,26 @@ import { CheckIcon, CrossIcon } from "@/lib/icons";
 
 export const freeProComparisonList = [
   {
-    name: "Cost per site per month",
+    name: "Access to Prebuilt Sites",
     helpText: "",
     free: {
-      text: "Free",
+      text: "20 Templates",
       icon: "",
     },
     pro1: {
-      text: "$2.60",
+      text: "200 Templates",
       icon: "",
     },
-    pro2: {
-      text: "$1.31",
+  },
+  {
+    name: "Access to Section Templates",
+    helpText: "",
+    free: {
+      text: "100",
       icon: "",
     },
-    pro3: {
-      text: "$0.17",
+    pro1: {
+      text: "10,000",
       icon: "",
     },
   },
@@ -29,14 +33,6 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -52,14 +48,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Text & Image Animations",
@@ -69,14 +57,6 @@ export const freeProComparisonList = [
       icon: "",
     },
     pro1: {
-      text: "Advanced",
-      icon: "",
-    },
-    pro2: {
-      text: "Advanced",
-      icon: "",
-    },
-    pro3: {
       text: "Advanced",
       icon: "",
     },
@@ -92,14 +72,6 @@ export const freeProComparisonList = [
       text: "Full",
       icon: "",
     },
-    pro2: {
-      text: "Full",
-      icon: "",
-    },
-    pro3: {
-      text: "Full",
-      icon: "",
-    },
   },
   {
     name: "Smooth Scrolling",
@@ -109,14 +81,6 @@ export const freeProComparisonList = [
       icon: "",
     },
     pro1: {
-      text: "Advanced",
-      icon: "",
-    },
-    pro2: {
-      text: "Advanced",
-      icon: "",
-    },
-    pro3: {
       text: "Advanced",
       icon: "",
     },
@@ -132,14 +96,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Horizontal Scrolling",
@@ -149,14 +105,6 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -172,14 +120,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Flip Animation",
@@ -189,14 +129,6 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -212,14 +144,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Timeline-Based Animation",
@@ -229,14 +153,6 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -252,14 +168,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Draw SVG",
@@ -269,14 +177,6 @@ export const freeProComparisonList = [
       icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -292,14 +192,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Lottie Animations",
@@ -312,92 +204,28 @@ export const freeProComparisonList = [
       text: "Full",
       icon: "",
     },
-    pro2: {
-      text: "Full",
-      icon: "",
-    },
-    pro3: {
-      text: "Full",
-      icon: "",
-    },
   },
   {
-    name: "Access to Prebuilt Sites",
+    name: "Access to Page Templates",
     helpText: "",
     free: {
-      text: "10 Templates",
+      text: "20",
       icon: "",
     },
     pro1: {
-      text: "150 Templates",
-      icon: "",
-    },
-    pro2: {
-      text: "150 Templates",
-      icon: "",
-    },
-    pro3: {
-      text: "150 Templates",
+      text: "2000+",
       icon: "",
     },
   },
   {
-    name: "Access to Section Templates",
+    name: "Widgets",
     helpText: "",
     free: {
+      text: "68",
+      icon: "",
+    },
+    pro1: {
       text: "100+",
-      icon: "",
-    },
-    pro1: {
-      text: "10,000",
-      icon: "",
-    },
-    pro2: {
-      text: "10,000",
-      icon: "",
-    },
-    pro3: {
-      text: "10,000",
-      icon: "",
-    },
-  },
-  {
-    name: "Free Widgets",
-    helpText: "",
-    free: {
-      text: "46",
-      icon: "",
-    },
-    pro1: {
-      text: "46",
-      icon: "",
-    },
-    pro2: {
-      text: "46",
-      icon: "",
-    },
-    pro3: {
-      text: "46",
-      icon: "",
-    },
-  },
-  {
-    name: "Pro Widgets",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CrossIcon,
-    },
-    pro1: {
-      text: "46",
-      icon: "",
-    },
-    pro2: {
-      text: "46",
-      icon: "",
-    },
-    pro3: {
-      text: "46",
       icon: "",
     },
   },
@@ -409,14 +237,6 @@ export const freeProComparisonList = [
       icon: "",
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -432,14 +252,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Header Builder",
@@ -449,14 +261,6 @@ export const freeProComparisonList = [
       icon: CheckIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -472,14 +276,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Dynamic Content",
@@ -489,14 +285,6 @@ export const freeProComparisonList = [
       icon: CheckIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -512,14 +300,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Supports",
@@ -532,31 +312,15 @@ export const freeProComparisonList = [
       text: "24/7 Support",
       icon: "",
     },
-    pro2: {
-      text: "Priority Support",
-      icon: "",
-    },
-    pro3: {
-      text: "Dedicated Support",
-      icon: "",
-    },
   },
   {
     name: "Custom Font Uploader",
     helpText: "",
     free: {
       text: "",
-      icon: CheckIcon,
+      icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -566,17 +330,9 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CheckIcon,
+      icon: CrossIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
@@ -592,14 +348,6 @@ export const freeProComparisonList = [
       text: "",
       icon: CheckIcon,
     },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
-      text: "",
-      icon: CheckIcon,
-    },
   },
   {
     name: "Filterable Gallery",
@@ -609,14 +357,6 @@ export const freeProComparisonList = [
       icon: CheckIcon,
     },
     pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro2: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro3: {
       text: "",
       icon: CheckIcon,
     },
