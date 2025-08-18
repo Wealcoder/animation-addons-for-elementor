@@ -869,26 +869,29 @@ class Plugin {
 	private function include_files() {
 
 		require_once WCF_ADDONS_PATH . 'config.php';
-
+		require_once WCF_ADDONS_PATH . 'inc/helper.php';
 		if ( is_admin() ) {
 			if ( get_option( 'wcf_addons_setup_wizard' ) !== 'complete' ) {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
 			}
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
-
+			if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
 			// Include CodeSnippet Admin functionality.
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
+				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
+			}
 		}
 
 		// Include CodeSnippet frontend functionality.
 		if ( ! is_admin() ) {
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
+			if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
+				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
+				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
+			}
 		}
 
 		require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
 
-		require_once WCF_ADDONS_PATH . 'inc/helper.php';
+		
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';

@@ -1721,13 +1721,13 @@ $config = array(
 
 					'code-snippet' => array(
 						'label'        => 'Code Snippet',
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'location'     => array(
 							'cTab' => 'general',
 						),
 						'icon'         => 'wcf-icon-Content-Protection',
 						'is_active'    => false,
-						'is_extension' => false,
+						'is_extension' => true,
 						'is_upcoming'  => false,
 						'demo_url'     => '',
 						'doc_url'      => '',
