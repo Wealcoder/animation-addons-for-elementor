@@ -60,7 +60,8 @@ class CodeSnippetFrontend {
 	 */
 	private function init_hooks() {
 		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
-		add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
+		$this->run_php_code_snippets();
+		// add_action( 'wp', array( $this, 'run_php_code_snippets' ) );
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
@@ -85,11 +86,62 @@ class CodeSnippetFrontend {
 		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
-			$snippet_data = aae_get_code_snippet_settings( $snippet->ID );
+			$snippet_data = $this->get_code_snippet_settings( $snippet->ID );
 			if ( $this->check_visibility_conditions( $snippet_data ) ) {
 				$this->execute_snippet( $snippet_data );
 			}
 		}
+	}
+
+	function get_code_snippet_settings( $id = null ) {
+		$defaults = array(
+			'code_type'            => '',
+			'load_location'        => '',
+			'code_content'         => '',
+			'is_active'            => 'no',
+			'priority'             => '10',
+			'visibility_page'      => '',
+			'visibility_page_list' => array(),
+		);
+
+		/**
+		 * Filter the default code snippet settings.
+		 *
+		 * @since 2.3.10
+		 *
+		 * @param array $defaults The default settings.
+		 */
+		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults );
+
+		$settings = array();
+		if ( ! empty( $id ) ) {
+			$metadata                  = get_post_meta( $id );
+			$settings['snippet_id']    = $id;
+			$settings['snippet_title'] = get_the_title( $id );
+
+			foreach ( $metadata as $key => $value ) {
+				$value = maybe_unserialize( is_array( $value ) ? $value[0] : $value );
+				if ( ! empty( $value ) ) {
+					$settings[ $key ] = $value;
+				} else {
+					$settings[ $key ] = $defaults[ $key ];
+				}
+			}
+		} else {
+			foreach ( $defaults as $key => $value ) {
+				$settings[ $key ] = $value;
+			}
+		}
+
+		/**
+		 * Filter the code snippet settings.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $settings The code snippet settings.
+		 * @param array $defaults The default settings.
+		 */
+		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults );
 	}
 
 	/**
