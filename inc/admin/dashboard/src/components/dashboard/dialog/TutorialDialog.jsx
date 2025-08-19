@@ -27,8 +27,8 @@ const TutorialDialog = ({ open, setOpen }) => {
             <iframe
               width="100%"
               height="100%"
-              src="https://www.youtube.com/embed/NS0TGy8A_tU?si=1HJkBHeiPFosz38d"
-              title="Animation Addons for Elementor – The Ultimate GSAP Animation Plugin"
+              src="https://www.youtube.com/embed/tRbvgq2gJF4?si=Ft1slmDRA316RZCr"
+              title="Create Stunning Animated Websites"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin"

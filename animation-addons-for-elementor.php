@@ -117,7 +117,8 @@ final class WCF_ADDONS_Plugin {
 	public function __construct() {
 
 		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
-		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
+		register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
+		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
 		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
@@ -135,8 +136,25 @@ final class WCF_ADDONS_Plugin {
 		if ( !get_option( 'wcf_addons_version' ) && !get_option( 'wcf_addons_setup_wizard' ) ) {
 			update_option( 'wcf_addons_setup_wizard', 'redirect' );
 		}
-
+		$count = (int) get_option('aae_activation_count', 0);
+    	update_option('aae_activation_count', $count + 1, true);
+		update_option('aae_last_activated', current_time('mysql'), true);
+		// Fallback cron in case no one loads a page soon.
+		if ( ! wp_next_scheduled('aae_send_activation_ping_cron') ) {
+			wp_schedule_single_event(time() + 2 * MINUTE_IN_SECONDS, 'aae_send_activation_ping_cron');
+		}
 		flush_rewrite_rules();
+	}
+	/**
+	 * Plugin dactivation hook
+	 *
+	 * @since 1.0.0
+	 */
+	public static function plugin_deactivation_hook() {
+		
+		$count = (int) get_option('aae_dactivation_count', 0);
+    	update_option('aae_dactivation_count', $count + 1, true);
+		update_option('aae_last_dactivated', current_time('mysql'), true);		
 	}
 
 	/**
@@ -144,7 +162,7 @@ final class WCF_ADDONS_Plugin {
 	 *
 	 * @since 1.0.0
 	 */
-	public static function plugin_deactivation_hook() {
+	public static function plugin_unregister_hook() {
 
 	}
 

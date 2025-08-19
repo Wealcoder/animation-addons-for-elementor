@@ -2150,8 +2150,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Advanced-Portfolio',
-			'demo_url'     => '',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-advanced-portfolio',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/advanced-portfolio/',
 			'youtube_url'  => '',
 		),
 		'filterable-gallery' => array(
@@ -2164,8 +2164,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Filterable-Gallery',
-			'demo_url'     => '',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-filterable-gallery',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/filterable-gallery/',
 			'youtube_url'  => '',
 		),
 		'breadcrumbs'        => array(
@@ -2178,8 +2178,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Breadcrumbs',
-			'demo_url'     => '',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-breadcrumbs',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/breadcrumbs/',
 			'youtube_url'  => '',
 		),
 		'table-of-contents'  => array(
@@ -2192,8 +2192,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Table-Of-Content',
-			'demo_url'     => '',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-table-of-content',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/table-of-content/',
 			'youtube_url'  => '',
 		),
 		'image-accordion'    => array(
@@ -2207,7 +2207,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Image-Accordion',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-image-accordion',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/image-accordion/',
 			'youtube_url'  => '',
 		),
 		'author-box'         => array(
@@ -2221,7 +2222,8 @@ $config = array(
 			'is_pro'       => true,
 			'is_extension' => false,
 			'icon'         => 'wcf-icon-Author-Box',
-			'doc_url'      => '',
+			'demo_url'     => 'https://animation-addons.com/widgets/aae-author-box',
+			'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/author-box/',
 			'youtube_url'  => '',
 		),
 

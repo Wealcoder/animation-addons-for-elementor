@@ -18,10 +18,10 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 As the **No.1 animation plugin for Elementor**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
-[Browse 150+ Pre-Built Websites](https://animation-addons.com/templates-list/)
+[Browse 200+ Pre-Built Websites](https://animation-addons.com/templates-list/)
 [Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
 
-https://youtu.be/NS0TGy8A_tU
+https://youtu.be/tRbvgq2gJF4
 
 **Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder**. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
 
@@ -63,11 +63,13 @@ https://youtu.be/NS0TGy8A_tU
 🎨 Preloader
 🗂️ Mega Menus
 ↔️ Horizontal Scrolling
+↔️ Motion Scroll Card
 🔁 Preset Animation
 🛠️ CPT Builder
 🖼️ Icon Generator
 🔠 Custom Font Uploader
 ⚡ One-Click Demo Imports
+✒️ Code Snippet
 
 Animation Addons for Elementor is a game-changer in animation-focused web design. The blend of its advanced animations, customizable features, and unique functionality set it apart from competitors. Whether you’re a web developer, designer, agency owner, or website owner, the plugin caters to your holistic professional needs.
 
@@ -419,6 +421,12 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.11 – 19 august 2025 = 
+  - 🆕 **Added:** Starter Template Menu
+  - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
+  - 🆕 **Added:** Code Snippet extension, 
+  - ✏️ **Improved** Renamed “Pin” extension to “Sticky” for clearer usability and better user understanding
 
 = Animation Addons for Elementor v2.3.10 – 11 august 2025 = 
   - 🆕 **Added:** 20+ premium widgets — now completely free for all users!
