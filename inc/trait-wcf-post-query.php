@@ -355,7 +355,7 @@ trait WCF_Post_Query_Trait {
 
 	protected function query_arg() {
 		$query_args = [];
-
+		
 		//related post
 		if ( 'related' === $this->get_settings( 'query_type' ) && is_singular() ) {
 			$post_id         = get_queried_object_id();
@@ -736,14 +736,27 @@ trait WCF_Post_Query_Trait {
 		return $query_args;
 	}
 
+	/**
+	 * Get current paged number (1 if not paginated)
+	 */
+	function aae_get_paged(): int {
+		$paged = absint( get_query_var('paged') );
+		if ( ! $paged ) {
+			// On static front page or paginated Page templates WP uses 'page'
+			$paged = absint( get_query_var('page') );
+		}
+		return $paged ? $paged : 1;
+	}
+
 	public function get_query() {
 		global $wp_query;
-
+		
 		// Check custom post type archive
 		if ( 'archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && is_tax() ) {
 
 			if ( $this->get_settings( 'post_type' ) != 'post' ) {
 				$query_object = get_queried_object();
+			
 				$tax_query    = [];
 				if ( isset( $query_object->taxonomy ) && isset( $query_object->term_id ) ) {
 					$tax_query = [
@@ -758,14 +771,17 @@ trait WCF_Post_Query_Trait {
 				$GLOBALS['wp_query'] = new \WP_Query( [
 					'post_type' => $this->get_settings( 'post_type' ),
 					'tax_query' => $tax_query,
+					'paged'               => $this->aae_get_paged(),
+					'posts_per_page'      => $this->get_settings( 'posts_per_page' ),
 				] );
-
+			
 				return $GLOBALS['wp_query'];
 			}
 
 		}
 
 		if ( 'archive' === $this->get_settings( 'query_type' ) && ! \Elementor\Plugin::$instance->editor->is_edit_mode() && ( $wp_query->is_archive || $wp_query->is_search ) ) {
+			
 			return $this->query = $wp_query;
 		} else {
 			return $this->query = new \WP_Query( $this->query_arg() );

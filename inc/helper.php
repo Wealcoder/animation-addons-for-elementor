@@ -450,14 +450,14 @@ if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 		global $post;
 
 		$separator = ' &raquo; ';
-		echo '<div class="aae-breadcrumbs"><a href="' . home_url() . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
+		echo '<div class="aae-breadcrumbs"><a href="' . esc_url( get_home_url() ) . '">' . esc_html__('Home', 'animation-addons-for-elementor') . '</a>';
 
 		if (is_front_page()) {
 			echo '</div>';
 			return;
 		}
 
-		echo $separator;
+		echo wp_kses_post( $separator );
 
 		if (is_category() || (is_single() && get_post_type() === 'post')) {
 			$cat = get_the_category();
@@ -481,7 +481,7 @@ if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 					$parent_id = $page->post_parent;
 				}
 
-				echo implode($separator, array_reverse($breadcrumbs)) . $separator;
+				echo wp_kses_post( implode($separator, array_reverse($breadcrumbs)) . $separator );
 			}
 
 			echo esc_html(get_the_title());
@@ -490,7 +490,7 @@ if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 			$post_type = get_post_type_object(get_post_type());
 
 			if ($post_type && $post_type->has_archive) {
-				echo '<a href="' . esc_url(get_post_type_archive_link(get_post_type())) . '">' . esc_html($post_type->labels->name) . '</a>' . $separator;
+				echo wp_kses_post( '<a href="' . esc_url(get_post_type_archive_link(get_post_type())) . '">' . esc_html($post_type->labels->name) . '</a>' . $separator );
 			}
 
 			$taxonomies = get_object_taxonomies(get_post_type());
@@ -498,7 +498,7 @@ if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 				$terms = get_the_terms(get_the_ID(), $taxonomy);
 				if (!empty($terms) && !is_wp_error($terms)) {
 					$term = current($terms);
-					echo '<a href="' . esc_url(get_term_link($term)) . '">' . esc_html($term->name) . '</a>' . $separator;
+					echo wp_kses_post( '<a href="' . esc_url(get_term_link($term)) . '">' . esc_html($term->name) . '</a>' . $separator );
 					break;
 				}
 			}
@@ -512,7 +512,7 @@ if( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 				$term = get_queried_object();
 				if ($term->parent) {
 					$parent_term = get_term($term->parent, $term->taxonomy);
-					echo '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . $separator;
+					echo wp_kses_post( '<a href="' . esc_url(get_term_link($parent_term)) . '">' . esc_html($parent_term->name) . '</a>' . $separator);
 				}
 				echo esc_html($term->name);
 			} elseif (is_day()) {

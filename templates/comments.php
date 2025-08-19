@@ -44,7 +44,7 @@ if ( !function_exists('aae_addon_comment_style') ):
               </h3>
               <p class="default-details-comment-date">
                  <?php
-                    echo get_comment_date() .'<span></span>' . get_comment_time();
+                    echo wp_kses_post( get_comment_date() .'<span></span>' . get_comment_time() );
                   ?>
               </p>
               <div class="builder-comment-text"><?php comment_text(); ?></div>
@@ -78,9 +78,9 @@ endif;
 				<?php
 
 					if(get_comments_number() < 1){
-						printf( '%1$s ' . esc_html__( 'Comment', 'animation-addons-for-elementor' ), get_comments_number() );
+						printf( '%1$s ' . esc_html__( 'Comment', 'animation-addons-for-elementor' ), wp_kses_post( get_comments_number() ) );
 					}else{
-						printf( '%1$s ' . esc_html__( 'Comments', 'animation-addons-for-elementor' ), get_comments_number() );
+						printf( '%1$s ' . esc_html__( 'Comments', 'animation-addons-for-elementor' ), wp_kses_post( get_comments_number() ) );
 					}
 				
 				?>
@@ -195,6 +195,7 @@ endif;
 				'class_submit'		 => sprintf("wcf--theme-btn wc-btn-primary %s",esc_attr( $button_style )),
 				'title_reply_before' => '<h3 id="reply-title" class="elc-inbd-comment__title mb-10">',
 				'title_reply'		 => esc_html__( 'Leave a Reply', 'animation-addons-for-elementor' ),
+				/* translators: %s: the author name being replied to. */
 				'title_reply_to'	 => esc_html__( 'Leave a Reply to %s', 'animation-addons-for-elementor' ),
 				'cancel_reply_link'	 => esc_html__( 'Cancel Reply', 'animation-addons-for-elementor' ),
 				'label_submit'		 => esc_html__( 'Submit Now', 'animation-addons-for-elementor' ),
