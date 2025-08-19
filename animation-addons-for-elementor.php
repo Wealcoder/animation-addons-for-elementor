@@ -3,7 +3,7 @@
  * Plugin Name: Animation Addons
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://animation-addons.com/
- * Version:     2.3.10
+ * Version:     2.3.11
  * Author:      Wealcoder
  * Author URI:  https://animation-addons.com/
  * License:           GPL v2 or later
@@ -26,7 +26,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.3.10' );
+	define( 'WCF_ADDONS_VERSION', '2.3.11' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -137,13 +137,22 @@ final class WCF_ADDONS_Plugin {
 			update_option( 'wcf_addons_setup_wizard', 'redirect' );
 		}
 		$count = (int) get_option('aae_activation_count', 0);
+		
+		if(!$count){
+			wp_remote_post(
+				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated',
+				[
+					'timeout'  => 2,                           // keep it snappy
+					'blocking' => false,                       // fire-and-forget
+					'headers'  => ['Content-Type' => 'application/json'],				
+				]
+			);
+		}			
+		
     	update_option('aae_activation_count', $count + 1, true);
 		update_option('aae_last_activated', current_time('mysql'), true);
-		// Fallback cron in case no one loads a page soon.
-		if ( ! wp_next_scheduled('aae_send_activation_ping_cron') ) {
-			wp_schedule_single_event(time() + 2 * MINUTE_IN_SECONDS, 'aae_send_activation_ping_cron');
-		}
 		flush_rewrite_rules();
+		
 	}
 	/**
 	 * Plugin dactivation hook
@@ -154,7 +163,15 @@ final class WCF_ADDONS_Plugin {
 		
 		$count = (int) get_option('aae_dactivation_count', 0);
     	update_option('aae_dactivation_count', $count + 1, true);
-		update_option('aae_last_dactivated', current_time('mysql'), true);		
+		update_option('aae_last_dactivated', current_time('mysql'), true);	
+		wp_remote_post(
+			'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
+			[
+				'timeout'  => 2,                           // keep it snappy
+				'blocking' => false,                       // fire-and-forget
+				'headers'  => ['Content-Type' => 'application/json'],				
+			]
+		);	
 	}
 
 	/**

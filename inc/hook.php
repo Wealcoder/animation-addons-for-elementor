@@ -141,47 +141,6 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
     add_action('wp_ajax_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
 }
 
-// 1) Enqueue in admin only
-add_action('admin_enqueue_scripts', function () {
-    // Only load if we actually have something to send
-    $count = get_option('aae_activation_count', null);
-    $last  = get_option('aae_last_activated', null);
-    if ($count === null || $last === null) {
-        return; // nothing to send => don't enqueue
-    }
 
-    wp_enqueue_script(
-        'aae-activation-ping',
-        WCF_ADDONS_URL . 'assets/js/admin-activation.js',
-        [], // add deps if needed (e.g., ['jquery'])
-        '1.0',
-        true
-    );
 
-    wp_localize_script('aae-activation-ping', 'AAE_ACTIVATION', [
-        'ajax_url'          => admin_url('admin-ajax.php'),
-        'plugin_slug'       => 'animation-addons-for-elementor',
-        'activation_count'  => (int) $count,
-        'last_activated'    => (string) $last,
-        'nonce'             => wp_create_nonce('aae_activation_cleanup')        
-    ]);
-
-});
-
-// 2) Secure AJAX cleanup
-add_action('wp_ajax_aae_admin_plugin_activation_count_remove', 'aae_admin_plugin_activation_count_remove');
-if (!function_exists('aae_admin_plugin_activation_count_remove')) {
-    function aae_admin_plugin_activation_count_remove() {
-        // Nonce + capability checks
-        check_ajax_referer('aae_activation_cleanup');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Forbidden'], 403);
-        }
-
-        delete_option('aae_activation_count');
-        delete_option('aae_last_activated');
-
-        wp_send_json_success(['message' => 'Options removed', 'ts' => current_time('mysql')]);
-    }
-}
 
