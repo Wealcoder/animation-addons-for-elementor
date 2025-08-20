@@ -14,7 +14,7 @@ module.exports = {
     "modules/dashboard/index": "./src/modules/dashboard/main.js",
     "modules/dashboard/wizardSetup": "./src/modules/dashboard/wizardSetup.js",
     "modules/dashboard/opt-out": "./src/modules/dashboard/opt-out.js",
-    "modules/page-import/index": "./src/modules/dashboard/main.js",
+    "modules/page-import/index": "./src/modules/page-import/main.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

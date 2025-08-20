@@ -41,17 +41,17 @@ const CompleteImport = () => {
         </div>
         <div className="flex flex-col gap-1.5">
           <a
-            href={WCF_ADDONS_ADMIN?.home_url ?? "#"}
+            href={WCF_ADDONS_ADMIN.page_url ?? "#"}
             className={cn(buttonVariants(), "w-full h-11")}
           >
-            Visit your website
+            Go to page
           </a>
           <Button
             variant="link"
             className={"w-full"}
-            onClick={() => changeRoute("dashboard")}
+            onClick={() => changeRoute("stater-template")}
           >
-            Go to dashboard
+            Go to page library
           </Button>
         </div>
       </div>

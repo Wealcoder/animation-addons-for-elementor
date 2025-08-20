@@ -493,7 +493,7 @@ class OneClickImport
 			/*
 			 * Save the post ID that has navigation block in transient.
 			 */
-			if (strpos($postdata['post_content'], '<!-- wp:navigation') !== false) {
+			if (! empty($postdata['post_content']) && strpos($postdata['post_content'], '<!-- wp:navigation') !== false) {
 				// Keep track of POST ID that has navigation block.
 				$wcfio_post_nav_block = get_transient('aaeaddon_import_posts_with_nav_block');
 

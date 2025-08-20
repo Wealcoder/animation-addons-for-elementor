@@ -1,5 +1,7 @@
 import { Button } from "S/components/ui/button";
 import CompleteBG from "../../../../public/images/complete-bg.png";
+import { cn } from "../lib/utils";
+import { buttonVariants } from "../components/ui/button";
 
 const FailImport = () => {
   const url = new URL(window.location.href);
@@ -48,13 +50,12 @@ const FailImport = () => {
           >
             Retry
           </Button>
-          <Button
-            variant="link"
-            className={"w-full"}
-            onClick={() => changeRoute("dashboard")}
+          <a
+            href={WCF_ADDONS_ADMIN.page_url}
+            className={cn(buttonVariants({ variant: "link" }), "w-full")}
           >
-            Go to dashboard
-          </Button>
+            Go to page
+          </a>
         </div>
       </div>
     </div>

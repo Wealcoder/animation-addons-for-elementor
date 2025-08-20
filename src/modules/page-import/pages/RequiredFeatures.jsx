@@ -50,7 +50,7 @@ const RequiredFeatures = () => {
   const getTemplateData = async (id) => {
     try {
       const url = new URL(
-        `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
+        `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page`
       );
 
       if (id) {

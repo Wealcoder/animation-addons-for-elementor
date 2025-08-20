@@ -66,7 +66,7 @@ const DemoImporting = () => {
     debounceFn(async (id) => {
       try {
         const url = new URL(
-          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
+          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page`
         );
 
         if (id) {
@@ -254,7 +254,7 @@ const DemoImporting = () => {
         <div className="mb-6">
           <h3 className="text-2xl font-medium">
             {!currenTemplate
-              ? "Template finding....."
+              ? "Page finding....."
               : "Creating your website..."}{" "}
           </h3>
           <p className="mt-1.5 text-text-secondary">

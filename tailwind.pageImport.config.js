@@ -5,9 +5,9 @@ const plugin = require("tailwindcss/plugin");
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./src/modules/dashboard/components/**/*.{js,jsx}",
-    "./src/modules/dashboard/layouts/**/*.{js,ts,jsx,tsx}",
-    "./src/modules/dashboard/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/modules/page-import/components/**/*.{js,jsx}",
+    "./src/modules/page-import/layouts/**/*.{js,ts,jsx,tsx}",
+    "./src/modules/page-import/pages/**/*.{js,ts,jsx,tsx}",
     // "./src/**/*.{js,ts,jsx,tsx}",
   ],
   prefix: "",

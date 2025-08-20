@@ -530,7 +530,7 @@ class ClassLoader
 
         if (isset($this->prefixesPsr0[$first])) {
             foreach ($this->prefixesPsr0[$first] as $prefix => $dirs) {
-                if (0 === strpos($class, $prefix)) {
+                if (! empty($class) && 0 === strpos($class, $prefix)) {
                     foreach ($dirs as $dir) {
                         if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
                             return $file;

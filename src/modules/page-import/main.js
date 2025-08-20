@@ -7,7 +7,7 @@ wp.element.render(
   <AppContextProvider>
     <MainLayout />
   </AppContextProvider>,
-  document.getElementById("wcf-admin-ds-cr-js")
+  document.getElementById("aae-page-importer")
 );
 
-wp.element.render(<Toaster />, document.getElementById("wcf-admin-toast"));
+//wp.element.render(<Toaster />, document.getElementById("wcf-admin-toast"));

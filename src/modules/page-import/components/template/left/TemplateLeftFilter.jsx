@@ -26,7 +26,7 @@ const TemplateLeftFilter = ({
   const [allCategory, setAllCategory] = useState([]);
 
   useEffect(() => {
-    fetch(`${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/st-cat`)
+    fetch(`${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page-type`)
       .then((response) => response.json())
       .then((data) => {
         setAllCategory(data);

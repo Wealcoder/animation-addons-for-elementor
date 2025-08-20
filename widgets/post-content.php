@@ -106,7 +106,7 @@ class Post_Content extends Widget_Base {
 				$preview_type = $document->get_settings( 'preview_type' );
 				$preview_id   = $document->get_settings( 'preview_id' );
 
-				if ( 0 === strpos( $preview_type, 'single' ) && ! empty( $preview_id ) ) {
+				if ( ! empty($preview_type) && 0 === strpos( $preview_type, 'single' ) && ! empty( $preview_id ) ) {
 					$post = get_post( $preview_id );
 
 					if ( ! $post ) {

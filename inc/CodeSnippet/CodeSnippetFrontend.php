@@ -359,12 +359,12 @@ class CodeSnippetFrontend {
 
 			default:
 				// Check for custom post-types.
-				if ( strpos( $visibility_condition, 'singular_' ) === 0 ) {
+				if ( ! empty($visibility_condition) && strpos( $visibility_condition, 'singular_' ) === 0 ) {
 					$post_type = str_replace( 'singular_', '', $visibility_condition );
 					return is_singular( $post_type );
 				}
 
-				if ( strpos( $visibility_condition, 'archive_' ) === 0 ) {
+				if ( ! empty($visibility_condition) && strpos( $visibility_condition, 'archive_' ) === 0 ) {
 					$post_type = str_replace( 'archive_', '', $visibility_condition );
 					return is_post_type_archive( $post_type );
 				}
