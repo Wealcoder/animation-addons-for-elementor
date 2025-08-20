@@ -36,7 +36,7 @@ class AAEAddon_Row_Actions {
 
     function _enqueue_admin_scripts($hook) {        
         if ($hook === 'plugins.php') {
-            wp_enqueue_script('aaeaddon-plugin-deactivate', plugin_dir_url( __FILE__ ) . 'dashboard/build/optout.js', [], null, true);
+            wp_enqueue_script('aaeaddon-plugin-deactivate', WCF_ADDONS_URL . 'assets/build/modules/dashboard/optout.js', [], null, true);
         }
     }
 

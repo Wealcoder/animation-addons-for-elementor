@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [ "./src/modules/dashboard*" ]
+		}
+	},
+	"include": ["**/*.js", "**/*.jsx"],
+	"exclude": [
+    "node_modules",
+    "build",
+  ]
+}
