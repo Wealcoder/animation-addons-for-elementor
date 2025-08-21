@@ -137,7 +137,7 @@ trait WCF_Post_Handler_Trait
 		}
 
 		// Youtube Link Checking
-		if (strpos($link, 'https://www.youtube.com/') === 0) {
+		if (! empty($link) && strpos($link, 'https://www.youtube.com/') === 0) {
 			parse_str(wp_parse_url($link, PHP_URL_QUERY), $query);
 
 			if (isset($query['v'])) {
@@ -147,7 +147,7 @@ trait WCF_Post_Handler_Trait
 		}
 
 		// Vimeo Link Checking
-		if (strpos($link, 'https://vimeo.com/') === 0) {
+		if (! empty($link) && strpos($link, 'https://vimeo.com/') === 0) {
 			$videoId = str_replace('https://vimeo.com/', '', $link);
 			$link    = 'https://player.vimeo.com/video/' . $videoId;
 		}

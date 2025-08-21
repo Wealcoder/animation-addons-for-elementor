@@ -276,12 +276,12 @@ class WCF_Admin_Init {
 			// CSS
 			wp_enqueue_style(
 				'wcf-admin', // Handle for the stylesheet
-				plugins_url( 'dashboard/build/index.css', __FILE__ ), // Path to the CSS file
+				WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
 				array(), // Dependencies (none in this case)
 				time()
 			);
 
-			wp_enqueue_script( 'wcf-admin', plugin_dir_url( __FILE__ ) . 'dashboard/build/index.js', array( 'react', 'react-dom', 'wp-element', 'wp-i18n' ), time(), true );
+			wp_enqueue_script( 'wcf-admin', WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.js', array( 'react', 'react-dom', 'wp-element', 'wp-i18n' ), time(), true );
 			wcf_get_total_config_elements_by_key( $GLOBALS['wcf_addons_config']['extensions'], $total_extensions );
 			wcf_get_total_config_elements_by_key( $GLOBALS['wcf_addons_config']['widgets'], $total_widgets );
 

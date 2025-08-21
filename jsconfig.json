@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [ "./src/modules/dashboard*" ],
+			"S/*": [ "./src/modules/page-import*" ]
+		}
+	},
+	"include": ["**/*.js", "**/*.jsx"],
+	"exclude": [
+    "node_modules",
+    "build",
+  ]
+}

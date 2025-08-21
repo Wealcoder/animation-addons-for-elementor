@@ -345,7 +345,6 @@ class Post_Feature_Image extends Widget_Base
         $this->register_slider_pagination_style_controls();
 
         $this->end_controls_section();
-
     }
 
     protected function switch_post()
@@ -381,8 +380,8 @@ class Post_Feature_Image extends Widget_Base
                 $link = get_post_meta(get_the_ID(), '_video_url', true);
 
                 // Youtube Link Checking
-                if (strpos($link, "https://www.youtube.com/") === 0) {
-//					parse_str( wp_parse_url( $link, PHP_URL_QUERY ), $query );
+                if (! empty($link) && strpos($link, "https://www.youtube.com/") === 0) {
+                    //					parse_str( wp_parse_url( $link, PHP_URL_QUERY ), $query );
                     parse_str(wp_parse_url($link)['query'] ?? '', $query);
 
                     if (isset($query['v'])) {
@@ -392,22 +391,22 @@ class Post_Feature_Image extends Widget_Base
                 }
 
                 // Vimeo Link Checking
-                if (strpos($link, "https://vimeo.com/") === 0) {
+                if (! empty($link) && strpos($link, "https://vimeo.com/") === 0) {
                     $videoId = str_replace("https://vimeo.com/", "", $link);
                     $link = "https://player.vimeo.com/video/" . $videoId;
                 }
-                ?>
+?>
                 <div class="wcf-f-image-wrapper video">
                     <iframe src="<?php echo esc_url($link); ?>"></iframe>
                 </div>
-                <?php
+            <?php
             } elseif ('audio' === $post_format) {
                 $link = get_post_meta(get_the_ID(), '_audio_url', true);
-                ?>
+            ?>
                 <div class="wcf-f-image-wrapper audio">
-                    <?php echo wp_kses_post( wp_oembed_get($link) ); ?>
+                    <?php echo wp_kses_post(wp_oembed_get($link)); ?>
                 </div>
-                <?php
+            <?php
             } elseif ('gallery' === $post_format) {
                 $slider_settings = $this->get_slider_attributes();
 
@@ -421,38 +420,40 @@ class Post_Feature_Image extends Widget_Base
 
                 $gallery_images = get_post_meta(get_the_ID(), '_gallery_images', true);
                 $gallery_images = is_array($gallery_images) ? $gallery_images : [];
-                ?>
+            ?>
                 <div <?php $this->print_render_attribute_string('wrapper'); ?>>
                     <div <?php $this->print_render_attribute_string('carousel-wrapper'); ?>>
                         <div class="swiper-wrapper">
                             <?php foreach ($gallery_images as $img) { ?>
                                 <div class="swiper-slide">
                                     <img src="<?php echo esc_url($img); ?>"
-                                         alt="<?php echo esc_attr__('Gallery Image', 'animation-addons-for-elementor') ?>">
+                                        alt="<?php echo esc_attr__('Gallery Image', 'animation-addons-for-elementor') ?>">
                                 </div>
                             <?php } ?>
                         </div>
 
-                        <?php // if ( 1 < count( $settings['testimonials'] ) ) : ?>
+                        <?php // if ( 1 < count( $settings['testimonials'] ) ) : 
+                        ?>
                         <?php $this->render_slider_navigation(); ?>
                         <?php $this->render_slider_pagination(); ?>
-                        <?php // endif; ?>
+                        <?php // endif; 
+                        ?>
                     </div>
                 </div>
-                <?php
+            <?php
             } else {
-                ?>
+            ?>
                 <div class="wcf-f-image-wrapper">
                     <?php echo get_the_post_thumbnail($post_id, $image_size, array()); ?>
                 </div>
-                <?php
+            <?php
             }
         } else {
             ?>
             <div class="wcf-f-image-wrapper">
                 <?php echo get_the_post_thumbnail($post_id, $image_size, array()); ?>
             </div>
-            <?php
+<?php
         }
 
         Plugin::$instance->db->restore_current_post();
