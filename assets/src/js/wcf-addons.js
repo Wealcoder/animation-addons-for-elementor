@@ -106,30 +106,11 @@
         return finish_content;
       },
     });
-
-    // const ClickDrop = function ($scope) {
-    //     let $btn = $scope.find(".aae-clickdrop-btn");
-    //     let $modal = $scope.find(".aae-clickdrop-modal");
-    //
-    //     $btn.on("click", function (e) {
-    //         e.stopPropagation();
-    //         $modal.slideToggle();
-    //     });
-    //
-    //     // Click outside to close
-    //     $(document).on("click", function (e) {
-    //         if (!$scope.is(e.target) && $scope.has(e.target).length === 0) {
-    //             $modal.slideUp();
-    //         }
-    //     });
-    // };
-
     //Toggle Switcher
     const toggle_switcher = function ($scope) {
       const checked = $("input", $scope);
       const toggle_pane = $(".toggle-pane", $scope);
-      const toggle_label = $(".before_label, .after_label", $scope);
-
+      const toggle_label = $(".before_label, .after_label", $scope);      
       checked.change(function () {
         toggle_pane.toggleClass("show");
         toggle_label.toggleClass("active");
