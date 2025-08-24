@@ -442,19 +442,19 @@ class ClickDrop extends Widget_Base
 
         if (!is_user_logged_in()) {
 ?>
-            <a href="<?php echo esc_url(!empty($settings['login_url']) ? $settings['login_url'] : wp_login_url()); ?>"
-                class="aae-clickdrop-btn">
-                <?php echo esc_html($settings['login_label']); ?>
-            </a>
-        <?php
+<a href="<?php echo esc_url(!empty($settings['login_url']) ? $settings['login_url'] : wp_login_url()); ?>"
+    class="aae-clickdrop-btn">
+    <?php echo esc_html($settings['login_label']); ?>
+</a>
+<?php
         } else {
         ?>
-            <div class="aae-clickdrop-wrapper">
-                <div class="aae-clickdrop-inner">
-                    <button class="aae-clickdrop-btn"><?php echo esc_html($settings['logged_label']); ?></button>
-                    <div class="aae-clickdrop-modal">
-                        <ul>
-                            <?php
+<div class="aae-clickdrop-wrapper">
+    <div class="aae-clickdrop-inner">
+        <button class="aae-clickdrop-btn"><?php echo esc_html($settings['logged_label']); ?></button>
+        <div class="aae-clickdrop-modal">
+            <ul>
+                <?php
                             if (!empty($settings['menus_url']) && is_array($settings['menus_url'])) {
                                 foreach ($settings['menus_url'] as $index => $item) {
 
@@ -494,9 +494,9 @@ class ClickDrop extends Widget_Base
 
                             ?>
 
-                                    <li class="<?php echo esc_attr($item_class); ?>" style="<?php echo esc_attr($border_style); ?>">
-                                        <a href="<?php echo esc_url($url); ?>" <?php echo esc_attr($is_external . $nofollow); ?>>
-                                            <?php
+                <li class="<?php echo esc_attr($item_class); ?>" style="<?php echo esc_attr($border_style); ?>">
+                    <a href="<?php echo esc_url($url); ?>" <?php echo esc_attr($is_external . $nofollow); ?>>
+                        <?php
                                             if (!empty($item['menu_icon']['value'])) {
                                                 \Elementor\Icons_Manager::render_icon(
                                                     $item['menu_icon'],
@@ -507,20 +507,20 @@ class ClickDrop extends Widget_Base
                                                 );
                                             }
                                             ?>
-                                            <span style="<?php echo esc_attr($label_color); ?>">
-                                                <?php echo esc_html($item['menu_title']); ?>
-                                            </span>
-                                        </a>
-                                    </li>
+                        <span style="<?php echo esc_attr($label_color); ?>">
+                            <?php echo esc_html($item['menu_title']); ?>
+                        </span>
+                    </a>
+                </li>
 
-                            <?php
+                <?php
                                 }
                             }
                             ?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            </ul>
+        </div>
+    </div>
+</div>
 <?php
         }
     }

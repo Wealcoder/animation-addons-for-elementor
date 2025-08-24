@@ -421,7 +421,8 @@ class Button_Pro extends Widget_Base
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .aae--btn-pro, {{WRAPPER}} .btn-text-flip span, {{WRAPPER}} .g-btn-text' => 'color: {{VALUE}}; fill: {{VALUE}}',
-					'{{WRAPPER}} .style-4 .aae--btn-pro strong'                                           => 'background-color: {{VALUE}}',
+					'{{WRAPPER}} .g-btn-icon' => 'color: {{VALUE}}; fill: {{VALUE}}',
+					'{{WRAPPER}} .style-4 .aae--btn-pro strong' => 'background-color: {{VALUE}}',
 				],
 			]
 		);

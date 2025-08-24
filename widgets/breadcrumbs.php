@@ -7,7 +7,6 @@ use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Group_Control_Typography;
 use Elementor\Utils;
 use Elementor\Widget_Base;
-use WPSEO_Breadcrumbs;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
@@ -64,22 +63,23 @@ class Breadcrumbs extends Widget_Base
 				'label_on' => esc_html__('Yes', 'animation-addons-for-elementor'),
 				'label_off' => esc_html__('No', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
-				'default' => 'yes',
+				'default' => class_exists('\\WPSEO_Breadcrumbs') ? 'yes' : '',
 			]
 		);
 
-		if (! class_exists('\WPSEO_Breadcrumbs')) {
+		// Show warning only if Yoast is not installed but user tries to enable it
+		if (! class_exists('\\WPSEO_Breadcrumbs')) {
 			$this->add_control(
 				'warning_text',
 				[
-					'type'       => Controls_Manager::ALERT,
-					'alert_type' => 'warning',
-					'content'    => __('<strong>Yoast SEO</strong> is not installed/activated on your site. Please install and activate <a href="plugin-install.php?s=wordpress-seo&tab=search&type=term" target="_blank">Yoast SEO</a> first.', 'animation-addons-for-elementor'),
+					'type'            => Controls_Manager::RAW_HTML,
+					'raw'             => __('<strong>Yoast SEO</strong> is not installed/activated on your site. Please install and activate <a href="plugin-install.php?s=wordpress-seo&tab=search&type=term" target="_blank" rel="noopener noreferrer">Yoast SEO</a> first.', 'animation-addons-for-elementor'),
+					'content_classes' => 'elementor-descriptor',
+					'condition'       => [
+						'yoast_seo' => 'yes',
+					],
 				]
 			);
-
-			$this->end_controls_section(); // Ends section early if Yoast is not active
-			return; // Prevent further controls from being registered
 		}
 
 		$this->add_responsive_control(
@@ -121,22 +121,25 @@ class Breadcrumbs extends Widget_Base
 			]
 		);
 
-		$yoast_url = admin_url( 'admin.php?page=wpseo_titles#top#breadcrumbs' );
+		$yoast_url = admin_url('admin.php?page=wpseo_titles#top#breadcrumbs');
 
-		
+
 		$desc_html = sprintf(
 			// translators: 1: opening <a> tag linking to Yoast SEO Breadcrumbs settings; 2: closing </a> tag.
-			__( 'Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor' ),
-			'<a href="' . esc_url( $yoast_url ) . '" target="_blank" rel="noopener noreferrer">',
+			__('Additional settings are available in the Yoast SEO %1$sBreadcrumbs Panel%2$s', 'animation-addons-for-elementor'),
+			'<a href="' . esc_url($yoast_url) . '" target="_blank" rel="noopener noreferrer">',
 			'</a>'
 		);
 
 		$this->add_control(
 			'html_description',
 			[
-				'raw'             => wp_kses_post( $desc_html ),
+				'raw'             => wp_kses_post($desc_html),
 				'type'            => Controls_Manager::RAW_HTML,
 				'content_classes' => 'elementor-descriptor',
+				'condition'       => [
+					'yoast_seo' => 'yes',
+				],
 			]
 		);
 
@@ -157,21 +160,21 @@ class Breadcrumbs extends Widget_Base
 
 		$link = sprintf(
 			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-			esc_url( $url ),
-			esc_html__( 'HTML Symbols', 'animation-addons-for-elementor' )
+			esc_url($url),
+			esc_html__('HTML Symbols', 'animation-addons-for-elementor')
 		);
 
-		
+
 		$desc_html = sprintf(
 			// translators: %s is a clickable "HTML Symbols" link to an external reference page.
-			__( 'You can use HTML entities as separators. Check out %s for examples.', 'animation-addons-for-elementor' ),
+			__('You can use HTML entities as separators. Check out %s for examples.', 'animation-addons-for-elementor'),
 			$link
 		);
 
 		$this->add_control(
 			'sep_description',
 			[
-				'raw'             => wp_kses_post( $desc_html ),
+				'raw'             => wp_kses_post($desc_html),
 				'type'            => Controls_Manager::RAW_HTML,
 				'content_classes' => 'elementor-descriptor',
 				'condition'       => [
@@ -181,7 +184,7 @@ class Breadcrumbs extends Widget_Base
 		);
 
 
-		$this->end_controls_section(); // END CONTENT SECTION
+		$this->end_controls_section();
 
 
 		// Style Section
@@ -261,10 +264,9 @@ class Breadcrumbs extends Widget_Base
 
 		$this->end_controls_tab();
 
-		// ✅ THIS WAS MISSING!
 		$this->end_controls_tabs();
 
-		$this->end_controls_section(); // END STYLE SECTION
+		$this->end_controls_section();
 	}
 
 
@@ -281,12 +283,14 @@ class Breadcrumbs extends Widget_Base
 
 	protected function render()
 	{
+		echo "Working this widget";
 		$settings = $this->get_settings_for_display();
 		$html_tag = $this->get_html_tag();
 
-		if (class_exists('\WPSEO_Breadcrumbs') && $settings['yoast_seo'] === 'yes') {
-			WPSEO_Breadcrumbs::breadcrumb('<' . $html_tag . ' id="breadcrumbs">', '</' . $html_tag . '>');
+		if (class_exists('\\WPSEO_Breadcrumbs') && $settings['yoast_seo'] === 'yes') {
+			call_user_func(['WPSEO_Breadcrumbs', 'breadcrumb'], '<' . $html_tag . ' id="breadcrumbs">', '</' . $html_tag . '>');
 		} else {
+			echo "Working this widget";
 			$separator = isset($settings['br_separator']) ? $settings['br_separator'] : ' &raquo; ';
 			aae_addon_breadcrumbs($html_tag, $separator);
 		}
