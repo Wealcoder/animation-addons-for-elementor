@@ -60,7 +60,7 @@ final class AAE_Admin_Buttons
             return;
         }
         add_submenu_page(
-            null,                   // 👈 null keeps it hidden from UI
+            '',                   // 👈 null keeps it hidden from UI
             'Page Import',          // Page title
             'Page Import',          // Menu title (ignored since it's hidden)
             'manage_options',       // Capability
