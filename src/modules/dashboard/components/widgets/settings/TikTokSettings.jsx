@@ -95,6 +95,10 @@ const TikTokSettings = () => {
         <p className="text-sm text-text-secondary mt-1">
           Add credentials to your TikTok Feed
         </p>
+        <p className="text-xs text-text-secondary/50 mt-2 border p-4 rounded bg-[#F9FAFB]">
+          We only collect your basic TikTok information (name, profile image,
+          and follower count) to display in the widget.
+        </p>
       </div>
       <div className="px-6 py-5 border-b border-[#F2F5F8]">
         <a
