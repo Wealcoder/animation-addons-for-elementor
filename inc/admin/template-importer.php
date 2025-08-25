@@ -300,22 +300,14 @@ class AAEAddon_Importer {
 				if ( isset( $xml->option ) ) {
 					foreach ( $xml->option as $opt ) {
 						$option_name     = sanitize_text_field( (string) $opt->name );
-						$serialized_data = sanitize_text_field( (string) $opt->value );
-						if (preg_match('/^aae_cpts_(\d{6})$/', $option_name, $m)) {
-							$cpts = get_option($option_name);
-							if (is_array($cpts)) {
-								$cpts[] = $serialized_data;
-								$serialized_data = serialize($cpts);
-							} else {
-								$serialized_data = serialize([$serialized_data]);
-							}
-						}
+						$serialized_data = sanitize_text_field( (string) $opt->value );					
 						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 						$wpdb->update(
 							$wpdb->options,
 							array( 'option_value' => $serialized_data ),
 							array( 'option_name'  => $option_name )
 						);
+						do_action('aae/addons/options/import',$option_name, $serialized_data);
 					}
 				} else {
 					$option_name     = sanitize_text_field( (string) $xml->name );
@@ -327,6 +319,7 @@ class AAEAddon_Importer {
 						array( 'option_value' => $serialized_data ),
 						array( 'option_name'  => $option_name )
 					);
+					do_action('aae/addons/options/import',$option_name, $serialized_data);
 				}
 			}
 		}
