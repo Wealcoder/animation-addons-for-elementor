@@ -732,6 +732,32 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
+		if(isset($_GET['aae-ajax-filter']))
+		{
+			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
+				$query_args['tax_query'][] = [
+					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
+					'field'    => 'term_id',
+					'terms'    => sanitize_text_field( wp_slash( $_GET['term'] ) ),
+				];
+			}		
+		}
+
+		if(isset($_GET['aae-ajax-filter']))
+		{
+			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
+				$query_args['tax_query'][] = [
+					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
+					'field'    => 'term_id',
+					'terms'    => sanitize_text_field( wp_slash( $_GET['term'] ) ),
+				];				
+			}
+			if(isset($_GET['tax']) && isset($_GET['term']) && isset($_GET['cpaged'])){
+				$query_args['paged'] = sanitize_text_field( wp_slash( $_GET['cpaged'] ) );
+			}		
+		}
+
+		$query_args = apply_filters('aaeaddons/lite/query/before', $query_args);
 
 		return $query_args;
 	}
