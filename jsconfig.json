@@ -3,7 +3,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": [ "./src/modules/dashboard*" ],
-			"S/*": [ "./src/modules/page-import*" ]
+			"C/*": [ "./src/modules/page-import*" ],
+			"S/*": ["./src/modules/cpt-builder/*"],
 		}
 	},
 	"include": ["**/*.js", "**/*.jsx"],
