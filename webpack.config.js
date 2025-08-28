@@ -18,6 +18,8 @@ module.exports = {
     "modules/custom-font/main": "./src/modules/custom-font/main.js",
     "modules/custom-icon/main": "./src/modules/custom-icon/main.js",
     "modules/cpt-builder/main": "./src/modules/cpt-builder/main.js",
+    "modules/nested-slider/editor/index":
+      "./src/modules/nested-slider/editor/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
