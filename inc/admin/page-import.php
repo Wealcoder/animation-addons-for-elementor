@@ -113,7 +113,7 @@ final class AAE_Admin_Buttons
             true
         );
 
-        wp_localize_script(self::HANDLE, 'AAE_ADMIN', [
+        wp_localize_script(self::HANDLE, 'AAE_PAGE_IMPORT', [
             'nonce'   => wp_create_nonce('aae_admin_nonce'),
             'screen'  => $screen->id,
             'post_id' => $post_id,

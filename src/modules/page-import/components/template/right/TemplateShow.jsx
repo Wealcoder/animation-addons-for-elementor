@@ -131,13 +131,10 @@ const TemplateShow = ({ allTemplate }) => {
                 <div className="ms-1">
                   <h3 className="text-lg">{template?.title}</h3>
                   <div className="flex gap-1.5 items-center mt-1.5">
-                    <div className="flex gap-1 items-center">
-                      {template?.categories?.slice(0, 2)?.map((el, i) => (
-                        <p key={el + i} className="text-label text-sm">
-                          {el}
-                          {i === 0 ? ", " : ""}
+                    <div className="flex-1">
+                        <p className="text-label text-sm truncate">
+                          {template?.categories[0]}
                         </p>
-                      ))}
                     </div>
 
                     <Dot

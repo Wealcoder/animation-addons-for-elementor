@@ -3,7 +3,7 @@
      
             if (heading) {
                 const btn = document.createElement('a');
-                btn.href = AAE_ADMIN.page_url;
+                btn.href = AAE_PAGE_IMPORT.page_url;
 
                 btn.id = 'aae-heading-button';
                 btn.className = 'page-title-action'; // same styling as Add New

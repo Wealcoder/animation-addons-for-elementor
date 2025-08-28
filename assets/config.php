@@ -1012,8 +1012,8 @@ $config = [
 							'cTab' => 'all'
 						],
 						'is_active'    => false,
-						'is_pro'       => true,
-						'is_extension' => true,
+						'is_pro'       => false,
+						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => "wcf-icon-Mailchimp",
 						'demo_url'     => 'https://animation-addons.com/widgets/aae-mailchimp/',
