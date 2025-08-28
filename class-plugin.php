@@ -835,8 +835,10 @@ class Plugin
 			}
 
 			if (! $data['is_pro'] && ! $data['is_extension']) {
+				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
 
-				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+				}
 			}
 		}
 	}

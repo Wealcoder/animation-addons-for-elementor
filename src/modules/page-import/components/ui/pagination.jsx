@@ -1,8 +1,8 @@
 import * as React from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 
-import { cn } from "S/lib/utils";
-import { buttonVariants } from "S/components/ui/button";
+import { cn } from "C/lib/utils";
+import { buttonVariants } from "C/components/ui/button";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 const Pagination = ({ className, ...props }) => (

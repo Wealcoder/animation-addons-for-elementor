@@ -51,6 +51,27 @@ if (! function_exists('wcf_addons_get_saved_template_list')) :
 	}
 endif;
 
+if (! function_exists('aae_validate_content_json')) {
+	function aae_validate_content_json($input)
+	{
+		// Check if the input is a valid string and not empty
+		if (! is_string($input) || empty($input)) {
+			return false;  // Invalid input
+		}
+
+		// Attempt to decode the JSON
+		$decoded = json_decode($input, true);
+
+		// Check for JSON decoding errors
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			return false;  // Invalid JSON
+		}
+
+		// Return the decoded JSON if valid, otherwise false
+		return $decoded;
+	}
+}
+
 /**
  * Get database settings of a widget by widget id and element
  *

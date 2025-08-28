@@ -1,9 +1,9 @@
-import ProConfirmDialog from "S/components/shared/ProConfirmDialog";
-import { Badge } from "S/components/ui/badge";
-import { Button, buttonVariants } from "S/components/ui/button";
-import { Toggle } from "S/components/ui/toggle";
-import { useActivate, useTNavigation } from "S/hooks/app.hooks";
-import { cn } from "S/lib/utils";
+import ProConfirmDialog from "C/components/shared/ProConfirmDialog";
+import { Badge } from "C/components/ui/badge";
+import { Button, buttonVariants } from "C/components/ui/button";
+import { Toggle } from "C/components/ui/toggle";
+import { useActivate, useTNavigation } from "C/hooks/app.hooks";
+import { cn } from "C/lib/utils";
 import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";

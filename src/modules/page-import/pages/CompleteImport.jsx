@@ -1,6 +1,6 @@
-import { Button, buttonVariants } from "S/components/ui/button";
-import { ConfettiAnimation } from "S/lib/confettiAnimation";
-import { cn } from "S/lib/utils";
+import { Button, buttonVariants } from "C/components/ui/button";
+import { ConfettiAnimation } from "C/lib/confettiAnimation";
+import { cn } from "C/lib/utils";
 import { useEffect } from "react";
 
 import CompleteBG from "../../../../public/images/complete-bg.png";

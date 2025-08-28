@@ -1,4 +1,4 @@
-import { cn } from "S/lib/utils";
+import { cn } from "C/lib/utils";
 
 export const LoadingSpinner = ({ size = 24, className, ...props }) => {
   return (

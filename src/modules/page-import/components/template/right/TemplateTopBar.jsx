@@ -1,4 +1,4 @@
-import { Input } from "S/components/ui/input";
+import { Input } from "C/components/ui/input";
 import { RiCloseLine, RiFilterLine, RiSearchLine } from "react-icons/ri";
 import {
   Select,
@@ -7,8 +7,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "S/components/ui/select";
-import { Button } from "S/components/ui/button";
+} from "C/components/ui/select";
+import { Button } from "C/components/ui/button";
 
 const TemplateTopBar = ({
   filterKey,

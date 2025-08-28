@@ -2660,7 +2660,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'keywords' => [
 						"slider inside slider",
@@ -2922,7 +2922,7 @@ $config = array(
 					),
 					'custom-fonts'     => array(
 						'label'        => 'Custom Fonts',
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'location'     => array(
 							'cTab' => 'general',
 						),
@@ -2937,7 +2937,7 @@ $config = array(
 					),
 					'custom-cpt'       => array(
 						'label'        => 'Post Type Builder',
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'location'     => array(
 							'cTab' => 'general',
 						),
@@ -2952,7 +2952,7 @@ $config = array(
 					),
 					'custom-icon'      => array(
 						'label'        => 'Custom Icon',
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'location'     => array(
 							'cTab' => 'general',
 						),

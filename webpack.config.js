@@ -39,7 +39,8 @@ module.exports = {
     extensions: [".js", ".jsx"],
     alias: {
       "@": path.resolve(__dirname, "src/modules/dashboard"),
-      S: path.resolve(__dirname, "src/modules/page-import"),
+      C: path.resolve(__dirname, "src/modules/page-import"),
+      S: path.resolve(__dirname, "src/modules/cpt-builder/"),
     },
   },
 };

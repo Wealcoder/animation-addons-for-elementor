@@ -1,8 +1,8 @@
-import TemplateHeader from "S/components/header/TemplateHeader";
-import { ScrollArea } from "S/components/ui/scroll-area";
-import { ShowContent } from "S/config/showFullContent";
-import { useTNavigation } from "S/hooks/app.hooks";
-import { hideElements } from "S/lib/utils";
+import TemplateHeader from "C/components/header/TemplateHeader";
+import { ScrollArea } from "C/components/ui/scroll-area";
+import { ShowContent } from "C/config/showFullContent";
+import { useTNavigation } from "C/hooks/app.hooks";
+import { hideElements } from "C/lib/utils";
 import { useEffect, useState, Suspense } from "react";
 
 const MainLayout = () => {

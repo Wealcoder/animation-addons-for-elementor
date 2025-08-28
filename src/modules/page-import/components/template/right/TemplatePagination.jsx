@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "S/components/ui/pagination";
+} from "C/components/ui/pagination";
 
 const TemplatePagination = () => {
   return (

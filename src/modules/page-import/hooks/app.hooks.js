@@ -1,4 +1,4 @@
-import { AppContext } from "S/context/app.context";
+import { AppContext } from "C/context/app.context";
 import { useContext } from "react";
 
 export const useTNavigation = () => {
