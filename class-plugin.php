@@ -434,6 +434,13 @@ class Plugin
 					'version' => false,
 					'arg'     => true,
 				),
+				'mailchimp-script'     => array(
+					'handler' => 'wcf--mailchimp',
+					'src'     => 'widgets/mailchimp.min.js',
+					'dep'     => array(),
+					'version' => false,
+					'arg'     => true,
+				),
 			)
 		);
 	}
@@ -758,6 +765,13 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			),
+			'mailchimp' => array(
+				'handler' => 'wcf--mailchimp',
+				'src'     => 'widgets/mailchimp.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			),
 		);
 	}
 
@@ -914,6 +928,8 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
 		include_once WCF_ADDONS_PATH . 'inc/admin/image-cache.php';
 		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
+		include_once WCF_ADDONS_PATH . 'inc/ajax-handler-mailchimp.php';
+		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
 
 		// extensions.
 		$this->register_extensions();
@@ -942,8 +958,8 @@ class Plugin
 		$active_plugins = get_option('active_plugins');
 		$dahsboard_link = admin_url('admin.php?page=wcf_addons_settings');
 ?>
-<script type="text/template" id="tmpl-wcf-templates-header">
-    <div class="dialog-header dialog-lightbox-header">
+		<script type="text/template" id="tmpl-wcf-templates-header">
+			<div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header wcf-template-library--header">
 					<div class="elementor-templates-modal__header__logo-area"></div>
 					<div class="elementor-templates-modal__header__menu-area" data-disabled="false">
@@ -970,8 +986,8 @@ class Plugin
 				</div>
 			</div>
 		</script>
-<script type="text/template" id="tmpl-wcf-templates">
-    <div class="dialog-message dialog-lightbox-message">
+		<script type="text/template" id="tmpl-wcf-templates">
+			<div class="dialog-message dialog-lightbox-message">
 				<div class="dialog-content dialog-lightbox-content">
 					<div class="elementor-template-library-templates">
 						<!--toolbar-->
@@ -1069,8 +1085,8 @@ class Plugin
 				</div>
 			</div>
 		</script>
-<script type="text/template" id="tmpl-wcf-templates-single">
-    <div class="dialog-header dialog-lightbox-header">
+		<script type="text/template" id="tmpl-wcf-templates-single">
+			<div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header">
 					<div id="wcf-template-library-header-preview-back">
 							<i class="eicon-" aria-hidden="true"></i>

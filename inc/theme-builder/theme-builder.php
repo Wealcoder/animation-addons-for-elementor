@@ -26,7 +26,6 @@ class WCF_Theme_Builder
 	/**
 	 * [instance] Initializes a singleton instance
 	 *
-	 * @return [_Admin_Init]
 	 */
 	public static function instance()
 	{
@@ -551,7 +550,7 @@ class WCF_Theme_Builder
 			),
 		);
 
-		$meta_query = array_merge($typeCondition, $extraConditions);
+		$meta_query = array_merge($typeCondition, []);
 		$query_args = array(
 			'post_type'      => self::CPTTYPE,
 			'fields'         => 'ids',
@@ -589,7 +588,7 @@ class WCF_Theme_Builder
 				$templates = array_merge($templates, $templates_specific);
 			}
 		}
-
+		// aae_print($templates);
 		wp_reset_postdata();
 		if (empty($templates)) {
 			return false;
@@ -761,6 +760,7 @@ class WCF_Theme_Builder
 			return $templates['global'];
 		}
 	}
+
 
 	/**
 	 * Get current page type
@@ -1436,12 +1436,7 @@ class WCF_Theme_Builder
 								</select>
 							</div>
 
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
-								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
-										name="aae-popup-builder-delay"
-										placeholder="{{ data.heading.fields.delay.placeholder }}">
-							</div>
+							
 
 							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
 								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
@@ -1454,6 +1449,19 @@ class WCF_Theme_Builder
 										<option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option>
 										<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
 									</select>
+							</div>
+							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
+								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
+										name="aae-popup-builder-delay"
+										placeholder="{{ data.heading.fields.delay.placeholder }}">
+							</div>
+
+							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.selector}}}</label>
+								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-selector" type="text"
+										name="aae-popup-builder-selector"
+										placeholder=".body">
 							</div>
 
 						</div>
@@ -1515,6 +1523,7 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty($_POST['specificsDisplay']) ? sanitize_text_field(wp_unslash($_POST['specificsDisplay'])) : '';
 			$popupDelay       = ! empty($_POST['tmpDelay']) ? sanitize_text_field(wp_unslash($_POST['tmpDelay'])) : 0;
 			$popuptrigger     = ! empty($_POST['tmpTrigger']) ? sanitize_text_field(wp_unslash($_POST['tmpTrigger'])) : 'pageloaded';
+			$selector     = ! empty($_POST['tmpSelector']) ? sanitize_text_field(wp_unslash($_POST['tmpSelector'])) : '';
 
 			$data = array(
 				'title'         => $title,
@@ -1524,6 +1533,7 @@ class WCF_Theme_Builder
 				'tmpSpLocation' => $specificsDisplay,
 				'tmpDelay'      => $popupDelay,
 				'tmpTrigger'    => $popuptrigger,
+				'tmpSelector'    => $selector,
 			);
 
 			if ($tmpid) {
@@ -1571,6 +1581,7 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty(get_post_meta($tmpid, self::CPT_META . '_splocation', true)) ? get_post_meta($tmpid, self::CPT_META . '_splocation', true) : '';
 			$tmpDelay         = ! empty(get_post_meta($tmpid, 'delayTime', true)) ? get_post_meta($tmpid, 'delayTime', true) : 0;
 			$popupTrigger     = ! empty(get_post_meta($tmpid, 'popup_trigger', true)) ? get_post_meta($tmpid, 'popup_trigger', true) : 'pageloaded';
+			$popup_selector     = ! empty(get_post_meta($tmpid, 'popup_selector', true)) ? get_post_meta($tmpid, 'popup_selector', true) : '';
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
@@ -1587,6 +1598,7 @@ class WCF_Theme_Builder
 				'tmpSpLocation' => $spLocations,
 				'tmpDelay'      => $tmpDelay,
 				'tmpTrigger'    => $popupTrigger,
+				'tmpSelector' => $popup_selector
 			);
 			wp_send_json_success($data);
 		} else {
@@ -1761,6 +1773,7 @@ class WCF_Theme_Builder
 			if ('popup' === $data['tmptype']) {
 				update_post_meta($new_post_id, 'delayTime', $data['tmpDelay']);
 				update_post_meta($new_post_id, 'popup_trigger', $data['tmpTrigger']);
+				update_post_meta($new_post_id, 'popup_selector', $data['tmpSelector']);
 			}
 
 			wp_send_json_success($return);
@@ -1810,6 +1823,7 @@ class WCF_Theme_Builder
 		if ('popup' === $data['tmptype']) {
 			update_post_meta($data['id'], 'delayTime', $data['tmpDelay']);
 			update_post_meta($data['id'], 'popup_trigger', $data['tmpTrigger']);
+			update_post_meta($data['id'], 'popup_selector', $data['tmpSelector']);
 		}
 
 		$return = array(
