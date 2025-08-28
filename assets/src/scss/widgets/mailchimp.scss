@@ -1,0 +1,170 @@
+.wcf--mailchimp {
+  i,
+  svg {
+    height: 1em;
+    width: 1em;
+  }
+
+  .mailchimp-response-message {
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 5px;
+
+    &.error {
+      display: block;
+      color: #842029;
+      background-color: #f8d7da;
+      border-color: #f5c2c7;
+    }
+
+    &.success {
+      display: block;
+      color: #0f5132;
+      background-color: #d1e7dd;
+      border-color: #badbcc;
+    }
+
+    &.warning {
+      display: block;
+      color: #664d03;
+      background-color: #fff3cd;
+      border-color: #ffecb5;
+    }
+  }
+
+  .wcf-mailchimp-form {
+    gap: 30px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  label {
+    display: inline-block;
+  }
+
+  .input {
+    display: flex;
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background-color: #e9ecef;
+    }
+
+    input,
+    .icon {
+      border: 1px solid #ced4da;
+      outline: none;
+      border-radius: 3px;
+      padding: 15px;
+    }
+
+    &.after {
+      .icon {
+        order: 2;
+        margin-left: -1px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+
+
+    &.before {
+      .icon {
+        margin-right: -1px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      input {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+
+  .wcf-mc-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    line-height: 1;
+    align-self: flex-end;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    background-color: #ced4da;
+    color: #000;
+    padding: 12px 15px;
+
+    &.icon-position-after {
+      i,
+      svg {
+        order: 15;
+      }
+    }
+  }
+}
+
+.aae-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row-reverse;
+
+  label {
+    text-transform: uppercase;
+  }
+
+  .input {
+    display: flex;
+    align-items: center;
+    background: black;
+    border-radius: 20px;
+    width: 80px;
+    height: 40px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .input label {
+    flex: 1;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-bottom: 0;
+  }
+
+  .input input {
+    display: none;
+  }
+
+  /* Slider for toggle effect */
+  .slider {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+
+  /* Hide unselected text */
+  .input input[value="Yes"]:checked ~ label[for="radio_field_1"],
+  .input input[value="No"]:checked ~ label[for="radio_field_0"] {
+    color: transparent;
+  }
+}
