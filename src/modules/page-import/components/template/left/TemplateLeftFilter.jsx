@@ -9,9 +9,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "S/components/ui/accordion";
-import { ScrollArea } from "S/components/ui/scroll-area";
-import { ToggleGroup, ToggleGroupItem } from "S/components/ui/toggle-group";
+} from "C/components/ui/accordion";
+import { ScrollArea } from "C/components/ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "C/components/ui/toggle-group";
 import { useEffect, useState } from "react";
 
 const TemplateLeftFilter = ({

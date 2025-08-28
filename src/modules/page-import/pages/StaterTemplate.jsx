@@ -1,15 +1,15 @@
-import TemplateLeftFilter from "S/components/template/left/TemplateLeftFilter";
-import TemplateRightContent from "S/components/template/right/TemplateRightContent";
-import { ScrollArea } from "S/components/ui/scroll-area";
+import TemplateLeftFilter from "C/components/template/left/TemplateLeftFilter";
+import TemplateRightContent from "C/components/template/right/TemplateRightContent";
+import { ScrollArea } from "C/components/ui/scroll-area";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { debounceFn } from "S/lib/utils";
+import { debounceFn } from "C/lib/utils";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "S/components/ui/sheet";
+} from "C/components/ui/sheet";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);

@@ -169,6 +169,9 @@ class Plugin
 	 */
 	public function editor_scripts()
 	{
+		wp_enqueue_script('aae-nested-sl', WCF_ADDONS_URL.'/assets/build/modules/nested-slider/editor/index.js', [
+			'nested-elements','elementor-editor', 'elementor-common', 'wp-element','jquery'
+		], time(), true);
 		wp_enqueue_script(
 			'wcf-editor',
 			plugins_url('/assets/js/editor.min.js', __FILE__),
@@ -289,6 +292,13 @@ class Plugin
 				'counter'           => array(
 					'handler' => 'wcf--counter',
 					'src'     => 'widgets/counter.min.js',
+					'dep'     => array('jquery-numerator'),
+					'version' => false,
+					'arg'     => true,
+				),
+				'nested-slider'           => array(
+					'handler' => 'aae--nested-slider',
+					'src'     => 'widgets/aae-slider-frontend.min.js',
 					'dep'     => array('jquery-numerator'),
 					'version' => false,
 					'arg'     => true,
@@ -835,8 +845,10 @@ class Plugin
 			}
 
 			if (! $data['is_pro'] && ! $data['is_extension']) {
+				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
 
-				include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+				}
 			}
 		}
 	}
@@ -930,6 +942,7 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
 		include_once WCF_ADDONS_PATH . 'inc/ajax-handler-mailchimp.php';
 		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
+		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-nested-slider.php';
 
 		// extensions.
 		$this->register_extensions();

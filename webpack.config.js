@@ -15,6 +15,11 @@ module.exports = {
     "modules/dashboard/wizardSetup": "./src/modules/dashboard/wizardSetup.js",
     "modules/dashboard/opt-out": "./src/modules/dashboard/opt-out.js",
     "modules/page-import/index": "./src/modules/page-import/main.js",
+    "modules/custom-font/main": "./src/modules/custom-font/main.js",
+    "modules/custom-icon/main": "./src/modules/custom-icon/main.js",
+    "modules/cpt-builder/main": "./src/modules/cpt-builder/main.js",
+    "modules/nested-slider/editor/index":
+      "./src/modules/nested-slider/editor/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
@@ -36,7 +41,8 @@ module.exports = {
     extensions: [".js", ".jsx"],
     alias: {
       "@": path.resolve(__dirname, "src/modules/dashboard"),
-      S: path.resolve(__dirname, "src/modules/page-import"),
+      C: path.resolve(__dirname, "src/modules/page-import"),
+      S: path.resolve(__dirname, "src/modules/cpt-builder/"),
     },
   },
 };

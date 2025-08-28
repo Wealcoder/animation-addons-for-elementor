@@ -1,4 +1,4 @@
-import { Button } from "S/components/ui/button";
+import { Button } from "C/components/ui/button";
 import CompleteBG from "../../../../public/images/complete-bg.png";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";

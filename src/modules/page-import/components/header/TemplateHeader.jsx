@@ -1,4 +1,4 @@
-import { cn } from "S/lib/utils";
+import { cn } from "C/lib/utils";
 import LargeLogo from "./LargeLogo";
 import { buttonVariants } from "../ui/button";
 

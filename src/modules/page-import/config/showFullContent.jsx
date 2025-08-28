@@ -1,11 +1,11 @@
 import { lazy } from "react";
-import MainLayout from "S/layouts/MainLayout";
-import CompleteImport from "S/pages/CompleteImport";
-import FailImport from "S/pages/FailImport";
+import MainLayout from "C/layouts/MainLayout";
+import CompleteImport from "C/pages/CompleteImport";
+import FailImport from "C/pages/FailImport";
 
-const StaterTemplate = lazy(() => import("S/pages/StaterTemplate"));
-const RequiredFeatures = lazy(() => import("S/pages/RequiredFeatures"));
-const DemoImporting = lazy(() => import("S/pages/DemoImporting"));
+const StaterTemplate = lazy(() => import("C/pages/StaterTemplate"));
+const RequiredFeatures = lazy(() => import("C/pages/RequiredFeatures"));
+const DemoImporting = lazy(() => import("C/pages/DemoImporting"));
 
 export const ShowContent = (item) => {
   switch (item.tabKey) {

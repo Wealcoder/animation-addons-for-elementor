@@ -4,7 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "S/components/ui/dialog";
+} from "C/components/ui/dialog";
 import ProDialog from "../../../../../public/images/pro-dialog.png";
 
 const ProConfirmDialog = ({ open, setOpen }) => {

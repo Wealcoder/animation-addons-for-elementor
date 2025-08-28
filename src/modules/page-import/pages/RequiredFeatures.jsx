@@ -3,11 +3,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "S/components/ui/accordion";
-import { Badge } from "S/components/ui/badge";
-import { Button } from "S/components/ui/button";
-import { Checkbox } from "S/components/ui/checkbox";
-import { useTNavigation } from "S/hooks/app.hooks";
+} from "C/components/ui/accordion";
+import { Badge } from "C/components/ui/badge";
+import { Button } from "C/components/ui/button";
+import { Checkbox } from "C/components/ui/checkbox";
+import { useTNavigation } from "C/hooks/app.hooks";
 import { useEffect, useState } from "react";
 
 const RequiredFeatures = () => {

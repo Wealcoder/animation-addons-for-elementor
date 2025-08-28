@@ -1,0 +1,157 @@
+.wcfcb2025-wrapper * {
+  all: revert-layer;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+
+.wcfci2025-style {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+
+  p {
+    padding: 0;
+    margin: 0
+  }
+}
+
+.notice{
+  display: none;
+  height: 0;
+}
+
+.post-type-wcf-custom-icons #side-sortables {
+  display: none;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropzone:hover {
+  background-color: #f3f4f6;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-icon {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  max-width: fit-content;
+  margin: 0 auto;
+}
+
+.drag-text {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.file-info {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.hidden {
+  display: none;
+}
+
+.section-title {
+  font-weight: 500;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.75rem;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.5rem;
+  padding-right: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.file-item:hover {
+  border-color: #e5e7eb;
+  padding-right: 0;
+}
+
+.file-details {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.file-icon {
+  color: white;
+}
+
+.file-info {
+  margin-left: 0.5rem;
+  flex-grow: 1;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.cancel-btn {
+  background-color: #ef4444;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-item:hover .cancel-btn {
+  display: flex;
+}
+
+.uploaded .cancel-btn {
+  background-color: #ef4444;
+}
+
+.show-icon-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  border-radius: 8px;
+
+
+}

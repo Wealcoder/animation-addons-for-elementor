@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
 
-import { cn } from "S/lib/utils";
+import { cn } from "C/lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "S/components/ui/dialog";
+} from "C/components/ui/dialog";
 import { RiSearchLine } from "react-icons/ri";
 
 const Command = React.forwardRef(({ className, ...props }, ref) => (

@@ -1,0 +1,123 @@
+.wcfcb2025-wrapper * {
+  all: revert-layer;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
+.wcf-select-content * {
+  all: revert-layer;
+  box-sizing: border-box;
+}
+
+.wcf-dialog-content * {
+  all: revert-layer;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@config '../../../tailwind.cptBuilder.config.js';
+
+@layer base {
+  :root {
+    --gray-00: 0 0% 100%;
+    --gray-50: 216 33% 97%;
+    --gray-100: 210 30% 96%;
+    --gray-200: 220 18% 90%;
+    --gray-300: 219 15% 82%;
+    --gray-400: 220 11% 64%;
+    --gray-500: 221 8% 48%;
+    --gray-600: 222 11% 36%;
+    --gray-700: 221 16% 20%;
+    --gray-800: 227 17% 16%;
+    --gray-900: 226 21% 12%;
+    --gray-950: 222 32% 8%;
+
+    /* brand  */
+    --brand-500: 11 97% 64%;
+    --brand-600: 11 92% 57%;
+  }
+}
+
+.wcfcb2024-style * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+}
+
+.wcf-dialog-content * {
+  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+}
+
+.wcfcb2024-style {
+  @apply overflow-x-hidden;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-text font-inter overflow-x-hidden;
+  }
+
+  a {
+    @apply no-underline text-text;
+  }
+
+  a:focus {
+    @apply shadow-none outline-0;
+  }
+
+  p {
+    @apply text-base;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.wcfcb2024-style {
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #e1e4ea;
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  /* ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  } */
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 50000000s ease-in-out 0s !important;
+  }
+}
+.animation-addon_page_wcf-cpt-builder .notice,
+.notice.is-dismissible {
+  display: none;
+  height: 0;
+}

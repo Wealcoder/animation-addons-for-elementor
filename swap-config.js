@@ -3,8 +3,8 @@ const path = require('path');
 
 const configName = process.argv[2];
 
-if (!configName || (configName !== 'dashboard' && configName !== 'pageImport')) {
-  console.error('Please specify either "dashboard" or "pageImport"');
+if (!configName || (configName !== 'dashboard' && configName !== 'cptBuilder' && configName !== 'pageImport')) {
+  console.error('Please specify either "dashboard" or "cptBuilder" or "pageImport"');
   process.exit(1);
 }
 

@@ -1,9 +1,9 @@
-import { LoadingSpinner } from "S/components/shared/LoadingSpinner";
-import { Progress } from "S/components/ui/progress";
+import { LoadingSpinner } from "C/components/shared/LoadingSpinner";
+import { Progress } from "C/components/ui/progress";
 import DemoImportingBG from "../../../../public/images/demo-importing-bg.png";
 import { useCallback, useEffect, useState } from "react";
-import { debounceFn } from "S/lib/utils";
-import { useTNavigation } from "S/hooks/app.hooks";
+import { debounceFn } from "C/lib/utils";
+import { useTNavigation } from "C/hooks/app.hooks";
 
 const DemoImporting = () => {
   const [currenTemplate, setCurrenTemplate] = useState(false);
