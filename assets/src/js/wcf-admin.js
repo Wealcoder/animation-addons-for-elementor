@@ -400,9 +400,7 @@
 
     };
 
-    WCFAdmin.init();
-   
-    // Post rating handler
+    WCFAdmin.init();  
    
 
 })(jQuery);
