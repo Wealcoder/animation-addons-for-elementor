@@ -556,7 +556,7 @@ class CustomCpt_Lite {
        }else if(is_numeric($id)) {
         $my_post = array(
             'ID'           => $id,
-            'post_title'   =>  wp_strip_all_tags( $title )         
+            'post_title'   =>  wp_kses_post( $title )         
         );  
         update_post_meta($id, $this->meta_key, $post_meta); 
         wp_update_post( $my_post );
@@ -585,8 +585,11 @@ class CustomCpt_Lite {
     
 
     public function aae_list() {
-      
-        $nonce = isset($_REQUEST['wcf_nonce']) ? $_REQUEST['wcf_nonce'] : null;
+        
+        // validate nonce
+
+
+        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash( $_REQUEST['wcf_nonce'] ) ) : null;
         if ( ! wp_verify_nonce( $nonce, 'wcf_admin_nonce' ) ) {
             wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
@@ -658,7 +661,7 @@ class CustomCpt_Lite {
        } else if(is_numeric($id)) {
         $my_taxonomy = array(
             'ID'           => $id,
-            'post_title'   =>  wp_strip_all_tags( $title ),           
+            'post_title'   =>  wp_kses_post( $title ),           
         );  
         update_post_meta($id, $this->tax_meta_key, $taxonomy_meta);   
         wp_update_post( $my_taxonomy );
@@ -688,7 +691,7 @@ class CustomCpt_Lite {
 
     public function aae_taxonomy_list() {
      
-        $nonce = isset($_REQUEST['wcf_nonce']) ? $_REQUEST['wcf_nonce'] : null;
+        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['wcf_nonce']) ) : null;
         if ( ! wp_verify_nonce( $nonce, 'wcf_admin_nonce' ) ) {
             wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
@@ -752,9 +755,9 @@ class CustomCpt_Lite {
      *
      * Loads necessary styles and scripts for the admin panel.
      */
-    public function admin_scripts() {
-       
-        if ( isset( $_GET['page'] ) && $_GET['page'] === 'wcf-cpt-builder' ) {
+    public function admin_scripts( $hook ) {
+  
+        if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
                 WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css'

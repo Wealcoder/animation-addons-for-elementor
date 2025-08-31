@@ -108,7 +108,7 @@ Class CustomFonts_Lite{
 			return;
 		}
 	
-		$settings = wp_unslash( $_POST['settings'] );
+		$settings = sanitize_text_field( wp_unslash( $_POST['settings'] ) );
 			
 		update_option( 'wcf_custom_font_setting', $settings );
 		wp_send_json( $settings );
@@ -494,6 +494,8 @@ Class CustomFonts_Lite{
         $mime_types['ttf'] = 'font/ttf';
 		$mime_types['otf'] = 'font/otf';
 		$mime_types['eot'] = 'application/vnd.ms-fontobject'; // Add support for .eot
+        $mime_types['zip']  = 'application/zip';
+        $mime_types['x-zip'] = 'application/x-zip-compressed';
 		return $mime_types;
 	}
 	

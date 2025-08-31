@@ -127,7 +127,7 @@ class CustomIcons_Lite
 			$checked = ($switcher_value === 'yes') ? 'checked' : ''; // Default is unchecked (0)			
 			// Switcher (checkbox) for toggle button
 			echo '<label class="aae_switch" title="' . esc_attr__('Load Icons Across the Site, if disable , icon will load depends on elementor usage', 'animation-addons-for-elementor') . '">
-					<input type="checkbox" data-post-id="' . esc_attr($post_id) . '" class="aaeaddon-global-load-switcher-toggle switcher-toggle" ' . $checked . ' />
+					<input type="checkbox" data-post-id="' . esc_attr($post_id) . '" class="aaeaddon-global-load-switcher-toggle switcher-toggle" ' . esc_html($checked) . ' />
 					<span class="aae_slider round"></span>
 				  </label>';
 		}
@@ -322,46 +322,80 @@ class CustomIcons_Lite
      *
      * @since 1.0.0
      */
-	public function upload_zip()
-	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
+	public function upload_zip() {
+		// 1) Security: nonce + capability
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'You are not allowed to do this action.', 'animation-addons-for-elementor' ) );
 		}
 
-		if (! isset($_FILES['custom_icon'])) {
-			return;
+		// 2) Validate inputs
+		if ( ! isset( $_POST['id'] ) || empty( $_POST['id'] ) ) {
+			wp_send_json_error( esc_html__( 'Missing process ID.', 'animation-addons-for-elementor' ) );
+		}
+		$this->process_id = sanitize_key( wp_unslash( $_POST['id'] ) ); // safe for dir names
+
+		if ( empty( $_FILES['custom_icon'] ) || ! isset( $_FILES['custom_icon']['error'] ) ) {
+			wp_send_json_error( esc_html__( 'No file uploaded.', 'animation-addons-for-elementor' ) );
+		}
+		if ( UPLOAD_ERR_OK !== (int) $_FILES['custom_icon']['error'] ) {
+			wp_send_json_error( esc_html__( 'Upload error.', 'animation-addons-for-elementor' ) );
 		}
 
-		if (! isset($_POST['id'])) {
-			return;
-		}
-		
-		$this->process_id = sanitize_text_field(wp_unslash($_POST['id']));		
-		$file = $_FILES['custom_icon'];
-		$upload_dir = wp_upload_dir()['basedir'] . '/aaeaddon-icons/'.$this->process_id . '/';	
-		if (!is_dir($upload_dir)) {
-			mkdir($upload_dir, 0755, true);
-		}	
-		$zip_path = $upload_dir . $file['name'];	
-		$this->file_name = $file['name'];
-		$msg = '';
-		// Move uploaded file
-		if (move_uploaded_file($file['tmp_name'], $zip_path)) {
-			$zip = new ZipArchive;
-			if ($zip->open($zip_path) === TRUE) {
-				$zip->extractTo($upload_dir);
-				$zip->close();
-				unlink($zip_path); // Clean up the zip file
-				$msg = $this->process_icon_files($upload_dir);				
-			} else {
-				wp_send_json_error(esc_html__('Failed to extract ZIP file.','animation-addons-for-elementor'));
-			}
-		}		
+		// 3) Use WP upload API with strict MIME
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		$overrides = array(
+			'test_form' => false,
+			'mimes'     => array(
+				'zip' => 'application/zip',
+				// some browsers send zip like below:
+				'x-zip' => 'application/x-zip-compressed',
+			),
+		);
 
-		wp_send_json($msg);
+		// Sanitize filename (extra safety)
+		$_FILES['custom_icon']['name'] = isset($_FILES['custom_icon']['name']) ? sanitize_file_name( wp_unslash( $_FILES['custom_icon']['name'] ) ) : 'n/a';
+
+		$uploaded = wp_handle_upload( $_FILES['custom_icon'], $overrides );
+
+		if ( ! $uploaded || isset( $uploaded['error'] ) ) {
+			wp_send_json_error( esc_html__( 'Upload failed or invalid file type (zip required).', 'animation-addons-for-elementor' ) );
+		}
+
+		$zip_file_path = $uploaded['file'];     // absolute path to uploaded zip
+		$this->file_name = wp_basename( $zip_file_path );
+
+		// 4) Prepare target directory
+		$uploads      = wp_upload_dir();
+		$target_dir   = trailingslashit( $uploads['basedir'] ) . 'aaeaddon-icons/' . $this->process_id . '/';
+
+		if ( ! wp_mkdir_p( $target_dir ) ) {
+			@wp_delete_file( $zip_file_path );
+			wp_send_json_error( esc_html__( 'Failed to create target directory.', 'animation-addons-for-elementor' ) );
+		}
+
+		// 5) Unzip safely with WP API
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php'; // includes unzip_file()
+		$unzipped = unzip_file( $zip_file_path, $target_dir );
+
+		// Always remove the uploaded zip after processing
+		@wp_delete_file( $zip_file_path );
+
+		if ( is_wp_error( $unzipped ) ) {
+			wp_send_json_error( esc_html__( 'Failed to extract ZIP file.', 'animation-addons-for-elementor' ) );
+		}
+
+		// 6) Process extracted files (your custom logic)
+		$msg = $this->process_icon_files( $target_dir ); // should return string/array
+
+		// 7) Done
+		wp_send_json_success( array(
+			'message'   => $msg ?: esc_html__( 'Icons processed successfully.', 'animation-addons-for-elementor' ),
+			'processId' => $this->process_id,
+		) );
 	}
+
 	 /**
      * Processes icon files from the uploaded zip.
      *
@@ -380,50 +414,52 @@ class CustomIcons_Lite
 		return esc_html__('Unsupported Icon File','animation-addons-for-elementor');
 	}
 	
-	public function icomoon_file_process($json_path,$upload_dir){
-		$json_data = json_decode(file_get_contents($json_path), true);
-		$icons = [];
-		$this->icon_prefix = $json_data['preferences']['fontPref']['prefix'];
-		$this->postfix = $json_data['preferences']['fontPref']['postfix'];
+	public function icomoon_file_process($json_path, $upload_dir) {
+    // Initialize WP Filesystem
+    if ( ! function_exists( 'WP_Filesystem' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+    }
+    WP_Filesystem();
+    global $wp_filesystem;
 
-		foreach ($json_data['icons'] as $icon) {
+    $json_data = json_decode(file_get_contents($json_path), true);
+    $icons = [];
+    $this->icon_prefix = $json_data['preferences']['fontPref']['prefix'];
+    $this->icon_postfix = $json_data['preferences']['fontPref']['postfix'];
 
-			if (isset($icon['properties']['name'])) {
+    foreach ($json_data['icons'] as $icon) {
+        if (isset($icon['properties']['name'])) {
+            $icon_name = explode(',', $icon['properties']['name']);
+            foreach ($icon_name as $iitem) {
+                $trimi = trim($iitem);
+                $formatted_icon = "aaeaddon-icon {$this->icon_prefix}{$trimi}{$this->icon_postfix}";
+                $icons[] = $formatted_icon;
+            }
+        }
+    }
 
-				$icon_name      = explode(',' , $icon['properties']['name'] );
-				foreach($icon_name as $iitem){
-					$trimi = trim($iitem);
-					$formatted_icon = "aaeaddon-icon {$this->icon_prefix}{$trimi}{$this->postfix}";
-					$icons[]        = $formatted_icon;
-				}				
+    $elementor_file = 'elementor-icon.js';
+    $file_path = $upload_dir . $elementor_file;
+    $output_data = json_encode(['icons' => $icons], JSON_PRETTY_PRINT);
 
-			}
-		}
+    // Write file using WP_Filesystem
+    if ($wp_filesystem->put_contents($file_path, $output_data, FS_CHMOD_FILE)) {
+        delete_post_meta($this->process_id, 'wcf_addon_custom_icons');
+    } else {
+        return esc_html__('Failed to create file.', 'animation-addons-for-elementor');
+    }
 
-		$elementor_file = 'elementor-icon.js';
-		$file_path      = $upload_dir . $elementor_file;
-		$output_data    = json_encode(['icons' => $icons], JSON_PRETTY_PRINT);
-
-		$file = fopen($file_path, 'w'); // 'w' mode createfilename: filename: s or overwrites the file
-		if ($file) {
-		    fwrite($file, $output_data);
-		    fclose($file);	
-			delete_post_meta($this->process_id, 'wcf_addon_custom_icons');	   
-		} else {
-			error_log("Failed to write to $file_path. Check file permissions.");
-		    return esc_html__('Failed to create file.','animation-addons-for-elementor');
-		}
-		update_post_meta($this->process_id, 'wcf_addon_custom_icons',[
-			'name'           => $this->file_name,
-			'folder_path'    => 'aaeaddon-icons/'.$this->process_id . '/',
-			'elementor_path' => 'aaeaddon-icons/'.$this->process_id . '/'.$elementor_file,
-			'elementor_style' => 'aaeaddon-icons/'.$this->process_id . '/style.css',
-			'icon_prefix'    => $this->icon_prefix,
-			'icon_postfix'   => $this->icon_postfix
-		]);
-		update_post_meta($this->process_id, 'wcf_addon_custom_icontype', 'icomoon');
-		return esc_html__('File has been Created Successfully.','animation-addons-for-elementor');
-	}
+    update_post_meta($this->process_id, 'wcf_addon_custom_icons', [
+        'name'            => $this->file_name,
+        'folder_path'     => 'aaeaddon-icons/' . $this->process_id . '/',
+        'elementor_path'  => 'aaeaddon-icons/' . $this->process_id . '/' . $elementor_file,
+        'elementor_style' => 'aaeaddon-icons/' . $this->process_id . '/style.css',
+        'icon_prefix'     => $this->icon_prefix,
+        'icon_postfix'    => $this->icon_postfix
+    ]);
+    update_post_meta($this->process_id, 'wcf_addon_custom_icontype', 'icomoon');
+    return esc_html__('File has been Created Successfully.', 'animation-addons-for-elementor');
+}
 
 	public function update_custom_icon_delete()
 	{
@@ -487,7 +523,7 @@ class CustomIcons_Lite
 			return;
 		}
 		$sanitize_id = sanitize_text_field(wp_unslash($_POST['id']));
-		$title = sanitize_text_field(wp_unslash($_POST['title']));
+		$title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : 'no title';
 
 		$updated_post = array(
 			'ID'         => $sanitize_id,

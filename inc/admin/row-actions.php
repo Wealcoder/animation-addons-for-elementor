@@ -54,8 +54,12 @@ class AAEAddon_Row_Actions {
      * Handle deactivation feedback submission
      */
     public function handle_deactivate_feedback() {
+        if (!isset($_POST['reason']) || !isset($_POST['other_text']) || !isset($_POST['nonce'])) {
+            wp_send_json_error('Missing parameters');
+        }
+        $nonce = sanitize_text_field(wp_unslash( $_POST['nonce'] ));
         // Verify nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'aae_deactivate_feedback_nonce')) {
+        if (!wp_verify_nonce($nonce, 'aae_deactivate_feedback_nonce')) {
             wp_send_json_error('Invalid nonce');
         }
 
@@ -64,8 +68,8 @@ class AAEAddon_Row_Actions {
             wp_send_json_error('Permission denied');
         }
 
-        $reason = sanitize_text_field($_POST['reason']);
-        $other_text = sanitize_textarea_field($_POST['other_text']);
+        $reason = sanitize_text_field(wp_unslash( $_POST['reason'] ));
+        $other_text = sanitize_textarea_field(wp_unslash( $_POST['other_text'] ));
 
         // Log the feedback
         $feedback_data = array(

@@ -536,7 +536,7 @@ class CodeSnippetFrontend {
 	private function execute_css_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<style type="text/css">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n";
+			echo wp_kses_post( $content ) . "\n";
 			echo '</style>' . "\n";
 		}
 	}
@@ -552,7 +552,7 @@ class CodeSnippetFrontend {
 	private function execute_javascript_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<script type="text/javascript">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n";
+			echo wp_kses_post( $content ) . "\n";
 			echo '</script>' . "\n";
 		}
 	}

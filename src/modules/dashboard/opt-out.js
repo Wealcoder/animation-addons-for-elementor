@@ -200,7 +200,7 @@
             try {
                 await Feedback.submit(selectedReason.value);
             } catch (error) {
-               
+                console.error('Feedback submission failed:', error);               
             } finally {
                 Modal.hide();
                 Deactivation.proceed();
@@ -236,7 +236,7 @@
             const data = await response.json();
             
             if (data.ok) {
-              
+                console.log('Feedback submitted successfully');              
             } else {
                 throw new Error('Feedback submission failed');
             }
