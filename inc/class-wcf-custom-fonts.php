@@ -101,7 +101,7 @@ Class CustomFonts_Lite{
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action','animation-addons-for-elementor-pro' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action','animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['settings'] ) ) {
@@ -180,8 +180,10 @@ Class CustomFonts_Lite{
                     
                 }
             }
-            
-            echo '<style>'.$custom_css.'</style>';
+            if ( $custom_css === '' ) {
+                return;
+            }
+            echo wp_kses('<style>'.$custom_css.'</style>');
         
         }
          
@@ -222,6 +224,10 @@ Class CustomFonts_Lite{
                 );
                 
             }
+        }
+
+        if ( $custom_css === '' ) {
+            return;
         }
        
        wp_add_inline_style( 'wcf--addons', $custom_css );
@@ -473,10 +479,9 @@ Class CustomFonts_Lite{
                 }
               }  
               
-            }         
+            }        
           
-        }
-       
+        }      
       
         return $arr;
     }
@@ -496,7 +501,7 @@ Class CustomFonts_Lite{
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor-pro' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['custom_font_global'] ) ) {
@@ -509,14 +514,14 @@ Class CustomFonts_Lite{
         $sanitize_id = sanitize_text_field( wp_unslash($_POST['id']) );
         $sanitize_data = sanitize_text_field( wp_unslash($_POST['custom_font_global']) );
         update_post_meta($sanitize_id, 'custom_font_global', $sanitize_data);
-		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor-pro' ) );
+		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor' ) );
     }
 	public function save_settings() {
 
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor-pro' ) );
+			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
 
 		if ( ! isset( $_POST['fields'] ) ) {
@@ -531,7 +536,7 @@ Class CustomFonts_Lite{
 		$sanitize_id = sanitize_text_field( wp_unslash($_POST['id']) );
 		$data = json_decode($sanitize_data, true);
 		update_post_meta($sanitize_id, 'wcf_addon_custom_fonts', $data);
-		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor-pro' ) );
+		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor' ) );
 	}
 
 	public function admin_scripts() {
@@ -568,7 +573,7 @@ Class CustomFonts_Lite{
 
 		add_meta_box(
 			'wcf_proaddon_custom_fonts_metabox',          
-			esc_html__('Custom Fonts','animation-addons-for-elementor-pro'),      
+			esc_html__('Custom Fonts','animation-addons-for-elementor'),      
 			[$this,'metabox_callback'],    
 			$this->post_type,                  
 			'normal',                   
@@ -577,7 +582,7 @@ Class CustomFonts_Lite{
 
         add_meta_box(
 			'wcf_proaddon_custom_fonts_metabox_settings',          
-			esc_html__('Settings','animation-addons-for-elementor-pro'),      
+			esc_html__('Settings','animation-addons-for-elementor'),      
 			[$this,'metabox_side_settings_callback'],    
 			$this->post_type,                  
 			'side',                   
@@ -593,35 +598,35 @@ Class CustomFonts_Lite{
 	}
 	public function register_sub_menu_post() { 
 	
-        add_submenu_page( 'wcf_addons_page' , esc_html__('Custom Fonts', 'animation-addons-for-elementor-pro') , esc_html__('Custom Fonts', 'animation-addons-for-elementor-pro') , 'manage_options' , "edit.php?post_type=$this->post_type", null );      
+        add_submenu_page( 'wcf_addons_page' , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , 'manage_options' , "edit.php?post_type=$this->post_type", null );      
     }
 	function custom_post_type(){
    
 		$labels = array(
-			'name'                  => _x( 'Fonts', 'Post type general name', 'animation-addons-for-elementor-pro' ),
-			'singular_name'         => _x( 'Font', 'Post type singular name', 'animation-addons-for-elementor-pro' ),
-			'menu_name'             => _x( 'Fonts', 'Admin Menu text', 'animation-addons-for-elementor-pro' ),
-			'name_admin_bar'        => _x( 'Font', 'Add New on Toolbar', 'animation-addons-for-elementor-pro' ),
-			'add_new'               => __( 'Add New', 'animation-addons-for-elementor-pro' ),
-			'add_new_item'          => __( 'Add New Font', 'animation-addons-for-elementor-pro' ),
-			'new_item'              => __( 'New Font', 'animation-addons-for-elementor-pro' ),
-			'edit_item'             => __( 'Edit Font', 'animation-addons-for-elementor-pro' ),
-			'view_item'             => __( 'View Font', 'animation-addons-for-elementor-pro' ),
-			'all_items'             => __( 'All Fonts', 'animation-addons-for-elementor-pro' ),
-			'search_items'          => __( 'Search Font', 'animation-addons-for-elementor-pro' ),
-			'parent_item_colon'     => __( 'Parent Fonts:', 'animation-addons-for-elementor-pro' ),
-			'not_found'             => __( 'No font found.', 'animation-addons-for-elementor-pro' ),
-			'not_found_in_trash'    => __( 'No fonts found in Trash.', 'animation-addons-for-elementor-pro' ),
-			'featured_image'        => _x( 'Font Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro' ),
-			'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro' ),
-			'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro'),
-			'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro' ),
-			'archives'              => _x( 'Font archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'animation-addons-for-elementor-pro' ),
-			'insert_into_item'      => _x( 'Insert into Font', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'uploaded_to_this_item' => _x( 'Uploaded to this Font', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'animation-addons-for-elementor-pro' ),
-			'filter_items_list'     => _x( 'Filter Fonts list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'animation-addons-for-elementor-pro' ),
-			'items_list_navigation' => _x( 'Fonts list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'animation-addons-for-elementor-pro' ),
-			'items_list'            => _x( 'Fonts list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'animation-addons-for-elementor-pro' ),
+			'name'                  => _x( 'Fonts', 'Post type general name', 'animation-addons-for-elementor' ),
+			'singular_name'         => _x( 'Font', 'Post type singular name', 'animation-addons-for-elementor' ),
+			'menu_name'             => _x( 'Fonts', 'Admin Menu text', 'animation-addons-for-elementor' ),
+			'name_admin_bar'        => _x( 'Font', 'Add New on Toolbar', 'animation-addons-for-elementor' ),
+			'add_new'               => __( 'Add New', 'animation-addons-for-elementor' ),
+			'add_new_item'          => __( 'Add New Font', 'animation-addons-for-elementor' ),
+			'new_item'              => __( 'New Font', 'animation-addons-for-elementor' ),
+			'edit_item'             => __( 'Edit Font', 'animation-addons-for-elementor' ),
+			'view_item'             => __( 'View Font', 'animation-addons-for-elementor' ),
+			'all_items'             => __( 'All Fonts', 'animation-addons-for-elementor' ),
+			'search_items'          => __( 'Search Font', 'animation-addons-for-elementor' ),
+			'parent_item_colon'     => __( 'Parent Fonts:', 'animation-addons-for-elementor' ),
+			'not_found'             => __( 'No font found.', 'animation-addons-for-elementor' ),
+			'not_found_in_trash'    => __( 'No fonts found in Trash.', 'animation-addons-for-elementor' ),
+			'featured_image'        => _x( 'Font Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor' ),
+			'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor' ),
+			'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor'),
+			'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor' ),
+			'archives'              => _x( 'Font archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'animation-addons-for-elementor' ),
+			'insert_into_item'      => _x( 'Insert into Font', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'animation-addons-for-elementor'),
+			'uploaded_to_this_item' => _x( 'Uploaded to this Font', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'animation-addons-for-elementor' ),
+			'filter_items_list'     => _x( 'Filter Fonts list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'animation-addons-for-elementor' ),
+			'items_list_navigation' => _x( 'Fonts list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'animation-addons-for-elementor' ),
+			'items_list'            => _x( 'Fonts list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'animation-addons-for-elementor' ),
 		);
         register_post_type($this->post_type,
           array(

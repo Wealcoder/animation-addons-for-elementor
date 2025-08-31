@@ -93,7 +93,7 @@ class Ajax_Handler_Mailchimp
 		ob_start();
 
 		if ('template' === $settings['popup_content_type']) {
-			echo Plugin::$instance->frontend->get_builder_content($settings['popup_elementor_templates']);
+			echo wp_kses_post( Plugin::$instance->frontend->get_builder_content($settings['popup_elementor_templates']) );
 		} else {
 
 			$content = $settings['popup_content'];
@@ -105,7 +105,7 @@ class Ajax_Handler_Mailchimp
 				$content = $GLOBALS['wp_embed']->autoembed($content);
 			}
 
-			echo $content;
+			echo wp_kses_post( $content );
 		}
 		$html = ob_get_contents();
 		ob_end_clean();

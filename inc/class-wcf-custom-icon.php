@@ -119,14 +119,14 @@ class CustomIcons_Lite
 			if ($custom_field_value) {
 				echo esc_html($custom_field_value);
 			} else {
-				echo esc_html__('Unknown', 'animation-addons-for-elementor-pro');
+				echo esc_html__('Unknown', 'animation-addons-for-elementor');
 			}
 		}
 		if ($column === 'aae_actions') {		
 			$switcher_value = get_post_meta($post_id, 'aae_gl_load', true); // Check the state from custom field			
 			$checked = ($switcher_value === 'yes') ? 'checked' : ''; // Default is unchecked (0)			
 			// Switcher (checkbox) for toggle button
-			echo '<label class="aae_switch" title="' . esc_attr__('Load Icons Across the Site, if disable , icon will load depends on elementor usage', 'animation-addons-for-elementor-pro') . '">
+			echo '<label class="aae_switch" title="' . esc_attr__('Load Icons Across the Site, if disable , icon will load depends on elementor usage', 'animation-addons-for-elementor') . '">
 					<input type="checkbox" data-post-id="' . esc_attr($post_id) . '" class="aaeaddon-global-load-switcher-toggle switcher-toggle" ' . $checked . ' />
 					<span class="aae_slider round"></span>
 				  </label>';
@@ -142,8 +142,8 @@ class CustomIcons_Lite
      */
 	function add_custom_column($columns)
 	{
-		$columns = array_slice($columns, 0, 2, true) + ['aae_actions' => esc_html__('Action', 'animation-addons-for-elementor-pro')] + array_slice($columns, 2, null, true);
-		$columns = array_slice($columns, 0, 2, true) + ['aae_icontype' => esc_html__('Type', 'animation-addons-for-elementor-pro')] + array_slice($columns, 2, null, true);
+		$columns = array_slice($columns, 0, 2, true) + ['aae_actions' => esc_html__('Action', 'animation-addons-for-elementor')] + array_slice($columns, 2, null, true);
+		$columns = array_slice($columns, 0, 2, true) + ['aae_icontype' => esc_html__('Type', 'animation-addons-for-elementor')] + array_slice($columns, 2, null, true);
 		return $columns;
 	}
 
@@ -296,7 +296,7 @@ class CustomIcons_Lite
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor-pro'));
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
 		}
 
 		if (! isset($_POST['option_name'])) {
@@ -314,7 +314,7 @@ class CustomIcons_Lite
 		$option_value = sanitize_text_field(wp_unslash($_POST['option_value']));		
 		$option_name = sanitize_text_field(wp_unslash($_POST['option_name']));	
        update_post_meta($process_id, $option_name, $option_value);
-	   wp_send_json(esc_html__('Update Settings', 'animation-addons-for-elementor-pro'));
+	   wp_send_json(esc_html__('Update Settings', 'animation-addons-for-elementor'));
 	}
 
 	/**
@@ -327,7 +327,7 @@ class CustomIcons_Lite
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor-pro'));
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
 		}
 
 		if (! isset($_FILES['custom_icon'])) {
@@ -356,7 +356,7 @@ class CustomIcons_Lite
 				unlink($zip_path); // Clean up the zip file
 				$msg = $this->process_icon_files($upload_dir);				
 			} else {
-				wp_send_json_error(esc_html__('Failed to extract ZIP file.','animation-addons-for-elementor-pro'));
+				wp_send_json_error(esc_html__('Failed to extract ZIP file.','animation-addons-for-elementor'));
 			}
 		}		
 
@@ -377,7 +377,7 @@ class CustomIcons_Lite
 		 	return $this->icomoon_file_process($icomoon_path, $upload_dir);
 		}
 		
-		return esc_html__('Unsupported Icon File','animation-addons-for-elementor-pro');
+		return esc_html__('Unsupported Icon File','animation-addons-for-elementor');
 	}
 	
 	public function icomoon_file_process($json_path,$upload_dir){
@@ -411,7 +411,7 @@ class CustomIcons_Lite
 			delete_post_meta($this->process_id, 'wcf_addon_custom_icons');	   
 		} else {
 			error_log("Failed to write to $file_path. Check file permissions.");
-		    return esc_html__('Failed to create file.','animation-addons-for-elementor-pro');
+		    return esc_html__('Failed to create file.','animation-addons-for-elementor');
 		}
 		update_post_meta($this->process_id, 'wcf_addon_custom_icons',[
 			'name'           => $this->file_name,
@@ -422,7 +422,7 @@ class CustomIcons_Lite
 			'icon_postfix'   => $this->icon_postfix
 		]);
 		update_post_meta($this->process_id, 'wcf_addon_custom_icontype', 'icomoon');
-		return esc_html__('File has been Created Successfully.','animation-addons-for-elementor-pro');
+		return esc_html__('File has been Created Successfully.','animation-addons-for-elementor');
 	}
 
 	public function update_custom_icon_delete()
@@ -430,7 +430,7 @@ class CustomIcons_Lite
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor-pro'));
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
 		}
 
 		if (! isset($_POST['id'])) {
@@ -462,12 +462,12 @@ class CustomIcons_Lite
             $deleted = $wp_filesystem->delete( $target_dir, true );
 
             if ( $deleted ) {
-                return esc_html__('Directory deleted successfully.', 'animation-addons-for-elementor-pro');
+                return esc_html__('Directory deleted successfully.', 'animation-addons-for-elementor');
             } else {
-                return esc_html__('Failed to delete the directory.', 'animation-addons-for-elementor-pro');
+                return esc_html__('Failed to delete the directory.', 'animation-addons-for-elementor');
             }
         } else {         
-			return esc_html__('Directory does not exist.', 'animation-addons-for-elementor-pro');
+			return esc_html__('Directory does not exist.', 'animation-addons-for-elementor');
         }
     }
 
@@ -476,7 +476,7 @@ class CustomIcons_Lite
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor-pro'));
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
 		}
 
 		if (! isset($_POST['custom_font_global'])) {
@@ -496,7 +496,7 @@ class CustomIcons_Lite
 
 		// Update the post in the database
 		wp_update_post($updated_post);
-		wp_send_json(esc_html__('Updated', 'animation-addons-for-elementor-pro'));
+		wp_send_json(esc_html__('Updated', 'animation-addons-for-elementor'));
 	}
 
 	public function frontend_scripts(){
@@ -564,7 +564,7 @@ class CustomIcons_Lite
 
 		add_meta_box(
 			'wcf_proaddon_custom_icons_metabox',
-			esc_html__('Settings', 'animation-addons-for-elementor-pro'),
+			esc_html__('Settings', 'animation-addons-for-elementor'),
 			[$this, 'metabox_callback'],
 			$this->post_type,
 			'normal',
@@ -573,7 +573,7 @@ class CustomIcons_Lite
 
 		add_meta_box(
 			'wcf_proaddon_custom_icons_metabox_settings',
-			esc_html__('Settings', 'animation-addons-for-elementor-pro'),
+			esc_html__('Settings', 'animation-addons-for-elementor'),
 			[$this, 'metabox_side_settings_callback'],
 			$this->post_type,
 			'side',
@@ -594,36 +594,36 @@ class CustomIcons_Lite
 	public function register_sub_menu_post()
 	{
 
-		add_submenu_page('wcf_addons_page', esc_html__('Custom Icons', 'animation-addons-for-elementor-pro'), esc_html__('Custom Icons', 'animation-addons-for-elementor-pro'), 'manage_options', "edit.php?post_type=$this->post_type", null);
+		add_submenu_page('wcf_addons_page', esc_html__('Custom Icons', 'animation-addons-for-elementor'), esc_html__('Custom Icons', 'animation-addons-for-elementor'), 'manage_options', "edit.php?post_type=$this->post_type", null);
 	}
 
 	function custom_post_type()
 	{
 		$labels = array(
-			'name'                  => _x('Custom Icons', 'Post type general name', 'animation-addons-for-elementor-pro'),
-			'singular_name'         => _x('Custom Icon', 'Post type singular name', 'animation-addons-for-elementor-pro'),
-			'menu_name'             => _x('Custom Icons', 'Admin Menu text', 'animation-addons-for-elementor-pro'),
-			'name_admin_bar'        => _x('Custom Icon', 'Add New on Toolbar', 'animation-addons-for-elementor-pro'),
-			'add_new'               => __('Add New', 'animation-addons-for-elementor-pro'),
-			'add_new_item'          => __('Add New Icon', 'animation-addons-for-elementor-pro'),
-			'new_item'              => __('New Icon', 'animation-addons-for-elementor-pro'),
-			'edit_item'             => __('Edit Icon', 'animation-addons-for-elementor-pro'),
-			'view_item'             => __('View Icon', 'animation-addons-for-elementor-pro'),
-			'all_items'             => __('All Icons', 'animation-addons-for-elementor-pro'),
-			'search_items'          => __('Search Icon', 'animation-addons-for-elementor-pro'),
-			'parent_item_colon'     => __('Parent Icons:', 'animation-addons-for-elementor-pro'),
-			'not_found'             => __('No Icon found.', 'animation-addons-for-elementor-pro'),
-			'not_found_in_trash'    => __('No Icon found in Trash.', 'animation-addons-for-elementor-pro'),
-			'featured_image'        => _x('Icon Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro'),
-			'set_featured_image'    => _x('Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro'),
-			'remove_featured_image' => _x('Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro'),
-			'use_featured_image'    => _x('Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor-pro'),
-			'archives'              => _x('Icon archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'insert_into_item'      => _x('Insert into Icon', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'uploaded_to_this_item' => _x('Uploaded to this Icon', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'filter_items_list'     => _x('Filter Icons list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'items_list_navigation' => _x('Icons list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'animation-addons-for-elementor-pro'),
-			'items_list'            => _x('Icons list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'animation-addons-for-elementor-pro'),
+			'name'                  => _x('Custom Icons', 'Post type general name', 'animation-addons-for-elementor'),
+			'singular_name'         => _x('Custom Icon', 'Post type singular name', 'animation-addons-for-elementor'),
+			'menu_name'             => _x('Custom Icons', 'Admin Menu text', 'animation-addons-for-elementor'),
+			'name_admin_bar'        => _x('Custom Icon', 'Add New on Toolbar', 'animation-addons-for-elementor'),
+			'add_new'               => __('Add New', 'animation-addons-for-elementor'),
+			'add_new_item'          => __('Add New Icon', 'animation-addons-for-elementor'),
+			'new_item'              => __('New Icon', 'animation-addons-for-elementor'),
+			'edit_item'             => __('Edit Icon', 'animation-addons-for-elementor'),
+			'view_item'             => __('View Icon', 'animation-addons-for-elementor'),
+			'all_items'             => __('All Icons', 'animation-addons-for-elementor'),
+			'search_items'          => __('Search Icon', 'animation-addons-for-elementor'),
+			'parent_item_colon'     => __('Parent Icons:', 'animation-addons-for-elementor'),
+			'not_found'             => __('No Icon found.', 'animation-addons-for-elementor'),
+			'not_found_in_trash'    => __('No Icon found in Trash.', 'animation-addons-for-elementor'),
+			'featured_image'        => _x('Icon Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor'),
+			'set_featured_image'    => _x('Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor'),
+			'remove_featured_image' => _x('Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor'),
+			'use_featured_image'    => _x('Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'animation-addons-for-elementor'),
+			'archives'              => _x('Icon archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'animation-addons-for-elementor'),
+			'insert_into_item'      => _x('Insert into Icon', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'animation-addons-for-elementor'),
+			'uploaded_to_this_item' => _x('Uploaded to this Icon', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'animation-addons-for-elementor'),
+			'filter_items_list'     => _x('Filter Icons list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'animation-addons-for-elementor'),
+			'items_list_navigation' => _x('Icons list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'animation-addons-for-elementor'),
+			'items_list'            => _x('Icons list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'animation-addons-for-elementor'),
 		);
 		register_post_type(
 			$this->post_type,

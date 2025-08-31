@@ -26,7 +26,7 @@ class Nested_Slider extends Widget_Nested_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Nested Slider', 'animation-addons-for-elementor-pro' );
+		return esc_html__( 'Nested Slider', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -80,19 +80,19 @@ class Nested_Slider extends Widget_Nested_Base {
 			[
 				'elType' => 'container',
 				'settings' => [
-					'_title' => __( 'Slide #1', 'animation-addons-for-elementor-pro' ),
+					'_title' => __( 'Slide #1', 'animation-addons-for-elementor' ),
 				],
 			],
 			[
 				'elType' => 'container',
 				'settings' => [
-					'_title' => __( 'Slide #2', 'animation-addons-for-elementor-pro' ),
+					'_title' => __( 'Slide #2', 'animation-addons-for-elementor' ),
 				],
 			],
 			[
 				'elType' => 'container',
 				'settings' => [
-					'_title' => __( 'Slide #3', 'animation-addons-for-elementor-pro' ),
+					'_title' => __( 'Slide #3', 'animation-addons-for-elementor' ),
 				],
 			],
 		];
@@ -103,7 +103,8 @@ class Nested_Slider extends Widget_Nested_Base {
 	}
 
 	protected function get_default_children_title() {
-		return esc_html__( 'Slide #%d', 'animation-addons-for-elementor-pro' );
+		/* translators: %d: Slide number. */
+		return esc_html__( 'Slide #%d', 'animation-addons-for-elementor' );
 	}
 
 	protected function get_default_children_placeholder_selector() {
@@ -123,7 +124,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->start_controls_section(
 			'section_slides',
 			[
-				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -132,10 +133,10 @@ class Nested_Slider extends Widget_Nested_Base {
 		$repeater->add_control(
 			'slide_title',
 			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Slide Title', 'animation-addons-for-elementor-pro' ),
-				'placeholder' => esc_html__( 'Slide Title', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'Slide Title', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Slide Title', 'animation-addons-for-elementor' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -146,9 +147,9 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->add_control(
 			'carousel_name',
 			[
-				'label' => esc_html__( 'Carousel Name', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Carousel Name', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Carousel', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'Carousel', 'animation-addons-for-elementor' ),
 				'render_type'        => 'none', // template
 			]
 		);
@@ -156,18 +157,18 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->add_control(
 			'carousel_items',
 			[
-				'label' => esc_html__( 'Carousel Items', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Carousel Items', 'animation-addons-for-elementor' ),
 				'type' => Control_Nested_Repeater::CONTROL_TYPE,				
 				'fields' => $repeater->get_controls(),
 				'default' => [
 					[
-						'slide_title' => esc_html__( 'Slide #1', 'animation-addons-for-elementor-pro' ),
+						'slide_title' => esc_html__( 'Slide #1', 'animation-addons-for-elementor' ),
 					],
 					[
-						'slide_title' => esc_html__( 'Slide #2', 'animation-addons-for-elementor-pro' ),
+						'slide_title' => esc_html__( 'Slide #2', 'animation-addons-for-elementor' ),
 					],
 					[
-						'slide_title' => esc_html__( 'Slide #3', 'animation-addons-for-elementor-pro' ),
+						'slide_title' => esc_html__( 'Slide #3', 'animation-addons-for-elementor' ),
 					],
 				],
 				'frontend_available' => true,
@@ -182,7 +183,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->start_controls_section(
 			'section_slides_style',
 			[
-				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -197,7 +198,7 @@ class Nested_Slider extends Widget_Nested_Base {
 				'selector' => $low_specificity_slider_container_selector,
 				'fields_options' => [
 					'color' => [
-						'label' => esc_html__( 'Background Color', 'animation-addons-for-elementor-pro' ),
+						'label' => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
 					],
 				],
 			]
@@ -210,10 +211,10 @@ class Nested_Slider extends Widget_Nested_Base {
 				'selector' => $low_specificity_slider_container_selector,
 				'fields_options' => [
 					'color' => [
-						'label' => esc_html__( 'Border Color', 'animation-addons-for-elementor-pro' ),
+						'label' => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
 					],
 					'width' => [
-						'label' => esc_html__( 'Border Width', 'animation-addons-for-elementor-pro' ),
+						'label' => esc_html__( 'Border Width', 'animation-addons-for-elementor' ),
 					],
 				],
 			]
@@ -222,7 +223,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->add_responsive_control(
 			'border_radius',
 			[
-				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors' => [
@@ -237,7 +238,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->add_responsive_control(
 			'content_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
 				'selectors'  => [
@@ -253,7 +254,7 @@ class Nested_Slider extends Widget_Nested_Base {
 				$this->start_controls_section(
 					'section_slider_options',
 					[
-						'label' => esc_html__( 'Slider Options', 'animation-addons-for-elementor-pro' ),
+						'label' => esc_html__( 'Slider Options', 'animation-addons-for-elementor' ),
 					]
 				);
 		
@@ -269,7 +270,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->start_controls_section(
 			'section_slider_navigation_style',
 			[
-				'label'     => esc_html__( 'Slider Navigation', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Slider Navigation', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'navigation' => 'yes' ],
 			]
@@ -283,7 +284,7 @@ class Nested_Slider extends Widget_Nested_Base {
 		$this->start_controls_section(
 			'section_slider_pagination_style',
 			[
-				'label'     => esc_html__( 'Slider Pagination', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Slider Pagination', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [ 'pagination' => 'yes' ],
 			]
@@ -310,7 +311,7 @@ class Nested_Slider extends Widget_Nested_Base {
 			'data-slide': slideCount,
 			'role': 'group',
 			'aria-roledescription': 'slide',
-			'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'elementor-pro' ); ?> ' + numOfSlides,
+			'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'animation-addons-for-elementor' ); ?> ' + numOfSlides,
 		};
 
 		view.addRenderAttribute( 'single-slide', slideWrapperKeyItem, null, true );
@@ -363,7 +364,7 @@ class Nested_Slider extends Widget_Nested_Base {
 								'aria-roledescription' => 'slide',
 								'aria-label' => sprintf(
 									/* translators: 1: Slide number. 2: Total amount of slides. */
-									esc_attr__( '%1$s of %2$s', 'animation-addons-for-elementor-pro' ),
+									esc_attr__( '%1$s of %2$s', 'animation-addons-for-elementor' ),
 									$slide_count,
 									count( $slides )
 								),
@@ -509,7 +510,7 @@ class Nested_Slider extends Widget_Nested_Base {
 									'data-slide': slideCount,
 									'role': 'group',
 									'aria-roledescription': 'slide',
-									'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'animation-addons-for-elementor-pro' ); ?> ' + settings['carousel_items'].length,
+									'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'animation-addons-for-elementor' ); ?> ' + settings['carousel_items'].length,
 								} );
 							#>
 								<div {{{ view.getRenderAttributeString( slideWrapperKey ) }}}></div>
