@@ -141,10 +141,7 @@ MainLayout.SecondLayout = ({ children }) => {
           <p className="text-lg font-semibold">Loading...</p>
         </div>
       ) : (
-        <div className="bg-background">
-          <TemplateHeader />
-          <div>{children}</div>
-        </div>
+        <div className="bg-background">{children}</div>
       )}
     </>
   );

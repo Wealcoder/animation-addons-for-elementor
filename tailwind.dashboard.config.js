@@ -25,6 +25,7 @@ module.exports = {
     extend: {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
+        figtree: ["Figtree", "sans-serif"],
       },
       colors: {
         brand: {
