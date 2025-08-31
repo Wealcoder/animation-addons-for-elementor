@@ -438,8 +438,7 @@ class CustomCpt_Lite {
             {
                 register_post_type( $ky, $pargs ); 
             } 
-        }catch(\Exception $e){}
-        
+        }catch(\Exception $e){}        
     }
     function setup_post_type() {
         $args = array(
@@ -584,10 +583,7 @@ class CustomCpt_Lite {
     
     
 
-    public function aae_list() {
-        
-        // validate nonce
-
+    public function aae_list() {   
 
         $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash( $_REQUEST['wcf_nonce'] ) ) : null;
         if ( ! wp_verify_nonce( $nonce, 'wcf_admin_nonce' ) ) {
@@ -620,6 +616,7 @@ class CustomCpt_Lite {
     }
 
     public function post_type_exist() {
+
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
@@ -639,10 +636,10 @@ class CustomCpt_Lite {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
-        $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
-        $taxonomy_meta= isset( $_POST['taxonomy_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_meta'] ) ) : null;
-        $title= isset( $_POST['taxonomy_title'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_title'] ) ) : null;
-        $taxonomy_meta = json_decode($taxonomy_meta, true);     
+        $id            = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
+        $taxonomy_meta = isset( $_POST['taxonomy_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_meta'] ) ) : null;
+        $title         = isset( $_POST['taxonomy_title'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_title'] ) ) : null;
+        $taxonomy_meta = json_decode($taxonomy_meta, true);
      
        if(is_null($id)) { 
         $my_taxonomy = array(
@@ -654,8 +651,8 @@ class CustomCpt_Lite {
             
         // Insert the post into the database
         $createdTaxonomy = wp_insert_post( $my_taxonomy );
-        $data = $this->latest_data($this->tax_type);
-        $data['post'] = $createdTaxonomy;
+        $data            = $this->latest_data($this->tax_type);
+        $data['post']    = $createdTaxonomy;
         wp_send_json_success( $data );
         
        } else if(is_numeric($id)) {
