@@ -376,14 +376,12 @@ class Nested_Slider extends Widget_Nested_Base {
 							<?php
 						}
 						?>
-					</div>
-					<!--navigation -->					
-					<?php $this->render_slider_navigation(); ?>
-								
-					<?php $this->render_slider_pagination(); ?>
-					
-				</div>
+					</div>	
+				</div>				
 			</div>
+				<!--navigation -->					
+			<?php $this->render_slider_navigation(); ?>								
+			<?php $this->render_slider_pagination(); ?>
 		<?php
 	}
 
@@ -516,22 +514,22 @@ class Nested_Slider extends Widget_Nested_Base {
 								<div {{{ view.getRenderAttributeString( slideWrapperKey ) }}}></div>
 							<# } ); #>
 						</div>		
-						<# if ( 'yes' === settings['navigation'] && shouldRenderPaginationAndArrows ) { #> 					
-							<?php $this->render_slider_navigation_temp('flex'); ?>
-						 <# }else{ #>	
-							<?php $this->render_slider_navigation_temp('none'); ?>
-						 <# } #>									
-						 <# if ( 'yes' === settings['pagination'] && shouldRenderPaginationAndArrows ) { #> 
-							<div class="ts-pagination">
-								<div class="swiper-pagination"></div>
-							</div>
-						 <# }else{ #>	
-							<div class="ts-pagination" style="display:none;">
-								<div class="swiper-pagination"></div>
-							</div>		
-						 <# } #>			
 					</div>					
-				</div>			
+				</div>	
+				<# if ( 'yes' === settings['navigation'] && shouldRenderPaginationAndArrows ) { #> 					
+				<?php $this->render_slider_navigation_temp('flex'); ?>
+				<# }else{ #>	
+				<?php $this->render_slider_navigation_temp('none'); ?>
+				<# } #>									
+				<# if ( 'yes' === settings['pagination'] && shouldRenderPaginationAndArrows ) { #> 
+				<div class="ts-pagination">
+					<div class="swiper-pagination"></div>
+				</div>
+				<# }else{ #>	
+				<div class="ts-pagination" style="display:none;">
+					<div class="swiper-pagination"></div>
+				</div>		
+				<# } #>		
 			
 			<# } #>
 		<?php

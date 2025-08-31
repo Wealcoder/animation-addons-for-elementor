@@ -72,21 +72,26 @@ button {
   gap: 10px;
 }
 
+.elementor-widget-n-carousel,
 .wcf__slider-wrapper {
   position: relative;
 }
+.elementor-widget-n-carousel .wcf__slider,
 .wcf__slider-wrapper .wcf__slider {
   text-align: center;
   margin: 0 auto;
   --slides-to-show: 1;
   --space-between: 20px;
 }
+.elementor-widget-n-carousel .wcf__slider:not(.swiper-initialized) .swiper-wrapper,
 .wcf__slider-wrapper .wcf__slider:not(.swiper-initialized) .swiper-wrapper {
   gap: var(--space-between);
 }
+.elementor-widget-n-carousel .wcf__slider:not(.swiper-initialized) .swiper-slide,
 .wcf__slider-wrapper .wcf__slider:not(.swiper-initialized) .swiper-slide {
   width: calc(100% / var(--slides-to-show) - var(--space-between) * (var(--slides-to-show) - 1) / var(--slides-to-show));
 }
+.elementor-widget-n-carousel .ts-navigation,
 .wcf__slider-wrapper .ts-navigation {
   gap: 10px;
   display: flex;
@@ -96,6 +101,7 @@ button {
   z-index: 1;
   position: relative;
 }
+.elementor-widget-n-carousel .wcf-arrow,
 .wcf__slider-wrapper .wcf-arrow {
   font-size: 20px;
   padding: 10px;
@@ -111,10 +117,12 @@ button {
   transition: all 0.3s;
   cursor: pointer;
 }
+.elementor-widget-n-carousel .wcf-arrow svg,
 .wcf__slider-wrapper .wcf-arrow svg {
   width: 1em;
   height: 1em;
 }
+.elementor-widget-n-carousel .mid-line,
 .wcf__slider-wrapper .mid-line {
   width: 100px;
   display: inline-block;
@@ -124,6 +132,7 @@ button {
   margin-right: 10px;
   margin-left: 10px;
 }
+.elementor-widget-n-carousel .swiper-pagination,
 .wcf__slider-wrapper .swiper-pagination {
   gap: 5px;
   display: inline-flex;
