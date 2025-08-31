@@ -939,7 +939,7 @@ class Advance_Accordion extends Widget_Base
 				foreach ($settings['tabs'] as $index => $item) {
 					$json['mainEntity'][] = [
 						'@type'          => 'Question',
-						'name'           => wp_strip_all_tags($item['tab_title']),
+						'name'           => wp_kses_post($item['tab_title']),
 						'acceptedAnswer' => [
 							'@type' => 'Answer',
 							'text'  => $this->parse_text_editor($item['tab_content']),

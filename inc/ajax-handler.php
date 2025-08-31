@@ -26,6 +26,18 @@ class Ajax_Handler {
 	}
 
 	public static function handle_live_search() {
+		// Check if nonce is set
+		if ( ! isset( $_POST['nonce'] ) || empty( $_POST['nonce'] ) ) {
+			wp_send_json_error( 'Missing nonce' );
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
+
+		// Verify nonce
+		if ( ! wp_verify_nonce( $nonce, 'wcf-addons-frontend' ) ) {
+			exit( 'No naughty business please' );
+		}
+
 		$keyword    = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
 		$from_date  = isset( $_POST['from_date'] ) ? sanitize_text_field( wp_unslash( $_POST['from_date'] ) ) : '';
 		$to_date    = isset( $_POST['to_date'] ) ? sanitize_text_field( wp_unslash( $_POST['to_date'] ) ) : '';
@@ -61,12 +73,15 @@ class Ajax_Handler {
 
 				$title = get_the_title();
 				$thumb = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+			
 				$date  = get_the_date();
 				?>
                 <div class="search-item">
-                    <div class="thumb">
+					<?php if ( $thumb !='' ) { ?>
+                    <div class="thumb AAE-no-image">
                         <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_html( $title ); ?>">
                     </div>
+					<?php } ?>
                     <div class="content">
                         <a class="title" href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( $title ); ?></a>
                         <div class="date"><?php echo esc_html( $date ); ?></div>
@@ -87,11 +102,18 @@ class Ajax_Handler {
 	 */
 	public static function mailchimp_lists() {
 	
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-editor' ) ) {
-			exit( 'No naughty business please' );
+		if ( ! isset( $_REQUEST['nonce'] ) || empty( $_REQUEST['nonce'] ) ) {
+			wp_send_json_error( 'Missing nonce' );
 		}
 
-		$api = ! empty( $_REQUEST['api'] ) ? $_REQUEST['api'] : '';			
+		// Verify nonce
+
+		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
+
+		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-editor' ) ) {
+			exit( 'No naughty business please' );
+		}	
+		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $api ) ) : '';		
 		update_option('aae_mailchimp_api', $api);
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
@@ -99,13 +121,18 @@ class Ajax_Handler {
 	}
 	
 	public static function wcf_mailchimp_list_fields() {
-	
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-editor' ) ) {
-			exit( 'No naughty business please' );
+		
+		if ( ! isset( $_REQUEST['nonce'] ) || empty( $_REQUEST['nonce'] ) ) {
+			wp_send_json_error( 'Missing nonce' );
 		}
+		// Verify nonce
+		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		$api = ! empty( $_REQUEST['api'] ) ? $_REQUEST['api'] : '';	
-		$list_id = ! empty( $_REQUEST['list_id'] ) ? $_REQUEST['list_id'] : '';	
+		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-editor' ) ) {
+			exit( 'No naughty business please' );
+		}		
+		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $api ) ) : '';		
+		$list_id = ! empty( $_REQUEST['list_id'] ) ? sanitize_text_field( wp_unslash($_REQUEST['list_id']) ) : '';	
 
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
 
@@ -116,11 +143,18 @@ class Ajax_Handler {
 	 * Mailchimp subscriber handler Ajax call
 	 */
 	public static function mailchimp_prepare_ajax() {
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-frontend' ) ) {
+
+		if ( ! isset( $_REQUEST['nonce'] ) || empty( $_REQUEST['nonce'] ) ) {
+			wp_send_json_error( 'Missing nonce' );
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
+
+		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
 			exit( 'No naughty business please' );
 		}
 
-		parse_str( isset( $_POST['subscriber_info'] ) ? $_POST['subscriber_info'] : '', $subscriber );
+		parse_str( isset( $_POST['subscriber_info'] ) ? sanitize_text_field( wp_unslash($_POST['subscriber_info']) ) : '', $subscriber );
 	
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
 

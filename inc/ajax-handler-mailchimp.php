@@ -34,11 +34,17 @@ class Ajax_Handler_Mailchimp
 	public static function mailchimp_lists()
 	{
 
-		if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-editor')) {
+		if(isset($_REQUEST['nonce']) && !empty($_REQUEST['nonce']) ) {
+			$nonce = sanitize_text_field(wp_unslash( $_REQUEST['nonce'] ));
+		} else {
+			wp_send_json_error('Missing nonce');
+		}
+
+		if (! wp_verify_nonce($nonce, 'wcf-addons-editor')) {
 			exit('No naughty business please');
 		}
 
-		$api = ! empty($_REQUEST['api']) ? $_REQUEST['api'] : '';
+		$api = ! empty($_REQUEST['api']) ? sanitize_text_field( wp_unslash($_REQUEST['api']) ) : '';
 		update_option('aae_mailchimp_api', $api);
 		$response = Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists($api);
 
@@ -48,12 +54,18 @@ class Ajax_Handler_Mailchimp
 	public static function wcf_mailchimp_list_fields()
 	{
 
-		if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-editor')) {
+		 if(isset($_REQUEST['nonce']) && !empty($_REQUEST['nonce']) ) {
+			$nonce = sanitize_text_field(wp_unslash( $_REQUEST['nonce'] ));
+		} else {
+			wp_send_json_error('Missing nonce');
+		}
+
+		if (! wp_verify_nonce($nonce, 'wcf-addons-editor')) {
 			exit('No naughty business please');
 		}
 
-		$api = ! empty($_REQUEST['api']) ? $_REQUEST['api'] : '';
-		$list_id = ! empty($_REQUEST['list_id']) ? $_REQUEST['list_id'] : '';
+		$api = ! empty($_REQUEST['api']) ? sanitize_text_field( wp_unslash($_REQUEST['api']) ) : '';
+		$list_id = ! empty($_REQUEST['list_id']) ? sanitize_text_field( wp_unslash( $_REQUEST['list_id'] ) ) : '';
 
 		$response = Widgets\Mailchimp\Mailchimp_Api::get_form_fields($api, $list_id);
 
@@ -65,11 +77,17 @@ class Ajax_Handler_Mailchimp
 	 */
 	public static function mailchimp_prepare_ajax()
 	{
-		if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
-			exit('No naughty business please');
+		if(isset($_REQUEST['nonce']) && !empty($_REQUEST['nonce']) ) {
+			$nonce = sanitize_text_field(wp_unslash( $_REQUEST['nonce'] ));
+		} else {
+			wp_send_json_error('Missing nonce');
 		}
 
-		parse_str(isset($_POST['subscriber_info']) ? $_POST['subscriber_info'] : '', $subscriber);
+		if (! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
+			exit('No naughty business please');
+		}
+		$subscriber_info = isset( $_POST['subscriber_info'] ) ?  sanitize_text_field( wp_unslash( $_POST['subscriber_info'] ) ) : '';
+		parse_str($subscriber_info, $subscriber);
 
 		$response = Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp($subscriber);
 
@@ -81,19 +99,23 @@ class Ajax_Handler_Mailchimp
 	 */
 	public static function wcf__popup_content()
 	{
+		if(isset($_REQUEST['nonce']) && !empty($_REQUEST['nonce']) ) {
+			$nonce = sanitize_text_field(wp_unslash( $_REQUEST['nonce'] ));
+		} else {
+			wp_send_json_error('Missing nonce');
+		}	
 
-		if (! wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
+		if (! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
 			exit('No naughty business please');
 		}
 
-		$post_id    = $_REQUEST["post_id"];
-		$element_id = $_REQUEST["element_id"];
+		$post_id    = isset( $_REQUEST['post_id'] ) ? absint( sanitize_text_field( wp_unslash( $_REQUEST['post_id'] ) ) ) : 0;
+		$element_id = isset( $_REQUEST['element_id'] ) ? absint( sanitize_text_field( wp_unslash( $_REQUEST['element_id'] ) ) ) : 0;
 		$settings   = wcf_addons_get_widget_settings($post_id, $element_id);
-
 		ob_start();
 
 		if ('template' === $settings['popup_content_type']) {
-			echo Plugin::$instance->frontend->get_builder_content($settings['popup_elementor_templates']);
+			echo wp_kses_post( Plugin::$instance->frontend->get_builder_content($settings['popup_elementor_templates']) );
 		} else {
 
 			$content = $settings['popup_content'];
@@ -105,7 +127,7 @@ class Ajax_Handler_Mailchimp
 				$content = $GLOBALS['wp_embed']->autoembed($content);
 			}
 
-			echo $content;
+			echo wp_kses_post( $content );
 		}
 		$html = ob_get_contents();
 		ob_end_clean();

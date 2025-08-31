@@ -16,18 +16,21 @@ final class AAE_Admin_Buttons
 
     public function __construct()
     {
+    
         add_action('admin_enqueue_scripts', [$this, 'enqueue']);
         add_action('admin_enqueue_scripts', [$this, 'importer_assets']);
 
         add_action('admin_menu', array($this, 'add_menu'), 25);
+      
         add_action('admin_print_scripts', [$this, 'clear_notices_for_importer']);
         add_filter('admin_body_class', array($this, 'admin_classes'), 100);
+
     }
     public function clear_notices_for_importer()
     {
         $screen = get_current_screen();
 
-        if ($screen && $screen->id === 'admin_page_aae-page-importer') {
+        if ($screen && ($screen->id === 'admin_page_aae-page-importer' || $screen->id === 'animation-addon_page_aae-page-importer')) {
             remove_all_actions('admin_notices');
             remove_all_actions('all_admin_notices');
         }
@@ -44,7 +47,7 @@ final class AAE_Admin_Buttons
         }
 
         // Check if we are on the correct page
-        if ($screen && $screen->id === 'admin_page_aae-page-importer') {
+        if ($screen && ($screen->id === 'admin_page_aae-page-importer' || $screen->id === 'animation-addon_page_aae-page-importer')) {
             $classes .= ' wcf-anim2024';
         }
 
@@ -60,7 +63,7 @@ final class AAE_Admin_Buttons
             return;
         }
         add_submenu_page(
-            '',                   // 👈 null keeps it hidden from UI
+            'wcf_addons_page',                 // 👈 null keeps it hidden from UI
             'Page Import',          // Page title
             'Page Import',          // Menu title (ignored since it's hidden)
             'manage_options',       // Capability
@@ -93,10 +96,10 @@ final class AAE_Admin_Buttons
         if ($screen->post_type === 'page') {
             $should_load = true;
         }
-
+       
         // 2) Single edit screen: post.php with post_type=page (optionally only a certain post ID)
-        if ($hook_suffix === 'post.php' && $screen->post_type === 'page') {
-            $post_id = isset($_GET['post']) ? absint($_GET['post']) : 0;
+        if ($hook_suffix === 'edit.php' && $screen->post_type === 'page') {         
+          
             $should_load = true;
         }
 
@@ -125,8 +128,8 @@ final class AAE_Admin_Buttons
 
     public function importer_assets($hook)
     {
-
-        if ($hook == 'admin_page_aae-page-importer') {
+      
+        if ($hook == 'admin_page_aae-page-importer' || $hook == 'animation-addon_page_aae-page-importer') {
             // CSS
             wp_enqueue_style(
                 'aae-page-importer-admin', // Handle for the stylesheet

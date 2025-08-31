@@ -381,6 +381,7 @@ class OneClickImport
 
 		// Get info of import data files and filter it.
 		$this->import_files = array();
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		$attachment_status =  array_key_exists('attachment', $_POST) ? sanitize_text_field(wp_unslash($_POST['attachment'])) : true; // Remove slashes if added by WP	
 		// Importer options array.
 		$importer_options = array(

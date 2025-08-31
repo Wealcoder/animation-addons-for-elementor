@@ -18,7 +18,14 @@ class Mailchimp_Api {
 	 */
 	public static function insert_subscriber_to_mailchimp( $submitted_data ) {
 
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wcf-addons-frontend' ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || empty( $_REQUEST['nonce'] ) ) {
+			wp_send_json_error( 'Missing nonce' );
+		}
+
+		// Verify nonce
+		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
+
+		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
 			exit( 'No naughty business please' );
 		}
 
@@ -26,17 +33,19 @@ class Mailchimp_Api {
 
 		$api = '';
 		if ( isset( $_POST['key'] ) ) {
-			$api = str_replace( 'w1c2f', '', base64_decode( $_POST['key'] ) );
+			$ke = sanitize_text_field( wp_unslash( $_POST['key'] ) );
+			$api = str_replace( 'w1c2f', '', base64_decode( $ke ) );
 		}
 
 		$tags = '';
 		if ( isset( $_POST['listTags'] ) && ! empty( $_POST['listTags'] ) ) {
-			$tags = explode( ', ', $_POST['listTags'] );
+			$lst = sanitize_text_field( wp_unslash($_POST['listTags']) );	
+			$tags = explode( ', ', $lst );
 		}
 
 		$auth = [
 			'api_key' => $api,
-			'list_id' => $_POST['listId'],
+			'list_id' => isset($_POST['listId']) ? sanitize_text_field( wp_unslash($_POST['listId']) ) : '',
 		];
 
 		$data = [

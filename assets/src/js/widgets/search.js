@@ -206,7 +206,8 @@
 
             const data = {
                 action: 'live_search',
-                keyword: keyword
+                keyword: keyword,
+                nonce: WCF_ADDONS_JS._wpnonce
             };
 
             if (fromDate && toDate) {
@@ -225,7 +226,7 @@
                 type: 'POST',
                 data: data,
                 success: function (response) {
-                    console.log(response)
+                    
                     if ($searchWrapper.length) {
                         $searchWrapper.addClass('ajax-fs-wrap');
                     }

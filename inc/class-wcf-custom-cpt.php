@@ -158,7 +158,7 @@ class CustomCpt_Lite {
                     $this->plabels['name'] = esc_html($item['post_title']);
                     $this->plabels['all_items'] = sprintf(
                         '%s %s',
-                        esc_html__('All', 'animation-addons-for-elementor-pro'),
+                        esc_html__('All', 'animation-addons-for-elementor'),
                         esc_html($meta['singular_name'])
                     );
                    
@@ -311,7 +311,7 @@ class CustomCpt_Lite {
                      $this->plabels['name'] = esc_html($item['post_title']);
                      $this->plabels['all_items'] = sprintf(
                          '%s %s',
-                         esc_html__('All', 'animation-addons-for-elementor-pro'),
+                         esc_html__('All', 'animation-addons-for-elementor'),
                          esc_html($meta['singular_name'])
                      );
                     
@@ -438,13 +438,12 @@ class CustomCpt_Lite {
             {
                 register_post_type( $ky, $pargs ); 
             } 
-        }catch(\Exception $e){}
-        
+        }catch(\Exception $e){}        
     }
     function setup_post_type() {
         $args = array(
             'public'    => false,
-            'label'     => __( 'Post type', 'animation-addons-for-elementor-pro' ),
+            'label'     => __( 'Post type', 'animation-addons-for-elementor' ),
             'menu_icon' => 'dashicons-admin-site-alt2',
         );
         register_post_type( $this->post_type, $args );
@@ -458,8 +457,8 @@ class CustomCpt_Lite {
     public function register_sub_menu() {
         add_submenu_page(
             'wcf_addons_page',
-            esc_html__( 'CPT Builder', 'animation-addons-for-elementor-pro' ),
-            esc_html__( 'CPT Builder', 'animation-addons-for-elementor-pro' ),
+            esc_html__( 'CPT Builder', 'animation-addons-for-elementor' ),
+            esc_html__( 'CPT Builder', 'animation-addons-for-elementor' ),
             'manage_options',
             'wcf-cpt-builder',
             [ $this, 'cpt_callback' ]
@@ -486,18 +485,18 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $id = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : null;
         $custom_font_global = isset( $_POST['wcfcustom_cpt_global'] ) ? sanitize_text_field( wp_unslash( $_POST['wcfcustom_cpt_global'] ) ) : null;
 
         if ( empty( $id ) || empty( $custom_font_global ) ) {
-            wp_send_json_error( esc_html__( 'Invalid data provided.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'Invalid data provided.', 'animation-addons-for-elementor' ) );
         }
 
         update_post_meta( $id, 'wcfcustom_cpt_global', $custom_font_global );
-        wp_send_json_success( esc_html__( 'Settings updated successfully.', 'animation-addons-for-elementor-pro' ) );
+        wp_send_json_success( esc_html__( 'Settings updated successfully.', 'animation-addons-for-elementor' ) );
     }
 
     public function latest_data($post_type) {
@@ -529,7 +528,7 @@ class CustomCpt_Lite {
 
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         delete_option($this->cache_key);       
@@ -556,7 +555,7 @@ class CustomCpt_Lite {
        }else if(is_numeric($id)) {
         $my_post = array(
             'ID'           => $id,
-            'post_title'   =>  wp_strip_all_tags( $title )         
+            'post_title'   =>  wp_kses_post( $title )         
         );  
         update_post_meta($id, $this->meta_key, $post_meta); 
         wp_update_post( $my_post );
@@ -569,7 +568,7 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
         delete_option($this->cache_key);
         $id = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
@@ -584,15 +583,15 @@ class CustomCpt_Lite {
     
     
 
-    public function aae_list() {
-      
-        $nonce = isset($_REQUEST['wcf_nonce']) ? $_REQUEST['wcf_nonce'] : null;
+    public function aae_list() {   
+
+        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash( $_REQUEST['wcf_nonce'] ) ) : null;
         if ( ! wp_verify_nonce( $nonce, 'wcf_admin_nonce' ) ) {
-            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
         delete_option($this->cache_key);
         delete_option($this->cache_tax_key);
@@ -603,7 +602,7 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $id = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
@@ -617,10 +616,11 @@ class CustomCpt_Lite {
     }
 
     public function post_type_exist() {
+
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) : null;
@@ -633,13 +633,13 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
-        $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
-        $taxonomy_meta= isset( $_POST['taxonomy_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_meta'] ) ) : null;
-        $title= isset( $_POST['taxonomy_title'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_title'] ) ) : null;
-        $taxonomy_meta = json_decode($taxonomy_meta, true);     
+        $id            = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
+        $taxonomy_meta = isset( $_POST['taxonomy_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_meta'] ) ) : null;
+        $title         = isset( $_POST['taxonomy_title'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_title'] ) ) : null;
+        $taxonomy_meta = json_decode($taxonomy_meta, true);
      
        if(is_null($id)) { 
         $my_taxonomy = array(
@@ -651,14 +651,14 @@ class CustomCpt_Lite {
             
         // Insert the post into the database
         $createdTaxonomy = wp_insert_post( $my_taxonomy );
-        $data = $this->latest_data($this->tax_type);
-        $data['post'] = $createdTaxonomy;
+        $data            = $this->latest_data($this->tax_type);
+        $data['post']    = $createdTaxonomy;
         wp_send_json_success( $data );
         
        } else if(is_numeric($id)) {
         $my_taxonomy = array(
             'ID'           => $id,
-            'post_title'   =>  wp_strip_all_tags( $title ),           
+            'post_title'   =>  wp_kses_post( $title ),           
         );  
         update_post_meta($id, $this->tax_meta_key, $taxonomy_meta);   
         wp_update_post( $my_taxonomy );
@@ -673,7 +673,7 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
@@ -688,13 +688,13 @@ class CustomCpt_Lite {
 
     public function aae_taxonomy_list() {
      
-        $nonce = isset($_REQUEST['wcf_nonce']) ? $_REQUEST['wcf_nonce'] : null;
+        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['wcf_nonce']) ) : null;
         if ( ! wp_verify_nonce( $nonce, 'wcf_admin_nonce' ) ) {
-            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
         delete_option($this->cache_key);
         wp_send_json_success( $this->latest_data($this->tax_type) );
@@ -704,7 +704,7 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
@@ -729,7 +729,7 @@ class CustomCpt_Lite {
                 strpos( $post_type, 'wcf-' ) !== 0 &&
                 strpos( $post_type, 'templately' ) !== 0 &&
                 strpos( $post_type, 'acf-' ) !== 0 &&
-                strpos( $post_type, 'animation-addons-for-elementor-pro' ) !== 0;
+                strpos( $post_type, 'animation-addons-for-elementor' ) !== 0;
         });
        return $post_types;
     }
@@ -738,7 +738,7 @@ class CustomCpt_Lite {
         check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor-pro' ) );
+            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
         $post_type = isset( $_POST['taxonomy_key'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_key'] ) ) : null;
@@ -752,9 +752,9 @@ class CustomCpt_Lite {
      *
      * Loads necessary styles and scripts for the admin panel.
      */
-    public function admin_scripts() {
-       
-        if ( isset( $_GET['page'] ) && $_GET['page'] === 'wcf-cpt-builder' ) {
+    public function admin_scripts( $hook ) {
+  
+        if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
                 WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css'
