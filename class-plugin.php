@@ -1235,6 +1235,28 @@ class Plugin
 		return $templates_data;
 	}
 
+	public static function admin_scripts($hook)
+	{
+		if($hook === 'plugins.php' ){
+			wp_enqueue_script(
+				'aae-admin-scripts',
+				WCF_ADDONS_URL . 'assets/js/wcf-admin.js',
+				array(),
+				WCF_ADDONS_VERSION,
+				true
+			);
+
+			wp_enqueue_style(
+				'aae-plugins-styles',
+				WCF_ADDONS_URL . 'assets/css/plugins.css',
+				array(),
+				WCF_ADDONS_VERSION,
+				'all'
+			);
+		}
+	}
+
+
 	/**
 	 *  Plugin class constructor
 	 *
@@ -1249,8 +1271,9 @@ class Plugin
 		add_action('elementor/elements/categories_registered', array($this, 'widget_categories'));
 
 		// Register widget scripts
-		add_action('wp_enqueue_scripts', array($this, 'widget_scripts'), 29);
-
+		add_action('wp_enqueue_scripts', array($this, 'widget_scripts'), 29);	
+		// admin footer
+	
 		// Register widget style
 		add_action('wp_enqueue_scripts', array($this, 'widget_styles'));
 

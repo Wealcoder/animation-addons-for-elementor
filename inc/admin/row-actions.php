@@ -32,12 +32,74 @@ class AAEAddon_Row_Actions {
 		add_filter( 'plugin_action_links', [ $this , 'add_plugin_link' ] , 10, 2 );		
         add_filter( 'plugin_row_meta', [ $this, '_plugin_row_meta' ], 10, 2 ); 
         add_action( 'admin_enqueue_scripts', [ $this , '_enqueue_admin_scripts' ] );    	
+        add_action( 'wp_ajax_aae_deactivate_feedback', [ $this, 'handle_deactivate_feedback' ] );
     }
-
+    
     function _enqueue_admin_scripts($hook) {        
         if ($hook === 'plugins.php') {
-            wp_enqueue_script('aaeaddon-plugin-deactivate', WCF_ADDONS_URL . 'assets/build/modules/dashboard/optout.js', [], null, true);
+            wp_enqueue_script('aaeaddon-plugin-deactivate', WCF_ADDONS_URL . 'assets/build/modules/dashboard/opt-out.js', [], time(), true);
+            wp_enqueue_script('wcf-admin', WCF_ADDONS_URL . 'assets/js/wcf-admin.js', ['jquery'], null, true);
+            wp_localize_script('aaeaddon-plugin-deactivate', 'aae_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('aae_deactivate_feedback_nonce'),
+                'logo_url' => WCF_ADDONS_URL . 'assets/images/aae-logo.png'
+            ));          
+            wp_enqueue_style('aae-plugins-styles', WCF_ADDONS_URL . 'assets/css/plugins.css', [], time(), 'all');
         }
+    }
+
+   
+
+    /**
+     * Handle deactivation feedback submission
+     */
+    public function handle_deactivate_feedback() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'aae_deactivate_feedback_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Check user permissions
+        if (!current_user_can('activate_plugins')) {
+            wp_send_json_error('Permission denied');
+        }
+
+        $reason = sanitize_text_field($_POST['reason']);
+        $other_text = sanitize_textarea_field($_POST['other_text']);
+
+        // Log the feedback
+        $feedback_data = array(
+            'reason' => $reason,
+            'other_text' => $other_text,
+            'user_id' => get_current_user_id(),
+            'site_url' => get_site_url(),
+            'timestamp' => current_time('mysql'),
+            'plugin_version' => WCF_ADDONS_VERSION
+        );
+
+        // Store feedback in options
+        $existing_feedback = get_option('aae_deactivation_feedback', array());
+        $existing_feedback[] = $feedback_data;
+        update_option('aae_deactivation_feedback', $existing_feedback);
+
+        // Send feedback to external service (optional)
+        $this->send_feedback_to_server($feedback_data);
+
+        wp_send_json_success('Feedback submitted successfully');
+    }
+
+    /**
+     * Send feedback to external server
+     */
+    private function send_feedback_to_server($feedback_data) {
+        $api_url = 'https://data.animation-addons.com/wp-json/wmd/v1/feedback/deactivation';
+        
+        wp_remote_post($api_url, array(
+            'timeout' => 5,
+            'blocking' => false,
+            'headers' => array('Content-Type' => 'application/json'),
+            'body' => json_encode($feedback_data)
+        ));
     }
 
     function _plugin_row_meta( $meta, $plugin_file ) {

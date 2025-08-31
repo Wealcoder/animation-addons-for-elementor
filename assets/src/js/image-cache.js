@@ -8,7 +8,7 @@
  * - Uses a Web Worker (Blob) to fetch & parse API responses off the main thread
  */
 
-(() => {
+ document.addEventListener('DOMContentLoaded', () => {
   const CFG = Object.assign(
     {
       idleMs: 6000,
@@ -437,4 +437,6 @@
     running = false;
     kickoff();
   };
-})();
+  window.AAE_forcePreload();
+});
+
