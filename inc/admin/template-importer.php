@@ -286,7 +286,9 @@ class AAEAddon_Importer {
 
 	public function install_options( $settings ) {
 		global $wpdb;
-	
+		// clean cache
+		delete_option('aae_cpts_032153');
+		delete_option('aae_taxs_933153');
 		foreach ( $settings as $item ) {
 			$response = wp_remote_get( $item['xml_file'] );
 	

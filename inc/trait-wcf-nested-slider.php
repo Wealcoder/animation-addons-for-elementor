@@ -55,7 +55,7 @@ trait AAE_Nested_Slider_Trait {
 		// 		'type' => \Elementor\Controls_Manager::BUTTON,
 		// 		'separator' => 'before',
 		// 		'button_type' => 'warning',
-		// 		'text' => esc_html__( 'Save Change', 'animation-addons-for-elementor-pro' ),	
+		// 		'text' => esc_html__( 'Save Change', 'animation-addons-for-elementor' ),	
 		// 		'event' => 'aae_nsslider:editor:savechnage',			
 		// 	]
 		// );		
@@ -63,12 +63,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'slides_to_show',
 			[
-				'label'       => esc_html__( 'Slides to Show', 'animation-addons-for-elementor-pro' ),
+				'label'       => esc_html__( 'Slides to Show', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => $default['slides_to_show'],
 				'required'    => true,
 				'options'     => [
-					                 'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor-pro' ),
+					                 'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
 				                 ] + $slides_to_show,
 				'render_type'        => 'none', // template
 				'frontend_available' => true,
@@ -81,13 +81,13 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'autoplay',
 			[
-				'label'   => esc_html__( 'Autoplay', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Autoplay', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'frontend_available' => true,
 				'default' => $default['autoplay'],
 				'options' => [
-					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor-pro' ),
-					'no'  => esc_html__( 'No', 'animation-addons-for-elementor-pro' ),
+					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
 				],
 				'render_type'        => 'none', // template
 			]
@@ -96,7 +96,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'autoplay_delay',
 			[
-				'label'     => esc_html__( 'Autoplay delay', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Autoplay delay', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'default'   => $default['autoplay_delay'],
 				'condition' => [
@@ -110,12 +110,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'autoplay_interaction',
 			[
-				'label'     => esc_html__( 'Autoplay Interaction', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Autoplay Interaction', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => $default['autoplay_interaction'],
 				'options'   => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor-pro' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor-pro' ),
+					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
 				],
 				'condition' => [
 					'autoplay' => 'yes',
@@ -127,13 +127,13 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'allow_touch_move',
 			[
-				'label'     => esc_html__( 'Allow Touch Move', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Allow Touch Move', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'separator' => 'before',
 				'default'   => $default['allow_touch_move'],
 				'options'   => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor-pro' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor-pro' ),
+					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
 				],
 				'render_type'        => 'none', // template
 			]
@@ -143,12 +143,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'loop',
 			[
-				'label'   => esc_html__( 'Loop', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Loop', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => $default['loop'],
 				'options' => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor-pro' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor-pro' ),
+					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
+					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
 				],
 				'render_type'        => 'none', // template
 				'frontend_available' => true,
@@ -158,11 +158,11 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'mousewheel',
 			[
-				'label'              => esc_html__( 'Mousewheel', 'animation-addons-for-elementor-pro' ),
-				'description'        => esc_html__( 'If you want to use mousewheel, please disable loop.', 'animation-addons-for-elementor-pro' ),
+				'label'              => esc_html__( 'Mousewheel', 'animation-addons-for-elementor' ),
+				'description'        => esc_html__( 'If you want to use mousewheel, please disable loop.', 'animation-addons-for-elementor' ),
 				'type'               => Controls_Manager::SWITCHER,
-				'label_on'           => esc_html__( 'Show', 'animation-addons-for-elementor-pro' ),
-				'label_off'          => esc_html__( 'Hide', 'animation-addons-for-elementor-pro' ),
+				'label_on'           => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off'          => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'default'            => $default['mousewheel'],
 				'render_type'        => 'none',                                                                                                 // template
 				
@@ -172,7 +172,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'speed',
 			[
-				'label'              => esc_html__( 'Animation Speed', 'animation-addons-for-elementor-pro' ),
+				'label'              => esc_html__( 'Animation Speed', 'animation-addons-for-elementor' ),
 				'type'               => Controls_Manager::NUMBER,
 				'default'            => $default['speed'],
 				'render_type'        => 'none',// template
@@ -183,7 +183,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'space_between',
 			[
-				'label'       => esc_html__( 'Space Between', 'animation-addons-for-elementor-pro' ),
+				'label'       => esc_html__( 'Space Between', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::NUMBER,
 				'default'     => $default[ 'space_between' ],
 				'render_type' => 'none',                                                            // template
@@ -197,7 +197,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'grid_rows',
 			[
-				'label'     => esc_html__( 'Grid Rows', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Grid Rows', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 1,
 				'max'       => 10,
@@ -212,11 +212,11 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'navigation',
 			[
-				'label'     => esc_html__( 'Navigation', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Navigation', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SWITCHER,
 				'separator' => 'before',
-				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor-pro' ),
-				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor-pro' ),
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'default'   => $default['navigation'],
 				'render_type'        => 'ui', // template
 				'frontend_available' => true,
@@ -227,7 +227,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'navigation_previous_icon',
 			[
-				'label'            => esc_html__( 'Previous Arrow Icon', 'animation-addons-for-elementor-pro' ),
+				'label'            => esc_html__( 'Previous Arrow Icon', 'animation-addons-for-elementor' ),
 				'type'             => Controls_Manager::ICONS,
 				'fa4compatibility' => 'icon',
 				'skin'             => 'inline',
@@ -271,7 +271,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'navigation_next_icon',
 			[
-				'label'            => esc_html__( 'Next Arrow Icon', 'animation-addons-for-elementor-pro' ),
+				'label'            => esc_html__( 'Next Arrow Icon', 'animation-addons-for-elementor' ),
 				'type'             => Controls_Manager::ICONS,
 				'fa4compatibility' => 'icon',
 				'skin'             => 'inline',
@@ -315,11 +315,11 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'pagination',
 			[
-				'label'     => esc_html__( 'Pagination', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Pagination', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SWITCHER,
 				'separator' => 'before',
-				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor-pro' ),
-				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor-pro' ),
+				'label_on'  => esc_html__( 'Show', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
 				'default'   => $default['navigation'],
 				'render_type'        => 'ui', // template
 				'frontend_available' => true,
@@ -329,13 +329,13 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'pagination_type',
 			[
-				'label'     => esc_html__( 'Pagination Type', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Pagination Type', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => $default['pagination_type'],
 				'options'   => [
-					'bullets'     => esc_html__( 'Bullets', 'animation-addons-for-elementor-pro' ),
-					'fraction'    => esc_html__( 'Fraction', 'animation-addons-for-elementor-pro' ),
-					'progressbar' => esc_html__( 'Progressbar', 'animation-addons-for-elementor-pro' ),
+					'bullets'     => esc_html__( 'Bullets', 'animation-addons-for-elementor' ),
+					'fraction'    => esc_html__( 'Fraction', 'animation-addons-for-elementor' ),
+					'progressbar' => esc_html__( 'Progressbar', 'animation-addons-for-elementor' ),
 				],
 				'condition' => [ 'pagination' => 'yes' ],
 				'render_type'        => 'ui', // template
@@ -346,13 +346,13 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'direction',
 			[
-				'label'     => esc_html__( 'Left/Right Direction', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Left/Right Direction', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'separator' => 'before',
 				'default'   => $default['direction'],
 				'options'   => [
-					'ltr' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
-					'rtl' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+					'ltr' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+					'rtl' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 				],
 				'render_type'        => 'ui', // template
 				'frontend_available' => true,
@@ -389,7 +389,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'arrow_size',
 			[
-				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -405,7 +405,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'arrow_svg_size',
 			[
-				'label'     => esc_html__( ' Svg Size', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( ' Svg Size', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -421,7 +421,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'arrow_circle_size',
 			[
-				'label'     => esc_html__( 'Circle Size', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Circle Size', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -445,7 +445,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'arrow_border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => $selectors['arrow_border_radius'],
@@ -455,7 +455,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'arrow_padding',
 			[
-				'label'     => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -472,14 +472,14 @@ trait AAE_Nested_Slider_Trait {
 		$this->start_controls_tab(
 			'tab_arrow_normal',
 			[
-				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'arrow_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['arrow_color'],
 			]
@@ -499,14 +499,14 @@ trait AAE_Nested_Slider_Trait {
 		$this->start_controls_tab(
 			'tab_arrow_hover',
 			[
-				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'arrow_hover_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['arrow_hover_color'],
 			]
@@ -524,7 +524,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'arrow_hover_border_color',
 			[
-				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['arrow_hover_border_color'],
 				'condition' => [ 'arrow_border_border!' => '' ],
@@ -538,12 +538,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_position',
 			[
-				'label'     => esc_html__( 'Position Type', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Position Type', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => '',
 				'options'   => [
-					''         => esc_html__( 'Default', 'animation-addons-for-elementor-pro' ),
-					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor-pro' ),
+					''         => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .ts-navigation' => 'position: {{VALUE}};',
@@ -555,23 +555,23 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_align',
 			[
-				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'flex-start'    => [
-						'title' => esc_html__( 'Start', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Start', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-justify-start-h',
 					],
 					'center'        => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-justify-center-h',
 					],
 					'flex-end'      => [
-						'title' => esc_html__( 'End', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'End', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-justify-end-h',
 					],
 					'space-between' => [
-						'title' => esc_html__( 'Space Between', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Space Between', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-justify-space-between-h',
 					],
 				],
@@ -585,7 +585,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -603,7 +603,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -626,16 +626,16 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'navigation_hr_orn',
 			[
-				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor-pro' ),
+				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'prefix_class' => 'aae--slider-hrp-',
 				'options'      => [
 					'left'  => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -647,7 +647,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_hr_offset',
 			[
-				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -670,16 +670,16 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'navigation_vr_orn',
 			[
-				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor-pro' ),
+				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'prefix_class' => 'aae--slider-vrp-',
 				'options'      => [
 					'top'    => [
-						'title' => esc_html__( 'Top', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'bottom' => [
-						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-v-align-bottom',
 					],
 				],
@@ -691,7 +691,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'navigation_vr_offset',
 			[
-				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -754,7 +754,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'bullets_inactive_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['bullets_inactive_color'],
 				'condition' => [ 'pagination_type' => 'bullets' ]
@@ -764,7 +764,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'bullets_color',
 			[
-				'label'     => esc_html__( 'Active Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Active Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['bullets_color'],
 				'condition' => [ 'pagination_type' => 'bullets' ]
@@ -774,7 +774,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'bullets_size',
 			[
-				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -790,7 +790,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'bullets_gap',
 			[
-				'label'     => esc_html__( 'Gap', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -817,7 +817,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'bullets_b_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors'  => [
@@ -830,12 +830,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'bullets_direction',
 			[
-				'label'     => esc_html__( 'Direction', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'row',
 				'options'   => [
-					'row'    => esc_html__( 'Row', 'animation-addons-for-elementor-pro' ),
-					'column' => esc_html__( 'Column', 'animation-addons-for-elementor-pro' ),
+					'row'    => esc_html__( 'Row', 'animation-addons-for-elementor' ),
+					'column' => esc_html__( 'Column', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .swiper-pagination-bullets' => 'flex-direction: {{VALUE}};',
@@ -848,7 +848,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'fraction_current_color',
 			[
-				'label'     => esc_html__( 'Current Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Current Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_current_color'],
 				'condition' => [ 'pagination_type' => 'fraction' ]
@@ -867,7 +867,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'fraction_total_color',
 			[
-				'label'     => esc_html__( 'Total Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Total Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_total_color'],
 				'condition' => [ 'pagination_type' => 'fraction' ],
@@ -886,7 +886,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'fraction_midline_color',
 			[
-				'label'     => esc_html__( 'Mid Line Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Mid Line Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['fraction_midline_color'],
 				'condition' => [ 'pagination_type' => 'fraction' ]
@@ -896,7 +896,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'fraction_line_width',
 			[
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -919,7 +919,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'fraction_line_height',
 			[
-				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -947,7 +947,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'fraction_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -971,7 +971,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'progress_color',
 			[
-				'label'     => esc_html__( 'Progressbar Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Progressbar Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['progress_color'],
 				'condition' => [ 'pagination_type' => 'progressbar' ]
@@ -981,7 +981,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'progress_fill_color',
 			[
-				'label'     => esc_html__( 'Progressbar Fill Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Progressbar Fill Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => $selectors['progress_fill_color'],
 				'condition' => [ 'pagination_type' => 'progressbar' ]
@@ -992,12 +992,12 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'pagination_position',
 			[
-				'label'     => esc_html__( 'Position', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Position', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'relative',
 				'options'   => [
-					'relative' => esc_html__( 'Default', 'animation-addons-for-elementor-pro' ),
-					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor-pro' ),
+					'relative' => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'absolute' => esc_html__( 'Absolute', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .ts-pagination' => 'position: {{VALUE}};',
@@ -1009,7 +1009,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'progressbar_rotate',
 			[
-				'label'      => esc_html__( 'Rotate', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Rotate', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -1028,19 +1028,19 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'pagination_align',
 			[
-				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'left'   => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'  => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-right',
 					],
 				],
@@ -1055,16 +1055,16 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'pagination_hr_orn',
 			[
-				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor-pro' ),
+				'label'        => esc_html__( 'Horizontal Orientation', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'prefix_class' => 'aae--slider-pg-hr-',
 				'options'      => [
 					'left'  => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-h-align-left',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-h-align-right',
 					],
 				],
@@ -1075,7 +1075,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'pagination_hr_offset',
 			[
-				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -1098,16 +1098,16 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_control(
 			'pagination_vr_orn',
 			[
-				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor-pro' ),
+				'label'        => esc_html__( 'Vertical Orientation', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::CHOOSE,
 				'prefix_class' => 'aae--slider-pg-vr-',
 				'options'      => [
 					'top'    => [
-						'title' => esc_html__( 'Top', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'bottom' => [
-						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-v-align-bottom',
 					],
 				],
@@ -1118,7 +1118,7 @@ trait AAE_Nested_Slider_Trait {
 		$this->add_responsive_control(
 			'pagination_vr_offset',
 			[
-				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Offset', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'range'      => [
