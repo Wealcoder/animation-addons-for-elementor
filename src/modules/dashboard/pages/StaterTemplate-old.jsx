@@ -10,8 +10,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { StaterTemplateHeader } from "../components/header/StaterTemplateHeader";
-import { RiArrowLeftLine } from "react-icons/ri";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);
@@ -156,49 +154,43 @@ const StaterTemplate = () => {
     }
   }, [allTemplate]);
 
-  const changeRoute = (value) => {
-    const url = new URL(window.location.href);
-    const pageQuery = url.searchParams.get("page");
-
-    url.search = "";
-    url.hash = "";
-    url.search = `page=${pageQuery}`;
-
-    url.searchParams.set("tab", value);
-    window.history.replaceState({}, "", url);
-    window.location.reload();
-  };
-
   return (
-    <ScrollArea className="h-screen" ref={viewportRef}>
-      <div className="px-5 py-[54px] min-h-screen relative starter-template-dashboard">
-        <div className="fixed top-5 left-0 px-8 w-full z-50">
-          <div className="flex items-center gap-[30px] bg-white shadow-[0_0_15px_10px_rgba(0,0,0,0.05)] px-[25px] rounded-[10px] min-h-[74px]">
-            <div
-              onClick={() => changeRoute("dashboard")}
-              className="cursor-pointer flex w-11 h-11 px-[3px] py-1 justify-center items-center bg-[#EFEFEF] rounded-full"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="w-[14px] h-[14px] flex-shrink-0"
-              >
-                <path
-                  d="M3.34988 6.1001H14V7.90001H3.34988L8.04335 12.7273L6.80593 14L0 7.00005L6.80593 0L8.04335 1.27273L3.34988 6.1001Z"
-                  fill="#202020"
-                />
-              </svg>
-            </div>
-            <StaterTemplateHeader />
-            <div className="bg-[#1212121A] w-[1px] h-6"></div>
-          </div>
-        </div>
-        <div className="px-8 py-[80px] bg-[#F9F9F9] rounded-[30px]">
+    <div className="flex">
+      <div className="hidden lg:block w-[278px] border-r border-border h-[calc(100vh-85px)]">
+        <TemplateLeftFilter
+          types={types}
+          setTypes={setTypes}
+          license={license}
+          setLicense={setLicense}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          setPageNum={setPageNum}
+        />
+      </div>
+      <Sheet open={openSidebar} onOpenChange={setOpenSidebar}>
+        <SheetContent
+          className="lg:hidden w-[278px] border-r border-border h-[calc(100vh-48px)] mt-0"
+          side={"left"}
+        >
+          <SheetHeader className="hidden">
+            <SheetTitle></SheetTitle>
+            <SheetDescription></SheetDescription>
+          </SheetHeader>
+          <TemplateLeftFilter
+            types={types}
+            setTypes={setTypes}
+            license={license}
+            setLicense={setLicense}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            setPageNum={setPageNum}
+          />
+        </SheetContent>
+      </Sheet>
+      <ScrollArea className="h-[calc(100vh-85px)] flex-1" ref={viewportRef}>
+        <>
           {loading && !allTemplate?.templates?.length ? (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-[10vh]">
               <p className="text-lg font-semibold">Loading...</p>
             </div>
           ) : (
@@ -219,9 +211,9 @@ const StaterTemplate = () => {
           ) : (
             ""
           )}
-        </div>
-      </div>
-    </ScrollArea>
+        </>
+      </ScrollArea>
+    </div>
   );
 };
 

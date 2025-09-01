@@ -8,11 +8,11 @@ const TemplateRightContent = ({
   setFilterKey,
   setPageNum,
   allTemplate,
-  setOpenSidebar
+  setOpenSidebar,
 }) => {
   return (
     <div className="mx-[31px]">
-      <div className="mt-6 mb-8">
+      {/* <div className="mt-6 mb-8">
         <TemplateTopBar
           filterKey={filterKey}
           setFilterKey={setFilterKey}
@@ -21,7 +21,7 @@ const TemplateRightContent = ({
           setPageNum={setPageNum}
           setOpenSidebar={setOpenSidebar}
         />
-      </div>
+      </div> */}
       <div className="mb-10">
         <TemplateShow allTemplate={allTemplate} />
       </div>
