@@ -10,7 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-const StarterTemplateFilter = () => {
+const StarterTemplateFilter = ({ metaData, setMetaData }) => {
+  const { filterData } = metaData || {};
   return (
     <NavigationMenu2 viewport={false}>
       <NavigationMenuList2 className="gap-[25px]">
@@ -42,7 +43,15 @@ const StarterTemplateFilter = () => {
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Type
                 </p>
-                <RadioGroup2 defaultValue="all">
+                <RadioGroup2
+                  value={filterData?.type}
+                  onValueChange={(value) =>
+                    setMetaData((pre) => ({
+                      ...pre,
+                      filterData: { ...filterData, type: value, pageNum: 1 },
+                    }))
+                  }
+                >
                   <div className="flex items-center gap-1">
                     <RadioGroupItem2 value="all" id="type_all" />
                     <Label
@@ -76,7 +85,15 @@ const StarterTemplateFilter = () => {
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Mode
                 </p>
-                <RadioGroup2 defaultValue="all">
+                <RadioGroup2
+                  value={filterData?.mode}
+                  onValueChange={(value) =>
+                    setMetaData((pre) => ({
+                      ...pre,
+                      filterData: { ...filterData, mode: value, pageNum: 1  },
+                    }))
+                  }
+                >
                   <div className="flex items-center gap-1">
                     <RadioGroupItem2 value="all" id="mode_all" />
                     <Label
@@ -110,7 +127,15 @@ const StarterTemplateFilter = () => {
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Direction
                 </p>
-                <RadioGroup2 defaultValue="all">
+                <RadioGroup2
+                  value={filterData?.dir}
+                  onValueChange={(value) =>
+                    setMetaData((pre) => ({
+                      ...pre,
+                      filterData: { ...filterData, dir: value, pageNum: 1  },
+                    }))
+                  }
+                >
                   <div className="flex items-center gap-1">
                     <RadioGroupItem2 value="all" id="dir_all" />
                     <Label
@@ -144,7 +169,15 @@ const StarterTemplateFilter = () => {
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By order
                 </p>
-                <RadioGroup2 defaultValue="default">
+                <RadioGroup2
+                  value={filterData?.order}
+                  onValueChange={(value) =>
+                    setMetaData((pre) => ({
+                      ...pre,
+                      filterData: { ...filterData, order: value, pageNum: 1  },
+                    }))
+                  }
+                >
                   <div className="flex items-center gap-1">
                     <RadioGroupItem2 value="default" id="order_default" />
                     <Label
@@ -181,6 +214,13 @@ const StarterTemplateFilter = () => {
                 <div className="flex items-center gap-1.5">
                   <Checkbox
                     id="wishlist_checkbox"
+                    checked={filterData?.wishlist}
+                    onCheckedChange={(value) =>
+                      setMetaData((pre) => ({
+                        ...pre,
+                        filterData: { ...filterData, wishlist: value, pageNum: 1  },
+                      }))
+                    }
                     className={"w-3 h-3 border-[#202020] rounded-full"}
                     svgClassName={"w-3 h-3 -mt-[1px]"}
                   />

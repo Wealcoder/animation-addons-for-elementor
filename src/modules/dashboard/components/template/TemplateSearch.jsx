@@ -34,7 +34,7 @@ const TemplateSearch = ({ setMetaData }) => {
       setIsLoading(true);
 
       fetch(
-        `https://www.themecrowdy.com/wp-json/wp/v2/starter-templates?page=1&per_page=50&title-search=yes&s=${encodeURIComponent(
+        `https://www.themecrowdy.com/wp-json/wp/v2/starter-templates?title-search=yes&s=${encodeURIComponent(
           searchQuery.toLowerCase()
         )}`
       )
@@ -74,32 +74,37 @@ const TemplateSearch = ({ setMetaData }) => {
 
   // Handle keyboard navigation
   const handleKeyDown = (e) => {
-    if (!isOpen) return;
-
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < results.length - 1 ? prev + 1 : prev
-        );
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (selectedIndex >= 0) {
-          handleSelectResult(results[selectedIndex]);
-        } else {
-          handleSelectResult({ title: query });
-        }
-        break;
-      case "Escape":
-        setIsOpen(false);
-        setSelectedIndex(-1);
-        inputRef.current?.blur();
-        break;
+    if (isOpen) {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) =>
+            prev < results.length - 1 ? prev + 1 : prev
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (selectedIndex >= 0) {
+            handleSelectResult(results[selectedIndex]);
+          } else {
+            handleSelectResult({ title: query });
+          }
+          break;
+        case "Escape":
+          setIsOpen(false);
+          setSelectedIndex(-1);
+          inputRef.current?.blur();
+          break;
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      handleSelectResult({ title: query });
+    } else {
+      return;
     }
   };
 
@@ -108,8 +113,7 @@ const TemplateSearch = ({ setMetaData }) => {
     justSelectedRef.current = true; // Mark that we just selected something
     isSelectedValueRef.current = true; // Mark that next query change is from selection
     setQuery(result.title);
-    console.log(result.title);
-    setMetaData((prev) => ({ ...prev, searchKey: result.title }));
+    setMetaData((prev) => ({ ...prev, searchKey: result.title, pageNum: 1 }));
     setIsOpen(false);
     setSelectedIndex(-1);
 

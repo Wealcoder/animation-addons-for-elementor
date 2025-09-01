@@ -9,9 +9,13 @@ import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Badge } from "../ui/badge";
+import { CircleX } from "lucide-react";
 
-export function StaterTemplateHeader() {
+export function StaterTemplateHeader({ metaData, setMetaData }) {
   const [menuData, setMenuData] = useState([]);
+
+  const { selectedCategory, tempSelectedCategory } = metaData || {};
 
   useEffect(() => {
     fetch("http://www.themecrowdy.com/wp-json/wcf/v1/menu/42")
@@ -20,6 +24,12 @@ export function StaterTemplateHeader() {
         setMenuData(data.items);
       });
   }, []);
+
+  function toggleObject(array, obj, key = "id") {
+    return array.some((item) => item[key] === obj[key])
+      ? array.filter((item) => item[key] !== obj[key]) // remove if exists
+      : [...array, obj]; // add if not exists
+  }
 
   return (
     <NavigationMenu2 viewport={false}>
@@ -40,12 +50,49 @@ export function StaterTemplateHeader() {
                       <div className="flex items-center gap-1.5" key={item.id}>
                         <Checkbox
                           id={item.id}
-                          className={"w-3 h-3 border-[#202020] rounded-[3px]"}
+                          checked={selectedCategory.includes(item.cat_id)}
+                          onCheckedChange={(value) =>
+                            setMetaData((prev) => {
+                              let updatedCategories = [
+                                ...prev.selectedCategory,
+                              ];
+                              let updatedTempCategories = [
+                                ...prev.tempSelectedCategory,
+                              ];
+
+                              if (value) {
+                                if (!updatedCategories.includes(item.cat_id)) {
+                                  updatedCategories.push(item.cat_id);
+                                }
+                                if (
+                                  !updatedTempCategories.some(
+                                    (el) => el.cat_id === item.cat_id
+                                  )
+                                ) {
+                                  updatedTempCategories.push(item);
+                                }
+                              } else {
+                                updatedCategories = updatedCategories.filter(
+                                  (id) => id !== item.cat_id
+                                );
+                                updatedTempCategories =
+                                  updatedTempCategories.filter(
+                                    (el) => el.cat_id !== item.cat_id
+                                  );
+                              }
+                              return {
+                                ...prev,
+                                selectedCategory: updatedCategories,
+                                tempSelectedCategory: updatedTempCategories,
+                              };
+                            })
+                          }
+                          className={"w-3 h-3 border-[#202020] rounded-[3px] cursor-pointer"}
                           svgClassName={"w-3 h-3 -mt-[1px]"}
                         />
                         <Label
                           htmlFor={item.id}
-                          className="text-[15px] text-[#202020]"
+                          className="text-[15px] text-[#202020] cursor-pointer"
                         >
                           {item.title}
                         </Label>
@@ -55,6 +102,28 @@ export function StaterTemplateHeader() {
                   <Button
                     variant="link"
                     className="px-0 py-0 text-[#F6502C] text-[15px] font-semibold mt-2 h-5 uppercase"
+                    onClick={() => {
+                      setMetaData((prev) => {
+                        let updatedCategories = [...prev.selectedCategory];
+                        let updatedTempCategories = [
+                          ...prev.tempSelectedCategory,
+                        ];
+
+                        updatedTempCategories = updatedTempCategories.filter(
+                          (el) => el.parent !== gItem.id
+                        );
+
+                        updatedCategories = updatedTempCategories.map(
+                          (el) => el.cat_id
+                        );
+
+                        return {
+                          ...prev,
+                          selectedCategory: updatedCategories,
+                          tempSelectedCategory: updatedTempCategories,
+                        };
+                      });
+                    }}
                   >
                     uncheck All
                   </Button>
@@ -63,6 +132,42 @@ export function StaterTemplateHeader() {
                   <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                     Selected Services
                   </p>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {tempSelectedCategory?.map((sCat) => (
+                      <Badge
+                        variant="secondary"
+                        className="bg-[#F6502C] text-white h-6 px-2 text-sm gap-1 font-medium rounded-[6px]"
+                      >
+                        {sCat.title}
+                        <CircleX
+                          className="w-[14px] h-[14px] cursor-pointer"
+                          onClick={() => {
+                            setMetaData((prev) => {
+                              let updatedCategories = [
+                                ...prev.selectedCategory,
+                              ];
+                              let updatedTempCategories = [
+                                ...prev.tempSelectedCategory,
+                              ];
+
+                              updatedCategories = updatedCategories.filter(
+                                (id) => id !== sCat.cat_id
+                              );
+                              updatedTempCategories =
+                                updatedTempCategories.filter(
+                                  (el) => el.cat_id !== sCat.cat_id
+                                );
+                              return {
+                                ...prev,
+                                selectedCategory: updatedCategories,
+                                tempSelectedCategory: updatedTempCategories,
+                              };
+                            });
+                          }}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
             </NavigationMenuContent2>
