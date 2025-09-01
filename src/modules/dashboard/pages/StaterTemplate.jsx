@@ -163,7 +163,7 @@ const StaterTemplate = () => {
   return (
     <ScrollArea className="h-screen" ref={viewportRef}>
       <div className="px-5 py-[54px] min-h-screen relative starter-template-dashboard">
-        <div className="fixed top-5 left-0 px-8 w-full z-50">
+        <div className="sticky top-0 left-0 px-8 w-full z-50 -mt-[33px] -mb-[41px]">
           <div className="flex justify-between items-center bg-white shadow-[0_0_15px_10px_rgba(0,0,0,0.05)] px-[25px] rounded-[10px] min-h-[74px]">
             <div className="flex items-center gap-[30px]">
               <div
