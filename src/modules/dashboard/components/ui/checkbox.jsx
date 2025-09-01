@@ -4,7 +4,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
 
-const Checkbox = React.forwardRef(({ className, ...props }, ref) => (
+const Checkbox = React.forwardRef(({ className, svgClassName, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
@@ -16,7 +16,7 @@ const Checkbox = React.forwardRef(({ className, ...props }, ref) => (
     <CheckboxPrimitive.Indicator
       className={cn("flex items-center justify-center text-current")}
     >
-      <CheckIcon className="h-4 w-4" />
+      <CheckIcon className={cn("h-4 w-4", svgClassName)} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ));
