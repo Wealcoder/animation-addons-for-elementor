@@ -11,9 +11,17 @@ class Ajax_Handler_Mailchimp
 
 	public static function init()
 	{
+
+		//popup action
+		add_action('wp_ajax_wcf_load_popup_content', [__CLASS__, 'wcf__popup_content']);
+		add_action('wp_ajax_nopriv_wcf_load_popup_content', [__CLASS__, 'wcf__popup_content']);
 		if (class_exists('\WCFAddonsPro\Ajax_Handler')) {
 			return;
 		}
+		if (class_exists('\WCFAddonsPro\Ajax_Handler')) {
+			return;
+		}
+		return;
 		add_action('wp_ajax_mailchimp_api', [__CLASS__, 'mailchimp_lists']);
 		add_action('wp_ajax_nopriv_mailchimp_api', [__CLASS__, 'mailchimp_lists']);
 
@@ -23,9 +31,7 @@ class Ajax_Handler_Mailchimp
 		add_action('wp_ajax_wcf_mailchimp_list_fields', [__CLASS__, 'wcf_mailchimp_list_fields']);
 		add_action('wp_ajax_nopriv_wcf_mailchimp_list_fields', [__CLASS__, 'wcf_mailchimp_list_fields']);
 
-		//popup action
-		add_action('wp_ajax_wcf_load_popup_content', [__CLASS__, 'wcf__popup_content']);
-		add_action('wp_ajax_nopriv_wcf_load_popup_content', [__CLASS__, 'wcf__popup_content']);
+		
 	}
 
 	/**

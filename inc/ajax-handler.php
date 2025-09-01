@@ -113,7 +113,7 @@ class Ajax_Handler {
 		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-editor' ) ) {
 			exit( 'No naughty business please' );
 		}	
-		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $api ) ) : '';		
+		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $_REQUEST['api']) ) : '';		
 		update_option('aae_mailchimp_api', $api);
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
@@ -131,7 +131,7 @@ class Ajax_Handler {
 		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-editor' ) ) {
 			exit( 'No naughty business please' );
 		}		
-		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $api ) ) : '';		
+		$api = isset($_REQUEST['api']) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';		
 		$list_id = ! empty( $_REQUEST['list_id'] ) ? sanitize_text_field( wp_unslash($_REQUEST['list_id']) ) : '';	
 
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
@@ -153,9 +153,9 @@ class Ajax_Handler {
 		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
 			exit( 'No naughty business please' );
 		}
-
-		parse_str( isset( $_POST['subscriber_info'] ) ? sanitize_text_field( wp_unslash($_POST['subscriber_info']) ) : '', $subscriber );
 	
+		$subscriber_info = isset( $_POST['subscriber_info'] ) ? wp_kses_post( wp_unslash($_POST['subscriber_info'] ) ) : '';
+		parse_str($subscriber_info, $subscriber);		
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
 
 		wp_send_json( $response );
