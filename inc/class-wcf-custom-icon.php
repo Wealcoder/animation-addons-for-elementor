@@ -11,6 +11,11 @@ if(class_exists('\WCF_ADDONS\Extensions\CustomIcons')){
     return;
 }
 
+if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.11', '<=')) {
+    return;
+}
+
+
 /**
  * Class CustomIcons
  *
