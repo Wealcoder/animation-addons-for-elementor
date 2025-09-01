@@ -13,10 +13,8 @@ const StaterTemplate = () => {
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [metaData, setMetaData] = useState({
     searchKey: "",
-    filterKey: "",
+    filterData: {},
     pageNum: 1,
-    types: [],
-    license: "",
     selectedCategory: [],
     wishlist: WCF_ADDONS_ADMIN.addons_config.wishlist.toString(),
   });
@@ -44,29 +42,34 @@ const StaterTemplate = () => {
           url.searchParams.append("page", meta.pageNum);
           url.searchParams.append("per_page", 40);
         }
-        if (meta.filterKey) {
-          if (meta.filterKey === "popular") {
-            url.searchParams.append("popular", 1);
-          } else {
-            url.searchParams.append("orderby", "date");
-          }
+        if (meta?.filterData?.order === "popular") {
+          url.searchParams.append("popular", 1);
+        } else if (meta?.filterData?.order === "new") {
+          url.searchParams.append("orderbydate", true);
         }
 
         if (meta.selectedCategory && meta.selectedCategory.length) {
           url.searchParams.append("st-cat", meta.selectedCategory.toString());
         }
 
-        if (meta?.types?.includes("favorites")) {
-          url.searchParams.append("favourites", 1);
-        } else if (meta?.types?.includes("wishlist")) {
+        if (meta?.filterData?.wishlist) {
           url.searchParams.append("wishlist", meta.wishlist);
         }
 
-        if (meta.license) {
-          url.searchParams.append(
-            "premium",
-            meta.license === "pro" ? "yes" : "no"
-          );
+        if (meta?.filterData?.mode === "premium") {
+          url.searchParams.append("premium", "yes");
+        } else if (meta?.filterData?.mode === "free") {
+          url.searchParams.append("premium", "no");
+        }
+
+        // light dark 
+        if (meta?.filterData?.type && meta?.filterData?.type !== 'all') {
+          url.searchParams.append("mode", meta?.filterData?.type);
+        }
+
+        // ltr rtl 
+        if (meta?.filterData?.dir  && meta?.filterData?.dir !== 'all') {
+          url.searchParams.append("layout", meta?.filterData?.dir);
         }
 
         await fetch(url.toString())
@@ -182,7 +185,10 @@ const StaterTemplate = () => {
               </div>
               <StaterTemplateHeader />
               <div className="bg-[#1212121A] w-[1px] h-6"></div>
-              <StarterTemplateFilter />
+              <StarterTemplateFilter
+                metaData={metaData}
+                setMetaData={setMetaData}
+              />
             </div>
             <TemplateSearch setMetaData={setMetaData} />
           </div>
