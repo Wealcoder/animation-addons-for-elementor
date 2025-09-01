@@ -6,9 +6,9 @@ import {
   NavigationMenuTrigger2,
 } from "@/components/ui/navigation-menu-2";
 import { useEffect, useState } from "react";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export function StaterTemplateHeader() {
   const [menuData, setMenuData] = useState([]);
@@ -41,18 +41,21 @@ export function StaterTemplateHeader() {
                         <Checkbox
                           id={item.id}
                           className={"w-3 h-3 border-[#202020] rounded-[3px]"}
-                          svgClassName={"w-3 h-3"}
+                          svgClassName={"w-3 h-3 -mt-[1px]"}
                         />
                         <Label
                           htmlFor={item.id}
-                          className="text-sm text-[#202020]"
+                          className="text-[15px] text-[#202020]"
                         >
                           {item.title}
                         </Label>
                       </div>
                     ))}
                   </div>
-                  <Button variant="link" className="px-0 py-0 text-[#F6502C] text-sm font-semibold mt-2 h-5 uppercase">
+                  <Button
+                    variant="link"
+                    className="px-0 py-0 text-[#F6502C] text-[15px] font-semibold mt-2 h-5 uppercase"
+                  >
                     uncheck All
                   </Button>
                 </div>
