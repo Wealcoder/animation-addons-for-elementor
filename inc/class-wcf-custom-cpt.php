@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 if(class_exists('\WCF_ADDONS\Extensions\CustomCpt_Pro')){    
     return;
 }
+
+if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.11', '<=')) {
+    return;
+}
+
 class CustomCpt_Lite {
 
     /**

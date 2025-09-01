@@ -10,6 +10,10 @@ if(class_exists('\WCF_ADDONS\Extensions\CustomFonts')){
     return;
 }
 
+if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.11', '<=')) {
+    return;
+}
+
 Class CustomFonts_Lite{
 	public $elementor_local_font = [];
     public $configs              = [];
