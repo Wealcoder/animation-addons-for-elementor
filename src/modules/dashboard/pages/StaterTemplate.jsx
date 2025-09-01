@@ -15,6 +15,7 @@ const StaterTemplate = () => {
     searchKey: "",
     filterData: {},
     pageNum: 1,
+    tempSelectedCategory: [],
     selectedCategory: [],
     wishlist: WCF_ADDONS_ADMIN.addons_config.wishlist.toString(),
   });
@@ -62,13 +63,13 @@ const StaterTemplate = () => {
           url.searchParams.append("premium", "no");
         }
 
-        // light dark 
-        if (meta?.filterData?.type && meta?.filterData?.type !== 'all') {
+        // light dark
+        if (meta?.filterData?.type && meta?.filterData?.type !== "all") {
           url.searchParams.append("mode", meta?.filterData?.type);
         }
 
-        // ltr rtl 
-        if (meta?.filterData?.dir  && meta?.filterData?.dir !== 'all') {
+        // ltr rtl
+        if (meta?.filterData?.dir && meta?.filterData?.dir !== "all") {
           url.searchParams.append("layout", meta?.filterData?.dir);
         }
 
@@ -183,7 +184,10 @@ const StaterTemplate = () => {
                   />
                 </svg>
               </div>
-              <StaterTemplateHeader />
+              <StaterTemplateHeader
+                metaData={metaData}
+                setMetaData={setMetaData}
+              />
               <div className="bg-[#1212121A] w-[1px] h-6"></div>
               <StarterTemplateFilter
                 metaData={metaData}
