@@ -50,7 +50,6 @@ const navigationMenuTriggerStyle2 = cva(
 );
 
 function NavigationMenuTrigger2({ className, children, ...props }) {
-  console.log(className);
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"

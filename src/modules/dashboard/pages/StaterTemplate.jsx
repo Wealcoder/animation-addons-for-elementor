@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { StaterTemplateHeader } from "../components/header/StaterTemplateHeader";
 import { RiArrowLeftLine } from "react-icons/ri";
+import StarterTemplateFilter from "../components/header/StarterTemplateFilter";
 
 const StaterTemplate = () => {
   const viewportRef = useRef(null);
@@ -176,7 +177,7 @@ const StaterTemplate = () => {
           <div className="flex items-center gap-[30px] bg-white shadow-[0_0_15px_10px_rgba(0,0,0,0.05)] px-[25px] rounded-[10px] min-h-[74px]">
             <div
               onClick={() => changeRoute("dashboard")}
-              className="cursor-pointer flex w-11 h-11 px-[3px] py-1 justify-center items-center bg-[#EFEFEF] rounded-full"
+              className="cursor-pointer flex w-11 h-11 px-[3px] py-1 justify-center items-center bg-[#F6502C] rounded-full"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -188,12 +189,13 @@ const StaterTemplate = () => {
               >
                 <path
                   d="M3.34988 6.1001H14V7.90001H3.34988L8.04335 12.7273L6.80593 14L0 7.00005L6.80593 0L8.04335 1.27273L3.34988 6.1001Z"
-                  fill="#202020"
+                  fill="#ffffff"
                 />
               </svg>
             </div>
             <StaterTemplateHeader />
             <div className="bg-[#1212121A] w-[1px] h-6"></div>
+            <StarterTemplateFilter />
           </div>
         </div>
         <div className="px-8 py-[80px] bg-[#F9F9F9] rounded-[30px]">
