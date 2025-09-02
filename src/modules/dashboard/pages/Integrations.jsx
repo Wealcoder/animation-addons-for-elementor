@@ -1,5 +1,5 @@
 import IntegrationTopBar from "@/components/integrations/IntegrationTopBar";
-import ShowIntegrations from "@/components/integrations/ShowIntegrations";
+// import ShowIntegrations from "@/components/integrations/ShowIntegrations";
 import ShowIntegrationsLibrary from "@/components/integrations/ShowIntegrationsLibrary";
 
 const Integrations = () => {
@@ -9,7 +9,7 @@ const Integrations = () => {
         <IntegrationTopBar />
       </div>
       <div className="mt-4 space-y-11">
-        <ShowIntegrations />
+        {/* <ShowIntegrations /> */}
 
         <ShowIntegrationsLibrary />
       </div>
