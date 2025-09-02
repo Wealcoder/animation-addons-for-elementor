@@ -202,6 +202,43 @@ class Mailchimp extends Widget_Base
 
 	protected function register_form_content_controls()
 	{
+
+		$this->start_controls_section(
+			'_section_mailchimp_form_message',
+			[
+				'label' => esc_html__('Message', 'animation-addons-for-elementor'),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'confirmation_message',
+			[
+				'label'       => esc_html__('Confirmation Message', 'animation-addons-for-elementor'),
+				'type'        => Controls_Manager::TEXTAREA,
+				'default'     => esc_html__('Please confirm your subscription via the link sent to your email.', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Please confirm your subscription via the link sent to your email.', 'animation-addons-for-elementor'),
+				'dynamic'     => ['active' => true],
+				'frontend_available' => true,
+				'render_type' => 'none',
+			]			
+		);
+		
+		$this->add_control(
+			'success_message',
+			[
+				'label'       => esc_html__('Success Message', 'animation-addons-for-elementor'),
+				'type'        => Controls_Manager::TEXTAREA,
+				'default'     => esc_html__('Thank you for subscribing!', 'animation-addons-for-elementor'),
+				'placeholder' => esc_html__('Thank you for subscribing!', 'animation-addons-for-elementor'),
+				'dynamic'     => ['active' => true],
+				'frontend_available' => true,	
+				'render_type' => 'none',
+			]
+		);
+
+		$this->end_controls_section();
+
 		$this->start_controls_section(
 			'_section_mailchimp_form',
 			[

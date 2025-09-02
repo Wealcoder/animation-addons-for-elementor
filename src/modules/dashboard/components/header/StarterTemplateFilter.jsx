@@ -6,9 +6,14 @@ import {
   NavigationMenuTrigger2,
 } from "@/components/ui/navigation-menu-2";
 import { RadioGroup2, RadioGroupItem2 } from "@/components/ui/radio-group-2";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const StarterTemplateFilter = ({ metaData, setMetaData }) => {
   const { filterData } = metaData || {};
@@ -17,28 +22,37 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
       <NavigationMenuList2 className="gap-[25px]">
         <NavigationMenuItem2>
           <NavigationMenuTrigger2 className="px-0 py-[19px] [&>svg]:hidden h-full">
-            <Button className="px-3 py-0 h-[26px] bg-[#F6502C] rounded-full text-base font-medium text-white gap-1">
-              <div className="flex justify-center items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                >
-                  <path
-                    d="M5.16685 7.29522C3.71526 6.20993 2.68079 5.01617 2.11595 4.34506C1.9411 4.13731 1.88381 3.98527 1.84936 3.71747C1.7314 2.80047 1.67242 2.34197 1.9413 2.04598C2.21019 1.75 2.68569 1.75 3.63669 1.75H10.3633C11.3143 1.75 11.7898 1.75 12.0587 2.04598C12.3276 2.34197 12.2686 2.80047 12.1507 3.71747C12.1162 3.98528 12.0589 4.13731 11.884 4.34506C11.3184 5.01703 10.2819 6.21291 8.82735 7.29954C8.69575 7.39789 8.60901 7.55807 8.59291 7.73582C8.44883 9.32867 8.31594 10.2011 8.23323 10.6424C8.09976 11.355 7.08937 11.7837 6.5485 12.1662C6.22656 12.3938 5.83584 12.1228 5.79412 11.7704C5.71459 11.0986 5.56477 9.73373 5.40124 7.73582C5.38655 7.55644 5.2995 7.39439 5.16685 7.29522Z"
-                    stroke="white"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>{" "}
-              Filter Items
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="px-2 2xl:px-3 py-0 h-[26px] bg-[#F6502C] rounded-full text-[16px] font-medium text-white gap-1">
+                    <div className="flex justify-center items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          d="M5.16685 7.29522C3.71526 6.20993 2.68079 5.01617 2.11595 4.34506C1.9411 4.13731 1.88381 3.98527 1.84936 3.71747C1.7314 2.80047 1.67242 2.34197 1.9413 2.04598C2.21019 1.75 2.68569 1.75 3.63669 1.75H10.3633C11.3143 1.75 11.7898 1.75 12.0587 2.04598C12.3276 2.34197 12.2686 2.80047 12.1507 3.71747C12.1162 3.98528 12.0589 4.13731 11.884 4.34506C11.3184 5.01703 10.2819 6.21291 8.82735 7.29954C8.69575 7.39789 8.60901 7.55807 8.59291 7.73582C8.44883 9.32867 8.31594 10.2011 8.23323 10.6424C8.09976 11.355 7.08937 11.7837 6.5485 12.1662C6.22656 12.3938 5.83584 12.1228 5.79412 11.7704C5.71459 11.0986 5.56477 9.73373 5.40124 7.73582C5.38655 7.55644 5.2995 7.39439 5.16685 7.29522Z"
+                          stroke="white"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>{" "}
+                    <span className="hidden 2xl:block">Filter</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="2xl:hidden">
+                  <p>Filter Items</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </NavigationMenuTrigger2>
-          <NavigationMenuContent2 className="-left-[30px] p-0">
-            <div className="grid grid-cols-5 gap-5 w-[595px] p-[30px]">
+          <NavigationMenuContent2 className="-right-[30px] 2xl:right-auto left-auto 2xl:-left-[30px] p-0">
+            <div className="grid grid-cols-4 gap-5 w-[480px] p-[30px]">
               <div>
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Type
@@ -49,7 +63,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                     setMetaData((pre) => ({
                       ...pre,
                       filterData: { ...filterData, type: value },
-                      pageNum: 1 
+                      pageNum: 1,
                     }))
                   }
                 >
@@ -91,8 +105,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, mode: value  },
-                      pageNum: 1 
+                      filterData: { ...filterData, mode: value },
+                      pageNum: 1,
                     }))
                   }
                 >
@@ -135,7 +149,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                     setMetaData((pre) => ({
                       ...pre,
                       filterData: { ...filterData, dir: value },
-                      pageNum: 1 
+                      pageNum: 1,
                     }))
                   }
                 >
@@ -177,8 +191,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, order: value  },
-                      pageNum: 1 
+                      filterData: { ...filterData, order: value },
+                      pageNum: 1,
                     }))
                   }
                 >
@@ -211,7 +225,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   </div>
                 </RadioGroup2>
               </div>
-              <div>
+              {/* <div>
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Wishlist
                 </p>
@@ -236,7 +250,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                     Wishlist
                   </Label>
                 </div>
-              </div>
+              </div> */}
             </div>
           </NavigationMenuContent2>
         </NavigationMenuItem2>

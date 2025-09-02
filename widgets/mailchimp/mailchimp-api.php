@@ -92,7 +92,7 @@ class Mailchimp_Api {
         if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
             wp_send_json_error('Invalid nonce');
         }
-
+  
         // 1) Decode API key and basic inputs
         $api_key = '';
         if (!empty($_POST['key'])) {
@@ -112,8 +112,7 @@ class Mailchimp_Api {
 
         // 2) Email: sanitize, validate, lowercase + hash
         $email_lc_or_error = self::normalize_and_validate_email($submitted_data['email'] ?? '');
-        if (is_wp_error($email_lc_or_error)) {
-            error_log('Mailchimp invalid email: ' . wp_json_encode($email_lc_or_error->get_error_data()));
+        if (is_wp_error($email_lc_or_error)) {          
             return ['status' => 0, 'msg' => esc_html__('Please provide a valid email address.', 'animation-addons-for-elementor')];
         }
         $email           = $email_lc_or_error;
@@ -139,8 +138,9 @@ class Mailchimp_Api {
         // If user enabled advanced mapping, only copy keys that are valid merge tags
         if (isset($submitted_data['advanced-mailchimp'])) {
             $candidate_merge = self::filter_merge_fields($submitted_data, $merge_fields_allowed);
+             
         }
-
+      
         // Ensure JSON object for merge_fields ({} when empty)
         $merge_fields_obj = self::as_json_object(
             self::filter_merge_fields($candidate_merge, $merge_fields_allowed)
@@ -155,9 +155,8 @@ class Mailchimp_Api {
 
         // 5) PUT add-or-update
         $member_url = "https://{$dc}.api.mailchimp.com/3.0/lists/{$list_id}/members/{$subscriber_hash}";
-        $res = self::request('PUT', $member_url, $api_key, $payload);
-        error_log('MC upsert response: ' . print_r($res, true));
-
+        $res = self::request('PUT', $member_url, $api_key, $payload);    
+	
         // 6) If tags requested, apply via the dedicated endpoint (reliable for both new & existing)
         if (!empty($tags) && $res['http_code'] >= 200 && $res['http_code'] < 300) {
             $tag_ops = array_map(fn($t) => ['name' => $t, 'status' => 'active'], $tags);
@@ -173,9 +172,9 @@ class Mailchimp_Api {
 
         $member_status = $res['body']['status'] ?? '';
         if ($member_status === 'pending') {
-            return ['status' => 1, 'msg' => esc_html__('Confirm your subscription from your email.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+            return ['status' => 'confirmation_message', 'msg' => esc_html__('Confirm your subscription from your email.', 'animation-addons-for-elementor'), 'body' => $res['body']];
         }
-        return ['status' => 1, 'msg' => esc_html__('Your data has been inserted on Mailchimp.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+        return ['status' => 'success_message', 'msg' => esc_html__('Your subscription updated.', 'animation-addons-for-elementor'), 'body' => $res['body']];
     }
 
     /** Get audience lists (unchanged but use GET helper) */
