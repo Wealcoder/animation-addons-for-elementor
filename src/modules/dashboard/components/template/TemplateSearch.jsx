@@ -3,8 +3,8 @@ import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const TemplateSearch = ({ setMetaData }) => {
-  const [query, setQuery] = useState("");
+const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
+  const [query, setQuery] = useState(metaData?.searchKey);
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -114,6 +114,7 @@ const TemplateSearch = ({ setMetaData }) => {
     isSelectedValueRef.current = true; // Mark that next query change is from selection
     setQuery(result.title);
     setMetaData((prev) => ({ ...prev, searchKey: result.title, pageNum: 1 }));
+    setOpenSearch(false)
     setIsOpen(false);
     setSelectedIndex(-1);
 
@@ -131,7 +132,7 @@ const TemplateSearch = ({ setMetaData }) => {
     setSelectedIndex(-1);
     isSelectedValueRef.current = false; // Reset the selected value flag
     inputRef.current?.focus();
-    setMetaData((prev) => ({ ...prev, searchKey: "" }));
+    setMetaData((prev) => ({ ...prev, searchKey: "", pageNum: 1 }));
   };
 
   // Handle input focus - only open if we didn't just select something
@@ -159,7 +160,7 @@ const TemplateSearch = ({ setMetaData }) => {
   }, []);
 
   return (
-    <div className="relative w-full max-w-[400px]">
+    <div className="relative w-[400px]">
       {/* Search Input Container */}
       <div className="relative py-[11px]">
         {/* Search Icon or Clear Button */}
@@ -184,7 +185,7 @@ const TemplateSearch = ({ setMetaData }) => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
-          className="pl-10 pr-10 h-11 text-base border-[#00000026] focus:border-[#202020] focus:ring-0 placeholder:text-[#797979]"
+          className="pl-10 pr-10 h-11 text-base bg-white border-[#00000026] focus:border-[#202020] focus:ring-0 placeholder:text-[#797979]"
         />
 
         {/* Loading indicator */}

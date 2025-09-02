@@ -5,15 +5,17 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { useActivate, useTNavigation } from "@/hooks/app.hooks";
 import { cn } from "@/lib/utils";
-import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
-import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-const TemplateShow = ({ allTemplate }) => {
+const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
   const [open, setOpen] = useState(false);
-  const [wishlistData, setWishlistData] = useState(
-    WCF_ADDONS_ADMIN.addons_config.wishlist || []
-  );
+
   const { setTabKey } = useTNavigation();
   const { activated } = useActivate();
 
@@ -63,13 +65,14 @@ const TemplateShow = ({ allTemplate }) => {
         })
         .then((return_content) => {
           if (return_content.success) {
-            setWishlistData(return_content.data);
+            setMetaData((pre) => ({
+              ...pre,
+              wishlist: return_content.data,
+              pageNum: 1,
+            }));
             WCF_ADDONS_ADMIN.addons_config.wishlist = return_content.data;
           }
         });
-      fetch(
-        `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/starter-templates/v1/favourites?tpl_id=${data}`
-      );
     } catch (error) {}
   };
 
@@ -161,8 +164,10 @@ const TemplateShow = ({ allTemplate }) => {
                       Import
                     </Button>
                     <Toggle
-                      aria-label="Toggle bold"
-                      pressed={wishlistData.includes(template.id.toString())}
+                      aria-label="Wishlist"
+                      pressed={metaData?.wishlist?.includes(
+                        template.id.toString()
+                      )}
                       onPressedChange={(value) => saveWishlist(template.id)}
                       className={`data-[state=on]:bg-[#F6502C] data-[state=on]:border-[#F6502C]  cursor-pointer h-9 w-[150px] bg-transparent hover:bg-transparent border border-white text-white rounded-full text-base font-medium capitalize gap-1`}
                     >
@@ -190,35 +195,44 @@ const TemplateShow = ({ allTemplate }) => {
                   <h3 className="text-base font-medium text-[#202020] capitalize">
                     {template?.title}
                   </h3>
-                  <Badge className="px-2 h-5 gap-1 bg-[#EAEAFF] text-[#5453FD] rounded-[4px] border-none">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 8.5H8"
-                        stroke="#5453FD"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M4 6.5H6"
-                        stroke="#5453FD"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M6.5 1.25V1.5C6.5 2.91422 6.5 3.62132 6.93935 4.06066C7.3787 4.5 8.0858 4.5 9.5 4.5H9.75M10 5.32845V7C10 8.8856 10 9.82845 9.4142 10.4142C8.82845 11 7.8856 11 6 11C4.11438 11 3.17157 11 2.58578 10.4142C2 9.82845 2 8.8856 2 7V4.72792C2 3.10541 2 2.29416 2.44303 1.74467C2.53254 1.63366 2.63365 1.53254 2.74466 1.44304C3.29415 1 4.10541 1 5.7279 1C6.0807 1 6.25705 1 6.4186 1.05701C6.4522 1.06886 6.4851 1.0825 6.51725 1.09788C6.6718 1.17178 6.7965 1.2965 7.04595 1.54594L9.4142 3.91422C9.70325 4.20325 9.84775 4.34776 9.9239 4.53153C10 4.7153 10 4.91968 10 5.32845Z"
-                        stroke="#5453FD"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>{" "}
-                    {template?.page_count ?? 0} Pages
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="rounded-[4px]">
+                        <Badge className="px-2 h-5 gap-1 bg-[#EAEAFF] text-[#5453FD] rounded-[4px] border-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                          >
+                            <path
+                              d="M4 8.5H8"
+                              stroke="#5453FD"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M4 6.5H6"
+                              stroke="#5453FD"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M6.5 1.25V1.5C6.5 2.91422 6.5 3.62132 6.93935 4.06066C7.3787 4.5 8.0858 4.5 9.5 4.5H9.75M10 5.32845V7C10 8.8856 10 9.82845 9.4142 10.4142C8.82845 11 7.8856 11 6 11C4.11438 11 3.17157 11 2.58578 10.4142C2 9.82845 2 8.8856 2 7V4.72792C2 3.10541 2 2.29416 2.44303 1.74467C2.53254 1.63366 2.63365 1.53254 2.74466 1.44304C3.29415 1 4.10541 1 5.7279 1C6.0807 1 6.25705 1 6.4186 1.05701C6.4522 1.06886 6.4851 1.0825 6.51725 1.09788C6.6718 1.17178 6.7965 1.2965 7.04595 1.54594L9.4142 3.91422C9.70325 4.20325 9.84775 4.34776 9.9239 4.53153C10 4.7153 10 4.91968 10 5.32845Z"
+                              stroke="#5453FD"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>{" "}
+                          {template?.page_count ?? 0}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Pages</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <div className="flex justify-between gap-1.5 items-center mt-2">
                   <p className="text-[#636363] text-sm truncate">
