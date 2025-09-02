@@ -112,8 +112,7 @@ class Mailchimp_Api {
 
         // 2) Email: sanitize, validate, lowercase + hash
         $email_lc_or_error = self::normalize_and_validate_email($submitted_data['email'] ?? '');
-        if (is_wp_error($email_lc_or_error)) {
-            error_log('Mailchimp invalid email: ' . wp_json_encode($email_lc_or_error->get_error_data()));
+        if (is_wp_error($email_lc_or_error)) {          
             return ['status' => 0, 'msg' => esc_html__('Please provide a valid email address.', 'animation-addons-for-elementor')];
         }
         $email           = $email_lc_or_error;
@@ -155,9 +154,8 @@ class Mailchimp_Api {
 
         // 5) PUT add-or-update
         $member_url = "https://{$dc}.api.mailchimp.com/3.0/lists/{$list_id}/members/{$subscriber_hash}";
-        $res = self::request('PUT', $member_url, $api_key, $payload);
-        error_log('MC upsert response: ' . print_r($res, true));
-
+        $res = self::request('PUT', $member_url, $api_key, $payload);    
+	
         // 6) If tags requested, apply via the dedicated endpoint (reliable for both new & existing)
         if (!empty($tags) && $res['http_code'] >= 200 && $res['http_code'] < 300) {
             $tag_ops = array_map(fn($t) => ['name' => $t, 'status' => 'active'], $tags);
