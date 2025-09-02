@@ -354,7 +354,8 @@ class WCF_Admin_Init
 
 		$url      = "https://www.themecrowdy.com/wp-json/wcf/v1/menu/42";
 		$response = wp_remote_get($url, [
-			'timeout' => 15, // prevent long hangs
+			'timeout' => 15,
+			'sslverify' => false,
 			'headers' => [
 				'Accept' => 'application/json'
 			]
