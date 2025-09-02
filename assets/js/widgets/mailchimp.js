@@ -1,3 +1,4 @@
+
 /* global WCF_ADDONS_JS */
 ( function( $ ) {
     /**
@@ -8,9 +9,10 @@
     const MailChimp = function MailChimp($scope) {
         const elForm = $scope.find('.wcf-mailchimp-form'),
             elMessage = $scope.find('.mailchimp-response-message'),
-            elFormDataAttr = elForm.data();
+            elFormDataAttr = elForm.data(),
+            Settings = $scope.attr('data-settings') ? JSON.parse($scope.attr('data-settings')) : {};
 
-        elForm.on('submit', function (e) {
+            elForm.on('submit', function (e) {
             e.preventDefault();
 
             const data = {};
@@ -19,7 +21,7 @@
                 nonce: WCF_ADDONS_JS._wpnonce,
                 subscriber_info: elForm.serialize(),
             });
-
+          
             $.ajax({
                 type: 'post',
                 url: WCF_ADDONS_JS.ajaxUrl,
@@ -30,7 +32,14 @@
                     if (response.status) {
                         elMessage.removeClass('error');
                         elMessage.addClass('success');
-                        elMessage.text(response.msg);
+                        if(Settings.success_message && response.status === 'success_message'){
+                            elMessage.text(Settings.success_message);
+                        }else if(Settings.confirmation_message && response.status === 'confirmation_message'){
+                             elMessage.text(Settings.confirmation_message);
+                        }else{
+                            elMessage.text(response.msg);
+                        }                       
+                       
                     } else {
                         elMessage.addClass('error');
                         elMessage.removeClass('success');
@@ -49,8 +58,6 @@
         });
 
         elForm.removeAttr('data-key');
-
-
         // E-News
         const radios = document.querySelectorAll('.enews');
         const slider = document.createElement('span');
