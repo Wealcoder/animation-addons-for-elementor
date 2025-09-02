@@ -42,7 +42,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                         />
                       </svg>
                     </div>{" "}
-                    <span className="hidden 2xl:block">Filter Items</span>
+                    <span className="hidden 2xl:block">Filter</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="2xl:hidden">

@@ -11,6 +11,17 @@ use WCF_ADDONS\WCF_Theme_Builder;
 defined( 'ABSPATH' ) || exit;
 
 $locations = WCF_Theme_Builder::get_hf_location_selections();
+
+if ( 'php' === $snippet_details['code_type'] ) {
+	$locations['basic']['value'] = array_merge(
+		$locations['basic']['value'],
+		array(
+			'frontend' => 'Frontend',
+			'admin' => 'Frontend',
+		)
+	);
+}
+
 ?>
 <div class="container">
 	<div class="header">

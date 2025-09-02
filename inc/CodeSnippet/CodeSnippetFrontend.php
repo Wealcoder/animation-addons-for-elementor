@@ -249,10 +249,7 @@ class CodeSnippetFrontend {
 
 		// Check a specific page list first.
 		if ( ! empty( $visibility_page_list ) && is_array( $visibility_page_list ) ) {
-			$current_post_id = function_exists( 'get_queried_object_id' ) ? get_queried_object_id() : 0;
-			if ( empty( $current_post_id ) ) {
-				$current_post_id = get_the_ID();
-			}
+			$current_post_id = get_the_ID();
 			if ( in_array( $current_post_id, $visibility_page_list, false ) ) {
 				return true;
 			}
@@ -357,14 +354,17 @@ class CodeSnippetFrontend {
 			case 'admin':
 				return is_admin();
 
+			case 'frontend':
+				return ! is_admin();
+
 			default:
 				// Check for custom post-types.
-				if ( ! empty($visibility_condition) && strpos( $visibility_condition, 'singular_' ) === 0 ) {
+				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'singular_' ) === 0 ) {
 					$post_type = str_replace( 'singular_', '', $visibility_condition );
 					return is_singular( $post_type );
 				}
 
-				if ( ! empty($visibility_condition) && strpos( $visibility_condition, 'archive_' ) === 0 ) {
+				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'archive_' ) === 0 ) {
 					$post_type = str_replace( 'archive_', '', $visibility_condition );
 					return is_post_type_archive( $post_type );
 				}
@@ -536,7 +536,7 @@ class CodeSnippetFrontend {
 	private function execute_css_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<style type="text/css">' . "\n";
-			echo wp_kses_post( $content ) . "\n";
+			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</style>' . "\n";
 		}
 	}
@@ -552,7 +552,7 @@ class CodeSnippetFrontend {
 	private function execute_javascript_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<script type="text/javascript">' . "\n";
-			echo wp_kses_post( $content ) . "\n";
+			echo esc_js( $content ) . "\n";
 			echo '</script>' . "\n";
 		}
 	}
@@ -573,7 +573,7 @@ class CodeSnippetFrontend {
 
 			try {
 				$wrapped = 'return function() { ' . $content . ' };';
-                $func    = eval( $wrapped ); // phpcs:ignore
+				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged
 
 				if ( is_callable( $func ) ) {
 					$func();

@@ -920,12 +920,10 @@ class Plugin
 		}
 
 		// Include CodeSnippet frontend functionality.
-		if (! is_admin()) {
-			if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
-				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
-				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
-			}
-		}
+        if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
+            include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
+            include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
+        }
 
 		require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
 

@@ -747,3 +747,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
     WCFCustomCode.init();
 })(jQuery);
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const codeTypeSelect = document.getElementById('code-type');
+    const visibilityPageSelect = document.getElementById('visibility-page');
+
+    // Store original options for restoration
+    const originalOptions = visibilityPageSelect.innerHTML;
+
+    function updateVisibilityOptions() {
+        const selectedCodeType = codeTypeSelect.value;
+
+        // Store currently selected value before updating options
+        const currentlySelected = visibilityPageSelect.value;
+
+        if (selectedCodeType === 'php') {
+            // Clear all options and add only allowed ones for PHP
+            visibilityPageSelect.innerHTML = `
+                <optgroup label="Basic">
+                    <option value="">None</option>
+                    <option value="global">Entire Website</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="admin">Backend</option>
+                </optgroup>
+            `;
+        } else {
+            // Restore original options for other code types
+            visibilityPageSelect.innerHTML = originalOptions;
+        }
+
+        // Try to restore the previously selected value if it still exists
+        const optionExists = Array.from(visibilityPageSelect.options).some(option => option.value === currentlySelected);
+        if (optionExists) {
+            visibilityPageSelect.value = currentlySelected;
+        }
+    }
+
+    // Add event listener to code type select
+    codeTypeSelect.addEventListener('change', updateVisibilityOptions);
+
+    // Initialize on page load - check current value and update accordingly
+    updateVisibilityOptions();
+
+    // Also check on page reload/refresh to maintain state
+    window.addEventListener('load', function() {
+        updateVisibilityOptions();
+    });
+});
