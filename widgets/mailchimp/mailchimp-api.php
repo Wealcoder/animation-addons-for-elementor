@@ -1,205 +1,224 @@
 <?php
-
 /**
  * MailChimp api
  */
 
 namespace WCF_ADDONS\Widgets\Mailchimp;
 
-defined( 'ABSPATH' ) || die();
+defined('ABSPATH') || die();
 
 class Mailchimp_Api {
 
-	/**
-	 * request
-	 *
-	 * @param array $submitted_data
-	 * @return array | int error
-	 */
-	public static function insert_subscriber_to_mailchimp( $submitted_data ) {
+    /** Core HTTP helper (uses Basic auth + keeps raw body for debugging) */
+    private static function request($method, $url, $api_key, $body = null, $timeout = 45) {
+        $args = [
+            'method'  => $method,
+            'timeout' => $timeout,
+            'headers' => [
+                // Mailchimp recommends Basic (or Bearer). Basic is simplest for API keys.
+                'Authorization' => 'Basic ' . base64_encode('anystring:' . $api_key),
+                'Content-Type'  => 'application/json; charset=utf-8',
+                'Accept'        => 'application/json',
+            ],
+        ];
 
-		if ( ! isset( $_REQUEST['nonce'] ) || empty( $_REQUEST['nonce'] ) ) {
-			wp_send_json_error( 'Missing nonce' );
-		}
+        if ($body !== null) {
+            $args['body'] = wp_json_encode($body);
+        }
 
-		// Verify nonce
-		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
+        $resp = wp_remote_request($url, $args);
+        if (is_wp_error($resp)) {
+            return ['http_code' => 0, 'body' => ['title' => $resp->get_error_message()], 'raw' => null];
+        }
+        $code = wp_remote_retrieve_response_code($resp);
+        $raw  = wp_remote_retrieve_body($resp);
+        $json = json_decode($raw, true) ?: [];
 
-		if ( ! wp_verify_nonce( $nonce , 'wcf-addons-frontend' ) ) {
-			exit( 'No naughty business please' );
-		}
+        return ['http_code' => $code, 'body' => $json, 'raw' => $raw];
+    }
 
-		$return = [];
+    /** Extract DC ("usX") from API key */
+    private static function dc_from_key($api_key) {
+        $parts = explode('-', (string) $api_key);
+        return $parts[1] ?? null;
+    }
 
-		$api = '';
-		if ( isset( $_POST['key'] ) ) {
-			$ke = sanitize_text_field( wp_unslash( $_POST['key'] ) );
-			$api = str_replace( 'w1c2f', '', base64_decode( $ke ) );
-		}
+    /** Keep only merge tags that exist in the audience */
+    private static function filter_merge_fields(array $input, array $allowed_tags) {
+        $clean = [];
+        foreach ($allowed_tags as $tag) {
+            if (isset($input[$tag])) {
+                $clean[$tag] = is_string($input[$tag]) ? trim((string)$input[$tag]) : $input[$tag];
+            }
+        }
+        return $clean;
+    }
 
-		$tags = '';
-		if ( isset( $_POST['listTags'] ) && ! empty( $_POST['listTags'] ) ) {
-			$lst = sanitize_text_field( wp_unslash($_POST['listTags']) );	
-			$tags = explode( ', ', $lst );
-		}
+    /** Make sure an array encodes to JSON object ({}) instead of [] when empty */
+    private static function as_json_object(array $arr) {
+        return $arr ? (object) $arr : new \stdClass();
+    }
 
-		$auth = [
-			'api_key' => $api,
-			'list_id' => isset($_POST['listId']) ? sanitize_text_field( wp_unslash($_POST['listId']) ) : '',
-		];
+    /** Pretty-print Mailchimp field-level errors */
+    private static function pretty_mailchimp_error(array $body): string {
+        if (!empty($body['errors']) && is_array($body['errors'])) {
+            $lines = [];
+            foreach ($body['errors'] as $e) {
+                $f = isset($e['field']) ? (string)$e['field'] : '';
+                $m = isset($e['message']) ? (string)$e['message'] : '';
+                $lines[] = trim(($f ? "{$f}: " : '') . $m);
+            }
+            return implode(' | ', $lines);
+        }
+        return (string)($body['detail'] ?? $body['title'] ?? __('Mailchimp error', 'animation-addons-for-elementor'));
+    }
 
-		$data = [
-			'email_address' => ( isset( $submitted_data['email'] ) ? $submitted_data['email'] : '' ),
-			'status'        => ( ( isset( $_POST['doubleOpt'] ) && $_POST['doubleOpt'] == 'yes' ) ? 'pending' : 'subscribed' ),
-			'status_if_new' => ( ( isset( $_POST['doubleOpt'] ) && $_POST['doubleOpt'] == 'yes' ) ? 'pending' : 'subscribed' ),
-			'merge_fields'  => [
-				'FNAME' => ( isset( $submitted_data['fname'] ) ? $submitted_data['fname'] : '' ),
-				'LNAME' => ( isset( $submitted_data['lname'] ) ? $submitted_data['lname'] : '' ),
-				'PHONE' => ( isset( $submitted_data['phone'] ) ? $submitted_data['phone'] : '' ),
-			],
-		];
-		
-		if(isset($submitted_data['advanced-mailchimp'])){
-			$data['merge_fields'] = $submitted_data;
-		}
+    /** Normalize + validate email (returns lowercased email or WP_Error) */
+    private static function normalize_and_validate_email($raw) {
+        $email = sanitize_email((string)$raw);
+        if (!$email || !is_email($email)) {
+            return new \WP_Error('invalid_email', __('Please provide a valid email address.', 'animation-addons-for-elementor'), [
+                'raw'       => $raw,
+                'sanitized' => $email,
+            ]);
+        }
+        return strtolower($email);
+    }
 
-		if ( ! empty( $tags ) ) {
-			$data['tags'] = $tags;
-		}
+    /**
+     * Add/Update a subscriber (idempotent)
+     */
+    public static function insert_subscriber_to_mailchimp($submitted_data) {
+        if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
+            wp_send_json_error('Invalid nonce');
+        }
 
-		$server = explode( '-', $auth['api_key'] );
+        // 1) Decode API key and basic inputs
+        $api_key = '';
+        if (!empty($_POST['key'])) {
+            $api_key = str_replace('w1c2f', '', base64_decode(wp_unslash($_POST['key'])));
+        }
+        $list_id = isset($_POST['listId']) ? trim((string) wp_unslash($_POST['listId'])) : '';
+        $double  = (isset($_POST['doubleOpt']) && $_POST['doubleOpt'] === 'yes');
 
-		if ( ! isset( $server[1] ) ) {
-			return [
-				'status' => 0,
-				'msg'    => esc_html__( 'Invalid API key.', 'animation-addons-for-elementor' ),
-			];
-		}
+        if (!$api_key || !$list_id) {
+            return ['status' => 0, 'msg' => esc_html__('Missing API key or List ID.', 'animation-addons-for-elementor')];
+        }
 
-		$url = 'https://' . $server[1] . '.api.mailchimp.com/3.0/lists/' . $auth['list_id'] . '/members/';
+        $dc = self::dc_from_key($api_key);
+        if (!$dc) {
+            return ['status' => 0, 'msg' => esc_html__('Invalid API key.', 'animation-addons-for-elementor')];
+        }
 
-		$response = wp_remote_post(
-			$url,
-			[
-				'method'      => 'POST',
-				'data_format' => 'body',
-				'timeout'     => 45,
-				'headers'     => [
-					'Authorization' => 'apikey ' . $auth['api_key'],
-					'Content-Type'  => 'application/json; charset=utf-8',
-				],
-				'body'        => wp_json_encode( $data ),
-			]
-		);
+        // 2) Email: sanitize, validate, lowercase + hash
+        $email_lc_or_error = self::normalize_and_validate_email($submitted_data['email'] ?? '');
+        if (is_wp_error($email_lc_or_error)) {
+            error_log('Mailchimp invalid email: ' . wp_json_encode($email_lc_or_error->get_error_data()));
+            return ['status' => 0, 'msg' => esc_html__('Please provide a valid email address.', 'animation-addons-for-elementor')];
+        }
+        $email           = $email_lc_or_error;
+        $subscriber_hash = md5($email); // Mailchimp requires md5(lowercase email)
 
-		if ( is_wp_error( $response ) ) {
-			$error_message    = $response->get_error_message();
-			$return['status'] = 0;
-			$return['msg']    = 'Something went wrong: ' . esc_html( $error_message );
-		} else {
-			$body           = (array) json_decode( $response['body'] );
-			$return['body'] = $body;
-			if ( $body['status'] > 399 && $body['status'] < 600 ) {
-				$return['status'] = 0;
-				$return['msg']    = $body['title'];
-			} elseif ( $body['status'] == 'subscribed' ) {
-				$return['status'] = 1;
-				$return['msg']    = esc_html__( 'Your data has been inserted on Mailchimp.', 'animation-addons-for-elementor' );
-			} elseif ( $body['status'] == 'pending' ) {
-				$return['status'] = 1;
-				$return['msg']    = esc_html__( 'Confirm your subscription from your email.', 'animation-addons-for-elementor' );
-			} else {
-				$return['status'] = 0;
-				$return['msg']    = esc_html__( 'Something went wrong. Try again later.', 'animation-addons-for-elementor' );
-			}
-		}
+        // 3) Optional tags (array of strings)
+        $tags = [];
+        if (!empty($_POST['listTags'])) {
+            $tags = array_filter(array_map('trim', preg_split('/\s*,\s*/', wp_unslash($_POST['listTags']))));
+        }
 
-		return $return;
-	}
+        // 4) Build merge_fields safely
+        // Read allowed merge tags from API so we never send invalid keys
+        $merge_fields_allowed = self::get_merge_tags($api_key, $list_id); // ['FNAME','LNAME','PHONE',...]
+        $default_merge        = [
+            'FNAME' => isset($submitted_data['fname']) ? trim((string)$submitted_data['fname']) : '',
+            'LNAME' => isset($submitted_data['lname']) ? trim((string)$submitted_data['lname']) : '',
+            'PHONE' => isset($submitted_data['phone']) ? trim((string)$submitted_data['phone']) : '',
+        ];
 
-	/**
-	 * Get request
-	 *
-	 * @return array all list
-	 */
-	public static function get_mailchimp_lists( $api = null ) {
-		$options = [];
+        $candidate_merge = $default_merge;
 
-		$server = explode( '-', $api );
+        // If user enabled advanced mapping, only copy keys that are valid merge tags
+        if (isset($submitted_data['advanced-mailchimp'])) {
+            $candidate_merge = self::filter_merge_fields($submitted_data, $merge_fields_allowed);
+        }
 
-		if ( ! isset( $server[1] ) ) {
-			return 0;
-		}
+        // Ensure JSON object for merge_fields ({} when empty)
+        $merge_fields_obj = self::as_json_object(
+            self::filter_merge_fields($candidate_merge, $merge_fields_allowed)
+        );
 
-		$url = 'https://' . $server[1] . '.api.mailchimp.com/3.0/lists';
+        $payload = [
+            'email_address' => $email,                          // correct key
+            'status_if_new' => $double ? 'pending' : 'subscribed',
+            'status'        => $double ? 'pending' : 'subscribed',
+            'merge_fields'  => $merge_fields_obj,               // must be object
+        ];
 
-		$response = wp_remote_post(
-			$url,
-			[
-				'method'      => 'GET',
-				'data_format' => 'body',
-				'timeout'     => 45,
-				'headers'     => [
+        // 5) PUT add-or-update
+        $member_url = "https://{$dc}.api.mailchimp.com/3.0/lists/{$list_id}/members/{$subscriber_hash}";
+        $res = self::request('PUT', $member_url, $api_key, $payload);
+        error_log('MC upsert response: ' . print_r($res, true));
 
-					'Authorization' => 'apikey ' . $api,
-					'Content-Type'  => 'application/json; charset=utf-8',
-				],
-				'body'        => '',
-			]
-		);
+        // 6) If tags requested, apply via the dedicated endpoint (reliable for both new & existing)
+        if (!empty($tags) && $res['http_code'] >= 200 && $res['http_code'] < 300) {
+            $tag_ops = array_map(fn($t) => ['name' => $t, 'status' => 'active'], $tags);
+            $tags_url = "https://{$dc}.api.mailchimp.com/3.0/lists/{$list_id}/members/{$subscriber_hash}/tags";
+            self::request('POST', $tags_url, $api_key, ['tags' => $tag_ops]);
+        }
 
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-			$body   = (array) json_decode( $response['body'] );
-			$listed = isset( $body['lists'] ) ? $body['lists'] : [];
+        // 7) Normalize response
+        if ($res['http_code'] >= 400) {
+            $msg = self::pretty_mailchimp_error($res['body']);
+            return ['status' => 0, 'msg' => sanitize_text_field($msg), 'body' => $res['body']];
+        }
 
-			if ( is_array( $listed ) && count( $listed ) > 0 ) {
-				$options = array_reduce(
-					$listed,
-					function ( $result, $item ) {
-						// extra space is needed to maintain order in elementor control
-						$result[ $item->id ] = $item->name;
+        $member_status = $res['body']['status'] ?? '';
+        if ($member_status === 'pending') {
+            return ['status' => 1, 'msg' => esc_html__('Confirm your subscription from your email.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+        }
+        return ['status' => 1, 'msg' => esc_html__('Your data has been inserted on Mailchimp.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+    }
 
-						return $result;
-					},
-					array()
-				);
-			}
-		}
+    /** Get audience lists (unchanged but use GET helper) */
+    public static function get_mailchimp_lists($api = null) {
+        $dc = self::dc_from_key($api);
+        if (!$dc) return 0;
 
-		return $options;
-	}
-	public static function get_form_fields( $api = null , $list_id = null ) {
-		$options = [];
+        $url = "https://{$dc}.api.mailchimp.com/3.0/lists";
+        $res = self::request('GET', $url, $api);
+        if ($res['http_code'] >= 200 && !empty($res['body']['lists'])) {
+            $options = [];
+            foreach ($res['body']['lists'] as $item) {
+                // preserve Elementor control ordering
+                $options[$item['id']] = $item['name'];
+            }
+            return $options;
+        }
+        return [];
+    }
 
-		$server = explode( '-', $api );
+    /** Fetch merge tags (returns list of tag strings like ['FNAME','LNAME']) */
+    public static function get_merge_tags($api, $list_id) {
+        $dc = self::dc_from_key($api);
+        if (!$dc) return [];
 
-		if ( ! isset( $server[1] ) ) {
-			return 0;
-		}
+        $url = "https://{$dc}.api.mailchimp.com/3.0/lists/".trim($list_id)."/merge-fields?count=100";
+        $res = self::request('GET', $url, $api);
+        if ($res['http_code'] >= 200 && !empty($res['body']['merge_fields'])) {
+            return array_values(array_map(fn($mf) => $mf['tag'], $res['body']['merge_fields']));
+        }
+        return ['FNAME','LNAME','PHONE']; // sensible fallbacks
+    }
 
-		$url = 'https://' . $server[1] . '.api.mailchimp.com/3.0/lists/'.trim($list_id).'/merge-fields?count=30';
-
-		$response = wp_remote_post(
-			$url,
-			[
-				'method'      => 'GET',
-				'data_format' => 'body',
-				'timeout'     => 45,
-				'headers'     => [
-					'Authorization' => 'apikey ' . $api,
-					'Content-Type'  => 'application/json; charset=utf-8',
-				],
-				'body'        => '',
-			]
-		);
-
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-			$body   = (array) json_decode( $response['body'] );
-			$listed = isset( $body['merge_fields'] ) ? $body['merge_fields'] : [];
-			update_option('aae_addon_mailchimp_form_field', $listed);
-			return $listed;			
-		}
-
-		return $options;
-	}
+    /** Back-compat alias (kept for your existing UI) */
+    public static function get_form_fields($api = null, $list_id = null) {
+        $dc = self::dc_from_key($api);
+        if (!$dc) return [];
+        $url = "https://{$dc}.api.mailchimp.com/3.0/lists/".trim($list_id)."/merge-fields?count=30";
+        $res = self::request('GET', $url, $api);
+        if ($res['http_code'] >= 200 && !empty($res['body']['merge_fields'])) {
+            update_option('aae_addon_mailchimp_form_field', $res['body']['merge_fields']);
+            return $res['body']['merge_fields'];
+        }
+        return [];
+    }
 }

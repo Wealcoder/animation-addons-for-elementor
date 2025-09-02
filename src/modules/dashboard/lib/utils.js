@@ -303,3 +303,22 @@ export const hideElements = () => {
   if (wpToolbar) wpToolbar.style.paddingTop = "0px";
   if (wcfAnim2024) wcfAnim2024.style.overflow = "hidden";
 };
+
+export function formatNumber(value) {
+  // convert string to number if needed
+  const num = typeof value === "string" ? parseFloat(value) : value;
+
+  if (isNaN(num)) return "0";
+
+  if (num >= 1_000_000_000) {
+    return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B";
+  }
+  if (num >= 1_000_000) {
+    return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  }
+  if (num >= 1_000) {
+    return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+  }
+
+  return num.toString();
+}
