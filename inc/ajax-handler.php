@@ -130,7 +130,7 @@ class Ajax_Handler {
                 <div class="search-item">
 					<?php if ( $thumb !='' ) { ?>
                     <div class="thumb AAE-no-image">
-                        <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_html( $title ); ?>">
+                        <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_attr( $title ); ?>">
                     </div>
 					<?php } ?>
                     <div class="content">
@@ -205,7 +205,8 @@ class Ajax_Handler {
 			exit( 'No naughty business please' );
 		}
 	
-		$subscriber_info = isset( $_POST['subscriber_info'] ) ? wp_kses_post( wp_unslash($_POST['subscriber_info'] ) ) : '';
+		$query = isset( $_POST['subscriber_info'] ) ? wp_kses_post( wp_unslash($_POST['subscriber_info'] ) ) : '';
+		$subscriber_info = html_entity_decode($query);
 		parse_str($subscriber_info, $subscriber);		
 		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
 

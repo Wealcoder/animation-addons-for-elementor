@@ -35,7 +35,7 @@ const StaterTemplate = () => {
         const url = new URL(
           `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
         );
-        console.log(meta);
+       
         if (meta.searchKey) {
           url.searchParams.append("s", meta.searchKey);
         }
