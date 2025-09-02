@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.11
+Stable tag: 2.3.12
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,7 +98,7 @@ Once your website is designed with all the essential elements, enhance its funct
 **Wrapper Link**: Transform entire container sections into clickable links for seamless navigation.
 **[Popup](https://animation-addons.com/extensions/pop-up/)**: Create engaging popups to enhance user interaction and showcase important content.
 **Tilt Effect**: Tilt an element based on the visitor’s mouse movement for a dynamic visual experience.
-**Advanced Tooltip**: Display additional information about elements when users hover over them.
+**[Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/)**: Display additional information about elements when users hover over them.
 **Custom Fonts**: Integrate unique custom fonts to maintain a consistent brand identity.
 **Mega Menu**: Create a customizable, expansive mega menu for seamless navigation.
 
@@ -421,6 +421,14 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= Animation Addons for Elementor v2.3.12 – 02 September 2025 =
+
+  - 🎨 Fixed: Toggle Widget for smoother interaction and better user experience
+  - 🎨 Fixed: Mailchimp Widget subscribing issue to ensure seamless email marketing integration
+  - 🎨 Fixed: Nested Element editor loading issue for faster, stable page building
+  - 🆕 Added: Code Snippet visibility option to give you more control and flexibility in your projects
+  - ✏️ Improved: Dashboard Starter Template design and filter for easier access to 200+ websites & 10,000+ sections
 
 = Animation Addons for Elementor v2.3.11 – 19 august 2025 = 
   - 🆕 **Added:** Starter Template Menu

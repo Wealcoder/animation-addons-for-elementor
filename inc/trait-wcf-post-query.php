@@ -734,6 +734,7 @@ trait WCF_Post_Query_Trait {
 
 		if(isset($_GET['aae-ajax-filter']))
 		{
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
 				$query_args['tax_query'][] = [
 					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
@@ -745,6 +746,7 @@ trait WCF_Post_Query_Trait {
 
 		if(isset($_GET['aae-ajax-filter']))
 		{
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
 				$query_args['tax_query'][] = [
 					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
@@ -752,8 +754,10 @@ trait WCF_Post_Query_Trait {
 					'terms'    => sanitize_text_field( wp_slash( $_GET['term'] ) ),
 				];				
 			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only access to a public pagination var. No state change, DB write, or sensitive action.
+			// Also fully sanitized to prevent injection.
 			if(isset($_GET['tax']) && isset($_GET['term']) && isset($_GET['cpaged'])){
-				$query_args['paged'] = sanitize_text_field( wp_slash( $_GET['cpaged'] ) );
+				$query_args['paged'] = absint( sanitize_text_field( wp_slash( $_GET['cpaged'] ) ) );
 			}		
 		}
 

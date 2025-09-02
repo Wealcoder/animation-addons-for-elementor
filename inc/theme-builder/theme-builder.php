@@ -1442,12 +1442,12 @@ class WCF_Theme_Builder
 								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
 									<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-trigger"
 										id="wcf-addons--popup--builder-trigger">
-										<option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option>
+										<!-- <option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option> -->
 										<option value="pageloaded"><?php echo esc_html__('Page Loaded', 'animation-addons-for-elementor'); ?></option>
 										<option value="pageexit"><?php echo esc_html__('Page Body Exist', 'animation-addons-for-elementor'); ?></option>
-										<option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option>
-										<option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option>
-										<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
+										<!-- <option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option> -->
+										<!-- <option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option> -->
+										<!-- <option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option> -->
 									</select>
 							</div>
 							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">

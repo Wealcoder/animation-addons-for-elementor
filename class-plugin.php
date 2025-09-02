@@ -937,7 +937,7 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
 		include_once WCF_ADDONS_PATH . 'inc/admin/image-cache.php';
-		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
+		//include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
 		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-nested-slider.php';
 
