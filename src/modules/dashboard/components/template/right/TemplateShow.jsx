@@ -109,7 +109,7 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                       href={template?.demo_link}
                       className={cn(
                         buttonVariants(),
-                        "h-9 w-[150px] bg-transparent hover:bg-transparent border border-white text-white rounded-full text-base font-medium capitalize gap-1"
+                        "h-9 w-[150px] bg-transparent hover:bg-transparent border-2 border-white text-white rounded-full text-base font-medium capitalize gap-1"
                       )}
                       target="_blank"
                     >
@@ -133,7 +133,7 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                       Preview
                     </a>
                     <Button
-                      className="h-9 w-[150px] bg-[#F6502C] hover:bg-[#F6502C] border border-[#F6502C]  text-white rounded-full text-base font-medium capitalize gap-1"
+                      className="h-9 w-[150px] bg-[#F6502C] hover:bg-[#F6502C] border-2 border-[#F6502C]  text-white rounded-full text-base font-medium capitalize gap-1"
                       onClick={() =>
                         changeRoute(
                           "required-features",
@@ -169,7 +169,7 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                         template.id.toString()
                       )}
                       onPressedChange={(value) => saveWishlist(template.id)}
-                      className={`data-[state=on]:bg-[#F6502C] data-[state=on]:border-[#F6502C]  cursor-pointer h-9 w-[150px] bg-transparent hover:bg-transparent border border-white text-white rounded-full text-base font-medium capitalize gap-1`}
+                      className={`data-[state=on]:bg-[#F6502C] data-[state=on]:border-[#F6502C]  cursor-pointer h-9 w-[150px] bg-transparent hover:bg-transparent border-2 border-white text-white rounded-full text-base font-medium capitalize gap-1`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

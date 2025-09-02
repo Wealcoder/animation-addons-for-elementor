@@ -238,7 +238,7 @@ const StaterTemplate = () => {
                           stroke-linecap="round"
                           stroke-linejoin="round"
                         />
-                      </svg>
+                      </svg>           
                       <div className="px-1 py-1.5 bg-[#FEEEEA] rounded-full text-xs font-medium min-w-5 h-5 flex justify-center items-center">
                         {metaData?.wishlist?.length}
                       </div>
