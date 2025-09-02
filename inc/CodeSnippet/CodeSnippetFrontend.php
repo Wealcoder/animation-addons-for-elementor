@@ -552,7 +552,7 @@ class CodeSnippetFrontend {
 	private function execute_javascript_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<script type="text/javascript">' . "\n";
-			echo esc_js( $content ) . "\n";
+			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</script>' . "\n";
 		}
 	}
@@ -578,10 +578,7 @@ class CodeSnippetFrontend {
 				if ( is_callable( $func ) ) {
 					$func();
 				}
-			} catch ( \Throwable $e ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'Code Snippet Error: ' . $e->getMessage() );
-				}
+			} catch ( \Throwable $e ) {				
 			}
 
 			$output = ob_get_clean();
