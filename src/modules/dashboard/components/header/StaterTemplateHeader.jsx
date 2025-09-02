@@ -108,6 +108,7 @@ export function StaterTemplateHeader({ metaData, setMetaData }) {
                                     ...prev,
                                     selectedCategory: updatedCategories,
                                     tempSelectedCategory: updatedTempCategories,
+                                    pageNum: 1
                                   };
                                 })
                               }
@@ -148,6 +149,7 @@ export function StaterTemplateHeader({ metaData, setMetaData }) {
                               ...prev,
                               selectedCategory: updatedCategories,
                               tempSelectedCategory: updatedTempCategories,
+                              pageNum: 1
                             };
                           });
                         }}
@@ -189,6 +191,7 @@ export function StaterTemplateHeader({ metaData, setMetaData }) {
                                     ...prev,
                                     selectedCategory: updatedCategories,
                                     tempSelectedCategory: updatedTempCategories,
+                                    pageNum: 1
                                   };
                                 });
                               }}

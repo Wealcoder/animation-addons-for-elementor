@@ -48,7 +48,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, type: value, pageNum: 1 },
+                      filterData: { ...filterData, type: value },
+                      pageNum: 1 
                     }))
                   }
                 >
@@ -90,7 +91,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, mode: value, pageNum: 1  },
+                      filterData: { ...filterData, mode: value  },
+                      pageNum: 1 
                     }))
                   }
                 >
@@ -132,7 +134,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, dir: value, pageNum: 1  },
+                      filterData: { ...filterData, dir: value },
+                      pageNum: 1 
                     }))
                   }
                 >
@@ -174,7 +177,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                   onValueChange={(value) =>
                     setMetaData((pre) => ({
                       ...pre,
-                      filterData: { ...filterData, order: value, pageNum: 1  },
+                      filterData: { ...filterData, order: value  },
+                      pageNum: 1 
                     }))
                   }
                 >
@@ -218,7 +222,8 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                     onCheckedChange={(value) =>
                       setMetaData((pre) => ({
                         ...pre,
-                        filterData: { ...filterData, wishlist: value, pageNum: 1  },
+                        filterData: { ...filterData, wishlist: value },
+                        pageNum: 1 
                       }))
                     }
                     className={"w-3 h-3 border-[#202020] rounded-full"}
