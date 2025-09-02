@@ -185,7 +185,7 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
-          className="pl-10 pr-10 h-11 text-base bg-white border-[#00000026] focus:border-[#202020] focus:ring-0 placeholder:text-[#797979]"
+          className="pl-10 pr-10 h-11 text-[16px] bg-white border-[#00000026] focus:border-[#202020] focus:ring-0 placeholder:text-[#797979]"
         />
 
         {/* Loading indicator */}

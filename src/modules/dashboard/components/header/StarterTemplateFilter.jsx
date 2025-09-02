@@ -25,7 +25,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button className="px-2 2xl:px-3 py-0 h-[26px] bg-[#F6502C] rounded-full text-base font-medium text-white gap-1">
+                  <Button className="px-2 2xl:px-3 py-0 h-[26px] bg-[#F6502C] rounded-full text-[16px] font-medium text-white gap-1">
                     <div className="flex justify-center items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

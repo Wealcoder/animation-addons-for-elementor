@@ -46,7 +46,7 @@ const StaterTemplate = () => {
         const url = new URL(
           `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
         );
-       
+
         if (meta.searchKey) {
           url.searchParams.append("s", meta.searchKey);
         }
@@ -222,7 +222,7 @@ const StaterTemplate = () => {
                         metaData?.filterData?.wishlist
                           ? "bg-[#F6502C] text-white [&>svg]:stroke-white [&>div]:bg-white [&>div]:text-[#121212]"
                           : "bg-transparent [&>svg]:stroke-[#F6502C] text-[#F6502C]",
-                        "cursor-pointer ps-3 pe-[3px] py-0 h-[26px] border border-[#F6502C]  rounded-full text-base font-medium capitalize gap-1"
+                        "cursor-pointer ps-3 pe-[3px] py-0 h-[26px] border border-[#F6502C]  rounded-full text-[16px] font-medium capitalize gap-1"
                       )}
                     >
                       <svg
@@ -239,26 +239,37 @@ const StaterTemplate = () => {
                           stroke-linejoin="round"
                         />
                       </svg>
-                      <span className="hidden 2xl:block">Wishlist</span>
                       <div className="px-1 py-1.5 bg-[#FEEEEA] rounded-full text-xs font-medium min-w-5 h-5 flex justify-center items-center">
                         {metaData?.wishlist?.length}
                       </div>
                     </Toggle>
                   </TooltipTrigger>
-                  <TooltipContent className="2xl:hidden">
+                  <TooltipContent>
                     <p>Wishlist</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
             <div className="hidden 2xl:block">
-              <TemplateSearch metaData={metaData} setMetaData={setMetaData} setOpenSearch={setOpenSearch} />
+              <TemplateSearch
+                metaData={metaData}
+                setMetaData={setMetaData}
+                setOpenSearch={setOpenSearch}
+              />
             </div>
             <div className="block 2xl:hidden">
-              <Button className="h-11 border shadow-none border-[#00000026] rounded-[10px] px-4 bg-transparent" onClick={() => setOpenSearch(true)}>
+              <Button
+                className="h-11 border shadow-none border-[#00000026] rounded-[10px] px-4 bg-transparent"
+                onClick={() => setOpenSearch(true)}
+              >
                 <Search className="h-4 w-4 text-[#797979]" />
               </Button>
-              <TemplateSearchDialog metaData={metaData} setMetaData={setMetaData} openSearch={openSearch} setOpenSearch={setOpenSearch} />
+              <TemplateSearchDialog
+                metaData={metaData}
+                setMetaData={setMetaData}
+                openSearch={openSearch}
+                setOpenSearch={setOpenSearch}
+              />
             </div>
           </div>
         </div>

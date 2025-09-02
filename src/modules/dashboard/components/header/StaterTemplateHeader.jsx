@@ -35,7 +35,7 @@ export function StaterTemplateHeader({ metaData, setMetaData }) {
         {
           menuData?.map((gItem) => (
             <NavigationMenuItem2 key={gItem.id}>
-              <NavigationMenuTrigger2 className="px-0 py-[21px] text-base font-medium text-[#202020] data-[state=open]:text-[#F6502C] [&>svg]:w-5 [&>svg]:h-5 leading-[20px] h-full">
+              <NavigationMenuTrigger2 className="px-0 py-[21px] text-[16px] font-medium text-[#202020] data-[state=open]:text-[#F6502C] [&>svg]:w-5 [&>svg]:h-5 leading-[20px] h-full">
                 {gItem.title}
               </NavigationMenuTrigger2>
               <NavigationMenuContent2 className="-left-[30px] p-0">
