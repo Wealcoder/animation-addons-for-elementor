@@ -162,16 +162,18 @@ final class WCF_ADDONS_Plugin {
 	public static function plugin_deactivation_hook() {
 		
 		$count = (int) get_option('aae_dactivation_count', 0);
-    	update_option('aae_dactivation_count', $count + 1, true);
-		update_option('aae_last_dactivated', current_time('mysql'), true);	
-		wp_remote_post(
-			'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
-			[
-				'timeout'  => 2,                           // keep it snappy
-				'blocking' => false,                       // fire-and-forget
-				'headers'  => ['Content-Type' => 'application/json'],				
-			]
-		);	
+		if(!$count){
+			update_option('aae_dactivation_count', $count + 1, true);
+			update_option('aae_last_dactivated', current_time('mysql'), true);	
+			wp_remote_post(
+				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
+				[
+					'timeout'  => 2,                           // keep it snappy
+					'blocking' => false,                       // fire-and-forget
+					'headers'  => ['Content-Type' => 'application/json'],				
+				]
+			);	
+		}
 	}
 
 	/**
