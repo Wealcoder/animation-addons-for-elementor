@@ -3,7 +3,7 @@
  * Plugin Name: Animation Addons
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://animation-addons.com/
- * Version:     2.3.11
+ * Version:     2.3.12
  * Author:      Wealcoder
  * Author URI:  https://animation-addons.com/
  * License:           GPL v2 or later
@@ -26,7 +26,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.3.11' );
+	define( 'WCF_ADDONS_VERSION', '2.3.12' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -162,16 +162,18 @@ final class WCF_ADDONS_Plugin {
 	public static function plugin_deactivation_hook() {
 		
 		$count = (int) get_option('aae_dactivation_count', 0);
-    	update_option('aae_dactivation_count', $count + 1, true);
-		update_option('aae_last_dactivated', current_time('mysql'), true);	
-		wp_remote_post(
-			'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
-			[
-				'timeout'  => 2,                           // keep it snappy
-				'blocking' => false,                       // fire-and-forget
-				'headers'  => ['Content-Type' => 'application/json'],				
-			]
-		);	
+		if(!$count){
+			update_option('aae_dactivation_count', $count + 1, true);
+			update_option('aae_last_dactivated', current_time('mysql'), true);	
+			wp_remote_post(
+				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
+				[
+					'timeout'  => 2,                           // keep it snappy
+					'blocking' => false,                       // fire-and-forget
+					'headers'  => ['Content-Type' => 'application/json'],				
+				]
+			);	
+		}
 	}
 
 	/**

@@ -89,16 +89,20 @@ class Mailchimp_Api {
      * Add/Update a subscriber (idempotent)
      */
     public static function insert_subscriber_to_mailchimp($submitted_data) {
-        if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], 'wcf-addons-frontend')) {
+
+        // 0) Basic nonce check
+        $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
+
+        if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($nonce , 'wcf-addons-frontend')) {
             wp_send_json_error('Invalid nonce');
         }
   
         // 1) Decode API key and basic inputs
         $api_key = '';
         if (!empty($_POST['key'])) {
-            $api_key = str_replace('w1c2f', '', base64_decode(wp_unslash($_POST['key'])));
+            $api_key = str_replace('w1c2f', '', base64_decode( sanitize_text_field( wp_unslash($_POST['key']) )));
         }
-        $list_id = isset($_POST['listId']) ? trim((string) wp_unslash($_POST['listId'])) : '';
+        $list_id = isset($_POST['listId']) ? trim((string) sanitize_text_field( wp_unslash($_POST['listId']))) : '';
         $double  = (isset($_POST['doubleOpt']) && $_POST['doubleOpt'] === 'yes');
 
         if (!$api_key || !$list_id) {
@@ -121,7 +125,7 @@ class Mailchimp_Api {
         // 3) Optional tags (array of strings)
         $tags = [];
         if (!empty($_POST['listTags'])) {
-            $tags = array_filter(array_map('trim', preg_split('/\s*,\s*/', wp_unslash($_POST['listTags']))));
+            $tags = array_filter(array_map('trim', preg_split('/\s*,\s*/', sanitize_text_field(wp_unslash($_POST['listTags'])))));
         }
 
         // 4) Build merge_fields safely

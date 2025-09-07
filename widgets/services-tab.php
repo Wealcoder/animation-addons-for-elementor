@@ -200,7 +200,7 @@ class Services_Tab extends Widget_Base {
 				'dynamic'     => [
 					'active' => true,
 				],
-				'placeholder' => esc_html__( 'https://your-link.com', 'animation-addons-for-elementor' ),
+				'placeholder' =>  'https://your-link.com',
 			]
 		);
 

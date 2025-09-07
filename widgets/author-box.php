@@ -300,7 +300,7 @@ class Author_Box extends Widget_Base
 			[
 				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
+				'placeholder' => esc_url('https://your-link.com'),
 				'condition'   => [
 					'source' => 'custom',
 				],
@@ -330,7 +330,7 @@ class Author_Box extends Widget_Base
 			[
 				'label'       => esc_html__('Archive Button', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'placeholder' => esc_html__('https://your-link.com', 'animation-addons-for-elementor'),
+				'placeholder' => 'https://your-link.com',
 				'dynamic'     => [
 					'active' => true,
 				],
