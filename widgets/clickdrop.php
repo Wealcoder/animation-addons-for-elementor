@@ -82,7 +82,7 @@ class ClickDrop extends Widget_Base
             [
                 'label' => esc_html__('Login Link', 'animation-addons-for-elementor'),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__('https://crowdytheme.com/login', 'animation-addons-for-elementor'),
+                'placeholder' => esc_url('https://crowdytheme.com/login'),
             ]
         );
         $this->add_control(
