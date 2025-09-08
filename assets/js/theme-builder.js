@@ -239,6 +239,9 @@
                 $("#wcf-addons--popup--builder-trigger")
                   .val(response.responseJSON.data?.tmpTrigger)
                   .trigger("change");
+                $("#wcf-addons--popup--builder-effect")
+                  .val(response.responseJSON.data?.tmpEffect)
+                  .trigger("change");
                 $(".aae-popup-builder-location").removeClass("hidden");
                 WCFThemeBuilder.selectorFieldDisplay(
                   response.responseJSON.data?.tmpTrigger
@@ -321,6 +324,10 @@
         data["tmpTrigger"] = $("#wcf-addons--popup--builder-trigger").val()
           ? $("#wcf-addons--popup--builder-trigger").val()
           : "pageloaded";
+
+        data["tmpEffect"] = $("#wcf-addons--popup--builder-effect").val()
+          ? $("#wcf-addons--popup--builder-effect").val()
+          : "flip";
 
         data["tmpSelector"] = $("#aae-popup-builder-selector").val()
           ? $("#aae-popup-builder-selector").val()

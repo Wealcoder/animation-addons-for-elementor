@@ -485,7 +485,7 @@ class WCF_Theme_Builder
 					$format     = get_post_format($post_id) ?: 'standard';
 					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
-					if (! empty($location) && ! empty($splocation)) {					
+					if (! empty($location) && ! empty($splocation)) {
 
 						if ('post-singular' === $location && $splocation[0] === $get_queried_object->slug) {
 							$cat_id = $post_id;
@@ -566,7 +566,7 @@ class WCF_Theme_Builder
 		$count              = $query->post_count;
 		$templates          = array();
 		$templates_specific = array('specifics' => array());
-	
+
 		foreach ($query->posts as $key => $post_id) {
 			// to strong
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
@@ -574,10 +574,12 @@ class WCF_Theme_Builder
 			$popup_trigger = get_post_meta($post_id, 'popup_trigger', true);
 			$popup_selector = get_post_meta($post_id, 'popup_selector', true);
 			$delayTime = get_post_meta($post_id, 'delayTime', true);
-			$poup_data[$post_id] = array(				
+			$effect = get_post_meta($post_id, 'effect', true);
+			$poup_data[$post_id] = array(
 				'popup_trigger' => $popup_trigger,
 				'popup_selector' => $popup_selector,
 				'delayTime' => $delayTime,
+				'effect' => $effect,
 			);
 			if (! empty($location)) {
 				if ('specifics' === $location) {
@@ -589,7 +591,7 @@ class WCF_Theme_Builder
 						)
 					);
 				} else {
-					if($location == 404){
+					if ($location == 404) {
 						$location = '_404';
 					}
 					$templates[$location][] = $post_id;
@@ -599,32 +601,32 @@ class WCF_Theme_Builder
 			if ($key === $count - 1 && ! empty($templates_specific['specifics'])) {
 				$templates = array_merge($templates, $templates_specific);
 			}
-		}		
+		}
 		wp_reset_postdata();
 		if (empty($templates)) {
 			return false;
 		}
-		$return_ids = array_merge($return_ids, array_values($templates['global'] ?? []));		
+		$return_ids = array_merge($return_ids, array_values($templates['global'] ?? []));
 		// check for specific page and post
-		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {			
+		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {
 			foreach ($templates['specifics'] as $specific) {
-				if(isset($specific['posts']) && is_array($specific['posts'])){
+				if (isset($specific['posts']) && is_array($specific['posts'])) {
 					$key = array_search(get_the_ID(), $specific['posts']);
 					if (false !== $key) {
 						$return_ids[] = $specific['id'];
 					}
-				}				
-			}			
+				}
+			}
 		}
-	
+
 		// check 404 page
 		if (is_404() && array_key_exists('_404', $templates)) {
-			$return_ids = array_merge($return_ids, array_values($templates['_404'] ?? []));			
+			$return_ids = array_merge($return_ids, array_values($templates['_404'] ?? []));
 		}
 
 		// check search page
 		if (is_search() && array_key_exists('search', $templates)) {
-			$return_ids = array_merge($return_ids, array_values($templates['search'] ?? []));			
+			$return_ids = array_merge($return_ids, array_values($templates['search'] ?? []));
 		}
 
 		// check front page
@@ -634,31 +636,30 @@ class WCF_Theme_Builder
 
 		// check for blog/posts page
 		if (is_home() && array_key_exists('blog', $templates)) {
-			$return_ids = array_merge($return_ids, array_values($templates['blog'] ?? []));				
+			$return_ids = array_merge($return_ids, array_values($templates['blog'] ?? []));
 		}
-		
-		
+
+
 		if (function_exists('is_shop') && is_shop()) {
 			// check for WooCommerce shop archive
 			if (function_exists('is_shop') && is_shop() && array_key_exists('product-archive', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['product-archive'] ?? []));					
+				$return_ids = array_merge($return_ids, array_values($templates['product-archive'] ?? []));
 			}
 		}
 		// check for archive
 		if (is_archive()) {
-			
+
 			if (is_category() && isset($templates['specifics_cat']) && is_numeric($templates['specifics_cat'])) {
-			
 			}
 
 			// check for all date archive
 			if (is_date() && array_key_exists('date', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['date'] ?? []));				
+				$return_ids = array_merge($return_ids, array_values($templates['date'] ?? []));
 			}
 
 			// check for all author archive
 			if (is_author() && array_key_exists('author', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['author'] ?? []));		
+				$return_ids = array_merge($return_ids, array_values($templates['author'] ?? []));
 			}
 
 			// check for custom post type archive
@@ -674,19 +675,19 @@ class WCF_Theme_Builder
 					foreach ($post_types as $ptype) {
 						$custom_archive = $ptype . '-archive';
 						if (array_key_exists($custom_archive, $templates)) {
-							$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));							
+							$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));
 						}
 					}
 				}
 			}
 
 			if (array_key_exists($custom_archive, $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));					
+				$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));
 			}
 
 			// all archives
 			if (array_key_exists('archives', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['archives'] ?? []));				
+				$return_ids = array_merge($return_ids, array_values($templates['archives'] ?? []));
 			}
 		}
 
@@ -696,25 +697,25 @@ class WCF_Theme_Builder
 			// if template type single ignore post type page		
 
 			if (is_page() && array_key_exists('allpage', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['allpage'] ?? []));						
+				$return_ids = array_merge($return_ids, array_values($templates['allpage'] ?? []));
 			}
 
 			// check for custom post type singular
 			$custom_single = get_post_type() . '-singulars';
 
 			if (array_key_exists($custom_single, $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates[$custom_single] ?? []));				
+				$return_ids = array_merge($return_ids, array_values($templates[$custom_single] ?? []));
 			}
 
 			// all singular
 			if (array_key_exists('singulars', $templates)) {
-				$return_ids = array_merge($return_ids, array_values($templates['singulars'] ?? []));					
+				$return_ids = array_merge($return_ids, array_values($templates['singulars'] ?? []));
 			}
 		}
-		$uniq_ids = array_unique( $return_ids );
-		
-		$poup_data = array_intersect_key( $poup_data, array_flip( $uniq_ids ) );	
-		return $poup_data; 
+		$uniq_ids = array_unique($return_ids);
+
+		$poup_data = array_intersect_key($poup_data, array_flip($uniq_ids));
+		return $poup_data;
 	}
 
 
@@ -828,13 +829,13 @@ class WCF_Theme_Builder
 			$current_type = sanitize_key($_GET['template_type']);
 		}
 ?>
-		<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
-			<div class="wcf-menu-area">
-				<a class="nav-tab <?php echo esc_attr($active_class); ?>"
-					href="edit.php?post_type=<?php echo esc_attr(self::CPTTYPE); ?>">
-					<?php echo esc_html__('All', 'animation-addons-for-elementor'); ?>
-				</a>
-				<?php
+<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
+    <div class="wcf-menu-area">
+        <a class="nav-tab <?php echo esc_attr($active_class); ?>"
+            href="edit.php?post_type=<?php echo esc_attr(self::CPTTYPE); ?>">
+            <?php echo esc_html__('All', 'animation-addons-for-elementor'); ?>
+        </a>
+        <?php
 				foreach (self::get_template_type() as $tabkey => $tab) {
 					$active_class = ($current_type == $tabkey ? 'nav-tab-active' : '');
 					$url          = 'edit.php?post_type=' . self::CPTTYPE . '&template_type=' . $tabkey;
@@ -847,9 +848,9 @@ class WCF_Theme_Builder
 					);
 				}
 				?>
-			</div>
-		</div>
-		<?php
+    </div>
+</div>
+<?php
 		return $views;
 	}
 
@@ -918,11 +919,11 @@ class WCF_Theme_Builder
 		if ($column_name === 'status') {
 			$tmpDisplay = get_post_meta($post_id, self::CPT_META . '_location', true);
 		?>
-			<div class="post-status">
-				<strong>Display: </strong>
-				<?php echo esc_html($tmpDisplay); ?>
-			</div>
-		<?php
+<div class="post-status">
+    <strong>Display: </strong>
+    <?php echo esc_html($tmpDisplay); ?>
+</div>
+<?php
 		}
 	}
 
@@ -1257,8 +1258,8 @@ class WCF_Theme_Builder
 	{
 		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
 		?>
-			<script type="text/template" id="tmpl-wcf-addons-ctppopup">
-				<div class="wcf-addons-template-edit-popup-area">
+<script type="text/template" id="tmpl-wcf-addons-ctppopup">
+    <div class="wcf-addons-template-edit-popup-area">
 					<div class="wcf-addons-body-overlay"></div>
 					<div class="wcf-addons-template-edit-popup">
 
@@ -1406,6 +1407,7 @@ class WCF_Theme_Builder
 										<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
 									</select>
 							</div>
+						
 							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
 								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
 								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
@@ -1419,7 +1421,17 @@ class WCF_Theme_Builder
 										name="aae-popup-builder-selector"
 										placeholder=".body">
 							</div>
-
+							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+								<label class="wcf-addons-template-edit-label">Effects</label>
+									<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-effect"
+										id="wcf-addons--popup--builder-effect">
+										<option value="flip"><?php echo esc_html__('Flip', 'animation-addons-for-elementor'); ?></option>
+										<option value="shakeEffect"><?php echo esc_html__('Scale + Shake Effect', 'animation-addons-for-elementor'); ?></option>
+										<option value="slideFromTo"><?php echo esc_html__('Slide From Top', 'animation-addons-for-elementor'); ?></option>
+										<option value="zoomBounce"><?php echo esc_html__('Zoom + Bounce', 'animation-addons-for-elementor'); ?></option>
+										<option value="fadeSlideup"><?php echo esc_html__('Fade + Slide Up', 'animation-addons-for-elementor'); ?></option>
+									</select>
+							</div>
 						</div>
 
 						<div class="wcf-addons-template-edit-footer">
@@ -1479,6 +1491,7 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty($_POST['specificsDisplay']) ? sanitize_text_field(wp_unslash($_POST['specificsDisplay'])) : '';
 			$popupDelay       = ! empty($_POST['tmpDelay']) ? sanitize_text_field(wp_unslash($_POST['tmpDelay'])) : 0;
 			$popuptrigger     = ! empty($_POST['tmpTrigger']) ? sanitize_text_field(wp_unslash($_POST['tmpTrigger'])) : 'pageloaded';
+			$popupEffect     = ! empty($_POST['tmpEffect']) ? sanitize_text_field(wp_unslash($_POST['tmpEffect'])) : 'flip';
 			$selector     = ! empty($_POST['tmpSelector']) ? sanitize_text_field(wp_unslash($_POST['tmpSelector'])) : '';
 
 			$data = array(
@@ -1490,6 +1503,7 @@ class WCF_Theme_Builder
 				'tmpDelay'      => $popupDelay,
 				'tmpTrigger'    => $popuptrigger,
 				'tmpSelector'    => $selector,
+				'tmpEffect' => $popupEffect
 			);
 
 			if ($tmpid) {
@@ -1537,6 +1551,7 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty(get_post_meta($tmpid, self::CPT_META . '_splocation', true)) ? get_post_meta($tmpid, self::CPT_META . '_splocation', true) : '';
 			$tmpDelay         = ! empty(get_post_meta($tmpid, 'delayTime', true)) ? get_post_meta($tmpid, 'delayTime', true) : 0;
 			$popupTrigger     = ! empty(get_post_meta($tmpid, 'popup_trigger', true)) ? get_post_meta($tmpid, 'popup_trigger', true) : 'pageloaded';
+			$popupEffect     = ! empty(get_post_meta($tmpid, 'effect', true)) ? get_post_meta($tmpid, 'effect', true) : 'flip';
 			$popup_selector     = ! empty(get_post_meta($tmpid, 'popup_selector', true)) ? get_post_meta($tmpid, 'popup_selector', true) : '';
 			$spLocations      = array();
 
@@ -1554,7 +1569,8 @@ class WCF_Theme_Builder
 				'tmpSpLocation' => $spLocations,
 				'tmpDelay'      => $tmpDelay,
 				'tmpTrigger'    => $popupTrigger,
-				'tmpSelector' => $popup_selector
+				'tmpSelector' => $popup_selector,
+				'tmpEffect' => $popupEffect
 			);
 			wp_send_json_success($data);
 		} else {
@@ -1729,7 +1745,9 @@ class WCF_Theme_Builder
 			if ('popup' === $data['tmptype']) {
 				update_post_meta($new_post_id, 'delayTime', $data['tmpDelay']);
 				update_post_meta($new_post_id, 'popup_trigger', $data['tmpTrigger']);
-				update_post_meta($new_post_id, 'popup_selector', $data['tmpSelector']);
+				update_post_meta($new_post_id, 'popup_selector', $data['tmpEffect']);
+				update_post_meta($new_post_id, 'effect', $data['tmpEffect']);
+
 				update_post_meta($new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation']);
 			}
 
@@ -1781,6 +1799,8 @@ class WCF_Theme_Builder
 			update_post_meta($data['id'], 'delayTime', $data['tmpDelay']);
 			update_post_meta($data['id'], 'popup_trigger', $data['tmpTrigger']);
 			update_post_meta($data['id'], 'popup_selector', $data['tmpSelector']);
+			update_post_meta($data['id'], 'effect', $data['tmpEffect']);
+
 			update_post_meta($data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation']);
 		}
 

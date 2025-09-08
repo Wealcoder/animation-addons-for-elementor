@@ -293,7 +293,6 @@ class Toggle_Switcher extends Widget_Base
 
 		$this->end_controls_section();
 
-
 		//switcher
 		$this->start_controls_section(
 			'section_style_Switcher',
@@ -550,7 +549,7 @@ class Toggle_Switcher extends Widget_Base
 			'wcf__toggle_switcher',
 			'style-' . $settings['element_list']
 		]);
-	?>
+?>
 		<div <?php $this->print_render_attribute_string('wrapper'); ?>>
 
 			<div class="slide-toggle-wrapper">
@@ -583,7 +582,6 @@ class Toggle_Switcher extends Widget_Base
 				}
 				?>
 			</div>
-
 
 		</div>
 <?php
