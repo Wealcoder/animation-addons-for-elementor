@@ -331,20 +331,29 @@ class CustomIcons_Lite
 		// 1) Security: nonce + capability
 		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'You are not allowed to do this action.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'You are not allowed to do this action.', 'animation-addons-for-elementor' ),
+			], 400 );
+			
 		}
 
 		// 2) Validate inputs
 		if ( ! isset( $_POST['id'] ) || empty( $_POST['id'] ) ) {
-			wp_send_json_error( esc_html__( 'Missing process ID.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'Missing process ID.', 'animation-addons-for-elementor' ),
+			], 400 );			
 		}
 		$this->process_id = sanitize_key( wp_unslash( $_POST['id'] ) ); // safe for dir names
 
 		if ( empty( $_FILES['custom_icon'] ) || ! isset( $_FILES['custom_icon']['error'] ) ) {
-			wp_send_json_error( esc_html__( 'No file uploaded.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'No file uploaded.', 'animation-addons-for-elementor' ),
+			], 400 );				
 		}
 		if ( UPLOAD_ERR_OK !== (int) $_FILES['custom_icon']['error'] ) {
-			wp_send_json_error( esc_html__( 'Upload error.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'Upload error.', 'animation-addons-for-elementor' ),
+			], 400 );
 		}
 
 		// 3) Use WP upload API with strict MIME
@@ -364,7 +373,9 @@ class CustomIcons_Lite
 		$uploaded = wp_handle_upload( $_FILES['custom_icon'], $overrides );
 
 		if ( ! $uploaded || isset( $uploaded['error'] ) ) {
-			wp_send_json_error( esc_html__( 'Upload failed or invalid file type (zip required).', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'Upload failed or invalid file type (zip required).', 'animation-addons-for-elementor' ),
+			], 400 );			
 		}
 
 		$zip_file_path = $uploaded['file'];     // absolute path to uploaded zip
@@ -376,19 +387,43 @@ class CustomIcons_Lite
 
 		if ( ! wp_mkdir_p( $target_dir ) ) {
 			@wp_delete_file( $zip_file_path );
-			wp_send_json_error( esc_html__( 'Failed to create target directory.', 'animation-addons-for-elementor' ) );
+			wp_send_json_error( [
+				'message' =>esc_html__( 'Failed to create target directory.', 'animation-addons-for-elementor' ),
+			], 400 );			
 		}
 
+		// 2) Init WP_Filesystem (this may ask for creds if not direct)
+		$url   = admin_url( 'admin-ajax.php' ); // or current admin page URL
+		$creds = request_filesystem_credentials( $url, '', false, ABSPATH, [] );
+
+		if ( false === $creds ) {			
+			wp_send_json_error( [
+				'message' => $msg ?: esc_html__( 'Filesystem credentials required.', 'animation-addons-for-elementor' ),
+			], 400 );
+		}
+
+		if ( ! WP_Filesystem( $creds ) ) {
+			// Try again to prompt for correct creds
+			request_filesystem_credentials( $url, '', true, ABSPATH, [] );
+			wp_send_json_error( [
+				'message' => $msg ?: esc_html__( 'Could not initialize WordPress filesystem.', 'animation-addons-for-elementor' ),
+			], 400 );
+			
+		}
+		
 		// 5) Unzip safely with WP API
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php'; // includes unzip_file()
 		$unzipped = unzip_file( $zip_file_path, $target_dir );
-
+		
 		// Always remove the uploaded zip after processing
 		@wp_delete_file( $zip_file_path );
 
 		if ( is_wp_error( $unzipped ) ) {
-			wp_send_json_error( esc_html__( 'Failed to extract ZIP file.', 'animation-addons-for-elementor' ) );
+			$msg = $unzipped->get_error_message();
+			wp_send_json_error( [
+				'message' => $msg ?: esc_html__( 'Failed to unzip the file.', 'animation-addons-for-elementor' ),
+			], 400 );
 		}
 
 		// 6) Process extracted files (your custom logic)
@@ -400,6 +435,7 @@ class CustomIcons_Lite
 			'processId' => $this->process_id,
 		) );
 	}
+
 
 	 /**
      * Processes icon files from the uploaded zip.
