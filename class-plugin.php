@@ -17,7 +17,7 @@ if (! defined('ABSPATH')) {
  */
 class Plugin
 {
-
+	public $categories;
 	/**
 	 * Plugin version.
 	 *
@@ -169,8 +169,12 @@ class Plugin
 	 */
 	public function editor_scripts()
 	{
-		wp_enqueue_script('aae-nested-sl', WCF_ADDONS_URL.'/assets/build/modules/nested-slider/editor/index.js', [
-			'nested-elements','elementor-editor', 'elementor-common', 'wp-element','jquery'
+		wp_enqueue_script('aae-nested-sl', WCF_ADDONS_URL . '/assets/build/modules/nested-slider/editor/index.js', [
+			'nested-elements',
+			'elementor-editor',
+			'elementor-common',
+			'wp-element',
+			'jquery'
 		], time(), true);
 		wp_enqueue_script(
 			'wcf-editor',
@@ -968,8 +972,8 @@ class Plugin
 		$active_plugins = get_option('active_plugins');
 		$dahsboard_link = admin_url('admin.php?page=wcf_addons_settings');
 ?>
-		<script type="text/template" id="tmpl-wcf-templates-header">
-			<div class="dialog-header dialog-lightbox-header">
+<script type="text/template" id="tmpl-wcf-templates-header">
+    <div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header wcf-template-library--header">
 					<div class="elementor-templates-modal__header__logo-area"></div>
 					<div class="elementor-templates-modal__header__menu-area" data-disabled="false">
@@ -996,8 +1000,8 @@ class Plugin
 				</div>
 			</div>
 		</script>
-		<script type="text/template" id="tmpl-wcf-templates">
-			<div class="dialog-message dialog-lightbox-message">
+<script type="text/template" id="tmpl-wcf-templates">
+    <div class="dialog-message dialog-lightbox-message">
 				<div class="dialog-content dialog-lightbox-content">
 					<div class="elementor-template-library-templates">
 						<!--toolbar-->
@@ -1095,8 +1099,8 @@ class Plugin
 				</div>
 			</div>
 		</script>
-		<script type="text/template" id="tmpl-wcf-templates-single">
-			<div class="dialog-header dialog-lightbox-header">
+<script type="text/template" id="tmpl-wcf-templates-single">
+    <div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header">
 					<div id="wcf-template-library-header-preview-back">
 							<i class="eicon-" aria-hidden="true"></i>
@@ -1234,7 +1238,7 @@ class Plugin
 
 	public static function admin_scripts($hook)
 	{
-		if($hook === 'plugins.php' ){
+		if ($hook === 'plugins.php') {
 			wp_enqueue_script(
 				'aae-admin-scripts',
 				WCF_ADDONS_URL . 'assets/js/wcf-admin.js',
@@ -1268,9 +1272,9 @@ class Plugin
 		add_action('elementor/elements/categories_registered', array($this, 'widget_categories'));
 
 		// Register widget scripts
-		add_action('wp_enqueue_scripts', array($this, 'widget_scripts'), 29);	
+		add_action('wp_enqueue_scripts', array($this, 'widget_scripts'), 29);
 		// admin footer
-	
+
 		// Register widget style
 		add_action('wp_enqueue_scripts', array($this, 'widget_styles'));
 
