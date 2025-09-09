@@ -753,6 +753,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const codeTypeSelect = document.getElementById('code-type');
     const visibilityPageSelect = document.getElementById('visibility-page');
 
+    if (!codeTypeSelect || !visibilityPageSelect) return;
+
     // Store original options for restoration
     const originalOptions = visibilityPageSelect.innerHTML;
 
@@ -795,3 +797,38 @@ document.addEventListener('DOMContentLoaded', function() {
         updateVisibilityOptions();
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const codeType = document.getElementById('code-type');
+    const loadLocation = document.getElementById('load-location');
+
+    function updateLoadLocations() {
+        const value = codeType.value;
+
+        Array.from(loadLocation.options).forEach(option => {
+            if (value === 'javascript') {
+                // Only enable head, footer, and empty option
+                option.disabled = !(option.value === '' || option.value === 'head' || option.value === 'footer');
+            } else {
+                // HTML, CSS, PHP → enable all options
+                option.disabled = false;
+            }
+        });
+
+        // Auto-select first enabled option if current selection is disabled
+        if (loadLocation.options[loadLocation.selectedIndex].disabled) {
+            const firstEnabled = Array.from(loadLocation.options).find(opt => !opt.disabled);
+            if (firstEnabled) {
+                loadLocation.value = firstEnabled.value;
+            }
+        }
+    }
+
+    // Run once on page load
+    updateLoadLocations();
+
+    // Listen for code type changes
+    codeType.addEventListener('change', updateLoadLocations);
+});
+
+

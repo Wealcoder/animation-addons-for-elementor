@@ -570,3 +570,10 @@ select {
 .fullscreen-esc-button.show {
   display: block;
 }
+
+#load-location option:disabled {
+  color: #999;                 /* Gray text */
+  background-color: #f0f0f0;   /* Light gray background */
+  font-style: italic;           /* Optional: italic for clarity */
+  cursor: not-allowed;          /* Show not-allowed cursor */
+}

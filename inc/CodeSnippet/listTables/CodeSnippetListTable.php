@@ -232,67 +232,53 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @param string $doaction Action name.
 	 *
 	 * @since 1.0.0
-	 */
-	/**
-	 * Process bulk action.
-	 *
-	 * @param string $doaction Action name.
-	 *
-	 * @since 1.0.0
+	 * @return void
 	 */
 	public function process_bulk_action( $doaction ) {
-		if ( empty( $doaction ) || ! check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
-			parent::process_bulk_actions( $doaction );
-			return;
-		}
+		if ( ! empty( $doaction ) && check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
+			$id  = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+			$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
-		$id  = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
-		$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-
-		// Handle single item deletion.
-		if ( ! empty( $id ) ) {
-			$ids = array( absint( $id ) );
-		} elseif ( ! empty( $ids ) ) {
-			$ids = array_map( 'absint', $ids );
-		}
-
-		// If no valid IDs found, return without redirect.
-		if ( empty( $ids ) ) {
-			return;
-		}
-
-		$deleted_count = 0;
-
-		switch ( $doaction ) {
-			case 'delete':
-				foreach ( $ids as $snippet_id ) {
-					if ( wp_delete_post( $snippet_id, true ) ) {
-						++$deleted_count;
-					}
-				}
-				break;
-		}
-
-		// Prepare redirect URL.
-		$redirect_url = remove_query_arg(
-			array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
-			wp_get_referer()
-		);
-
-		// Add status parameters for notice display.
-		if ( $deleted_count > 0 ) {
-			$redirect_url = add_query_arg( 'deleted', $deleted_count, $redirect_url );
-		}
-
-		// Clean any output and redirect.
-		if ( ! headers_sent() ) {
-			if ( ob_get_level() ) {
-				ob_clean();
+			// Handle single item deletion.
+			if ( ! empty( $id ) ) {
+				$ids = array( absint( $id ) );
+			} elseif ( ! empty( $ids ) ) {
+				$ids = array_map( 'absint', $ids );
+			} elseif ( wp_get_referer() ) {
+				wp_safe_redirect( wp_get_referer() );
+				exit;
 			}
+
+			// If no valid IDs found, return without redirect.
+			if ( empty( $ids ) ) {
+				return;
+			}
+
+			$deleted_count = 0;
+
+			// switch ( $doaction ) {
+			// case 'delete':
+			// foreach ( $ids as $snippet_id ) {
+			// if ( wp_delete_post( $snippet_id, true ) ) {
+			// ++$deleted_count;
+			// }
+			// }
+			// break;
+			// }
+
+			// translators: %d: number of things deleted.
+			// wp_admin_notice( sprintf( _n( '%d item deleted.', '%d items deleted.', $deleted_count, 'animation-addons-for-elementor' ), $deleted_count ), 'success' );
+			// Prepare redirect URL.
+			$redirect_url = remove_query_arg(
+				array( 'action', 'action2', 'ids', 'id', '_wpnonce', 'edit', '_wp_http_referer' ),
+				wp_get_referer() ?? admin_url( 'admin.php?page=wcf-code-snippet' )
+			);
+
+			wp_safe_redirect( $redirect_url );
+			exit();
 		}
 
-		wp_safe_redirect( $redirect_url );
-		exit();
+		parent::process_bulk_actions( $doaction );
 	}
 
 	/**
