@@ -4,7 +4,7 @@
  *
  * @since 2.3.10
  * @subpackage CodeSnippet/views
- * @package WCF_ADDONS
+ * @package WCF_ADDONS\CodeSnippet
  * @var string $page_hook Page hook.
  */
 

@@ -166,38 +166,14 @@ class CodeSnippet {
 	 * @return void
 	 */
 	public function admin_menu() {
-		// Check if parent menu exists, if not create main menu
-		global $menu;
-		$parent_exists = false;
-		foreach ( $menu as $menu_item ) {
-			if ( isset( $menu_item[2] ) && 'wcf_addons_page' === $menu_item[2] ) {
-				$parent_exists = true;
-				break;
-			}
-		}
-
-		if ( ! $parent_exists ) {
-			// Create main menu if parent doesn't exist
-			add_menu_page(
-				esc_html__( 'Code Snippets', 'animation-addons-for-elementor' ),
-				esc_html__( 'Code Snippets', 'animation-addons-for-elementor' ),
-				'manage_options',
-				'wcf-code-snippet',
-				array( $this, 'code_snippet_page_admin_page' ),
-				'dashicons-editor-code',
-				'55.5'
-			);
-		} else {
-			// Add as submenu to existing parent
-			add_submenu_page(
-				'wcf_addons_page',
-				esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
-				esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
-				'manage_options',
-				self::CPTTYPE,
-				array( $this, 'code_snippet_page_admin_page' )
-			);
-		}
+		add_submenu_page(
+			'wcf_addons_page',
+			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
+			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
+			'manage_options',
+			self::CPTTYPE,
+			array( $this, 'code_snippet_page_admin_page' )
+		);
 	}
 
 	/**

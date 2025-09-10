@@ -3,7 +3,7 @@
  * Admin views: Add/Edit Code Snippet
  *
  * @since 2.3.10
- * @package WCF_ADDONS
+ * @package WCF_ADDONS\CodeSnippet
  */
 
 use WCF_ADDONS\WCF_Theme_Builder;
@@ -17,7 +17,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 		$locations['basic']['value'],
 		array(
 			'frontend' => 'Frontend',
-			'admin' => 'Frontend',
+			'admin'    => 'Frontend',
 		)
 	);
 }
