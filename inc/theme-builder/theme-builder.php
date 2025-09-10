@@ -486,7 +486,6 @@ class WCF_Theme_Builder
 					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
 					if (! empty($location) && ! empty($splocation)) {
-						// aae_print($splocation);
 
 						if ('post-singular' === $location && $splocation[0] === $get_queried_object->slug) {
 							$cat_id = $post_id;
@@ -550,6 +549,9 @@ class WCF_Theme_Builder
 			),
 		);
 
+		$return_ids = [];
+		$poup_data = [];
+
 		$meta_query = array_merge($typeCondition, []);
 		$query_args = array(
 			'post_type'      => self::CPTTYPE,
@@ -566,10 +568,21 @@ class WCF_Theme_Builder
 		$templates_specific = array('specifics' => array());
 
 		foreach ($query->posts as $key => $post_id) {
-
+			// to strong
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
-
+			$popup_trigger = get_post_meta($post_id, 'popup_trigger', true);
+			$popup_selector = get_post_meta($post_id, 'popup_selector', true);
+			$delayTime = get_post_meta($post_id, 'delayTime', true);
+			$effect = get_post_meta($post_id, 'effect', true);
+			$scrollPostion = get_post_meta($post_id, 'scrollPostion', true);
+			$poup_data[$post_id] = array(
+				'popup_trigger' => $popup_trigger,
+				'popup_selector' => $popup_selector,
+				'delayTime' => $delayTime,
+				'effect' => $effect,
+				'scrollPostion' => $scrollPostion,
+			);
 			if (! empty($location)) {
 				if ('specifics' === $location) {
 					array_push(
@@ -580,7 +593,10 @@ class WCF_Theme_Builder
 						)
 					);
 				} else {
-					$templates[$location] = $post_id;
+					if ($location == 404) {
+						$location = '_404';
+					}
+					$templates[$location][] = $post_id;
 				}
 			}
 
@@ -588,85 +604,64 @@ class WCF_Theme_Builder
 				$templates = array_merge($templates, $templates_specific);
 			}
 		}
-		// aae_print($templates);
 		wp_reset_postdata();
 		if (empty($templates)) {
 			return false;
 		}
-
+		$return_ids = array_merge($return_ids, array_values($templates['global'] ?? []));
 		// check for specific page and post
 		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {
 			foreach ($templates['specifics'] as $specific) {
-				$key = array_search(get_the_ID(), $specific['posts']);
-				if (false !== $key) {
-					return $specific['id'];
+				if (isset($specific['posts']) && is_array($specific['posts'])) {
+					$key = array_search(get_the_ID(), $specific['posts']);
+					if (false !== $key) {
+						$return_ids[] = $specific['id'];
+					}
 				}
 			}
 		}
 
 		// check 404 page
-		if (is_404() && array_key_exists('404', $templates)) {
-			return $templates['404'];
+		if (is_404() && array_key_exists('_404', $templates)) {
+			$return_ids = array_merge($return_ids, array_values($templates['_404'] ?? []));
 		}
 
 		// check search page
 		if (is_search() && array_key_exists('search', $templates)) {
-			return $templates['search'];
+			$return_ids = array_merge($return_ids, array_values($templates['search'] ?? []));
 		}
 
 		// check front page
 		if (is_front_page() && array_key_exists('front', $templates)) {
-			return $templates['front'];
+			$return_ids = array_merge($return_ids, array_values($templates['front'] ?? []));
 		}
 
 		// check for blog/posts page
 		if (is_home() && array_key_exists('blog', $templates)) {
-			return $templates['blog'];
+			$return_ids = array_merge($return_ids, array_values($templates['blog'] ?? []));
 		}
+
 
 		if (function_exists('is_shop') && is_shop()) {
 			// check for WooCommerce shop archive
 			if (function_exists('is_shop') && is_shop() && array_key_exists('product-archive', $templates)) {
-				return $templates['product-archive'];
+				$return_ids = array_merge($return_ids, array_values($templates['product-archive'] ?? []));
 			}
 		}
 		// check for archive
 		if (is_archive()) {
 
 			if (is_category() && isset($templates['specifics_cat']) && is_numeric($templates['specifics_cat'])) {
-				// get category slug
-				$get_queried_object         = get_queried_object();
-				$splocation                 = $get_queried_object->slug; // Get the category slug.
-				$query_args['meta_query'][] = array(
-					'key'     => self::CPT_META . '_location',
-					'value'   => 'specifics_cat',
-					'compare' => 'LIKE',
-				);
-				$query                      = new \WP_Query($query_args);
-				$cat_id                     = null;
-				foreach ($query->posts as $key => $post_id) {
-					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
-					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
-					if (! empty($location) && ! empty($splocation)) {
-						if ('specifics_cat' === $location && $splocation[0] === $get_queried_object->slug) {
-							$cat_id = $post_id;
-						}
-					}
-				}
-				wp_reset_postdata();
-				if (is_numeric($cat_id)) {
-					return $cat_id;
-				}
 			}
 
 			// check for all date archive
 			if (is_date() && array_key_exists('date', $templates)) {
-				return $templates['date'];
+				$return_ids = array_merge($return_ids, array_values($templates['date'] ?? []));
 			}
 
 			// check for all author archive
 			if (is_author() && array_key_exists('author', $templates)) {
-				return $templates['author'];
+				$return_ids = array_merge($return_ids, array_values($templates['author'] ?? []));
 			}
 
 			// check for custom post type archive
@@ -682,83 +677,47 @@ class WCF_Theme_Builder
 					foreach ($post_types as $ptype) {
 						$custom_archive = $ptype . '-archive';
 						if (array_key_exists($custom_archive, $templates)) {
-							return $templates[$custom_archive];
+							$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));
 						}
 					}
 				}
 			}
 
 			if (array_key_exists($custom_archive, $templates)) {
-				return $templates[$custom_archive];
+				$return_ids = array_merge($return_ids, array_values($templates[$custom_archive] ?? []));
 			}
 
 			// all archives
 			if (array_key_exists('archives', $templates)) {
-				return $templates['archives'];
+				$return_ids = array_merge($return_ids, array_values($templates['archives'] ?? []));
 			}
 		}
 
 		// check for singular
 		if (is_singular()) {
 			// check for specific post format current post format
-
-			if (is_singular('post') && isset($templates['post-singular']) && is_numeric($templates['post-singular'])) {
-				// get category slug
-
-				$get_queried_object = get_queried_object();
-
-				$query_args['meta_query'][] = array(
-					'key'     => self::CPT_META . '_location',
-					'value'   => 'post-singular',
-					'compare' => 'LIKE',
-				);
-
-				$query  = new \WP_Query($query_args);
-				$cat_id = null;
-				foreach ($query->posts as $key => $post_id) {
-					$format     = get_post_format($post_id) ?: 'standard';
-					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
-					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
-					if (! empty($location) && ! empty($splocation)) {
-						// aae_print($splocation);
-
-						if ('post-singular' === $location && $splocation[0] === $get_queried_object->slug) {
-							$cat_id = $post_id;
-						}
-					}
-				}
-				wp_reset_postdata();
-				if (is_numeric($cat_id)) {
-					return $cat_id;
-				}
-			}
-
-			// if template type single ignore post type page
-			if (('page' === get_post_type() || self::CPTTYPE === get_post_type()) && 'single' === $tmpType) {
-				return false;
-			}
+			// if template type single ignore post type page		
 
 			if (is_page() && array_key_exists('allpage', $templates)) {
-				return $templates['allpage'];
+				$return_ids = array_merge($return_ids, array_values($templates['allpage'] ?? []));
 			}
 
 			// check for custom post type singular
-			$custom_single = get_post_type() . '-singular';
+			$custom_single = get_post_type() . '-singulars';
 
 			if (array_key_exists($custom_single, $templates)) {
-				return $templates[$custom_single];
+				$return_ids = array_merge($return_ids, array_values($templates[$custom_single] ?? []));
 			}
 
 			// all singular
 			if (array_key_exists('singulars', $templates)) {
-				return $templates['singulars'];
+				$return_ids = array_merge($return_ids, array_values($templates['singulars'] ?? []));
 			}
 		}
+		$uniq_ids = array_unique($return_ids);
 
-		// check for global
-		if (array_key_exists('global', $templates)) {
-			return $templates['global'];
-		}
+		$poup_data = array_intersect_key($poup_data, array_flip($uniq_ids));
+		return $poup_data;
 	}
 
 
@@ -1301,192 +1260,204 @@ class WCF_Theme_Builder
 	{
 		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
 		?>
-			<script type="text/template" id="tmpl-wcf-addons-ctppopup">
-				<div class="wcf-addons-template-edit-popup-area">
-					<div class="wcf-addons-body-overlay"></div>
-					<div class="wcf-addons-template-edit-popup">
+	<script type="text/template" id="tmpl-wcf-addons-ctppopup">
+		<div class="wcf-addons-template-edit-popup-area">
+			<div class="wcf-addons-body-overlay"></div>
+			<div class="wcf-addons-template-edit-popup">
 
-						<div class="wcf-addons-template-edit-header">
-							<h3 class="wcf-addons-template-edit-setting-title">
-								{{{data.heading.head}}}
-							</h3>
-							<span class="wcf-addons-template-edit-cross">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-									class="bi bi-x-lg" viewBox="0 0 16 16"><path
-											d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>
-							</span>
+				<div class="wcf-addons-template-edit-header">
+					<h3 class="wcf-addons-template-edit-setting-title">
+						{{{data.heading.head}}}
+					</h3>
+					<span class="wcf-addons-template-edit-cross">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							class="bi bi-x-lg" viewBox="0 0 16 16"><path
+									d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>
+					</span>
+				</div>
+
+				<div class="wcf-addons-template-edit-body">
+
+					<div class="wcf-addons-template-edit-field">
+						<label class="wcf-addons-template-edit-label">{{{ data.heading.fields.name.title}}}</label>
+						<input class="wcf-addons-template-edit-input" id="wcf-addons-template-title" type="text" name="wcf-addons-template-title" placeholder="{{ data.heading.fields.name.placeholder }}"/>
+					</div>
+
+					<div class="wcf-addons-template-edit-field">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.type}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-template-type"
+								id="wcf-addons-template-type">
+							<#
+							_.each( data.templatetype, function( item, key ) {
+
+							#>
+							<option value="{{ key }}">{{{ item.label }}}</option>
+							<#
+
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field hf-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-display-type"
+								id="wcf-addons-hf-display-type">
+							<#
+							_.each( data.hflocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field hf-s-location hidden">
+						<label class="wcf-addons-template-edit-label"></label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-s-display-type[]"
+								id="wcf-addons-hf-s-display-type" multiple="multiple">
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field archive-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-archive-display-type"
+								id="wcf-addons-archive-display-type">
+							<#
+							_.each( data.archivelocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field single-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-single-display-type"
+								id="wcf-addons-single-display-type">
+							<#
+							_.each( data.singlelocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field single-category-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.category}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-single-category-display-type"
+								id="wcf-addons-single-category-display-type">
+							<#								
+							_.each( data.postcategory, function( items, keys ) {
+							#>                                   
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>                                  
+							<#
+							} );
+							#>
+						</select>
+					</div>
+					
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
+							<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-trigger"
+								id="wcf-addons--popup--builder-trigger">
+								<option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option>
+								<option value="pageloaded"><?php echo esc_html__('Page Loaded', 'animation-addons-for-elementor'); ?></option>
+								<option value="pageexit"><?php echo esc_html__('Page Body Exist', 'animation-addons-for-elementor'); ?></option>
+								<option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option>
+								<option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option>
+								<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
+							</select>
+					</div>
+				
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="number"
+								name="aae-popup-builder-delay"
+								placeholder="{{ data.heading.fields.delay.placeholder }}">
+					</div>
+
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.selector}}}</label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-selector" type="text"
+								name="aae-popup-builder-selector"
+								placeholder=".body">
+					</div>
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label"><?php echo esc_html__('Scroll Postion','animation-addons-for-elementor') ?></label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-scrollPostion" type="text"
+								name="aae-popup-builder-scrollPostion"
+								placeholder="1500">
+					</div>
+					
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">Effects</label>
+							<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-effect"
+								id="wcf-addons--popup--builder-effect">
+								<option value="flip"><?php echo esc_html__('Flip', 'animation-addons-for-elementor'); ?></option>
+								<option value="shakeEffect"><?php echo esc_html__('Scale + Shake Effect', 'animation-addons-for-elementor'); ?></option>
+								<option value="slideFromTo"><?php echo esc_html__('Slide From Top', 'animation-addons-for-elementor'); ?></option>
+								<option value="zoomBounce"><?php echo esc_html__('Zoom + Bounce', 'animation-addons-for-elementor'); ?></option>
+								<option value="fadeSlideup"><?php echo esc_html__('Fade + Slide Up', 'animation-addons-for-elementor'); ?></option>
+							</select>
+					</div>
+					
+				</div>
+				
+				<div class="wcf-addons-template-edit-footer">
+					<div class="wcf-addons-template-button-group">
+						<div class="wcf-addons-template-button-item wcf-addons-editor-elementor {{ data.haselementor === 'yes' ? 'button-show' : '' }}">
+							<button class="wcf-addons-tmp-elementor button">{{{
+								data.heading.buttons.elementor.label
+								}}}
+							</button>
 						</div>
-
-						<div class="wcf-addons-template-edit-body">
-
-							<div class="wcf-addons-template-edit-field">
-								<label class="wcf-addons-template-edit-label">{{{ data.heading.fields.name.title
-									}}}</label>
-								<input class="wcf-addons-template-edit-input" id="wcf-addons-template-title" type="text"
-										name="wcf-addons-template-title"
-										placeholder="{{ data.heading.fields.name.placeholder }}">
-							</div>
-
-							<div class="wcf-addons-template-edit-field">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.type}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-template-type"
-										id="wcf-addons-template-type">
-									<#
-									_.each( data.templatetype, function( item, key ) {
-
-									#>
-									<option value="{{ key }}">{{{ item.label }}}</option>
-									<#
-
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field hf-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-display-type"
-										id="wcf-addons-hf-display-type">
-									<#
-									_.each( data.hflocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field hf-s-location hidden">
-								<label class="wcf-addons-template-edit-label"></label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-s-display-type[]"
-										id="wcf-addons-hf-s-display-type" multiple="multiple">
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field archive-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-archive-display-type"
-										id="wcf-addons-archive-display-type">
-									<#
-									_.each( data.archivelocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field single-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-single-display-type"
-										id="wcf-addons-single-display-type">
-									<#
-									_.each( data.singlelocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field single-category-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.category}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-single-category-display-type"
-										id="wcf-addons-single-category-display-type">
-									<#								
-									_.each( data.postcategory, function( items, keys ) {
-									#>                                   
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>                                  
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							
-
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
-									<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-trigger"
-										id="wcf-addons--popup--builder-trigger">
-										<!-- <option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option> -->
-										<option value="pageloaded"><?php echo esc_html__('Page Loaded', 'animation-addons-for-elementor'); ?></option>
-										<option value="pageexit"><?php echo esc_html__('Page Body Exist', 'animation-addons-for-elementor'); ?></option>
-										<!-- <option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option> -->
-										<!-- <option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option> -->
-										<!-- <option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option> -->
-									</select>
-							</div>
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
-								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
-										name="aae-popup-builder-delay"
-										placeholder="{{ data.heading.fields.delay.placeholder }}">
-							</div>
-
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.selector}}}</label>
-								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-selector" type="text"
-										name="aae-popup-builder-selector"
-										placeholder=".body">
-							</div>
-
+						<div class="wcf-addons-template-button-item">
+							<button class="wcf-addons-tmp-save button button-primary">{{{
+								data.heading.buttons.save.label }}}
+							</button>
 						</div>
-
-						<div class="wcf-addons-template-edit-footer">
-
-							<div class="wcf-addons-template-button-group">
-								<div class="wcf-addons-template-button-item wcf-addons-editor-elementor {{ data.haselementor === 'yes' ? 'button-show' : '' }}">
-									<button class="wcf-addons-tmp-elementor button">{{{
-										data.heading.buttons.elementor.label
-										}}}
-									</button>
-								</div>
-								<div class="wcf-addons-template-button-item">
-									<button class="wcf-addons-tmp-save button button-primary">{{{
-										data.heading.buttons.save.label }}}
-									</button>
-								</div>
-							</div>
-
-						</div>
-
 					</div>
 				</div>
-			</script>
+				
+			</div>
+		</div>
+	</script>
 <?php
 		}
 	}
@@ -1523,7 +1494,9 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty($_POST['specificsDisplay']) ? sanitize_text_field(wp_unslash($_POST['specificsDisplay'])) : '';
 			$popupDelay       = ! empty($_POST['tmpDelay']) ? sanitize_text_field(wp_unslash($_POST['tmpDelay'])) : 0;
 			$popuptrigger     = ! empty($_POST['tmpTrigger']) ? sanitize_text_field(wp_unslash($_POST['tmpTrigger'])) : 'pageloaded';
+			$popupEffect     = ! empty($_POST['tmpEffect']) ? sanitize_text_field(wp_unslash($_POST['tmpEffect'])) : 'flip';
 			$selector     = ! empty($_POST['tmpSelector']) ? sanitize_text_field(wp_unslash($_POST['tmpSelector'])) : '';
+			$scrollPostion     = ! empty($_POST['tmpScrollPostion']) ? sanitize_text_field(wp_unslash($_POST['tmpScrollPostion'])) : 0;
 
 			$data = array(
 				'title'         => $title,
@@ -1534,6 +1507,8 @@ class WCF_Theme_Builder
 				'tmpDelay'      => $popupDelay,
 				'tmpTrigger'    => $popuptrigger,
 				'tmpSelector'    => $selector,
+				'tmpScrollPostion'    => $scrollPostion,
+				'tmpEffect' => $popupEffect
 			);
 
 			if ($tmpid) {
@@ -1581,7 +1556,9 @@ class WCF_Theme_Builder
 			$specificsDisplay = ! empty(get_post_meta($tmpid, self::CPT_META . '_splocation', true)) ? get_post_meta($tmpid, self::CPT_META . '_splocation', true) : '';
 			$tmpDelay         = ! empty(get_post_meta($tmpid, 'delayTime', true)) ? get_post_meta($tmpid, 'delayTime', true) : 0;
 			$popupTrigger     = ! empty(get_post_meta($tmpid, 'popup_trigger', true)) ? get_post_meta($tmpid, 'popup_trigger', true) : 'pageloaded';
+			$popupEffect     = ! empty(get_post_meta($tmpid, 'effect', true)) ? get_post_meta($tmpid, 'effect', true) : 'flip';
 			$popup_selector     = ! empty(get_post_meta($tmpid, 'popup_selector', true)) ? get_post_meta($tmpid, 'popup_selector', true) : '';
+			$scrollPostion     = ! empty(get_post_meta($tmpid, 'scrollPostion', true)) ? get_post_meta($tmpid, 'scrollPostion', true) : '';
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
@@ -1598,7 +1575,9 @@ class WCF_Theme_Builder
 				'tmpSpLocation' => $spLocations,
 				'tmpDelay'      => $tmpDelay,
 				'tmpTrigger'    => $popupTrigger,
-				'tmpSelector' => $popup_selector
+				'tmpSelector' => $popup_selector,
+				'tmpEffect' => $popupEffect,
+				'tmpScrollPostion' => $scrollPostion
 			);
 			wp_send_json_success($data);
 		} else {
@@ -1773,7 +1752,11 @@ class WCF_Theme_Builder
 			if ('popup' === $data['tmptype']) {
 				update_post_meta($new_post_id, 'delayTime', $data['tmpDelay']);
 				update_post_meta($new_post_id, 'popup_trigger', $data['tmpTrigger']);
-				update_post_meta($new_post_id, 'popup_selector', $data['tmpSelector']);
+				update_post_meta($new_post_id, 'popup_selector', $data['tmpEffect']);
+				update_post_meta($new_post_id, 'effect', $data['tmpEffect']);
+				update_post_meta($new_post_id, 'scrollPostion', $data['tmpScrollPostion']);
+
+				update_post_meta($new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation']);
 			}
 
 			wp_send_json_success($return);
@@ -1824,6 +1807,10 @@ class WCF_Theme_Builder
 			update_post_meta($data['id'], 'delayTime', $data['tmpDelay']);
 			update_post_meta($data['id'], 'popup_trigger', $data['tmpTrigger']);
 			update_post_meta($data['id'], 'popup_selector', $data['tmpSelector']);
+			update_post_meta($data['id'], 'effect', $data['tmpEffect']);
+			update_post_meta($data['id'], 'scrollPostion', $data['tmpScrollPostion']);
+
+			update_post_meta($data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation']);
 		}
 
 		$return = array(

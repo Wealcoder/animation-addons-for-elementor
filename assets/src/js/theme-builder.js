@@ -120,14 +120,24 @@
     },
 
     selectorFieldDisplay: function (val) {
-      if (["click", "page_scroll"].includes(val)) {
+       if (["page_scroll"].includes(val)) {
+        $("#aae-popup-builder-scrollPostion")
+          .parents(".aae-popup-builder-location")
+          .removeClass("hidden");
+       }else{
+          $("#aae-popup-builder-scrollPostion")
+          .parents(".aae-popup-builder-location")
+          .addClass("hidden");
+       }
+      if (["click",].includes(val)) {
         $("#aae-popup-builder-selector")
           .parents(".aae-popup-builder-location")
           .removeClass("hidden");
+        
       } else {
         $("#aae-popup-builder-selector")
           .parents(".aae-popup-builder-location")
-          .addClass("hidden");
+          .addClass("hidden");         
       }
     },
 
@@ -236,8 +246,14 @@
                 $("#aae-popup-builder-selector").val(
                   response.responseJSON.data.tmpSelector
                 );
+                $("#aae-popup-builder-scrollPostion").val(
+                  response.responseJSON.data?.tmpScrollPostion
+                );
                 $("#wcf-addons--popup--builder-trigger")
                   .val(response.responseJSON.data?.tmpTrigger)
+                  .trigger("change");
+                $("#wcf-addons--popup--builder-effect")
+                  .val(response.responseJSON.data?.tmpEffect)
                   .trigger("change");
                 $(".aae-popup-builder-location").removeClass("hidden");
                 WCFThemeBuilder.selectorFieldDisplay(
@@ -322,9 +338,17 @@
           ? $("#wcf-addons--popup--builder-trigger").val()
           : "pageloaded";
 
+        data["tmpEffect"] = $("#wcf-addons--popup--builder-effect").val()
+          ? $("#wcf-addons--popup--builder-effect").val()
+          : "flip";
+
         data["tmpSelector"] = $("#aae-popup-builder-selector").val()
           ? $("#aae-popup-builder-selector").val()
           : "";
+
+           data["tmpScrollPostion"] = $("#aae-popup-builder-scrollPostion").val()
+          ? $("#aae-popup-builder-scrollPostion").val()
+          : 0;
       }
 
       $.ajax({

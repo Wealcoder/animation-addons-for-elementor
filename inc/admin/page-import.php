@@ -9,7 +9,7 @@ namespace WCF_ADDONS\Admin;
 
 defined('ABSPATH') || exit;
 
-final class AAE_Admin_Buttons
+final class AAE_Admin_Page_Importer
 {
 
     const HANDLE = 'aae-admin-actions';
@@ -155,5 +155,5 @@ final class AAE_Admin_Buttons
     }
 }
 if (is_admin()) {
-    new AAE_Admin_Buttons();
+    new AAE_Admin_Page_Importer();
 }
