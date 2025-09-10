@@ -37,7 +37,7 @@ abstract class AbstractListTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Process bulk action.
+	 * Process bulk action - FIXED VERSION.
 	 *
 	 * @param string $doaction Action name.
 	 *
@@ -45,15 +45,22 @@ abstract class AbstractListTable extends \WP_List_Table {
 	 */
 	public function process_bulk_actions( $doaction ) {
 		if ( ! empty( $_GET['_wp_http_referer'] ) || ! empty( $_GET['_wpnonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			wp_safe_redirect(
-				remove_query_arg(
+			// FIXED: Better redirect handling to avoid WooCommerce issues
+			$redirect_url = $this->base_url ?? admin_url( 'admin.php?page=wcf-code-snippet' );
+			
+			// Only use current URL if it's safe and contains our page
+			$current_url = $_SERVER['REQUEST_URI'] ?? '';
+			if ( $current_url && strpos( $current_url, 'wcf-code-snippet' ) !== false ) {
+				$redirect_url = remove_query_arg(
 					array(
 						'_wp_http_referer',
 						'_wpnonce',
 					),
-					isset( $_SERVER['REQUEST_URI'] ) ?? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
-				)
-			);
+					$current_url
+				);
+			}
+			
+			wp_safe_redirect( $redirect_url );
 			exit;
 		}
 	}

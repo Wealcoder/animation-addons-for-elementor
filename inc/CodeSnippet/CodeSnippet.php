@@ -56,18 +56,32 @@ class CodeSnippet {
 		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
 		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
 		add_action( 'wp_ajax_toggle_snippet_status', array( $this, 'handle_toggle_snippet_status' ) );
+
+		// Initialize notices
+		new Notices();
 	}
 
 	/**
-	 * Remove Query Var.
+	 * Remove Query Var - FIXED VERSION.
 	 *
 	 * @since 2.3.10
 	 * @return void
 	 */
 	public function remove_query_vars() {
 		if ( isset( $_GET['page'] ) && 'wcf-code-snippet' === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$redirect = remove_query_arg( array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ), );
-			wp_safe_redirect( $redirect );
+			// FIXED: Better redirect handling to avoid WooCommerce issues
+			$redirect_url = admin_url( 'admin.php?page=wcf-code-snippet' );
+
+			// Only use referer if it's safe and contains our page
+			$referer = wp_get_referer();
+			if ( $referer && strpos( $referer, 'wcf-code-snippet' ) !== false ) {
+				$redirect_url = remove_query_arg(
+					array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
+					$referer
+				);
+			}
+
+			wp_safe_redirect( $redirect_url );
 			exit;
 		}
 	}
@@ -138,25 +152,52 @@ class CodeSnippet {
 
 		register_post_type( self::CPTTYPE, $args );
 
-		flush_rewrite_rules();
+		// FIXED: Only flush rewrite rules if needed to avoid WooCommerce conflicts
+		if ( ! get_option( 'wcf_code_snippet_rewrite_rules_flushed' ) ) {
+			flush_rewrite_rules();
+			update_option( 'wcf_code_snippet_rewrite_rules_flushed', true );
+		}
 	}
 
 	/**
-	 * Add Code Snippet Post type Submenu
+	 * Add Code Snippet Post type Submenu - IMPROVED VERSION.
 	 *
 	 * @since 2.3.10
 	 * @return void
 	 */
 	public function admin_menu() {
-		$link_custom_post = self::CPTTYPE;
-		add_submenu_page(
-			'wcf_addons_page',
-			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
-			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
-			'manage_options',
-			$link_custom_post,
-			array( $this, 'code_snippet_page_admin_page' )
-		);
+		// Check if parent menu exists, if not create main menu
+		global $menu;
+		$parent_exists = false;
+		foreach ( $menu as $menu_item ) {
+			if ( isset( $menu_item[2] ) && 'wcf_addons_page' === $menu_item[2] ) {
+				$parent_exists = true;
+				break;
+			}
+		}
+
+		if ( ! $parent_exists ) {
+			// Create main menu if parent doesn't exist
+			add_menu_page(
+				esc_html__( 'Code Snippets', 'animation-addons-for-elementor' ),
+				esc_html__( 'Code Snippets', 'animation-addons-for-elementor' ),
+				'manage_options',
+				'wcf-code-snippet',
+				array( $this, 'code_snippet_page_admin_page' ),
+				'dashicons-editor-code',
+				'55.5'
+			);
+		} else {
+			// Add as submenu to existing parent
+			add_submenu_page(
+				'wcf_addons_page',
+				esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
+				esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
+				'manage_options',
+				self::CPTTYPE,
+				array( $this, 'code_snippet_page_admin_page' )
+			);
+		}
 	}
 
 	/**
@@ -173,7 +214,7 @@ class CodeSnippet {
 			$snippet_details = $this->aae_get_code_snippet_settings();
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} elseif ( $code_snippet_id ) {
-			$snippet_details = $this->aae_get_code_snippet_settings($code_snippet_id);
+			$snippet_details = $this->aae_get_code_snippet_settings( $code_snippet_id );
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} else {
 			include __DIR__ . '/views/code-snippet-list.php';
@@ -297,9 +338,15 @@ class CodeSnippet {
 
 		$redirect_to = admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id );
 		if ( isset( $_POST['snippet_id'] ) && ! empty( $_POST['snippet_id'] ) ) {
-			wp_admin_notice( esc_html__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ), 'success' );
+			Helpers::add_flash_message(
+				__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ),
+				'success'
+			);
 		} else {
-			wp_admin_notice( 'Code Snippet Added Successfully!', 'success' );
+			Helpers::add_flash_message(
+				__( 'Code Snippet Added Successfully!', 'animation-addons-for-elementor' ),
+				'success'
+			);
 		}
 		wp_safe_redirect( $redirect_to );
 		exit;

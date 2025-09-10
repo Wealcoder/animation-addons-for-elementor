@@ -802,6 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const codeType = document.getElementById('code-type');
     const loadLocation = document.getElementById('load-location');
 
+    if (!codeType || !loadLocation) return;
     function updateLoadLocations() {
         const value = codeType.value;
 

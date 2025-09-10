@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\CodeSnippet\listTables;
 
 use WCF_ADDONS\CodeSnippet\CodeSnippet;
+use WCF_ADDONS\CodeSnippet\Helpers;
 use WCF_ADDONS\CodeSnippet\listTables\AbstractListTable;
 
 defined( 'ABSPATH' ) || exit;
@@ -14,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * @package WCF_ADDONS
  */
 class CodeSnippetListTable extends AbstractListTable {
+
 	/**
 	 * Get a snippet table.
 	 *
@@ -39,8 +41,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Retrieve all the data for the table.
 	 *
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function prepare_items() {
 		$columns               = $this->get_columns();
@@ -87,25 +89,25 @@ class CodeSnippetListTable extends AbstractListTable {
 				break;
 			case 'code_type':
 				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'code_type'; // phpcs:ignore
+                $args['meta_key'] = 'code_type'; // phpcs:ignore
 				break;
 			case 'load_location':
 				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'load_location'; // phpcs:ignore
+                $args['meta_key'] = 'load_location'; // phpcs:ignore
 				break;
 			case 'priority':
 				$args['orderby']  = 'meta_value_num';
-				$args['meta_key'] = 'priority'; // phpcs:ignore
+                $args['meta_key'] = 'priority'; // phpcs:ignore
 				break;
 			case 'snippet_status':
 				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'is_active'; // phpcs:ignore
+                $args['meta_key'] = 'is_active'; // phpcs:ignore
 				break;
 			default:
 				$args['orderby'] = 'title';
 		}
 
-		$args['order'] = in_array( strtoupper( $order ), array( 'ASC', 'DESC' ) ) ? strtoupper( $order ) : 'ASC'; // phpcs:ignore
+        $args['order'] = in_array(strtoupper($order), array('ASC', 'DESC')) ? strtoupper($order) : 'ASC'; // phpcs:ignore
 
 		$query = new \WP_Query( $args );
 
@@ -126,9 +128,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * Returns an associative array listing all the views that can be used
 	 * with this table.
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string[] An array of HTML links keyed by their view.
+	 * @since 1.0.0
 	 */
 	protected function get_views() {
 		$current      = $this->get_request_status( 'all' );
@@ -160,8 +161,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * No items found text.
 	 *
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function no_items() {
 		esc_html_e( 'No code snippet found.', 'animation-addons-for-elementor' );
@@ -170,8 +171,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Get the table columns
 	 *
-	 * @since 1.0.0
 	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_columns() {
 		return array(
@@ -189,8 +190,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Get the table sortable columns
 	 *
-	 * @since 1.0.0
 	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_sortable_columns() {
 		return array(
@@ -206,8 +207,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Get the table hidden columns
 	 *
-	 * @since 1.0.0
 	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_hidden_columns() {
 		return array();
@@ -231,8 +232,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 *
 	 * @param string $doaction Action name.
 	 *
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function process_bulk_action( $doaction ) {
 		if ( ! empty( $doaction ) && check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
@@ -249,25 +250,34 @@ class CodeSnippetListTable extends AbstractListTable {
 				exit;
 			}
 
-			// If no valid IDs found, return without redirect.
+			// If no valid IDs found, return without a redirect.
 			if ( empty( $ids ) ) {
 				return;
 			}
 
 			$deleted_count = 0;
 
-			// switch ( $doaction ) {
-			// case 'delete':
-			// foreach ( $ids as $snippet_id ) {
-			// if ( wp_delete_post( $snippet_id, true ) ) {
-			// ++$deleted_count;
-			// }
-			// }
-			// break;
-			// }
+			switch ( $doaction ) {
+				case 'delete':
+					foreach ( $ids as $snippet_id ) {
+						if ( wp_delete_post( $snippet_id, true ) ) {
+							++$deleted_count;
+						}
+					}
+					break;
+			}
 
 			// translators: %d: number of things deleted.
-			// wp_admin_notice( sprintf( _n( '%d item deleted.', '%d items deleted.', $deleted_count, 'animation-addons-for-elementor' ), $deleted_count ), 'success' );
+			if ( $deleted_count > 0 ) {
+				Helpers::add_flash_message(
+					sprintf(
+					/* translators: %d: Number of items deleted. */
+						_n( '%d item deleted.', '%d items deleted.', $deleted_count, 'animation-addons-for-elementor' ),
+						$deleted_count
+					),
+					'success'
+				);
+			}
 			// Prepare redirect URL.
 			$redirect_url = remove_query_arg(
 				array( 'action', 'action2', 'ids', 'id', '_wpnonce', 'edit', '_wp_http_referer' ),
@@ -284,8 +294,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Define primary column.
 	 *
-	 * @since 1.0.0
 	 * @return string
+	 * @since 1.0.0
 	 */
 	public function get_primary_column_name() {
 		return 'name';
@@ -296,8 +306,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 *
 	 * @param object $item The current ticket object.
 	 *
-	 * @since  1.0.0
 	 * @return string Displays a checkbox.
+	 * @since  1.0.0
 	 */
 	public function column_cb( $item ) {
 		return sprintf( '<input type="checkbox" name="ids[]" value="%d"/>', esc_attr( $item->ID ) );
@@ -308,8 +318,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 *
 	 * @param object $item The current post-tab object.
 	 *
-	 * @since  1.0.0
 	 * @return string Displays the tab name.
+	 * @since  1.0.0
 	 */
 	public function column_name( $item ) {
 		$admin_url = admin_url( 'admin.php?page=wcf-code-snippet&' );
@@ -383,8 +393,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 *
 	 * @param object $item The current snippet object.
 	 *
-	 * @since 1.0.0
 	 * @return string
+	 * @since 1.0.0
 	 */
 	private function get_status_toggle( $item ) {
 		$id        = $item->ID;
