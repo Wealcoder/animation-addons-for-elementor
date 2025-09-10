@@ -35,10 +35,6 @@ class CodeSnippetListTable extends AbstractListTable {
 		);
 		$this->screen   = get_current_screen();
 		$this->base_url = admin_url( 'admin.php?page=wcf-code-snippet' );
-        add_action( 'load-admin_page_wcf-code-snippet', function() {
-            $list_table = new CodeSnippetListTable();
-            $list_table->add_screen_option( 'snippets_per_page', __( 'Snippets per page', 'animation-addons-for-elementor' ), 20 );
-        });
 		parent::__construct( $args );
 	}
 
@@ -84,6 +80,8 @@ class CodeSnippetListTable extends AbstractListTable {
 		// Handle search.
 		if ( ! empty( $search ) ) {
 			$args['s'] = $search;
+			// Add custom search to include meta fields
+			add_filter( 'posts_search', array( $this, 'custom_search_query' ), 10, 2 );
 		}
 
 		// Handle code type filtering.
@@ -98,6 +96,11 @@ class CodeSnippetListTable extends AbstractListTable {
 		}
 
 		$query = new \WP_Query( $args );
+
+		// Remove the search filter after query
+		if ( ! empty( $search ) ) {
+			remove_filter( 'posts_search', array( $this, 'custom_search_query' ), 10 );
+		}
 
 		$this->items = $query->posts;
 		$total_count = $query->found_posts;
@@ -187,6 +190,62 @@ class CodeSnippetListTable extends AbstractListTable {
 		);
 
 		return isset( $meta_keys[ $orderby ] ) ? $meta_keys[ $orderby ] : 'code_type';
+	}
+
+	/**
+	 * Custom search query to include meta fields.
+	 *
+	 * @param string   $search   Search SQL for WHERE clause.
+	 * @param \WP_Query $wp_query The current WP_Query object.
+	 * @return string Modified search SQL.
+	 * @since 1.0.0
+	 */
+	public function custom_search_query( $search, $wp_query ) {
+		global $wpdb;
+
+		if ( empty( $search ) || empty( $wp_query->query_vars['search_terms'] ) ) {
+			return $search;
+		}
+
+		$q = $wp_query->query_vars;
+		$n = ! empty( $q['exact'] ) ? '' : '%';
+
+		$search_terms = $q['search_terms'];
+		$search_conditions = array();
+
+		// Search in post title and content
+		foreach ( $search_terms as $term ) {
+			$search_conditions[] = $wpdb->prepare(
+				"($wpdb->posts.post_title LIKE %s OR $wpdb->posts.post_content LIKE %s)",
+				$n . $wpdb->esc_like( $term ) . $n,
+				$n . $wpdb->esc_like( $term ) . $n
+			);
+		}
+
+		// Search in meta fields (code_content)
+		$meta_search_conditions = array();
+		foreach ( $search_terms as $term ) {
+			$meta_search_conditions[] = $wpdb->prepare(
+				"EXISTS (
+					SELECT 1 FROM $wpdb->postmeta 
+					WHERE $wpdb->postmeta.post_id = $wpdb->posts.ID 
+					AND $wpdb->postmeta.meta_key = 'code_content' 
+					AND $wpdb->postmeta.meta_value LIKE %s
+				)",
+				$n . $wpdb->esc_like( $term ) . $n
+			);
+		}
+
+		// Combine all search conditions
+		$search_conditions = array_merge( $search_conditions, $meta_search_conditions );
+
+		if ( ! is_user_logged_in() ) {
+			$search_conditions[] = "$wpdb->posts.post_password = ''";
+		}
+
+		$search = ' AND (' . implode( ' OR ', $search_conditions ) . ')';
+
+		return $search;
 	}
 
 	/**
@@ -280,21 +339,18 @@ class CodeSnippetListTable extends AbstractListTable {
 	}
 
 	/**
-	 * Get bulk actions
+	 * Get bulk actions - Disabled for AJAX handling
 	 *
 	 * @since 1.0.0
 	 * @return array
 	 */
 	public function get_bulk_actions() {
-		return array(
-			'delete'     => __( 'Delete', 'animation-addons-for-elementor' ),
-			'activate'   => __( 'Activate', 'animation-addons-for-elementor' ),
-			'deactivate' => __( 'Deactivate', 'animation-addons-for-elementor' ),
-		);
+		// Return empty array since we handle bulk actions via AJAX
+		return array();
 	}
 
 	/**
-	 * Process bulk action.
+	 * Process bulk action - Disabled for AJAX handling
 	 *
 	 * @param string $doaction Action name.
 	 *
@@ -302,79 +358,9 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	public function process_bulk_action( $doaction ) {
-		if ( ! empty( $doaction ) && check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
-			$id  = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
-			$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-
-			// Handle single item actions.
-			if ( ! empty( $id ) ) {
-				$ids = array( absint( $id ) );
-			} elseif ( ! empty( $ids ) ) {
-				$ids = array_map( 'absint', $ids );
-			} else {
-				// No valid IDs, redirect back.
-				wp_safe_redirect( $this->get_redirect_url() );
-				exit;
-			}
-
-			// If no valid IDs found, return without a redirect.
-			if ( empty( $ids ) ) {
-				return;
-			}
-
-			$processed_count = 0;
-			$action_message  = '';
-
-			switch ( $doaction ) {
-				case 'delete':
-					foreach ( $ids as $snippet_id ) {
-						// if ( wp_delete_post( $snippet_id, true ) ) {
-						// ++$processed_count;
-						// }
-					}
-					$action_message = sprintf(
-					/* translators: %d: Number of items deleted. */
-						_n( '%d snippet deleted.', '%d snippets deleted.', $processed_count, 'animation-addons-for-elementor' ),
-						$processed_count
-					);
-					break;
-
-				case 'activate':
-					foreach ( $ids as $snippet_id ) {
-						if ( update_post_meta( $snippet_id, 'is_active', '1' ) ) {
-							++$processed_count;
-						}
-					}
-					$action_message = sprintf(
-					/* translators: %d: Number of items activated. */
-						_n( '%d snippet activated.', '%d snippets activated.', $processed_count, 'animation-addons-for-elementor' ),
-						$processed_count
-					);
-					break;
-
-				case 'deactivate':
-					foreach ( $ids as $snippet_id ) {
-						if ( update_post_meta( $snippet_id, 'is_active', '0' ) ) {
-							++$processed_count;
-						}
-					}
-					$action_message = sprintf(
-					/* translators: %d: Number of items deactivated. */
-						_n( '%d snippet deactivated.', '%d snippets deactivated.', $processed_count, 'animation-addons-for-elementor' ),
-						$processed_count
-					);
-					break;
-			}
-
-			if ( $processed_count > 0 ) {
-				Helpers::add_flash_message( $action_message, 'success' );
-			}
-
-			wp_safe_redirect( $this->get_redirect_url() );
-			exit();
-		}
-
-		parent::process_bulk_actions( $doaction );
+		// Bulk actions are now handled via AJAX, so we don't process them here
+		// This method is kept for compatibility but does nothing
+		return;
 	}
 
 	/**
@@ -423,24 +409,13 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since  1.0.0
 	 */
 	public function column_name( $item ) {
-		$edit_url   = add_query_arg( 'edit', $item->ID, $this->base_url );
-		$delete_url = wp_nonce_url(
-			add_query_arg(
-				array(
-					'action' => 'delete',
-					'id'     => $item->ID,
-				),
-				$this->base_url
-			),
-			'bulk-snippets'
-		);
+		$edit_url = add_query_arg( 'edit', $item->ID, $this->base_url );
 
 		$actions = array(
 			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_url ), __( 'Edit', 'animation-addons-for-elementor' ) ),
 			'delete' => sprintf(
-				'<a href="%s" onclick="return confirm(\'%s\')">%s</a>',
-				esc_url( $delete_url ),
-				esc_js( __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ) ),
+				'<a href="#" class="ajax-delete-snippet" data-id="%d">%s</a>',
+				esc_attr( $item->ID ),
 				__( 'Delete', 'animation-addons-for-elementor' )
 			),
 		);

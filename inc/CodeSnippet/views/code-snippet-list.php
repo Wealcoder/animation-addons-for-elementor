@@ -66,8 +66,11 @@ if ( isset( $_GET['message'] ) ) {
 		}
 		?>
 
-		<form id="code-snippet-list-table-form" method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
+		<form id="code-snippet-list-table-form" method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" onsubmit="return false;">
 			<?php
+			// Add nonce for bulk actions
+			wp_nonce_field( 'bulk-snippets' );
+			
 			// Preserve essential URL parameters.
 			$preserve_params = array( 'page', 'code_type', 'orderby', 'order' );
 			foreach ( $preserve_params as $param ) {
@@ -81,59 +84,39 @@ if ( isset( $_GET['message'] ) ) {
 			}
 			$list_table->views();
 			$list_table->search_box( __( 'Search Snippets', 'animation-addons-for-elementor' ), 'snippet' );
-			$list_table->display();
 			?>
+			
+			<!-- Custom Bulk Actions for AJAX -->
+			<div class="tablenav top">
+				<div class="alignleft actions bulkactions">
+					<label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
+					<select name="action" id="bulk-action-selector-top">
+						<option value="-1">Bulk actions</option>
+						<option value="delete">Delete</option>
+						<option value="activate">Activate</option>
+						<option value="deactivate">Deactivate</option>
+					</select>
+					<input type="submit" id="doaction" class="button action" value="Apply">
+				</div>
+			</div>
+			
+			<?php 
+			$list_table->display(); 
+			?>
+			
+			<!-- Custom Bulk Actions for AJAX (Bottom) -->
+			<div class="tablenav bottom">
+				<div class="alignleft actions bulkactions">
+					<label for="bulk-action-selector-bottom" class="screen-reader-text">Select bulk action</label>
+					<select name="action2" id="bulk-action-selector-bottom">
+						<option value="-1">Bulk actions</option>
+						<option value="delete">Delete</option>
+						<option value="activate">Activate</option>
+						<option value="deactivate">Deactivate</option>
+					</select>
+					<input type="submit" id="doaction2" class="button action" value="Apply">
+				</div>
+			</div>
 		</form>
 	</div>
 </div>
-
-<script>
-	jQuery(document).ready(function($) {
-	$('.row-actions .delete a').on('click', function(e) {
-		if (!confirm('<?php echo esc_js( __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ) ); ?>')) {
-			e.preventDefault();
-			return false;
-		}
-	});
-
-	// Confirm bulk delete actions
-	$('#doaction, #doaction2').on('click', function(e) {
-		var action = $(this).siblings('select').val();
-		if (action === 'delete') {
-			var checkedBoxes = $('input[name="ids[]"]:checked');
-			if (checkedBoxes.length > 0) {
-				var confirmMessage = checkedBoxes.length === 1
-					? '<?php echo esc_js( __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ) ); ?>'
-					: '<?php echo esc_js( __( 'Are you sure you want to delete the selected snippets?', 'animation-addons-for-elementor' ) ); ?>';
-
-				if (!confirm(confirmMessage)) {
-					e.preventDefault();
-					return false;
-				}
-			}
-		}
-	});
-
-	// Auto-submit form when filter dropdown changes
-	$('#filter-by-code-type').on('change', function() {
-		// Clear search when changing filters
-		$('input[name="s"]').val('');
-		$(this).closest('form').submit();
-	});
-
-	// Handle search form submission
-	$('#search-submit').on('click', function(e) {
-		// Reset pagination when searching
-		$('input[name="paged"]').remove();
-		// Reset filters when searching (optional)
-		// $('select[name="code_type"]').val('all');
-	});
-
-	// Handle views links (All, HTML, CSS, etc.)
-	$('.subsubsub a').on('click', function(e) {
-		e.preventDefault();
-		var href = $(this).attr('href');
-		window.location.href = href;
-	});
-	});
-</script>

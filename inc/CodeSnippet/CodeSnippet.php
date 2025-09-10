@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
+// Include the AJAX handler class
+require_once __DIR__ . '/CodeSnippetAjax.php';
+
 /**
  * CodeSnippet Class
  *
@@ -57,7 +60,10 @@ class CodeSnippet {
 		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
 		add_action( 'wp_ajax_toggle_snippet_status', array( $this, 'handle_toggle_snippet_status' ) );
 
-		// Initialize notices
+		// Initialize AJAX handler.
+		new CodeSnippetAjax();
+
+		// Initialize notices.
 		new Notices();
 	}
 
@@ -208,6 +214,7 @@ class CodeSnippet {
 	public function enqueue_scripts( $hook ) {
 		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
 			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'aae-code-snippet-ajax', WCF_ADDONS_URL . 'assets/css/code-snippet-ajax.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'select2', WCF_ADDONS_URL . 'assets/css/select2.min.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'codemirror-core', WCF_ADDONS_URL . 'assets/css/cs-css/codemirror.min.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'foldgutter', WCF_ADDONS_URL . 'assets/css/cs-css/foldgutter.min.css', null, WCF_ADDONS_VERSION, 'all' );
@@ -236,6 +243,15 @@ class CodeSnippet {
 				'1.0.0',
 				true
 			);
+
+			// AJAX functionality for list page.
+			wp_enqueue_script(
+				'code-snippet-ajax',
+				WCF_ADDONS_URL . 'assets/js/code-snippet-ajax.js',
+				array( 'jquery' ),
+				WCF_ADDONS_VERSION,
+				true
+			);
 			$localize_data = array(
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'nonce'         => wp_create_nonce( 'wcf_custom_code_security' ),
@@ -244,6 +260,18 @@ class CodeSnippet {
 					'currentVersion' => PHP_VERSION,
 					'majorVersion'   => PHP_MAJOR_VERSION,
 					'minorVersion'   => PHP_MINOR_VERSION,
+				),
+				'ajaxActions'   => array(
+					'search'    => 'wcf_search_snippets',
+					'delete'    => 'wcf_delete_snippet',
+					'bulk'      => 'wcf_bulk_action_snippets',
+					'toggle'    => 'wcf_toggle_snippet_status',
+				),
+				'messages'      => array(
+					'confirmDelete'     => __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ),
+					'confirmBulkDelete' => __( 'Are you sure you want to delete the selected snippets?', 'animation-addons-for-elementor' ),
+					'loading'           => __( 'Loading...', 'animation-addons-for-elementor' ),
+					'error'             => __( 'An error occurred. Please try again.', 'animation-addons-for-elementor' ),
 				),
 			);
 			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
@@ -528,6 +556,9 @@ class CodeSnippet {
 			wp_send_json_error( array( 'message' => __( 'Failed to update snippet status.', 'animation-addons-for-elementor' ) ) );
 		}
 	}
+
+
+
 }
 
 CodeSnippet::instance();
