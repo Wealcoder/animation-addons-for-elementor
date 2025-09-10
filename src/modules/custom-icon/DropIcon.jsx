@@ -68,9 +68,8 @@ export default function DropIcon() {
             );
           }),
         })
-        .then(() => {
+        .then((data) => {
           setUploadedFiles([file]);
-
           setFilesToUpload((prevUploadProgress) =>
             prevUploadProgress.filter((item) => item.File !== file)
           );
@@ -125,6 +124,8 @@ export default function DropIcon() {
       "application/zip": [".zip"], // Restrict to ZIP files
     },
   });
+
+  console.log(uploadedFiles);
 
   if (!titleText) return;
 
@@ -224,7 +225,11 @@ export default function DropIcon() {
           <div>
             <p
               className="section-title"
-              style={{ color: "#F58E2F", fontSize: "24px", textAlign: "center" }}
+              style={{
+                color: "#F58E2F",
+                fontSize: "24px",
+                textAlign: "center",
+              }}
             >
               Icon Generated
             </p>
