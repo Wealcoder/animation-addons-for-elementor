@@ -3,20 +3,40 @@
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin: 5px 15px 2px;
+  margin: 10px 15px 2px;
 }
 
 .header {
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
   color: #ffffff;
-  padding: 25px 30px;
+  padding: 2px 30px;
   position: relative;
 }
 .header h1 {
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 8px;
   color: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.header h1 div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.header h1 div a svg {
+  padding: 0.75rem;
+  background-color: #f6502c;
+  border-radius: 50%;
+}
+.header h1 div a:hover svg {
+  background-color: #6c757d;
+  border-radius: 50%;
 }
 .header p {
   opacity: 0.9;
@@ -62,7 +82,7 @@
 
 .sidebar {
   background: #f8f9fa;
-  padding: 25px;
+  padding: 10px 25px;
   border-radius: 8px;
 }
 
@@ -98,7 +118,7 @@
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 12px 15px;
+  padding: 8px 15px;
   border: 2px solid #e1e8ed;
   border-radius: 6px;
   font-size: 14px;
@@ -112,6 +132,11 @@
   outline: none;
   border-color: #ff6b35;
   box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+.form-group input.priority-slider,
+.form-group select.priority-slider,
+.form-group textarea.priority-slider {
+  padding: 2px 15px;
 }
 
 .code-editor {
@@ -264,13 +289,10 @@ input:checked + .slider:before {
   display: flex;
   gap: 15px;
   justify-content: flex-end;
-  margin-top: 30px;
-  padding-top: 25px;
-  border-top: 2px solid #f1f3f4;
 }
 
 .btn {
-  padding: 12px 25px;
+  padding: 8px 14px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -294,6 +316,14 @@ input:checked + .slider:before {
 }
 .btn.btn-secondary:hover {
   background: #545b62;
+}
+.btn.btn-secondary-white {
+  background: #f8f9fa;
+  color: #1e1e1e;
+}
+.btn.btn-secondary-white:hover {
+  background: #d4d4d4;
+  color: #1e1e1e;
 }
 
 .help-text {
@@ -320,7 +350,7 @@ input:checked + .slider:before {
 .form-group {
   margin-bottom: 20px;
   background: white;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

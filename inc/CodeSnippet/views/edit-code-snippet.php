@@ -26,20 +26,29 @@ if ( 'php' === $snippet_details['code_type'] ) {
 <div class="container">
 	<div class="header">
 		<h1>
-			<?php
-			if ( ! isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' );
-			} else {
-				esc_html_e( 'Edit Snippet', 'animation-addons-for-elementor' );
-			}
-			?>
-			<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="btn btn-secondary">
-					<?php esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' ); ?>
+			<div>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet' ) ); ?>" class="">
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" class="w-[14px] h-[14px] flex-shrink-0"><path d="M3.34988 6.1001H14V7.90001H3.34988L8.04335 12.7273L6.80593 14L0 7.00005L6.80593 0L8.04335 1.27273L3.34988 6.1001Z" fill="#ffffff"></path></svg>
 				</a>
-			<?php } ?>
+				<div>
+					<?php
+					if ( ! isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' );
+					} else {
+						esc_html_e( 'Edit Snippet', 'animation-addons-for-elementor' );
+					}
+					?>
+				</div>•
+				<p><?php esc_html_e( 'Create and manage custom code snippets for your WordPress site', 'animation-addons-for-elementor' ); ?></p>
+			</div>
+			<div>
+				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="btn btn-secondary-white" id="ajax-delete-snippet">
+						<?php esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' ); ?>
+					</a>
+				<?php } ?>
+			</div>
 		</h1>
-		<p><?php esc_html_e( 'Create and manage custom code snippets for your WordPress site', 'animation-addons-for-elementor' ); ?></p>
 	</div>
 
 	<div class="form-content">
@@ -169,14 +178,11 @@ if ( 'php' === $snippet_details['code_type'] ) {
 			<div class="action-buttons">
 				<input type="hidden" name="action" value="add_wcf_code_snippet"/>
 				<?php wp_nonce_field( 'wcf_code_snippet' ); ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet' ) ); ?>" class="btn btn-secondary">
-					<?php esc_html_e( 'Back', 'animation-addons-for-elementor' ); ?>
-				</a>
 				<?php if ( ! isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 					<button class="btn btn-primary"><?php esc_html_e( 'Add Code Snippet', 'animation-addons-for-elementor' ); ?></button>
 				<?php } else { ?>
 					<input type="hidden" name="snippet_id" value="<?php echo absint( $code_snippet_id ); ?>">
-					<a class="del btn btn-primary" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'action', 'delete', admin_url( 'admin.php?page=wcf-code-snippet&id=' . absint( $code_snippet_id ) ) ), 'bulk-snippets' ) ); ?>"><?php esc_html_e( 'Delete', 'animation-addons-for-elementor' ); ?></a>
+					<span class="btn btn-secondary" id="ajax-delete-snippet" data-id="<?php echo absint( $code_snippet_id ); ?>"><?php esc_html_e( 'Delete', 'animation-addons-for-elementor' ); ?></span>
 					<button class="btn btn-primary"><?php esc_html_e( 'Update Code Snippet', 'animation-addons-for-elementor' ); ?></button>
 				<?php } ?>
 			</div>

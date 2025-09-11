@@ -38,21 +38,46 @@ $code-text: #d4d4d4;
   border-radius: 12px;
   box-shadow: 0 20px 40px $shadow-light;
   overflow: hidden;
-  margin: 5px 15px 2px;
+  margin: 10px 15px 2px;
 }
 
 // Header
 .header {
   @include gradient-primary;
   color: $white;
-  padding: 25px 30px;
+  padding: 2px 30px;
   position: relative;
 
   h1 {
-    font-size: 28px;
+    font-size: 18px;
     font-weight: 600;
     margin-bottom: 8px;
     color: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      a {
+        svg {
+          padding: 0.75rem;
+          background-color: #f6502c;
+          border-radius: 50%;
+        }
+
+        &:hover {
+          svg {
+            background-color: #6c757d;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
   }
 
   p {
@@ -103,7 +128,7 @@ $code-text: #d4d4d4;
 // Sidebar
 .sidebar {
   background: $bg-light;
-  padding: 25px;
+  padding: 10px 25px;
   border-radius: 8px;
   //border-left: 4px solid $primary-color;
 }
@@ -144,7 +169,7 @@ $code-text: #d4d4d4;
   input,
   select,
   textarea {
-    padding: 12px 15px;
+    padding: 8px 15px;
     border: 2px solid $border-color;
     border-radius: 6px;
     font-size: 14px;
@@ -153,6 +178,10 @@ $code-text: #d4d4d4;
     width: 100%;
     &:focus {
       @include focus-state;
+    }
+
+    &.priority-slider{
+      padding: 2px 15px;
     }
   }
 }
@@ -324,14 +353,11 @@ input:checked + .slider {
   display: flex;
   gap: 15px;
   justify-content: flex-end;
-  margin-top: 30px;
-  padding-top: 25px;
-  border-top: 2px solid #f1f3f4;
 }
 
 // Button styles
 .btn {
-  padding: 12px 25px;
+  padding: 8px 14px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -356,6 +382,16 @@ input:checked + .slider {
 
     &:hover {
       background: #545b62;
+    }
+  }
+
+  &.btn-secondary-white {
+    background: $bg-light;
+    color: $dark-bg;
+
+    &:hover {
+      background: $code-text;
+      color: $dark-bg;
     }
   }
 }
@@ -392,7 +428,7 @@ input:checked + .slider {
 .form-group {
   margin-bottom: 20px;
   background: white;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

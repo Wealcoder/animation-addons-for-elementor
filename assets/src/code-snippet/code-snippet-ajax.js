@@ -66,6 +66,12 @@
                 self.handleSingleDelete($(this));
             });
 
+            $(document).on('click', '#ajax-delete-snippet', function(e) {
+                e.preventDefault();
+                console.log($(this));
+                self.handleSingleDelete($(this));
+            });
+
             // AJAX Bulk Actions
             $('#doaction, #doaction2').on('click', function(e) {
                 e.preventDefault();
@@ -247,10 +253,18 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        row.fadeOut(300, function() {
-                            $(this).remove();
-                            CodeSnippetAjax.showSuccessMessage(response.data.message);
-                        });
+                        if( row ) {
+                            row.fadeOut(300, function() {
+                                $(this).remove();
+                                CodeSnippetAjax.showSuccessMessage(response.data.message);
+                            });
+                        } else {
+                            setTimeout(function() {
+                                const params = new URLSearchParams(window.location.href);
+                                params.delete('edit');
+                                window.location.href = params;
+                            }, 2000);
+                        }
                     } else {
                         CodeSnippetAjax.showErrorMessage(response.data.message || WCFCustomCodeVars.messages.error);
                     }

@@ -63,20 +63,6 @@ if ( isset( $_GET['message'] ) ) { // phpcs:ignore WordPress.Security.NonceVerif
 
 		<form id="code-snippet-list-table-form" method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" onsubmit="return false;">
 			<?php
-			// Add nonce for bulk actions.
-			wp_nonce_field( 'bulk-snippets' );
-
-			// Preserve essential URL parameters.
-			$preserve_params = array( 'page', 'code_type', 'orderby', 'order' );
-			foreach ( $preserve_params as $param ) {
-				if ( isset( $_GET[ $param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					printf(
-						'<input type="hidden" name="%s" value="%s" />',
-						esc_attr( $param ),
-						esc_attr( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					);
-				}
-			}
 			$list_table->views();
 			$list_table->search_box( __( 'Search Snippets', 'animation-addons-for-elementor' ), 'snippet' );
 			$list_table->display();

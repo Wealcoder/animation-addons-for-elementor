@@ -307,7 +307,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			'load_location'   => __( 'Load Location', 'animation-addons-for-elementor' ),
 			'priority'        => __( 'Priority', 'animation-addons-for-elementor' ),
 			'snippet_status'  => __( 'Status', 'animation-addons-for-elementor' ),
-			'date_created'    => __( 'Date Modified', 'animation-addons-for-elementor' ),
+			'date_created'    => __( 'Last Modified', 'animation-addons-for-elementor' ),
 		);
 	}
 
