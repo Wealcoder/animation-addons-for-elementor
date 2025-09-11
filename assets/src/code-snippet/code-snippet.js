@@ -687,61 +687,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 placeholder: 'Search and select an option',
                 allowClear: true
             });
-
-            $(document).on('change', '.snippet-status-toggle', function() {
-                var $checkbox = $(this);
-                var snippetId = $checkbox.data('id');
-                var isActive = $checkbox.is(':checked') ? 'yes' : 'no';
-
-                // Disable checkbox during AJAX request
-                $checkbox.prop('disabled', true);
-
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'toggle_snippet_status',
-                        snippet_id: snippetId,
-                        status: isActive,
-                        nonce: WCFCustomCodeVars.nonce
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Show success message
-                            showNotification(response.data.message);
-                            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                                wp.data.dispatch('core/notices').createSuccessNotice(
-                                    response.data.message || 'Status updated successfully.',
-                                    { id: 'snippet-status-updated' }
-                                );
-                            }
-                        } else {
-                            // Revert checkbox state on error
-                            $checkbox.prop('checked', !$checkbox.is(':checked'));
-                            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                                wp.data.dispatch('core/notices').createErrorNotice(
-                                    response.data.message || 'Failed to update status.',
-                                    { id: 'snippet-status-error' }
-                                );
-                            }
-                        }
-                    },
-                    error: function() {
-                        // Revert checkbox state on error
-                        $checkbox.prop('checked', !$checkbox.is(':checked'));
-                        if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                            wp.data.dispatch('core/notices').createErrorNotice(
-                                'Network error occurred while updating status.',
-                                { id: 'snippet-status-error' }
-                            );
-                        }
-                    },
-                    complete: function() {
-                        // Re-enable checkbox
-                        $checkbox.prop('disabled', false);
-                    }
-                });
-            });
         },
     };
 

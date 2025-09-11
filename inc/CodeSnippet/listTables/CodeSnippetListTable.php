@@ -80,7 +80,7 @@ class CodeSnippetListTable extends AbstractListTable {
 		// Handle search.
 		if ( ! empty( $search ) ) {
 			$args['s'] = $search;
-			// Add custom search to include meta fields
+			// Add custom search to include meta fields.
 			add_filter( 'posts_search', array( $this, 'custom_search_query' ), 10, 2 );
 		}
 
@@ -97,7 +97,7 @@ class CodeSnippetListTable extends AbstractListTable {
 
 		$query = new \WP_Query( $args );
 
-		// Remove the search filter after query
+		// Remove the search filter after query.
 		if ( ! empty( $search ) ) {
 			remove_filter( 'posts_search', array( $this, 'custom_search_query' ), 10 );
 		}
@@ -195,7 +195,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Custom search query to include meta fields.
 	 *
-	 * @param string   $search   Search SQL for WHERE clause.
+	 * @param string    $search   Search SQL for WHERE clause.
 	 * @param \WP_Query $wp_query The current WP_Query object.
 	 * @return string Modified search SQL.
 	 * @since 1.0.0
@@ -210,10 +210,10 @@ class CodeSnippetListTable extends AbstractListTable {
 		$q = $wp_query->query_vars;
 		$n = ! empty( $q['exact'] ) ? '' : '%';
 
-		$search_terms = $q['search_terms'];
+		$search_terms      = $q['search_terms'];
 		$search_conditions = array();
 
-		// Search in post title and content
+		// Search in post title and content.
 		foreach ( $search_terms as $term ) {
 			$search_conditions[] = $wpdb->prepare(
 				"($wpdb->posts.post_title LIKE %s OR $wpdb->posts.post_content LIKE %s)",
@@ -222,7 +222,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			);
 		}
 
-		// Search in meta fields (code_content)
+		// Search in meta fields (code_content).
 		$meta_search_conditions = array();
 		foreach ( $search_terms as $term ) {
 			$meta_search_conditions[] = $wpdb->prepare(
@@ -236,7 +236,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			);
 		}
 
-		// Combine all search conditions
+		// Combine all search conditions.
 		$search_conditions = array_merge( $search_conditions, $meta_search_conditions );
 
 		if ( ! is_user_logged_in() ) {
@@ -329,23 +329,26 @@ class CodeSnippetListTable extends AbstractListTable {
 	}
 
 	/**
+	 * Get bulk actions
+	 *
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_bulk_actions() {
+		return array(
+			'delete'     => __( 'Delete', 'animation-addons-for-elementor' ),
+			'activate'   => __( 'Activate', 'animation-addons-for-elementor' ),
+			'deactivate' => __( 'Deactivate', 'animation-addons-for-elementor' ),
+		);
+	}
+
+	/**
 	 * Get the table hidden columns
 	 *
 	 * @return array
 	 * @since 1.0.0
 	 */
 	public function get_hidden_columns() {
-		return array();
-	}
-
-	/**
-	 * Get bulk actions - Disabled for AJAX handling
-	 *
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_bulk_actions() {
-		// Return empty array since we handle bulk actions via AJAX
 		return array();
 	}
 
@@ -358,24 +361,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	public function process_bulk_action( $doaction ) {
-		// Bulk actions are now handled via AJAX, so we don't process them here
-		// This method is kept for compatibility but does nothing
-		return;
-	}
-
-	/**
-	 * Get redirect URL after bulk actions.
-	 *
-	 * @return string
-	 * @since 1.0.0
-	 */
-	private function get_redirect_url() {
-		$current_url = wp_get_referer();
-
-		return remove_query_arg(
-			array( 'action', 'action2', 'ids', 'id', '_wpnonce', 'edit', '_wp_http_referer' ),
-			$current_url ?? $this->base_url
-		);
+		// Bulk actions are now handled via AJAX, so we don't process them here.
+		// This method is kept for compatibility but does nothing.
 	}
 
 	/**
@@ -423,7 +410,7 @@ class CodeSnippetListTable extends AbstractListTable {
 		$title = sprintf(
 			'<a href="%s"><strong>%s</strong></a>',
 			esc_url( $edit_url ),
-			esc_html( $item->post_title ?: __( '(no title)', 'animation-addons-for-elementor' ) )
+			esc_html( $item->post_title ? $item->post_title : __( '(no title)', 'animation-addons-for-elementor' ) )
 		);
 
 		return $title . $this->row_actions( $actions );
@@ -452,27 +439,17 @@ class CodeSnippetListTable extends AbstractListTable {
 				break;
 
 			case 'visibility_list':
-				$visibility_page = get_post_meta( $item->ID, 'visibility_page', true );
-				$visibility_list = get_post_meta( $item->ID, 'visibility_page_list', true );
-
-				if ( 'specific' === $visibility_page && ! empty( $visibility_list ) && is_array( $visibility_list ) ) {
-					$titles = array();
-					foreach ( array_slice( $visibility_list, 0, 3 ) as $page_id ) {
-						if ( $title = get_the_title( $page_id ) ) {
-							$titles[] = sprintf(
-								'<a href="%s" title="%s">%s</a>',
-								esc_url( get_permalink( $page_id ) ),
-								esc_attr( $title ),
-								esc_html( $title )
-							);
-						}
+				$id              = $item->ID;
+				$visibility_list = get_post_meta( $id, 'visibility_page_list', true );
+				$visibility_page = get_post_meta( $id, 'visibility_page', true );
+				if ( ! empty( $visibility_list ) && is_array( $visibility_list ) && 'specifics' === $visibility_page ) {
+					$value = '';
+					foreach ( $visibility_list as $visibility ) {
+						$value .= '<a href="' . get_the_permalink( $visibility ) . '"><span class="visibility-list-item">' . esc_html( get_the_title( $visibility ) ) . '</span></a>,';
 					}
-					if ( count( $visibility_list ) > 3 ) {
-						$titles[] = sprintf( __( 'and %d more', 'animation-addons-for-elementor' ), count( $visibility_list ) - 3 );
-					}
-					$value = implode( ', ', $titles );
+					$value = rtrim( $value, ',' );
 				} else {
-					$value = esc_html( ucfirst( str_replace( '_', ' ', $visibility_page ?: 'all' ) ) );
+					$value = ucwords( $visibility_page );
 				}
 				break;
 
@@ -492,7 +469,7 @@ class CodeSnippetListTable extends AbstractListTable {
 						'<time datetime="%s" title="%s">%s</time>',
 						esc_attr( $date ),
 						esc_attr( mysql2date( 'c', $date ) ),
-						esc_html( human_time_diff( strtotime( $date ), current_time( 'timestamp' ) ) . ' ago' )
+						esc_html( human_time_diff( strtotime( $date ), current_time( 'timestamp' ) ) . ' ago' ) // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 					);
 				}
 				break;

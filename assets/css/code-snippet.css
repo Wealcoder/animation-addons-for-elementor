@@ -454,10 +454,6 @@ select {
   top: 50px;
 }
 
-.visibility-list-item {
-  padding: 4px 10px;
-}
-
 .CodeMirror-fullscreen {
   position: fixed !important;
   top: 0;
@@ -494,117 +490,8 @@ select {
 }
 
 #load-location option:disabled {
-  color: #999; /* Gray text */
-  background-color: #f0f0f0; /* Light gray background */
-  font-style: italic; /* Optional: italic for clarity */
-  cursor: not-allowed; /* Show not-allowed cursor */
-}
-
-.wcf-code-snippet-admin .wcf-admin-page-header {
-  background: #fff;
-  border-bottom: 1px solid #ccd0d4;
-  margin: 0 -20px 20px -22px;
-  padding: 20px 20px;
-}
-
-.wcf-code-snippet-admin .wcf-header-content {
-  max-width: none;
-}
-
-.wcf-code-snippet-admin .wp-heading-inline {
-  margin-bottom: 0;
-}
-
-.wcf-code-snippet-admin .page-title-action {
-  margin-left: 10px;
-}
-
-.wcf-code-snippet-admin .tablenav {
-  margin: 10px 0;
-}
-
-.wcf-code-snippet-admin .code-type {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.wcf-code-snippet-admin .code-type-html {
-  background-color: #e34c26;
-}
-
-.wcf-code-snippet-admin .code-type-css {
-  background-color: #1572b6;
-}
-
-.wcf-code-snippet-admin .code-type-javascript {
-  background-color: #f7df1e;
-  color: #000;
-}
-
-.wcf-code-snippet-admin .code-type-php {
-  background-color: #777bb4;
-}
-
-.wcf-code-snippet-admin .load-location {
-  display: inline-block;
-  padding: 2px 6px;
-  background-color: #f0f0f1;
-  border-radius: 3px;
-  font-size: 11px;
-  color: #50575e;
-}
-
-.wcf-code-snippet-admin .priority {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.wcf-code-snippet-admin .priority-high {
-  background-color: #d63384;
-  color: #fff;
-}
-
-.wcf-code-snippet-admin .priority-medium {
-  background-color: #fd7e14;
-  color: #fff;
-}
-
-.wcf-code-snippet-admin .priority-low {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.wcf-code-snippet-admin .column-snippet_status {
-  width: 100px;
-}
-
-.wcf-code-snippet-admin .column-code_type {
-  width: 120px;
-}
-
-.wcf-code-snippet-admin .column-load_location {
-  width: 150px;
-}
-
-.wcf-code-snippet-admin .column-priority {
-  width: 80px;
-}
-
-.wcf-code-snippet-admin .column-date_created {
-  width: 150px;
-}
-
-@media screen and (max-width: 782px) {
-  .wcf-code-snippet-admin .wcf-admin-page-header {
-    margin: 0 -10px 20px -10px;
-    padding: 15px;
-  }
+  color: #999;
+  background-color: #f0f0f0;
+  font-style: italic;
+  cursor: not-allowed;
 }

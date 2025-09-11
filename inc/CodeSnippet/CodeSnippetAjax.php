@@ -69,7 +69,6 @@ class CodeSnippetAjax {
 	private function verify_ajax_security() {
 		// Verify nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		
 
 		if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'animation-addons-for-elementor' ) ) );
@@ -142,26 +141,58 @@ class CodeSnippetAjax {
 				$query->the_post();
 				$snippet_id = get_the_ID();
 				$snippets[] = array(
-					'id'            => $snippet_id,
-					'title'         => get_the_title(),
-					'code_type'     => get_post_meta( $snippet_id, 'code_type', true ),
-					'load_location' => get_post_meta( $snippet_id, 'load_location', true ),
-					'priority'      => get_post_meta( $snippet_id, 'priority', true ),
-					'is_active'     => get_post_meta( $snippet_id, 'is_active', true ),
-					'date_modified' => get_the_modified_date(),
-					'edit_url'      => admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id ),
+					'id'              => $snippet_id,
+					'title'           => get_the_title(),
+					'code_type'       => get_post_meta( $snippet_id, 'code_type', true ),
+					'visibility_list' => $this->ajax_get_visibility_options( $snippet_id ),
+					'load_location'   => get_post_meta( $snippet_id, 'load_location', true ),
+					'priority'        => get_post_meta( $snippet_id, 'priority', true ),
+					'is_active'       => get_post_meta( $snippet_id, 'is_active', true ),
+					'date_modified'   => sprintf(
+						'<time datetime="%s" title="%s">%s</time>',
+						esc_attr( get_the_modified_date( 'Y-m-d H:i:s' ) ),
+						esc_attr( mysql2date( 'c', get_the_modified_date( 'Y-m-d H:i:s' ) ) ),
+						esc_html( human_time_diff( strtotime( get_the_modified_date( 'Y-m-d H:i:s' ) ), current_time( 'timestamp' ) ) . ' ago' ) // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+					),
+					'edit_url'        => admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id ),
 				);
 			}
 		}
 
 		wp_reset_postdata();
 
-		wp_send_json_success( array(
-			'snippets'     => $snippets,
-			'total'        => $query->found_posts,
-			'total_pages'  => $query->max_num_pages,
-			'current_page' => $page,
-		) );
+		wp_send_json_success(
+			array(
+				'snippets'     => $snippets,
+				'total'        => $query->found_posts,
+				'total_pages'  => $query->max_num_pages,
+				'current_page' => $page,
+			)
+		);
+	}
+
+	/**
+	 * Get visibility options for a single item.
+	 *
+	 * @param int $id Itemed ID.
+	 *
+	 * @since 2.3.10
+	 * @return string
+	 */
+	public function ajax_get_visibility_options( $id ) {
+		$visibility_list = get_post_meta( $id, 'visibility_page_list', true );
+		$visibility_page = get_post_meta( $id, 'visibility_page', true );
+		if ( ! empty( $visibility_list ) && is_array( $visibility_list ) && 'specifics' === $visibility_page ) {
+			$value = '';
+			foreach ( $visibility_list as $visibility ) {
+				$value .= '<a href="' . get_the_permalink( $visibility ) . '"><span class="visibility-list-item">' . esc_html( get_the_title( $visibility ) ) . '</span></a>,';
+			}
+			$value = rtrim( $value, ',' );
+		} else {
+			$value = ucwords( $visibility_page );
+		}
+
+		return $value;
 	}
 
 	/**
@@ -191,10 +222,12 @@ class CodeSnippetAjax {
 		$deleted = wp_delete_post( $snippet_id, true );
 
 		if ( $deleted ) {
-			wp_send_json_success( array(
-				'message'    => __( 'Snippet deleted successfully.', 'animation-addons-for-elementor' ),
-				'snippet_id' => $snippet_id,
-			) );
+			wp_send_json_success(
+				array(
+					'message'    => __( 'Snippet deleted successfully.', 'animation-addons-for-elementor' ),
+					'snippet_id' => $snippet_id,
+				)
+			);
 		} else {
 			wp_send_json_error( array( 'message' => __( 'Failed to delete snippet.', 'animation-addons-for-elementor' ) ) );
 		}
@@ -213,7 +246,6 @@ class CodeSnippetAjax {
 
 		$action = isset( $_POST['bulk_action'] ) ? sanitize_text_field( wp_unslash( $_POST['bulk_action'] ) ) : '';
 		$ids    = isset( $_POST['snippet_ids'] ) ? array_map( 'absint', $_POST['snippet_ids'] ) : array();
-		
 
 		if ( empty( $action ) || empty( $ids ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid action or no snippets selected.', 'animation-addons-for-elementor' ) ) );
@@ -276,11 +308,13 @@ class CodeSnippetAjax {
 		}
 
 		if ( $processed_count > 0 ) {
-			wp_send_json_success( array(
-				'message'          => $action_message,
-				'processed_count'  => $processed_count,
-				'action'           => $action,
-			) );
+			wp_send_json_success(
+				array(
+					'message'         => $action_message,
+					'processed_count' => $processed_count,
+					'action'          => $action,
+				)
+			);
 		} else {
 			wp_send_json_error( array( 'message' => __( 'No snippets were processed.', 'animation-addons-for-elementor' ) ) );
 		}
@@ -299,7 +333,6 @@ class CodeSnippetAjax {
 
 		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : '';
 		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
-		
 
 		// Validate snippet exists and is of correct post-type.
 		$snippet = get_post( $snippet_id );
@@ -331,7 +364,7 @@ class CodeSnippetAjax {
 	 * Custom search query to include meta fields.
 	 * This extends the default WordPress search to include post meta fields.
 	 *
-	 * @param string   $search   Search SQL for WHERE clause.
+	 * @param string    $search   Search SQL for WHERE clause.
 	 * @param \WP_Query $wp_query The current WP_Query object.
 	 * @return string Modified search SQL.
 	 * @since 2.3.10
@@ -346,10 +379,10 @@ class CodeSnippetAjax {
 		$q = $wp_query->query_vars;
 		$n = ! empty( $q['exact'] ) ? '' : '%';
 
-		$search_terms = $q['search_terms'];
+		$search_terms      = $q['search_terms'];
 		$search_conditions = array();
 
-		// Search in post title and content
+		// Search in post title and content.
 		foreach ( $search_terms as $term ) {
 			$search_conditions[] = $wpdb->prepare(
 				"($wpdb->posts.post_title LIKE %s OR $wpdb->posts.post_content LIKE %s)",
@@ -358,7 +391,7 @@ class CodeSnippetAjax {
 			);
 		}
 
-		// Search in meta fields (code_content)
+		// Search in meta fields (code_content).
 		$meta_search_conditions = array();
 		foreach ( $search_terms as $term ) {
 			$meta_search_conditions[] = $wpdb->prepare(
@@ -372,7 +405,7 @@ class CodeSnippetAjax {
 			);
 		}
 
-		// Combine all search conditions
+		// Combine all search conditions.
 		$search_conditions = array_merge( $search_conditions, $meta_search_conditions );
 
 		if ( ! is_user_logged_in() ) {
@@ -385,5 +418,5 @@ class CodeSnippetAjax {
 	}
 }
 
-// Initialize the AJAX handler
+// Initialize the AJAX handler.
 CodeSnippetAjax::instance();

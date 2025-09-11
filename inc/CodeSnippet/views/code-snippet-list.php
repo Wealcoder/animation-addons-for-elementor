@@ -10,22 +10,17 @@ use WCF_ADDONS\CodeSnippet\Helpers;
 
 defined( 'ABSPATH' ) || exit;
 
-// Initialize the list table
 $list_table = Helpers::aae_get_list_table( 'wcf-code-snippet' );
-
-// Process any bulk actions
-$action = $list_table->current_action();
+$action     = $list_table->current_action();
 if ( $action ) {
 	$list_table->process_bulk_action( $action );
 }
-
-// Prepare items for display
 $list_table->prepare_items();
 
-// Handle messages
+// Handle messages.
 $message = '';
-if ( isset( $_GET['message'] ) ) {
-	$message_code = sanitize_key( wp_unslash( $_GET['message'] ) );
+if ( isset( $_GET['message'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$message_code = sanitize_key( wp_unslash( $_GET['message'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$messages     = array(
 		'deleted'     => __( 'Snippet(s) deleted successfully.', 'animation-addons-for-elementor' ),
 		'activated'   => __( 'Snippet(s) activated successfully.', 'animation-addons-for-elementor' ),
@@ -60,7 +55,7 @@ if ( isset( $_GET['message'] ) ) {
 
 	<div class="wcf-admin-page-content">
 		<?php
-		// Display any additional admin notices
+		// Display any additional admin notices.
 		if ( method_exists( $list_table, 'admin_notices' ) ) {
 			$list_table->admin_notices();
 		}
@@ -68,55 +63,24 @@ if ( isset( $_GET['message'] ) ) {
 
 		<form id="code-snippet-list-table-form" method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" onsubmit="return false;">
 			<?php
-			// Add nonce for bulk actions
+			// Add nonce for bulk actions.
 			wp_nonce_field( 'bulk-snippets' );
-			
+
 			// Preserve essential URL parameters.
 			$preserve_params = array( 'page', 'code_type', 'orderby', 'order' );
 			foreach ( $preserve_params as $param ) {
-				if ( isset( $_GET[ $param ] ) ) {
+				if ( isset( $_GET[ $param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					printf(
 						'<input type="hidden" name="%s" value="%s" />',
 						esc_attr( $param ),
-						esc_attr( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) )
+						esc_attr( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					);
 				}
 			}
 			$list_table->views();
 			$list_table->search_box( __( 'Search Snippets', 'animation-addons-for-elementor' ), 'snippet' );
+			$list_table->display();
 			?>
-			
-			<!-- Custom Bulk Actions for AJAX -->
-			<div class="tablenav top">
-				<div class="alignleft actions bulkactions">
-					<label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
-					<select name="action" id="bulk-action-selector-top">
-						<option value="-1">Bulk actions</option>
-						<option value="delete">Delete</option>
-						<option value="activate">Activate</option>
-						<option value="deactivate">Deactivate</option>
-					</select>
-					<input type="submit" id="doaction" class="button action" value="Apply">
-				</div>
-			</div>
-			
-			<?php 
-			$list_table->display(); 
-			?>
-			
-			<!-- Custom Bulk Actions for AJAX (Bottom) -->
-			<div class="tablenav bottom">
-				<div class="alignleft actions bulkactions">
-					<label for="bulk-action-selector-bottom" class="screen-reader-text">Select bulk action</label>
-					<select name="action2" id="bulk-action-selector-bottom">
-						<option value="-1">Bulk actions</option>
-						<option value="delete">Delete</option>
-						<option value="activate">Activate</option>
-						<option value="deactivate">Deactivate</option>
-					</select>
-					<input type="submit" id="doaction2" class="button action" value="Apply">
-				</div>
-			</div>
 		</form>
 	</div>
 </div>
