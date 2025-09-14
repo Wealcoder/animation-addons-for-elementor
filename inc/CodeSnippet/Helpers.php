@@ -66,4 +66,39 @@ class Helpers {
 
 		return $list_table;
 	}
+
+	/**
+	 * Get a code type list.
+	 *
+	 * @since 2.3.10
+	 * @return array
+	 */
+	public static function get_code_type_list() {
+		$code_type_list = array(
+			'html'       => __( 'HTML', 'animation-addons-for-elementor' ),
+			'css'        => __( 'CSS', 'animation-addons-for-elementor' ),
+			'php'        => __( 'PHP', 'animation-addons-for-elementor' ),
+			'javascript' => __( 'Java Script', 'animation-addons-for-elementor' ),
+		);
+
+		return apply_filters( 'wcf_code_type_list', $code_type_list );
+	}
+
+	/**
+	 * Get load location list.
+	 *
+	 * @since 2.3.10
+	 * @return array
+	 */
+	public static function get_load_location_list() {
+		$load_loaction_list = array(
+			'head'           => __( 'Head Section', 'animation-addons-for-elementor' ),
+			'footer'         => __( 'Footer', 'animation-addons-for-elementor' ),
+			'body_start'     => __( 'After Body Open', 'animation-addons-for-elementor' ),
+			'content_before' => __( 'Before Content', 'animation-addons-for-elementor' ),
+			'content_after'  => __( 'After Content', 'animation-addons-for-elementor' ),
+		);
+
+		return apply_filters( 'wcf_load_location_list', $load_loaction_list );
+	}
 }

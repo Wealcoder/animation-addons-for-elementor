@@ -51,7 +51,7 @@ class CodeSnippetCompatibility {
 	 * @return void
 	 */
 	public function code_snippet_woocommerce_hooks() {
-		// FIXED: Better WooCommerce detection to prevent issues when deactivated
+		// FIXED: Better WooCommerce detection to prevent issues when deactivated.
 		if ( class_exists( 'WooCommerce' ) && function_exists( 'WC' ) ) {
 			// WooCommerce specific hooks.
 			add_action(

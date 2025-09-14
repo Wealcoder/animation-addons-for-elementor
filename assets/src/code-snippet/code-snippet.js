@@ -777,4 +777,49 @@ document.addEventListener('DOMContentLoaded', function () {
     codeType.addEventListener('change', updateLoadLocations);
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const loadLocation = document.getElementById("load-location"); // head/footer/before/after select
+    const pageLocation = document.getElementById("visibility-page"); // page condition select
+
+    if (!loadLocation || !pageLocation) {
+        return;
+    }
+
+    function toggleDependencies() {
+        const loadVal = loadLocation.value;
+        const pageVal = pageLocation.value;
+
+        const isArchiveLike =
+            pageVal.includes("archive") || pageVal === "blog";
+
+        Array.from(pageLocation.options).forEach(option => {
+            if (option.value.includes("archive") || option.value === "blog") {
+                option.disabled = (loadVal === "content_before" || loadVal === "content_after");
+            }
+        });
+
+        const beforeOpt = loadLocation.querySelector('option[value="content_before"]');
+        const afterOpt = loadLocation.querySelector('option[value="content_after"]');
+
+        if (isArchiveLike) {
+            if (beforeOpt) beforeOpt.disabled = true;
+            if (afterOpt) afterOpt.disabled = true;
+
+            if (loadVal === "content_before" || loadVal === "content_after") {
+                loadLocation.value = "";
+            }
+        } else {
+            if (beforeOpt) beforeOpt.disabled = false;
+            if (afterOpt) afterOpt.disabled = false;
+        }
+    }
+
+    // Initial run
+    toggleDependencies();
+
+    // Bind events
+    loadLocation.addEventListener("change", toggleDependencies);
+    pageLocation.addEventListener("change", toggleDependencies);
+});
+
 

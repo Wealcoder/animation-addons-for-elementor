@@ -95,7 +95,7 @@
             var currentPage = params.get('paged') || 1;
 
             this.config.ajaxInProgress = true;
-            this.showLoadingState();
+            // this.showLoadingState();
 
             $.ajax({
                 url: WCFCustomCodeVars.ajaxurl,
@@ -120,7 +120,7 @@
                 },
                 complete: function() {
                     CodeSnippetAjax.config.ajaxInProgress = false;
-                    CodeSnippetAjax.hideLoadingState();
+                    // CodeSnippetAjax.hideLoadingState();
                 }
             });
         },
@@ -213,7 +213,7 @@
          * Update pagination
          */
         updatePagination: function(data) {
-            var pagination = $('.tablenav-pages');
+            var pagination = $('.tablenav-pages .pagination-links');
             if (data.total_pages > 1) {
                 pagination.show();
             } else {
@@ -331,6 +331,8 @@
                             // For activate/deactivate, just refresh the table
                             CodeSnippetAjax.performAjaxSearch();
                         }
+
+                        $('#cb-select-all-2, #cb-select-all-1').prop('checked', false);
                     } else {
                         CodeSnippetAjax.showErrorMessage(response.data.message || WCFCustomCodeVars.messages.error);
                     }

@@ -68,8 +68,8 @@ class CodeSnippetListTable extends AbstractListTable {
 		);
 
 		// Add meta_key for custom field sorting.
-		if ( in_array( $order_by, array( 'code_type', 'load_location', 'priority', 'snippet_status' ) ) ) {
-			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by );
+		if ( in_array( $order_by, array( 'code_type', 'load_location', 'priority', 'snippet_status' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			if ( 'priority' === $order_by ) {
 				$args['orderby'] = 'meta_value_num';
 			} else {
@@ -86,7 +86,7 @@ class CodeSnippetListTable extends AbstractListTable {
 
 		// Handle code type filtering.
 		if ( ! empty( $code_type_filter ) && 'all' !== $code_type_filter ) {
-			$args['meta_query'] = array(
+			$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => 'code_type',
 					'value'   => $code_type_filter,
@@ -120,7 +120,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	private function get_sanitized_orderby() {
-		$orderby         = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'post_title';
+		$orderby         = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'post_title'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$allowed_orderby = array( 'post_title', 'date_created', 'code_type', 'load_location', 'priority', 'snippet_status' );
 		return in_array( $orderby, $allowed_orderby ) ? $orderby : 'post_title';
 	}
@@ -132,7 +132,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	private function get_sanitized_order() {
-		$order = isset( $_GET['order'] ) ? strtoupper( sanitize_key( wp_unslash( $_GET['order'] ) ) ) : 'ASC';
+		$order = isset( $_GET['order'] ) ? strtoupper( sanitize_key( wp_unslash( $_GET['order'] ) ) ) : 'ASC'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return in_array( $order, array( 'ASC', 'DESC' ) ) ? $order : 'ASC';
 	}
 
@@ -143,7 +143,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	private function get_search_query() {
-		return isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+		return isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -153,7 +153,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	 * @since 1.0.0
 	 */
 	private function get_code_type_filter() {
-		return isset( $_GET['code_type'] ) ? sanitize_text_field( wp_unslash( $_GET['code_type'] ) ) : '';
+		return isset( $_GET['code_type'] ) ? sanitize_text_field( wp_unslash( $_GET['code_type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -175,7 +175,7 @@ class CodeSnippetListTable extends AbstractListTable {
 	}
 
 	/**
-	 * Get meta key for custom field sorting.
+	 * Get meta-key for custom field sorting.
 	 *
 	 * @param string $orderby The orderby parameter.
 	 * @return string

@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
-// Include the AJAX handler class
 require_once __DIR__ . '/CodeSnippetAjax.php';
 
 /**
@@ -62,8 +61,6 @@ class CodeSnippet {
 
 		// Initialize AJAX handler.
 		new CodeSnippetAjax();
-
-		// Initialize notices.
 		new Notices();
 	}
 
@@ -75,10 +72,10 @@ class CodeSnippet {
 	 */
 	public function remove_query_vars() {
 		if ( isset( $_GET['page'] ) && 'wcf-code-snippet' === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			// FIXED: Better redirect handling to avoid WooCommerce issues
+			// FIXED: Better redirect handling to avoid WooCommerce issues.
 			$redirect_url = admin_url( 'admin.php?page=wcf-code-snippet' );
 
-			// Only use referer if it's safe and contains our page
+			// Only use referer if it's safe and contains our page.
 			$referer = wp_get_referer();
 			if ( $referer && strpos( $referer, 'wcf-code-snippet' ) !== false ) {
 				$redirect_url = remove_query_arg(
@@ -158,7 +155,7 @@ class CodeSnippet {
 
 		register_post_type( self::CPTTYPE, $args );
 
-		// FIXED: Only flush rewrite rules if needed to avoid WooCommerce conflicts
+		// FIXED: Only flush rewrite rules if needed to avoid WooCommerce conflicts.
 		if ( ! get_option( 'wcf_code_snippet_rewrite_rules_flushed' ) ) {
 			flush_rewrite_rules();
 			update_option( 'wcf_code_snippet_rewrite_rules_flushed', true );
@@ -262,10 +259,10 @@ class CodeSnippet {
 					'minorVersion'   => PHP_MINOR_VERSION,
 				),
 				'ajaxActions'   => array(
-					'search'    => 'wcf_search_snippets',
-					'delete'    => 'wcf_delete_snippet',
-					'bulk'      => 'wcf_bulk_action_snippets',
-					'toggle'    => 'wcf_toggle_snippet_status',
+					'search' => 'wcf_search_snippets',
+					'delete' => 'wcf_delete_snippet',
+					'bulk'   => 'wcf_bulk_action_snippets',
+					'toggle' => 'wcf_toggle_snippet_status',
 				),
 				'messages'      => array(
 					'confirmDelete'     => __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ),
@@ -556,9 +553,6 @@ class CodeSnippet {
 			wp_send_json_error( array( 'message' => __( 'Failed to update snippet status.', 'animation-addons-for-elementor' ) ) );
 		}
 	}
-
-
-
 }
 
 CodeSnippet::instance();

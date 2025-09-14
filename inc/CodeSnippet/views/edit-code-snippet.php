@@ -6,6 +6,7 @@
  * @package WCF_ADDONS\CodeSnippet
  */
 
+use WCF_ADDONS\CodeSnippet\Helpers;
 use WCF_ADDONS\WCF_Theme_Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -64,22 +65,25 @@ if ( 'php' === $snippet_details['code_type'] ) {
 					<div class="form-group">
 						<label for="code-type"><?php esc_html_e( 'Code Type', 'animation-addons-for-elementor' ); ?></label>
 						<select id="code-type" name="code_type">
-							<option value="html" <?php selected( $snippet_details['code_type'], 'html' ); ?>><?php echo esc_html( 'HTML' ); ?></option>
-							<option value="css" <?php selected( $snippet_details['code_type'], 'css' ); ?>><?php echo esc_html( 'CSS' ); ?></option>
-							<option value="javascript" <?php selected( $snippet_details['code_type'], 'javascript' ); ?>><?php echo esc_html( 'Java Script' ); ?></option>
-							<option value="php" <?php selected( $snippet_details['code_type'], 'php' ); ?>><?php echo esc_html( 'PHP' ); ?></option>
+							<?php
+							foreach ( Helpers::get_code_type_list() as $key => $code_type ) {
+								?>
+								<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $snippet_details['code_type'], $key ); ?>><?php echo esc_html( $code_type ); ?></option>
+								<?php
+							}
+							?>
 						</select>
 					</div>
 
 					<div class="form-group">
 						<label for="load-location"><?php esc_html_e( 'Load Location', 'animation-addons-for-elementor' ); ?></label>
 						<select id="load-location" name="load_location">
-							<option value=""><?php echo esc_html( 'Select Location' ); ?></option>
-							<option value="head" <?php selected( $snippet_details['load_location'], 'head' ); ?>><?php echo esc_html( 'Head Section' ); ?></option>
-							<option value="footer" <?php selected( $snippet_details['load_location'], 'footer' ); ?>><?php echo esc_html( 'Footer' ); ?></option>
-							<option value="body_start" <?php selected( $snippet_details['load_location'], 'body_start' ); ?>><?php echo esc_html( 'After Body Open' ); ?></option>
-							<option value="content_before" <?php selected( $snippet_details['load_location'], 'content_before' ); ?>><?php echo esc_html( 'Before Content' ); ?></option>
-							<option value="content_after" <?php selected( $snippet_details['load_location'], 'content_after' ); ?>><?php echo esc_html( 'After Content' ); ?></option>
+							<option value=""><?php echo esc_html__( 'Select Location', 'animation-addons-for-elementor' ); ?></option>
+							<?php foreach ( Helpers::get_load_location_list() as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $snippet_details['load_location'], $value ); ?>>
+									<?php echo esc_html( $label ); ?>
+								</option>
+							<?php endforeach; ?>
 						</select>
 					</div>
 
@@ -90,6 +94,8 @@ if ( 'php' === $snippet_details['code_type'] ) {
 
 				<div class="form-group">
 					<label for="code-content-hidden"><?php esc_html_e( 'Code Content', 'animation-addons-for-elementor' ); ?> *</label>
+					<div class="help-text"><?php esc_html_e( 'Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results.', 'animation-addons-for-elementor' ); ?></div>
+
 					<!-- Replace the textarea with this div -->
 					<div id="wp-code-editor-container" class="code-editor-wrapper">
 						<!-- CodeMirror will be initialized here -->
@@ -109,7 +115,6 @@ if ( 'php' === $snippet_details['code_type'] ) {
 
 					<!-- Stats display -->
 					<div id="editor-stats" class="editor-stats"></div>
-					<div class="help-text"><?php esc_html_e( 'Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results.', 'animation-addons-for-elementor' ); ?></div>
 				</div>
 			</div>
 

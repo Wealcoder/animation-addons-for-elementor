@@ -113,13 +113,13 @@ class CodeSnippetAjax {
 		// Handle search.
 		if ( ! empty( $search_term ) ) {
 			$args['s'] = $search_term;
-			// Add custom search filter to include meta fields
+			// Add custom search filter to include meta fields.
 			add_filter( 'posts_search', array( $this, 'custom_search_query' ), 10, 2 );
 		}
 
 		// Handle code type filtering.
 		if ( ! empty( $code_type ) && 'all' !== $code_type ) {
-			$args['meta_query'] = array(
+			$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => 'code_type',
 					'value'   => $code_type,
@@ -130,7 +130,7 @@ class CodeSnippetAjax {
 
 		$query = new \WP_Query( $args );
 
-		// Remove the search filter after query
+		// Remove the search filter after query.
 		if ( ! empty( $search_term ) ) {
 			remove_filter( 'posts_search', array( $this, 'custom_search_query' ), 10 );
 		}

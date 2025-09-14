@@ -28,7 +28,7 @@ class Notices {
 	 */
 	public function display_notices() {
 		// Check if we're on the CodeSnippet admin page.
-		if ( ! isset( $_GET['page'] ) || 'wcf-code-snippet' !== $_GET['page'] ) {
+		if ( ! isset( $_GET['page'] ) || 'wcf-code-snippet' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
