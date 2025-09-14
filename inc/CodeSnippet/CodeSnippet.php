@@ -253,6 +253,7 @@ class CodeSnippet {
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'nonce'         => wp_create_nonce( 'wcf_custom_code_security' ),
 				'adminURL'      => admin_url(),
+				'snippet_page'  => admin_url( 'admin.php?page=wcf-code-snippet' ),
 				'serverDetails' => array(
 					'currentVersion' => PHP_VERSION,
 					'majorVersion'   => PHP_MAJOR_VERSION,

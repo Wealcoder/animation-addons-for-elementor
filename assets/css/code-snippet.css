@@ -525,3 +525,36 @@ select {
   font-style: italic;
   cursor: not-allowed;
 }
+
+#wcf-code-loading {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ddd;
+  border-top: 6px solid #f6502c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  background: unset;
+  visibility: visible;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

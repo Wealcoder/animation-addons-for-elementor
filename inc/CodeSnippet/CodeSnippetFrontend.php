@@ -315,13 +315,13 @@ class CodeSnippetFrontend {
 
 			default:
 				// Check for custom post-types.
-				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'singular_' ) === 0 ) {
-					$post_type = str_replace( 'singular_', '', $visibility_condition );
+				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'singulars' ) ) {
+					$post_type = str_replace( '-singulars', '', $visibility_condition );
 					return is_singular( $post_type );
 				}
 
-				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'archive_' ) === 0 ) {
-					$post_type = str_replace( 'archive_', '', $visibility_condition );
+				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'archive' ) ) {
+					$post_type = str_replace( '-archive', '', $visibility_condition );
 					return is_post_type_archive( $post_type );
 				}
 

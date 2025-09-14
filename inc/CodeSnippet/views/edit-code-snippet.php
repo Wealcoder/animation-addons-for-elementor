@@ -44,7 +44,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 			</div>
 			<div>
 				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="btn btn-secondary-white" id="ajax-delete-snippet">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="btn btn-secondary-white">
 						<?php esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' ); ?>
 					</a>
 				<?php } ?>
@@ -94,8 +94,6 @@ if ( 'php' === $snippet_details['code_type'] ) {
 
 				<div class="form-group">
 					<label for="code-content-hidden"><?php esc_html_e( 'Code Content', 'animation-addons-for-elementor' ); ?> *</label>
-					<div class="help-text"><?php esc_html_e( 'Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results.', 'animation-addons-for-elementor' ); ?></div>
-
 					<!-- Replace the textarea with this div -->
 					<div id="wp-code-editor-container" class="code-editor-wrapper">
 						<!-- CodeMirror will be initialized here -->
@@ -115,6 +113,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 
 					<!-- Stats display -->
 					<div id="editor-stats" class="editor-stats"></div>
+					<div class="help-text"><?php esc_html_e( 'Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results.', 'animation-addons-for-elementor' ); ?></div>
 				</div>
 			</div>
 
@@ -193,4 +192,11 @@ if ( 'php' === $snippet_details['code_type'] ) {
 			</div>
 		</form>
 	</div>
+</div>
+
+<style>
+
+</style>
+<div id="wcf-code-loading" class="wcf-code-loading" style="display: none;">
+		<div class="spinner"></div>
 </div>

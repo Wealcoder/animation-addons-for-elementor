@@ -68,8 +68,7 @@
 
             $(document).on('click', '#ajax-delete-snippet', function(e) {
                 e.preventDefault();
-                console.log($(this));
-                self.handleSingleDelete($(this));
+                self.handleSingleDeleteBtn($(this));
             });
 
             // AJAX Bulk Actions
@@ -253,7 +252,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        if( row ) {
+                        if( row.length > 0 ) {
                             row.fadeOut(300, function() {
                                 $(this).remove();
                                 CodeSnippetAjax.showSuccessMessage(response.data.message);
@@ -271,6 +270,46 @@
                 },
                 error: function() {
                     CodeSnippetAjax.showErrorMessage(WCFCustomCodeVars.messages.error);
+                }
+            });
+        },
+
+        /**
+         * Handle single delete
+         */
+        handleSingleDeleteBtn: function(link) {
+            if (!confirm(WCFCustomCodeVars.messages.confirmDelete)) {
+                return false;
+            }
+
+            var snippetId = link.data('id');
+            $.ajax({
+                url: WCFCustomCodeVars.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: WCFCustomCodeVars.ajaxActions.delete,
+                    nonce: WCFCustomCodeVars.nonce,
+                    snippet_id: snippetId
+                },
+                beforeSend: function() {
+                    $('#wcf-code-loading').show();
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response.success) {
+                        setTimeout(function() {
+                            CodeSnippetAjax.showErrorMessage(response.data.message);
+                            $('#wcf-code-loading').hide();
+                            window.location.href = WCFCustomCodeVars.snippet_page;
+                        }, 2000);
+                    } else {
+                        CodeSnippetAjax.showErrorMessage(response.data.message || WCFCustomCodeVars.messages.error);
+                        $('#wcf-code-loading').hide();
+                    }
+                },
+                error: function() {
+                    CodeSnippetAjax.showErrorMessage(WCFCustomCodeVars.messages.error);
+                    $('#wcf-code-loading').hide();
                 }
             });
         },
