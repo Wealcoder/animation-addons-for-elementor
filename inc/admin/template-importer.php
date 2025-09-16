@@ -352,6 +352,11 @@ class AAEAddon_Importer {
 		}
 		
 	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
+		
+		if(isset($template['base_path']) && $template['base_path'] !=''){
+			$remote_url = $template['base_path'] . 'wp-json/starter-templates/download';
+		}
+
 		$args = [
 			'timeout'   => 90,
 			'body' => [
