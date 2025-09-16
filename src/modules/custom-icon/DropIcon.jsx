@@ -8,6 +8,7 @@ export default function DropIcon() {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [titleText, setTitleText] = useState("");
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     document.addEventListener("DOMContentLoaded", trackInputValue);
@@ -68,9 +69,9 @@ export default function DropIcon() {
             );
           }),
         })
-        .then(() => {
+        .then((res) => {
           setUploadedFiles([file]);
-
+          setMessage(res?.data?.data?.message);
           setFilesToUpload((prevUploadProgress) =>
             prevUploadProgress.filter((item) => item.File !== file)
           );
@@ -224,9 +225,13 @@ export default function DropIcon() {
           <div>
             <p
               className="section-title"
-              style={{ color: "#F58E2F", fontSize: "24px", textAlign: "center" }}
+              style={{
+                color: "#F58E2F",
+                fontSize: "24px",
+                textAlign: "center",
+              }}
             >
-              Icon Generated
+              {message}
             </p>
           </div>
         </>
