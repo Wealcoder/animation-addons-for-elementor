@@ -261,14 +261,13 @@ CSP STYLE
 .aae-csp-editor select {
   width: 161px;
 }
-.aae-csp-editor textarea {
+.aae-csp-editor .code-editor-wrapper {
   height: 528px;
   width: 100%;
-  padding: 15px;
   border: 1px solid #E2E8F0;
   background: rgba(248, 250, 252, 0.3137254902);
 }
-.aae-csp-editor textarea:focus {
+.aae-csp-editor .code-editor-wrapper:focus {
   border-color: var(--vibrant-mint);
   box-shadow: none;
   outline-width: 0;
