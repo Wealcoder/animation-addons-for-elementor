@@ -477,7 +477,9 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_html_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			echo wp_kses_post( $content );
+			$allowed_tags          = wp_kses_allowed_html( 'post' );
+			$allowed_tags['style'] = array();
+			echo wp_kses( $content, $allowed_tags );
 		}
 	}
 
