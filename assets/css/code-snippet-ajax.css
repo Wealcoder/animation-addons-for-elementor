@@ -96,7 +96,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: rgb(156, 163, 175);
   transition: 0.4s;
   border-radius: 24px;
 }
@@ -115,7 +115,7 @@
 }
 
 .wcf-code-snippet-admin input:checked + .slider {
-  background-color: #2271b1;
+  background-color: #4ADE80;
 }
 
 .wcf-code-snippet-admin input:checked + .slider:before {
@@ -165,7 +165,7 @@
   background-color: #f0f0f1;
   border-radius: 4px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 700;
   color: #50575e;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -178,18 +178,6 @@
 /* Priority Badges */
 .priority.column-priority {
   margin-top: 8px;
-}
-
-.wcf-code-snippet-admin .priority {
-  padding: 3px 8px;
-  background-color: #f0f0f1;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #50575e;
-  min-width: 30px;
-  text-align: center;
-  display: inline-block;
 }
 
 /* Table Row Animations */

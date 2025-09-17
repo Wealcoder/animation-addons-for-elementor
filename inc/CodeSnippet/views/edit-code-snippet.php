@@ -29,11 +29,13 @@ if ( 'php' === $snippet_details['code_type'] ) {
 		<div class="aae-csp__container">
 		<div class="aae-csp-top">
 			<div class="aae-csp-top__start">
+				<div>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet' ) ); ?>" class="aae-csp-top__backward-btn">
 					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" class="w-[14px] h-[14px] flex-shrink-0">
 						<path d="M3.34988 6.1001H14V7.90001H3.34988L8.04335 12.7273L6.80593 14L0 7.00005L6.80593 0L8.04335 1.27273L3.34988 6.1001Z" fill="#717784"></path>
 					</svg>
 				</a>
+				</div>
 				<div class="aae-csp-top__content">
 					<h2 class="aae-csp-top__title">
 						<?php

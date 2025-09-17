@@ -23,7 +23,8 @@ CSP STYLE
 }
 @media (max-width: 991px) {
   .aae-csp {
-    padding: 15px;
+    padding: 15px 0;
+    padding-inline-end: 10px;
   }
 }
 .aae-csp * {
@@ -61,12 +62,20 @@ CSP STYLE
 .aae-csp .select2-selection:focus {
   border-color: var(--vibrant-mint) !important;
 }
+.aae-csp .select2-container--default .select2-selection--multiple.select2-selection--clearable {
+  padding-right: 25px;
+  max-height: 170px;
+  overflow-y: scroll;
+  padding-bottom: 10px;
+}
 
 .aae-csp-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 .aae-csp-top__start {
   display: flex;
@@ -276,10 +285,20 @@ CSP STYLE
   border: 1px solid #E2E8F0;
   background: rgba(248, 250, 252, 0.3137254902);
 }
+@media (max-width: 1200px) {
+  .aae-csp-editor .code-editor-wrapper {
+    height: 300px;
+  }
+}
 .aae-csp-editor .code-editor-wrapper:focus {
   border-color: var(--vibrant-mint);
   box-shadow: none;
   outline-width: 0;
+}
+@media (max-width: 1200px) {
+  .aae-csp-editor .CodeMirror {
+    height: 300px;
+  }
 }
 .aae-csp-editor__mode {
   display: inline-flex;
@@ -292,6 +311,7 @@ CSP STYLE
   align-items: center;
   font-weight: 500;
   color: var(--deep-navy);
+  flex-wrap: wrap;
 }
 .aae-csp-editor-top__text span {
   font-weight: 400;
@@ -304,6 +324,8 @@ CSP STYLE
   justify-content: space-between;
   align-items: center;
   padding-top: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 .aae-csp-editor__wordcount {
   display: flex;
@@ -385,17 +407,21 @@ CSP STYLE
   font-size: 12px !important;
 }
 
-.wp-core-ui .notice.is-dismissible {
+.animation-addon_page_wcf-code-snippet .is-dismissible {
   width: 14.5%;
-  margin: auto;
   margin-top: 10px;
   border-color: #E1E4EA;
   border-left-color: rgb(74, 222, 128);
   padding: 6px 15px;
-  position: absolute;
+  position: absolute !important;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: unset !important;
+}
+
+.wcf-admin-page-content .is-dismissible {
+  transform: unset !important;
 }
 
 /*

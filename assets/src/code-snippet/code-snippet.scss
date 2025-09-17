@@ -25,7 +25,8 @@ COLOR PLATES
   font-family: "Inter", sans-serif;
   padding: 58px 47px;
   @media (max-width:991px){
-    padding: 15px;
+    padding: 15px 0;
+    padding-inline-end: 10px;
   }
   *{
     margin: 0;
@@ -62,6 +63,12 @@ COLOR PLATES
       border-color: var(--vibrant-mint) !important;
     }
   }
+.select2-container--default .select2-selection--multiple.select2-selection--clearable {
+    padding-right: 25px;
+    max-height: 170px;
+    overflow-y: scroll;
+    padding-bottom: 10px;
+}
 }
 
 .aae-csp-top{
@@ -69,6 +76,8 @@ COLOR PLATES
   align-items: center;
   justify-content: space-between;
   margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 15px;
   &__start{
     display: flex;
     align-items: center;
@@ -280,10 +289,18 @@ COLOR PLATES
     width: 100%;
     border: 1px solid #E2E8F0;
     background: #F8FAFC50;
+    @media (max-width:1200px){
+      height: 300px;
+    }
     &:focus{
       border-color: var(--vibrant-mint);
       box-shadow: none;
       outline-width: 0;
+    }
+  }
+  .CodeMirror{
+    @media (max-width:1200px){
+      height: 300px;
     }
   }
   &__mode{
@@ -298,6 +315,7 @@ COLOR PLATES
     align-items: center;
     font-weight: 500;
     color: var(--deep-navy);
+    flex-wrap: wrap;
       span{
         font-weight: 400;
         font-size: 12px;
@@ -311,6 +329,8 @@ COLOR PLATES
     justify-content: space-between;
     align-items: center;
     padding-top: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
   }
   &__wordcount{
     display: flex;
@@ -391,17 +411,24 @@ COLOR PLATES
     padding: 10px 15px !important;
     font-size: 12px !important;
 }
-.wp-core-ui .notice.is-dismissible {
-    width: 14.5%;
-    margin: auto;
-    margin-top: 10px;
-    border-color: #E1E4EA;
-    border-left-color: rgba(74, 222, 128, 1);
-    padding: 6px 15px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+.animation-addon_page_wcf-code-snippet{
+    .is-dismissible {
+        width: 14.5%;
+        margin-top: 10px;
+        border-color: #E1E4EA;
+        border-left-color: rgba(74, 222, 128, 1);
+        padding: 6px 15px;
+        position: absolute !important;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        transition: unset !important;
+    }
+}
+.wcf-admin-page-content{
+  .is-dismissible{
+    transform: unset !important;
+  }
 }
 
 /*
