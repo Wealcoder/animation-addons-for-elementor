@@ -128,7 +128,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				<div class="aae-csp-editor-top-start">
 					<p class="aae-csp-editor-top__text">Code Content*<span>(Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results.)</span></p>
 				</div>
-				<div class="aae-csp-editor-top-end">
+				<div class="aae-csp-editor-top__end">
 					<div class="aae-csp-editor__mode">
 						<p class="aae-csp-active__label">Night Mode</p>
 						<div class="checkbox-wrapper-6 mode">

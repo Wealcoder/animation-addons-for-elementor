@@ -906,7 +906,6 @@ COLOR PLATES
     }
   }
   &__footer{
-    padding-bottom: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -936,6 +935,11 @@ COLOR PLATES
   justify-content: space-between;
   align-items: center;
   margin-bottom: 14px;
+  &__end{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 }
 .aae-csp-priority-slider-wrapper {
     display: flex;

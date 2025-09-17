@@ -262,7 +262,6 @@ CSP STYLE
   color: var(--cool-gray);
 }
 .aae-csp-editor__footer {
-  padding-bottom: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -292,6 +291,11 @@ CSP STYLE
   justify-content: space-between;
   align-items: center;
   margin-bottom: 14px;
+}
+.aae-csp-editor-top__end {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .aae-csp-priority-slider-wrapper {
