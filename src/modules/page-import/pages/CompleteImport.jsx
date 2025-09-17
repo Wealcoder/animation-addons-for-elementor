@@ -29,7 +29,7 @@ const CompleteImport = () => {
         <div className="mb-6">
           <h3 className="text-2xl font-medium">Congratulations!!! 🎉</h3>
           <p className="mt-1.5 text-text-secondary">
-            Your website is now imported and ready to use.
+            Your page is now imported and ready to use.
           </p>
         </div>
         <div className="mb-6">
