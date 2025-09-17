@@ -180,7 +180,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 					</div>
 					<div class="aae-csp-editor-top__end">
 						<div class="aae-csp-editor__mode">
-							<p class="aae-csp-active__label"><?php esc_html_e( 'Night Mode', 'animation-addons-for-elementor' ); ?></p>
+							<p class="aae-csp-active__label"><?php esc_html_e( 'Dark Mode', 'animation-addons-for-elementor' ); ?></p>
 							<div class="checkbox-wrapper-6 mode">
 								<input class="tgl tgl-light" id="theme-toggle-btn" type="checkbox"/>
 								<label class="tgl-btn" for="theme-toggle-btn">
