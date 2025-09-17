@@ -37,6 +37,24 @@ CSP STYLE
   line-height: 1.5;
   color: var(--deep-navy);
 }
+.aae-csp a {
+  color: var(--deep-navy);
+}
+.aae-csp .priority-value {
+  text-align: center;
+  font-weight: 600;
+  color: var(--theme-bg);
+  border: 1px solid var(--off-white);
+  padding: 5px 15px;
+}
+.aae-csp .priority-value:focus {
+  border-color: var(--vibrant-mint);
+  outline: 0;
+  box-shadow: none;
+}
+.aae-csp .CodeMirror-gutter-wrapper {
+  left: -38px !important;
+}
 
 .aae-csp-top {
   display: flex;
@@ -105,15 +123,20 @@ CSP STYLE
   justify-content: center;
   align-items: center;
   padding: 10px;
-  width: 36px;
-  height: 36px;
   background: var(--white);
   border: 1px solid var(--off-white);
   box-shadow: 0 1px 4px rgba(10, 13, 20, 0.03);
   border-radius: 10px;
+  text-decoration: none;
+  gap: 5px;
+}
+.aae-csp-top__tools-btn:hover {
+  color: rgb(252, 104, 72);
+  background-color: rgb(254, 225, 218);
+  border-color: rgba(252, 104, 72, 0.2);
 }
 .aae-csp-top__tools-btn:hover svg path {
-  stroke: #FC6848;
+  stroke: var(--theme-bg);
 }
 
 .aae-csp-main {
@@ -185,6 +208,13 @@ CSP STYLE
   color: var(--vibrant-mint);
   text-transform: capitalize;
   margin-bottom: 8px;
+}
+.aae-csp-active__status.inactive {
+  background-color: rgb(254, 225, 218);
+  color: rgb(252, 104, 72);
+}
+.aae-csp-active__status.inactive span::before {
+  background-color: rgb(252, 104, 72);
 }
 .aae-csp-active__status span {
   position: relative;
@@ -288,6 +318,15 @@ CSP STYLE
   display: flex;
   align-items: center;
   gap: 7px;
+  border: 1px solid transparent;
+}
+.aae-csp-editor__insertBtn:hover {
+  color: rgb(252, 104, 72);
+  background-color: rgb(254, 225, 218);
+  border-color: rgba(252, 104, 72, 0.2);
+}
+.aae-csp-editor__insertBtn:hover svg path {
+  stroke: rgb(252, 104, 72);
 }
 
 .aae-csp-editor-top {
@@ -330,14 +369,6 @@ CSP STYLE
   box-shadow: none;
 }
 
-.priority-value {
-  text-align: center;
-  font-weight: 600;
-  color: var(--theme-bg);
-  border: 1px solid var(--off-white);
-  padding: 5px 15px;
-}
-
 /*
 ----------------------------------
 CHECK BUTTON STYLE
@@ -378,7 +409,7 @@ CHECK BUTTON STYLE
 }
 
 .checkbox-wrapper-6 .tgl-light + .tgl-btn {
-  background: #9FD6AE;
+  background: rgb(254, 225, 218);
   border-radius: 2em;
   padding: 2px;
   transition: all 0.4s ease;

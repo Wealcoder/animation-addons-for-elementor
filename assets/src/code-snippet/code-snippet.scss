@@ -38,6 +38,24 @@ COLOR PLATES
     line-height: 1.5;
     color: var(--deep-navy);
   }
+  a{
+    color: var(--deep-navy);
+  }
+  .priority-value {
+    text-align: center;
+    font-weight: 600;
+    color: var(--theme-bg);
+    border: 1px solid var(--off-white);
+    padding: 5px 15px;
+    &:focus{
+      border-color: var(--vibrant-mint);
+      outline: 0;
+      box-shadow: none;
+    }
+}
+.CodeMirror-gutter-wrapper{
+  left: -38px !important;
+}
 }
 .aae-csp-top{
   display: flex;
@@ -107,16 +125,19 @@ COLOR PLATES
     justify-content: center;
     align-items: center;
     padding: 10px;
-    width: 36px;
-    height: 36px;
     background: var(--white);
     border: 1px solid var(--off-white);
     box-shadow: 0 1px 4px rgba(10, 13, 20, 0.03);
     border-radius: 10px;
+    text-decoration: none;
+    gap: 5px;
     &:hover{
+      color: rgba(252, 104, 72, 1);
+      background-color: rgba(254, 225, 218, 1);
+      border-color: rgba(252, 104, 72, 0.2);
       svg{
         path{
-          stroke: #FC6848;
+          stroke: var(--theme-bg);
         }
       }
     }
@@ -191,6 +212,15 @@ COLOR PLATES
     color: var(--vibrant-mint);
     text-transform: capitalize;
     margin-bottom: 8px;
+    &.inactive{
+      background-color: rgba(254, 225, 218, 1);
+      color: rgba(252, 104, 72, 1);
+      span{
+        &::before{
+          background-color: rgba(252, 104, 72, 1);
+        }
+      }
+    }
     span{
       position: relative;
         &::before{
@@ -293,7 +323,18 @@ COLOR PLATES
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 7px
+    gap: 7px;
+    border: 1px solid transparent;
+    &:hover{
+      color: rgba(252, 104, 72, 1);
+      background-color: rgba(254, 225, 218, 1);
+      border-color: rgba(252, 104, 72, 0.2);
+      svg{
+        path{
+          stroke: rgba(252, 104, 72, 1);
+        }
+      }
+    }
   }
 }
 .aae-csp-editor-top{
@@ -334,13 +375,6 @@ COLOR PLATES
     box-shadow: none
   }
 }
-.priority-value {
-    text-align: center;
-    font-weight: 600;
-    color: var(--theme-bg);
-    border: 1px solid var(--off-white);
-    padding: 5px 15px;
-}
 
 /*
 ----------------------------------
@@ -376,7 +410,7 @@ CHECK BUTTON STYLE
   left: 50%;
 }
 .checkbox-wrapper-6 .tgl-light + .tgl-btn {
-  background: #9FD6AE;
+  background: rgba(254, 225, 218, 1);
   border-radius: 2em;
   padding: 2px;
   transition: all 0.4s ease;

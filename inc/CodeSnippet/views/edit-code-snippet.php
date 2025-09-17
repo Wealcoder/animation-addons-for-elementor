@@ -56,7 +56,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 							<path d="M7.99992 14.6667C11.6666 14.6667 14.6666 11.6667 14.6666 8.00004C14.6666 4.33337 11.6666 1.33337 7.99992 1.33337C4.33325 1.33337 1.33325 4.33337 1.33325 8.00004C1.33325 11.6667 4.33325 14.6667 7.99992 14.6667Z" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M5.33325 8H10.6666" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M8 10.6667V5.33337" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
+						</svg> <?php esc_html_e('Add New Snippet','animation-addons-for-elementor');?>
 					</a>
 				<?php } ?>
 				<button class="aae-csp-top__tools-btn">
@@ -66,7 +66,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 							<path d="M6.3999 9.6C6.3999 10.0243 6.56847 10.4313 6.86853 10.7314C7.16859 11.0314 7.57556 11.2 7.9999 11.2C8.42425 11.2 8.83121 11.0314 9.13127 10.7314C9.43133 10.4313 9.5999 10.0243 9.5999 9.6C9.5999 9.17565 9.43133 8.76869 9.13127 8.46863C8.83121 8.16857 8.42425 8 7.9999 8C7.57556 8 7.16859 8.16857 6.86853 8.46863C6.56847 8.76869 6.3999 9.17565 6.3999 9.6Z" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M9.60005 1.59998V4.79998H4.80005V1.59998" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 						</g>
-					</svg>
+					</svg> <?php esc_html_e('Save Snippet','animation-addons-for-elementor');?> 
 				</button>
 				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 					<input type="hidden" name="snippet_id" value="<?php echo absint( $code_snippet_id ); ?>">
@@ -85,8 +85,8 @@ if ( 'php' === $snippet_details['code_type'] ) {
 		<div class="aae-csp-main">
 			<div class="aae-csp-aside">
 			<div class="aae-csp-active aae-csp-widget">
-				<span class="aae-csp-active__status">
-					<span class="<?php echo 'yes' === $snippet_details['is_active'] ? 'active' : 'inactive'; ?>">
+				<span class="aae-csp-active__status <?php echo 'yes' === $snippet_details['is_active'] ? '' : 'inactive'; ?>">
+					<span>
 						<?php echo 'yes' === $snippet_details['is_active'] ? 'Active' : 'Inactive'; ?>
 					</span>
 				</span>
@@ -192,13 +192,13 @@ if ( 'php' === $snippet_details['code_type'] ) {
 							<path d="M12 4L4 12" stroke="#717784" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M11.9999 6.66667V4H9.33325" stroke="#717784" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M4 9.33337V12H6.66667" stroke="#717784" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg>
+							</svg> 
 						</button>
 						<button class="aae-csp-top__tools-btn" type="button" id="copy-code-btn">
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M11.3132 8.16663V11.1666C11.3132 13.6666 10.3132 14.6666 7.81323 14.6666H4.81323C2.31323 14.6666 1.31323 13.6666 1.31323 11.1666V8.16663C1.31323 5.66663 2.31323 4.66663 4.81323 4.66663H7.81323C10.3132 4.66663 11.3132 5.66663 11.3132 8.16663Z" stroke="#717784" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M14.6466 3.90004V6.10004C14.6466 7.93337 13.9132 8.66671 12.0799 8.66671H11.3132V8.16671C11.3132 5.66671 10.3132 4.66671 7.81323 4.66671H7.31323V3.90004C7.31323 2.06671 8.04657 1.33337 9.8799 1.33337H12.0799C13.9132 1.33337 14.6466 2.06671 14.6466 3.90004Z" stroke="#717784" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg>
+							</svg> 
 						</button>
 						<button class="aae-csp-top__tools-btn" type="button" id="download-code-btn">
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
