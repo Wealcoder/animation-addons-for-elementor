@@ -243,7 +243,7 @@ function updateStats() {
     }
 }
 
-// Toggle theme
+// Toggle theme.
 function toggleTheme() {
     if (!editor) return;
 
@@ -284,7 +284,7 @@ function exitFullscreen() {
     wrapper.classList.remove('fullscreen');
     editor.setSize('100%', '500px');
     if (escButton) {
-        escButton.classList.remove('show'); // Hide ESC button
+        escButton.classList.remove('show');
     }
     editor.refresh();
     showNotification('Exited fullscreen mode');
@@ -875,6 +875,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     const toggle = document.getElementById("active-toggle");
     const statusEl = document.querySelector(".aae-csp-active__status");
+    if (!toggle || !statusEl) return;
     const statusText = statusEl.querySelector("span");
 
     if (toggle && statusEl && statusText) {
