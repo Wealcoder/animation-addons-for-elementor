@@ -265,10 +265,9 @@ COLOR PLATES
   select{
     width: 161px;
   }
-  textarea{
+  .code-editor-wrapper{
     height: 528px;
     width: 100%;
-    padding: 15px;
     border: 1px solid #E2E8F0;
     background: #F8FAFC50;
     &:focus{
