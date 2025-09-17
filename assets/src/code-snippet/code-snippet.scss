@@ -914,6 +914,10 @@ COLOR PLATES
   &__wordcount{
     display: flex;
     gap: 5px;
+    li{
+      font-size: 12px;
+      color: var(--cool-gray);
+    }
   }
   &__insertBtn{
     font-weight: 500;
@@ -935,6 +939,8 @@ COLOR PLATES
   justify-content: space-between;
   align-items: center;
   margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 15px;
   &__end{
     display: flex;
     align-items: center;
