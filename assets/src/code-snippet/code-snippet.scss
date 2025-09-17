@@ -23,7 +23,7 @@ COLOR PLATES
   --theme-bg : #FC6848;
 
   font-family: "Inter", sans-serif;
-  padding: 64px;
+  padding: 58px 47px;
   @media (max-width:991px){
     padding: 15px;
   }
@@ -52,11 +52,18 @@ COLOR PLATES
       outline: 0;
       box-shadow: none;
     }
+  }
+  .CodeMirror-gutter-wrapper{
+    left: -38px !important;
+  }
+  .select2-selection{
+    border-color: var(--off-white);
+    &:focus{
+      border-color: var(--vibrant-mint) !important;
+    }
+  }
 }
-.CodeMirror-gutter-wrapper{
-  left: -38px !important;
-}
-}
+
 .aae-csp-top{
   display: flex;
   align-items: center;
@@ -254,6 +261,9 @@ COLOR PLATES
   display: flex;
   flex-direction: column;
   gap: 24px;
+  &__visibility-pages{
+    margin-top: 10px;
+  }
 }
 .aae-csp-editor{
   background-color: var(--white);
@@ -373,6 +383,25 @@ COLOR PLATES
     cursor: pointer;
     box-shadow: none
   }
+}
+.notification {
+    right: 3.5%!important;
+    background-color: #4ade80!important;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px !important;
+    padding: 10px 15px !important;
+    font-size: 12px !important;
+}
+.wp-core-ui .notice.is-dismissible {
+    width: 14.5%;
+    margin: auto;
+    margin-top: 10px;
+    border-color: #E1E4EA;
+    border-left-color: rgba(74, 222, 128, 1);
+    padding: 6px 15px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 /*

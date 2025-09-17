@@ -19,7 +19,7 @@ CSP STYLE
   --vibrant-mint: #4ADE80;
   --theme-bg: #FC6848;
   font-family: "Inter", sans-serif;
-  padding: 64px;
+  padding: 58px 47px;
 }
 @media (max-width: 991px) {
   .aae-csp {
@@ -54,6 +54,12 @@ CSP STYLE
 }
 .aae-csp .CodeMirror-gutter-wrapper {
   left: -38px !important;
+}
+.aae-csp .select2-selection {
+  border-color: var(--off-white);
+}
+.aae-csp .select2-selection:focus {
+  border-color: var(--vibrant-mint) !important;
 }
 
 .aae-csp-top {
@@ -249,6 +255,9 @@ CSP STYLE
   flex-direction: column;
   gap: 24px;
 }
+.aae-csp-visibility__visibility-pages {
+  margin-top: 10px;
+}
 
 .aae-csp-editor {
   background-color: var(--white);
@@ -366,6 +375,27 @@ CSP STYLE
   background: var(--theme-bg);
   cursor: pointer;
   box-shadow: none;
+}
+
+.notification {
+  right: 3.5% !important;
+  background-color: #4ade80 !important;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px !important;
+  padding: 10px 15px !important;
+  font-size: 12px !important;
+}
+
+.wp-core-ui .notice.is-dismissible {
+  width: 14.5%;
+  margin: auto;
+  margin-top: 10px;
+  border-color: #E1E4EA;
+  border-left-color: rgb(74, 222, 128);
+  padding: 6px 15px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 /*
