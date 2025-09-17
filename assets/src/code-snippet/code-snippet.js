@@ -15,12 +15,6 @@ const languageModes = {
 const exampleCode = {
     html: `<h1>Code is Poetry.</h1>`,
     css: `/* CSS Example */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
 .button {
     background: #007cba;
     color: white;
@@ -40,7 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });`,
     php: `<?php
 // PHP Example
-echo 'Code is Poetry.';`
+add_filter( 'the_title', 'convert_smilies' );
+add_filter( 'wp_title', 'convert_smilies' );
+add_filter( 'sanitize_file_name', 'mb_strtolower' );`
 };
 
 // Create ESC button and inject CSS
@@ -516,10 +512,64 @@ document.addEventListener('DOMContentLoaded', function () {
     codeTypeSelect.addEventListener('change', toggleLoadLocation);
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const prioritySlider = document.getElementById('priority-slider');
+    const priorityValue = document.getElementById('priority-value');
+
+    function updatePriorityValue(value) {
+        if (priorityValue) {
+            priorityValue.value = value;
+        }
+    }
+
+    function updatePrioritySlider(value) {
+        let numValue = parseInt(value, 10);
+
+        if (isNaN(numValue)) {
+            numValue = 1;
+        } else if (numValue < 1) {
+            numValue = 1;
+        } else if (numValue > 999) {
+            numValue = 999;
+        }
+
+        if (prioritySlider) {
+            prioritySlider.value = numValue;
+        }
+        if (priorityValue) {
+            priorityValue.value = numValue;
+        }
+    }
+
+    if (prioritySlider) {
+        prioritySlider.addEventListener('input', function() {
+            updatePriorityValue(this.value);
+        });
+    }
+
+    if (priorityValue) {
+        priorityValue.addEventListener('input', function() {
+            updatePrioritySlider(this.value);
+        });
+
+        priorityValue.addEventListener('blur', function() {
+            updatePrioritySlider(this.value);
+        });
+
+        priorityValue.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updatePrioritySlider(this.value);
+                this.blur(); // Remove focus from input
+            }
+        });
+    }
+});
+
+// Global function for inline oninput attribute (if you need to keep it)
 function updatePriorityValue(value) {
-    const priorityValueElement = document.getElementById('priority-value');
-    if (priorityValueElement) {
-        priorityValueElement.textContent = value;
+    const priorityValue = document.getElementById('priority-value');
+    if (priorityValue) {
+        priorityValue.value = value;
     }
 }
 

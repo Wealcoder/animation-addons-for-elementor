@@ -72,12 +72,12 @@ if ( 'php' === $snippet_details['code_type'] ) {
 					<input type="hidden" name="snippet_id" value="<?php echo absint( $code_snippet_id ); ?>">
 					<span class="aae-csp-top__tools-btn" id="ajax-delete-snippet" data-id="<?php echo absint( $code_snippet_id ); ?>">
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-				            <path d="M14 3.98665C11.78 3.76665 9.54667 3.65332 7.32 3.65332C6 3.65332 4.68 3.71999 3.36 3.85332L2 3.98665" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				            <path d="M5.66675 3.31337L5.81341 2.44004C5.92008 1.80671 6.00008 1.33337 7.12675 1.33337H8.87341C10.0001 1.33337 10.0867 1.83337 10.1867 2.44671L10.3334 3.31337" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				            <path d="M12.5667 6.09338L12.1334 12.8067C12.06 13.8534 12 14.6667 10.14 14.6667H5.86002C4.00002 14.6667 3.94002 13.8534 3.86668 12.8067L3.43335 6.09338" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				            <path d="M6.88672 11H9.10672" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				            <path d="M6.33325 8.33337H9.66659" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-				</svg>
+							<path d="M14 3.98665C11.78 3.76665 9.54667 3.65332 7.32 3.65332C6 3.65332 4.68 3.71999 3.36 3.85332L2 3.98665" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M5.66675 3.31337L5.81341 2.44004C5.92008 1.80671 6.00008 1.33337 7.12675 1.33337H8.87341C10.0001 1.33337 10.0867 1.83337 10.1867 2.44671L10.3334 3.31337" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M12.5667 6.09338L12.1334 12.8067C12.06 13.8534 12 14.6667 10.14 14.6667H5.86002C4.00002 14.6667 3.94002 13.8534 3.86668 12.8067L3.43335 6.09338" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M6.88672 11H9.10672" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M6.33325 8.33337H9.66659" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
 					</span>
 				<?php } ?>
 			</div>
@@ -154,7 +154,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 					<label for="priority-slider" class="aae-csp-aside__label"><?php esc_html_e( 'Execution Priority', 'animation-addons-for-elementor' ); ?></label>
 					<div class="aae-csp-priority-slider-wrapper">
 						<input type="range" id="priority-slider" name="priority" min="1" max="999" value="<?php echo esc_attr( $snippet_details['priority'] ); ?>" class="priority-slider" oninput="updatePriorityValue(this.value)">
-						<label for="priority-value"><input class="priority-value" id="priority-value" name="priority-value" value="<?php echo esc_attr( $snippet_details['priority'] ); ?>"></label>
+						<label for="priority-value"><input type="number" min="1" max="999"  class="priority-value" id="priority-value" name="priority-value" value="<?php echo esc_attr( $snippet_details['priority'] ); ?>"></label>
 					</div>
 					<span class="aae-csp-aside__help-text"><?php esc_html_e( 'Higher numbers = higher priority', 'animation-addons-for-elementor' ); ?></span>
 				</div>
