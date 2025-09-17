@@ -120,8 +120,8 @@ if ( 'php' === $snippet_details['code_type'] ) {
 						</select>
 						<span class="aae-csp-aside__help-text"><?php esc_html_e( 'Select where this code snippet should be loaded', 'animation-addons-for-elementor' ); ?></span>
 					</div>
-					<div class="form-subgroup">
-						<label for="visibility-page-list" class="visibility-page-list"><?php esc_html_e( 'Add Specific Pages', 'animation-addons-for-elementor' ); ?></label>
+					<div class="form-subgroup aae-csp-visibility__visibility-pages">
+						<label for="visibility-page-list" class="visibility-page-list aae-csp-aside__label"><?php esc_html_e( 'Add Specific Pages', 'animation-addons-for-elementor' ); ?></label>
 						<select class="visibility-page-list" name="visibility_page_list[]" id="visibility-page-list" multiple="multiple">
 							<?php
 							if ( ! empty( $snippet_details['visibility_page_list'] ) && is_array( $snippet_details['visibility_page_list'] ) ) {
