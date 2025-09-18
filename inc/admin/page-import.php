@@ -16,15 +16,47 @@ final class AAE_Admin_Page_Importer
 
     public function __construct()
     {
-    
+
         add_action('admin_enqueue_scripts', [$this, 'enqueue']);
         add_action('admin_enqueue_scripts', [$this, 'importer_assets']);
 
         add_action('admin_menu', array($this, 'add_menu'), 25);
-      
+
         add_action('admin_print_scripts', [$this, 'clear_notices_for_importer']);
         add_filter('admin_body_class', array($this, 'admin_classes'), 100);
+        add_filter('views_edit-page', [$this, 'custom_page_tab']);
+        add_action('pre_get_posts', [$this, 'custom_page_filter']);
+    }
 
+    function custom_page_tab($views)
+    {
+        global $wpdb;
+
+        $count = $wpdb->get_var("
+            SELECT COUNT(*) FROM $wpdb->posts 
+            WHERE post_type = 'page' 
+            AND post_status = 'publish' 
+            AND ID IN (
+                SELECT post_id FROM $wpdb->postmeta 
+                WHERE meta_key = 'aae_imported' AND meta_value = '1'
+            )
+        ");
+
+        $class = (isset($_GET['aae-latest-import']) && $_GET['aae-latest-import'] == 'import') ? 'current' : '';
+        $url   = add_query_arg('aae-latest-import', 'import', admin_url('edit.php?post_type=page'));
+        $views['latest-import'] = "<a href='$url' class='$class' style='color: #fc6848; font-weight: 500' >AAE Imported <span class='count'>($count)</span></a>";
+        return $views;
+    }
+    function custom_page_filter($query)
+    {
+        global $pagenow;
+
+        if (is_admin() && $pagenow == 'edit.php' && $query->get('post_type') == 'page') {
+            if (isset($_GET['aae-latest-import']) && $_GET['aae-latest-import'] == 'import') {
+                $query->set('meta_key', 'aae_imported');
+                $query->set('meta_value', '1');
+            }
+        }
     }
     public function clear_notices_for_importer()
     {
@@ -96,10 +128,10 @@ final class AAE_Admin_Page_Importer
         if ($screen->post_type === 'page') {
             $should_load = true;
         }
-       
+
         // 2) Single edit screen: post.php with post_type=page (optionally only a certain post ID)
-        if ($hook_suffix === 'edit.php' && $screen->post_type === 'page') {         
-          
+        if ($hook_suffix === 'edit.php' && $screen->post_type === 'page') {
+
             $should_load = true;
         }
 
@@ -129,7 +161,7 @@ final class AAE_Admin_Page_Importer
 
     public function importer_assets($hook)
     {
-      
+
         if ($hook == 'admin_page_aae-page-importer' || $hook == 'animation-addon_page_aae-page-importer') {
             // CSS
             wp_enqueue_style(

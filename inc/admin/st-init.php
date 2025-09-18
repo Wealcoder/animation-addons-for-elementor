@@ -104,7 +104,8 @@ class OneClickImport
 		add_action('wp_import_insert_post', [$this, 'save_wp_navigation_import_mapping'], 10, 4);
 		add_action('wp_import_insert_post', [$this, 'save_wp_page_import_track'], 10, 4);
 		add_action('aaeaddon/after_import', [$this, 'fix_imported_wp_navigation']);
-		add_action('wp_ajax_aae_get_latest_imported_pages', [$this,'aae_get_latest_imported_pages']);		
+		add_action('wp_ajax_aae_lite_get_latest_imported_pages', [$this,'aae_get_latest_imported_pages']);	
+			
 	}
 
 	/**
@@ -136,7 +137,7 @@ class OneClickImport
 
 	function aae_get_latest_imported_pages() {
 		// Optional nonce check
-		if (isset($_POST['nonce']) && ! wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aae_import_nonce')) {
+		if (isset($_POST['nonce']) && ! wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'wcf_admin_nonce')) {
 			wp_send_json_error(['message' => 'Invalid nonce'], 403);
 		}
 

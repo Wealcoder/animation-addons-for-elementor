@@ -1,13 +1,15 @@
 import { Button, buttonVariants } from "C/components/ui/button";
 import { ConfettiAnimation } from "C/lib/confettiAnimation";
 import { cn } from "C/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import CompleteBG from "../../../../public/images/complete-bg.png";
 
 const CompleteImport = () => {
+  const [pageUrl, setPageUrl] = useState([])
   useEffect(() => {
     ConfettiAnimation();
+    importedPage();
   }, []);
 
   const changeRoute = (value) => {
@@ -21,6 +23,32 @@ const CompleteImport = () => {
     url.searchParams.set("tab", value);
     window.history.replaceState({}, "", url);
     window.location.reload();
+  };
+
+  const importedPage = async () => {
+    try {
+      const formData = new URLSearchParams();
+
+      formData.append("action", "aae_lite_get_latest_imported_pages");
+      formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
+      formData.append("per_page", 1);
+
+      const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setPageUrl(data?.data?.pages)
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -41,7 +69,7 @@ const CompleteImport = () => {
         </div>
         <div className="flex flex-col gap-1.5">
           <a
-            href={WCF_ADDONS_ADMIN.page_url ?? "#"}
+            href={pageUrl[0]?.permalink ?? "#"}
             className={cn(buttonVariants(), "w-full h-11")}
           >
             Go to page
