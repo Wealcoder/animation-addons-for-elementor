@@ -120,6 +120,7 @@ final class AAE_Admin_Page_Importer
             'nonce'   => wp_create_nonce('aae_admin_nonce'),
             'screen'  => $screen->id,
             'post_id' => $post_id,
+            'logo' => WCF_ADDONS_URL . 'assets/images/wcf.png',
             'page_url'   => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
 
