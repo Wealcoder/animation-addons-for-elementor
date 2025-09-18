@@ -414,8 +414,8 @@ class WXRImporter extends \WP_Importer
 					update_option('aaeaddon_template_import_progress', [
 						'type' => 'single',
 						'total_items' => $total_init,
-						 'title' => $temp_title,
-						'progress' => $aae_counter_progress,
+						'title' => $temp_title,
+						'progress' => $aae_counter_progress,						
 						'data' => [						
 							'📝 Posts: ' . $aae_counter_progress,		
 						]
@@ -928,6 +928,7 @@ class WXRImporter extends \WP_Importer
 		} else {
 			$post_id = wp_insert_post($postdata, true);
 			do_action('wp_import_insert_post', $post_id, $original_id, $postdata, $data);
+			
 		}
 
 		if (is_wp_error($post_id)) {
