@@ -142,7 +142,7 @@ final class AAE_Admin_Page_Importer
         // Register + enqueue your JS
         wp_register_script(
             self::HANDLE,
-            WCF_ADDONS_URL . 'assets/js/aae-admin-actions.js',
+            WCF_ADDONS_URL . 'assets/js/aae-admin-actions.min.js',
             ['jquery'],
             time(),
             true
