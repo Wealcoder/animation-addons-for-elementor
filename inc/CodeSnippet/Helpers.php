@@ -78,7 +78,7 @@ class Helpers {
 			'html'       => __( 'HTML', 'animation-addons-for-elementor' ),
 			'css'        => __( 'CSS', 'animation-addons-for-elementor' ),
 			'php'        => __( 'PHP', 'animation-addons-for-elementor' ),
-			'javascript' => __( 'Java Script', 'animation-addons-for-elementor' ),
+			'javascript' => __( 'JavaScript', 'animation-addons-for-elementor' ),
 		);
 
 		return apply_filters( 'wcf_code_type_list', $code_type_list );

@@ -58,7 +58,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 							<path d="M7.99992 14.6667C11.6666 14.6667 14.6666 11.6667 14.6666 8.00004C14.6666 4.33337 11.6666 1.33337 7.99992 1.33337C4.33325 1.33337 1.33325 4.33337 1.33325 8.00004C1.33325 11.6667 4.33325 14.6667 7.99992 14.6667Z" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M5.33325 8H10.6666" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M8 10.6667V5.33337" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg> <?php esc_html_e('Add New Snippet','animation-addons-for-elementor');?>
+						</svg> <?php esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' ); ?>
 					</a>
 				<?php } ?>
 				<button class="aae-csp-top__tools-btn">
@@ -68,7 +68,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 							<path d="M6.3999 9.6C6.3999 10.0243 6.56847 10.4313 6.86853 10.7314C7.16859 11.0314 7.57556 11.2 7.9999 11.2C8.42425 11.2 8.83121 11.0314 9.13127 10.7314C9.43133 10.4313 9.5999 10.0243 9.5999 9.6C9.5999 9.17565 9.43133 8.76869 9.13127 8.46863C8.83121 8.16857 8.42425 8 7.9999 8C7.57556 8 7.16859 8.16857 6.86853 8.46863C6.56847 8.76869 6.3999 9.17565 6.3999 9.6Z" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M9.60005 1.59998V4.79998H4.80005V1.59998" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 						</g>
-					</svg> <?php esc_html_e('Save Snippet','animation-addons-for-elementor');?> 
+					</svg> <?php esc_html_e( 'Save Snippet', 'animation-addons-for-elementor' ); ?> 
 				</button>
 				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 					<input type="hidden" name="snippet_id" value="<?php echo absint( $code_snippet_id ); ?>">
@@ -140,7 +140,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 						<span class="aae-csp-aside__help-text"><?php esc_html_e( 'Search and select pages to execute your snippet.', 'animation-addons-for-elementor' ); ?></span>
 					</div>
 				</div>
-				<div class="aae-csp-visibility__input-group">
+				<div class="aae-csp-visibility__input-group" id="load-location-group">
 					<label for="load-location" class="aae-csp-aside__label"><?php esc_html_e( 'Load Location', 'animation-addons-for-elementor' ); ?></label>
 					<select id="load-location" name="load_location">
 						<option value=""><?php echo esc_html__( 'Select Location', 'animation-addons-for-elementor' ); ?></option>
@@ -151,6 +151,9 @@ if ( 'php' === $snippet_details['code_type'] ) {
 						<?php endforeach; ?>
 					</select>
 					<span class="aae-csp-aside__help-text"><?php esc_html_e( 'Select the page location where that will appear.', 'animation-addons-for-elementor' ); ?></span>
+				</div>
+				<div id="php-version-notice" class="form-group aae-csp-visibility__input-group">
+
 				</div>
 				<div class="aae-csp-visibility__input-group">
 					<label for="priority-slider" class="aae-csp-aside__label"><?php esc_html_e( 'Execution Priority', 'animation-addons-for-elementor' ); ?></label>

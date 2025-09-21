@@ -463,20 +463,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // Show Hide location fields.
 document.addEventListener('DOMContentLoaded', function () {
     const codeTypeSelect = document.getElementById('code-type');
-    const loadLocationElement = document.getElementById('load-location');
+    const loadLocationElement = document.getElementById('load-location-group');
     const loadNotice = document.getElementById('php-version-notice');
 
     if (!codeTypeSelect || !loadLocationElement || !loadNotice) return;
 
-    const loadLocationField = loadLocationElement.closest('.form-group');
-    if (!loadLocationField) return;
-
     function toggleLoadLocation() {
         if (codeTypeSelect.value === 'php') {
-            loadLocationField.style.display = 'none';
+            loadLocationElement.style.display = 'none';
             loadNotice.style.display = '';
         } else {
-            loadLocationField.style.display = '';
+            loadLocationElement.style.display = '';
             loadNotice.style.display = 'none';
         }
     }
