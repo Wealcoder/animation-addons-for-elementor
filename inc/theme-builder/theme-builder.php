@@ -575,11 +575,13 @@ class WCF_Theme_Builder
 			$popup_selector = get_post_meta($post_id, 'popup_selector', true);
 			$delayTime = get_post_meta($post_id, 'delayTime', true);
 			$effect = get_post_meta($post_id, 'effect', true);
+			$scrollPostion = get_post_meta($post_id, 'scrollPostion', true);
 			$poup_data[$post_id] = array(
 				'popup_trigger' => $popup_trigger,
 				'popup_selector' => $popup_selector,
 				'delayTime' => $delayTime,
 				'effect' => $effect,
+				'scrollPostion' => $scrollPostion,
 			);
 			if (! empty($location)) {
 				if ('specifics' === $location) {
@@ -829,13 +831,13 @@ class WCF_Theme_Builder
 			$current_type = sanitize_key($_GET['template_type']);
 		}
 ?>
-<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
-    <div class="wcf-menu-area">
-        <a class="nav-tab <?php echo esc_attr($active_class); ?>"
-            href="edit.php?post_type=<?php echo esc_attr(self::CPTTYPE); ?>">
-            <?php echo esc_html__('All', 'animation-addons-for-elementor'); ?>
-        </a>
-        <?php
+		<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
+			<div class="wcf-menu-area">
+				<a class="nav-tab <?php echo esc_attr($active_class); ?>"
+					href="edit.php?post_type=<?php echo esc_attr(self::CPTTYPE); ?>">
+					<?php echo esc_html__('All', 'animation-addons-for-elementor'); ?>
+				</a>
+				<?php
 				foreach (self::get_template_type() as $tabkey => $tab) {
 					$active_class = ($current_type == $tabkey ? 'nav-tab-active' : '');
 					$url          = 'edit.php?post_type=' . self::CPTTYPE . '&template_type=' . $tabkey;
@@ -848,9 +850,9 @@ class WCF_Theme_Builder
 					);
 				}
 				?>
-    </div>
-</div>
-<?php
+			</div>
+		</div>
+		<?php
 		return $views;
 	}
 
@@ -919,11 +921,11 @@ class WCF_Theme_Builder
 		if ($column_name === 'status') {
 			$tmpDisplay = get_post_meta($post_id, self::CPT_META . '_location', true);
 		?>
-<div class="post-status">
-    <strong>Display: </strong>
-    <?php echo esc_html($tmpDisplay); ?>
-</div>
-<?php
+			<div class="post-status">
+				<strong>Display: </strong>
+				<?php echo esc_html($tmpDisplay); ?>
+			</div>
+		<?php
 		}
 	}
 
@@ -1258,203 +1260,204 @@ class WCF_Theme_Builder
 	{
 		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
 		?>
-<script type="text/template" id="tmpl-wcf-addons-ctppopup">
-    <div class="wcf-addons-template-edit-popup-area">
-					<div class="wcf-addons-body-overlay"></div>
-					<div class="wcf-addons-template-edit-popup">
+	<script type="text/template" id="tmpl-wcf-addons-ctppopup">
+		<div class="wcf-addons-template-edit-popup-area">
+			<div class="wcf-addons-body-overlay"></div>
+			<div class="wcf-addons-template-edit-popup">
 
-						<div class="wcf-addons-template-edit-header">
-							<h3 class="wcf-addons-template-edit-setting-title">
-								{{{data.heading.head}}}
-							</h3>
-							<span class="wcf-addons-template-edit-cross">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-									class="bi bi-x-lg" viewBox="0 0 16 16"><path
-											d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>
-							</span>
+				<div class="wcf-addons-template-edit-header">
+					<h3 class="wcf-addons-template-edit-setting-title">
+						{{{data.heading.head}}}
+					</h3>
+					<span class="wcf-addons-template-edit-cross">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							class="bi bi-x-lg" viewBox="0 0 16 16"><path
+									d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>
+					</span>
+				</div>
+
+				<div class="wcf-addons-template-edit-body">
+
+					<div class="wcf-addons-template-edit-field">
+						<label class="wcf-addons-template-edit-label">{{{ data.heading.fields.name.title}}}</label>
+						<input class="wcf-addons-template-edit-input" id="wcf-addons-template-title" type="text" name="wcf-addons-template-title" placeholder="{{ data.heading.fields.name.placeholder }}"/>
+					</div>
+
+					<div class="wcf-addons-template-edit-field">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.type}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-template-type"
+								id="wcf-addons-template-type">
+							<#
+							_.each( data.templatetype, function( item, key ) {
+
+							#>
+							<option value="{{ key }}">{{{ item.label }}}</option>
+							<#
+
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field hf-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-display-type"
+								id="wcf-addons-hf-display-type">
+							<#
+							_.each( data.hflocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field hf-s-location hidden">
+						<label class="wcf-addons-template-edit-label"></label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-s-display-type[]"
+								id="wcf-addons-hf-s-display-type" multiple="multiple">
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field archive-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-archive-display-type"
+								id="wcf-addons-archive-display-type">
+							<#
+							_.each( data.archivelocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field single-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-single-display-type"
+								id="wcf-addons-single-display-type">
+							<#
+							_.each( data.singlelocation, function( items, keys ) {
+							#>
+							<optgroup label="{{{ items.label }}}">
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>
+							</optgroup>
+							<#
+							} );
+							#>
+						</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field single-category-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.category}}}</label>
+						<select class="wcf-addons-template-edit-input" name="wcf-addons-single-category-display-type"
+								id="wcf-addons-single-category-display-type">
+							<#								
+							_.each( data.postcategory, function( items, keys ) {
+							#>                                   
+								<#
+								_.each( items.value, function( item, key ) {
+								#>
+								<option value="{{ key }}">{{{ item }}}</option>
+								<#
+								} );
+								#>                                  
+							<#
+							} );
+							#>
+						</select>
+					</div>
+					
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
+							<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-trigger"
+								id="wcf-addons--popup--builder-trigger">
+								<option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option>
+								<option value="pageloaded"><?php echo esc_html__('Page Loaded', 'animation-addons-for-elementor'); ?></option>
+								<option value="pageexit"><?php echo esc_html__('Page Body Exist', 'animation-addons-for-elementor'); ?></option>
+								<option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option>
+								<option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option>
+								<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
+							</select>
+					</div>
+				
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="number"
+								name="aae-popup-builder-delay"
+								placeholder="{{ data.heading.fields.delay.placeholder }}">
+					</div>
+
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">{{{data.heading.fields.selector}}}</label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-selector" type="text"
+								name="aae-popup-builder-selector"
+								placeholder=".body">
+					</div>
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label"><?php echo esc_html__('Scroll Postion','animation-addons-for-elementor') ?></label>
+						<input class="wcf-addons-template-edit-input" id="aae-popup-builder-scrollPostion" type="text"
+								name="aae-popup-builder-scrollPostion"
+								placeholder="1500">
+					</div>
+					
+					<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
+						<label class="wcf-addons-template-edit-label">Effects</label>
+							<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-effect"
+								id="wcf-addons--popup--builder-effect">
+								<option value="flip"><?php echo esc_html__('Flip', 'animation-addons-for-elementor'); ?></option>
+								<option value="shakeEffect"><?php echo esc_html__('Scale + Shake Effect', 'animation-addons-for-elementor'); ?></option>
+								<option value="slideFromTo"><?php echo esc_html__('Slide From Top', 'animation-addons-for-elementor'); ?></option>
+								<option value="zoomBounce"><?php echo esc_html__('Zoom + Bounce', 'animation-addons-for-elementor'); ?></option>
+								<option value="fadeSlideup"><?php echo esc_html__('Fade + Slide Up', 'animation-addons-for-elementor'); ?></option>
+							</select>
+					</div>
+					
+				</div>
+				
+				<div class="wcf-addons-template-edit-footer">
+					<div class="wcf-addons-template-button-group">
+						<div class="wcf-addons-template-button-item wcf-addons-editor-elementor {{ data.haselementor === 'yes' ? 'button-show' : '' }}">
+							<button class="wcf-addons-tmp-elementor button">{{{
+								data.heading.buttons.elementor.label
+								}}}
+							</button>
 						</div>
-
-						<div class="wcf-addons-template-edit-body">
-
-							<div class="wcf-addons-template-edit-field">
-								<label class="wcf-addons-template-edit-label">{{{ data.heading.fields.name.title
-									}}}</label>
-								<input class="wcf-addons-template-edit-input" id="wcf-addons-template-title" type="text"
-										name="wcf-addons-template-title"
-										placeholder="{{ data.heading.fields.name.placeholder }}">
-							</div>
-
-							<div class="wcf-addons-template-edit-field">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.type}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-template-type"
-										id="wcf-addons-template-type">
-									<#
-									_.each( data.templatetype, function( item, key ) {
-
-									#>
-									<option value="{{ key }}">{{{ item.label }}}</option>
-									<#
-
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field hf-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-display-type"
-										id="wcf-addons-hf-display-type">
-									<#
-									_.each( data.hflocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field hf-s-location hidden">
-								<label class="wcf-addons-template-edit-label"></label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-hf-s-display-type[]"
-										id="wcf-addons-hf-s-display-type" multiple="multiple">
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field archive-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-archive-display-type"
-										id="wcf-addons-archive-display-type">
-									<#
-									_.each( data.archivelocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field single-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.display}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-single-display-type"
-										id="wcf-addons-single-display-type">
-									<#
-									_.each( data.singlelocation, function( items, keys ) {
-									#>
-									<optgroup label="{{{ items.label }}}">
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>
-									</optgroup>
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							<div class="wcf-addons-template-edit-field single-category-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.category}}}</label>
-								<select class="wcf-addons-template-edit-input" name="wcf-addons-single-category-display-type"
-										id="wcf-addons-single-category-display-type">
-									<#								
-									_.each( data.postcategory, function( items, keys ) {
-									#>                                   
-										<#
-										_.each( items.value, function( item, key ) {
-										#>
-										<option value="{{ key }}">{{{ item }}}</option>
-										<#
-										} );
-										#>                                  
-									<#
-									} );
-									#>
-								</select>
-							</div>
-
-							
-
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.trigger}}}</label>
-									<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-trigger"
-										id="wcf-addons--popup--builder-trigger">
-										<option value="click"><?php echo esc_html__('Click', 'animation-addons-for-elementor'); ?></option>
-										<option value="pageloaded"><?php echo esc_html__('Page Loaded', 'animation-addons-for-elementor'); ?></option>
-										<option value="pageexit"><?php echo esc_html__('Page Body Exist', 'animation-addons-for-elementor'); ?></option>
-										<option value="user_inactivity"><?php echo esc_html__('User Inactivity', 'animation-addons-for-elementor'); ?></option>
-										<option value="page_scroll"><?php echo esc_html__('Page Scroll', 'animation-addons-for-elementor'); ?></option>
-										<option value="page_scroll_up"><?php echo esc_html__('Page Scroll Up', 'animation-addons-for-elementor'); ?></option>
-									</select>
-							</div>
-						
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.delay}}}</label>
-								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-delay" type="text"
-										name="aae-popup-builder-delay"
-										placeholder="{{ data.heading.fields.delay.placeholder }}">
-							</div>
-
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">{{{data.heading.fields.selector}}}</label>
-								<input class="wcf-addons-template-edit-input" id="aae-popup-builder-selector" type="text"
-										name="aae-popup-builder-selector"
-										placeholder=".body">
-							</div>
-							<div class="wcf-addons-template-edit-field aae-popup-builder-location hidden">
-								<label class="wcf-addons-template-edit-label">Effects</label>
-									<select class="wcf-addons-template-edit-input" name="wcf-addons--popup--builder-effect"
-										id="wcf-addons--popup--builder-effect">
-										<option value="flip"><?php echo esc_html__('Flip', 'animation-addons-for-elementor'); ?></option>
-										<option value="shakeEffect"><?php echo esc_html__('Scale + Shake Effect', 'animation-addons-for-elementor'); ?></option>
-										<option value="slideFromTo"><?php echo esc_html__('Slide From Top', 'animation-addons-for-elementor'); ?></option>
-										<option value="zoomBounce"><?php echo esc_html__('Zoom + Bounce', 'animation-addons-for-elementor'); ?></option>
-										<option value="fadeSlideup"><?php echo esc_html__('Fade + Slide Up', 'animation-addons-for-elementor'); ?></option>
-									</select>
-							</div>
+						<div class="wcf-addons-template-button-item">
+							<button class="wcf-addons-tmp-save button button-primary">{{{
+								data.heading.buttons.save.label }}}
+							</button>
 						</div>
-
-						<div class="wcf-addons-template-edit-footer">
-
-							<div class="wcf-addons-template-button-group">
-								<div class="wcf-addons-template-button-item wcf-addons-editor-elementor {{ data.haselementor === 'yes' ? 'button-show' : '' }}">
-									<button class="wcf-addons-tmp-elementor button">{{{
-										data.heading.buttons.elementor.label
-										}}}
-									</button>
-								</div>
-								<div class="wcf-addons-template-button-item">
-									<button class="wcf-addons-tmp-save button button-primary">{{{
-										data.heading.buttons.save.label }}}
-									</button>
-								</div>
-							</div>
-
-						</div>
-
 					</div>
 				</div>
-			</script>
+				
+			</div>
+		</div>
+	</script>
 <?php
 		}
 	}
@@ -1493,6 +1496,7 @@ class WCF_Theme_Builder
 			$popuptrigger     = ! empty($_POST['tmpTrigger']) ? sanitize_text_field(wp_unslash($_POST['tmpTrigger'])) : 'pageloaded';
 			$popupEffect     = ! empty($_POST['tmpEffect']) ? sanitize_text_field(wp_unslash($_POST['tmpEffect'])) : 'flip';
 			$selector     = ! empty($_POST['tmpSelector']) ? sanitize_text_field(wp_unslash($_POST['tmpSelector'])) : '';
+			$scrollPostion     = ! empty($_POST['tmpScrollPostion']) ? sanitize_text_field(wp_unslash($_POST['tmpScrollPostion'])) : 0;
 
 			$data = array(
 				'title'         => $title,
@@ -1503,6 +1507,7 @@ class WCF_Theme_Builder
 				'tmpDelay'      => $popupDelay,
 				'tmpTrigger'    => $popuptrigger,
 				'tmpSelector'    => $selector,
+				'tmpScrollPostion'    => $scrollPostion,
 				'tmpEffect' => $popupEffect
 			);
 
@@ -1553,6 +1558,7 @@ class WCF_Theme_Builder
 			$popupTrigger     = ! empty(get_post_meta($tmpid, 'popup_trigger', true)) ? get_post_meta($tmpid, 'popup_trigger', true) : 'pageloaded';
 			$popupEffect     = ! empty(get_post_meta($tmpid, 'effect', true)) ? get_post_meta($tmpid, 'effect', true) : 'flip';
 			$popup_selector     = ! empty(get_post_meta($tmpid, 'popup_selector', true)) ? get_post_meta($tmpid, 'popup_selector', true) : '';
+			$scrollPostion     = ! empty(get_post_meta($tmpid, 'scrollPostion', true)) ? get_post_meta($tmpid, 'scrollPostion', true) : '';
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
@@ -1570,7 +1576,8 @@ class WCF_Theme_Builder
 				'tmpDelay'      => $tmpDelay,
 				'tmpTrigger'    => $popupTrigger,
 				'tmpSelector' => $popup_selector,
-				'tmpEffect' => $popupEffect
+				'tmpEffect' => $popupEffect,
+				'tmpScrollPostion' => $scrollPostion
 			);
 			wp_send_json_success($data);
 		} else {
@@ -1747,6 +1754,7 @@ class WCF_Theme_Builder
 				update_post_meta($new_post_id, 'popup_trigger', $data['tmpTrigger']);
 				update_post_meta($new_post_id, 'popup_selector', $data['tmpEffect']);
 				update_post_meta($new_post_id, 'effect', $data['tmpEffect']);
+				update_post_meta($new_post_id, 'scrollPostion', $data['tmpScrollPostion']);
 
 				update_post_meta($new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation']);
 			}
@@ -1800,6 +1808,7 @@ class WCF_Theme_Builder
 			update_post_meta($data['id'], 'popup_trigger', $data['tmpTrigger']);
 			update_post_meta($data['id'], 'popup_selector', $data['tmpSelector']);
 			update_post_meta($data['id'], 'effect', $data['tmpEffect']);
+			update_post_meta($data['id'], 'scrollPostion', $data['tmpScrollPostion']);
 
 			update_post_meta($data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation']);
 		}

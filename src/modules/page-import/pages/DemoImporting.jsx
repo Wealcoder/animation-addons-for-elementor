@@ -255,10 +255,10 @@ const DemoImporting = () => {
           <h3 className="text-2xl font-medium">
             {!currenTemplate
               ? "Page finding....."
-              : "Creating your website..."}{" "}
+              : "Creating your page..."}{" "}
           </h3>
           <p className="mt-1.5 text-text-secondary">
-            Please wait, your website is being created. It will take few minute.
+            Please wait, your page is being created. It will take few minute.
             Do not reload.
           </p>
 

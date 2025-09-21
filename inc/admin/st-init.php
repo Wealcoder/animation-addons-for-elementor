@@ -102,7 +102,10 @@ class OneClickImport
 		add_filter('wxr_importer.pre_process.post', [$this, 'skip_failed_attachment_import']);
 		add_action('wxr_importer.process_failed.post', [$this, 'handle_failed_attachment_import'], 10, 5);
 		add_action('wp_import_insert_post', [$this, 'save_wp_navigation_import_mapping'], 10, 4);
+		add_action('wp_import_insert_post', [$this, 'save_wp_page_import_track'], 10, 4);
 		add_action('aaeaddon/after_import', [$this, 'fix_imported_wp_navigation']);
+		add_action('wp_ajax_aae_lite_get_latest_imported_pages', [$this,'aae_get_latest_imported_pages']);	
+			
 	}
 
 	/**
@@ -118,6 +121,77 @@ class OneClickImport
 	 * @return void
 	 */
 	public function __wakeup() {}
+
+	public function save_wp_page_import_track($post_id, $original_id, $postdata, $data){
+		if (empty($postdata['post_content'])) {
+			return;
+		}
+
+		if ($postdata['post_type'] == 'page') {
+			$batch_id = 'wxr_' . gmdate('Ymd_His'); 
+			update_option('aae_last_import_batch', $batch_id);
+			add_post_meta($post_id, 'aae_import_batch', $batch_id, true);			
+			add_post_meta($post_id, 'aae_imported', 1, true);
+		}
+	}
+
+	function aae_get_latest_imported_pages() {
+		// Optional nonce check
+		if (isset($_POST['nonce']) && ! wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'wcf_admin_nonce')) {
+			wp_send_json_error(['message' => 'Invalid nonce'], 403);
+		}
+
+		$per_page = isset($_POST['per_page']) ? max(1, (int) $_POST['per_page']) : 1; // latest one by default
+		$batch_id = get_option('aae_last_import_batch');
+
+		// If batch not found, gracefully fall back to any page marked imported
+		$meta_query = [];
+		if ($batch_id) {
+			$meta_query[] = [
+				'key'   => 'aae_import_batch',
+				'value' => $batch_id,
+				'compare' => '='
+			];
+		} else {
+			$meta_query[] = [
+				'key'   => 'aae_imported',
+				'value' => 1,
+				'compare' => '='
+			];
+		}
+
+		$q = new \WP_Query([
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => $per_page,
+			'orderby'        => 'date',        // or 'ID'
+			'order'          => 'DESC',
+			'meta_query'     => $meta_query,
+			'no_found_rows'  => true,
+			'fields'         => 'ids',
+		]);
+
+		if (empty($q->posts)) {
+			wp_send_json_success([
+				'batch_id' => $batch_id,
+				'pages'    => []
+			]);
+		}
+
+		$pages = array_map(function($id) {
+			return [
+				'id'        => $id,
+				'title'     => get_the_title($id),
+				'permalink' => get_permalink($id),
+				'date'      => get_post_time('c', true, $id),
+			];
+		}, $q->posts);
+
+		wp_send_json_success([
+			'batch_id' => $batch_id,
+			'pages'    => $pages
+		]);
+	}
 
 	public function import_demo_data_ajax_callback()
 	{

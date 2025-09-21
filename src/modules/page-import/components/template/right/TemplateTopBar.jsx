@@ -20,7 +20,7 @@ const TemplateTopBar = ({
 }) => {
   return (
     <div className="flex justify-between items-center gap-5">
-      <h3 className="text-xl font-medium">All Templates</h3>
+      <h3 className="text-xl font-medium">All Pages</h3>
       <div className="flex justify-end items-center gap-2">
         <div className="ml-6">
           <div className="relative">

@@ -523,7 +523,7 @@ class Social_Icons extends Widget_Base {
 					$this->add_render_attribute( $link_key, 'class', [
 						'elementor-icon',
 						'wcf-social-icon',
-						'social-icon-' . $social . $class_animation,
+						'social-icon-'. $class_animation,
 						'elementor-repeater-item-' . $item['_id'],
 					] );
 					$this->add_link_attributes( $link_key, $item['link'] );

@@ -8,7 +8,6 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
-
 .wcfci2025-style {
   display: flex;
   flex-direction: column;
@@ -16,16 +15,20 @@
 
   p {
     padding: 0;
-    margin: 0
+    margin: 0;
   }
 }
 
-.notice{
+.notice {
   display: none;
   height: 0;
 }
 
-.post-type-wcf-custom-icons #side-sortables {
+/* .post-type-wcf-custom-icons #side-sortables {
+  display: none;
+} */
+.misc-pub-section.misc-pub-visibility,
+.misc-pub-section.curtime.misc-pub-curtime {
   display: none;
 }
 
@@ -152,6 +155,4 @@
   border: 1px solid #d1d5db;
   padding: 10px;
   border-radius: 8px;
-
-
 }
