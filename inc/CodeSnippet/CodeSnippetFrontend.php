@@ -94,57 +94,6 @@ class CodeSnippetFrontend {
 		}
 	}
 
-	function get_code_snippet_settings( $id = null ) {
-		$defaults = array(
-			'code_type'            => '',
-			'load_location'        => '',
-			'code_content'         => '',
-			'is_active'            => 'no',
-			'priority'             => '10',
-			'visibility_page'      => '',
-			'visibility_page_list' => array(),
-		);
-
-		/**
-		 * Filter the default code snippet settings.
-		 *
-		 * @since 2.3.10
-		 *
-		 * @param array $defaults The default settings.
-		 */
-		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults );
-
-		$settings = array();
-		if ( ! empty( $id ) ) {
-			$metadata                  = get_post_meta( $id );
-			$settings['snippet_id']    = $id;
-			$settings['snippet_title'] = get_the_title( $id );
-
-			foreach ( $metadata as $key => $value ) {
-				$value = maybe_unserialize( is_array( $value ) ? $value[0] : $value );
-				if ( ! empty( $value ) ) {
-					$settings[ $key ] = $value;
-				} else {
-					$settings[ $key ] = $defaults[ $key ];
-				}
-			}
-		} else {
-			foreach ( $defaults as $key => $value ) {
-				$settings[ $key ] = $value;
-			}
-		}
-
-		/**
-		 * Filter the code snippet settings.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param array $settings The code snippet settings.
-		 * @param array $defaults The default settings.
-		 */
-		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults );
-	}
-
 	/**
 	 * Get all active code snippets
 	 *
@@ -239,12 +188,18 @@ class CodeSnippetFrontend {
 	 * @return bool
 	 */
 	private function check_visibility_conditions( $snippet_data ) {
+		$code_type            = isset( $snippet_data['code_type'] ) ? $snippet_data['code_type'] : '';
+		$load_location        = isset( $snippet_data['load_location'] ) ? $snippet_data['load_location'] : '';
 		$visibility_page      = isset( $snippet_data['visibility_page'] ) ? $snippet_data['visibility_page'] : '';
 		$visibility_page_list = isset( $snippet_data['visibility_page_list'] ) ? $snippet_data['visibility_page_list'] : array();
 
+		if ( 'php' !== $code_type && empty( $load_location ) ) {
+			return false;
+		}
+
 		// If no specific visibility is set, load everywhere.
-		if ( empty( $visibility_page ) && empty( $visibility_page_list ) ) {
-			return true;
+		if ( empty( $visibility_page ) || ( ! empty( $visibility_page ) && empty( $visibility_page_list ) ) ) {
+			return false;
 		}
 
 		// Check a specific page list first.
@@ -277,6 +232,7 @@ class CodeSnippetFrontend {
 				return true;
 
 			case 'singulars':
+				if ( is_front_page() ) { return false; }
 				return is_singular();
 
 			case 'archives':
@@ -359,13 +315,13 @@ class CodeSnippetFrontend {
 
 			default:
 				// Check for custom post-types.
-				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'singular_' ) === 0 ) {
-					$post_type = str_replace( 'singular_', '', $visibility_condition );
+				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'singulars' ) ) {
+					$post_type = str_replace( '-singulars', '', $visibility_condition );
 					return is_singular( $post_type );
 				}
 
-				if ( ! empty( $visibility_condition ) && strpos( $visibility_condition, 'archive_' ) === 0 ) {
-					$post_type = str_replace( 'archive_', '', $visibility_condition );
+				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'archive' ) ) {
+					$post_type = str_replace( '-archive', '', $visibility_condition );
 					return is_post_type_archive( $post_type );
 				}
 
@@ -521,7 +477,9 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_html_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			echo wp_kses_post( $content );
+			$allowed_tags          = wp_kses_allowed_html( 'post' );
+			$allowed_tags['style'] = array();
+			echo wp_kses( $content, $allowed_tags );
 		}
 	}
 
@@ -578,7 +536,7 @@ class CodeSnippetFrontend {
 				if ( is_callable( $func ) ) {
 					$func();
 				}
-			} catch ( \Throwable $e ) {				
+			} catch ( \Throwable $e ) {
 			}
 
 			$output = ob_get_clean();

@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
+require_once __DIR__ . '/CodeSnippetAjax.php';
+
 /**
  * CodeSnippet Class
  *
@@ -56,18 +58,33 @@ class CodeSnippet {
 		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
 		add_action( 'wp_ajax_add_custom_page', array( $this, 'add_custom_page' ) );
 		add_action( 'wp_ajax_toggle_snippet_status', array( $this, 'handle_toggle_snippet_status' ) );
+
+		// Initialize AJAX handler.
+		new CodeSnippetAjax();
+		new Notices();
 	}
 
 	/**
-	 * Remove Query Var.
+	 * Remove Query Var - FIXED VERSION.
 	 *
 	 * @since 2.3.10
 	 * @return void
 	 */
 	public function remove_query_vars() {
 		if ( isset( $_GET['page'] ) && 'wcf-code-snippet' === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$redirect = remove_query_arg( array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ), );
-			wp_safe_redirect( $redirect );
+			// FIXED: Better redirect handling to avoid WooCommerce issues.
+			$redirect_url = admin_url( 'admin.php?page=wcf-code-snippet' );
+
+			// Only use referer if it's safe and contains our page.
+			$referer = wp_get_referer();
+			if ( $referer && strpos( $referer, 'wcf-code-snippet' ) !== false ) {
+				$redirect_url = remove_query_arg(
+					array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
+					$referer
+				);
+			}
+
+			wp_safe_redirect( $redirect_url );
 			exit;
 		}
 	}
@@ -138,23 +155,26 @@ class CodeSnippet {
 
 		register_post_type( self::CPTTYPE, $args );
 
-		flush_rewrite_rules();
+		// FIXED: Only flush rewrite rules if needed to avoid WooCommerce conflicts.
+		if ( ! get_option( 'wcf_code_snippet_rewrite_rules_flushed' ) ) {
+			flush_rewrite_rules();
+			update_option( 'wcf_code_snippet_rewrite_rules_flushed', true );
+		}
 	}
 
 	/**
-	 * Add Code Snippet Post type Submenu
+	 * Add Code Snippet Post type Submenu - IMPROVED VERSION.
 	 *
 	 * @since 2.3.10
 	 * @return void
 	 */
 	public function admin_menu() {
-		$link_custom_post = self::CPTTYPE;
 		add_submenu_page(
 			'wcf_addons_page',
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			'manage_options',
-			$link_custom_post,
+			self::CPTTYPE,
 			array( $this, 'code_snippet_page_admin_page' )
 		);
 	}
@@ -173,7 +193,7 @@ class CodeSnippet {
 			$snippet_details = $this->aae_get_code_snippet_settings();
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} elseif ( $code_snippet_id ) {
-			$snippet_details = $this->aae_get_code_snippet_settings($code_snippet_id);
+			$snippet_details = $this->aae_get_code_snippet_settings( $code_snippet_id );
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} else {
 			include __DIR__ . '/views/code-snippet-list.php';
@@ -191,6 +211,7 @@ class CodeSnippet {
 	public function enqueue_scripts( $hook ) {
 		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
 			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'aae-code-snippet-ajax', WCF_ADDONS_URL . 'assets/css/code-snippet-ajax.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'select2', WCF_ADDONS_URL . 'assets/css/select2.min.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'codemirror-core', WCF_ADDONS_URL . 'assets/css/cs-css/codemirror.min.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'foldgutter', WCF_ADDONS_URL . 'assets/css/cs-css/foldgutter.min.css', null, WCF_ADDONS_VERSION, 'all' );
@@ -219,14 +240,36 @@ class CodeSnippet {
 				'1.0.0',
 				true
 			);
+
+			// AJAX functionality for list page.
+			wp_enqueue_script(
+				'code-snippet-ajax',
+				WCF_ADDONS_URL . 'assets/js/code-snippet-ajax.js',
+				array( 'jquery' ),
+				WCF_ADDONS_VERSION,
+				true
+			);
 			$localize_data = array(
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'nonce'         => wp_create_nonce( 'wcf_custom_code_security' ),
 				'adminURL'      => admin_url(),
+				'snippet_page'  => admin_url( 'admin.php?page=wcf-code-snippet' ),
 				'serverDetails' => array(
 					'currentVersion' => PHP_VERSION,
 					'majorVersion'   => PHP_MAJOR_VERSION,
 					'minorVersion'   => PHP_MINOR_VERSION,
+				),
+				'ajaxActions'   => array(
+					'search' => 'wcf_search_snippets',
+					'delete' => 'wcf_delete_snippet',
+					'bulk'   => 'wcf_bulk_action_snippets',
+					'toggle' => 'wcf_toggle_snippet_status',
+				),
+				'messages'      => array(
+					'confirmDelete'     => __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ),
+					'confirmBulkDelete' => __( 'Are you sure you want to delete the selected snippets?', 'animation-addons-for-elementor' ),
+					'loading'           => __( 'Loading...', 'animation-addons-for-elementor' ),
+					'error'             => __( 'An error occurred. Please try again.', 'animation-addons-for-elementor' ),
 				),
 			);
 			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
@@ -297,9 +340,15 @@ class CodeSnippet {
 
 		$redirect_to = admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id );
 		if ( isset( $_POST['snippet_id'] ) && ! empty( $_POST['snippet_id'] ) ) {
-			wp_admin_notice( esc_html__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ), 'success' );
+			Helpers::add_flash_message(
+				__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ),
+				'success'
+			);
 		} else {
-			wp_admin_notice( 'Code Snippet Added Successfully!', 'success' );
+			Helpers::add_flash_message(
+				__( 'Code Snippet Added Successfully!', 'animation-addons-for-elementor' ),
+				'success'
+			);
 		}
 		wp_safe_redirect( $redirect_to );
 		exit;
