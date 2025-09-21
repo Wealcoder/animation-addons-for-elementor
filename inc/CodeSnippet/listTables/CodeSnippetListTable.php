@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\CodeSnippet\listTables;
 
 use WCF_ADDONS\CodeSnippet\CodeSnippet;
+use WCF_ADDONS\CodeSnippet\Helpers;
 use WCF_ADDONS\CodeSnippet\listTables\AbstractListTable;
 
 defined( 'ABSPATH' ) || exit;
@@ -14,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * @package WCF_ADDONS
  */
 class CodeSnippetListTable extends AbstractListTable {
+
 	/**
 	 * Get a snippet table.
 	 *
@@ -39,8 +41,8 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Retrieve all the data for the table.
 	 *
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function prepare_items() {
 		$columns               = $this->get_columns();
@@ -48,24 +50,38 @@ class CodeSnippetListTable extends AbstractListTable {
 		$hidden                = $this->get_hidden_columns();
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
-		$per_page         = 20;
-		$order_by         = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'post_title'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$order            = isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'ASC'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$search           = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$current_page     = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$code_type_filter = isset( $_GET['code_type'] ) ? sanitize_text_field( wp_unslash( $_GET['code_type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$per_page         = $this->get_items_per_page( 'snippets_per_page', 20 );
+		$order_by         = $this->get_sanitized_orderby();
+		$order            = $this->get_sanitized_order();
+		$search           = $this->get_search_query();
+		$current_page     = $this->get_pagenum();
+		$code_type_filter = $this->get_code_type_filter();
 
 		// Build query arguments.
 		$args = array(
 			'post_type'      => 'wcf-code-snippet',
-			'post_status'    => 'any',
+			'post_status'    => array( 'publish', 'draft', 'private' ),
 			'posts_per_page' => $per_page,
 			'paged'          => $current_page,
+			'orderby'        => $this->get_wp_orderby( $order_by ),
+			'order'          => $order,
 		);
+
+		// Add meta_key for custom field sorting.
+		if ( in_array( $order_by, array( 'code_type', 'load_location', 'priority', 'snippet_status' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			if ( 'priority' === $order_by ) {
+				$args['orderby'] = 'meta_value_num';
+			} else {
+				$args['orderby'] = 'meta_value';
+			}
+		}
 
 		// Handle search.
 		if ( ! empty( $search ) ) {
 			$args['s'] = $search;
+			// Add custom search to include meta fields.
+			add_filter( 'posts_search', array( $this, 'custom_search_query' ), 10, 2 );
 		}
 
 		// Handle code type filtering.
@@ -78,57 +94,166 @@ class CodeSnippetListTable extends AbstractListTable {
 				),
 			);
 		}
-		switch ( $order_by ) {
-			case 'post_title':
-				$args['orderby'] = 'title';
-				break;
-			case 'date_created':
-				$args['orderby'] = 'modified';
-				break;
-			case 'code_type':
-				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'code_type'; // phpcs:ignore
-				break;
-			case 'load_location':
-				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'load_location'; // phpcs:ignore
-				break;
-			case 'priority':
-				$args['orderby']  = 'meta_value_num';
-				$args['meta_key'] = 'priority'; // phpcs:ignore
-				break;
-			case 'snippet_status':
-				$args['orderby']  = 'meta_value';
-				$args['meta_key'] = 'is_active'; // phpcs:ignore
-				break;
-			default:
-				$args['orderby'] = 'title';
-		}
-
-		$args['order'] = in_array( strtoupper( $order ), array( 'ASC', 'DESC' ) ) ? strtoupper( $order ) : 'ASC'; // phpcs:ignore
 
 		$query = new \WP_Query( $args );
 
+		// Remove the search filter after query.
+		if ( ! empty( $search ) ) {
+			remove_filter( 'posts_search', array( $this, 'custom_search_query' ), 10 );
+		}
+
 		$this->items = $query->posts;
 		$total_count = $query->found_posts;
-		$total_pages = $query->max_num_pages;
 
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_count,
 				'per_page'    => $per_page,
-				'total_pages' => $total_pages,
 			)
 		);
+	}
+
+	/**
+	 * Get sanitized orderby parameter.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_sanitized_orderby() {
+		$orderby         = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'post_title'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$allowed_orderby = array( 'post_title', 'date_created', 'code_type', 'load_location', 'priority', 'snippet_status' );
+		return in_array( $orderby, $allowed_orderby ) ? $orderby : 'post_title';
+	}
+
+	/**
+	 * Get sanitized order parameter.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_sanitized_order() {
+		$order = isset( $_GET['order'] ) ? strtoupper( sanitize_key( wp_unslash( $_GET['order'] ) ) ) : 'ASC'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return in_array( $order, array( 'ASC', 'DESC' ) ) ? $order : 'ASC';
+	}
+
+	/**
+	 * Get search query.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_search_query() {
+		return isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Get code type filter.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_code_type_filter() {
+		return isset( $_GET['code_type'] ) ? sanitize_text_field( wp_unslash( $_GET['code_type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Convert orderby parameter to WP_Query compatible format.
+	 *
+	 * @param string $orderby The orderby parameter.
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_wp_orderby( $orderby ) {
+		switch ( $orderby ) {
+			case 'post_title':
+				return 'title';
+			case 'date_created':
+				return 'modified';
+			default:
+				return 'title';
+		}
+	}
+
+	/**
+	 * Get meta-key for custom field sorting.
+	 *
+	 * @param string $orderby The orderby parameter.
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private function get_meta_key_for_orderby( $orderby ) {
+		$meta_keys = array(
+			'code_type'      => 'code_type',
+			'load_location'  => 'load_location',
+			'priority'       => 'priority',
+			'snippet_status' => 'is_active',
+		);
+
+		return isset( $meta_keys[ $orderby ] ) ? $meta_keys[ $orderby ] : 'code_type';
+	}
+
+	/**
+	 * Custom search query to include meta fields.
+	 *
+	 * @param string    $search   Search SQL for WHERE clause.
+	 * @param \WP_Query $wp_query The current WP_Query object.
+	 * @return string Modified search SQL.
+	 * @since 1.0.0
+	 */
+	public function custom_search_query( $search, $wp_query ) {
+		global $wpdb;
+
+		if ( empty( $search ) || empty( $wp_query->query_vars['search_terms'] ) ) {
+			return $search;
+		}
+
+		$q = $wp_query->query_vars;
+		$n = ! empty( $q['exact'] ) ? '' : '%';
+
+		$search_terms      = $q['search_terms'];
+		$search_conditions = array();
+
+		// Search in post title and content.
+		foreach ( $search_terms as $term ) {
+			$search_conditions[] = $wpdb->prepare(
+				"($wpdb->posts.post_title LIKE %s OR $wpdb->posts.post_content LIKE %s)",
+				$n . $wpdb->esc_like( $term ) . $n,
+				$n . $wpdb->esc_like( $term ) . $n
+			);
+		}
+
+		// Search in meta fields (code_content).
+		$meta_search_conditions = array();
+		foreach ( $search_terms as $term ) {
+			$meta_search_conditions[] = $wpdb->prepare(
+				"EXISTS (
+					SELECT 1 FROM $wpdb->postmeta 
+					WHERE $wpdb->postmeta.post_id = $wpdb->posts.ID 
+					AND $wpdb->postmeta.meta_key = 'code_content' 
+					AND $wpdb->postmeta.meta_value LIKE %s
+				)",
+				$n . $wpdb->esc_like( $term ) . $n
+			);
+		}
+
+		// Combine all search conditions.
+		$search_conditions = array_merge( $search_conditions, $meta_search_conditions );
+
+		if ( ! is_user_logged_in() ) {
+			$search_conditions[] = "$wpdb->posts.post_password = ''";
+		}
+
+		$search = ' AND (' . implode( ' OR ', $search_conditions ) . ')';
+
+		return $search;
 	}
 
 	/**
 	 * Returns an associative array listing all the views that can be used
 	 * with this table.
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string[] An array of HTML links keyed by their view.
+	 * @since 1.0.0
 	 */
 	protected function get_views() {
 		$current      = $this->get_request_status( 'all' );
@@ -137,7 +262,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			'all'        => __( 'All', 'animation-addons-for-elementor' ),
 			'html'       => __( 'HTML', 'animation-addons-for-elementor' ),
 			'css'        => __( 'CSS', 'animation-addons-for-elementor' ),
-			'javascript' => __( 'JAVA SCRIPT', 'animation-addons-for-elementor' ),
+			'javascript' => __( 'JavaScript', 'animation-addons-for-elementor' ),
 			'php'        => __( 'PHP', 'animation-addons-for-elementor' ),
 		);
 
@@ -154,24 +279,24 @@ class CodeSnippetListTable extends AbstractListTable {
 			);
 		}
 
-		return $this->get_views_links( $status_links );
+		return $this->get_status_links( $status_links );
 	}
 
 	/**
 	 * No items found text.
 	 *
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function no_items() {
-		esc_html_e( 'No code snippet found.', 'animation-addons-for-elementor' );
+		esc_html_e( 'No code snippets found.', 'animation-addons-for-elementor' );
 	}
 
 	/**
 	 * Get the table columns
 	 *
-	 * @since 1.0.0
 	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_columns() {
 		return array(
@@ -182,15 +307,15 @@ class CodeSnippetListTable extends AbstractListTable {
 			'load_location'   => __( 'Load Location', 'animation-addons-for-elementor' ),
 			'priority'        => __( 'Priority', 'animation-addons-for-elementor' ),
 			'snippet_status'  => __( 'Status', 'animation-addons-for-elementor' ),
-			'date_created'    => __( 'Date Modified', 'animation-addons-for-elementor' ),
+			'date_created'    => __( 'Last Modified', 'animation-addons-for-elementor' ),
 		);
 	}
 
 	/**
 	 * Get the table sortable columns
 	 *
-	 * @since 1.0.0
 	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_sortable_columns() {
 		return array(
@@ -204,102 +329,47 @@ class CodeSnippetListTable extends AbstractListTable {
 	}
 
 	/**
-	 * Get the table hidden columns
+	 * Get bulk actions
 	 *
 	 * @since 1.0.0
 	 * @return array
+	 */
+	public function get_bulk_actions() {
+		return array(
+			'delete'     => __( 'Delete', 'animation-addons-for-elementor' ),
+			'activate'   => __( 'Activate', 'animation-addons-for-elementor' ),
+			'deactivate' => __( 'Deactivate', 'animation-addons-for-elementor' ),
+		);
+	}
+
+	/**
+	 * Get the table hidden columns
+	 *
+	 * @return array
+	 * @since 1.0.0
 	 */
 	public function get_hidden_columns() {
 		return array();
 	}
 
 	/**
-	 * Get bulk actions
-	 *
-	 * since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_bulk_actions() {
-		return array(
-			'delete' => __( 'Delete', 'animation-addons-for-elementor' ),
-		);
-	}
-
-	/**
-	 * Process bulk action.
+	 * Process bulk action - Disabled for AJAX handling
 	 *
 	 * @param string $doaction Action name.
 	 *
-	 * @since 1.0.0
-	 */
-	/**
-	 * Process bulk action.
-	 *
-	 * @param string $doaction Action name.
-	 *
+	 * @return void
 	 * @since 1.0.0
 	 */
 	public function process_bulk_action( $doaction ) {
-		if ( empty( $doaction ) || ! check_admin_referer( 'bulk-' . $this->_args['plural'] ) ) {
-			parent::process_bulk_actions( $doaction );
-			return;
-		}
-
-		$id  = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
-		$ids = filter_input( INPUT_GET, 'ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-
-		// Handle single item deletion.
-		if ( ! empty( $id ) ) {
-			$ids = array( absint( $id ) );
-		} elseif ( ! empty( $ids ) ) {
-			$ids = array_map( 'absint', $ids );
-		}
-
-		// If no valid IDs found, return without redirect.
-		if ( empty( $ids ) ) {
-			return;
-		}
-
-		$deleted_count = 0;
-
-		switch ( $doaction ) {
-			case 'delete':
-				foreach ( $ids as $snippet_id ) {
-					if ( wp_delete_post( $snippet_id, true ) ) {
-						++$deleted_count;
-					}
-				}
-				break;
-		}
-
-		// Prepare redirect URL.
-		$redirect_url = remove_query_arg(
-			array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
-			wp_get_referer()
-		);
-
-		// Add status parameters for notice display.
-		if ( $deleted_count > 0 ) {
-			$redirect_url = add_query_arg( 'deleted', $deleted_count, $redirect_url );
-		}
-
-		// Clean any output and redirect.
-		if ( ! headers_sent() ) {
-			if ( ob_get_level() ) {
-				ob_clean();
-			}
-		}
-
-		wp_safe_redirect( $redirect_url );
-		exit();
+		// Bulk actions are now handled via AJAX, so we don't process them here.
+		// This method is kept for compatibility but does nothing.
 	}
 
 	/**
 	 * Define primary column.
 	 *
-	 * @since 1.0.0
 	 * @return string
+	 * @since 1.0.0
 	 */
 	public function get_primary_column_name() {
 		return 'name';
@@ -308,10 +378,10 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Renders the checkbox column in the items list table.
 	 *
-	 * @param object $item The current ticket object.
+	 * @param object $item The current snippet object.
 	 *
-	 * @since  1.0.0
 	 * @return string Displays a checkbox.
+	 * @since  1.0.0
 	 */
 	public function column_cb( $item ) {
 		return sprintf( '<input type="checkbox" name="ids[]" value="%d"/>', esc_attr( $item->ID ) );
@@ -320,38 +390,54 @@ class CodeSnippetListTable extends AbstractListTable {
 	/**
 	 * Renders the name column in the item list table.
 	 *
-	 * @param object $item The current post-tab object.
+	 * @param object $item The current snippet object.
 	 *
+	 * @return string Displays the snippet name with actions.
 	 * @since  1.0.0
-	 * @return string Displays the tab name.
 	 */
 	public function column_name( $item ) {
-		$admin_url = admin_url( 'admin.php?page=wcf-code-snippet&' );
-		$id_url    = add_query_arg( 'id', $item->ID, $admin_url );
-		$actions   = array(
-			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( 'edit', $item->ID, $admin_url ) ), __( 'Edit', 'animation-addons-for-elementor' ) ),
-			'delete' => sprintf( '<a href="%s">%s</a>', wp_nonce_url( add_query_arg( 'action', 'delete', $id_url ), 'bulk-snippets' ), __( 'Delete', 'animation-addons-for-elementor' ) ),
+		$edit_url = add_query_arg( 'edit', $item->ID, $this->base_url );
+
+		$actions = array(
+			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_url ), __( 'Edit', 'animation-addons-for-elementor' ) ),
+			'delete' => sprintf(
+				'<a href="#" class="ajax-delete-snippet" data-id="%d">%s</a>',
+				esc_attr( $item->ID ),
+				__( 'Delete', 'animation-addons-for-elementor' )
+			),
 		);
 
-		return sprintf( '<a href="%s">%s</a> %s', esc_url( add_query_arg( 'edit', $item->ID, $admin_url ) ), esc_html( $item->post_title ), $this->row_actions( $actions ) );
-	}
+		$title = sprintf(
+			'<a href="%s"><strong>%s</strong></a>',
+			esc_url( $edit_url ),
+			esc_html( $item->post_title ? $item->post_title : __( '(no title)', 'animation-addons-for-elementor' ) )
+		);
 
+		return $title . $this->row_actions( $actions );
+	}
 
 	/**
 	 * This function renders most of the columns in the list table.
 	 *
-	 * @param object $item The current tab object.
+	 * @param object $item The current snippet object.
 	 * @param string $column_name The name of the column.
 	 *
 	 * @since 1.0.0
+	 * @return string
 	 */
 	public function column_default( $item, $column_name ) {
 		$value = '&mdash;';
+
 		switch ( $column_name ) {
 			case 'code_type':
-				$id    = $item->ID;
-				$value = strtoupper( str_replace( '-', ' ', esc_html( get_post_meta( $id, 'code_type', true ) ) ) );
+				$code_type = get_post_meta( $item->ID, 'code_type', true );
+				if ( ! empty( $code_type ) ) {
+					$value = '<span class="code-type code-type-' . esc_attr( $code_type ) . '">' .
+						esc_html( strtoupper( str_replace( array( '-', '_' ), ' ', $code_type ) ) ) .
+						'</span>';
+				}
 				break;
+
 			case 'visibility_list':
 				$id              = $item->ID;
 				$visibility_list = get_post_meta( $id, 'visibility_page_list', true );
@@ -366,53 +452,45 @@ class CodeSnippetListTable extends AbstractListTable {
 					$value = ucwords( $visibility_page );
 				}
 				break;
+
 			case 'load_location':
-				$id = $item->ID;
-				if ( ! empty( get_post_meta( $id, 'load_location', true ) ) ) {
-					$value = strtoupper( str_replace( array( '-', '_' ), ' ', esc_attr( get_post_meta( $id, 'load_location', true ) ) ) );
+				$load_location = get_post_meta( $item->ID, 'load_location', true );
+				if ( ! empty( $load_location ) ) {
+					$value = '<span class="load-location">' .
+						esc_html( strtoupper( str_replace( array( '-', '_' ), ' ', $load_location ) ) ) .
+						'</span>';
 				}
 				break;
+
 			case 'date_created':
 				$date = $item->post_modified;
 				if ( $date ) {
-					$value = sprintf( '<time datetime="%s">%s</time>', esc_attr( $date ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $date ) ) ) );
+					$value = sprintf(
+						'<time datetime="%s" title="%s">%s</time>',
+						esc_attr( $date ),
+						esc_attr( mysql2date( 'c', $date ) ),
+						esc_html( human_time_diff( strtotime( $date ), current_time( 'timestamp' ) ) . ' ago' ) // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+					);
 				}
 				break;
+
 			case 'priority':
-				$id    = $item->ID;
-				$value = strtoupper( str_replace( '-', ' ', absint( get_post_meta( $id, 'priority', true ) ) ) );
+				$priority = get_post_meta( $item->ID, 'priority', true );
+				if ( '' !== $priority ) {
+					$value = '<span class="priority priority-' . esc_attr( $priority ) . '">' .
+						esc_html( $priority ) .
+						'</span>';
+				}
 				break;
+
 			case 'snippet_status':
-				$value = $this->get_status_toggle( $item );
+				$value = Helpers::get_status_toggle( $item );
 				break;
+
 			default:
-				$value = parent::column_default( $item, $column_name );
+				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item );
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Get the status toggle HTML for a snippet.
-	 *
-	 * @param object $item The current snippet object.
-	 *
-	 * @since 1.0.0
-	 * @return string
-	 */
-	private function get_status_toggle( $item ) {
-		$id        = $item->ID;
-		$is_active = get_post_meta( $id, 'is_active', true );
-
-		$toggle_html  = '<label class="toggle-switch">';
-		$toggle_html .= sprintf(
-			'<input type="checkbox" class="snippet-status-toggle" data-id="%d" %s>',
-			esc_attr( $id ),
-			( 'yes' === $is_active ) ? 'checked' : ''
-		);
-		$toggle_html .= '<span class="slider"></span>';
-		$toggle_html .= '</label>';
-
-		return $toggle_html;
 	}
 }

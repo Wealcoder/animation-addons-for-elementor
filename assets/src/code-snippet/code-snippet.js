@@ -15,12 +15,6 @@ const languageModes = {
 const exampleCode = {
     html: `<h1>Code is Poetry.</h1>`,
     css: `/* CSS Example */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
 .button {
     background: #007cba;
     color: white;
@@ -40,7 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });`,
     php: `<?php
 // PHP Example
-echo 'Code is Poetry.';`
+add_filter( 'the_title', 'convert_smilies' );
+add_filter( 'wp_title', 'convert_smilies' );
+add_filter( 'sanitize_file_name', 'mb_strtolower' );`
 };
 
 // Create ESC button and inject CSS
@@ -247,7 +243,7 @@ function updateStats() {
     }
 }
 
-// Toggle theme
+// Toggle theme.
 function toggleTheme() {
     if (!editor) return;
 
@@ -286,9 +282,9 @@ function exitFullscreen() {
     isFullscreen = false;
     const wrapper = editor.getWrapperElement();
     wrapper.classList.remove('fullscreen');
-    editor.setSize('100%', '300px');
+    editor.setSize('100%', '500px');
     if (escButton) {
-        escButton.classList.remove('show'); // Hide ESC button
+        escButton.classList.remove('show');
     }
     editor.refresh();
     showNotification('Exited fullscreen mode');
@@ -516,10 +512,64 @@ document.addEventListener('DOMContentLoaded', function () {
     codeTypeSelect.addEventListener('change', toggleLoadLocation);
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const prioritySlider = document.getElementById('priority-slider');
+    const priorityValue = document.getElementById('priority-value');
+
+    function updatePriorityValue(value) {
+        if (priorityValue) {
+            priorityValue.value = value;
+        }
+    }
+
+    function updatePrioritySlider(value) {
+        let numValue = parseInt(value, 10);
+
+        if (isNaN(numValue)) {
+            numValue = 1;
+        } else if (numValue < 1) {
+            numValue = 1;
+        } else if (numValue > 999) {
+            numValue = 999;
+        }
+
+        if (prioritySlider) {
+            prioritySlider.value = numValue;
+        }
+        if (priorityValue) {
+            priorityValue.value = numValue;
+        }
+    }
+
+    if (prioritySlider) {
+        prioritySlider.addEventListener('input', function() {
+            updatePriorityValue(this.value);
+        });
+    }
+
+    if (priorityValue) {
+        priorityValue.addEventListener('input', function() {
+            updatePrioritySlider(this.value);
+        });
+
+        priorityValue.addEventListener('blur', function() {
+            updatePrioritySlider(this.value);
+        });
+
+        priorityValue.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updatePrioritySlider(this.value);
+                this.blur(); // Remove focus from input
+            }
+        });
+    }
+});
+
+// Global function for inline oninput attribute (if you need to keep it)
 function updatePriorityValue(value) {
-    const priorityValueElement = document.getElementById('priority-value');
-    if (priorityValueElement) {
-        priorityValueElement.textContent = value;
+    const priorityValue = document.getElementById('priority-value');
+    if (priorityValue) {
+        priorityValue.value = value;
     }
 }
 
@@ -687,61 +737,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 placeholder: 'Search and select an option',
                 allowClear: true
             });
-
-            $(document).on('change', '.snippet-status-toggle', function() {
-                var $checkbox = $(this);
-                var snippetId = $checkbox.data('id');
-                var isActive = $checkbox.is(':checked') ? 'yes' : 'no';
-
-                // Disable checkbox during AJAX request
-                $checkbox.prop('disabled', true);
-
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'toggle_snippet_status',
-                        snippet_id: snippetId,
-                        status: isActive,
-                        nonce: WCFCustomCodeVars.nonce
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Show success message
-                            showNotification(response.data.message);
-                            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                                wp.data.dispatch('core/notices').createSuccessNotice(
-                                    response.data.message || 'Status updated successfully.',
-                                    { id: 'snippet-status-updated' }
-                                );
-                            }
-                        } else {
-                            // Revert checkbox state on error
-                            $checkbox.prop('checked', !$checkbox.is(':checked'));
-                            if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                                wp.data.dispatch('core/notices').createErrorNotice(
-                                    response.data.message || 'Failed to update status.',
-                                    { id: 'snippet-status-error' }
-                                );
-                            }
-                        }
-                    },
-                    error: function() {
-                        // Revert checkbox state on error
-                        $checkbox.prop('checked', !$checkbox.is(':checked'));
-                        if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                            wp.data.dispatch('core/notices').createErrorNotice(
-                                'Network error occurred while updating status.',
-                                { id: 'snippet-status-error' }
-                            );
-                        }
-                    },
-                    complete: function() {
-                        // Re-enable checkbox
-                        $checkbox.prop('disabled', false);
-                    }
-                });
-            });
         },
     };
 
@@ -752,6 +747,8 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function() {
     const codeTypeSelect = document.getElementById('code-type');
     const visibilityPageSelect = document.getElementById('visibility-page');
+
+    if (!codeTypeSelect || !visibilityPageSelect) return;
 
     // Store original options for restoration
     const originalOptions = visibilityPageSelect.innerHTML;
@@ -794,4 +791,102 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('load', function() {
         updateVisibilityOptions();
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const codeType = document.getElementById('code-type');
+    const loadLocation = document.getElementById('load-location');
+
+    if (!codeType || !loadLocation) return;
+    function updateLoadLocations() {
+        const value = codeType.value;
+
+        Array.from(loadLocation.options).forEach(option => {
+            if (value === 'javascript') {
+                // Only enable head, footer, and empty option
+                option.disabled = !(option.value === '' || option.value === 'head' || option.value === 'footer');
+            } else {
+                // HTML, CSS, PHP → enable all options
+                option.disabled = false;
+            }
+        });
+
+        // Auto-select first enabled option if current selection is disabled
+        if (loadLocation.options[loadLocation.selectedIndex].disabled) {
+            const firstEnabled = Array.from(loadLocation.options).find(opt => !opt.disabled);
+            if (firstEnabled) {
+                loadLocation.value = firstEnabled.value;
+            }
+        }
+    }
+
+    // Run once on page load
+    updateLoadLocations();
+
+    // Listen for code type changes
+    codeType.addEventListener('change', updateLoadLocations);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loadLocation = document.getElementById("load-location"); // head/footer/before/after select
+    const pageLocation = document.getElementById("visibility-page"); // page condition select
+
+    if (!loadLocation || !pageLocation) {
+        return;
+    }
+
+    function toggleDependencies() {
+        const loadVal = loadLocation.value;
+        const pageVal = pageLocation.value;
+
+        const isArchiveLike =
+            pageVal.includes("archive") || pageVal === "blog";
+
+        Array.from(pageLocation.options).forEach(option => {
+            if (option.value.includes("archive") || option.value === "blog") {
+                option.disabled = (loadVal === "content_before" || loadVal === "content_after");
+            }
+        });
+
+        const beforeOpt = loadLocation.querySelector('option[value="content_before"]');
+        const afterOpt = loadLocation.querySelector('option[value="content_after"]');
+
+        if (isArchiveLike) {
+            if (beforeOpt) beforeOpt.disabled = true;
+            if (afterOpt) afterOpt.disabled = true;
+
+            if (loadVal === "content_before" || loadVal === "content_after") {
+                loadLocation.value = "";
+            }
+        } else {
+            if (beforeOpt) beforeOpt.disabled = false;
+            if (afterOpt) afterOpt.disabled = false;
+        }
+    }
+
+    // Initial run
+    toggleDependencies();
+
+    // Bind events
+    loadLocation.addEventListener("change", toggleDependencies);
+    pageLocation.addEventListener("change", toggleDependencies);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggle = document.getElementById("active-toggle");
+    const statusEl = document.querySelector(".aae-csp-active__status");
+    if (!toggle || !statusEl) return;
+    const statusText = statusEl.querySelector("span");
+
+    if (toggle && statusEl && statusText) {
+        toggle.addEventListener("change", function () {
+            if (this.checked) {
+                statusEl.classList.remove("inactive");
+                statusText.textContent = "Active";
+            } else {
+                statusEl.classList.add("inactive");
+                statusText.textContent = "Inactive";
+            }
+        });
+    }
 });
