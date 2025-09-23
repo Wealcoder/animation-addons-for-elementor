@@ -429,6 +429,12 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= Animation Addons for Elementor v2.3.13 – 22 September 2025 =
+
+  - 🆕 Added: 660+ Pages in importer 
+  - ✏️ Improved: Code Snippet design and functionality 
+  - ✏️ Improved: Section Import Library
+
 = Animation Addons for Elementor v2.3.12 – 02 September 2025 =
 
   - 🎨 Fixed: Toggle Widget for smoother interaction and better user experience

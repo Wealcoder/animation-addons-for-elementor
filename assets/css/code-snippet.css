@@ -144,6 +144,7 @@ CSP STYLE
   border-radius: 10px;
   text-decoration: none;
   gap: 5px;
+  cursor: pointer;
 }
 .aae-csp-top__tools-btn:hover {
   color: rgb(252, 104, 72);
@@ -478,6 +479,16 @@ CHECK BUTTON STYLE
 
 .checkbox-wrapper-6 .tgl-light:checked + .tgl-btn {
   background: var(--vibrant-mint);
+}
+
+#php-version-notice {
+  color: var(--theme-bg);
+  font-weight: 600;
+  font-style: italic;
+  text-transform: lowercase;
+}
+#php-version-notice strong {
+  color: var(--vibrant-mint);
 }
 
 .wcf-code-loading {

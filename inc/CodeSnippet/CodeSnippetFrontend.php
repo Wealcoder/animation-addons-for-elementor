@@ -315,6 +315,7 @@ class CodeSnippetFrontend {
 
 			default:
 				// Check for custom post-types.
+				
 				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'singulars' ) ) {
 					$post_type = str_replace( '-singulars', '', $visibility_condition );
 					return is_singular( $post_type );

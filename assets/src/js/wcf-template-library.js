@@ -12,12 +12,11 @@
   let currentPage = 1;
   let currentCategory = "";
   let currentType = "";
-  let currentColorType = "";
   let active_menu_first_load = 0;
+  let currentColorType = "";
+  let currentSection = null;
   let active_resize_first_load = 0;
-  let allCategory = async () => {
-    //https://block.animation-addons.com/wp-json/templates/v2/wcf-tpl-category
-    //"https://crowdytheme.com/elementor/info-templates/wp-json/templates/v2/wcf-tpl-category"
+  let allCategory = async () => {   
     await fetch(
       "https://block.animation-addons.com/wp-json/templates/v2/wcf-tpl-category"
     )
@@ -27,9 +26,8 @@
       });
   };
 
+
   allCategory();
-  // API for get requests
- // https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=20&subtype=block
   let aae_domain =
     "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=100&subtype=block";
   const activePlugin = async () => {
@@ -62,10 +60,11 @@
   const templates_validate = function (remotetemplates) {
     let templates = [];
 
-    remotetemplates.forEach((template, index) => {
+    remotetemplates.forEach((template, index) => {    
       if (
-        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
-        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true
+        (WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
+        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true) || 
+        template?.is_pro == '0'
       ) {
         template["valid"] = "yes";
       }
@@ -163,7 +162,7 @@
         ".elementor-add-wcf-template-button",
         function (event) {
           event.preventDefault();
-
+          currentSection = $(this);
           window.wcftmLibrary = elementorCommon.dialogsManager.createWidget(
             "lightbox",
             {
@@ -277,7 +276,6 @@
               ).attr("selected", "selected");
             }
 
-            //window.backContent = $('#wcf-template-library .dialog-widget-content').html();
           }
 
           function render_single_template(t) {
@@ -358,15 +356,7 @@
               $(t).find(".dialog-message").remove();
 
               render_templates(t, activeMenu);
-
-              //category select ensure dom selections
-              // selected_category(t);
-
-              //   render_single_template(t);
-
-              // search_function();
-
-              // template_import();
+             
             });
 
             //hide modal
@@ -375,11 +365,7 @@
               function () {
                 window.wcftmLibrary.hide();
               }
-            );
-
-            // if (active_menu_first_load >= 1){
-            //     return;
-            // }
+            );          
 
             let activeMenu = $(
               ".wcf-template-library--header .elementor-active"
@@ -467,12 +453,18 @@
               }, 300)
             );
           }
+        
 
           function template_import(id = null) {
             let is_loading = true;
             $(document).on("click", ".library--action.insert", function () {
               let _that = $(this);
               let template_id = id;
+              let jurl = $(this).closest(".wcf-library-template").data('jurl');
+              if(jurl && jurl !=''){
+                jurl = jurl+'.json';
+              }
+
               if (null === template_id) {
                 template_id = $(this)
                   .closest(".wcf-library-template")
@@ -480,26 +472,51 @@
               }
               loading(is_loading);
               _that.hide();
+            
+              let curPos = currentSection.parents('.elementor-add-section-inline').index();            
+              if(jurl){       
+               let position = curPos;   
+                $.get({ url: "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates/json-content?url="+jurl, crossDomain: true })
+                .done(function (data) {
+                  let options = { at: position };   
+                    if (data?.content) {
 
-              window.wcftmLibrary.currentRequest = elementorCommon.ajax
-                .addRequest("get_wcf_template_data", {
-                  unique_id: template_id,
-                  data: {
-                    edit_mode: !0,
-                    display: !0,
-                    template_id: template_id,
-                  },
-                  success: function (e) {
-                    $e.run("document/elements/import", {
-                      model: window.elementor.elementsModel,
-                      data: e,
-                    });
-                    is_loading = false;
-                    window.wcftmLibrary.hide();
-                  },
-                })
-                .fail(function () {});
-            });
+                      $e.run("document/elements/import", {
+                        model: window.elementor.elementsModel,
+                        data: data,
+                        options: options,
+                      });
+                    
+                      is_loading = false;
+                      window.wcftmLibrary.hide();
+
+                      elementor.notifications.showToast({
+                        message: elementor.translate("Content Pasted!"),
+                      });
+
+                  } 
+                });
+                    
+              }else{
+                  window.wcftmLibrary.currentRequest = elementorCommon.ajax.addRequest("get_wcf_template_data", {
+                    unique_id: template_id,
+                    data: {
+                      edit_mode: !0,
+                      display: !0,
+                      template_id: template_id,
+                    },
+                    success: function (e) {
+                      $e.run("document/elements/import", {
+                        model: window.elementor.elementsModel,
+                        data: e,
+                      });
+                      is_loading = false;
+                      window.wcftmLibrary.hide();
+                    },
+                  }).fail(function () {});
+              }              
+
+            }); // end click
           }
 
           function loading(is_loading) {
@@ -568,7 +585,7 @@
 
   const generateTemplate = (item) => {
     return `
-            <div class="wcf-library-template" data-id="${item.id}" data-url="${
+            <div class="wcf-library-template" data-jurl="${item.json_url}" data-id="${item.id}" data-url="${
       item.template_demo_url
     }">
                 <div class="thumbnail">

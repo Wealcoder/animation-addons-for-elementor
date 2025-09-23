@@ -142,7 +142,7 @@ final class AAE_Admin_Page_Importer
         // Register + enqueue your JS
         wp_register_script(
             self::HANDLE,
-            WCF_ADDONS_URL . 'assets/js/aae-admin-actions.js',
+            WCF_ADDONS_URL . 'assets/js/aae-admin-actions.min.js',
             ['jquery'],
             time(),
             true
@@ -152,7 +152,7 @@ final class AAE_Admin_Page_Importer
             'nonce'   => wp_create_nonce('aae_admin_nonce'),
             'screen'  => $screen->id,
             'post_id' => $post_id,
-            'logo' => WCF_ADDONS_URL . 'assets/images/wcf.png',
+            'logo' => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
             'page_url'   => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
 

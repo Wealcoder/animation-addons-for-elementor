@@ -167,7 +167,7 @@ const DemoImporting = () => {
         } else {
           formData.append("action", "aaeaddon_template_installer");
         }
-
+        formData.append("import_type", 'full-demo');
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);

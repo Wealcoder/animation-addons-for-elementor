@@ -147,6 +147,7 @@ COLOR PLATES
     border-radius: 10px;
     text-decoration: none;
     gap: 5px;
+    cursor: pointer;
     &:hover{
       color: rgba(252, 104, 72, 1);
       background-color: rgba(254, 225, 218, 1);
@@ -477,6 +478,16 @@ CHECK BUTTON STYLE
 }
 .checkbox-wrapper-6 .tgl-light:checked + .tgl-btn {
   background: var(--vibrant-mint);
+}
+
+#php-version-notice {
+  color: var(--theme-bg);
+  font-weight: 600;
+  font-style: italic;
+  text-transform: lowercase;
+  strong {
+    color: var(--vibrant-mint);
+  }
 }
 
  .wcf-code-loading {

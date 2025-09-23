@@ -468,34 +468,38 @@ class WCF_Theme_Builder
 		if (is_singular()) {
 			// check for specific post format current post format
 
-			if (is_singular('post') && isset($templates['post-singular']) && is_numeric($templates['post-singular'])) {
+			if (is_singular('post') && isset($templates['post-singulars']) && is_numeric($templates['post-singulars'])) {
 				// get category slug
-
 				$get_queried_object = get_queried_object();
+			
+				if(get_post_type($templates['post-singulars']) === 'post') {
+				
+					$query_args['meta_query'][] = array(
+						'key'     => self::CPT_META . '_location',
+						'value'   => 'post-singular',
+						'compare' => 'LIKE',
+					);
 
-				$query_args['meta_query'][] = array(
-					'key'     => self::CPT_META . '_location',
-					'value'   => 'post-singular',
-					'compare' => 'LIKE',
-				);
+					$query  = new \WP_Query($query_args);
+					$cat_id = null;
+					foreach ($query->posts as $key => $post_id) {
+						$format     = get_post_format($post_id) ?: 'standard';
+						$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
+						$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
+						if (! empty($location) && ! empty($splocation)) {
 
-				$query  = new \WP_Query($query_args);
-				$cat_id = null;
-				foreach ($query->posts as $key => $post_id) {
-					$format     = get_post_format($post_id) ?: 'standard';
-					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
-					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
-					if (! empty($location) && ! empty($splocation)) {
-
-						if ('post-singular' === $location && $splocation[0] === $get_queried_object->slug) {
-							$cat_id = $post_id;
+							if ('post-singular' === $location && $splocation[0] === $get_queried_object->slug) {
+								$cat_id = $post_id;
+							}
 						}
 					}
+					wp_reset_postdata();
+					if (is_numeric($cat_id)) {
+						return $cat_id;
+					}
 				}
-				wp_reset_postdata();
-				if (is_numeric($cat_id)) {
-					return $cat_id;
-				}
+
+				return $templates['post-singulars'];
 			}
 			// if template type single ignore post type page
 			if (('page' === get_post_type() || self::CPTTYPE === get_post_type()) && 'single' === $tmpType) {
