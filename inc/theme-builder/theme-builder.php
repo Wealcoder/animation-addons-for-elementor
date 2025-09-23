@@ -121,7 +121,7 @@ class WCF_Theme_Builder
 		if (! $this->has_template('header')) {
 			return;
 		}
-
+	
 		require WCF_ADDONS_PATH . '/templates/header.php';
 
 		$templates = array();
@@ -195,6 +195,7 @@ class WCF_Theme_Builder
 		$archive_template_id = $this->get_template_id('header');
 		if ($archive_template_id != '0') {
 			// PHPCS - should not be escaped.
+			
 			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
@@ -283,8 +284,18 @@ class WCF_Theme_Builder
 	public function has_template($tmpType = '')
 	{
 		$template_ID = self::get_current_post_by_condition($tmpType);
-
+		
 		if ($template_ID) {
+			if($tmpType == 'header'){
+				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true );
+				$offsetY = get_post_meta( $template_ID, 'aae_header_smoother_offsety', true );
+				$offsetY = preg_replace( '/[^0-9.\-]/', '', $offsetY );
+				if($offsetY && is_numeric($offsetY)){
+					$GLOBALS['aae_header_smoother_offsetY'] = $offsetY;
+				}
+				
+			}
+			
 			return $template_ID;
 		}
 
@@ -501,20 +512,23 @@ class WCF_Theme_Builder
 
 				return $templates['post-singulars'];
 			}
+			
 			// if template type single ignore post type page
-			if (('page' === get_post_type() || self::CPTTYPE === get_post_type()) && 'single' === $tmpType) {
+			if ((('page' === get_post_type() && !is_front_page() ) || ( self::CPTTYPE === get_post_type() && !is_front_page() )) && 'single' === $tmpType) {
 				return false;
 			}
-
+			
 			// check for custom post type singular
 			$custom_single = get_post_type() . '-singular';
 
 			if (array_key_exists($custom_single, $templates)) {
+				
 				return $templates[$custom_single];
 			}
 
 			// all singular
-			if (array_key_exists('singulars', $templates)) {
+			if (array_key_exists('singulars', $templates) && !is_front_page()) {
+			
 				return $templates['singulars'];
 			}
 		}
@@ -1440,6 +1454,23 @@ class WCF_Theme_Builder
 								<option value="fadeSlideup"><?php echo esc_html__('Fade + Slide Up', 'animation-addons-for-elementor'); ?></option>
 							</select>
 					</div>
+							<!-- Header Smoother -->
+					<div class="wcf-addons-template-edit-field aae-header-smoother-location hidden">
+						<label class="wcf-addons-template-edit-label"><?php echo esc_html__('Smoother?', 'animation-addons-for-elementor'); ?></label>
+							<select class="wcf-addons-template-edit-input" name="aae-header-smoother-location"
+								id="aae-header-smoother-location">
+								<option value=""><?php echo esc_html__('Default', 'animation-addons-for-elementor'); ?></option>
+								<option value="yes"><?php echo esc_html__('Yes', 'animation-addons-for-elementor'); ?></option>	
+								<option value="no"><?php echo esc_html__('No', 'animation-addons-for-elementor'); ?></option>								
+							</select>
+					</div>
+
+					<div class="wcf-addons-template-edit-field aae-header-smoother-location yoffset hidden">
+						<label class="wcf-addons-template-edit-label"><?php echo esc_html__('OffsetY(px)', 'animation-addons-for-elementor'); ?></label>
+							<input class="wcf-addons-template-edit-input" id="aae-header-smoother-yoffset" type="text"
+								name="aae-header-smoother-yoffset"
+								placeholder="120">
+					</div>
 					
 				</div>
 				
@@ -1501,6 +1532,8 @@ class WCF_Theme_Builder
 			$popupEffect     = ! empty($_POST['tmpEffect']) ? sanitize_text_field(wp_unslash($_POST['tmpEffect'])) : 'flip';
 			$selector     = ! empty($_POST['tmpSelector']) ? sanitize_text_field(wp_unslash($_POST['tmpSelector'])) : '';
 			$scrollPostion     = ! empty($_POST['tmpScrollPostion']) ? sanitize_text_field(wp_unslash($_POST['tmpScrollPostion'])) : 0;
+			$headerSmoother     = ! empty($_POST['tmpHeaderSmoother']) ? sanitize_text_field(wp_unslash($_POST['tmpHeaderSmoother'])) : '';
+			$headerSmootheroffset     = ! empty($_POST['tmpHeaderSmootherOffsetY']) ? sanitize_text_field(wp_unslash($_POST['tmpHeaderSmootherOffsetY'])) : '';
 
 			$data = array(
 				'title'         => $title,
@@ -1512,7 +1545,9 @@ class WCF_Theme_Builder
 				'tmpTrigger'    => $popuptrigger,
 				'tmpSelector'    => $selector,
 				'tmpScrollPostion'    => $scrollPostion,
-				'tmpEffect' => $popupEffect
+				'tmpEffect' => $popupEffect,
+				'tmpHeaderSmoother' => $headerSmoother,
+				'tmpHeaderSmootherOffsetY' => $headerSmootheroffset
 			);
 
 			if ($tmpid) {
@@ -1563,6 +1598,8 @@ class WCF_Theme_Builder
 			$popupEffect     = ! empty(get_post_meta($tmpid, 'effect', true)) ? get_post_meta($tmpid, 'effect', true) : 'flip';
 			$popup_selector     = ! empty(get_post_meta($tmpid, 'popup_selector', true)) ? get_post_meta($tmpid, 'popup_selector', true) : '';
 			$scrollPostion     = ! empty(get_post_meta($tmpid, 'scrollPostion', true)) ? get_post_meta($tmpid, 'scrollPostion', true) : '';
+			$aae_header_smoother     = ! empty(get_post_meta($tmpid, 'aae_header_smoother', true)) ? get_post_meta($tmpid, 'aae_header_smoother', true) : '';
+			$header_smootheroffsety     = ! empty(get_post_meta($tmpid, 'aae_header_smoother_offsety', true)) ? get_post_meta($tmpid, 'aae_header_smoother_offsety', true) : '';
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
@@ -1581,7 +1618,9 @@ class WCF_Theme_Builder
 				'tmpTrigger'    => $popupTrigger,
 				'tmpSelector' => $popup_selector,
 				'tmpEffect' => $popupEffect,
-				'tmpScrollPostion' => $scrollPostion
+				'tmpScrollPostion' => $scrollPostion,
+				'tmpHeaderSmoother' => $aae_header_smoother,
+				'tmpHeaderSmootherOffsetY' => $header_smootheroffsety,
 			);
 			wp_send_json_success($data);
 		} else {
@@ -1743,6 +1782,9 @@ class WCF_Theme_Builder
 			// specific page and post template header footer
 			if ('header' === $data['tmptype'] || 'footer' === $data['tmptype']) {
 				update_post_meta($new_post_id, self::CPT_META . '_splocation', $data['tmpSpLocation']);
+				update_post_meta($new_post_id, 'aae_header_smoother', $data['tmpHeaderSmoother']);
+				update_post_meta($new_post_id, 'aae_header_smoother_offsety', $data['tmpHeaderSmootherOffsetY']);
+
 			}
 
 			if ('archive' === $data['tmptype'] && 'specifics_cat' === $data['tmplocation']) {
@@ -1795,6 +1837,8 @@ class WCF_Theme_Builder
 		// specific page and post template header footer
 		if ('header' === $data['tmptype'] || 'footer' === $data['tmptype']) {
 			update_post_meta($data['id'], self::CPT_META . '_splocation', $data['tmpSpLocation']);
+			update_post_meta($data['id'], 'aae_header_smoother', $data['tmpHeaderSmoother']);
+			update_post_meta($data['id'], 'aae_header_smoother_offsety', $data['tmpHeaderSmootherOffsetY']);
 		} else {
 			delete_post_meta($data['id'], self::CPT_META . '_splocation');
 		}
