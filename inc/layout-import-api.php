@@ -32,7 +32,7 @@ class Layout_Import_Api {
 				if ( empty( $data['template_id'] ) ) {
 					throw new \Exception( esc_html__( 'Template id missing', 'animation-addons-for-elementor' ) );
 				}
-
+				
 				$result = $this->get_template_data( $data );
 
 				return $result;

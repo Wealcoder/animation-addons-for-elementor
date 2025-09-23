@@ -55,7 +55,7 @@ class Library_Source extends Source_Base {
 		$response    = wp_remote_get(
 			$request_url,
 			array(
-				'timeout' => 30,
+				'timeout' => 15,
 				'body'    => [
 					// Which API version is used.
 					'api_version' => 1.1,
@@ -69,9 +69,15 @@ class Library_Source extends Source_Base {
 		return wp_remote_retrieve_body( $response );
 	}
 
-	public function get_data( array $args, $context = 'display' ) {
-		$data = $this->request_template_data( $args['template_id'] );
-		$data = json_decode( $data, true );
+	public function get_data( array $args, $context = 'display' ) {	
+	
+		if(isset($args['json_data'])){
+			$data = $args['json_data'];
+		}else{
+			$data = $this->request_template_data( $args['template_id'] );
+			$data = json_decode( $data, true );
+		}		
+	
 		if ( empty( $data ) || empty( $data['content'] ) ) {
 			throw new \Exception( esc_html__( 'Template does not have any content', 'animation-addons-for-elementor' ) );
 		}
