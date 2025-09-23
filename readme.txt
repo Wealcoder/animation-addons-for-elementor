@@ -433,7 +433,9 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
   - 🆕 Added: 660+ Pages in importer 
   - ✏️ Improved: Code Snippet design and functionality 
-  - ✏️ Improved: Section Import Library
+  - ✏️ Improved: Section Import Library,
+  - 🎨 Fixed: Native Sticky Header using smoother options
+  - 🎨 Fixed: ThemeBuilder post-singulars condition
 
 = Animation Addons for Elementor v2.3.12 – 02 September 2025 =
 

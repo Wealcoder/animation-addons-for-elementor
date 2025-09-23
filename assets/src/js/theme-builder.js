@@ -33,10 +33,17 @@
           "#wcf-addons-template-type, #wcf-addons-hf-display-type",
           this.displayLocation
         );
+
       $(document).on(
         "change",
         "#wcf-addons--popup--builder-trigger",
         this.triggerChange
+      );
+
+      $(document).on(
+        "change",
+        "#aae-header-smoother-location",
+        this.SmootherChange
       );
 
       $("#wcf-addons-hf-s-display-type").on("select2:select", function (e) {
@@ -117,6 +124,16 @@
       e.preventDefault();
       const triggerType = $(this).val();
       WCFThemeBuilder.selectorFieldDisplay(triggerType);
+    },
+    
+    SmootherChange: function (e) {
+      e.preventDefault();
+      const SmoothType = $(this).val();
+      if(SmoothType === 'no'){
+         $(".aae-header-smoother-location.yoffset").removeClass("hidden");
+      }else{
+         $(".aae-header-smoother-location.yoffset").addClass("hidden");
+      }
     },
 
     selectorFieldDisplay: function (val) {
@@ -235,6 +252,31 @@
                 }
               );
 
+              // header
+              
+              if (
+                response.responseJSON.data.tmpType &&
+                response.responseJSON.data.tmpType === "header"
+              ) {
+
+                $(".aae-header-smoother-location").removeClass("hidden");
+
+                $("#aae-header-smoother-location").val(
+                  response.responseJSON.data.tmpHeaderSmoother
+                );
+
+                $("#aae-header-smoother-yoffset").val(
+                  response.responseJSON.data.tmpHeaderSmootherOffsetY
+                );
+
+                if(response.responseJSON.data.tmpHeaderSmoother !== 'no'){
+                 $(".aae-header-smoother-location.yoffset").addClass("hidden");
+                }
+
+              }else{
+                $(".aae-header-smoother-location").addClass("hidden");
+              }
+
               //aae-popup-builder-location
               if (
                 response.responseJSON.data.tmpType &&
@@ -256,9 +298,11 @@
                   .val(response.responseJSON.data?.tmpEffect)
                   .trigger("change");
                 $(".aae-popup-builder-location").removeClass("hidden");
+
                 WCFThemeBuilder.selectorFieldDisplay(
                   response.responseJSON.data?.tmpTrigger
                 );
+
               } else {
                 $(".aae-popup-builder-location").addClass("hidden");
               }
@@ -351,6 +395,17 @@
           : 0;
       }
 
+      if(tmpType === 'header'){
+        
+         data["tmpHeaderSmoother"] = $("#aae-header-smoother-location").val()
+          ? $("#aae-header-smoother-location").val()
+          : "";
+          
+          data["tmpHeaderSmootherOffsetY"] = $("#aae-header-smoother-yoffset").val()
+          ? $("#aae-header-smoother-yoffset").val()
+          : "";
+      }
+
       $.ajax({
         url: WCF_Theme_Builder.ajaxurl,
         data: data,
@@ -427,6 +482,13 @@
       } else {
         $(".aae-popup-builder-location").addClass("hidden");
       }
+
+      if(type === 'header'){          
+        $(".aae-header-smoother-location").removeClass("hidden");       
+      }else{
+        $(".aae-header-smoother-location").addClass("hidden");      
+      }
+      
     },
   };
 

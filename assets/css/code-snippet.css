@@ -144,6 +144,7 @@ CSP STYLE
   border-radius: 10px;
   text-decoration: none;
   gap: 5px;
+  cursor: pointer;
 }
 .aae-csp-top__tools-btn:hover {
   color: rgb(252, 104, 72);
