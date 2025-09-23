@@ -63,7 +63,8 @@
     remotetemplates.forEach((template, index) => {    
       if (
         (WCF_TEMPLATE_LIBRARY?.config?.wcf_valid &&
-        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true) || template?.is_pro == '0'
+        WCF_TEMPLATE_LIBRARY?.config?.wcf_valid === true) || 
+        template?.is_pro == '0'
       ) {
         template["valid"] = "yes";
       }
