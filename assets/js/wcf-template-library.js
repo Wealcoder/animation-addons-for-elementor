@@ -473,26 +473,35 @@
               loading(is_loading);
               _that.hide();
             
-              let curPos = currentSection.parents('.elementor-add-section-inline').index();            
-              if(jurl){       
-               let position = curPos;   
+              let curPos = currentSection.parents('.elementor-add-section-inline').index();    
+            
+              let options = { at: curPos };        
+              if(jurl){      
+               
                 $.get({ url: "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates/json-content?url="+jurl, crossDomain: true })
                 .done(function (data) {
-                  let options = { at: position };   
+                         console.log(data);
                     if (data?.content) {
-
-                      $e.run("document/elements/import", {
-                        model: window.elementor.elementsModel,
-                        data: data,
-                        options: options,
-                      });
-                    
-                      is_loading = false;
-                      window.wcftmLibrary.hide();
-
-                      elementor.notifications.showToast({
-                        message: elementor.translate("Content Pasted!"),
-                      });
+                      
+                       window.wcftmLibrary.currentRequest = elementorCommon.ajax.addRequest("get_wcf_template_data", {
+                        unique_id: template_id,
+                        data: {
+                          edit_mode: !0,
+                          display: !0,
+                          template_id: template_id,
+                          json_data : data
+                        },
+                        success: function (e) {
+                          $e.run("document/elements/import", {
+                            model: window.elementor.elementsModel,
+                            data: e,
+                            options: options
+                          });
+                          is_loading = false;
+                          window.wcftmLibrary.hide();
+                        },
+                      }).fail(function () {});
+               
 
                   } 
                 });
@@ -509,7 +518,9 @@
                       $e.run("document/elements/import", {
                         model: window.elementor.elementsModel,
                         data: e,
+                        options: options
                       });
+             
                       is_loading = false;
                       window.wcftmLibrary.hide();
                     },
