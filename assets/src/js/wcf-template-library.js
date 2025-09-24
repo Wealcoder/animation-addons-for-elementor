@@ -479,10 +479,8 @@
               if(jurl){      
                
                 $.get({ url: "https://block.animation-addons.com/wp-json/wp/v2/wcf-templates/json-content?url="+jurl, crossDomain: true })
-                .done(function (data) {
-                         console.log(data);
-                    if (data?.content) {
-                      
+                .done(function (data) {                  
+                    if (data?.content) {                      
                        window.wcftmLibrary.currentRequest = elementorCommon.ajax.addRequest("get_wcf_template_data", {
                         unique_id: template_id,
                         data: {

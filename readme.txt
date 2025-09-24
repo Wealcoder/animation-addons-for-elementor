@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.12
+Stable tag: 2.3.13
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -429,9 +429,9 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= Animation Addons for Elementor v2.3.13 – 22 September 2025 =
+= Animation Addons for Elementor v2.3.13 – 24 September 2025 =
 
-  - 🆕 Added: 660+ Pages in importer 
+  - 🆕 Added: 660+ Pages in Page importer 
   - ✏️ Improved: Code Snippet design and functionality 
   - ✏️ Improved: Section Import Library,
   - 🎨 Fixed: Native Sticky Header using smoother options
