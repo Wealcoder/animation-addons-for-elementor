@@ -86,3 +86,12 @@
   top: 14px;
   right: 15px;
 }
+
+.nmc_btn-wrap button {
+  border: 0;
+  padding: 9px 15px;
+  background: #f6502c;
+  color: #fff;
+  display: inline-block;
+  cursor: pointer;
+}
