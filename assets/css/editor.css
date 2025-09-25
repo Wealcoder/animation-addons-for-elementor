@@ -86,3 +86,11 @@
   top: 14px;
   right: 15px;
 }
+
+.elementor-control-horizontal_scroll_breakpoint,
+.elementor-control-text_animation_breakpoint,
+.elementor-control-spin_text_scrub,
+.elementor-control-wcf_pin_breakpoint,
+.elementor-control-fade_animation_breakpoint {
+  display: none !important;
+}

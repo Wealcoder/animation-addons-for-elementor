@@ -69,7 +69,8 @@ https://youtu.be/tRbvgq2gJF4
 🖼️ Icon Generator
 🔠 [Custom Font Uploader](https://animation-addons.com/docs/general-extensions/custom-fonts/)
 ⚡ [One-Click Demo Imports](https://animation-addons.com/docs/getting-started/how-to-import-starter-templates-from-animation-addons/)
-✒️ Code Snippet
+⚡ [One-Click Page Imports](https://animation-addons.com/page-templates/)
+✒️ CodeSnippet
 
 Animation Addons for Elementor is a game-changer in animation-focused web design. The blend of its advanced animations, customizable features, and unique functionality set it apart from competitors. Whether you’re a web developer, designer, agency owner, or website owner, the plugin caters to your holistic professional needs.
 

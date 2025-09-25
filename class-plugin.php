@@ -242,7 +242,7 @@ class Plugin
 	 */
 	public function editor_styles()
 	{
-		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), WCF_ADDONS_VERSION, 'all');
+		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), time(), 'all');
 	}
 
 	/**
