@@ -249,7 +249,7 @@ class AAEAddon_Importer {
 
 	public function update_blog_and_homepage_options($template_data){
 	
-		 if($template_data['home_page'] && $template_data['home_page'] !=''){
+		 if(isset($template_data['home_page']) && $template_data['home_page'] !=''){
 			// Get the front page.
 			$front_page = get_posts(
 				[
@@ -267,7 +267,7 @@ class AAEAddon_Importer {
 			}
 		 }
 
-		 if($template_data['blog_page'] && $template_data['blog_page'] !=''){
+		 if(isset($template_data['blog_page']) && $template_data['blog_page'] !=''){
 			// Get the blog page.
 			$blog_page = get_posts(
 				[

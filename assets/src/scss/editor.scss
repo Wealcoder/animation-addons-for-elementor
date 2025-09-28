@@ -90,6 +90,13 @@
     top: 14px;
     right: 15px;
 }
+.elementor-control-horizontal_scroll_breakpoint,
+.elementor-control-text_animation_breakpoint,
+.elementor-control-spin_text_scrub,
+.elementor-control-wcf_pin_breakpoint,
+.elementor-control-fade_animation_breakpoint{
+    display: none !important;
+}
 
 // editor button 
 .nmc_btn-wrap button {
@@ -99,4 +106,16 @@
   color: #fff;
   display: inline-block;
   cursor: pointer;
+}
+.nmc-btn-run{
+  border: 0;
+  padding: 9px 15px;
+  background: #f6502c;
+  color: #fff;
+  display: inline-block;
+  cursor: pointer; 
+}
+
+.aae-motion-nested-card:has(.nmc-back-wrap){
+    pointer-events: none;
 }

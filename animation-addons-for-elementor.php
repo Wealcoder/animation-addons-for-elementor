@@ -3,15 +3,15 @@
  * Plugin Name: Animation Addons
  * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:  https://animation-addons.com/
- * Version:     2.3.12
+ * Version:     2.3.13
  * Author:      Wealcoder
  * Author URI:  https://animation-addons.com/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: animation-addons-for-elementor
  * Domain Path: /languages 
- * Elementor tested up to: 3.31.1
- * Elementor Pro tested up to: 3.31.1
+ * Elementor tested up to: 3.32.2
+ * Elementor Pro tested up to: 3.32.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +26,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.3.12' );
+	define( 'WCF_ADDONS_VERSION', '2.3.13' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -90,7 +90,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.3.10';
+	const VERSION = '2.3.13';
 
 	/**
 	 * Minimum Elementor Version
@@ -98,7 +98,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string Minimum Elementor version required to run the plugin.
 	 */
-	const MINIMUM_ELEMENTOR_VERSION = '3.28.0';
+	const MINIMUM_ELEMENTOR_VERSION = '3.29.0';
 
 	/**
 	 * Minimum PHP Version
@@ -259,9 +259,19 @@ final class WCF_ADDONS_Plugin {
 	public function admin_notice_missing_main_plugin() {
 	     
 		if ( !is_plugin_active('elementor/elementor.php') ) {
+			// echo '<div class="notice notice-error" id="elementor-install-notice">';
+			// echo '<p><strong>Animation Addons for Elementor</strong> </p>';
+			// echo '<p><button id="wcf-install-elementor" class="button button-primary">Install and Activate Elementor</button></p>';
+			// echo '</div>';
 			echo '<div class="notice notice-error" id="elementor-install-notice">';
-			echo '<p><strong>Animation Addons for Elementor</strong> requires Elementor plugin to be installed and activated.</p>';
-			echo '<p><button id="wcf-install-elementor" class="button button-primary">Install and Activate Elementor</button></p>';
+			echo '<p><svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M14.0002 25.6666C20.4435 25.6666 25.6668 20.4433 25.6668 14C25.6668 7.55666 20.4435 2.33331 14.0002 2.33331C7.55684 2.33331 2.3335 7.55666 2.3335 14C2.3335 20.4433 7.55684 25.6666 14.0002 25.6666Z" stroke="#FC6848" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M14 9.33331V14.5833" stroke="#FC6848" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M14 18.653V18.6647" stroke="#FC6848" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg> <strong>Animation Addons for Elementor</strong> requires <strong>Elementor</strong> plugin to be installed and activated.</p>';
+				echo '<button name="animation-addons-for-elementor" slug="animation-addons-for-elementor/animation-addons-for-elementor.php" id="wcf-install-pro-elementor" class="button button-primary"><svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M6.96475 6.85674L13.5055 0.315979L14.684 1.49449L13.5055 2.673L15.5679 4.7354L14.3894 5.9139L12.327 3.85151L11.1485 5.03002L12.9163 6.79782L11.7378 7.97632L9.97 6.20857L8.14325 8.03524C9.21509 9.65307 9.03833 11.8542 7.61292 13.2796C5.98576 14.9068 3.34758 14.9068 1.72039 13.2796C0.0932021 11.6524 0.0932021 9.01424 1.72039 7.38707C3.14578 5.96165 5.34694 5.7849 6.96475 6.85674ZM6.43442 12.1011C7.41075 11.1247 7.41075 9.5419 6.43442 8.56557C5.45813 7.58924 3.87521 7.58924 2.8989 8.56557C1.92259 9.5419 1.92259 11.1247 2.8989 12.1011C3.87521 13.0774 5.45813 13.0774 6.43442 12.1011Z" fill="white"/>
+				</svg>Activate</button>';
 			echo '</div>';
 		}
 	}

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2025-09-03 15:40+0600\n"
+"POT-Creation-Date: 2025-09-24 12:31+0600\n"
 "PO-Revision-Date: 2024-09-05 16:31+0600\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -62,7 +62,6 @@ msgid "Elementor"
 msgstr ""
 
 #: animation-addons-for-elementor.php:401
-#: inc/CodeSnippet/views/edit-code-snippet.php:61
 msgid "PHP"
 msgstr ""
 
@@ -86,187 +85,192 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: class-plugin.php:867
+#: class-plugin.php:871
 msgid "AAE"
 msgstr ""
 
-#: class-plugin.php:877
+#: class-plugin.php:881
 msgid "AAE Archive"
 msgstr ""
 
-#: class-plugin.php:882
+#: class-plugin.php:886
 msgid "AAE Search"
 msgstr ""
 
-#: class-plugin.php:887
+#: class-plugin.php:891
 msgid "AAE Single"
 msgstr ""
 
-#: class-plugin.php:993 class-plugin.php:1110
+#: class-plugin.php:997 class-plugin.php:1114
 msgid "Close"
 msgstr ""
 
-#: class-plugin.php:1009 inc/theme-builder/theme-builder.php:1881
+#: class-plugin.php:1013 inc/theme-builder/theme-builder.php:1916
 #: widgets/archive-title.php:83 widgets/category-showcase.php:1798
 #: widgets/post-meta-info.php:157 widgets/post-meta-info.php:564
 msgid "Category"
 msgstr ""
 
-#: class-plugin.php:1032
+#: class-plugin.php:1036
 msgid "Search Templates:"
 msgstr ""
 
-#: class-plugin.php:1058
+#: class-plugin.php:1062
 msgid "Go Premium"
 msgstr ""
 
-#: class-plugin.php:1063
+#: class-plugin.php:1067
 msgid "Activate License"
 msgstr ""
 
-#: class-plugin.php:1068
+#: class-plugin.php:1072
 msgid "Activate"
 msgstr ""
 
-#: class-plugin.php:1092 class-plugin.php:1144
+#: class-plugin.php:1096 class-plugin.php:1148
 msgid "Loading"
 msgstr ""
 
-#: class-plugin.php:1103
+#: class-plugin.php:1107
 msgid "Back to Library"
 msgstr ""
 
-#: class-plugin.php:1118
+#: class-plugin.php:1122
 msgid "Insert"
 msgstr ""
 
-#: class-plugin.php:1166 widgets/notification.php:373
+#: class-plugin.php:1170 widgets/notification.php:373
 #: widgets/post-comment.php:1069
 msgid "Block"
 msgstr ""
 
-#: class-plugin.php:1169 inc/WCF_Post_Handler_Trait.php:696
+#: class-plugin.php:1173 inc/WCF_Post_Handler_Trait.php:696
 #: widgets/post-content.php:141 widgets/posts.php:2377
 msgid "Page"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:85 inc/CodeSnippet/CodeSnippet.php:86
-#: inc/CodeSnippet/CodeSnippet.php:113 inc/CodeSnippet/CodeSnippet.php:154
-#: inc/CodeSnippet/CodeSnippet.php:155
+#: inc/CodeSnippet/CodeSnippet.php:102 inc/CodeSnippet/CodeSnippet.php:103
+#: inc/CodeSnippet/CodeSnippet.php:130 inc/CodeSnippet/CodeSnippet.php:174
+#: inc/CodeSnippet/CodeSnippet.php:175
 msgid "Code Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:87
+#: inc/CodeSnippet/CodeSnippet.php:104
 msgid "Code Snippet Archives"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:88
+#: inc/CodeSnippet/CodeSnippet.php:105
 msgid "Code Snippet Attributes"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:89 inc/theme-builder/theme-builder.php:1240
+#: inc/CodeSnippet/CodeSnippet.php:106 inc/theme-builder/theme-builder.php:1217
 msgid "Parent Item:"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:90
-#: inc/CodeSnippet/views/code-snippet-list.php:21
+#: inc/CodeSnippet/CodeSnippet.php:107
+#: inc/CodeSnippet/views/code-snippet-list.php:42
 msgid "Code Snippets"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:91
-#: inc/CodeSnippet/views/code-snippet-list.php:23
-#: inc/CodeSnippet/views/edit-code-snippet.php:31
-#: inc/CodeSnippet/views/edit-code-snippet.php:38
+#: inc/CodeSnippet/CodeSnippet.php:108
+#: inc/CodeSnippet/views/code-snippet-list.php:44
+#: inc/CodeSnippet/views/edit-code-snippet.php:43
+#: inc/CodeSnippet/views/edit-code-snippet.php:61
 msgid "Add New Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:92 inc/theme-builder/theme-builder.php:1243
+#: inc/CodeSnippet/CodeSnippet.php:109 inc/theme-builder/theme-builder.php:1220
 msgid "Add New"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:93
+#: inc/CodeSnippet/CodeSnippet.php:110
 msgid "New Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:94
-#: inc/CodeSnippet/views/edit-code-snippet.php:33
+#: inc/CodeSnippet/CodeSnippet.php:111
+#: inc/CodeSnippet/views/edit-code-snippet.php:45
 msgid "Edit Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:95
+#: inc/CodeSnippet/CodeSnippet.php:112
 msgid "Update Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:96 inc/CodeSnippet/CodeSnippet.php:97
+#: inc/CodeSnippet/CodeSnippet.php:113 inc/CodeSnippet/CodeSnippet.php:114
 msgid "View Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:98
+#: inc/CodeSnippet/CodeSnippet.php:115
 msgid "Search Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:99 inc/theme-builder/theme-builder.php:1250
+#: inc/CodeSnippet/CodeSnippet.php:116 inc/theme-builder/theme-builder.php:1227
 msgid "Not found"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:100 inc/theme-builder/theme-builder.php:1251
+#: inc/CodeSnippet/CodeSnippet.php:117 inc/theme-builder/theme-builder.php:1228
 msgid "Not found in Trash"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:101 inc/theme-builder/theme-builder.php:1252
+#: inc/CodeSnippet/CodeSnippet.php:118 inc/theme-builder/theme-builder.php:1229
 msgid "Featured Image"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:102 inc/theme-builder/theme-builder.php:1253
+#: inc/CodeSnippet/CodeSnippet.php:119 inc/theme-builder/theme-builder.php:1230
 msgid "Set featured image"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:103 inc/theme-builder/theme-builder.php:1254
+#: inc/CodeSnippet/CodeSnippet.php:120 inc/theme-builder/theme-builder.php:1231
 msgid "Remove featured image"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:104 inc/theme-builder/theme-builder.php:1255
+#: inc/CodeSnippet/CodeSnippet.php:121 inc/theme-builder/theme-builder.php:1232
 msgid "Use as featured image"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:105
+#: inc/CodeSnippet/CodeSnippet.php:122
 msgid "Insert into snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:106
+#: inc/CodeSnippet/CodeSnippet.php:123
 msgid "Uploaded to this Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:107
+#: inc/CodeSnippet/CodeSnippet.php:124
 msgid "Snippets list"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:108
+#: inc/CodeSnippet/CodeSnippet.php:125
 msgid "Snippets list navigation"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:109
+#: inc/CodeSnippet/CodeSnippet.php:126
 msgid "Filter from snippet list"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:114 inc/CodeSnippet/views/admin-page.php:21
+#: inc/CodeSnippet/CodeSnippet.php:131 inc/CodeSnippet/views/admin-page.php:21
 msgid "AAE Code Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:300
-msgid "Code Snippet Updated Successfully!"
-msgstr ""
-
-#: inc/CodeSnippet/CodeSnippet.php:322
+#: inc/CodeSnippet/CodeSnippet.php:371
 msgid "Nonce Varification Failed!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:387
+#: inc/CodeSnippet/CodeSnippet.php:436
 msgid "Some thing is wrong!"
 msgstr ""
 
-#: inc/CodeSnippet/listTables/CodeSnippetListTable.php:167
-msgid "No code snippet found."
+#: inc/CodeSnippet/CodeSnippetAjax.php:155
+#: inc/CodeSnippet/listTables/CodeSnippetListTable.php:472
+msgid " ago"
+msgstr ""
+
+#: inc/CodeSnippet/listTables/AbstractListTable.php:151
+msgid "No items found."
+msgstr ""
+
+#: inc/CodeSnippet/listTables/CodeSnippetListTable.php:292
+msgid "No code snippets found."
 msgstr ""
 
 #: inc/CodeSnippet/views/admin-page.php:22
@@ -277,150 +281,88 @@ msgstr ""
 msgid "nav-tab-active"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:42
-msgid "Create and manage custom code snippets for your WordPress site"
+#: inc/CodeSnippet/views/code-snippet-list.php:49
+msgid "success"
 msgstr ""
 
 #: inc/CodeSnippet/views/edit-code-snippet.php:49
-msgid "Snippet Title"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:50
-msgid "Enter a descriptive title for your snippet"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:51
-msgid "Choose a clear, descriptive name to easily identify this snippet"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:56
-msgid "Code Type"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:58
-msgid "HTML"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:59
-msgid "CSS"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:60
-msgid "Java Script"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:66
-msgid "Load Location"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:68
-msgid "Select Location"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:69
-msgid "Head Section"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:70
-#: inc/theme-builder/theme-builder.php:987
-msgid "Footer"
+msgid "Create and manage custom code snippets for your WordPress site"
 msgstr ""
 
 #: inc/CodeSnippet/views/edit-code-snippet.php:71
-msgid "After Body Open"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:72
-msgid "Before Content"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:73
-msgid "After Content"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:83
-msgid "Code Content"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:94
-msgid "Toggle Dark / Light"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:95
-msgid "Fullscreen"
+msgid "Save Snippet"
 msgstr ""
 
 #: inc/CodeSnippet/views/edit-code-snippet.php:96
-msgid "Copy"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:97
-msgid "Download"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:98
-msgid "Insert Example"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:103
-msgid "Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results."
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:109
-msgid "Status"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:112
-msgid "Active Status"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:118
 msgid "Enable or disable this snippet"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:123
-msgid "Priority"
+#: inc/CodeSnippet/views/edit-code-snippet.php:103
+msgid "Snippet Title"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:125
-msgid "Execution Priority"
+#: inc/CodeSnippet/views/edit-code-snippet.php:104
+msgid "Enter a descriptive title for your snippet"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:128
-msgid "Higher numbers = higher priority"
+#: inc/CodeSnippet/views/edit-code-snippet.php:105
+msgid "Choose a clear, descriptive name to easily identify this snippet"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:133
-msgid "Page Visibility"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:135
+#: inc/CodeSnippet/views/edit-code-snippet.php:111
 msgid "Where should this snippet appear?"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:149
-msgid "Add Specific Pages"
-msgstr ""
-
-#: inc/CodeSnippet/views/edit-code-snippet.php:165
+#: inc/CodeSnippet/views/edit-code-snippet.php:123
 msgid "Select where this code snippet should be loaded"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:173
-#: widgets/nav-menu/nav-menu.php:1482
-msgid "Back"
+#: inc/CodeSnippet/views/edit-code-snippet.php:126
+msgid "Add Specific Pages"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:176
-msgid "Add Code Snippet"
+#: inc/CodeSnippet/views/edit-code-snippet.php:140
+msgid "Search and select pages to execute your snippet."
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:179
-msgid "Delete"
+#: inc/CodeSnippet/views/edit-code-snippet.php:144
+msgid "Load Location"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:180
-msgid "Update Code Snippet"
+#: inc/CodeSnippet/views/edit-code-snippet.php:146
+msgid "Select Location"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:153
+msgid "Select the page location where that will appear."
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:159
+msgid "Execution Priority"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:164
+msgid "Higher numbers = higher priority"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:171
+msgid "Code Type"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:184
+msgid "Code Content"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:184
+msgid "Write your HTML, CSS, JavaScript, or PHP code. Use proper syntax for best results."
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:188
+msgid "Dark Mode"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:229
+msgid "Insert Example"
 msgstr ""
 
 #: inc/WCF_Post_Handler_Trait.php:106
@@ -492,23 +434,23 @@ msgstr ""
 msgid "not defined!"
 msgstr ""
 
-#: inc/admin/base/WXRImporter.php:1986
+#: inc/admin/base/WXRImporter.php:1987
 msgid "Processing Posts"
 msgstr ""
 
-#: inc/admin/base/WXRImporter.php:1990
+#: inc/admin/base/WXRImporter.php:1991
 msgid "Processing Comments"
 msgstr ""
 
-#: inc/admin/base/WXRImporter.php:1994
+#: inc/admin/base/WXRImporter.php:1995
 msgid "Processing Terms"
 msgstr ""
 
-#: inc/admin/base/WXRImporter.php:2312
+#: inc/admin/base/WXRImporter.php:2313
 msgid "Starting remapping of featured images"
 msgstr ""
 
-#: inc/admin/base/WXRImporter.php:2449
+#: inc/admin/base/WXRImporter.php:2450
 msgid "Comment checking"
 msgstr ""
 
@@ -518,12 +460,12 @@ msgstr ""
 
 #: inc/admin/dashboard.php:266 inc/admin/dashboard.php:267
 #: inc/admin/row-actions.php:138 inc/class-wcf-custom-fonts.php:591
-#: inc/class-wcf-custom-icon.php:608 inc/class-wcf-custom-icon.php:617
-#: widgets/advanced-testimonial.php:330 widgets/feature-posts.php:169
-#: widgets/grid-hover-posts.php:162 widgets/one-page-nav.php:155
-#: widgets/post-paginate.php:48 widgets/post-rating-form.php:90
-#: widgets/post-timeline.php:184 widgets/services-tab.php:257
-#: widgets/tabs.php:281 widgets/video-posts-tab.php:130
+#: inc/class-wcf-custom-icon.php:684 widgets/advanced-testimonial.php:330
+#: widgets/feature-posts.php:169 widgets/grid-hover-posts.php:162
+#: widgets/one-page-nav.php:155 widgets/post-paginate.php:48
+#: widgets/post-rating-form.php:90 widgets/post-timeline.php:184
+#: widgets/services-tab.php:257 widgets/tabs.php:281
+#: widgets/video-posts-tab.php:130
 msgid "Settings"
 msgstr ""
 
@@ -532,8 +474,8 @@ msgstr ""
 #: inc/admin/dashboard.php:668 inc/admin/dashboard.php:683
 #: inc/admin/dashboard.php:741 inc/admin/setup-wizard.php:253
 #: inc/class-wcf-custom-fonts.php:108 inc/class-wcf-custom-fonts.php:510
-#: inc/class-wcf-custom-fonts.php:530 inc/class-wcf-custom-icon.php:304
-#: inc/class-wcf-custom-icon.php:474 inc/class-wcf-custom-icon.php:520
+#: inc/class-wcf-custom-fonts.php:530 inc/class-wcf-custom-icon.php:341
+#: inc/class-wcf-custom-icon.php:550 inc/class-wcf-custom-icon.php:597
 msgid "you are not allowed to do this action"
 msgstr ""
 
@@ -587,15 +529,15 @@ msgstr ""
 msgid "Setup"
 msgstr ""
 
-#: inc/admin/st-init.php:172
+#: inc/admin/st-init.php:246
 msgid "Downloaded files"
 msgstr ""
 
-#: inc/admin/st-init.php:178
+#: inc/admin/st-init.php:252
 msgid "No import files specified!"
 msgstr ""
 
-#: inc/admin/st-init.php:264
+#: inc/admin/st-init.php:338
 msgid "Congrats, your demo has been imported."
 msgstr ""
 
@@ -627,63 +569,63 @@ msgstr ""
 msgid "Downloading Template"
 msgstr ""
 
-#: inc/admin/template-importer.php:230
+#: inc/admin/template-importer.php:237
 msgid "Template Demo Import fail"
 msgstr ""
 
-#: inc/admin/template-importer.php:235
+#: inc/admin/template-importer.php:242
 msgid "Checking Setup requirement"
 msgstr ""
 
-#: inc/admin/template-importer.php:343
+#: inc/admin/template-importer.php:350
 msgid "Kit Settings Update"
 msgstr ""
 
-#: inc/admin/template-importer.php:350
+#: inc/admin/template-importer.php:357
 msgid "Template Required"
 msgstr ""
 
-#: inc/admin/template-importer.php:367
+#: inc/admin/template-importer.php:379
 msgid "Failed to validate file from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:374
+#: inc/admin/template-importer.php:386
 msgid "Invalid file arguments. Please check the URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:381
+#: inc/admin/template-importer.php:393
 msgid "The downloadable file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:393
+#: inc/admin/template-importer.php:405
 msgid "Remote URL is required."
 msgstr ""
 
-#: inc/admin/template-importer.php:400
+#: inc/admin/template-importer.php:412
 msgid "Failed to fetch XML from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:406 inc/admin/template-importer.php:407
+#: inc/admin/template-importer.php:418 inc/admin/template-importer.php:419
 msgid "The remote XML file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:424 inc/admin/template-importer.php:425
+#: inc/admin/template-importer.php:436 inc/admin/template-importer.php:437
 msgid "Failed to save the XML file."
 msgstr ""
 
-#: inc/admin/template-importer.php:427
+#: inc/admin/template-importer.php:439
 msgid "File downloaded and saved successfully"
 msgstr ""
 
-#: inc/admin/template-importer.php:428
+#: inc/admin/template-importer.php:440
 msgid "File downloaded and saved successfully at "
 msgstr ""
 
-#: inc/admin/template-importer.php:434 inc/admin/template-importer.php:435
+#: inc/admin/template-importer.php:446 inc/admin/template-importer.php:447
 msgid "No theme specified."
 msgstr ""
 
-#: inc/admin/template-importer.php:442 inc/admin/template-importer.php:477
+#: inc/admin/template-importer.php:454 inc/admin/template-importer.php:489
 #, php-format
 msgid "Theme \"%s\" installed and activated successfully."
 msgstr ""
@@ -867,8 +809,8 @@ msgid "Update the icon for this category."
 msgstr ""
 
 #: inc/class-wcf-custom-cpt.php:166 inc/class-wcf-custom-cpt.php:319
-#: inc/theme-builder/theme-builder.php:879
-#: inc/theme-builder/theme-builder.php:1052 inc/trait-wcf-post-query.php:138
+#: inc/theme-builder/theme-builder.php:856
+#: inc/theme-builder/theme-builder.php:1029 inc/trait-wcf-post-query.php:138
 #: inc/trait-wcf-post-query.php:155 inc/trait-wcf-post-query.php:197
 #: inc/trait-wcf-post-query.php:214 inc/trait-wcf-post-query.php:278
 #: widgets/feature-posts.php:1802 widgets/feature-posts.php:1818
@@ -919,7 +861,7 @@ msgid "Use %1$scustom CSS%3$s to style your content or add %2$sthe \"selector\" 
 msgstr ""
 
 #: inc/class-wcf-custom-fonts.php:523 inc/class-wcf-custom-fonts.php:545
-#: inc/class-wcf-custom-icon.php:540
+#: inc/class-wcf-custom-icon.php:617
 msgid "Updated"
 msgstr ""
 
@@ -927,116 +869,126 @@ msgstr ""
 msgid "Custom Fonts"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:127
+#: inc/class-wcf-custom-icon.php:159
 msgid "Unknown"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:134
+#: inc/class-wcf-custom-icon.php:166
 msgid "Load Icons Across the Site, if disable , icon will load depends on elementor usage"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:150
-msgid "Action"
+#: inc/class-wcf-custom-icon.php:182 widgets/filterable-slider.php:524
+#: widgets/nav-menu/nav-menu.php:478 widgets/nav-menu/nav-menu.php:731
+#: widgets/one-page-nav.php:520
+msgid "Active"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:151 inc/theme-builder/theme-builder.php:934
-#: inc/theme-builder/theme-builder.php:1879 widgets/search-form.php:326
+#: inc/class-wcf-custom-icon.php:183 inc/theme-builder/theme-builder.php:911
+#: inc/theme-builder/theme-builder.php:1914 widgets/search-form.php:326
 msgid "Type"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:322
+#: inc/class-wcf-custom-icon.php:359
 msgid "Update Settings"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:334
+#: inc/class-wcf-custom-icon.php:373
 msgid "You are not allowed to do this action."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:339
+#: inc/class-wcf-custom-icon.php:381
 msgid "Missing process ID."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:344
+#: inc/class-wcf-custom-icon.php:388
 msgid "No file uploaded."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:347
+#: inc/class-wcf-custom-icon.php:393
 msgid "Upload error."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:367
+#: inc/class-wcf-custom-icon.php:415
 msgid "Upload failed or invalid file type (zip required)."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:379
+#: inc/class-wcf-custom-icon.php:429
 msgid "Failed to create target directory."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:391
-msgid "Failed to extract ZIP file."
+#: inc/class-wcf-custom-icon.php:439
+msgid "Filesystem credentials required."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:399
+#: inc/class-wcf-custom-icon.php:447
+msgid "Could not initialize WordPress filesystem."
+msgstr ""
+
+#: inc/class-wcf-custom-icon.php:463
+msgid "Failed to unzip the file."
+msgstr ""
+
+#: inc/class-wcf-custom-icon.php:472
 msgid "Icons processed successfully."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:419
+#: inc/class-wcf-custom-icon.php:494
 msgid "Unsupported Icon File"
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:454
+#: inc/class-wcf-custom-icon.php:530
 msgid "Failed to create file."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:466
+#: inc/class-wcf-custom-icon.php:542
 msgid "File has been Created Successfully."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:506
+#: inc/class-wcf-custom-icon.php:583
 msgid "Directory deleted successfully."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:508
+#: inc/class-wcf-custom-icon.php:585
 msgid "Failed to delete the directory."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:511
+#: inc/class-wcf-custom-icon.php:588
 msgid "Directory does not exist."
 msgstr ""
 
-#: inc/class-wcf-custom-icon.php:638
+#: inc/class-wcf-custom-icon.php:705
 msgid "Custom Icons"
 msgstr ""
 
-#: inc/helper.php:440
+#: inc/helper.php:417
 msgid "b"
 msgstr ""
 
-#: inc/helper.php:442
+#: inc/helper.php:419
 msgid "m"
 msgstr ""
 
-#: inc/helper.php:444
+#: inc/helper.php:421
 msgid "k"
 msgstr ""
 
-#: inc/helper.php:488 widgets/one-page-nav.php:71 widgets/one-page-nav.php:114
+#: inc/helper.php:463 widgets/one-page-nav.php:71 widgets/one-page-nav.php:114
 msgid "Home"
 msgstr ""
 
-#: inc/helper.php:558
+#: inc/helper.php:533
 msgid "Author: "
 msgstr ""
 
-#: inc/helper.php:560
+#: inc/helper.php:535
 msgid "Archives"
 msgstr ""
 
-#: inc/helper.php:563
+#: inc/helper.php:538
 msgid "Search Results for: "
 msgstr ""
 
-#: inc/helper.php:565
+#: inc/helper.php:540
 msgid "404 - Page not found"
 msgstr ""
 
@@ -1052,7 +1004,7 @@ msgstr ""
 msgid "Template id missing"
 msgstr ""
 
-#: inc/library-source.php:76
+#: inc/library-source.php:82
 msgid "Template does not have any content"
 msgstr ""
 
@@ -1136,67 +1088,71 @@ msgstr ""
 msgid "Review:"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:935
-#: inc/theme-builder/theme-builder.php:1880 widgets/category-showcase.php:627
+#: inc/theme-builder/theme-builder.php:912
+#: inc/theme-builder/theme-builder.php:1915 widgets/category-showcase.php:627
 #: widgets/category-showcase.php:845 widgets/category-showcase.php:1111
 #: widgets/category-showcase.php:1331 widgets/category-showcase.php:1456
 #: widgets/post-comment.php:1063
 msgid "Display"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:983
+#: inc/theme-builder/theme-builder.php:960
 msgid "Header"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:991
+#: inc/theme-builder/theme-builder.php:964
+msgid "Footer"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:968
 msgid "Archive/404/Search"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:995
+#: inc/theme-builder/theme-builder.php:972
 msgid "Single"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1018
-#: inc/theme-builder/theme-builder.php:1102
+#: inc/theme-builder/theme-builder.php:995
+#: inc/theme-builder/theme-builder.php:1079
 msgid "404 Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1019
-#: inc/theme-builder/theme-builder.php:1103
+#: inc/theme-builder/theme-builder.php:996
+#: inc/theme-builder/theme-builder.php:1080
 msgid "Search Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1020
-#: inc/theme-builder/theme-builder.php:1104
+#: inc/theme-builder/theme-builder.php:997
+#: inc/theme-builder/theme-builder.php:1081
 msgid "Blog / Posts Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1021
+#: inc/theme-builder/theme-builder.php:998
 msgid "Front Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1022
-#: inc/theme-builder/theme-builder.php:1105
+#: inc/theme-builder/theme-builder.php:999
+#: inc/theme-builder/theme-builder.php:1082
 msgid "Date Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1023
-#: inc/theme-builder/theme-builder.php:1106
+#: inc/theme-builder/theme-builder.php:1000
+#: inc/theme-builder/theme-builder.php:1083
 msgid "Author Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1027
+#: inc/theme-builder/theme-builder.php:1004
 msgid "WooCommerce Shop Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1032
-#: inc/theme-builder/theme-builder.php:1111
-#: inc/theme-builder/theme-builder.php:1169
+#: inc/theme-builder/theme-builder.php:1009
+#: inc/theme-builder/theme-builder.php:1088
+#: inc/theme-builder/theme-builder.php:1146
 msgid "Basic"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1034
-#: inc/theme-builder/theme-builder.php:1113 inc/trait-wcf-button.php:55
+#: inc/theme-builder/theme-builder.php:1011
+#: inc/theme-builder/theme-builder.php:1090 inc/trait-wcf-button.php:55
 #: widgets/author-box.php:237 widgets/brand-slider.php:397
 #: widgets/contact-form-7.php:626 widgets/floating-elements.php:306
 #: widgets/grid-hover-posts.php:548 widgets/icon-box.php:186
@@ -1217,192 +1173,324 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1035
+#: inc/theme-builder/theme-builder.php:1012
 msgid "Entire Website"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1036
+#: inc/theme-builder/theme-builder.php:1013
 msgid "All Singulars"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1037
-#: inc/theme-builder/theme-builder.php:1114
+#: inc/theme-builder/theme-builder.php:1014
+#: inc/theme-builder/theme-builder.php:1091
 msgid "All Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1042
-#: inc/theme-builder/theme-builder.php:1119
+#: inc/theme-builder/theme-builder.php:1019
+#: inc/theme-builder/theme-builder.php:1096
 msgid "Special Pages"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1059
-#: inc/theme-builder/theme-builder.php:1128
+#: inc/theme-builder/theme-builder.php:1036
+#: inc/theme-builder/theme-builder.php:1105
 msgid " Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1060
+#: inc/theme-builder/theme-builder.php:1037
 msgid " Singulars"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1067
-#: inc/theme-builder/theme-builder.php:1134
+#: inc/theme-builder/theme-builder.php:1044
+#: inc/theme-builder/theme-builder.php:1111
 msgid "Specific Target"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1069
+#: inc/theme-builder/theme-builder.php:1046
 msgid "Specific Pages / Posts."
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1136
+#: inc/theme-builder/theme-builder.php:1113
 msgid "Specific Category"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1171
+#: inc/theme-builder/theme-builder.php:1148
 msgid "All Singular"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1180
+#: inc/theme-builder/theme-builder.php:1157
 msgid " Singular"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1212 widgets/category-slider.php:1263
+#: inc/theme-builder/theme-builder.php:1189 widgets/category-slider.php:1263
 #: widgets/category-slider.php:1324
 msgid " "
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1236
-#: inc/theme-builder/theme-builder.php:1237
+#: inc/theme-builder/theme-builder.php:1213
+#: inc/theme-builder/theme-builder.php:1214
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1238
+#: inc/theme-builder/theme-builder.php:1215
 msgid "Template Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1239
+#: inc/theme-builder/theme-builder.php:1216
 msgid "Template Attributes"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1241
+#: inc/theme-builder/theme-builder.php:1218
 msgid "Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1242
+#: inc/theme-builder/theme-builder.php:1219
 msgid "Add New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1244
+#: inc/theme-builder/theme-builder.php:1221
 msgid "New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1245
+#: inc/theme-builder/theme-builder.php:1222
 msgid "Edit Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1246
+#: inc/theme-builder/theme-builder.php:1223
 msgid "Update Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1247
+#: inc/theme-builder/theme-builder.php:1224
 msgid "View Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1248
+#: inc/theme-builder/theme-builder.php:1225
 msgid "View Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1249
+#: inc/theme-builder/theme-builder.php:1226
 msgid "Search Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1256
+#: inc/theme-builder/theme-builder.php:1233
 msgid "Insert into Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1257
+#: inc/theme-builder/theme-builder.php:1234
 msgid "Uploaded to this Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1258
+#: inc/theme-builder/theme-builder.php:1235
 msgid "Templates list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1259
+#: inc/theme-builder/theme-builder.php:1236
 msgid "Templates list navigation"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1260
+#: inc/theme-builder/theme-builder.php:1237
 msgid "Filter from list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1264
-#: inc/theme-builder/theme-builder.php:1926
-#: inc/theme-builder/theme-builder.php:1927
+#: inc/theme-builder/theme-builder.php:1241
+#: inc/theme-builder/theme-builder.php:1961
+#: inc/theme-builder/theme-builder.php:1962
 msgid "Theme Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1265
+#: inc/theme-builder/theme-builder.php:1242
 msgid "AAE Theme Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1445 widgets/image-accordion.php:226
+#: inc/theme-builder/theme-builder.php:1417 widgets/image-accordion.php:226
 #: widgets/image-hotspot.php:409
 msgid "Click"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1446
+#: inc/theme-builder/theme-builder.php:1418
 msgid "Page Loaded"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1447
+#: inc/theme-builder/theme-builder.php:1419
 msgid "Page Body Exist"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1448
+#: inc/theme-builder/theme-builder.php:1420
 msgid "User Inactivity"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1449
+#: inc/theme-builder/theme-builder.php:1421
 msgid "Page Scroll"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1450
+#: inc/theme-builder/theme-builder.php:1422
 msgid "Page Scroll Up"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1505
-#: inc/theme-builder/theme-builder.php:1563
+#: inc/theme-builder/theme-builder.php:1440
+msgid "Scroll Postion"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1450 widgets/content-slider.php:264
+#: widgets/image-box-slider.php:401 widgets/nav-menu/nav-menu.php:216
+#: widgets/team-slider.php:840
+msgid "Flip"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1451
+msgid "Scale + Shake Effect"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1452
+msgid "Slide From Top"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1453
+msgid "Zoom + Bounce"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1454
+msgid "Fade + Slide Up"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1459
+msgid "Smoother?"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1462 inc/trait-wcf-button.php:37
+#: inc/trait-wcf-nested-slider.php:545 inc/trait-wcf-nested-slider.php:999
+#: inc/trait-wcf-slider.php:496 inc/trait-wcf-slider.php:945
+#: widgets/advance-accordion.php:142 widgets/animated-text.php:114
+#: widgets/breadcrumbs.php:114 widgets/button.php:153
+#: widgets/category-showcase.php:578 widgets/category-showcase.php:631
+#: widgets/category-showcase.php:740 widgets/category-showcase.php:849
+#: widgets/category-showcase.php:1115 widgets/category-showcase.php:1259
+#: widgets/category-showcase.php:1335 widgets/category-showcase.php:1460
+#: widgets/category-showcase.php:1662 widgets/category-slider.php:201
+#: widgets/category-slider.php:248 widgets/category-slider.php:310
+#: widgets/current-date.php:178 widgets/event-slider.php:135
+#: widgets/filterable-slider.php:572 widgets/filterable-slider.php:976
+#: widgets/grid-hover-posts.php:1297 widgets/grid-hover-posts.php:2531
+#: widgets/icon-box.php:111 widgets/image-box-slider.php:958
+#: widgets/image-box.php:523 widgets/image-hotspot.php:195
+#: widgets/image.php:289 widgets/post-comment.php:585
+#: widgets/post-feature-image.php:72 widgets/post-feature-image.php:242
+#: widgets/post-paginate.php:59 widgets/post-social-share.php:80
+#: widgets/post-social-share.php:392 widgets/post-social-share.php:726
+#: widgets/post-timeline.php:376 widgets/post-timeline.php:440
+#: widgets/post-timeline.php:1348 widgets/post-timeline.php:1672
+#: widgets/post-timeline.php:1819 widgets/post-timeline.php:3125
+#: widgets/site-logo.php:141 widgets/site-logo.php:301 widgets/team.php:304
+#: widgets/testimonial.php:134 widgets/testimonial.php:377
+#: widgets/timeline.php:554 widgets/timeline.php:962
+msgid "Default"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1463 inc/trait-wcf-nested-slider.php:89
+#: inc/trait-wcf-nested-slider.php:117 inc/trait-wcf-nested-slider.php:135
+#: inc/trait-wcf-nested-slider.php:150 inc/trait-wcf-post-query.php:336
+#: inc/trait-wcf-slider.php:75 inc/trait-wcf-slider.php:100
+#: inc/trait-wcf-slider.php:117 inc/trait-wcf-slider.php:131
+#: widgets/archive-title.php:115 widgets/brand-slider.php:301
+#: widgets/brand-slider.php:326 widgets/brand-slider.php:343
+#: widgets/brand-slider.php:357 widgets/breadcrumbs.php:63
+#: widgets/category-slider.php:560 widgets/content-slider.php:247
+#: widgets/feature-posts.php:1746 widgets/floating-elements.php:323
+#: widgets/image-box-slider.php:384 widgets/image-box-slider.php:694
+#: widgets/image-box-slider.php:738 widgets/image-box-slider.php:750
+#: widgets/image-gallery.php:213 widgets/mailchimp/mailchimp.php:306
+#: widgets/mailchimp/mailchimp.php:463 widgets/post-meta-info.php:101
+#: widgets/post-meta-info.php:115 widgets/post-meta-info.php:217
+#: widgets/post-paginate.php:85 widgets/post-paginate.php:130
+#: widgets/post-rating-form.php:99 widgets/post-rating-form.php:111
+#: widgets/post-reactions.php:162 widgets/post-reactions.php:175
+#: widgets/post-reactions.php:187 widgets/post-social-share.php:98
+#: widgets/post-social-share.php:112 widgets/post-social-share.php:149
+#: widgets/search-form.php:137 widgets/search-form.php:152
+#: widgets/search-form.php:165 widgets/search-form.php:308
+#: widgets/site-logo.php:142 widgets/team-slider.php:771
+#: widgets/team-slider.php:796 widgets/team-slider.php:813
+#: widgets/team-slider.php:826 widgets/testimonial.php:651
+#: widgets/testimonial.php:676 widgets/testimonial.php:693
+#: widgets/testimonial.php:707 widgets/testimonial2.php:564
+#: widgets/testimonial2.php:589 widgets/testimonial2.php:606
+#: widgets/testimonial2.php:620 widgets/testimonial3.php:597
+#: widgets/testimonial3.php:622 widgets/testimonial3.php:639
+#: widgets/testimonial3.php:653 widgets/video-posts-tab.php:1487
+msgid "Yes"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1464 inc/trait-wcf-nested-slider.php:90
+#: inc/trait-wcf-nested-slider.php:118 inc/trait-wcf-nested-slider.php:136
+#: inc/trait-wcf-nested-slider.php:151 inc/trait-wcf-post-query.php:337
+#: inc/trait-wcf-slider.php:76 inc/trait-wcf-slider.php:101
+#: inc/trait-wcf-slider.php:118 inc/trait-wcf-slider.php:132
+#: widgets/archive-title.php:116 widgets/brand-slider.php:302
+#: widgets/brand-slider.php:327 widgets/brand-slider.php:344
+#: widgets/brand-slider.php:358 widgets/breadcrumbs.php:64
+#: widgets/category-slider.php:559 widgets/content-slider.php:248
+#: widgets/feature-posts.php:1747 widgets/floating-elements.php:324
+#: widgets/image-box-slider.php:385 widgets/image-box-slider.php:695
+#: widgets/image-box-slider.php:739 widgets/image-box-slider.php:751
+#: widgets/image-gallery.php:214 widgets/mailchimp/mailchimp.php:307
+#: widgets/mailchimp/mailchimp.php:464 widgets/post-comment.php:73
+#: widgets/post-meta-info.php:102 widgets/post-meta-info.php:116
+#: widgets/post-meta-info.php:218 widgets/post-paginate.php:86
+#: widgets/post-paginate.php:131 widgets/post-rating-form.php:100
+#: widgets/post-rating-form.php:112 widgets/post-reactions.php:163
+#: widgets/post-reactions.php:176 widgets/post-reactions.php:188
+#: widgets/post-social-share.php:99 widgets/post-social-share.php:113
+#: widgets/post-social-share.php:150 widgets/search-form.php:138
+#: widgets/search-form.php:153 widgets/search-form.php:166
+#: widgets/search-form.php:307 widgets/site-logo.php:143
+#: widgets/team-slider.php:772 widgets/team-slider.php:797
+#: widgets/team-slider.php:814 widgets/team-slider.php:827
+#: widgets/testimonial.php:652 widgets/testimonial.php:677
+#: widgets/testimonial.php:694 widgets/testimonial.php:708
+#: widgets/testimonial2.php:565 widgets/testimonial2.php:590
+#: widgets/testimonial2.php:607 widgets/testimonial2.php:621
+#: widgets/testimonial3.php:598 widgets/testimonial3.php:623
+#: widgets/testimonial3.php:640 widgets/testimonial3.php:654
+#: widgets/video-posts-tab.php:1488
+msgid "No"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1469
+msgid "OffsetY(px)"
+msgstr ""
+
+#: inc/theme-builder/theme-builder.php:1511
+#: inc/theme-builder/theme-builder.php:1577
 msgid "You are unauthorize to adding template!"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1514
-#: inc/theme-builder/theme-builder.php:1627
+#: inc/theme-builder/theme-builder.php:1520
+#: inc/theme-builder/theme-builder.php:1649
 msgid "Nonce Varification Faild !"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1546
+#: inc/theme-builder/theme-builder.php:1560
 msgid "Post request dose not found"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1572
+#: inc/theme-builder/theme-builder.php:1586
 msgid "Nonce Varification Failed !"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1606
-#: inc/theme-builder/theme-builder.php:1692
-#: inc/theme-builder/theme-builder.php:1782
+#: inc/theme-builder/theme-builder.php:1628
+#: inc/theme-builder/theme-builder.php:1714
+#: inc/theme-builder/theme-builder.php:1811
 msgid "Some thing is worng !"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1750
+#: inc/theme-builder/theme-builder.php:1772
 msgid "Template has been inserted"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1830
+#: inc/theme-builder/theme-builder.php:1865
 msgid "Template has been updated"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1876
+#: inc/theme-builder/theme-builder.php:1911
 #: widgets/advanced-testimonial.php:795 widgets/author-box.php:198
 #: widgets/author-box.php:606 widgets/category-slider.php:936
 #: widgets/event-slider.php:159 widgets/post-rating-form.php:238
@@ -1413,39 +1501,39 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1877
+#: inc/theme-builder/theme-builder.php:1912
 msgid "Enter a template name"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1882
+#: inc/theme-builder/theme-builder.php:1917
 msgid "Delay"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1883
+#: inc/theme-builder/theme-builder.php:1918
 msgid "Trigger"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1884
+#: inc/theme-builder/theme-builder.php:1919
 msgid "Selector"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1886
+#: inc/theme-builder/theme-builder.php:1921
 msgid "Template Settings"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1889
+#: inc/theme-builder/theme-builder.php:1924
 msgid "Edit With Elementor"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1893
+#: inc/theme-builder/theme-builder.php:1928
 msgid "Save Settings"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1894
+#: inc/theme-builder/theme-builder.php:1929
 msgid "Saving..."
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1895
+#: inc/theme-builder/theme-builder.php:1930
 msgid "All Data Saved"
 msgstr ""
 
@@ -1468,35 +1556,6 @@ msgstr ""
 #: widgets/timeline.php:109 widgets/toggle-switcher.php:116
 #: widgets/typewriter.php:212
 msgid "Style"
-msgstr ""
-
-#: inc/trait-wcf-button.php:37 inc/trait-wcf-nested-slider.php:545
-#: inc/trait-wcf-nested-slider.php:999 inc/trait-wcf-slider.php:496
-#: inc/trait-wcf-slider.php:945 widgets/advance-accordion.php:142
-#: widgets/animated-text.php:114 widgets/breadcrumbs.php:114
-#: widgets/button.php:153 widgets/category-showcase.php:578
-#: widgets/category-showcase.php:631 widgets/category-showcase.php:740
-#: widgets/category-showcase.php:849 widgets/category-showcase.php:1115
-#: widgets/category-showcase.php:1259 widgets/category-showcase.php:1335
-#: widgets/category-showcase.php:1460 widgets/category-showcase.php:1662
-#: widgets/category-slider.php:201 widgets/category-slider.php:248
-#: widgets/category-slider.php:310 widgets/current-date.php:178
-#: widgets/event-slider.php:135 widgets/filterable-slider.php:572
-#: widgets/filterable-slider.php:976 widgets/grid-hover-posts.php:1297
-#: widgets/grid-hover-posts.php:2531 widgets/icon-box.php:111
-#: widgets/image-box-slider.php:958 widgets/image-box.php:523
-#: widgets/image-hotspot.php:195 widgets/image.php:289
-#: widgets/post-comment.php:585 widgets/post-feature-image.php:72
-#: widgets/post-feature-image.php:242 widgets/post-paginate.php:59
-#: widgets/post-social-share.php:80 widgets/post-social-share.php:392
-#: widgets/post-social-share.php:726 widgets/post-timeline.php:376
-#: widgets/post-timeline.php:440 widgets/post-timeline.php:1348
-#: widgets/post-timeline.php:1672 widgets/post-timeline.php:1819
-#: widgets/post-timeline.php:3125 widgets/site-logo.php:141
-#: widgets/site-logo.php:301 widgets/team.php:304 widgets/testimonial.php:134
-#: widgets/testimonial.php:377 widgets/timeline.php:554
-#: widgets/timeline.php:962
-msgid "Default"
 msgstr ""
 
 #: inc/trait-wcf-button.php:38
@@ -1798,7 +1857,7 @@ msgstr ""
 #: widgets/testimonial3.php:289 widgets/testimonial3.php:353
 #: widgets/testimonial3.php:404 widgets/testimonial3.php:455
 #: widgets/text-hover-image.php:260 widgets/text-hover-image.php:342
-#: widgets/toggle-switcher.php:467 widgets/toggle-switcher.php:488
+#: widgets/toggle-switcher.php:466 widgets/toggle-switcher.php:487
 #: widgets/typewriter.php:220 widgets/video-posts-tab.php:1147
 #: widgets/video-posts-tab.php:1180
 msgid "Text Color"
@@ -1923,8 +1982,8 @@ msgstr ""
 #: widgets/testimonial.php:427 widgets/testimonial.php:969
 #: widgets/testimonial2.php:372 widgets/timeline.php:479
 #: widgets/timeline.php:604 widgets/timeline.php:905
-#: widgets/toggle-switcher.php:285 widgets/toggle-switcher.php:357
-#: widgets/toggle-switcher.php:436 widgets/toggle-switcher.php:522
+#: widgets/toggle-switcher.php:285 widgets/toggle-switcher.php:356
+#: widgets/toggle-switcher.php:435 widgets/toggle-switcher.php:521
 #: widgets/video-posts-tab.php:550 widgets/video-posts-tab.php:1230
 msgid "Border Radius"
 msgstr ""
@@ -1997,7 +2056,7 @@ msgstr ""
 #: widgets/testimonial3.php:381 widgets/testimonial3.php:432
 #: widgets/testimonial3.php:483 widgets/testimonial3.php:541
 #: widgets/timeline.php:878 widgets/toggle-switcher.php:265
-#: widgets/toggle-switcher.php:509 widgets/video-posts-tab.php:775
+#: widgets/toggle-switcher.php:508 widgets/video-posts-tab.php:775
 #: widgets/video-posts-tab.php:1023 widgets/video-posts-tab.php:1242
 #: widgets/video-posts-tab.php:1395
 msgid "Padding"
@@ -2024,74 +2083,6 @@ msgstr ""
 #: widgets/testimonial.php:647 widgets/testimonial2.php:560
 #: widgets/testimonial3.php:593
 msgid "Autoplay"
-msgstr ""
-
-#: inc/trait-wcf-nested-slider.php:89 inc/trait-wcf-nested-slider.php:117
-#: inc/trait-wcf-nested-slider.php:135 inc/trait-wcf-nested-slider.php:150
-#: inc/trait-wcf-post-query.php:336 inc/trait-wcf-slider.php:75
-#: inc/trait-wcf-slider.php:100 inc/trait-wcf-slider.php:117
-#: inc/trait-wcf-slider.php:131 widgets/archive-title.php:115
-#: widgets/brand-slider.php:301 widgets/brand-slider.php:326
-#: widgets/brand-slider.php:343 widgets/brand-slider.php:357
-#: widgets/breadcrumbs.php:63 widgets/category-slider.php:560
-#: widgets/content-slider.php:247 widgets/feature-posts.php:1746
-#: widgets/floating-elements.php:323 widgets/image-box-slider.php:384
-#: widgets/image-box-slider.php:694 widgets/image-box-slider.php:738
-#: widgets/image-box-slider.php:750 widgets/image-gallery.php:213
-#: widgets/mailchimp/mailchimp.php:306 widgets/mailchimp/mailchimp.php:463
-#: widgets/post-meta-info.php:101 widgets/post-meta-info.php:115
-#: widgets/post-meta-info.php:217 widgets/post-paginate.php:85
-#: widgets/post-paginate.php:130 widgets/post-rating-form.php:99
-#: widgets/post-rating-form.php:111 widgets/post-reactions.php:162
-#: widgets/post-reactions.php:175 widgets/post-reactions.php:187
-#: widgets/post-social-share.php:98 widgets/post-social-share.php:112
-#: widgets/post-social-share.php:149 widgets/search-form.php:137
-#: widgets/search-form.php:152 widgets/search-form.php:165
-#: widgets/search-form.php:308 widgets/site-logo.php:142
-#: widgets/team-slider.php:771 widgets/team-slider.php:796
-#: widgets/team-slider.php:813 widgets/team-slider.php:826
-#: widgets/testimonial.php:651 widgets/testimonial.php:676
-#: widgets/testimonial.php:693 widgets/testimonial.php:707
-#: widgets/testimonial2.php:564 widgets/testimonial2.php:589
-#: widgets/testimonial2.php:606 widgets/testimonial2.php:620
-#: widgets/testimonial3.php:597 widgets/testimonial3.php:622
-#: widgets/testimonial3.php:639 widgets/testimonial3.php:653
-#: widgets/video-posts-tab.php:1487
-msgid "Yes"
-msgstr ""
-
-#: inc/trait-wcf-nested-slider.php:90 inc/trait-wcf-nested-slider.php:118
-#: inc/trait-wcf-nested-slider.php:136 inc/trait-wcf-nested-slider.php:151
-#: inc/trait-wcf-post-query.php:337 inc/trait-wcf-slider.php:76
-#: inc/trait-wcf-slider.php:101 inc/trait-wcf-slider.php:118
-#: inc/trait-wcf-slider.php:132 widgets/archive-title.php:116
-#: widgets/brand-slider.php:302 widgets/brand-slider.php:327
-#: widgets/brand-slider.php:344 widgets/brand-slider.php:358
-#: widgets/breadcrumbs.php:64 widgets/category-slider.php:559
-#: widgets/content-slider.php:248 widgets/feature-posts.php:1747
-#: widgets/floating-elements.php:324 widgets/image-box-slider.php:385
-#: widgets/image-box-slider.php:695 widgets/image-box-slider.php:739
-#: widgets/image-box-slider.php:751 widgets/image-gallery.php:214
-#: widgets/mailchimp/mailchimp.php:307 widgets/mailchimp/mailchimp.php:464
-#: widgets/post-comment.php:73 widgets/post-meta-info.php:102
-#: widgets/post-meta-info.php:116 widgets/post-meta-info.php:218
-#: widgets/post-paginate.php:86 widgets/post-paginate.php:131
-#: widgets/post-rating-form.php:100 widgets/post-rating-form.php:112
-#: widgets/post-reactions.php:163 widgets/post-reactions.php:176
-#: widgets/post-reactions.php:188 widgets/post-social-share.php:99
-#: widgets/post-social-share.php:113 widgets/post-social-share.php:150
-#: widgets/search-form.php:138 widgets/search-form.php:153
-#: widgets/search-form.php:166 widgets/search-form.php:307
-#: widgets/site-logo.php:143 widgets/team-slider.php:772
-#: widgets/team-slider.php:797 widgets/team-slider.php:814
-#: widgets/team-slider.php:827 widgets/testimonial.php:652
-#: widgets/testimonial.php:677 widgets/testimonial.php:694
-#: widgets/testimonial.php:708 widgets/testimonial2.php:565
-#: widgets/testimonial2.php:590 widgets/testimonial2.php:607
-#: widgets/testimonial2.php:621 widgets/testimonial3.php:598
-#: widgets/testimonial3.php:623 widgets/testimonial3.php:640
-#: widgets/testimonial3.php:654 widgets/video-posts-tab.php:1488
-msgid "No"
 msgstr ""
 
 #: inc/trait-wcf-nested-slider.php:99 inc/trait-wcf-slider.php:84
@@ -2579,7 +2570,7 @@ msgstr ""
 #: widgets/team-slider.php:631 widgets/team.php:206 widgets/testimonial.php:287
 #: widgets/testimonial.php:325 widgets/testimonial.php:903
 #: widgets/text-hover-image.php:371 widgets/timeline.php:501
-#: widgets/timeline.php:1031 widgets/toggle-switcher.php:310
+#: widgets/timeline.php:1031 widgets/toggle-switcher.php:309
 #: widgets/video-posts-tab.php:666
 msgid "Width"
 msgstr ""
@@ -2692,7 +2683,7 @@ msgstr ""
 #: widgets/team-slider.php:1141 widgets/team.php:276
 #: widgets/testimonial.php:348 widgets/text-hover-image.php:393
 #: widgets/timeline.php:526 widgets/timeline.php:1050
-#: widgets/toggle-switcher.php:328 widgets/video-posts-tab.php:486
+#: widgets/toggle-switcher.php:327 widgets/video-posts-tab.php:486
 #: widgets/video-posts-tab.php:644
 msgid "Height"
 msgstr ""
@@ -3200,8 +3191,8 @@ msgstr ""
 #: widgets/post-comment.php:749 widgets/post-comment.php:1104
 #: widgets/post-comment.php:1328 widgets/post-comment.php:1633
 #: widgets/post-comment.php:1803 widgets/post-comment.php:2003
-#: widgets/post-timeline.php:2789 widgets/toggle-switcher.php:346
-#: widgets/toggle-switcher.php:425
+#: widgets/post-timeline.php:2789 widgets/toggle-switcher.php:345
+#: widgets/toggle-switcher.php:424
 msgid "Background"
 msgstr ""
 
@@ -4471,11 +4462,6 @@ msgstr ""
 msgid "Coverflow"
 msgstr ""
 
-#: widgets/content-slider.php:264 widgets/image-box-slider.php:401
-#: widgets/nav-menu/nav-menu.php:216 widgets/team-slider.php:840
-msgid "Flip"
-msgstr ""
-
 #: widgets/content-slider.php:265 widgets/image-box-slider.php:402
 #: widgets/team-slider.php:841
 msgid "Cube"
@@ -4999,11 +4985,6 @@ msgstr ""
 
 #: widgets/filterable-slider.php:447 widgets/filterable-slider.php:613
 msgid "Filter Item 1"
-msgstr ""
-
-#: widgets/filterable-slider.php:524 widgets/nav-menu/nav-menu.php:478
-#: widgets/nav-menu/nav-menu.php:731 widgets/one-page-nav.php:520
-msgid "Active"
 msgstr ""
 
 #: widgets/filterable-slider.php:573
@@ -5924,6 +5905,10 @@ msgstr ""
 
 #: widgets/nav-menu/nav-menu.php:1404
 msgid "Hover Pointer Height"
+msgstr ""
+
+#: widgets/nav-menu/nav-menu.php:1482
+msgid "Back"
 msgstr ""
 
 #: widgets/nested-slider.php:29
@@ -7270,7 +7255,7 @@ msgid "Image Position"
 msgstr ""
 
 #: widgets/timeline.php:212 widgets/timeline.php:1009
-#: widgets/toggle-switcher.php:380
+#: widgets/toggle-switcher.php:379
 msgid "Indicator"
 msgstr ""
 
@@ -7362,19 +7347,19 @@ msgstr ""
 msgid "Bottom Space"
 msgstr ""
 
-#: widgets/toggle-switcher.php:369
+#: widgets/toggle-switcher.php:368
 msgid "Active Background"
 msgstr ""
 
-#: widgets/toggle-switcher.php:389
+#: widgets/toggle-switcher.php:388
 msgid "Indicator Size"
 msgstr ""
 
-#: widgets/toggle-switcher.php:407
+#: widgets/toggle-switcher.php:406
 msgid "Indicator Space"
 msgstr ""
 
-#: widgets/toggle-switcher.php:571
+#: widgets/toggle-switcher.php:570
 msgid "show"
 msgstr ""
 

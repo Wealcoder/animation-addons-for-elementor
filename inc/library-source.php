@@ -81,6 +81,7 @@ class Library_Source extends Source_Base {
 		if ( empty( $data ) || empty( $data['content'] ) ) {
 			throw new \Exception( esc_html__( 'Template does not have any content', 'animation-addons-for-elementor' ) );
 		}
+		add_filter('import_allow_fetch_attachments', '__return_false', 99);
 		$data['content'] = $this->replace_elements_ids( $data['content'] );
 		$data['content'] = $this->process_export_import_content( $data['content'], 'on_import' );
 
