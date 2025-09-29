@@ -283,14 +283,12 @@ class Breadcrumbs extends Widget_Base
 
 	protected function render()
 	{
-		echo "Working this widget";
 		$settings = $this->get_settings_for_display();
 		$html_tag = $this->get_html_tag();
 
 		if (class_exists('\\WPSEO_Breadcrumbs') && $settings['yoast_seo'] === 'yes') {
 			call_user_func(['WPSEO_Breadcrumbs', 'breadcrumb'], '<' . $html_tag . ' id="breadcrumbs">', '</' . $html_tag . '>');
 		} else {
-			echo "Working this widget";
 			$separator = isset($settings['br_separator']) ? $settings['br_separator'] : ' &raquo; ';
 			aae_addon_breadcrumbs($html_tag, $separator);
 		}
