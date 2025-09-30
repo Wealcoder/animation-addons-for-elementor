@@ -128,6 +128,10 @@
   }
 }
 
+#ehe-admin-cb {
+  display: none;
+}
+
 .wcf-anim2024-style {
   /* width */
   ::-webkit-scrollbar {
