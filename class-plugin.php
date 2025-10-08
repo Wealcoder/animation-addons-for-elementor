@@ -118,9 +118,7 @@ class Plugin
 		);
 
 		wp_localize_script('wcf--addons', 'WCF_ADDONS_JS', $data);
-
 		wp_enqueue_script('wcf--addons');
-
 		// widget scripts
 		foreach (self::get_widget_scripts() as $key => $script) {
 			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
@@ -641,7 +639,7 @@ class Plugin
 			),
 			'author-box'         => array(
 				'handler' => 'wcf--author-box',
-				'src'     => 'widgets/author-box.css',
+				'src'     => 'widgets/author-box.min.css',
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
@@ -676,7 +674,7 @@ class Plugin
 			),
 			'grid-hover-posts'   => array(
 				'handler' => 'grid-hover-posts',
-				'src'     => 'widgets/grid-hover-posts.css',
+				'src'     => 'widgets/grid-hover-posts.min.css',
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
@@ -711,7 +709,7 @@ class Plugin
 			),
 			'image-accordion'    => array(
 				'handler' => 'wcf--image-accordion',
-				'src'     => 'widgets/image-accordion.css',
+				'src'     => 'widgets/image-accordion.min.css',
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
@@ -814,6 +812,7 @@ class Plugin
 			if (file_exists(__DIR__ . '/widgets/' . $slug . '/' . $slug . '.php') || file_exists(__DIR__ . '/widgets/' . $slug . '.php')) {
 
 				if (! $data['is_pro'] && ! $data['is_extension']) {
+
 					if (is_dir(__DIR__ . '/widgets/' . $slug)) {
 						require_once __DIR__ . '/widgets/' . $slug . '/' . $slug . '.php';
 					} else {
@@ -825,6 +824,7 @@ class Plugin
 					$class = implode('_', $class);
 					$class = 'WCF_ADDONS\\Widgets\\' . $class;
 					ElementorPlugin::instance()->widgets_manager->register(new $class());
+					
 				}
 			}
 		}

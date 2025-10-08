@@ -7,7 +7,7 @@
 			"S/*": ["./src/modules/cpt-builder/*"],
 		}
 	},
-	"include": ["**/*.js", "**/*.jsx"],
+	"include": ["**/*.js", "**/*.jsx", "../animation-addons-for-elementor-pro/src/js/table-of-content.js"],
 	"exclude": [
     "node_modules",
     "build",

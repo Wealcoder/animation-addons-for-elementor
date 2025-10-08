@@ -49,8 +49,7 @@ jQuery(function ($) {
 	  }
   
 	  elementor.elementsManager.registerElementType(new AAENestedSlider());
-	  didRegister = true;
-	  console.log('[nested] AAENestedSlider registered');
+	  didRegister = true;	  
 	  return true;
 	};
   

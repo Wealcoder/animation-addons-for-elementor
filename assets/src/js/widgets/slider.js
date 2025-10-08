@@ -113,10 +113,7 @@
         });
 
         $.each(WcfSliderWidgets, function (widget, $skins) {
-
-            elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.default`, Slider);
-           
-            //if widget has skin
+            elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.default`, Slider);        
             if ($skins.length) {
                 for (const $skin of $skins) {
                     elementorFrontend.hooks.addAction(`frontend/element_ready/wcf--${widget}.${$skin}`, Slider);

@@ -90,17 +90,7 @@ class Nav_Menu extends Widget_Base {
 //		        'wcf--nav-menu'
 		];
 	}
-
-	/**
-	 * Retrieve the list of scripts the widget depended on.
-	 *
-	 * Used to set scripts dependencies required to run the widget.
-	 *
-	 * @return array Widget scripts dependencies.
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 */
+	
 	public function get_script_depends() {
 		return [ 'wcf--nav-menu' ];
 	}

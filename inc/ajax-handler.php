@@ -44,11 +44,10 @@ class Ajax_Handler {
 		}
 
 		$post_id    = isset( $_REQUEST['post_id'] ) ? absint( sanitize_text_field( wp_unslash( $_REQUEST['post_id'] ) ) ) : 0;
-		$element_id = isset( $_REQUEST['element_id'] ) ? absint( sanitize_text_field( wp_unslash( $_REQUEST['element_id'] ) ) ) : 0;
-		$settings   = wcf_addons_get_widget_settings($post_id, $element_id);
+		$element_id = isset( $_REQUEST['element_id'] ) ?  sanitize_text_field( wp_unslash( $_REQUEST['element_id'] ) )  : 0;
+		$settings   = wcf_addons_get_widget_settings($post_id, $element_id);	
 		ob_start();
-
-		if ('template' === $settings['popup_content_type']) {
+		if (isset($settings['popup_content_type']) && 'template' === $settings['popup_content_type']) {
 			echo wp_kses_post( Plugin::$instance->frontend->get_builder_content($settings['popup_elementor_templates']) );
 		} else {
 
