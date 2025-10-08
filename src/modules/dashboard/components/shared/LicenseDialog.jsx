@@ -101,6 +101,9 @@ const LicenseDialog = ({ open, setOpen }) => {
 
             updateNotice(sampleData);
 
+            const url = new URL(window.location.href);
+            url.searchParams.delete("aae-license");
+            window.history.replaceState({}, "", url);
             window.location.reload();
           } else {
             // WCF_ADDONS_ADMIN.addons_config.wcf_valid = false;
@@ -118,6 +121,9 @@ const LicenseDialog = ({ open, setOpen }) => {
             };
 
             updateNotice(sampleData);
+            const url = new URL(window.location.href);
+            url.searchParams.delete("aae-license");
+            window.history.replaceState({}, "", url);
 
             window.location.reload();
           }
@@ -129,7 +135,15 @@ const LicenseDialog = ({ open, setOpen }) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        const url = new URL(window.location.href);
+        url.searchParams.delete("aae-license");
+        window.history.replaceState({}, "", url);
+      }}
+    >
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
         className="w-[498px] max-w-[498px] rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4 p-6 gap-0"

@@ -6,8 +6,18 @@ import GlobalSearch from "../shared/GlobalSearch";
 import MobileNav from "./MobileNav";
 import Notification from "../notification";
 import GetProButton from "../shared/GetProButton";
+import { useEffect, useState } from "react";
 
 const MainHeader = ({ open, setOpen }) => {
+  const [showLicense, setShowLicense] = useState(false);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const license = url.searchParams.get("aae-license");
+    if (license === "1") {
+      setShowLicense(true);
+    }
+  }, []);
+
   return (
     <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
       <div>
@@ -28,7 +38,7 @@ const MainHeader = ({ open, setOpen }) => {
         <div className="block xl:hidden">
           <MobileNav />
         </div>
-        <GetProButton />
+        <GetProButton showLicense={showLicense} />
       </div>
       <GlobalSearch open={open} setOpen={setOpen} />
     </div>

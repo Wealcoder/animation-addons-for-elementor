@@ -334,7 +334,7 @@ class WCF_Admin_Init
 				'user_role'           => wcfaddon_get_current_user_roles(),
 				'version'             => WCF_ADDONS_VERSION,
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
-				'home_url'            => home_url('/'),
+				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data()
 			);
 
@@ -346,7 +346,7 @@ class WCF_Admin_Init
 	{
 		$transient_key = 'wcf_menu_42_data';
 		$cached_data   = get_transient($transient_key);
-		
+
 		// ✅ Return cached data if available
 		if ($cached_data !== false) {
 			return $cached_data;

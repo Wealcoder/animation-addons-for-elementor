@@ -3,13 +3,18 @@ import { Button, buttonVariants } from "../ui/button";
 import { toast } from "sonner";
 import { RiKey2Line, RiVipCrown2Line } from "react-icons/ri";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LicenseDialog from "./LicenseDialog";
 
-const GetProButton = ({ btnClassName }) => {
+const GetProButton = ({ btnClassName, showLicense }) => {
   const { activated } = useActivate();
   const [openLicense, setOpenLicense] = useState(false);
   const role = WCF_ADDONS_ADMIN.user_role;
+
+  useEffect(() => {
+    setOpenLicense(showLicense);
+  }, [showLicense]);
+
 
   const activePlugin = async () => {
     await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
