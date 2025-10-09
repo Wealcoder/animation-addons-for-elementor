@@ -123,7 +123,8 @@ final class WCF_ADDONS_Plugin {
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );		
-		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );
+		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );		
+		add_action( 'admin_init', [$this, 'redirect_to_dashboard'] );
 	}
 
 	/**
@@ -133,11 +134,11 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public static function plugin_activation_hook() {
 		//set setup wizard
+		update_option('aae_do_activation_redirect', 'new');
 		if ( !get_option( 'wcf_addons_version' ) && !get_option( 'wcf_addons_setup_wizard' ) ) {
 			update_option( 'wcf_addons_setup_wizard', 'redirect' );
 		}
-		$count = (int) get_option('aae_activation_count', 0);
-		
+		$count = (int) get_option('aae_activation_count', 0);		
 		if(!$count){
 			wp_remote_post(
 				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated',
@@ -410,7 +411,30 @@ final class WCF_ADDONS_Plugin {
 
 		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
 	}
+
+	
+
+	public function redirect_to_dashboard(){
+		
+		if ( !is_plugin_active('elementor/elementor.php') ) {	
+			return;
+		}
+		if ( get_option( 'aae_do_activation_redirect' ) ) {
+			delete_option( 'aae_do_activation_redirect' );			
+			if ( isset( $_GET['activate-multi'] ) ) {
+				return;
+			}
+			wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_settings' ) );
+			exit;
+		}
+
+	}
 }
 
 // Instantiate WCF_ADDONS_Plugin.
 new WCF_ADDONS_Plugin();
+
+
+
+
+
