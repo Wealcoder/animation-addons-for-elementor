@@ -34,13 +34,14 @@ class AAEAddon_Importer {
 		return self::$_instance;
 	}
 	public function __construct() {
+		
 		add_action( 'wp_ajax_aaeaddon_template_installer', [ $this, 'template_installer' ] );
 		add_action( 'wp_ajax_aaeaddon_heartbeat_data', [ $this, 'heartbeat_data' ] );  
-		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] ); 
+		add_action( 'wp_ajax_aaeaddon_wishlist_option', [ $this, 'wishlist' ] ); 		
 	
 		$this->plugin_installer = new WCF_Plugin_Installer(true);     
 		add_filter('wcf_addons_dashboard_config', [ $this, 'include_user_wishlist']);		
-	}
+	}	
 
 	public function include_user_wishlist($config) {
 		$user_id = get_current_user_id();
