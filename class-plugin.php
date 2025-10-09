@@ -86,13 +86,13 @@ class Plugin
 	{
 
 		$scripts = array(
-			'wcf-addons-core' => array(
-				'handler' => 'wcf--addons',
-				'src'     => 'wcf-addons.min.js',
-				'dep'     => array('jquery'),
-				'version' => false,
-				'arg'     => true,
-			),
+			// 'wcf-addons-core' => array(
+			// 	'handler' => 'wcf--addons',
+			// 	'src'     => 'wcf-addons.min.js',
+			// 	'dep'     => array('jquery'),
+			// 	'version' => false,
+			// 	'arg'     => true,
+			// ),
 		);
 
 		foreach ($scripts as $key => $script) {
@@ -118,7 +118,7 @@ class Plugin
 		);
 
 		wp_localize_script('wcf--addons', 'WCF_ADDONS_JS', $data);
-		wp_enqueue_script('wcf--addons');
+		// wp_enqueue_script('wcf--addons');
 		// widget scripts
 		foreach (self::get_widget_scripts() as $key => $script) {
 			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
@@ -449,6 +449,27 @@ class Plugin
 				'mailchimp-script'     => array(
 					'handler' => 'wcf--mailchimp',
 					'src'     => 'widgets/mailchimp.min.js',
+					'dep'     => array(),
+					'version' => false,
+					'arg'     => true,
+				),
+				'click-drop'     => array(
+					'handler' => 'wcf--click-drop',
+					'src'     => 'widgets/click-drop.min.js',
+					'dep'     => array(),
+					'version' => false,
+					'arg'     => true,
+				),
+				'wcf--countdown'     => array(
+					'handler' => 'wcf-countdown-script',
+					'src'     => 'widgets/countdown.min.js',
+					'dep'     => array(),
+					'version' => false,
+					'arg'     => true,
+				),
+				'aae--switcher-toggle'     => array(
+					'handler' => 'aae--switcher-toggle',
+					'src'     => 'widgets/toggle-switch.min.js',
 					'dep'     => array(),
 					'version' => false,
 					'arg'     => true,

@@ -2823,6 +2823,26 @@ $config = array(
 						'youtube_url'  => '',
 						'description'  => '',
 					),
+					'loop-grid'      => array(
+						'label'        => 'Loop Grid',
+						'is_active'    => false,
+						'location'     => array(
+							'cTab' => 'all',
+						),
+						'is_upcoming'  => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'keywords' => [
+							"loop grid",
+						],
+						'order'        => 21,
+						'icon'         => 'wcf-icon-Advanced-Accordion',
+						'demo_url'     => '',
+						'doc_url'      => '',
+						'youtube_url'  => '',
+						'description'  => '',
+					),
+					
 				),
 			),
 		),
