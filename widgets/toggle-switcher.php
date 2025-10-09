@@ -91,6 +91,11 @@ class Toggle_Switcher extends Widget_Base
 		return ['wcf--toggle-switch'];
 	}
 
+    public function get_script_depends()
+    {
+        return ['aae--switcher-toggle'];
+    }
+
 	/**
 	 * Register the widget controls.
 	 *
