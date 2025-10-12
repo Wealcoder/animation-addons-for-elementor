@@ -44,8 +44,7 @@ class AAEAddon_Importer {
 	}	
 
 	public function include_user_wishlist($config) {
-		$user_id = get_current_user_id();
-    
+		$user_id = get_current_user_id();    
     	// Fetch existing wishlist data
     	$config['wishlist'] = get_user_meta($user_id, $this->wishlist_key, true);
 		return $config;
