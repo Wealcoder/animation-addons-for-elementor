@@ -419,8 +419,11 @@ final class WCF_ADDONS_Plugin {
 		if ( !is_plugin_active('elementor/elementor.php') ) {	
 			return;
 		}
+
 		if ( get_option( 'aae_do_activation_redirect' ) ) {
-			delete_option( 'aae_do_activation_redirect' );			
+			
+			delete_option( 'aae_do_activation_redirect' );	
+
 			if ( isset( $_GET['activate-multi'] ) ) {
 				return;
 			}
