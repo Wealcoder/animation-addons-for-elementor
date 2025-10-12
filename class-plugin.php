@@ -84,25 +84,16 @@ class Plugin
 	 */
 	public function widget_scripts()
 	{
-
-		$scripts = array(
-			// 'wcf-addons-core' => array(
-			// 	'handler' => 'wcf--addons',
-			// 	'src'     => 'wcf-addons.min.js',
-			// 	'dep'     => array('jquery'),
-			// 	'version' => false,
-			// 	'arg'     => true,
-			// ),
-		);
-
-		foreach ($scripts as $key => $script) {
-			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
-		}
-
 		// widget scripts
 		foreach (self::get_widget_scripts() as $key => $script) {
 			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
 		}
+
+		if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.14', '<=')) {
+			wp_enqueue_script('aae--switcher-toggle');
+		}
+
+	
 	}
 
 	/**

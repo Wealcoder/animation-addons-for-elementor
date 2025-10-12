@@ -22,10 +22,13 @@ add_filter('upload_mimes', 'aaeaddonlight_hk_allow_svg_uploads');
 
 function aae_handle_aae_post_shares_count()
 {
+
     if (!isset($_POST['nonce'])) {
         exit('No naughty business please . Provide Security Code');
     }
+
     $nonce =  sanitize_text_field(wp_unslash($_POST['nonce']));
+
     if (! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
         exit('No naughty business please');
     }
@@ -36,6 +39,7 @@ function aae_handle_aae_post_shares_count()
 
         // Retrieve current share count, increment it, or set it if it doesn't exist
         $current_shares = get_post_meta($post_id, 'aae_post_shares', true);
+
         if (! is_array($current_shares)) {
             $current_shares = [];
         }
@@ -59,9 +63,11 @@ function aae_handle_aae_post_shares_count()
             'share_count' => $shares_count,
             'post_shares' => $current_shares
         ));
+
     } else {
         wp_send_json_error('Invalid post ID');
     }
+
 }
 add_action('wp_ajax_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For logged-in users
 add_action('wp_ajax_nopriv_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For non-logged-in users
@@ -140,6 +146,8 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
     add_action('wp_ajax_nopriv_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
     add_action('wp_ajax_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
 }
+
+
 
 
 

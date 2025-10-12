@@ -515,7 +515,7 @@ class WCF_Admin_Init
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
 		wcf_get_nested_config_keys($settings, $foundkeys, $actives);
-		error_log(print_r($actives, true));
+
 		update_option('wcf_addons_setup_wizard', 'complete');
 		// update new settings
 		if (! empty($option_name)) {

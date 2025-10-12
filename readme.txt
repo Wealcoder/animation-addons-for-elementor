@@ -1,11 +1,11 @@
 === Animation Addons for Elementor - GSAP Powered Elementor Addons & Website Templates ===
-Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari
+Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari, devsabbirhossain
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.13
+Stable tag: 2.3.14
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,7 @@ https://youtu.be/tRbvgq2gJF4
 ⚡ [One-Click Demo Imports](https://animation-addons.com/docs/getting-started/how-to-import-starter-templates-from-animation-addons/)
 ⚡ [One-Click Page Imports](https://animation-addons.com/page-templates/)
 ✒️ CodeSnippet
+🌍 Loop Builder
 
 Animation Addons for Elementor is a game-changer in animation-focused web design. The blend of its advanced animations, customizable features, and unique functionality set it apart from competitors. Whether you’re a web developer, designer, agency owner, or website owner, the plugin caters to your holistic professional needs.
 
@@ -429,6 +430,13 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025
+
+  - ⚡ **Improved:** On-demand JS loading for **Contact Form 7**, **Toggle Switcher**, and **Counter** widgets for faster performance.  
+  - 📦 **Improved:** **Section Import Library** for smoother and more efficient section imports.  
+  - 🎨 **Fixed:** Enhanced **UX for the plugin dashboard** with a cleaner and more user-friendly interface.  
+  - 🧩 **Fixed:** Resolved **page import notice issue** for a better importing experience. 
 
 = Animation Addons for Elementor v2.3.13 – 24 September 2025 =
 
