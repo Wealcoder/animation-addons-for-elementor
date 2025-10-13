@@ -8,7 +8,7 @@
    */
   // Make sure you run this code under Elementor.
   $(window).on("elementor/frontend/init", function () {
-alert();
+
     //Toggle Switcher
     const toggle_switcher = function ($scope) {
       const checked = $("input", $scope);
