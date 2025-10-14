@@ -29,7 +29,6 @@ class Post_Title extends Widget_Base {
 	}
 
 	public function show_in_panel() {
-		// By default don't show.
 		return true;
 	}
 
@@ -91,7 +90,7 @@ class Post_Title extends Widget_Base {
 					'h5' => 'H5',
 					'h6' => 'H6',
 				),
-				'default' => 'h1',
+				'default' => 'h2',
 			)
 		);
 
@@ -126,17 +125,33 @@ class Post_Title extends Widget_Base {
 			)
 		);
 
-		// Word Trimming Controls
+		// Content Trimming Controls.
 		$this->add_control(
-			'enable_word_trim',
+			'enable_trim',
 			array(
-				'label'        => esc_html__( 'Trim Words', 'animation-addons-for-elementor' ),
+				'label'        => esc_html__( 'Enable Trim', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'separator'    => 'before',
 				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
 				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => '',
+			)
+		);
+
+		$this->add_control(
+			'trim_type',
+			array(
+				'label'     => esc_html__( 'Trim By', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'words',
+				'options'   => array(
+					'words' => esc_html__( 'Words', 'animation-addons-for-elementor' ),
+					'lines' => esc_html__( 'Lines', 'animation-addons-for-elementor' ),
+				),
+				'condition' => array(
+					'enable_trim' => 'yes',
+				),
 			)
 		);
 
@@ -149,7 +164,28 @@ class Post_Title extends Widget_Base {
 				'min'       => 1,
 				'max'       => 100,
 				'condition' => array(
-					'enable_word_trim' => 'yes',
+					'enable_trim' => 'yes',
+					'trim_type'   => 'words',
+				),
+			)
+		);
+
+		// Changed to responsive control for line count.
+		$this->add_responsive_control(
+			'line_count',
+			array(
+				'label'              => esc_html__( 'Line Count', 'animation-addons-for-elementor' ),
+				'type'               => Controls_Manager::NUMBER,
+				'default'            => 2,
+				'min'                => 1,
+				'max'                => 10,
+				'frontend_available' => true,
+				'selectors'          => array(
+					'{{WRAPPER}} .wcf--title.wcf-line-clamp' => '-webkit-line-clamp: {{VALUE}};',
+				),
+				'condition'          => array(
+					'enable_trim' => 'yes',
+					'trim_type'   => 'lines',
 				),
 			)
 		);
@@ -167,7 +203,8 @@ class Post_Title extends Widget_Base {
 					'none' => esc_html__( 'None', 'animation-addons-for-elementor' ),
 				),
 				'condition' => array(
-					'enable_word_trim' => 'yes',
+					'enable_trim' => 'yes',
+					'trim_type'   => 'words',
 				),
 			)
 		);
@@ -179,8 +216,8 @@ class Post_Title extends Widget_Base {
 				'type'      => Controls_Manager::TEXT,
 				'default'   => '...',
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type'    => 'text',
+					'enable_trim'   => 'yes',
+					'ellipsis_type' => 'text',
 				),
 			)
 		);
@@ -195,11 +232,13 @@ class Post_Title extends Widget_Base {
 					'library' => 'solid',
 				),
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type'    => 'icon',
+					'enable_trim'   => 'yes',
+					'ellipsis_type' => 'icon',
 				),
 			)
 		);
+
+		// REMOVED: ellipsis_position control - not needed for CSS line-clamp.
 
 		$this->add_control(
 			'show_title_highlight',
@@ -314,7 +353,65 @@ class Post_Title extends Widget_Base {
 			)
 		);
 
-		// Ellipsis Style Controls
+		// Line Clamp Specific Styles.
+		$this->add_control(
+			'heading_line_clamp',
+			array(
+				'label'     => esc_html__( 'Line Clamp Settings', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => array(
+					'enable_trim' => 'yes',
+					'trim_type'   => 'lines',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'line_height',
+			array(
+				'label'     => esc_html__( 'Line Height', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => array(
+					'px' => array(
+						'min'  => 1,
+						'max'  => 3,
+						'step' => 0.1,
+					),
+				),
+				'selectors' => array(
+					'{{WRAPPER}} .wcf--title.wcf-line-clamp' => 'line-height: {{SIZE}};',
+				),
+				'condition' => array(
+					'enable_trim' => 'yes',
+					'trim_type'   => 'lines',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'max_height',
+			array(
+				'label'      => esc_html__( 'Max Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', 'em', 'rem' ),
+				'range'      => array(
+					'px' => array(
+						'min' => 20,
+						'max' => 500,
+					),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wcf--title.wcf-line-clamp' => 'max-height: {{SIZE}}{{UNIT}};',
+				),
+				'condition'  => array(
+					'enable_trim' => 'yes',
+					'trim_type'   => 'lines',
+				),
+			)
+		);
+
+		// Ellipsis Style Controls.
 		$this->add_control(
 			'heading_ellipsis',
 			array(
@@ -322,8 +419,8 @@ class Post_Title extends Widget_Base {
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type!'   => 'none',
+					'enable_trim'    => 'yes',
+					'ellipsis_type!' => 'none',
 				),
 			)
 		);
@@ -335,10 +432,12 @@ class Post_Title extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .wcf--title .wcf-ellipsis' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf--title i.wcf-ellipsis' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf--title svg.wcf-ellipsis' => 'fill: {{VALUE}};',
 				),
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type!'   => 'none',
+					'enable_trim'    => 'yes',
+					'ellipsis_type!' => 'none',
 				),
 			)
 		);
@@ -355,12 +454,47 @@ class Post_Title extends Widget_Base {
 					),
 				),
 				'selectors' => array(
-					'{{WRAPPER}} .wcf--title .wcf-ellipsis i' => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .wcf--title .wcf-ellipsis svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--title i.wcf-ellipsis' => 'font-size: {{SIZE}}{{UNIT}} !important;',
+					'{{WRAPPER}} .wcf--title svg.wcf-ellipsis' => 'width: {{SIZE}}{{UNIT}} !important; height: {{SIZE}}{{UNIT}} !important;',
 				),
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type'    => 'icon',
+					'enable_trim'   => 'yes',
+					'ellipsis_type' => 'icon',
+				),
+			)
+		);
+
+		$this->add_control(
+			'ellipsis_vertical_align',
+			array(
+				'label'     => esc_html__( 'Vertical Align', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => array(
+					'top'      => array(
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-top',
+					),
+					'middle'   => array(
+						'title' => esc_html__( 'Middle', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-middle',
+					),
+					'bottom'   => array(
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-v-align-bottom',
+					),
+					'baseline' => array(
+						'title' => esc_html__( 'Baseline', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-text-align-left',
+					),
+				),
+				'default'   => 'middle',
+				'selectors' => array(
+					'{{WRAPPER}} .wcf--title i.wcf-ellipsis' => 'vertical-align: {{VALUE}}; display: inline-block;',
+					'{{WRAPPER}} .wcf--title svg.wcf-ellipsis' => 'vertical-align: {{VALUE}}; display: inline-block;',
+				),
+				'condition' => array(
+					'enable_trim'   => 'yes',
+					'ellipsis_type' => 'icon',
 				),
 			)
 		);
@@ -381,10 +515,26 @@ class Post_Title extends Widget_Base {
 				),
 				'selectors' => array(
 					'{{WRAPPER}} .wcf--title .wcf-ellipsis' => 'margin-left: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--title i.wcf-ellipsis' => 'margin-left: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--title svg.wcf-ellipsis' => 'margin-left: {{SIZE}}{{UNIT}};',
 				),
 				'condition' => array(
-					'enable_word_trim' => 'yes',
-					'ellipsis_type!'   => 'none',
+					'enable_trim'    => 'yes',
+					'ellipsis_type!' => 'none',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			array(
+				'name'      => 'ellipsis_typography',
+				'label'     => esc_html__( 'Ellipsis Typography', 'animation-addons-for-elementor' ),
+				'selector'  => '{{WRAPPER}} .wcf--title .wcf-ellipsis:not(i):not(svg)',
+				'exclude'   => array( 'font_size', 'line_height' ),
+				'condition' => array(
+					'enable_trim'   => 'yes',
+					'ellipsis_type' => 'text',
 				),
 			)
 		);
@@ -431,7 +581,6 @@ class Post_Title extends Widget_Base {
 
 	protected function switch_post() {
 		if ( 'wcf-addons-template' === get_post_type() ) {
-
 			$recent_posts = wp_get_recent_posts(
 				array(
 					'numberposts' => 1,
@@ -449,8 +598,12 @@ class Post_Title extends Widget_Base {
 		}
 	}
 
+	/**
+	 * Render Post Title widget.
+	 *
+	 * @return void
+	 */
 	protected function render() {
-
 		$settings = $this->get_settings_for_display();
 
 		$this->switch_post();
@@ -462,37 +615,35 @@ class Post_Title extends Widget_Base {
 			return;
 		}
 
-		// Apply word trimming if enabled
 		$original_title = $title;
 		$ellipsis_html  = '';
+		$use_line_clamp = false;
 
-		if ( 'yes' === $settings['enable_word_trim'] ) {
-			$word_count = ! empty( $settings['word_count'] ) ? absint( $settings['word_count'] ) : 10;
+		if ( 'yes' === $settings['enable_trim'] ) {
+			$trim_type = ! empty( $settings['trim_type'] ) ? $settings['trim_type'] : 'words';
 
-			// Get the ellipsis based on type
-			$ellipsis = $this->get_ellipsis_html( $settings );
+			if ( 'words' === $trim_type ) {
+				$word_count = ! empty( $settings['word_count'] ) ? absint( $settings['word_count'] ) : 10;
+				$ellipsis   = $this->get_ellipsis_html( $settings );
+				$title      = wp_trim_words( $title, $word_count, '' );
 
-			// Trim the title
-			$title = wp_trim_words( $title, $word_count, '' );
-
-			// Check if title was actually trimmed
-			if ( $title !== $original_title && ! empty( $ellipsis ) ) {
-				$ellipsis_html = $ellipsis;
+				if ( $title !== $original_title && ! empty( $ellipsis ) ) {
+					$ellipsis_html = $ellipsis;
+				}
+			} else {
+				$use_line_clamp = true;
 			}
 		}
 
-		// Apply highlight if enabled
 		if ( 'yes' === $settings['show_title_highlight'] ) {
 			$highlight_title_length = (int) $settings['highlight_title_length'];
 			$title                  = $this->wcf_wrap_first_n_words( $title, $highlight_title_length );
 		}
 
-		// Add ellipsis to the title
-		if ( ! empty( $ellipsis_html ) ) {
+		if ( ! empty( $ellipsis_html ) && ! $use_line_clamp ) {
 			$title .= $ellipsis_html;
 		}
 
-		// Add link if needed
 		if ( ! empty( $settings['link']['url'] ) ) {
 			$this->add_link_attributes( 'url', $settings['link'] );
 			$title = sprintf( '<a %1$s>%2$s</a>', $this->get_render_attribute_string( 'url' ), $title );
@@ -510,10 +661,24 @@ class Post_Title extends Widget_Base {
 
 		$this->add_render_attribute( 'title', 'class', 'wcf--title' );
 
+		if ( $use_line_clamp ) {
+			$this->add_render_attribute( 'title', 'class', 'wcf-line-clamp' );
+		}
+
 		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $title );
 
-		// PHPCS - the variable $title_html holds safe data.
 		echo wp_kses_post( $title_html );
+
+		if ( $use_line_clamp ) {
+			echo '<style>
+                .wcf--title.wcf-line-clamp {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-word;
+                }
+            </style>';
+		}
 
 		Plugin::$instance->db->restore_current_post();
 	}
@@ -522,27 +687,31 @@ class Post_Title extends Widget_Base {
 	 * Get ellipsis HTML based on settings.
 	 *
 	 * @param array $settings Widget settings.
+	 * @param bool  $add_wrapper Whether to add wrapper span.
 	 * @return string
 	 */
-	private function get_ellipsis_html( $settings ) {
+	private function get_ellipsis_html( $settings, $add_wrapper = true ) {
 		$ellipsis_type = ! empty( $settings['ellipsis_type'] ) ? $settings['ellipsis_type'] : 'dots';
+		$wrapper_start = $add_wrapper ? '<span class="wcf-ellipsis">' : '';
+		$wrapper_end   = $add_wrapper ? '</span>' : '';
 
 		switch ( $ellipsis_type ) {
 			case 'dots':
-				return '<span class="wcf-ellipsis">...</span>';
+				return $wrapper_start . '...' . $wrapper_end;
 
 			case 'text':
 				$text = ! empty( $settings['ellipsis_text'] ) ? $settings['ellipsis_text'] : '...';
-				return '<span class="wcf-ellipsis">' . esc_html( $text ) . '</span>';
+				return $wrapper_start . esc_html( $text ) . $wrapper_end;
 
 			case 'icon':
 				if ( ! empty( $settings['ellipsis_icon'] ) ) {
 					ob_start();
+					$icon_class = $add_wrapper ? 'wcf-ellipsis' : '';
 					\Elementor\Icons_Manager::render_icon(
 						$settings['ellipsis_icon'],
 						array(
 							'aria-hidden' => 'true',
-							'class'       => 'wcf-ellipsis',
+							'class'       => $icon_class,
 						)
 					);
 					return ob_get_clean();
@@ -565,8 +734,7 @@ class Post_Title extends Widget_Base {
 	 * @return string
 	 */
 	private function wcf_wrap_first_n_words( $text, $n, $class_name = 'highlight' ) {
-		// Handle plain text (no HTML tags)
-		$words = preg_split( '/\s+/', strip_tags( $text ) );
+		$words = preg_split( '/\s+/', wp_strip_all_tags( $text ) );
 
 		if ( count( $words ) <= $n ) {
 			return '<span class="' . esc_attr( $class_name ) . '">' . esc_html( $text ) . '</span>';
