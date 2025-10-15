@@ -2366,13 +2366,13 @@ $config = array(
 						'youtube_url'  => '',
 						'description'  => 'Create a grid of content with the Loop Grid Widget.',
 					),
-					'loop-carosel'          => array(
-						'label'        => 'Loop Carosel',
+					'loop-carousel'         => array(
+						'label'        => 'Loop Carousel',
 						'is_active'    => false,
 						'location'     => array(
 							'cTab' => 'all',
 						),
-						'is_upcoming'  => true,
+						'is_upcoming'  => false,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'keywords'     => array(
