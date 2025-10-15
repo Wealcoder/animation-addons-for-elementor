@@ -84,6 +84,41 @@ class Plugin
 	 */
 	public function widget_scripts()
 	{
+		$scripts = array(
+			'wcf-addons-core' => array(
+				'handler' => 'wcf--addons',
+				'src'     => 'wcf-addons.min.js',
+				'dep'     => array(),
+				'version' => false,
+				'arg'     => false,
+			),
+		);
+
+		foreach ($scripts as $key => $script) {
+			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
+		}
+
+		$data = apply_filters(
+			'wcf-addons/js/data',
+			array(
+				'ajaxUrl'        => admin_url('admin-ajax.php'),
+				'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
+				'post_id'        => get_the_ID(),
+				'i18n'           => array(
+					'okay'    => esc_html__('Okay', 'animation-addons-for-elementor'),
+					'cancel'  => esc_html__('Cancel', 'animation-addons-for-elementor'),
+					'submit'  => esc_html__('Submit', 'animation-addons-for-elementor'),
+					'success' => esc_html__('Success', 'animation-addons-for-elementor'),
+					'warning' => esc_html__('Warning', 'animation-addons-for-elementor'),
+				),
+				'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
+				'mode'           => \Elementor\Plugin::$instance->editor->is_edit_mode(),
+			)
+		);
+
+		wp_localize_script('wcf--addons', 'WCF_ADDONS_JS', $data);
+
+		wp_enqueue_script('wcf--addons');
 		// widget scripts
 		foreach (self::get_widget_scripts() as $key => $script) {
 			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
@@ -1302,7 +1337,7 @@ class Plugin
 		add_action('elementor/editor/after_enqueue_styles', array($this, 'editor_styles'));
 		add_filter('elementor/document/urls/preview', array($this, 'elementor_editor_url'), 4);
 		add_filter('elementor/document/urls/wp_preview', array($this, 'elementor_editor_url'), 4);
-		add_action('wp_head', array($this, 'wp_head'), 4);
+		//add_action('wp_head', array($this, 'wp_head'), 4);
 
 		$this->include_files();
 
