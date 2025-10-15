@@ -1,8 +1,8 @@
-.wcf-t-animation-text_invert .elementor-widget-container {
+.wcf-t-animation-text_invert {
   --text-color: 0, 0%, 0%;
 }
-.wcf-t-animation-text_invert .elementor-widget-container .invert-line {
-  background-image: linear-gradient(to right, hsla(var(--text-color), 1) 50%, hsla(var(--text-color), 0.3) 50%);
+.wcf-t-animation-text_invert .invert-line {
+  background-image: linear-gradient(to right, hsla(var(--text-color), 1) 50%, hsla(var(--text-color), 0.3) 50%) !important;
   background-size: 200% 100%;
   background-position-x: 100%;
   color: transparent;
