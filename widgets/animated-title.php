@@ -11,7 +11,7 @@ use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 } // Exit if accessed directly
 
@@ -22,7 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Animated_Title extends Widget_Base {
+class Animated_Title extends Widget_Base
+{
 
 	/**
 	 * Retrieve the widget name.
@@ -32,7 +33,8 @@ class Animated_Title extends Widget_Base {
 	 *
 	 * @access public
 	 */
-	public function get_name() {
+	public function get_name()
+	{
 		return 'wcf--title';
 	}
 
@@ -44,8 +46,9 @@ class Animated_Title extends Widget_Base {
 	 *
 	 * @access public
 	 */
-	public function get_title() {
-		return esc_html__( 'Animated Title', 'animation-addons-for-elementor' );
+	public function get_title()
+	{
+		return esc_html__('Animated Title', 'animation-addons-for-elementor');
 	}
 
 	/**
@@ -56,7 +59,8 @@ class Animated_Title extends Widget_Base {
 	 *
 	 * @access public
 	 */
-	public function get_icon() {
+	public function get_icon()
+	{
 		return 'wcf eicon-t-letter';
 	}
 
@@ -73,8 +77,9 @@ class Animated_Title extends Widget_Base {
 	 *
 	 * @access public
 	 */
-	public function get_categories() {
-		return [ 'weal-coder-addon' ];
+	public function get_categories()
+	{
+		return ['weal-coder-addon'];
 	}
 
 	/**
@@ -86,18 +91,19 @@ class Animated_Title extends Widget_Base {
 	 *
 	 * @access protected
 	 */
-	protected function register_controls() {
+	protected function register_controls()
+	{
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Content', 'animation-addons-for-elementor'),
 			]
 		);
 
 		$this->add_control(
 			'title',
 			[
-				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Title', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXTAREA,
 				'ai'          => [
 					'type' => 'text',
@@ -105,18 +111,19 @@ class Animated_Title extends Widget_Base {
 				'dynamic'     => [
 					'active' => true,
 				],
-				'placeholder' => esc_html__( 'Enter your title', 'animation-addons-for-elementor' ),
-				'default'     => esc_html__( 'Add Your Heading [Text] Here', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__('Enter your title', 'animation-addons-for-elementor'),
+				'default'     => esc_html__('Add Your Heading [Text] Here', 'animation-addons-for-elementor'),
 				'description' => 'For Highlight, keep text in [ ]. Ex. [ Text ]',
+				'render_type'        => 'none',
 			]
 		);
 
 		$this->add_control(
 			'link',
 			[
-				'label'       => esc_html__( 'Link', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__('Link', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::URL,
-				'options'     => [ 'url', 'is_external', 'nofollow' ],
+				'options'     => ['url', 'is_external', 'nofollow'],
 				'default'     => [
 					'url'         => '',
 					'is_external' => false,
@@ -129,10 +136,10 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'show_title_prefix',
 			[
-				'label'        => esc_html__( 'Show Prefix', 'animation-addons-for-elementor' ),
+				'label'        => esc_html__('Show Prefix', 'animation-addons-for-elementor'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
-				'label_off'    => esc_html__( 'Hide', 'animation-addons-for-elementor' ),
+				'label_on'     => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off'    => esc_html__('Hide', 'animation-addons-for-elementor'),
 				'return_value' => 'yes',
 			]
 		);
@@ -140,21 +147,21 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'title_prefix_use',
 			[
-				'label'     => esc_html__( 'Prefix Use On', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Prefix Use On', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'prefix_on_normal',
 				'options'   => [
-					'prefix_on_normal' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
-					'prefix_on_hover'  => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+					'prefix_on_normal' => esc_html__('Normal', 'animation-addons-for-elementor'),
+					'prefix_on_hover'  => esc_html__('Hover', 'animation-addons-for-elementor'),
 				],
-				'condition' => [ 'show_title_prefix' => 'yes' ]
+				'condition' => ['show_title_prefix' => 'yes']
 			]
 		);
 
 		$this->add_control(
 			'header_size',
 			[
-				'label'   => esc_html__( 'HTML Tag', 'animation-addons-for-elementor' ),
+				'label'   => esc_html__('HTML Tag', 'animation-addons-for-elementor'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'h1'   => 'H1',
@@ -174,23 +181,23 @@ class Animated_Title extends Widget_Base {
 		$this->add_responsive_control(
 			'align',
 			[
-				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'left'    => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Left', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-left',
 					],
 					'center'  => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-center',
 					],
 					'right'   => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Right', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-right',
 					],
 					'justify' => [
-						'title' => esc_html__( 'Justified', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Justified', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-text-align-justify',
 					],
 				],
@@ -207,7 +214,7 @@ class Animated_Title extends Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
+				'label' => esc_html__('Title', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -215,7 +222,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Text Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--title' => 'color: {{VALUE}};',
@@ -250,10 +257,10 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'blend_mode',
 			[
-				'label'     => esc_html__( 'Blend Mode', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Blend Mode', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					''            => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
+					''            => esc_html__('Normal', 'animation-addons-for-elementor'),
 					'multiply'    => 'Multiply',
 					'screen'      => 'Screen',
 					'overlay'     => 'Overlay',
@@ -271,13 +278,14 @@ class Animated_Title extends Widget_Base {
 					'{{WRAPPER}} .wcf--title' => 'mix-blend-mode: {{VALUE}}',
 				],
 				'separator' => 'none',
+
 			]
 		);
 
 		$this->add_control(
 			'highlight',
 			[
-				'label'     => esc_html__( 'Highlight', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Highlight', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -286,7 +294,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'highlight_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#f00000',
 				'selectors' => [
@@ -299,7 +307,7 @@ class Animated_Title extends Widget_Base {
 			Group_Control_Background::get_type(),
 			[
 				'name'     => 'aaebackground',
-				'types'    => [ 'classic', 'gradient' ],
+				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .wcf--title .highlight',
 			]
 		);
@@ -331,10 +339,10 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'highlight_blend_mode',
 			[
-				'label'     => esc_html__( 'Blend Mode', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Blend Mode', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					''            => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
+					''            => esc_html__('Normal', 'animation-addons-for-elementor'),
 					'multiply'    => 'Multiply',
 					'screen'      => 'Screen',
 					'overlay'     => 'Overlay',
@@ -360,16 +368,16 @@ class Animated_Title extends Widget_Base {
 		$this->start_controls_section(
 			'section_title_prefix_style',
 			[
-				'label'     => esc_html__( 'Prefix', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Prefix', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'show_title_prefix' => 'yes' ]
+				'condition' => ['show_title_prefix' => 'yes']
 			]
 		);
 
 		$this->add_control(
 			'title_prefix_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--title.prefix_on_normal:before, {{WRAPPER}} .wcf--title.prefix_on_hover:before' => 'background-color: {{VALUE}};',
@@ -380,7 +388,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_responsive_control(
 			'title_prefix_w',
 			[
-				'label'     => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Width', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -397,7 +405,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_responsive_control(
 			'title_prefix_h',
 			[
-				'label'     => esc_html__( 'Height', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Height', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -414,7 +422,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_responsive_control(
 			'title_prefix_gap',
 			[
-				'label'     => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Gap', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -428,21 +436,22 @@ class Animated_Title extends Widget_Base {
 			]
 		);
 
-		$this->add_control( 'title_prefix_v_alignment',
+		$this->add_control(
+			'title_prefix_v_alignment',
 			[
-				'label'     => esc_html__( 'Vertical Alignment', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Vertical Alignment', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
 					'top'    => [
-						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Top', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-top',
 					],
 					'middle' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Center', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-middle',
 					],
 					'bottom' => [
-						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
+						'title' => esc_html__('Bottom', 'animation-addons-for-elementor'),
 						'icon'  => 'eicon-v-align-bottom',
 					],
 				],
@@ -459,7 +468,7 @@ class Animated_Title extends Widget_Base {
 		$this->start_controls_section(
 			'style_title_hover',
 			[
-				'label'     => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Hover', 'animation-addons-for-elementor'),
 				'tab'       => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -467,7 +476,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'title_h_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--title a:hover' => 'color: {{VALUE}};',
@@ -478,7 +487,7 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'highlight_h_color',
 			[
-				'label'     => esc_html__( 'Highlight Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Highlight Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .wcf--title a:hover .highlight' => 'color: {{VALUE}};',
@@ -489,61 +498,90 @@ class Animated_Title extends Widget_Base {
 		$this->add_control(
 			'prefix_h_color',
 			[
-				'label'     => esc_html__( 'Prefix Color', 'animation-addons-for-elementor' ),
+				'label'     => esc_html__('Prefix Color', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .has-link.prefix_on_normal:hover:before, {{WRAPPER}} .has-link.prefix_on_hover:hover:before' => 'background-color: {{VALUE}};',
 				],
-				'condition' => [ 'show_title_prefix' => 'yes' ],
+				'condition' => ['show_title_prefix' => 'yes'],
 			]
 		);
 
 		$this->end_controls_section();
 	}
 
-	/**
-	 * Render the widget output on the frontend.
-	 *
-	 * Written in PHP and used to generate the final HTML.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @access protected
-	 */
-	protected function render() {
+	protected function render()
+	{
 		$settings = $this->get_settings_for_display();
 
-		if ( '' === $settings['title'] ) {
+		if ('' === $settings['title']) {
+			return;
+		}
+		
+		$title = $settings['title'];
+		preg_match_all('/\[([^\]]*)\]/', $title, $matches);
+		foreach ($matches[0] as $key => $value) {
+			$title = str_replace($value, '<span class="highlight">' . $matches[1][$key] . '</span>', $title,);
+		}
+
+		if (! empty($settings['show_title_prefix'])) {
+			$this->add_render_attribute('title', 'class', $settings['title_prefix_use']);
+		}
+
+		$this->add_render_attribute('title', 'class', 'wcf--title');
+
+		$title_html = sprintf('<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag($settings['header_size']), $this->get_render_attribute_string('title'), $title);
+
+		if (empty($settings['link']['url'])) {
+			echo wp_kses_post($title_html);
+		} else {
+
+			$this->add_link_attributes('link', $settings['link']);
+			$this->add_render_attribute('title', 'class', 'has-link');
+?>
+			<<?php echo esc_attr(Utils::validate_html_tag($settings['header_size'])); ?> <?php echo wp_kses_post($this->get_render_attribute_string('title')); ?>>
+				<a <?php $this->print_render_attribute_string('link'); ?>>
+					<?php echo wp_kses_post($title); ?>
+				</a>
+			</<?php echo esc_attr(Utils::validate_html_tag($settings['header_size'])); ?>>
+<?php
+		}
+	}
+
+	/**
+	 * Render plain text (used for export / plain view)
+	 */
+	public function render_plain_content() {
+		$this->print_unescaped_setting('title');
+	}
+
+	/**
+	 * Render widget output in Elementor editor without PHP Ajax calls.
+	 * Backbone template for live preview.
+	 */
+	protected function content_template() {
+		?>
+		<#
+		if ( '' === settings.title ) {
 			return;
 		}
 
-		$title = $settings['title'];
-		preg_match_all( '/\[([^\]]*)\]/', $title, $matches );
-		foreach ( $matches[0] as $key => $value ) {
-			$title = str_replace( $value, '<span class="highlight">' . $matches[1][ $key ] . '</span>', $title, );
+		let title = settings.title;
+
+		// Replace [text] with highlight span
+		title = title.replace(/\[([^\]]*)\]/g, '<span class="highlight">$1</span>');
+
+		let tag = settings.header_size ? settings.header_size : 'h2';
+		let classes = ['wcf--title'];
+		if ( settings.show_title_prefix === 'yes' ) {
+			classes.push(settings.title_prefix_use);
 		}
 
-		if ( ! empty( $settings['show_title_prefix'] ) ) {
-			$this->add_render_attribute( 'title', 'class', $settings['title_prefix_use'] );
-		}
-
-		$this->add_render_attribute( 'title', 'class', 'wcf--title' );
-
-		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $title );
-		
-		if ( empty( $settings['link']['url'] ) ) {
-			echo wp_kses_post( $title_html );
-		} else {
-			
-			$this->add_link_attributes( 'link', $settings['link'] );
-			$this->add_render_attribute( 'title', 'class', 'has-link' );
-			?>
-            <<?php echo esc_attr( Utils::validate_html_tag( $settings['header_size'] ) ); ?> <?php echo wp_kses_post($this->get_render_attribute_string( 'title' )); ?>>
-            <a <?php $this->print_render_attribute_string( 'link' ); ?>>
-				<?php echo wp_kses_post( $title ); ?>
-            </a>
-            </<?php echo esc_attr(Utils::validate_html_tag( $settings['header_size'] )); ?>>
-			<?php
-		}
+		// Build title HTML
+		#>
+		<{{{ tag }}} class="{{ classes.join(' ') }}">
+			{{{ title }}}
+		</{{{ tag }}}>
+		<?php
 	}
 }

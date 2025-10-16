@@ -260,4 +260,16 @@ class Animated_Text extends Widget_Base {
 
 		echo wp_kses_post( $title_html );
 	}
+
+	protected function content_template() {
+		?>
+		<#
+		if ( '' === settings.text ) { return; }
+		view.addRenderAttribute( 'text-attr', 'class', 'wcf--text' );
+		#>
+		<div {{{ view.getRenderAttributeString( 'text-attr' ) }}}>
+			{{{ settings.text }}}
+		</div>
+		<?php
+	}
 }
