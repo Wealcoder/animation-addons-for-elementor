@@ -1,16 +1,19 @@
 <?php
 /**
- * Plugin Name: Animation Addons
- * Description: Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
- * Plugin URI:  https://animation-addons.com/
- * Version:     2.3.16
- * Author:      Wealcoder
- * Author URI:  https://animation-addons.com/
- * License:           GPL v2 or later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: animation-addons-for-elementor
- * Domain Path: /languages 
- * Elementor tested up to: 3.32.4
+ * Plugin Name:                Animation Addons
+ * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
+ * Plugin URI:                 https://animation-addons.com/
+ * Version:                    2.3.16
+ * Author:                     Wealcoder
+ * Author URI:                 https://animation-addons.com/
+ * License:                    GPL v2 or later
+ * License URI:                https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:                animation-addons-for-elementor
+ * Domain Path:                /languages
+ * Requires at least:          5.2
+ * Requires PHP:               7.4
+ * Tested up to:               6.8
+ * Elementor tested up to:     3.32.4
  * Elementor Pro tested up to: 3.32.4
  */
 
