@@ -2372,7 +2372,7 @@ $config = array(
 						'location'     => array(
 							'cTab' => 'all',
 						),
-						'is_upcoming'  => false,
+						'is_upcoming'  => true,
 						'is_pro'       => true,
 						'is_extension' => false,
 						'keywords'     => array(
