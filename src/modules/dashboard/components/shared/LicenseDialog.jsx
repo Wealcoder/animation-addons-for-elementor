@@ -188,8 +188,10 @@ const LicenseDialog = ({ open, setOpen }) => {
                       </FormLabel>
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger className="bg-transparent flex items-center">
-                            <RiInformation2Fill color="#CACFD8" size={18} />
+                          <TooltipTrigger asChild>
+                            <span className="bg-transparent flex items-center cursor-pointer">
+                              <RiInformation2Fill color="#CACFD8" size={18} />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[200px]">
                             <p>
