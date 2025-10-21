@@ -194,10 +194,41 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: "icomoon2";
+  src: url("../../../public/fonts/icomoon2.eot?uunc8k");
+  src:
+    url("../../../public/fonts/icomoon2.eot?uunc8k#iefix")
+      format("embedded-opentype"),
+    url("../../../public/fonts/icomoon2.ttf?uunc8k") format("truetype"),
+    url("../../../public/fonts/icomoon2.woff?uunc8k") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 [class^="wcf-icon-"],
 [class*=" wcf-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "icomoon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  -webkit-text-stroke: 0.5px;
+}
+
+[class^="wcf-icon2-"],
+[class*=" wcf-icon2-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "icomoon2" !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -622,4 +653,11 @@
 
 .wcf-icon-Wrapper-Link:before {
   content: "\e966";
+}
+
+.wcf-icon2-loop-grid:before {
+  content: "\e900";
+}
+.wcf-icon2-loop-carousel:before {
+  content: "\e901";
 }
