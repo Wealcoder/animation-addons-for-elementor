@@ -499,7 +499,7 @@ class WCF_Admin_Init
 	 */
 	public function save_settings()
 	{
-
+		
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
@@ -528,10 +528,10 @@ class WCF_Admin_Init
 			} else {
 				update_option('wcf_extension_dashboardv2', true);
 			}
-			$elements       = get_option($option_name);
+			
 			$return_message = array(
 				'status' => $updated,
-				'total'  => is_array($elements) ? count($elements) : 0,
+				'total'  => is_array($actives) ? count($actives) : 0,
 
 			);
 			wp_send_json($return_message);
