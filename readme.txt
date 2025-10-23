@@ -2,7 +2,7 @@
 Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari, devsabbirhossain
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
-Requires at least: 6.0
+Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 2.4.0

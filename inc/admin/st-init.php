@@ -136,9 +136,12 @@ class OneClickImport
 	}
 
 	function aae_get_latest_imported_pages() {
-		// Optional nonce check
-		if (isset($_POST['nonce']) && ! wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'wcf_admin_nonce')) {
-			wp_send_json_error(['message' => 'Invalid nonce'], 403);
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if (
+			! isset( $_POST['nonce'] ) ||
+			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wcf_admin_nonce' )
+		) {
+			wp_send_json_error( [ 'message' => 'Invalid or missing nonce' ], 403 );
 		}
 
 		$per_page = isset($_POST['per_page']) ? max(1, (int) $_POST['per_page']) : 1; // latest one by default
