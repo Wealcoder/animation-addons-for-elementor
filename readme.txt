@@ -25,6 +25,8 @@ https://youtu.be/tRbvgq2gJF4
 
 **Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder**. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
   
+https://youtu.be/LD2mr5dHEng
+
 ### Powerful GSAP Features for Advanced Animations
 🌟 ScrollTrigger
 🎨 GSAP Animation Builder
@@ -285,7 +287,6 @@ This template library is specifically crafted for developers, designers, and age
 
 💡 Unlock next-level animations with **Animation Addons for Elementor!**
 
-https://youtu.be/LD2mr5dHEng
 
 ### 100+ Elementor Widgets:
 Unlock endless design possibilities with 100+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
