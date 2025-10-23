@@ -95,7 +95,7 @@ class Notices {
 			$this->add(
 				array(
 					'message'     => __DIR__ . '/views/halloween-2025.php',
-					'notice_id'   => 'aae_halloween6',
+					'notice_id'   => 'aae_halloween',
 					'style'       => 'border-left-color: #FC6848;',
 					'dismissible' => false,
 				)
@@ -103,12 +103,12 @@ class Notices {
 		}
 
 		// Show after 5 days.
-		if ( $installed_time && $current_time > ( $installed_time + ( -5 * DAY_IN_SECONDS ) ) ) {
+		if ( $installed_time && $current_time > ( $installed_time + ( 5 * DAY_IN_SECONDS ) ) ) {
 			$this->add(
 				array(
 					'message'     => __DIR__ . '/views/review.php',
 					'dismissible' => false,
-					'notice_id'   => 'aae_review7',
+					'notice_id'   => 'aae_review',
 					'style'       => 'border-left-color: #FC6848;',
 				)
 			);
