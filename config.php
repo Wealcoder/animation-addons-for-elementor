@@ -1013,6 +1013,28 @@ $config = array(
 						'youtube_url'  => '',
 						'description'  => 'Animate SVG paths with precision using GSAP’s smooth drawing effect, enhancing your web visuals.',
 					),
+					'cube-scroll-reveal'         => array(
+						'label'        => 'Cube Scroll Reveal',
+						'location'     => array(
+							'cTab' => 'all',
+						),
+						'is_active'    => false,
+						'is_pro'       => true,
+						'is_extension' => false,
+						'is_upcoming'  => false,
+						'keywords' => [
+							"cube scroll reveal",
+							"scroll reveal",
+							"cube",
+							"reveal animation",
+						],
+						'order' => 16,
+						'icon'         => 'wcf-icon-GSAP-DrawSvg',
+						'demo_url'     => 'https://animation-addons.com/widgets/aae-gsap-drawsvg',
+						'doc_url'      => 'https://animation-addons.com/docs/animations-widgets/gsap-drawsvg/',
+						'youtube_url'  => '',
+						'description'  => 'Cube scroll reveal.',
+					),
 				),
 			),
 			'hf-elements'        => array(

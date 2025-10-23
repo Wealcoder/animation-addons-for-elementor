@@ -884,7 +884,6 @@ class Plugin
 		}
 	}
 
-
 	/**
 	 * Widget Category
 	 *
@@ -961,7 +960,6 @@ class Plugin
 
 		require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
 
-
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
@@ -993,7 +991,6 @@ class Plugin
 		}
 		return add_query_arg('aaeid', 1, $url);
 	}
-
 
 	public function print_templates()
 	{
