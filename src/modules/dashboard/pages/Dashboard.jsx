@@ -5,22 +5,24 @@ import LatestBlog from "@/components/dashboard/LatestBlog";
 import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
-import HeroBanner from "../../../../public/images/hero-banner.jpg";
+import HeroBanner from "../../../../public/images/dashboard-hero-banner.png";
 import QuickAccess from "@/components/dashboard/QuickAccess";
 
 const Dashboard = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative">
-        <img
-          src={HeroBanner}
+        <video
+          src={ window.innerWidth < 768 ? WCF_ADDONS_ADMIN.video_link.mobile : WCF_ADDONS_ADMIN.video_link.desktop }
           className="w-full h-full rounded-[10px]"
-          alt="Banner"
+          poster={HeroBanner}
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls={false}
         />
-        <Badge
-          className="absolute bottom-[34px] right-[20px]"
-          variant="version"
-        >
+        <Badge className="absolute bottom-[10px] left-[6px]" variant="version">
           Ver. {WCF_ADDONS_ADMIN?.version}
         </Badge>
       </div>

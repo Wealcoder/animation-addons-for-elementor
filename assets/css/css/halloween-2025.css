@@ -494,7 +494,7 @@
   color: var(--white);
   background-color: var(--halloween-bg);
   text-decoration: none;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border: 1px solid transparent;
   transition: 0.3s ease-in-out;
   border-radius: 4px;

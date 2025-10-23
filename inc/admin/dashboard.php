@@ -335,7 +335,11 @@ class WCF_Admin_Init
 				'version'             => WCF_ADDONS_VERSION,
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
-				'template_menu' => $this->get_template_menu_data()
+				'template_menu' => $this->get_template_menu_data(),
+				'video_link' => array(
+					'desktop' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-desktop.mp4',
+					'mobile' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-mobile.mp4',
+				),
 			);
 
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
