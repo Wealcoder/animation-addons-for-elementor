@@ -55,7 +55,7 @@ class Post_Title extends Widget_Base {
 				'type'         => \Elementor\Controls_Manager::SWITCHER,
 				'label_on'     => esc_html__( 'On', 'animation-addons-for-elementor' ),
 				'label_off'    => esc_html__( 'Off', 'animation-addons-for-elementor' ),
-				'default'      => 'yes',
+				'default'      => 'no',
 				'return_value' => 'yes',
 			)
 		);
