@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.3.16
+Stable tag: 2.4.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,12 +19,12 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 200+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
-[Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
+[Buy Pro Now – Get 70% Off!](https://animation-addons.com/pricing/)
 
 https://youtu.be/tRbvgq2gJF4
 
 **Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder**. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
-
+  
 ### Powerful GSAP Features for Advanced Animations
 🌟 ScrollTrigger
 🎨 GSAP Animation Builder
@@ -91,17 +91,20 @@ Once your website is designed with all the essential elements, enhance its funct
 **[Horizontal ScrollTrigger](https://animation-addons.com/extensions/horizontal-scroll/)**: Create animations when the user performs horizontal scrolling.
 **[DrawSVG](https://animation-addons.com/widgets/aae-gsap-drawsvg/)**: Reveal or hide the stroke of an SVG progressively.
 **[Portfolio Filter](https://animation-addons.com/docs/gsap-extensions/portfolio-filter/)**: Implement animated filters to organize and showcase portfolio items.
-**Animation Builder**: Create and customize animations with an intuitive, user-friendly interface.
+**Animation Builder**: Design powerful animations visually—no coding needed. Bring your Elementor pages to life in minutes!
 
 
 ### General Extensions:
 
+**[CodeSnippet](https://animation-addons.com/docs/general-extensions/code-snippet/)**: Add custom CSS, JS or PHP right inside Elementor to fine-tune designs without extra plugins.
 **[Custom CSS](https://animation-addons.com/docs/general-extensions/custom-css/)**: Add custom CSS styles directly within Elementor for precise design control.
 **[Wrapper Link](https://animation-addons.com/docs/general-extensions/wrapper-link/)**: Transform entire container sections into clickable links for seamless navigation.
 **[Popup](https://animation-addons.com/extensions/pop-up/)**: Create engaging popups to enhance user interaction and showcase important content.
 **[Tilt Effect](https://animation-addons.com/docs/general-extensions/tilt-effect-extensions/)**: Tilt an element based on the visitor’s mouse movement for a dynamic visual experience.
 **[Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/)**: Display additional information about elements when users hover over them.
 **[Custom Fonts](https://animation-addons.com/docs/general-extensions/custom-fonts/)**: Integrate unique custom fonts to maintain a consistent brand identity.
+**[Custom Icon](https://animation-addons.com/docs/general-extensions/custom-icon/)**: Upload and use your own icon fonts, including IcoMoon, to keep your website perfectly on-brand.
+**[Custom PostType](https://animation-addons.com/docs/general-extensions/post-type-builder/)**: Create and manage custom post types easily without any coding—perfect for blogs, portfolios, or products.
 **Mega Menu**: Create a customizable, expansive mega menu for seamless navigation.
 
 
@@ -237,6 +240,12 @@ Take your website design to the next level with 100+ Elementor widgets. Whether 
 
 **[Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)**: Create eye-catching and engaging animated headlines.
 
+**[Scrollmotion Cards](https://animation-addons.com/docs/advanced-widgets/scrollmotion-cards/)**: Add stunning scroll-triggered animated cards.
+
+**[Nested Slider](https://animation-addons.com/widgets/nested-slider-widget-for-elementor/)**: Create advanced multi-layer sliders with smooth animations and full Elementor control.
+
+**[Vertical Marquee](https://animation-addons.com/docs/advanced-widgets/vertical-marquee/)**: Add smooth, continuous vertical scrolling text or images to grab attention effortlessly.
+
 ##  Animation Addons for Elementor: Key Features
 
 ###Massive Website Template Library
@@ -275,6 +284,8 @@ This template library is specifically crafted for developers, designers, and age
 🔵 Perspective & Motion Enhancements
 
 💡 Unlock next-level animations with **Animation Addons for Elementor!**
+
+https://youtu.be/LD2mr5dHEng
 
 ### 100+ Elementor Widgets:
 Unlock endless design possibilities with 100+ advanced Elementor widgets. From dynamic sliders, service boxes, and portfolio grids to progress bars, accordions, and featured post images, these widgets enhance user engagement and optimize website functionality without the need for coding.
@@ -430,6 +441,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.4 – 23 October 2025
+
+  - 🧩 **Improved:** Dashboard interface
+  - 🧩 **Improved:** Notice interface
 
 = 🌀 Animation Addons for Elementor v2.3.15 – 13 October 2025
 

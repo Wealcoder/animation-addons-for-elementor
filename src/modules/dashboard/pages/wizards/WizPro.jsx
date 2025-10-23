@@ -72,10 +72,10 @@ const WizPro = () => {
                           fill="#FC6848"
                         />
                       </svg>
-                      70+ Pro Widgets
+                      29+ Pro Widgets
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
-                      Achieve maximum functionality of your websites with 70+
+                      Achieve maximum functionality of your websites with 29+
                       premium widgets.
                     </h2>
                   </div>
@@ -102,11 +102,11 @@ const WizPro = () => {
                           fill="#FC6848"
                         />
                       </svg>
-                      20+ Pro GSAP Extensions
+                      24+ Pro GSAP Extensions
                     </span>
                     <h2 className="mt-6 text-[24px] font-medium">
                       Boost your website's advanced animation capabilities with
-                      20+ Pro GSAP extensions.
+                      24+ Pro GSAP extensions.
                     </h2>
                   </div>
                   <div className="xl:px-[50px]">
@@ -130,13 +130,13 @@ const WizPro = () => {
                     </p>
                     <div className="mt-10 flex items-center gap-9">
                       <div>
-                        <h3 className="text-[42px] text-text">100+</h3>
+                        <h3 className="text-[42px] text-text">200+</h3>
                         <p className="text-xs text-text-secondary uppercase mt-2.5">
                           Pre-built Websites
                         </p>
                       </div>
                       <div>
-                        <h3 className="text-[42px] text-text">20+</h3>
+                        <h3 className="text-[42px] text-text">54+</h3>
                         <p className="text-xs text-text-secondary uppercase mt-2.5">
                           Different Categories
                         </p>

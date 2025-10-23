@@ -50,6 +50,30 @@ export const freeProComparisonList = [
     },
   },
   {
+    name: "Loop Builder",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Nested Slider",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
     name: "Text & Image Animations",
     helpText: "",
     free: {
@@ -221,11 +245,11 @@ export const freeProComparisonList = [
     name: "Widgets",
     helpText: "",
     free: {
-      text: "68",
+      text: "73",
       icon: "",
     },
     pro1: {
-      text: "100+",
+      text: "102+",
       icon: "",
     },
   },
@@ -318,7 +342,7 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CrossIcon,
+      icon: CheckIcon,
     },
     pro1: {
       text: "",
@@ -330,7 +354,7 @@ export const freeProComparisonList = [
     helpText: "",
     free: {
       text: "",
-      icon: CrossIcon,
+      icon: CheckIcon,
     },
     pro1: {
       text: "",

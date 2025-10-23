@@ -91,10 +91,10 @@ const WizTemplate = () => {
               <div className="max-w-[470px] space-y-6">
                 <img src={TLogo} alt="TLogo" className="w-[36px] h-[36px]" />
                 <h2 className="text-[40px] font-medium">
-                  Explore 100+ Pre-built Websites.
+                  Explore 200+ Pre-built Websites.
                 </h2>
                 <p className="text-base text-text-secondary">
-                  Discover a diverse collection of over 100 customizable
+                  Discover a diverse collection of over 200 customizable
                   websites designed to meet your complete website needs.
                 </p>
               </div>
@@ -149,7 +149,7 @@ const WizTemplate = () => {
                     />
                   </svg>
                   <p className="text-base text-text">
-                    Templates includes 15+ Categories.
+                    Templates includes 54+ Categories.
                   </p>
                 </div>
                 <div className="flex gap-4 items-center bg-white px-5 py-4 rounded-xl">
