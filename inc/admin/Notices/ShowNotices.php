@@ -111,7 +111,7 @@ class ShowNotices {
 	}
 
 	/**
-	 * Add message to the list of messages.
+	 * Add a message to the list of messages.
 	 *
 	 * @param string $type Message type. Default 'success'.
 	 * @param string $message The message to add.
