@@ -443,16 +443,13 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 == Changelog ==
 
 = 🌀 Animation Addons for Elementor v2.4 – 23 October 2025
-
   - 🧩 **Improved:** Dashboard interface
   - 🧩 **Improved:** Notice interface
 
 = 🌀 Animation Addons for Elementor v2.3.15 – 13 October 2025
-
   - 🧩 **Fixed:** Resolved js on demand object
 
 = 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025
-
   - ⚡ **Improved:** On-demand JS loading for **Contact Form 7**, **Toggle Switcher**, and **Counter** widgets for faster performance.  
   - 📦 **Improved:** **Section Import Library** for smoother and more efficient section imports.  
   - 🎨 **Fixed:** Enhanced **UX for the plugin dashboard** with a cleaner and more user-friendly interface.  
@@ -610,10 +607,10 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 = Animation Addons for Elementor v1.1.3 – 21 October 2024 =
   - 🎨 **UI Enhancements:**
-    - Introduced **responsive title margin controls** in the **Counter Widget** for improved layout customization.
+  - Introduced **responsive title margin controls** in the **Counter Widget** for improved layout customization.
   - 🔄 **Bug Fixes:**
-    - Resolved **meta description duplication** issue for better SEO indexing.
-    - Fixed **GoodShare console errors** to prevent script conflicts.
+  - Resolved **meta description duplication** issue for better SEO indexing.
+  - Fixed **GoodShare console errors** to prevent script conflicts.
 
 = Animation Addons for Elementor v1.1.2 – 22 September 2024 =
   - 🎨 **UI Enhancement:** Added **responsive input field height controls** in the **Contact Form 7 Widget** for better mobile optimization.
@@ -621,7 +618,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 = Animation Addons for Elementor v1.1.1 – 14 September 2024 =
   - ⚡ **Performance Upgrade:**
     - Replaced the outdated `Waypoints.js` library with the **native Intersection Observer API** for **faster and more efficient animations**.
-  - 🛠️ **Fixed:** **Progress Bar Widget** issue where progress was not displaying correctly.
+    - 🛠️ **Fixed:** **Progress Bar Widget** issue where progress was not displaying correctly.
 
 = Animation Addons for Elementor v1.0.0 – 1 April 2024 =
-- 🚀 **Initial Release**
+ - 🚀 **Initial Release**
