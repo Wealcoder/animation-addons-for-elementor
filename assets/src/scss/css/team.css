@@ -1,0 +1,82 @@
+.elementor-widget-wcf--team li {
+  list-style: none;
+}
+.elementor-widget-wcf--team li svg {
+  width: 1em;
+  height: 1em;
+}
+.elementor-widget-wcf--team .name a {
+  transition: all 0.3s;
+}
+.elementor-widget-wcf--team .thumb {
+  display: block;
+  line-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+.elementor-widget-wcf--team .thumb img {
+  margin: 0;
+}
+.elementor-widget-wcf--team .designation {
+  color: #1C1D20;
+  font-size: 14px;
+}
+.elementor-widget-wcf--team .social-media {
+  display: inline-flex;
+  gap: 10px;
+}
+.elementor-widget-wcf--team .social-media a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--icon-size, 20px);
+  line-height: var(--icon-size, 20px);
+  width: calc(var(--icon-size, 20px) + 2 * var(--icon-padding, 1px));
+  height: calc(var(--icon-size, 20px) + 2 * var(--icon-padding, 1px));
+  transition: all 0.3s;
+}
+.elementor-widget-wcf--team.wcf-social-placement-bottom .social-media {
+  bottom: -30px;
+  left: 0;
+  width: 100%;
+}
+.elementor-widget-wcf--team.wcf-social-placement-bottom .wcf--team:hover .social-media {
+  bottom: 0;
+}
+.elementor-widget-wcf--team.wcf-social-placement-left .social-media {
+  left: -30px;
+}
+.elementor-widget-wcf--team.wcf-social-placement-left .wcf--team:hover .social-media {
+  left: 0;
+}
+.elementor-widget-wcf--team.wcf-social-placement-right .social-media {
+  right: -30px;
+}
+.elementor-widget-wcf--team.wcf-social-placement-right .wcf--team:hover .social-media {
+  right: 0;
+}
+.elementor-widget-wcf--team.wcf-social-placement-center .social-media {
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+}
+.elementor-widget-wcf--team.wcf-social-placement-center .wcf--team:hover .social-media {
+  top: 50%;
+}
+.elementor-widget-wcf--team.wcf-social-placement-left .social-media, .elementor-widget-wcf--team.wcf-social-placement-right .social-media {
+  height: 100%;
+  flex-direction: column;
+}
+.elementor-widget-wcf--team .wcf--team.style-2 .social-media {
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.5s;
+}
+.elementor-widget-wcf--team .wcf--team.style-2:hover .social-media {
+  opacity: 1;
+  visibility: visible;
+}/*# sourceMappingURL=team.css.map */

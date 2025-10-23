@@ -1246,8 +1246,6 @@ class Plugin
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	public function wp_head(){
 		
 			$data = apply_filters(
@@ -1271,7 +1269,6 @@ class Plugin
 	}
 
 
->>>>>>> a4ba19da87538e00977f9b73bde47edbfc6e8cad
 	/**
 	 *  Plugin class constructor
 	 *
