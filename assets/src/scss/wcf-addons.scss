@@ -1,22 +1,4 @@
-//text-invert
-.wcf-t-animation-text_invert {
-  .elementor-widget-container {
-    --text-color: 0, 0%, 0%;
 
-    .invert-line {
-      background-image: linear-gradient(to right, hsla(var(--text-color), 1) 50%, hsla(var(--text-color), 0.3) 50%);
-      background-size: 200% 100%;
-      background-position-x: 100%;
-      color: transparent;
-      background-clip: text;
-      -webkit-background-clip: text;
-    }
-  }
-}
-
-.anim-reveal-line {
-  overflow: hidden;
-}
 button{
   cursor: pointer;
 }

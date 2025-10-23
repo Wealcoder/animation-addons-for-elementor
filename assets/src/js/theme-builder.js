@@ -465,6 +465,10 @@
       } else if ("single" === type) {
         $(".single-location").removeClass("hidden");
         $(".hf-location, .archive-location").addClass("hidden");
+      } else if ("loop-builder" === type) {
+          $(".single-location").addClass("hidden");
+          $(".hf-location").addClass("hidden");
+          $(".hf-location, .archive-location").addClass("hidden");
       } else {
         $(".hf-location").removeClass("hidden");
         $(".single-location, .archive-location").addClass("hidden");
