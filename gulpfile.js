@@ -22,6 +22,7 @@ gulp.task('compile:js', () => {
     return gulp.src([
         'assets/src/js/**/*.js',
         'assets/src/code-snippet/**/*.js',
+        'assets/src/notices/**/*.js',
         '!assets/src/js/**/*.min.js',
         '!assets/src/js/utils/*.min.js',
     ])
@@ -53,6 +54,8 @@ gulp.task('compile:scss', () => {
         'assets/src/scss/**/*.scss',
         'assets/src/code-snippet/**/*.scss',
         'assets/src/code-snippet/**/*.css',
+        'assets/src/notices/**/*.scss',
+        'assets/src/notices/**/*.css',
     ])
         .pipe(mode.development(sourcemaps.init({largeFile: true})))
         .pipe(sass().on('error', sass.logError))

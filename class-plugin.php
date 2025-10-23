@@ -948,6 +948,9 @@ class Plugin
 				// Include CodeSnippet Admin functionality.
 				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
 			}
+
+            include_once WCF_ADDONS_PATH . 'inc/admin/Notices/Notices.php';
+            include_once WCF_ADDONS_PATH . 'inc/admin/Notices/ShowNotices.php';
 		}
 
 		// Include CodeSnippet frontend functionality.

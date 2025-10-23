@@ -118,7 +118,7 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function __construct() {
-
+        add_option( 'aae_installed', wp_date( 'U' ) );
 		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
 		register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
 		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
