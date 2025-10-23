@@ -78,26 +78,26 @@ class Notices {
 		$installed_time = absint( get_option( 'aae_installed' ) );
 		$current_time   = absint( wp_date( 'U' ) );
 
-		if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
+		if ( defined( 'WCF_ADDONS_VERSION' ) ) {
 			wp_enqueue_style( 'aae-notice-halloween' );
 			$this->add(
 				array(
 					'message'     => __DIR__ . '/views/halloween-2025.php',
 					'notice_id'   => 'aae_halloween',
-					'style'       => 'border-left-color: #FC6848;',
+					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
 					'dismissible' => false,
 				)
 			);
 		}
 
 		// Show after 5 days.
-		if ( $installed_time && $current_time > ( $installed_time + ( -5 * DAY_IN_SECONDS ) ) ) {
+		if ( $installed_time && $current_time > ( $installed_time + ( 5 * DAY_IN_SECONDS ) ) ) {
 			$this->add(
 				array(
 					'message'     => __DIR__ . '/views/review.php',
 					'dismissible' => false,
 					'notice_id'   => 'aae_review',
-					'style'       => 'border-left-color: #FC6848;',
+					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
 				)
 			);
 		}
