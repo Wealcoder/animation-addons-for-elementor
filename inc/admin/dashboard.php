@@ -38,6 +38,7 @@ class WCF_Admin_Init
 	 * @var null
 	 */
 	private static $_instance = null;
+	private $plugin_file = null;
 
 	/**
 	 * [instance] Initializes a singleton instance
@@ -55,6 +56,7 @@ class WCF_Admin_Init
 
 	public function __construct()
 	{
+		$this->plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		$this->remove_all_notices();
 		$this->include();
 		$this->init();
@@ -113,9 +115,9 @@ class WCF_Admin_Init
 	}
 
 	public function dashboard_widget(){
+
 		
-		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
-		if ( file_exists( $plugin_file ) ) {
+		if ( file_exists( $this->plugin_file ) ) {
 			return;
 		}
 
@@ -380,7 +382,7 @@ class WCF_Admin_Init
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data(),
-				'hero' => defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
+				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
 				'video_link' => array(
 					'desktop' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-desktop.mp4',
 					'mobile' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-mobile.mp4',
