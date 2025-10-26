@@ -50,10 +50,6 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function __construct() {
-
-		if(defined( 'WCF_ADDONS_PRO_VERSION' )){
-			return;
-		}	
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_init', array( $this, 'add_admin_notices' ) );
