@@ -443,7 +443,10 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= 🌀 Animation Addons for Elementor v2.4 – 23 October 2025
+= 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
+  - 🧩 **Added:** Dashboard new widget  
+
+= 🌀 Animation Addons for Elementor v2.4.0 – 23 October 2025
   - 🧩 **Improved:** Dashboard interface
   - 🧩 **Improved:** Notice interface
 
