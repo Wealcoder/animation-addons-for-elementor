@@ -108,7 +108,51 @@ class WCF_Admin_Init
 		add_action('elementor/core/files/clear_cache', function () {
 			delete_transient('wcf_menu_42_data');
 		});
+
+		add_action( 'wp_dashboard_setup' , [$this , 'dashboard_widget'], 999 );
 	}
+
+	public function dashboard_widget(){
+		
+		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+		if ( file_exists( $plugin_file ) ) {
+			return;
+		}
+
+		wp_add_dashboard_widget(
+			'aae_dashboard_widget', 
+			'Animation Addons Overview', 
+			[$this , 'aae_render_dashboard_widget']  
+		);
+
+
+		global $wp_meta_boxes;
+
+		// Check that our widget actually exists before reordering
+		if (isset($wp_meta_boxes['dashboard']['normal']['core']['aae_dashboard_banner'])) {
+			// Get current dashboard widgets
+			$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+
+			// Backup our widget
+			$aae_widget_backup = [
+				'aae_dashboard_banner' => $normal_dashboard['aae_dashboard_banner']
+			];
+
+			// Remove from bottom and merge on top
+			unset($normal_dashboard['aae_dashboard_banner']);
+			$sorted_dashboard = array_merge($aae_widget_backup, $normal_dashboard);
+
+			// Assign back
+			$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+		}
+	}
+
+	function aae_render_dashboard_widget() {
+		$view = __DIR__ . '/banner/ads.php';		
+		require_once $view;
+	}
+
+
 	/**
 	 * Summary of elementor_disabled_elements
 	 *
