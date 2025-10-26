@@ -54,7 +54,7 @@ class Notices {
 
 		$this->plugin_prefix = 'aae_notice_';
 		add_action( 'wp_ajax_' . $this->plugin_prefix . '_dismiss_notice', array( $this, 'ajax_dismiss_notice' ) );
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		
 	}
 
 	/**

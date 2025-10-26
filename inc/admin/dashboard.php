@@ -336,6 +336,7 @@ class WCF_Admin_Init
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data(),
+				'hero' => defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
 				'video_link' => array(
 					'desktop' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-desktop.mp4',
 					'mobile' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-mobile.mp4',
@@ -503,7 +504,7 @@ class WCF_Admin_Init
 	 */
 	public function save_settings()
 	{
-		
+
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
@@ -532,7 +533,7 @@ class WCF_Admin_Init
 			} else {
 				update_option('wcf_extension_dashboardv2', true);
 			}
-			
+
 			$return_message = array(
 				'status' => $updated,
 				'total'  => is_array($actives) ? count($actives) : 0,
