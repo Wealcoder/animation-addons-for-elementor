@@ -565,13 +565,14 @@ class WCF_Admin_Init
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
-		wcf_get_nested_config_keys($settings, $foundkeys, $actives);
+		wcf_get_nested_active_config_keys($settings, $found, $actives);
+		wcf_get_nested_config_keys($settings, $foundkeys, $updatedSettings);
 
 		update_option('wcf_addons_setup_wizard', 'complete');
 		// update new settings
 		if (! empty($option_name)) {
 
-			$updated = update_option($option_name, $actives);
+			$updated = update_option($option_name, $updatedSettings);
 
 			if ($option_name == 'wcf_save_widgets') {
 				$this->sync_widgets_by_element_manager();
