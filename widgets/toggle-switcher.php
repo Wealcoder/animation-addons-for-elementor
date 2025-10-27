@@ -238,79 +238,60 @@ class Toggle_Switcher extends Widget_Base {
 		);
 
 		$this->end_controls_section();
-		// switcher wrapper
 
+		// switcher wrapper
 		$this->start_controls_section(
 			'section_style_switcher_wrap',
 			array(
-				'label'     => __( 'Switcher Wrap', 'animation-addons-for-elementor' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => array( 'element_list' => '1' ),
+				'label' => __( 'Switcher Wrapper', 'animation-addons-for-elementor' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			array(
+				'name'     => 'switcher_wrap_background',
+				'types'    => array( 'classic', 'gradient' ),
+				'selector' => '{{WRAPPER}} .slide-toggle-wrapper',
 			)
 		);
 
 		$this->add_responsive_control(
-			'switcher_wrapper_alignment',
+			'switcher_wrap_padding',
 			array(
-				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::CHOOSE,
-				'options'   => array(
-					'flex-start' => array(
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-text-align-left',
-					),
-					'center'     => array(
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-text-align-center',
-					),
-					'flex-end'   => array(
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
-						'icon'  => 'eicon-text-align-right',
-					),
-				),
-				'default'   => 'center',
-				'selectors' => array(
-					'{{WRAPPER}} .slide-toggle-wrapper' => 'justify-content: {{VALUE}};',
-				),
-			)
-		);
-
-		$this->add_responsive_control(
-			'switcher_wrapper_gap',
-			array(
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
-				'range'      => array(
-					'px' => array(
-						'min' => 0,
-						'max' => 100,
-					),
-				),
-				'default'    => array(
-					'unit' => 'px',
-					'size' => 10,
-				),
-				'selectors'  => array(
-					'{{WRAPPER}} .slide-toggle-wrapper' => 'gap: {{SIZE}}{{UNIT}};',
-				),
-			)
-		);
-
-		$this->add_responsive_control(
-			'switcher_wrapper_margin',
-			array(
-				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => array( 'px', '%', 'em' ),
+				'size_units' => array( 'px', '%' ),
 				'selectors'  => array(
-					'{{WRAPPER}} .slide-toggle-wrapper' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .slide-toggle-wrapper' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			array(
+				'name'     => 'switcher_wrap_border',
+				'selector' => '{{WRAPPER}} .slide-toggle-wrapper',
+			)
+		);
+
+		$this->add_control(
+			'switcher_wrap_radius',
+			array(
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .slide-toggle-wrapper' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				),
 			)
 		);
 
 		$this->end_controls_section();
 
+		// switcher.
 		$this->start_controls_section(
 			'section_style_Switcher',
 			array(
@@ -469,7 +450,7 @@ class Toggle_Switcher extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// title
+		// title.
 		$this->start_controls_section(
 			'section_style_title',
 			array(
