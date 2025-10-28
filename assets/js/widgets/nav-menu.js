@@ -8,11 +8,26 @@ window.addEventListener("elementor/frontend/init", () => {
   class WcfNavMenu extends Base {
     bindEvents() {
       this.run();
-      window.addEventListener("resize", () => this.mobileMenu());
+      window.addEventListener("resize", () => {
+        this.mobileMenu();
+        this.reRunForMobile();
+      });
     }
 
     run() {
       this.mobileMenu();
+    }
+
+    // ✅ Function to re-run only once when device < 767px
+    reRunForMobile() {
+      const width = window.innerWidth;
+      if (width < 767 && !this._rerunTriggered) {
+        this._rerunTriggered = true;
+        console.log("Re-running nav menu for mobile view");
+        this.mobileMenu(); // call your existing logic again
+      } else if (width >= 767) {
+        this._rerunTriggered = false; // reset when back to desktop
+      }
     }
 
     mobileMenu() {
