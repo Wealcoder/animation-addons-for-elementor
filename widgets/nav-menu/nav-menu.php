@@ -1293,6 +1293,32 @@ class Nav_Menu extends Widget_Base {
 				],
 			]
 		);
+		$this->add_responsive_control(
+			'mobile_menu_back_gap',
+			[
+				'label' => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+						'step' => 5,
+					],
+					'%' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => '%',
+					'size' => 50,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .nav-back-link' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
 
 		$this->start_controls_tabs(
 			'mobile_menu_back_style_tabs'
