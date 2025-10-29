@@ -90,7 +90,7 @@ window.addEventListener("elementor/frontend/init", () => {
         });
       });
 
-      // ✅ Fixed submenu toggle logic (multi-level support)
+      // Fixed submenu toggle logic (multi-level support)
       this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
         indicator.addEventListener("click", (e) => {
           e.preventDefault();
