@@ -134,7 +134,20 @@ class Nav_Menu extends Widget_Base {
 		$this->add_control(
 			'submenu_indicator',
 			[
-				'label'       => esc_html__( 'Submenu Indicator', 'animation-addons-for-elementor' ),
+				'label'       => esc_html__( 'Down Indicator', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::ICONS,
+				'skin'        => 'inline',
+				'label_block' => false,
+				'default'     => [
+					'value'   => 'fas fa-angle-down',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+		$this->add_control(
+			'innersubmenu_indicator_icon',
+			[
+				'label'       => esc_html__( 'Right Indicator', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
@@ -1293,6 +1306,32 @@ class Nav_Menu extends Widget_Base {
 				],
 			]
 		);
+		$this->add_responsive_control(
+			'mobile_menu_back_gap',
+			[
+				'label' => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+						'step' => 5,
+					],
+					'%' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => '%',
+					'size' => 50,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .nav-back-link' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
 
 		$this->start_controls_tabs(
 			'mobile_menu_back_style_tabs'
@@ -1448,6 +1487,7 @@ class Nav_Menu extends Widget_Base {
 			'container_class'        => 'wcf-nav-menu-container',
 			'menu_class'             => 'wcf-nav-menu-nav ' . 'menu-layout-' . $settings['menu_layout'],			
 			'submenu_indicator_icon' => Icons_Manager::try_get_icon_html( $settings['submenu_indicator'], [ 'aria-hidden' => 'true' ] ),
+			'innersubmenu_indicator_icon' => isset($settings['innersubmenu_indicator_icon']['library']) && $settings['innersubmenu_indicator_icon']['library'] !='' ? Icons_Manager::try_get_icon_html( $settings['innersubmenu_indicator_icon'], [ 'aria-hidden' => 'true' ] ): Icons_Manager::try_get_icon_html( $settings['submenu_indicator'], [ 'aria-hidden' => 'true' ] ),
 			'walker'                 => ( class_exists( 'WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker' ) ? new WCF_Menu_Walker(['remove_span'=> $remove_span]) : '' )
 		];
 

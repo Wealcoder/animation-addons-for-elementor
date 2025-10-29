@@ -78,7 +78,6 @@
   animation: backgroundPulse 8s ease-in-out infinite;
   overflow: hidden;
 }
-
 @media (max-width: 1366px) {
   .aae-review-wrapper {
     background-size: cover;
@@ -96,7 +95,6 @@
   grid-template-columns: 0.15fr 1fr;
   align-items: center;
 }
-
 @media (max-width: 1200px) {
   .aae-review-item {
     grid-template-columns: 0.2fr 1fr;
@@ -108,13 +106,13 @@
     gap: 30px;
   }
 }
+
 .aae-review-logo {
   display: flex;
   align-items: center;
   justify-content: end;
   padding-right: 35px;
 }
-
 @media (max-width: 767px) {
   .aae-review-logo {
     padding-right: 0;
@@ -126,6 +124,7 @@
     margin-left: 15px;
   }
 }
+
 .aae-review-logo img {
   animation: slideInLeft 0.8s ease-out;
 }
@@ -134,7 +133,6 @@
   position: relative;
   padding-left: 40px;
 }
-
 @media (max-width: 767px) {
   .aae-review-content {
     padding-left: 15px;
@@ -150,12 +148,12 @@
   position: absolute;
   background: linear-gradient(189deg, rgba(102, 102, 102, 0) 0%, rgba(102, 102, 102, 0.4) 50%, rgba(102, 102, 102, 0) 100%);
 }
-
 @media (max-width: 767px) {
   .aae-review-content::before {
     display: none;
   }
 }
+
 .aae-review-title {
   font-style: normal;
   font-weight: 400;
@@ -166,11 +164,9 @@
   margin-bottom: 15px;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
-
 .aae-review-title span {
   position: relative;
 }
-
 .aae-review-title span::before {
   content: "";
   position: absolute;
@@ -194,7 +190,6 @@
   animation: fadeInUp 0.8s ease-out 0.4s both;
   max-width: 85%;
 }
-
 @media (max-width: 1366px) {
   .aae-review-text {
     max-width: 100%;
@@ -204,7 +199,6 @@
   color: #121212;
   transition: 0.2s ease-in-out;
 }
-
 .aae-review-text a:hover {
   color: #f6502c;
   text-decoration: none;
@@ -238,20 +232,17 @@
   align-items: center;
   gap: 5px;
 }
-
 .aae-review-btn.outline {
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.3);
   color: rgba(0, 0, 0, 0.3);
 }
-
 .aae-review-btn.outline:hover {
   background: var(--review-bg);
   color: var(--white);
   border: 1px solid transparent;
   animation: buttonShake 0.5s ease-in-out;
 }
-
 .aae-review-btn:hover {
   animation: buttonShake 0.5s ease-in-out;
   color: var(--white);
@@ -268,7 +259,6 @@
   top: 37px;
   width: 160px;
 }
-
 @media (max-width: 1366px) {
   .aae-review-end-shape {
     display: none;
@@ -285,13 +275,13 @@
     display: none;
   }
 }
+
 .aae-review-close {
   position: absolute;
   right: 10px;
   top: 6px;
   text-decoration: none;
 }
-
 .aae-review-close span {
   color: rgba(246, 80, 44, 0.3);
   font-size: 14px;
@@ -299,8 +289,7 @@
   border-radius: 50%;
   border: 1px solid rgba(246, 80, 44, 0.3);
 }
-
 .aae-review-close span:hover {
   color: #f6502c;
   border: 1px solid #f6502c;
-} 
+}/*# sourceMappingURL=notice.css.map */
