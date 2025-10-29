@@ -237,8 +237,11 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		$submenu_indicator = '';
 		if ( in_array( 'menu-item-has-children', $classes ) || ! empty( $buildercontent ) ) {
 			// Use an if statement to conditionally display the submenu indicator icon
-			if ( ! empty( $args->submenu_indicator_icon ) ) {
+			if ( ! empty( $args->submenu_indicator_icon ) && $depth == 0 ) {
 				$submenu_indicator .= '<span class="wcf-submenu-indicator">' . $args->submenu_indicator_icon . '</span>';
+			}
+			if ( ! empty( $args->innersubmenu_indicator_icon ) && $depth !== 0 ) {
+				$submenu_indicator .= '<span class="wcf-submenu-indicator">' . $args->innersubmenu_indicator_icon . '</span>';
 			}
 		}
 		
