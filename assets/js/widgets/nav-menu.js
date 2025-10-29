@@ -18,7 +18,7 @@ window.addEventListener("elementor/frontend/init", () => {
       this.mobileMenu();
     }
 
-    // ✅ Function to re-run only once when device < 767px
+    // Function to re-run only once when device < 767px
     reRunForMobile() {
       const width = window.innerWidth;
       if (width < 767 && !this._rerunTriggered) {
@@ -109,16 +109,19 @@ window.addEventListener("elementor/frontend/init", () => {
       // Open / Close menu buttons
       this.findElement(".wcf-menu-hamburger")?.addEventListener("click", () => {
         navMenu.classList.add("wcf-nav-is-toggled");
+        document.body.style.overflow = 'hidden';
       });
 
       this.findElement(".wcf-menu-close")?.addEventListener("click", () => {
         navMenu.classList.remove("wcf-nav-is-toggled");
+        document.body.style.overflow = 'auto';
       });
 
       // Click outside to close
       document.addEventListener("mouseup", (e) => {
         if (!container?.contains(e.target)) {
           navMenu.classList.remove("wcf-nav-is-toggled");
+          document.body.style.overflow = 'auto';
         }
       });
     }
