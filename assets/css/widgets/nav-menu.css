@@ -316,13 +316,13 @@
   transform: translateY(-50%) scaleX(1);
   transform-origin: bottom left;
 }
-.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a .menu-text {
+.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a {
   position: relative;
   transition: transform 0.3s;
   transform-origin: 50% 0;
   transform-style: preserve-3d;
 }
-.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a .menu-text:before {
+.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a::after {
   position: absolute;
   top: 100%;
   left: 0;
@@ -333,6 +333,6 @@
   transform-origin: 50% 0;
   text-align: center;
 }
-.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a:hover .menu-text {
+.wcf__nav-menu.desktop-menu-active.hover-pointer-flip a:hover::after {
   transform: rotateX(90deg) translateY(-12px);
 }

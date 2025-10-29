@@ -58,7 +58,6 @@ window.addEventListener("elementor/frontend/init", () => {
 
       // === Desktop Mode ===
       if (breakpoint !== "all" && deviceWidth > breakpoint) {
-        // Remove back links if present
         navItems.forEach((item) => {
           const firstLi = item.querySelector(".sub-menu li:first-child");
           if (firstLi?.querySelector(".nav-back-link")) {
@@ -87,20 +86,22 @@ window.addEventListener("elementor/frontend/init", () => {
         backLink?.addEventListener("click", (e) => {
           e.preventDefault();
           item.classList.remove("active");
+          item.parentElement.closest(".menu-item")?.classList.add("active");
         });
       });
 
-      // Submenu toggle (mobile)
+      // ✅ Fixed submenu toggle logic (multi-level support)
       this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
         indicator.addEventListener("click", (e) => {
           e.preventDefault();
           const menuItem = indicator.closest(".menu-item");
           if (!menuItem) return;
 
-          menuItem
-            .closest(".wcf-nav-menu-nav")
-            ?.querySelectorAll(".menu-item.active")
-            .forEach((el) => el.classList.remove("active"));
+          // Only close siblings, not all
+          const siblingItems = menuItem.parentElement.querySelectorAll(":scope > .menu-item.active");
+          siblingItems.forEach((el) => {
+            if (el !== menuItem) el.classList.remove("active");
+          });
 
           menuItem.classList.toggle("active");
         });

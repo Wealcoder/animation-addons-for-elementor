@@ -392,12 +392,11 @@
       }
 
       &-flip a {
-        .menu-text{
           position: relative;
           transition: transform 0.3s;
           transform-origin: 50% 0;
           transform-style: preserve-3d;
-          &:before {
+          &::after {
             position: absolute;
             top: 100%;
             left: 0;
@@ -408,13 +407,11 @@
             transform-origin: 50% 0;
             text-align: center;
           }
-        }
 
         &:hover{
-
-          .menu-text {
-            transform: rotateX(90deg) translateY(-12px);
-          }
+            &::after{
+              transform: rotateX(90deg) translateY(-12px);
+            }
         }
       }
     }
