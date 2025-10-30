@@ -811,6 +811,13 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			),
+			'nav-menu' => array(
+				'handler' => 'wcf--nav-menu',
+				'src'     => 'widgets/nav-menu.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			),
 		);
 	}
 
