@@ -1,121 +1,143 @@
-( function( $ ) {
-    /**
-     * @param $scope The Widget wrapper element as a jQuery element
-     * @param $ The jQuery alias
-     */
+/**
+ * WCF Nav Menu 
+ */
 
-    // Make sure you run this code under Elementor.
-    $( window ).on( 'elementor/frontend/init', function() {
-        let adminbar_height = $('#wpadminbar').height();
+window.addEventListener("elementor/frontend/init", () => {
+  const Base = elementorModules.frontend.handlers.Base;
 
-        const device_width = $(window).width();
-        const elementorBreakpoints = elementorFrontend.config.responsive.activeBreakpoints;
-        const Modules = elementorModules.frontend.handlers.Base;
+  class WcfNavMenu extends Base {
+    bindEvents() {
+      this.run();
+      window.addEventListener("resize", () => {
+        this.mobileMenu();
+        this.reRunForMobile();
+      });
+    }
 
-        const WcfNavMenu = Modules.extend({
-            bindEvents: function bindEvents() {
-                this.run();
-            },
+    run() {
+      this.mobileMenu();
+    }
 
-            run: function run() {
+    // Function to re-run only once when device < 767px
+    reRunForMobile() {
+      const width = window.innerWidth;
+      if (width < 767 && !this._rerunTriggered) {
+        this._rerunTriggered = true;
+        console.log("Re-running nav menu for mobile view");
+        this.mobileMenu(); // call your existing logic again
+      } else if (width >= 767) {
+        this._rerunTriggered = false; // reset when back to desktop
+      }
+    }
 
-                $(window).resize(() => {
-                    this.mobileMenu();
-                });
+    mobileMenu() {
+      const adminbar = document.querySelector("#wpadminbar");
+      const adminbarHeight = adminbar ? adminbar.offsetHeight : 0;
 
-                this.mobileMenu();
-            },
+      const deviceWidth = window.innerWidth;
+      const navMenu = this.findElement(".wcf__nav-menu");
+      const container = this.findElement(".wcf-nav-menu-container");
+      const navItems = this.findElements(".wcf-nav-menu-nav .menu-item-has-children");
+      const mobileBackHtml = this.findElement(".mobile-sub-back")?.innerHTML || "Back";
 
-            mobileMenu: function () {
-                const device_width = $(window).width();
-                let breakpoint = 0;
-                let mobile_back = this.findElement('.mobile-sub-back').html();
+      // Get breakpoint
+      let breakpoint = 0;
+      const bpSetting = this.getElementSettings("mobile_menu_breakpoint");
+      const bpConfig = elementorFrontend.config.responsive.activeBreakpoints;
 
-                if (this.getElementSettings('mobile_menu_breakpoint') && 'all' !== this.getElementSettings('mobile_menu_breakpoint')) {
-                    breakpoint = elementorBreakpoints[this.getElementSettings('mobile_menu_breakpoint')].value;
-                }
+      if (bpSetting && bpSetting !== "all") {
+        breakpoint = bpConfig[bpSetting].value;
+      } else {
+        breakpoint = "all";
+      }
 
-                //mobile menu in all device
-                if ('all' === this.getElementSettings('mobile_menu_breakpoint')) {
-                    breakpoint = 'all';
-                }
+      // Reset classes
+      navMenu.classList.remove("desktop-menu-active", "mobile-menu-active", "wcf-nav-is-toggled");
 
-                //mobile menu active
-                this.findElement('.wcf__nav-menu').removeClass('desktop-menu-active');
-                this.findElement('.wcf__nav-menu').removeClass('mobile-menu-active')
+      const backLinkHTML = `<li class="menu-item"><a class="nav-back-link" href="#">${mobileBackHtml}</a></li>`;
 
-                const navExpand = [].slice.call(this.findElement('.wcf-nav-menu-nav .menu-item-has-children'))
-                const backLink = `<li class="menu-item"><a class="nav-back-link" href="javascript:;">${mobile_back}</a></li>`;
-
-                //desktop menu active
-                if (device_width > breakpoint) {
-                    //remove back link
-                    navExpand.forEach(item => {
-                        if ($(item).find('.nav-back-link').length) {
-                            $(item.querySelector('.sub-menu li:first-child')).remove()
-                        }
-                    })
-
-                    this.findElement('.wcf__nav-menu').removeClass('mobile-menu-active');
-                    this.findElement('.wcf__nav-menu').addClass('desktop-menu-active');
-                    this.findElement('.wcf__nav-menu').removeClass('wcf-nav-is-toggled');
-                    return
-                }
-
-                //mobile menu active
-                this.findElement('.wcf__nav-menu').removeClass('desktop-menu-active');
-                this.findElement('.wcf__nav-menu').addClass('mobile-menu-active')
-
-                //set mobile menu top value
-                this.findElement('.wcf-nav-menu-container').css({"top": adminbar_height});
-
-                navExpand.forEach(item => {
-
-                    if (0 === $(item).find('.nav-back-link').length) {
-                        item.querySelector('.sub-menu').insertAdjacentHTML('afterbegin', backLink)
-                    }
-
-                    item.querySelector('.nav-back-link').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        item.classList.remove('active')
-                    })
-                })
-
-                //mega menu mobile active
-                const sub_expand = this.findElement('.wcf-submenu-indicator');
-                sub_expand.on('click', function (e) {
-                    e.preventDefault();
-                    let menu_item = $(this).closest('.menu-item');
-                    menu_item.siblings().removeClass('active')
-                    menu_item.toggleClass('active');
-                })
-
-                //open menu
-                this.findElement('.wcf-menu-hamburger').on('click', () => {
-                    this.findElement('.wcf__nav-menu').addClass('wcf-nav-is-toggled')
-                })
-
-                //close menu
-                this.findElement('.wcf-menu-close').on('click', () => {
-                    this.findElement('.wcf__nav-menu').removeClass('wcf-nav-is-toggled')
-                })
-
-                //close menu outside menu area click
-                $(document).mouseup((e) => {
-                    let container = this.findElement('.wcf-nav-menu-container');
-                    // If the target of the click isn't the container
-                    if (!container.is(e.target) && container.has(e.target).length === 0) {
-                        this.findElement('.wcf__nav-menu').removeClass('wcf-nav-is-toggled')
-                    }
-                });
-            }
+      // === Desktop Mode ===
+      if (breakpoint !== "all" && deviceWidth > breakpoint) {
+        navItems.forEach((item) => {
+          const firstLi = item.querySelector(".sub-menu li:first-child");
+          if (firstLi?.querySelector(".nav-back-link")) {
+            firstLi.remove();
+          }
         });
 
-        elementorFrontend.hooks.addAction('frontend/element_ready/wcf--nav-menu.default', function ($scope) {
+        navMenu.classList.add("desktop-menu-active");
+        return;
+      }
 
-            elementorFrontend.elementsHandler.addHandler(WcfNavMenu, {
-                $element: $scope
-            });
+      // === Mobile Mode ===
+      navMenu.classList.add("mobile-menu-active");
+      if (container) container.style.top = `${adminbarHeight}px`;
+
+      // Insert back buttons
+      navItems.forEach((item) => {
+        const subMenu = item.querySelector(".sub-menu");
+        if (!subMenu) return;
+
+        if (!subMenu.querySelector(".nav-back-link")) {
+          subMenu.insertAdjacentHTML("afterbegin", backLinkHTML);
+        }
+
+        const backLink = subMenu.querySelector(".nav-back-link");
+        backLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          item.classList.remove("active");
+          item.parentElement.closest(".menu-item")?.classList.add("active");
         });
-    } );
-} )( jQuery );
+      });
+
+      // Fixed submenu toggle logic (multi-level support)
+      this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
+        indicator.addEventListener("click", (e) => {
+          e.preventDefault();
+          const menuItem = indicator.closest(".menu-item");
+          if (!menuItem) return;
+
+          // Only close siblings, not all
+          const siblingItems = menuItem.parentElement.querySelectorAll(":scope > .menu-item.active");
+          siblingItems.forEach((el) => {
+            if (el !== menuItem) el.classList.remove("active");
+          });
+
+          menuItem.classList.toggle("active");
+        });
+      });
+
+      // Open / Close menu buttons
+      this.findElement(".wcf-menu-hamburger")?.addEventListener("click", () => {
+        navMenu.classList.add("wcf-nav-is-toggled");
+        document.body.style.overflow = 'hidden';
+      });
+
+      this.findElement(".wcf-menu-close")?.addEventListener("click", () => {
+        navMenu.classList.remove("wcf-nav-is-toggled");
+        document.body.style.overflow = 'auto';
+      });
+
+      // Click outside to close
+      document.addEventListener("mouseup", (e) => {
+        if (!container?.contains(e.target)) {
+          navMenu.classList.remove("wcf-nav-is-toggled");
+          document.body.style.overflow = 'auto';
+        }
+      });
+    }
+
+    // Helper functions for scoped querying
+    findElement(selector) {
+      return this.$element[0]?.querySelector(selector);
+    }
+    findElements(selector) {
+      return Array.from(this.$element[0]?.querySelectorAll(selector) || []);
+    }
+  }
+
+  // Elementor Hook
+  elementorFrontend.hooks.addAction("frontend/element_ready/wcf--nav-menu.default", ($scope) => {
+    elementorFrontend.elementsHandler.addHandler(WcfNavMenu, { $element: $scope });
+  });
+});

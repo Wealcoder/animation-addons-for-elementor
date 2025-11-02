@@ -1,27 +1,19 @@
+window.addEventListener("elementor/frontend/init", () => {
+    const toggleSwitcher = ($scope) => {
+        const checked = $scope.querySelectorAll("input");
+        const togglePanes = $scope.querySelectorAll(".toggle-pane");
+        const toggleLabels = $scope.querySelectorAll(".before_label, .after_label");
 
-/* global WCF_ADDONS_JS */
-
-(function ($) {
-  /**
-   * @param $scope The Widget wrapper element as a jQuery element
-   * @param $ The jQuery alias
-   */
-  // Make sure you run this code under Elementor.
-  $(window).on("elementor/frontend/init", function () {
-    //Toggle Switcher
-    const toggle_switcher = function ($scope) {
-      const checked = $("input", $scope);
-      const toggle_pane = $(".toggle-pane", $scope);
-      const toggle_label = $(".before_label, .after_label", $scope);      
-      checked.change(function () {
-        toggle_pane.toggleClass("show");
-        toggle_label.toggleClass("active");
-      });
+        checked.forEach((input) => {
+            input.addEventListener("change", () => {
+                togglePanes.forEach((pane) => pane.classList.toggle("show"));
+                toggleLabels.forEach((label) => label.classList.toggle("active"));
+            });
+        });
     };
-    elementorFrontend.hooks.addAction(
-      `frontend/element_ready/wcf--toggle-switch.default`,
-      toggle_switcher
-    );
 
-  });
-})(jQuery);
+    elementorFrontend.hooks.addAction(
+        "frontend/element_ready/wcf--toggle-switch.default",
+        ($scope) => toggleSwitcher($scope[0] || $scope)
+    );
+});
