@@ -336,7 +336,7 @@ class Plugin
 				'nav-menu'          => array(
 					'handler' => 'wcf--nav-menu',
 					'src'     => 'widgets/nav-menu.min.js',
-					'dep'     => array('jquery'),
+					'dep'     => array(),
 					'version' => false,
 					'arg'     => true,
 				),
@@ -476,6 +476,13 @@ class Plugin
 				'aae--switcher-toggle'     => array(
 					'handler' => 'aae--switcher-toggle',
 					'src'     => 'widgets/toggle-switch.min.js',
+					'dep'     => array(),
+					'version' => false,
+					'arg'     => true,
+				),
+				'wcf-image-accordion'     => array(
+					'handler' => 'wcf--image-accordion',
+					'src'     => 'widgets/image-accordion.min.js',
 					'dep'     => array(),
 					'version' => false,
 					'arg'     => true,
@@ -807,6 +814,13 @@ class Plugin
 			'mailchimp' => array(
 				'handler' => 'wcf--mailchimp',
 				'src'     => 'widgets/mailchimp.min.css',
+				'dep'     => [],
+				'version' => false,
+				'media'   => 'all',
+			),
+			'nav-menu' => array(
+				'handler' => 'wcf--nav-menu',
+				'src'     => 'widgets/nav-menu.min.css',
 				'dep'     => [],
 				'version' => false,
 				'media'   => 'all',

@@ -41,7 +41,7 @@ class Image_Accordion extends Widget_Base
 	 */
 	public function get_name()
 	{
-		return 'wcf--imag-accordion';
+		return 'wcf--image-accordion';
 	}
 
 	/**
@@ -95,7 +95,16 @@ class Image_Accordion extends Widget_Base
 	 */
 	public function get_style_depends()
 	{
-		return ['wcf--image-accordion', 'wcf--button'];
+		return ['wcf--image-accordion'];
+	}
+
+	/**
+	 * Requires js files.
+	 *
+	 * @return array
+	 */
+	public function get_script_depends() {
+		return [ 'wcf--image-accordion' ];
 	}
 
 	/**
