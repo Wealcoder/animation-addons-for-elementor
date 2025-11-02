@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -442,6 +442,9 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025
+  - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
 
 = 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
   - 🧩 **Added:** Dashboard new widget  
