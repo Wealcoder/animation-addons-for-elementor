@@ -12,12 +12,6 @@ defined( 'ABSPATH' ) || exit;
 
 ?>
 <div class="aae-halloween-wrapper">
-	<div class="falling-element">👻</div>
-	<div class="falling-element">🎃</div>
-	<div class="falling-element">🎃</div>
-	<div class="falling-element">🕷️</div>
-	<div class="falling-element">🦇</div>
-
 	<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/halloween-animation-addons.gif' ); ?>" class="aae-halloween-end-shape" alt="Animation Addons" />
 	<div class="aae-halloween-container">
 		<div class="aae-halloween-item">
@@ -25,12 +19,11 @@ defined( 'ABSPATH' ) || exit;
 				<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/halloween-offer-text.png' ); ?>" alt="Animation Addons" />
 			</div>
 			<div class="aae-halloween-content">
-				<h3 class="aae-halloween-title">🎃
+				<h3 class="aae-halloween-title">
 					<?php
 					echo wp_kses_post(
 						sprintf(
-							/* translators: %s: Halloween Deal for You */
-							__( 'Halloween Deal for You — Save up to <span>$1050!</span>', 'animation-addons-for-elementor' )
+							__( 'Black Friday Deal for You <span>$1050!</span>', 'animation-addons-for-elementor' )
 						)
 					);
 					?>
@@ -39,8 +32,7 @@ defined( 'ABSPATH' ) || exit;
 					<?php
 					echo wp_kses_post(
 						sprintf(
-							// translators: %1$s: Animation Addons for Elementor Pro link, %2$s: Discount Pricing page link.
-							__( 'Upgrade to %1$s and unlock advanced GSAP animations, templates, and features — all with a flat %2$s this <strong>Halloween!</strong>', 'animation-addons-for-elementor' ),
+							__( 'Upgrade to %1$s and unlock advanced GSAP animations, templates, and features — all with a flat %2$s this <strong>Black Friday!</strong>', 'animation-addons-for-elementor' ),
 							'<a href="https://animation-addons.com/" target="_blank"><strong>Animation Addons for Elementor Pro</strong></a>',
 							'<a href="https://animation-addons.com/pricing/" target="_blank"><strong>70% discount</strong></a>'
 						)
