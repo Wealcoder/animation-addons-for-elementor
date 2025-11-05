@@ -2373,8 +2373,8 @@ $config = array(
 						'location'     => array(
 							'cTab' => 'all',
 						),
-						'is_upcoming'  => true,
-						'is_pro'       => true,
+						'is_upcoming'  => false,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'keywords'     => array(
 							'loop grid',
@@ -2395,7 +2395,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_upcoming'  => true,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'keywords'     => array(
 							'loop grid carousel',

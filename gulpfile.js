@@ -54,6 +54,7 @@ gulp.task('compile:scss', () => {
         'assets/src/scss/**/*.scss',
         'assets/src/code-snippet/**/*.scss',
         'assets/src/code-snippet/**/*.css',
+        'assets/src/scss/loop-builder/**/*.css',
         'assets/src/notices/**/*.scss',
         'assets/src/notices/**/*.css',
     ])

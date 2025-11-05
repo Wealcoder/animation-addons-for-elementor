@@ -1,118 +1,280 @@
-.elementor-panel .elementor-element .icon .wcf::after {
-  content: "";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 18px;
-  height: 18px;
-  background-image: url("../images/wcf.png");
-  background-position: center center;
-  background-size: cover;
-  filter: grayscale(0);
-  transition: 0.3s;
+/* AAE Loop Builder - Editor Styles */
+.template-preview-container {
+  margin-top: 10px;
+  padding: 15px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 3px;
 }
 
-.elementor-panel .elementor-element:hover .icon .wcf::after {
-  filter: grayscale(0);
-  opacity: 1;
-  transform: scale(1.2);
+.template-preview h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 14px;
 }
 
-.wcf-logo::after {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  width: 16px;
-  height: 16px;
-  background-image: url("../images/wcf.png");
-  background-position: center center;
-  background-size: cover;
+.widget-preview {
+  padding: 8px;
+  margin: 5px 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  font-size: 12px;
+  color: #666;
 }
 
-.elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-] {
+.loading {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.error {
+  color: #d63638;
+  text-align: center;
+  font-style: italic;
+}
+
+.empty-template {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 10px;
+}
+
+/* Active Document Mode - Compact Bar Inside Editor Container */
+.aae-template-mode-bar {
+  position: relative;
+  width: 100%;
+  height: 32px;
+  background: linear-gradient(135deg, #2271b1 0%, #0c5d8f 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  z-index: 1;
+  font-size: 11px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.aae-template-mode-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.aae-template-mode-content i {
+  font-size: 13px;
+}
+
+.aae-template-mode-text {
+  margin-right: 4px;
+}
+
+.aae-template-mode-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 22px;
+  line-height: 1;
+}
+
+.aae-template-back-btn {
+  background: #d63638;
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.aae-template-back-btn:hover {
+  background: #b32d2e;
+}
+
+.aae-template-mode-bar button i {
+  font-size: 11px;
+}
+
+/* Make sure preview container accommodates the bar */
+.aae-template-editing-mode #elementor-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.aae-template-editing-mode #elementor-preview-responsive-wrapper {
+  flex: 1;
+}
+
+/* Template editing indicators in preview */
+.elementor-editor-active .e-loop-item {
+  border: 2px dashed #007cba;
   position: relative;
 }
-.elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-]:after {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  width: 16px;
-  height: 16px;
-  background-image: url("../images/wcf.png");
-  background-position: center center;
-  background-size: cover;
+
+.elementor-editor-active .e-loop-item::before {
+  content: "Template Item";
   position: absolute;
-  top: 50%;
-  inset-inline-end: 1em;
-  transform: translateY(-50%);
+  top: -20px;
+  left: 0;
+  /* background: #007cba; */
+  color: white;
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 3px 3px 0 0;
+  z-index: 100;
 }
 
-.elementor-control-content .wcfaddon-pro-notice {
-  padding: 15px 0;
+/* Template action buttons */
+.aae-template-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
-.elementor-control-content .wcfaddon-pro-notice-content {
+
+.aae-template-actions button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.aae-create-template {
+  background: #2271b1 !important;
+  color: white !important;
+}
+
+.aae-create-template:hover {
+  background: #135e96 !important;
+}
+
+.aae-edit-template {
+  background: #007cba !important;
+  color: white !important;
+}
+
+.aae-edit-template:hover {
+  background: #005a87 !important;
+}
+
+/* Template Query Control Actions */
+.elementor-control-template-query-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.elementor-control-template-query-actions button {
+  flex: 1;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 3px;
+  transition: background 0.4s ease;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(225deg, #F12529 10.04%, #FFA030 90.11%);
+  color: #fff;
+}
+
+.elementor-control-template-query-actions button:hover {
+  background: linear-gradient(225deg, #FFA030 10.04%, #F12529 90.11%);
+}
+
+.elementor-control-template-query-actions button:active {
+  transform: translateY(0);
+}
+
+.elementor-control-template-query-actions button[data-action=edit] {
+  background: linear-gradient(225deg, #F12529 10.04%, #FFA030 90.11%);
+  color: #fff;
+}
+
+.elementor-control-template-query-actions button[data-action=edit]:hover {
+  background: linear-gradient(225deg, #FFA030 10.04%, #F12529 90.11%);
+}
+
+.elementor-control-template-query-actions button i {
+  font-size: 13px;
+}
+
+.elementor-control-template-query-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Placeholder/Empty State Styling */
+.elementor-control-template_query .select2-container--default .select2-selection--single {
+  min-height: 38px;
+  border: 1px solid #d5d5d5;
+  border-radius: 3px;
+}
+
+.elementor-control-template_query .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 36px;
+  color: #666;
+}
+
+.elementor-control-template_query .select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Empty state message when no template selected */
+.elementor-control-template_query-empty-state {
+  margin-top: 10px;
+  padding: 20px 15px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px dashed #d0d5dd;
+  border-radius: 6px;
   text-align: center;
 }
-.elementor-control-content .wcfaddon-pro-notice-content h4 {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.4;
-  margin-top: 20px;
-}
-.elementor-control-content .wcfaddon-pro-notice-content p {
-  line-height: 1.8;
-  font-size: 11px;
-  margin-top: 5px;
-}
-.elementor-control-content .wcfaddon-pro-notice-content .elementor-button {
-  background-color: #d30c5c;
-  color: #fff;
-  padding: 7px 25px;
-  margin-top: 20px;
-  border: none;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.1);
-  transition: 0.5s;
+
+.elementor-control-template_query-empty-state i {
+  font-size: 32px;
+  color: #93c5fd;
+  margin-bottom: 10px;
+  display: block;
 }
 
-.elementor-panel-heading-title.elementor-section-title span.wcfpro_text {
-  background: #FC6848;
-  color: #fff;
-  font-size: 11px;
-  padding: 2px 6px 3px;
-  line-height: 1.3;
-  border-radius: 3px;
-  box-shadow: none;
-  position: absolute;
-  top: 14px;
-  right: 15px;
+.elementor-control-template_query-empty-state h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
 }
 
-.elementor-control-horizontal_scroll_breakpoint,
-.elementor-control-text_animation_breakpoint,
-.elementor-control-spin_text_scrub,
-.elementor-control-wcf_pin_breakpoint,
-.elementor-control-fade_animation_breakpoint {
-  display: none !important;
+.elementor-control-template_query-empty-state p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
 }
 
-.nmc_btn-wrap button {
-  border: 0;
-  padding: 9px 15px;
-  background: #f6502c;
-  color: #fff;
-  display: inline-block;
-  cursor: pointer;
+.elementor-editor-preview .custom-loop-container .elementor-add-section {
+  display: block !important;
 }
 
-.nmc-btn-run {
-  border: 0;
-  padding: 9px 15px;
-  background: #f6502c;
-  color: #fff;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.aae-motion-nested-card:has(.nmc-back-wrap) {
-  pointer-events: none;
+.custom-loop-container #elementor-add-new-section {
+  display: block !important;
 }
