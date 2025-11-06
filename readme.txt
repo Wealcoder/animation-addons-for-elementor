@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -443,8 +443,20 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
+  
+  - 🪟 **Offcanvas Widget:** Added new control options, updated markup for better flexibility, optimized CSS, and replaced jQuery with lightweight JavaScript for enhanced speed.
+
+  - 📱**Nav Menu Widget:**
+    - **Added** new control panel for customization.
+    - **Fixed** mobile menu click issue on devices under 767px by reloading JavaScript dynamically.
+    - **Converted** jQuery logic to pure JavaScript for improved performance.
+
+  - 🖼️ **Image Accordion Widget:** Fixed functionality issues and completely refactored to vanilla JavaScript.
+  - 🔘 **Toggle Switcher:** Resolved toggle issues and refactored to pure JavaScript.
+
 = 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025
-  - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
+    - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
 
 = 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
   - 🧩 **Added:** Dashboard new widget  
