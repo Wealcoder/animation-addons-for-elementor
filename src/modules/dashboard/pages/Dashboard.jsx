@@ -36,10 +36,26 @@ const Dashboard = () => {
             Ver. {WCF_ADDONS_ADMIN?.version}
           </Badge>
         </div>
+      ) : isInOfferPeriod() ? (
+        <a href="https://animation-addons.com/pricing" target="_blank">
+          <div className="relative">
+            <img
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              className="w-full h-full rounded-[10px]"
+              alt="Banner"
+            />
+            <Badge
+              className="absolute bottom-[34px] right-[20px] bg-white"
+              variant="version"
+            >
+              Ver. {WCF_ADDONS_ADMIN?.version}
+            </Badge>
+          </div>
+        </a>
       ) : (
         <div className="relative">
           <img
-            src={isInOfferPeriod() ? WCF_ADDONS_ADMIN.hero_offer : HeroBanner}
+            src={HeroBanner}
             className="w-full h-full rounded-[10px]"
             alt="Banner"
           />
