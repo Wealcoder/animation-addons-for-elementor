@@ -83,14 +83,14 @@ class Notices {
 		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		if ( !file_exists( $plugin_file ) ) {
 			wp_enqueue_style( 'aae-notice-halloween' );
-			$this->add(
-				array(
-					'message'     => __DIR__ . '/views/halloween-2025.php',
-					'notice_id'   => 'aae_halloween',
-					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
-					'dismissible' => false,
-				)
-			);
+			// $this->add(
+			// 	array(
+			// 		'message'     => __DIR__ . '/views/halloween-2025.php',
+			// 		'notice_id'   => 'aae_halloween',
+			// 		'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
+			// 		'dismissible' => false,
+			// 	)
+			// );
 		}
 		
 	}
