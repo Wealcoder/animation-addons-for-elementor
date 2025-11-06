@@ -12,11 +12,11 @@ defined( 'ABSPATH' ) || exit;
 
 ?>
 <div class="aae-halloween-wrapper">
-	<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/halloween-animation-addons.gif' ); ?>" class="aae-halloween-end-shape" alt="Animation Addons" />
+	<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/black-friday-shape-1.png' ); ?>" class="aae-halloween-end-shape" alt="Animation Addons" />
 	<div class="aae-halloween-container">
 		<div class="aae-halloween-item">
 			<div class="aae-halloween-logo">
-				<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/halloween-offer-text.png' ); ?>" alt="Animation Addons" />
+				<img src="<?php echo esc_url( WCF_ADDONS_URL . 'assets/images/notice/black-friday-offer.png' ); ?>" alt="Animation Addons" />
 			</div>
 			<div class="aae-halloween-content">
 				<h3 class="aae-halloween-title">

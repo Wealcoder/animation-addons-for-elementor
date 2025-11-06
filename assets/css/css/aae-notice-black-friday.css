@@ -289,10 +289,11 @@
 }
 
 .aae-halloween-wrapper {
-  background-image: url("../../images/notice/hallowen-bg.png");
+  background-color: #000;
+  background-image: url("../../images/notice/black-friday-bg-2025.png");
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  padding: 20px 0 27px 0;
+  padding: 5px 0 0px 0;
   position: relative;
   animation: backgroundPulse 8s ease-in-out infinite;
   overflow: hidden;
@@ -300,8 +301,12 @@
 @media (max-width: 1366px) {
   .aae-halloween-wrapper {
     background-size: cover;
-    padding-inline-start: 30px;
-    padding-inline-end: 30px;
+  }
+}
+@media (max-width: 767px) {
+  .aae-halloween-wrapper {
+    padding-top: 15px;
+    padding-bottom: 20px;
   }
 }
 
@@ -424,7 +429,7 @@
   font-size: 24px;
   line-height: 1.23;
   text-transform: capitalize;
-  color: #121212;
+  color: #fff;
   margin-bottom: 15px;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
@@ -451,7 +456,7 @@
   font-size: 15px;
   line-height: 1.5;
   letter-spacing: -0.01em;
-  color: #303030;
+  color: #D5D5D5;
   margin-bottom: 20px;
   animation: fadeInUp 0.8s ease-out 0.4s both;
 }
@@ -466,7 +471,7 @@
   }
 }
 .aae-halloween-text a {
-  color: #121212;
+  color: #fff;
   transition: 0.2s ease-in-out;
 }
 .aae-halloween-text a:hover {
@@ -504,8 +509,8 @@
 }
 .aae-halloween-btn.outline {
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  color: rgba(0, 0, 0, 0.3);
+  color: var(--white);
+  border: 1px solid var(--white);
 }
 .aae-halloween-btn.outline:hover {
   background: var(--halloween-bg);
@@ -525,7 +530,8 @@
 
 .aae-halloween-end-shape {
   position: absolute;
-  right: 110px;
+  right: 132px;
+  bottom: 0;
 }
 @media (max-width: 1366px) {
   .aae-halloween-end-shape {
@@ -551,11 +557,11 @@
   text-decoration: none;
 }
 .aae-halloween-close span {
-  color: rgba(246, 80, 44, 0.3);
+  color: #fff;
   font-size: 14px;
   padding: 2px;
   border-radius: 50%;
-  border: 1px solid rgba(246, 80, 44, 0.3);
+  border: 1px solid #fff;
 }
 .aae-halloween-close span:hover {
   color: #f6502c;
