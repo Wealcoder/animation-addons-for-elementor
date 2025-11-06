@@ -111,7 +111,7 @@ class WCF_Admin_Init
 			delete_transient('wcf_menu_42_data');
 		});
 
-		add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
+		//add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
 	}
 
 	public function dashboard_widget()

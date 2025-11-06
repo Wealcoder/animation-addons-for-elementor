@@ -5,7 +5,7 @@ import LatestBlog from "@/components/dashboard/LatestBlog";
 import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
-import HeroBanner from "../../../../public/images/dashboard-hero-banner.png";
+import HeroBanner from "../../../../public/images/hero-banner.jpg";
 import QuickAccess from "@/components/dashboard/QuickAccess";
 
 function isInOfferPeriod() {
@@ -39,11 +39,7 @@ const Dashboard = () => {
       ) : (
         <div className="relative">
           <img
-            src={
-              isInOfferPeriod()
-                ? WCF_ADDONS_ADMIN.hero_offer
-                : HeroBanner
-            }
+            src={isInOfferPeriod() ? WCF_ADDONS_ADMIN.hero_offer : HeroBanner}
             className="w-full h-full rounded-[10px]"
             alt="Banner"
           />
