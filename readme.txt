@@ -178,8 +178,6 @@ Take your website design to the next level with 100+ Elementor widgets. Whether 
 
 **[Image Accordion](https://animation-addons.com/widgets/aae-image-accordion/)**: Display a series of images interactively and compactly.
 
-**Advanced Slider**: Customize and create advanced-level sliders.
-
 **[Scroll Elements](https://animation-addons.com/widgets/aae-scroll-elements/)**: Implement scroll-driven interactions for enhanced engagement.
 
 **[Breadcrumbs](https://animation-addons.com/widgets/aae-breadcrumbs)**: Display the navigation path to the current page.
