@@ -68,7 +68,7 @@ class Notices {
 	 */
 	public function enqueue_scripts() {
 		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array(), WCF_ADDONS_VERSION );
-		wp_register_style( 'aae-notice-halloween', WCF_ADDONS_URL . 'assets/css/css/halloween-2025.css', array(), WCF_ADDONS_VERSION );
+		wp_register_style( 'aae-notice-black-friday', WCF_ADDONS_URL . 'assets/css/css/aae-notice-black-friday.css', array(), WCF_ADDONS_VERSION );
 		wp_register_script( 'aae-notice', WCF_ADDONS_URL . 'assets/js/js/notice.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 	}
 
@@ -80,14 +80,22 @@ class Notices {
 	public function add_admin_notices() {
 		$installed_time = absint( get_option( 'aae_installed' ) );
 		$current_time   = absint( wp_date( 'U' ) );
+
+		$timezone     = wp_timezone();
+
+		// Define your start and end dates in the same timezone
+		$start_time = ( new \DateTime( '2025-11-06 00:00:00', $timezone ) )->getTimestamp();
+		$end_time   = ( new \DateTime( '2025-12-05 23:59:59', $timezone ) )->getTimestamp();
+
 		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
-		if ( !file_exists( $plugin_file ) ) {
-			wp_enqueue_style( 'aae-notice-halloween' );
+
+		if (  file_exists( $plugin_file ) && $current_time >= $start_time && $current_time <= $end_time ) {
+			wp_enqueue_style( 'aae-notice-black-friday' );
 			$this->add(
 				array(
-					'message'     => __DIR__ . '/views/halloween-2025.php',
-					'notice_id'   => 'aae_halloween',
-					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
+					'message'     => __DIR__ . '/views/black-friday-2025.php',
+					'notice_id'   => 'aae_black_friday_2025_notice',
+					'style'       => 'border-left-color: #000000; border-radius: 6px; overflow: hidden;',
 					'dismissible' => false,
 				)
 			);
