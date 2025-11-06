@@ -8,11 +8,26 @@ window.addEventListener("elementor/frontend/init", () => {
   class WcfNavMenu extends Base {
     bindEvents() {
       this.run();
-      window.addEventListener("resize", () => this.mobileMenu());
+      window.addEventListener("resize", () => {
+        this.mobileMenu();
+        this.reRunForMobile();
+      });
     }
 
     run() {
       this.mobileMenu();
+    }
+
+    // Function to re-run only once when device < 767px
+    reRunForMobile() {
+      const width = window.innerWidth;
+      if (width < 767 && !this._rerunTriggered) {
+        this._rerunTriggered = true;
+        console.log("Re-running nav menu for mobile view");
+        this.mobileMenu(); // call your existing logic again
+      } else if (width >= 767) {
+        this._rerunTriggered = false; // reset when back to desktop
+      }
     }
 
     mobileMenu() {
@@ -43,7 +58,6 @@ window.addEventListener("elementor/frontend/init", () => {
 
       // === Desktop Mode ===
       if (breakpoint !== "all" && deviceWidth > breakpoint) {
-        // Remove back links if present
         navItems.forEach((item) => {
           const firstLi = item.querySelector(".sub-menu li:first-child");
           if (firstLi?.querySelector(".nav-back-link")) {
@@ -72,20 +86,22 @@ window.addEventListener("elementor/frontend/init", () => {
         backLink?.addEventListener("click", (e) => {
           e.preventDefault();
           item.classList.remove("active");
+          item.parentElement.closest(".menu-item")?.classList.add("active");
         });
       });
 
-      // Submenu toggle (mobile)
+      // Fixed submenu toggle logic (multi-level support)
       this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
         indicator.addEventListener("click", (e) => {
           e.preventDefault();
           const menuItem = indicator.closest(".menu-item");
           if (!menuItem) return;
 
-          menuItem
-            .closest(".wcf-nav-menu-nav")
-            ?.querySelectorAll(".menu-item.active")
-            .forEach((el) => el.classList.remove("active"));
+          // Only close siblings, not all
+          const siblingItems = menuItem.parentElement.querySelectorAll(":scope > .menu-item.active");
+          siblingItems.forEach((el) => {
+            if (el !== menuItem) el.classList.remove("active");
+          });
 
           menuItem.classList.toggle("active");
         });
@@ -94,16 +110,19 @@ window.addEventListener("elementor/frontend/init", () => {
       // Open / Close menu buttons
       this.findElement(".wcf-menu-hamburger")?.addEventListener("click", () => {
         navMenu.classList.add("wcf-nav-is-toggled");
+        document.body.style.overflow = 'hidden';
       });
 
       this.findElement(".wcf-menu-close")?.addEventListener("click", () => {
         navMenu.classList.remove("wcf-nav-is-toggled");
+        document.body.style.overflow = 'auto';
       });
 
       // Click outside to close
       document.addEventListener("mouseup", (e) => {
         if (!container?.contains(e.target)) {
           navMenu.classList.remove("wcf-nav-is-toggled");
+          document.body.style.overflow = 'auto';
         }
       });
     }
