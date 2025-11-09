@@ -309,6 +309,7 @@ class Template_Manager {
 	 */
 	private function get_default_template_structure() {
 		return array(
+
 			array(
 				'id'       => uniqid(),
 				'elType'   => 'container',
@@ -322,11 +323,14 @@ class Template_Manager {
 						'id'         => uniqid(),
 						'elType'     => 'widget',
 						'widgetType' => 'wcf--blog--post--title',
+						'settings'   => array(
+							'header_size' => 'h4',
+						),
 					),
 					array(
 						'id'         => uniqid(),
 						'elType'     => 'widget',
-						'widgetType' => 'wcf--blog--post--excerpt',
+						'widgetType' => 'aae--advanced-button',
 					),
 				),
 			),
