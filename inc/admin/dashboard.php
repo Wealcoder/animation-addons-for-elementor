@@ -111,20 +111,21 @@ class WCF_Admin_Init
 			delete_transient('wcf_menu_42_data');
 		});
 
-		add_action( 'wp_dashboard_setup' , [$this , 'dashboard_widget'], 999 );
+		add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
 	}
 
-	public function dashboard_widget(){
+	public function dashboard_widget()
+	{
 
-		
-		if ( file_exists( $this->plugin_file ) ) {
+
+		if (file_exists($this->plugin_file)) {
 			return;
 		}
 
 		wp_add_dashboard_widget(
-			'aae_dashboard_widget', 
-			'Animation Addons Overview', 
-			[$this , 'aae_render_dashboard_widget']  
+			'aae_dashboard_widget',
+			'Animation Addons Overview',
+			[$this, 'aae_render_dashboard_widget']
 		);
 
 
@@ -149,8 +150,9 @@ class WCF_Admin_Init
 		}
 	}
 
-	function aae_render_dashboard_widget() {
-		$view = __DIR__ . '/banner/ads.php';		
+	function aae_render_dashboard_widget()
+	{
+		$view = __DIR__ . '/banner/ads.php';
 		require_once $view;
 	}
 
@@ -383,10 +385,8 @@ class WCF_Admin_Init
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data(),
 				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
-				'video_link' => array(
-					'desktop' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-desktop.mp4',
-					'mobile' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-mobile.mp4',
-				),
+				'hero_offer' => WCF_ADDONS_URL . 'assets/images/hero-banner-offer.png',
+
 			);
 
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);

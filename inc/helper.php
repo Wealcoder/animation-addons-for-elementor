@@ -624,3 +624,42 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 		echo '</' . esc_attr( $html_tag ) . '>';
 	}
 }
+
+/**
+ * Add AAE Loop to Elementor Edit Page
+ *
+ * @since 2.4.5
+ * @return void
+ */
+add_filter(
+    'elementor/frontend/admin_bar/settings',
+    function ( $settings ) {
+        foreach ( $settings['elementor_edit_page']['children'] as $id => $item ) {
+            $post_type = get_post_type( $id );
+
+            if ( 'wcf-addons-template' === $post_type ) {
+                switch ( get_post_meta( $id, 'wcf-addons-template-meta_type', true ) ) {
+                    case 'loop-builder':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Loop';
+                        break;
+                    case 'footer':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Footer';
+                        break;
+                    case 'header':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Header';
+                        break;
+                    case 'popup':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Pop-Up';
+                        break;
+                    case 'single':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Single';
+                        break;
+                    case 'archive':
+                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE archive';
+                        break;
+                }
+            }
+        }
+        return $settings;
+    }
+);

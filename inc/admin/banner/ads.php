@@ -4,7 +4,6 @@
                 alt="Animation Addons Banner"
                 style="max-width:100%;">
     </a>
-
     <div style="margin-top:10px;display:flex;justify-content:center;gap:15px;font-size:14px;">
         <a href="https://animation-addons.com/docs/" target="_blank" style="text-decoration:none;color:#0073aa;">
             📘 Docs

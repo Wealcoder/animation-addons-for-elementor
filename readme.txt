@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.4.1
+Stable tag: 2.4.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 200+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
-[Buy Pro Now – Get 70% Off!](https://animation-addons.com/pricing/)
+[Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
 
 https://youtu.be/tRbvgq2gJF4
 
@@ -177,8 +177,6 @@ Take your website design to the next level with 100+ Elementor widgets. Whether 
 **[Filterable Gallery](https://animation-addons.com/widgets/aae-filterable-gallery/)**: Create an attractive, well-organized image gallery.
 
 **[Image Accordion](https://animation-addons.com/widgets/aae-image-accordion/)**: Display a series of images interactively and compactly.
-
-**Advanced Slider**: Customize and create advanced-level sliders.
 
 **[Scroll Elements](https://animation-addons.com/widgets/aae-scroll-elements/)**: Implement scroll-driven interactions for enhanced engagement.
 
@@ -442,6 +440,24 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
+    - 🎨 **Added:** BlackFriday Offer  
+
+= 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
+  
+  - 🪟 **Offcanvas Widget:** Added new control options, updated markup for better flexibility, optimized CSS, and replaced jQuery with lightweight JavaScript for enhanced speed.
+
+  - 📱**Nav Menu Widget:**
+    - **Added** new control panel for customization.
+    - **Fixed** mobile menu click issue on devices under 767px by reloading JavaScript dynamically.
+    - **Converted** jQuery logic to pure JavaScript for improved performance.
+
+  - 🖼️ **Image Accordion Widget:** Fixed functionality issues and completely refactored to vanilla JavaScript.
+  - 🔘 **Toggle Switcher:** Resolved toggle issues and refactored to pure JavaScript.
+
+= 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025
+    - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
 
 = 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
   - 🧩 **Added:** Dashboard new widget  
