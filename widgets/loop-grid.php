@@ -98,7 +98,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return array( 'wcf--post-pro', 'wcf--loop-grid' );
+		return array( 'wcf--loop-grid' );
 	}
 
 	/**
@@ -200,9 +200,12 @@ class Loop_Grid extends \Elementor\Widget_Base {
 				'condition'          => array(
 					'template_id!' => '',
 				),
-				'selectors'          => array(
-					'{{WRAPPER}}' => '--grid-columns: {{VALUE}}',
+				'selectors' => array(
+					'{{WRAPPER}}.custom-loop-masonry-yes .aae-loop-grid-container' => 'display:block;column-count: {{VALUE}}',
+					'{{WRAPPER}}.custom-loop-equal-height-yes .aae-loop-grid-container' => 'display: grid; grid-template-columns: repeat({{VALUE}}, 1fr);',
+					'{{WRAPPER}} .aae-loop-grid-container' => 'align-self:flex-start;grid-template-columns: repeat({{VALUE}}, 1fr);',
 				),
+
 			)
 		);
 
@@ -1176,10 +1179,10 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		// Build base classes.
 		$container_classes = array(
 			'custom-loop-container',
-			'elementor-grid',
+			// 'elementor-grid',
 			'aae-loop-grid-container',
 			'custom-loop-container-' . $settings['template_id'],
-			'wcf-posts',
+			// 'wcf-posts',
 		);
 
 		$class_settings = array(
