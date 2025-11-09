@@ -94,7 +94,7 @@ $config = array(
 						'order'        => 94,
 						'icon'         => 'wcf-icon-Advanced-Accordion',
 						'demo_url'     => 'https://animation-addons.com/widgets/image-hotspot/',
-						'doc_url'      => 'https://animation-addons.com/docs/general-widgets/image-hotspot/',
+						'doc_url'      => 'https://animation-addons.com/widgets/image-hotspot/',
 						'youtube_url'  => '',
 						'description'  => '',
 					),
