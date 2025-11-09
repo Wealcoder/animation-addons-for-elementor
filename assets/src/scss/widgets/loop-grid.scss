@@ -54,11 +54,7 @@
   .elementor-widget-loop-grid .elementor-grid.e-loop-empty-view__container {
     grid-column-gap: calc(var(--grid-column-gap) - 20px);
   }
- .e-loop-empty-view__container.loop-carousel {
-   margin: 0 auto;
-   padding: 30px 0;
-   width: 95%;
- }
+
  .e-loop-empty-view__container .e-loop-empty-view__box {
    opacity: 1;
  }
@@ -93,11 +89,6 @@
 
  .e-loop-item * {
    box-sizing: border-box;
- }
-
- /* Masonry Layout */
- .custom-loop-masonry {
-   grid-auto-rows: max-content;
  }
 
 // /* Empty View */
@@ -311,3 +302,7 @@
       align-self: auto;
     }
 }
+
+ .elementor.elementor .e-con > .elementor-widget {
+   width: 100%;
+ }
