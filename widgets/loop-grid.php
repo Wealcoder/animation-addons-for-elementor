@@ -126,6 +126,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		// Style sections.
 		$this->register_style_layout_section();
 		$this->register_style_items_section();
+		$this->register_load_more_controls();
 		$this->register_style_nothing_found_section();
 	}
 
@@ -200,7 +201,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 				'condition'          => array(
 					'template_id!' => '',
 				),
-				'selectors' => array(
+				'selectors'          => array(
 					'{{WRAPPER}}.custom-loop-masonry-yes .aae-loop-grid-container' => 'display:block;column-count: {{VALUE}}',
 					'{{WRAPPER}}.custom-loop-equal-height-yes .aae-loop-grid-container' => 'display: grid; grid-template-columns: repeat({{VALUE}}, 1fr);',
 					'{{WRAPPER}} .aae-loop-grid-container' => 'align-self:flex-start;grid-template-columns: repeat({{VALUE}}, 1fr);',
@@ -585,8 +586,6 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		$this->end_controls_tabs();
 
 		$this->end_controls_section();
-
-		$this->register_load_more_controls();
 	}
 
 	/**
@@ -962,7 +961,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 					'unit' => 'px',
 				),
 				'selectors'  => array(
-					'{{WRAPPER}} .custom-loop-container' => '--grid-column-gap: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .custom-loop-container' => 'column-gap: {{SIZE}}{{UNIT}}',
 				),
 			)
 		);
@@ -979,12 +978,40 @@ class Loop_Grid extends \Elementor\Widget_Base {
 						'max' => 100,
 					),
 				),
+				'condition'  => array(
+					'masonry!' => 'yes',
+				),
 				'default'    => array(
 					'size' => 30,
 					'unit' => 'px',
 				),
 				'selectors'  => array(
-					'{{WRAPPER}} .custom-loop-container' => '--grid-row-gap: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .custom-loop-container' => 'row-gap: {{SIZE}}{{UNIT}}',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'row_items_margin',
+			array(
+				'label'      => __( 'Row Gap', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', 'em', 'rem', '%' ),
+				'range'      => array(
+					'px' => array(
+						'min' => 0,
+						'max' => 100,
+					),
+				),
+				'condition'  => array(
+					'masonry' => 'yes',
+				),
+				'default'    => array(
+					'size' => 30,
+					'unit' => 'px',
+				),
+				'selectors'  => array(
+					'{{WRAPPER}}.custom-loop-masonry-yes .custom-loop-container .aae-loop-item' => 'margin-bottom: {{SIZE}}{{UNIT}}',
 				),
 			)
 		);
