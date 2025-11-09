@@ -98,7 +98,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return array( 'wcf--post-pro', 'custom-loop-builder-grid' );
+		return array( 'wcf--post-pro', 'wcf--loop-grid' );
 	}
 
 	/**

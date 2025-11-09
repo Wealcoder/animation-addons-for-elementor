@@ -1,18 +1,14 @@
 <?php
 namespace WCF_ADDONS\Widgets\Loop_Builder;
 
-/**
- * Loop Builder Integration for Animation Addons
- *
- * Initializes the loop builder functionality
- */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
 /**
- * Main Loop Builder Integration Class.
+ *  Loop Builder Integration for Animation Addons.
+ *
+ *  Initializes the loop builder functionality.
  */
 class AAE_Loop_Builder_Integration {
 
@@ -191,7 +187,7 @@ class AAE_Loop_Builder_Integration {
 				$classes = get_post_class( 'e-loop-item aae-loop-item', get_the_ID() );
 				$query->the_post();
 				$html .= '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" data-elementor-type="loop-item">';
-				$html .= WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::render_template( $template_id, get_the_ID() );
+				$html .= \WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::render_template( $template_id, get_the_ID() );
 				$html .= '</div>';
 			}
 			wp_reset_postdata();
@@ -293,14 +289,6 @@ class AAE_Loop_Builder_Integration {
 				'nonce'    => wp_create_nonce( 'aae_loop_builder_nonce' ),
 			)
 		);
-
-		// Register grid style.
-		wp_register_style(
-			'custom-loop-builder-grid',
-			WCF_ADDONS_URL . 'assets/css/loop-builder/grid.css',
-			array(),
-			WCF_ADDONS_VERSION
-		);
 	}
 
 	/**
@@ -337,7 +325,7 @@ class AAE_Loop_Builder_Integration {
 
 		wp_enqueue_style(
 			'aae-loop-builder-editor',
-			WCF_ADDONS_URL . 'assets/css/loop-builder/editor.css',
+			WCF_ADDONS_URL . 'assets/css/editor-loop.css',
 			array( 'elementor-editor' ),
 			WCF_ADDONS_VERSION
 		);

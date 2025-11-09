@@ -63,8 +63,8 @@ class Ajax_Handler {
 	public function ajax_get_posts() {
 		$this->verify_nonce();
 
-		$search    = sanitize_text_field( wp_unslash( $_GET['q'] ) ?? '' );
-		$post_type = sanitize_text_field( wp_unslash( $_GET['post_type'] ) ?? 'post' );
+		$search    = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		$query_manager = Query_Manager::instance();
 		$results       = $query_manager->get_posts_for_autocomplete( $search, $post_type );
@@ -81,8 +81,8 @@ class Ajax_Handler {
 	public function ajax_get_terms() {
 		$this->verify_nonce();
 
-		$search   = sanitize_text_field( wp_unslash( $_GET['q'] ) ?? '' );
-		$taxonomy = sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ?? 'category' );
+		$search   = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) : 'category'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		$query_manager = Query_Manager::instance();
 		$results       = $query_manager->get_terms_for_autocomplete( $search, $taxonomy );
@@ -99,7 +99,7 @@ class Ajax_Handler {
 	public function ajax_get_authors() {
 		$this->verify_nonce();
 
-		$search = sanitize_text_field( wp_unslash( $_GET['q'] ) ?? '' );
+		$search = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		$query_manager = Query_Manager::instance();
 		$results       = $query_manager->get_authors_for_autocomplete( $search );
@@ -116,8 +116,8 @@ class Ajax_Handler {
 	public function ajax_get_templates() {
 		$this->verify_nonce();
 
-		$search      = sanitize_text_field( wp_unslash( $_GET['q'] ) ?? wp_unslash( $_POST['q'] ) ?? '' );
-		$source_type = sanitize_text_field( wp_unslash( $_GET['source_type'] ) ?? wp_unslash( $_POST['source_type'] ) ?? '' );
+		$search      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$source_type = isset( $_GET['source_type'] ) ? sanitize_text_field( wp_unslash( $_GET['source_type'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		$args = array(
 			'post_type'      => 'wcf-addons-template',
@@ -175,7 +175,7 @@ class Ajax_Handler {
 		try {
 			$this->verify_nonce();
 
-			$settings = $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ?? array() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$page     = intval( $_POST['page'] ?? 1 );
 
 			if ( empty( $settings['template_id'] ) ) {
@@ -193,9 +193,10 @@ class Ajax_Handler {
 			if ( $query->have_posts() ) {
 				while ( $query->have_posts() ) {
 					$query->the_post();
-					$html .= '<div class="e-loop-item" data-elementor-type="loop-item">';
-					$html .= Template_Manager::render_template( $settings['template_id'], get_the_ID() );
-					$html .= '</div>';
+					$classes = get_post_class( 'e-loop-item aae-loop-item', get_the_ID() );
+					$html   .= '<article class="' . esc_attr( implode( ' ', $classes ) ) . '" data-elementor-type="loop-item">';
+					$html   .= Template_Manager::render_template( $settings['template_id'], get_the_ID() );
+					$html   .= '</article>';
 				}
 				wp_reset_postdata();
 
@@ -257,9 +258,11 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	private function verify_nonce() {
-		$nonce = $_REQUEST['nonce'] ?? wp_unslash( $_GET['nonce'] ) ?? wp_unslash( $_POST['nonce'] ) ?? ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		if ( ! wp_verify_nonce( $nonce, 'aae_loop_builder_nonce' ) ) {
-			wp_send_json_error( 'Security check failed' );
+		if ( isset( $_REQUEST['nonce'] ) || isset( $_GET['nonce'] ) || isset( $_POST['nonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) ?? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) ?? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) ?? '';
+			if ( ! wp_verify_nonce( $nonce, 'aae_loop_builder_nonce' ) ) {
+				wp_send_json_error( 'Security check failed' );
+			}
 		}
 	}
 
@@ -290,7 +293,7 @@ class Ajax_Handler {
 		try {
 			$this->verify_nonce();
 
-			$settings = $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ?? array() );
+			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$page     = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : ( $settings['paged'] ?? 1 );
 
 			if ( empty( $settings['template_id'] ) ) {
@@ -307,9 +310,10 @@ class Ajax_Handler {
 			if ( $query->have_posts() ) {
 				while ( $query->have_posts() ) {
 					$query->the_post();
-					$html .= '<div class="e-loop-item" data-elementor-type="loop-item">';
-					$html .= Template_Manager::render_template( $settings['template_id'], get_the_ID() );
-					$html .= '</div>';
+					$classes = get_post_class( 'e-loop-item aae-loop-item', get_the_ID() );
+					$html   .= '<article class="' . esc_attr( implode( ' ', $classes ) ) . '" data-elementor-type="loop-item">';
+					$html   .= Template_Manager::render_template( $settings['template_id'], get_the_ID() );
+					$html   .= '</article>';
 				}
 				wp_reset_postdata();
 			}
@@ -389,7 +393,7 @@ class Ajax_Handler {
 	public function ajax_get_taxonomies() {
 		$this->verify_nonce();
 
-		$post_type  = sanitize_text_field( wp_unslash( $_GET['post_type'] ) ?? 'post' );
+		$post_type  = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		$taxonomies = $this->get_taxonomies( $post_type );
 
 		wp_send_json_success( $taxonomies );
@@ -458,10 +462,9 @@ class Ajax_Handler {
 			$protocol = 'http://';
 		}
 
-		$host = $_SERVER['HTTP_HOST'];
-		$uri  = $_SERVER['REQUEST_URI'];
+		$host = wp_unslash( $_SERVER['HTTP_HOST'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$uri  = wp_unslash( $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		return $protocol . $host . $uri;
 	}
 }
-

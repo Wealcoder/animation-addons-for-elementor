@@ -155,4 +155,3 @@ class Loop_Item extends \Elementor\Core\Base\Document {
 		return parent::get_preview_url( $args );
 	}
 }
-

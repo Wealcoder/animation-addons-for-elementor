@@ -822,6 +822,13 @@ class Plugin {
 				'version' => false,
 				'media'   => 'all',
 			),
+			'loop-grid'          => array(
+				'handler' => 'wcf--loop-grid',
+				'src'     => 'widgets/loop-grid.min.css',
+				'dep'     => array(),
+				'version' => false,
+				'media'   => 'all',
+			),
 		);
 	}
 

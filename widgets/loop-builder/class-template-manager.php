@@ -136,7 +136,7 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function ajax_create_template() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'aae_loop_builder_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Security check failed' ) );
 		}
 
@@ -144,8 +144,8 @@ class Template_Manager {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
-		$template_name = sanitize_text_field( $_POST['template_name'] );
-		$source_type   = sanitize_text_field( $_POST['source_type'] );
+		$template_name = isset( $_POST['template_name'] ) ? sanitize_text_field( wp_unslash( $_POST['template_name'] ) ) : '';
+		$source_type   = isset( $_POST['source_type'] ) ? sanitize_text_field( wp_unslash( $_POST['source_type'] ) ) : '';
 
 		if ( empty( $template_name ) ) {
 			wp_send_json_error( array( 'message' => 'Template name is required' ) );
@@ -198,7 +198,7 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function ajax_duplicate_template() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'aae_loop_builder_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Security check failed' ) );
 		}
 
@@ -206,7 +206,7 @@ class Template_Manager {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
-		$template_id   = intval( $_POST['template_id'] );
+		$template_id   = isset( $_POST['template_id'] ) ? intval( wp_unslash( $_POST['template_id'] ) ) : '';
 		$original_post = get_post( $template_id );
 
 		if ( ! $original_post ) {
@@ -248,7 +248,7 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function ajax_delete_template() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'aae_loop_builder_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Security check failed' ) );
 		}
 
@@ -256,7 +256,7 @@ class Template_Manager {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
-		$template_id = intval( $_POST['template_id'] );
+		$template_id = isset( $_POST['template_id'] ) ? intval( wp_unslash( $_POST['template_id'] ) ) : '';
 
 		if ( wp_delete_post( $template_id, true ) ) {
 			wp_send_json_success( 'Template deleted successfully' );

@@ -605,40 +605,39 @@ trait AAE_Post_Handler_Trait {
 			return;
 		}
 
-		// load more
-		if ( 'load_on_click' === $settings['pagination_type'] || 'infinite_scroll' === $settings['pagination_type'] ) {
-			$current_page = $this->get_current_page();
-			$next_page    = intval( $current_page ) + 1;
+	// load more
+	if ( 'load_on_click' === $settings['pagination_type'] || 'infinite_scroll' === $settings['pagination_type'] ) {
+		$current_page = $this->get_current_page();
+		$next_page    = intval( $current_page ) + 1;
 
-			$this->add_render_attribute(
-				'load_more_anchor',
-				array(
-					'data-page'      => $current_page,
-					'data-max-page'  => $this->get_query()->max_num_pages,
-					'data-next-page' => $this->next_page_link( $next_page ),
-				)
-			);
+		// Add data attributes to button
+		$this->add_render_attribute(
+			'load_more_button',
+			array(
+				'class'          => 'wcf-post-load-more custom-loop-load-more',
+				'data-type'      => $settings['pagination_type'],
+				'data-page'      => $next_page,
+				'data-max-page'  => $this->get_query()->max_num_pages,
+			)
+		);
 
-			?>
-				<div class="load-more-anchor" <?php $this->print_render_attribute_string( 'load_more_anchor' ); ?>></div>
-
-			<?php if ( 'infinite_scroll' === $settings['pagination_type'] ) { ?>
-					<span class="load-more-spinner eicon-animation-spin">
-						<?php Icons_Manager::render_icon( $settings['load_more_spinner'], array( 'aria-hidden' => 'true' ) ); ?>
-					</span>
-				<?php } ?>
-
-				<button class="wcf-post-load-more" data-type="<?php echo esc_attr( $settings['pagination_type'] ); ?>">
-				<?php if ( 'load_on_click' === $settings['pagination_type'] ) { ?>
-						<span class="load-more-spinner eicon-animation-spin">
-							<?php Icons_Manager::render_icon( $settings['load_more_spinner'], array( 'aria-hidden' => 'true' ) ); ?>
-						</span>
-					<?php } ?>
-					<span class="load-more-text">
-					<?php $this->print_unescaped_setting( 'load_more_btn_text' ); ?>
-					<?php Icons_Manager::render_icon( $settings['load_more_btn_icon'], array( 'aria-hidden' => 'true' ) ); ?>
-					</span>
-				</button>
+		?>
+		<button <?php $this->print_render_attribute_string( 'load_more_button' ); ?>>
+			<?php if ( 'load_on_click' === $settings['pagination_type'] ) { ?>
+				<span class="load-more-spinner custom-loop-loading-text eicon-animation-spin" style="display:none;">
+					<?php Icons_Manager::render_icon( $settings['load_more_spinner'], array( 'aria-hidden' => 'true' ) ); ?>
+				</span>
+			<?php } ?>
+			<span class="load-more-text custom-loop-load-more-text">
+				<?php $this->print_unescaped_setting( 'load_more_btn_text' ); ?>
+				<?php Icons_Manager::render_icon( $settings['load_more_btn_icon'], array( 'aria-hidden' => 'true' ) ); ?>
+			</span>
+		</button>
+		<?php if ( 'infinite_scroll' === $settings['pagination_type'] ) { ?>
+			<span class="load-more-spinner eicon-animation-spin" style="opacity:0;">
+				<?php Icons_Manager::render_icon( $settings['load_more_spinner'], array( 'aria-hidden' => 'true' ) ); ?>
+			</span>
+		<?php } ?>
 			<?php
 			return;
 		}
