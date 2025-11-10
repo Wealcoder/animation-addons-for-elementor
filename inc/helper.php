@@ -510,33 +510,49 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 		}
 
 		if ( is_category() || ( is_single() && get_post_type() === 'post' ) ) {
-			$cat = get_the_category();
-			if ( ! empty( $cat ) ) {
-				$category = $cat[0];
+			if ( is_category() ) {
+				$category = get_queried_object();
 
-				if ( $category->parent ) {
-					$category_parents = array();
-					$current_cat      = $category;
+				if ( $category && ! is_wp_error( $category ) ) {
+					if ( $category->parent ) {
+						$category_parents = array();
+						$current_cat      = $category;
 
-					while ( $current_cat->parent ) {
-						$current_cat = get_category( $current_cat->parent );
-						if ( $current_cat && ! is_wp_error( $current_cat ) ) {
-							$category_parents[] = '<a href="' . esc_url( get_category_link( $current_cat->term_id ) ) . '">' . esc_html( $current_cat->name ) . '</a>';
+						while ( $current_cat->parent ) {
+							$current_cat = get_category( $current_cat->parent );
+							if ( $current_cat && ! is_wp_error( $current_cat ) ) {
+								$category_parents[] = '<a href="' . esc_url( get_category_link( $current_cat->term_id ) ) . '">' . esc_html( $current_cat->name ) . '</a>';
+							}
 						}
+
+						$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $category_parents ) );
 					}
 
-					$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $category_parents ) );
-				}
-
-				if ( is_category() ) {
 					$breadcrumbs[] = esc_html( $category->name );
-				} else {
-					$breadcrumbs[] = '<a href="' . esc_url( get_category_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a>';
 				}
-			}
+			} elseif ( is_single() && get_post_type() === 'post' ) {
+				$cat = get_the_category();
+				if ( ! empty( $cat ) ) {
+					$category = $cat[0];
 
-			if ( is_single() ) {
-				$breadcrumbs[] = esc_html( get_the_title() );
+					if ( $category->parent ) {
+						$category_parents = array();
+						$current_cat      = $category;
+
+						while ( $current_cat->parent ) {
+							$current_cat = get_category( $current_cat->parent );
+							if ( $current_cat && ! is_wp_error( $current_cat ) ) {
+								$category_parents[] = '<a href="' . esc_url( get_category_link( $current_cat->term_id ) ) . '">' . esc_html( $current_cat->name ) . '</a>';
+							}
+						}
+
+						$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $category_parents ) );
+					}
+
+					$breadcrumbs[] = '<a href="' . esc_url( get_category_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a>';
+
+					$breadcrumbs[] = esc_html( get_the_title() );
+				}
 			}
 		} elseif ( is_page() ) {
 			if ( $post->post_parent ) {
@@ -593,7 +609,7 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 		} elseif ( is_archive() ) {
 			if ( is_post_type_archive() ) {
 				$breadcrumbs[] = esc_html( post_type_archive_title( '', false ) );
-			} elseif ( is_tax() || is_tag() || is_category() ) {
+			} elseif ( is_tax() || is_tag() ) {
 				$term = get_queried_object();
 
 				if ( isset( $term->parent ) && $term->parent ) {
