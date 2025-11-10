@@ -98,28 +98,37 @@ if ( ! function_exists( 'wcf_addons_get_widget_element_settings' ) ) :
 	}
 endif;
 
-/**
- * Get database settings of a widget by widget id and post id
- *
- * @param number $post_id
- * @param string $widget_id
- *
- * @return false|mixed|string
- */
-if ( ! function_exists( 'wcf_addons_get_widget_settings' ) ) :
+if ( ! function_exists( 'wcf_addons_get_widget_settings' ) ) {
+	/**
+	 * Get database settings of a widget by widget id and post id
+	 *
+	 * @param number $post_id Post ID.
+	 * @param string $widget_id Widget ID.
+	 *
+	 * @return false|mixed|string
+	 */
 	function wcf_addons_get_widget_settings( $post_id, $widget_id ) {
+		$document = \Elementor\Plugin::$instance->documents->get( $post_id );
 
-		$elementor_data = @json_decode( get_post_meta( $post_id, '_elementor_data', true ), true );
-
-		if ( $elementor_data ) {
-			$element = wcf_addons_get_widget_element_settings( $elementor_data, $widget_id );
-
-			return isset( $element['settings'] ) ? $element['settings'] : '';
+		if ( $document ) {
+			$elementor_data = $document->get_elements_data();
 		}
 
-		return false;
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return array();
+		}
+
+		if ( empty( $elementor_data ) || ! is_array( $elementor_data ) ) {
+			return array();
+		}
+
+		$element = wcf_addons_get_widget_element_settings( $elementor_data, $widget_id );
+
+		return ! empty( $element['settings'] ) && is_array( $element['settings'] )
+			? $element['settings']
+			: array();
 	}
-endif;
+}
 
 /**
  * Get local plugin data
@@ -268,20 +277,20 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	}
 }
 
-if( !function_exists('wcf_get_nested_config_keys') ) {
-	function wcf_get_nested_config_keys($array, &$foundKeys, &$active) {
-		foreach ($array as $key => $value) {
+if ( ! function_exists( 'wcf_get_nested_config_keys' ) ) {
+	function wcf_get_nested_config_keys( $array, &$foundKeys, &$active ) {
+		foreach ( $array as $key => $value ) {
 			// Check if the current key is one we're looking for
-			if (isset($value['is_active']) && $value['is_active'] == true) {
+			if ( isset( $value['is_active'] ) && $value['is_active'] == true ) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active
-				$active[$key] = true;
+				$active[ $key ] = true;
 			}
-	
+
 			// If value is an array, recurse into it
-			if (is_array($value)) {
-				wcf_get_nested_config_keys($value,$foundKeys, $active);
+			if ( is_array( $value ) ) {
+				wcf_get_nested_config_keys( $value, $foundKeys, $active );
 			}
 		}
 	}
@@ -632,34 +641,34 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
  * @return void
  */
 add_filter(
-    'elementor/frontend/admin_bar/settings',
-    function ( $settings ) {
-        foreach ( $settings['elementor_edit_page']['children'] as $id => $item ) {
-            $post_type = get_post_type( $id );
+	'elementor/frontend/admin_bar/settings',
+	function ( $settings ) {
+		foreach ( $settings['elementor_edit_page']['children'] as $id => $item ) {
+			$post_type = get_post_type( $id );
 
-            if ( 'wcf-addons-template' === $post_type ) {
-                switch ( get_post_meta( $id, 'wcf-addons-template-meta_type', true ) ) {
-                    case 'loop-builder':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Loop';
-                        break;
-                    case 'footer':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Footer';
-                        break;
-                    case 'header':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Header';
-                        break;
-                    case 'popup':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Pop-Up';
-                        break;
-                    case 'single':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Single';
-                        break;
-                    case 'archive':
-                        $settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE archive';
-                        break;
-                }
-            }
-        }
-        return $settings;
-    }
+			if ( 'wcf-addons-template' === $post_type ) {
+				switch ( get_post_meta( $id, 'wcf-addons-template-meta_type', true ) ) {
+					case 'loop-builder':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Loop';
+						break;
+					case 'footer':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Footer';
+						break;
+					case 'header':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Header';
+						break;
+					case 'popup':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Pop-Up';
+						break;
+					case 'single':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Single';
+						break;
+					case 'archive':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE archive';
+						break;
+				}
+			}
+		}
+		return $settings;
+	}
 );
