@@ -5,7 +5,7 @@ import LatestBlog from "@/components/dashboard/LatestBlog";
 import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
-// import HeroBanner from "../../../../public/images/dashboard-hero-banner.png";
+import HeroBanner from "../../../../public/images/hero-banner.jpg";
 import QuickAccess from "@/components/dashboard/QuickAccess";
 
 function isInOfferPeriod() {
@@ -36,14 +36,35 @@ const Dashboard = () => {
             Ver. {WCF_ADDONS_ADMIN?.version}
           </Badge>
         </div>
+      ) : isInOfferPeriod() ? (
+        <a href="https://animation-addons.com/pricing" target="_blank">
+          <div className="relative">
+            {/* <img
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              className="w-full h-full rounded-[10px]"
+              alt="Banner"
+            /> */}
+            <video
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls={false}
+              className="w-full"
+            />
+            <Badge
+              className="absolute bottom-[34px] right-[20px] bg-white"
+              variant="version"
+            >
+              Ver. {WCF_ADDONS_ADMIN?.version}
+            </Badge>
+          </div>
+        </a>
       ) : (
         <div className="relative">
           <img
-            src={
-              isInOfferPeriod()
-                ? WCF_ADDONS_ADMIN.hero_offer
-                : WCF_ADDONS_ADMIN.hero
-            }
+            src={HeroBanner}
             className="w-full h-full rounded-[10px]"
             alt="Banner"
           />
