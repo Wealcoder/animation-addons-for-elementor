@@ -181,6 +181,21 @@ trait WCF_Button_Trait {
 		);
 
 		$this->add_responsive_control(
+			'load_more_spacing',
+			array(
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor-pro' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .pf-load-more' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+				'condition'  => array(
+					'pagination_type' => 'load_more',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
 			'button_icon_size',
 			array(
 				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
