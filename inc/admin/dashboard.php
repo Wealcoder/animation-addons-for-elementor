@@ -111,7 +111,7 @@ class WCF_Admin_Init
 			delete_transient('wcf_menu_42_data');
 		});
 
-		add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
+		//add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
 	}
 
 	public function dashboard_widget()
@@ -385,10 +385,9 @@ class WCF_Admin_Init
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data(),
 				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
-				'hero_offer' => WCF_ADDONS_URL . 'assets/images/hero-banner-offer.png',
+				'hero_offer' => WCF_ADDONS_URL . 'assets/video/black-friday.mp4',
 
 			);
-
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 		}
 	}
