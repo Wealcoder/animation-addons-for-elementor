@@ -39,10 +39,19 @@ const Dashboard = () => {
       ) : isInOfferPeriod() ? (
         <a href="https://animation-addons.com/pricing" target="_blank">
           <div className="relative">
-            <img
+            {/* <img
               src={WCF_ADDONS_ADMIN.hero_offer}
               className="w-full h-full rounded-[10px]"
               alt="Banner"
+            /> */}
+            <video
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls={false}
+              className="w-full"
             />
             <Badge
               className="absolute bottom-[34px] right-[20px] bg-white"
