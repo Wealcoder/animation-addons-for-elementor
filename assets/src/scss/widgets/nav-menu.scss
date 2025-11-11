@@ -190,13 +190,13 @@
 }
 .wcf__nav-menu.mobile-menu-active.mobile-menu-right .wcf-nav-menu-container {
     // transform: translateX(100%);
-    // right: 0;
-    // left: auto; 
+    right: 0;
+    left: auto; 
     transform: translateX(0);
 }
 .wcf__nav-menu.mobile-menu-active.mobile-menu-left .wcf-nav-menu-container {
     // transform: translateX(-100%);
-    // left: 0; 
+    left: 0; 
     transform: translateX(0);
 }
 .wcf__nav-menu.desktop-menu-active {
