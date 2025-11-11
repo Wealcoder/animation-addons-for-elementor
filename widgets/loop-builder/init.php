@@ -301,7 +301,7 @@ class AAE_Loop_Builder_Integration {
 		wp_enqueue_script(
 			'aae-loop-builder-editor',
 			WCF_ADDONS_URL . 'assets/js/loop-builder/editor.js',
-			array( 'elementor-editor' ),
+			array( 'elementor-common', 'elementor-editor' ),
 			WCF_ADDONS_VERSION,
 			true
 		);
@@ -309,7 +309,7 @@ class AAE_Loop_Builder_Integration {
 		wp_enqueue_script(
 			'aae-loop-builder-active-document',
 			WCF_ADDONS_URL . 'assets/js/loop-builder/active-document.js',
-			array( 'elementor-editor' ),
+			array( 'elementor-common', 'elementor-editor', 'jquery' ),
 			WCF_ADDONS_VERSION,
 			true
 		);

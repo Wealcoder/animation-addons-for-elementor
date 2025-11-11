@@ -163,24 +163,32 @@
             previewDoc.head.appendChild(style);
         }
 
-        switchToTemplateDocument() {
-            // For active-document mode, the URL parameter handles document loading
-            // Just ensure the panel opens to elements view after load
-            setTimeout(() => {
-                try {
-                    // Use safer panel access
-                    if (window.$e && window.$e.run) {
-                        $e.run('panel/open', {
-                            view: 'elements'
-                        });
-                    } else if (elementor && elementor.panels && elementor.panels.currentView) {
-                        elementor.panels.currentView.setPage('elements');
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            }, 500);
-        }
+	switchToTemplateDocument() {
+		// For active-document mode, the URL parameter handles document loading
+		// Just ensure the panel opens to elements view after load
+		setTimeout(() => {
+			try {
+				// Method 1: Use panel view directly (most reliable)
+				if (elementor && elementor.getPanelView) {
+					const panelView = elementor.getPanelView();
+					if (panelView && panelView.setPage) {
+						panelView.setPage('elements');
+					}
+				}
+				// Method 2: Use panels.currentView (legacy)
+				else if (elementor && elementor.panels && elementor.panels.currentView) {
+					elementor.panels.currentView.setPage('elements');
+				}
+				// Method 3: Try direct navigation to panel (alternative)
+				else if (window.$e && window.$e.route) {
+					$e.route('panel/editor');
+				}
+			} catch (error) {
+				console.warn('Could not open elements panel:', error);
+				// Silent fail is okay - panel will just show whatever was last open
+			}
+		}, 500);
+	}
 
         saveAndExitTemplateMode() {
             // Show saving notification
@@ -250,7 +258,8 @@
                 (elementor.config.initial_document ? elementor.config.initial_document.id : null);
 
             if (!baseDocId) {
-                console.error('Base document ID not found');
+                console.error('Base document ID not found, using fallback');
+                this.fallbackExit();
                 return;
             }
 
@@ -264,56 +273,113 @@
 
             // Try switching without reload using document manager
             this.switchDocumentWithoutReload(baseDocId)
-                .catch(() => {
+                .catch((error) => {
+                    console.warn('Document switch failed, using page reload:', error);
+                    
+                    // Show user-friendly message
+                    if (elementor && elementor.notifications) {
+                        elementor.notifications.showToast({
+                            message: 'Reloading editor...',
+                            type: 'info'
+                        });
+                    }
+                    
                     // Fallback to page reload if switch fails
                     setTimeout(() => {
                         this.fallbackExit();
-                    }, 500);
+                    }, 800);
                 });
         }
 
-        switchDocumentWithoutReload(baseDocId) {
-            return new Promise((resolve, reject) => {
-                try {
-                    // Use $e.run command - the modern Elementor way
-                    if (window.$e && $e.run) {
+	switchDocumentWithoutReload(baseDocId) {
+		return new Promise((resolve, reject) => {
+			try {
+				// Verify preview is ready before switching
+				if (!this.isPreviewReady()) {
+					console.warn('Preview not ready, using fallback');
+					reject('Preview not ready');
+					return;
+				}
 
-                        // First, ensure document is closed properly
-                        if ($e.components && $e.components.get('document')) {
-                            const documentComponent = $e.components.get('document');
+				// Use $e.run command - the modern Elementor way
+				if (window.$e && $e.run) {
 
-                            // Save current document before switching
-                            if (documentComponent.save) {
-                                documentComponent.save()
-                                    .then(() => this.performDocumentSwitch(baseDocId, resolve, reject))
-                                    .catch(() => this.performDocumentSwitch(baseDocId, resolve, reject));
-                            } else {
-                                this.performDocumentSwitch(baseDocId, resolve, reject);
-                            }
-                        } else {
-                            this.performDocumentSwitch(baseDocId, resolve, reject);
-                        }
-                    } else {
-                        reject('Modern API not available');
-                    }
-                } catch (error) {
-                    console.error('Switch without reload error:', error);
-                    reject(error);
-                }
-            });
-        }
+					// First, ensure document is closed properly
+					if ($e.components && $e.components.get('document')) {
+						const documentComponent = $e.components.get('document');
+
+						// Save current document before switching
+						if (documentComponent.save) {
+							documentComponent.save()
+								.then(() => this.performDocumentSwitch(baseDocId, resolve, reject))
+								.catch(() => this.performDocumentSwitch(baseDocId, resolve, reject));
+						} else {
+							this.performDocumentSwitch(baseDocId, resolve, reject);
+						}
+					} else {
+						this.performDocumentSwitch(baseDocId, resolve, reject);
+					}
+				} else {
+					reject('Modern API not available');
+				}
+			} catch (error) {
+				console.error('Switch without reload error:', error);
+				reject(error);
+			}
+		});
+	}
+
+	isPreviewReady() {
+		try {
+			// Check if preview iframe exists
+			const $previewFrame = $('#elementor-preview-iframe');
+			if (!$previewFrame.length) return false;
+
+			const iframe = $previewFrame[0];
+			if (!iframe || !iframe.contentWindow || !iframe.contentDocument) return false;
+
+			// Check if jQuery is available in preview
+			const previewWindow = iframe.contentWindow;
+			if (!previewWindow.jQuery || typeof previewWindow.jQuery !== 'function') {
+				console.warn('Preview jQuery not initialized');
+				return false;
+			}
+
+			// Check if elementorFrontend exists
+			if (!previewWindow.elementorFrontend) {
+				console.warn('elementorFrontend not initialized');
+				return false;
+			}
+
+			return true;
+		} catch (error) {
+			console.warn('Preview ready check failed:', error);
+			return false;
+		}
+	}
 
         performDocumentSwitch(baseDocId, resolve, reject) {
             try {
-                // Switch to base document
-                $e.run('editor/documents/switch', {
-                    id: parseInt(baseDocId)
-                }).then(() => {
-                    this.completeExitWithoutReload();
-                    resolve();
-                }).catch((error) => {
-                    reject(error);
-                });
+                // Add a small delay to ensure everything is ready
+                setTimeout(() => {
+                    // Verify one more time before actual switch
+                    if (!this.isPreviewReady()) {
+                        console.error('Preview became unavailable, falling back to page reload');
+                        reject('Preview unavailable');
+                        return;
+                    }
+
+                    // Switch to base document
+                    $e.run('editor/documents/switch', {
+                        id: parseInt(baseDocId)
+                    }).then(() => {
+                        this.completeExitWithoutReload();
+                        resolve();
+                    }).catch((error) => {
+                        console.error('Document switch failed:', error);
+                        reject(error);
+                    });
+                }, 300);
             } catch (error) {
                 console.error('Perform switch error:', error);
                 reject(error);
@@ -348,9 +414,19 @@
         }
 
         fallbackExit() {
+            // Clean up before redirect
+            this.cleanup();
+            
             if (this.baseDocumentId) {
                 const baseUrl = `${window.location.origin}/wp-admin/post.php?post=${this.baseDocumentId}&action=elementor`;
+                console.log('Redirecting to:', baseUrl);
                 window.location.href = baseUrl;
+            } else {
+                console.error('Cannot fallback exit - no base document ID');
+                // Try to at least reload current page without active-document param
+                const url = new URL(window.location.href);
+                url.searchParams.delete('active-document');
+                window.location.href = url.toString();
             }
         }
 
