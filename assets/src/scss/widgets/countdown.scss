@@ -1,5 +1,6 @@
 .wcf--countdown {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 40px;
 
   .timer-content {
@@ -11,6 +12,7 @@
     line-height: 1;
     gap: 10px;
     position: relative;
+    z-index: 2;
     &:after {
       position: absolute;
       right: -20px;
