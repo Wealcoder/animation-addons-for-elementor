@@ -5,27 +5,78 @@ import LatestBlog from "@/components/dashboard/LatestBlog";
 import RecoPlugins from "@/components/dashboard/RecoPlugins";
 import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
-import HeroBanner from "../../../../public/images/dashboard-hero-banner.png";
+import HeroBanner from "../../../../public/images/hero-banner.jpg";
 import QuickAccess from "@/components/dashboard/QuickAccess";
+
+function isInOfferPeriod() {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+
+  // Note: Months are 0-indexed in JavaScript (0 = January, 10 = November, 11 = December)
+  const offerStart = new Date(currentYear, 10, 10); // November 10
+  const offerEnd = new Date(currentYear, 11, 5); // December 5
+
+  return today >= offerStart && today <= offerEnd;
+}
 
 const Dashboard = () => {
   return (
     <div className="flex flex-col gap-6">
-      <div className="relative">
-        <video
-          src={ window.innerWidth < 768 ? WCF_ADDONS_ADMIN.video_link.mobile : WCF_ADDONS_ADMIN.video_link.desktop }
-          className="w-full h-full rounded-[10px]"
-          poster={HeroBanner}
-          autoPlay
-          loop
-          muted
-          playsInline
-          controls={false}
-        />
-        <Badge className="absolute bottom-[10px] left-[6px]" variant="version">
-          Ver. {WCF_ADDONS_ADMIN?.version}
-        </Badge>
-      </div>
+      {WCF_ADDONS_ADMIN.hero !== "no" ? (
+        <div className="relative">
+          <img
+            src={WCF_ADDONS_ADMIN.hero}
+            className="w-full h-full rounded-[10px]"
+            alt="Banner"
+          />
+          <Badge
+            className="absolute bottom-[34px] right-[20px] bg-white"
+            variant="version"
+          >
+            Ver. {WCF_ADDONS_ADMIN?.version}
+          </Badge>
+        </div>
+      ) : isInOfferPeriod() ? (
+        <a href="https://animation-addons.com/pricing" target="_blank">
+          <div className="relative">
+            {/* <img
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              className="w-full h-full rounded-[10px]"
+              alt="Banner"
+            /> */}
+            <video
+              src={WCF_ADDONS_ADMIN.hero_offer}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls={false}
+              className="w-full"
+            />
+            <Badge
+              className="absolute bottom-[34px] right-[20px] bg-white"
+              variant="version"
+            >
+              Ver. {WCF_ADDONS_ADMIN?.version}
+            </Badge>
+          </div>
+        </a>
+      ) : (
+        <div className="relative">
+          <img
+            src={HeroBanner}
+            className="w-full h-full rounded-[10px]"
+            alt="Banner"
+          />
+          <Badge
+            className="absolute bottom-[34px] right-[20px] bg-white"
+            variant="version"
+          >
+            Ver. {WCF_ADDONS_ADMIN?.version}
+          </Badge>
+        </div>
+      )}
+
       <div className="mt-2">
         <QuickAccess />
       </div>

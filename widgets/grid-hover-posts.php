@@ -187,7 +187,7 @@ class Grid_Hover_Posts extends Widget_Base
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'posts_per_page',
 			[
 				'label'   => esc_html__('Posts Per Page', 'animation-addons-for-elementor'),

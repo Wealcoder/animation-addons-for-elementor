@@ -38,6 +38,7 @@ class WCF_Admin_Init
 	 * @var null
 	 */
 	private static $_instance = null;
+	private $plugin_file = null;
 
 	/**
 	 * [instance] Initializes a singleton instance
@@ -55,6 +56,7 @@ class WCF_Admin_Init
 
 	public function __construct()
 	{
+		$this->plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		$this->remove_all_notices();
 		$this->include();
 		$this->init();
@@ -108,7 +110,53 @@ class WCF_Admin_Init
 		add_action('elementor/core/files/clear_cache', function () {
 			delete_transient('wcf_menu_42_data');
 		});
+
+		//add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
 	}
+
+	public function dashboard_widget()
+	{
+
+
+		if (file_exists($this->plugin_file)) {
+			return;
+		}
+
+		wp_add_dashboard_widget(
+			'aae_dashboard_widget',
+			'Animation Addons Overview',
+			[$this, 'aae_render_dashboard_widget']
+		);
+
+
+		global $wp_meta_boxes;
+
+		// Check that our widget actually exists before reordering
+		if (isset($wp_meta_boxes['dashboard']['normal']['core']['aae_dashboard_banner'])) {
+			// Get current dashboard widgets
+			$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+
+			// Backup our widget
+			$aae_widget_backup = [
+				'aae_dashboard_banner' => $normal_dashboard['aae_dashboard_banner']
+			];
+
+			// Remove from bottom and merge on top
+			unset($normal_dashboard['aae_dashboard_banner']);
+			$sorted_dashboard = array_merge($aae_widget_backup, $normal_dashboard);
+
+			// Assign back
+			$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+		}
+	}
+
+	function aae_render_dashboard_widget()
+	{
+		$view = __DIR__ . '/banner/ads.php';
+		require_once $view;
+	}
+
+
 	/**
 	 * Summary of elementor_disabled_elements
 	 *
@@ -336,12 +384,10 @@ class WCF_Admin_Init
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
 				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 				'template_menu' => $this->get_template_menu_data(),
-				'video_link' => array(
-					'desktop' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-desktop.mp4',
-					'mobile' => WCF_ADDONS_URL . 'assets/images/halloween-hero-banner-mobile.mp4',
-				),
-			);
+				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
+				'hero_offer' => WCF_ADDONS_URL . 'assets/video/black-friday.mp4',
 
+			);
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 		}
 	}
@@ -503,7 +549,7 @@ class WCF_Admin_Init
 	 */
 	public function save_settings()
 	{
-		
+
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
@@ -518,13 +564,14 @@ class WCF_Admin_Init
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
-		wcf_get_nested_config_keys($settings, $foundkeys, $actives);
+		wcf_get_nested_active_config_keys($settings, $found, $actives);
+		wcf_get_nested_config_keys($settings, $foundkeys, $updatedSettings);
 
 		update_option('wcf_addons_setup_wizard', 'complete');
 		// update new settings
 		if (! empty($option_name)) {
 
-			$updated = update_option($option_name, $actives);
+			$updated = update_option($option_name, $updatedSettings);
 
 			if ($option_name == 'wcf_save_widgets') {
 				$this->sync_widgets_by_element_manager();
@@ -532,7 +579,7 @@ class WCF_Admin_Init
 			} else {
 				update_option('wcf_extension_dashboardv2', true);
 			}
-			
+
 			$return_message = array(
 				'status' => $updated,
 				'total'  => is_array($actives) ? count($actives) : 0,

@@ -1,4 +1,5 @@
 <?php
+
 namespace WCF_ADDONS\Admin\Notices;
 
 defined( 'ABSPATH' ) || exit();
@@ -49,8 +50,10 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function __construct() {
+		
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_init', array( $this, 'add_admin_notices' ) );
+		
 
 		$this->plugin_prefix = 'aae_notice_';
 		add_action( 'wp_ajax_' . $this->plugin_prefix . '_dismiss_notice', array( $this, 'ajax_dismiss_notice' ) );
@@ -77,30 +80,19 @@ class Notices {
 	public function add_admin_notices() {
 		$installed_time = absint( get_option( 'aae_installed' ) );
 		$current_time   = absint( wp_date( 'U' ) );
-
-		if ( ! defined( 'WCF_ADDONS_PRO_VERSION' ) && $current_time > ( $installed_time + ( DAY_IN_SECONDS ) ) ) {
+		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+		if ( !file_exists( $plugin_file ) ) {
 			wp_enqueue_style( 'aae-notice-halloween' );
-			$this->add(
-				array(
-					'message'     => __DIR__ . '/views/halloween-2025.php',
-					'notice_id'   => 'aae_halloween',
-					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
-					'dismissible' => false,
-				)
-			);
+			// $this->add(
+			// 	array(
+			// 		'message'     => __DIR__ . '/views/halloween-2025.php',
+			// 		'notice_id'   => 'aae_halloween',
+			// 		'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
+			// 		'dismissible' => false,
+			// 	)
+			// );
 		}
-
-		// Show after 5 days.
-		if ( $installed_time && $current_time < ( $installed_time + ( 5 * DAY_IN_SECONDS ) ) ) {
-			$this->add(
-				array(
-					'message'     => __DIR__ . '/views/review.php',
-					'dismissible' => false,
-					'notice_id'   => 'aae_review',
-					'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
-				)
-			);
-		}
+		
 	}
 
 	/**
