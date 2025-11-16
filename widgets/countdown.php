@@ -347,6 +347,68 @@ class Countdown extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'columns',
+			array(
+				'label'              => __( 'Columns', 'animation-addons-for-elementor-pro' ),
+				'type'               => Controls_Manager::SELECT,
+				'default'            => '3',
+				'tablet_default'     => '2',
+				'mobile_default'     => '1',
+				'options'            => array(
+					'1' => '1',
+					'2' => '2',
+					'3' => '3',
+					'4' => '4',
+				),
+				'prefix_class'       => 'elementor-grid%s-',
+				'frontend_available' => true,
+				'selectors'          => array(
+					'{{WRAPPER}} .wcf--countdown.style-1' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'border',
+				'selector' => '{{WRAPPER}} .timer-content',
+			]
+		);
+
+		$this->add_control(
+			'border_radius',
+			[
+				'label'      => esc_html__('Border Radius', 'animation-addons-for-elementor'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%', 'em', 'rem', 'custom'],
+				'selectors'  => [
+					'{{WRAPPER}} .timer-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'countdown_padding',
+			[
+				'label'      => esc_html__('Padding', 'animation-addons-for-elementor'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
+				'selectors'  => [
+					'{{WRAPPER}} .timer-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'countdown_background',
+				'types'    => ['classic', 'gradient'],
+				'selector' => '{{WRAPPER}} .timer-content',
+			]
+		);
+
 		$this->end_controls_section();
 
 		//Timer items style
