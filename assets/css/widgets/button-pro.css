@@ -147,7 +147,7 @@
 
 /* Style Five and Six */
 .aae-btn-pro-group {
-  display: flex;
+  display: inline-flex;
   width: -moz-fit-content;
   width: fit-content;
 }
