@@ -30,6 +30,16 @@ class Nested_Slider extends Widget_Nested_Base {
 		return esc_html__( 'Nested Slider', 'animation-addons-for-elementor' );
 	}
 
+    /**
+     * Get widget categories.
+     *
+     * @since 2.4.5
+     * @return array
+     */
+    public function get_categories() {
+        return array( 'wcf-wc-addon' );
+    }
+
 	public function get_icon() {
 		return 'wcf eicon-nested-carousel';
 	}
