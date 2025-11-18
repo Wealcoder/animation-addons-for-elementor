@@ -117,20 +117,45 @@ function createEscButton() {
 function initializeEditor() {
     const editorContainer = document.getElementById('wp-code-editor-container');
     const hiddenField = document.getElementById('code-content-hidden');
+    const codeTypeElement = document.getElementById('code-type');
 
     if (!editorContainer) {
         console.warn('Editor container not found');
         return;
     }
 
+    // Get initial content and detect type
+    const initialContent = hiddenField ? hiddenField.value || '' : '';
+    const detectedType = detectCodeType(initialContent);
+
+    // Update the select to match detected type if needed
+    if (codeTypeElement && initialContent) {
+        codeTypeElement.value = detectedType;
+    }
+
+    // Get the correct mode
+    const initialMode = languageModes[detectedType] || languageModes.html;
+
+    // Initialize CodeMirror with proper configuration
     editor = CodeMirror(editorContainer, {
-        lineNumbers: true,
-        mode: languageModes.html,
+        value: initialContent,
+        mode: initialMode,
         theme: 'default',
-        indentUnit: 4,
+        lineNumbers: true,
         lineWrapping: true,
+        indentUnit: 4,
+        tabSize: 4,
+        indentWithTabs: false,
         autoCloseBrackets: true,
         autoCloseTags: true,
+        matchBrackets: true,
+        matchTags: true,
+        styleActiveLine: true,
+        showCursorWhenSelecting: true,
+        scrollbarStyle: 'native',
+        viewportMargin: Infinity,
+        cursorBlinkRate: 530,
+        dragDrop: true,
         foldGutter: true,
         gutters: [
             "CodeMirror-linenumbers",
@@ -201,6 +226,15 @@ function initializeEditor() {
         value: hiddenField ? hiddenField.value || '' : '',
     });
 
+    // Force refresh to ensure proper rendering
+    setTimeout(function() {
+        if (editor) {
+            editor.refresh();
+            // Re-apply the mode to ensure syntax highlighting
+            editor.setOption("mode", initialMode);
+        }
+    }, 100);
+
     // Update hidden field on change
     if (hiddenField) {
         editor.on('change', function() {
@@ -211,6 +245,41 @@ function initializeEditor() {
 
     // Initial stats update
     updateStats();
+}
+
+function detectCodeType(content) {
+    if (!content || content.trim() === '') {
+        const codeTypeElement = document.getElementById('code-type');
+        return codeTypeElement ? codeTypeElement.value : 'html';
+    }
+
+    // Check for PHP tags
+    if (content.includes('<?php') || content.includes('<?=')) {
+        return 'php';
+    }
+
+    // Check for HTML tags
+    if (/<\/?[a-z][\s\S]*>/i.test(content)) {
+        // Check if it's mainly CSS
+        if (content.includes('{') && content.includes('}') && content.includes(':') && !content.includes('<style>')) {
+            return 'css';
+        }
+        return 'html';
+    }
+
+    // Check for JavaScript patterns
+    if (content.includes('function') || content.includes('var ') || content.includes('let ') || content.includes('const ') || content.includes('=>')) {
+        return 'javascript';
+    }
+
+    // Check for CSS patterns
+    if (content.includes('{') && content.includes('}') && content.includes(':')) {
+        return 'css';
+    }
+
+    // Default to current select value or html
+    const codeTypeElement = document.getElementById('code-type');
+    return codeTypeElement ? codeTypeElement.value : 'html';
 }
 
 // Change language mode
@@ -913,4 +982,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeLoadLocationOptions();
     initializeDependencyToggles();
     initializeActiveToggle();
+
+    setTimeout(function() {
+        if (editor) {
+            editor.refresh();
+            // Force re-apply current mode
+            const currentMode = editor.getOption('mode');
+            editor.setOption('mode', currentMode);
+        }
+    }, 500);
 });
