@@ -388,8 +388,20 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
+// Global function for inline oninput attribute (if you need to keep it)
+function updatePriorityValue(value) {
+    const priorityValue = document.getElementById('priority-value');
+    if (priorityValue) {
+        priorityValue.value = value;
+    }
+}
+
+// ==========================================
+// INITIALIZATION FUNCTIONS
+// ==========================================
+
+// Initialize main editor functionality
+function initializeEditorFunctionality() {
     // Create ESC button first
     createEscButton();
 
@@ -458,10 +470,10 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleTheme();
         }
     });
-});
+}
 
-// Show Hide location fields.
-document.addEventListener('DOMContentLoaded', function () {
+// Initialize PHP/Other code type location toggle
+function initializeLocationToggle() {
     const codeTypeSelect = document.getElementById('code-type');
     const loadLocationElement = document.getElementById('load-location-group');
     const loadNotice = document.getElementById('php-version-notice');
@@ -483,9 +495,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // On change
     codeTypeSelect.addEventListener('change', toggleLoadLocation);
-});
+}
 
-document.addEventListener('DOMContentLoaded', function () {
+// Initialize visibility page list toggle
+function initializeVisibilityPageToggle() {
     const codeTypeSelect = document.getElementById('visibility-page');
     const loadLocationElement = document.getElementById('visibility-page-list');
 
@@ -507,9 +520,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // On change
     codeTypeSelect.addEventListener('change', toggleLoadLocation);
-});
+}
 
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize priority slider functionality
+function initializePrioritySlider() {
     const prioritySlider = document.getElementById('priority-slider');
     const priorityValue = document.getElementById('priority-value');
 
@@ -560,17 +574,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
 
-// Global function for inline oninput attribute (if you need to keep it)
-function updatePriorityValue(value) {
-    const priorityValue = document.getElementById('priority-value');
-    if (priorityValue) {
-        priorityValue.value = value;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
+    // Secondary priority slider display (if exists)
     const slider = document.getElementById('priority-slider');
     const valueDisplay = document.getElementById('priority-value');
 
@@ -580,9 +585,10 @@ document.addEventListener('DOMContentLoaded', function () {
             valueDisplay.textContent = this.value;
         });
     }
-});
+}
 
-document.addEventListener('DOMContentLoaded', function () {
+// Initialize PHP version checking
+function initializePHPVersionCheck() {
     const codeTypeSelect = document.querySelector('[name="code_type"]');
     const codeTextarea = document.querySelector('[name="code_content"]');
 
@@ -616,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // === PHP 7.2 ===
         { regex: /object\s+\$[A-Za-z_]/, min: 7.2, name: 'object type hint' },
-        { regex: /(?<!::)count\(/, min: 7.2, name: 'count() with Countable objects' }, // mild check
+        { regex: /(?<!::)count\(/, min: 7.2, name: 'count() with Countable objects' },
         { regex: /stream_isatty\s*\(/, min: 7.2, name: 'stream_isatty() function' },
 
         // === PHP 7.3 ===
@@ -694,54 +700,50 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-});
+}
 
-/// Ajax Call for page select
-(function($){
-    "use strict";
-    const WCFCustomCode = {
-        init: function() {
-            $('#visibility-page-list').select2({
-                ajax: {
-                    url: ajaxurl,
-                    dataType: 'json',
-                    method: 'post',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term, // search term
-                            page: params.page || 1,
-                            action: 'add_custom_page',
-                            nonce: WCFCustomCodeVars.nonce,
-                        };
-                    },
-                    processResults: function (data) {
-                        let uniqueData = [];
-                        let seen = new Set();
-                        data.forEach(item => {
-                            if (!seen.has(item.id)) {
-                                seen.add(item.id);
-                                uniqueData.push(item);
-                            }
-                        });
-                        return {
-                            results: uniqueData
-                        };
-                    },
-                    cache: true
+// Initialize Select2 for page selection
+function initializeSelect2PageSelection() {
+    // This needs jQuery, so we'll wrap it
+    if (typeof jQuery !== 'undefined' && jQuery('#visibility-page-list').length) {
+        jQuery('#visibility-page-list').select2({
+            ajax: {
+                url: ajaxurl,
+                dataType: 'json',
+                method: 'post',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page || 1,
+                        action: 'add_custom_page',
+                        nonce: WCFCustomCodeVars.nonce,
+                    };
                 },
-                minimumInputLength: 2,
-                placeholder: 'Search and select an option',
-                allowClear: true
-            });
-        },
-    };
+                processResults: function (data) {
+                    let uniqueData = [];
+                    let seen = new Set();
+                    data.forEach(item => {
+                        if (!seen.has(item.id)) {
+                            seen.add(item.id);
+                            uniqueData.push(item);
+                        }
+                    });
+                    return {
+                        results: uniqueData
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Search and select an option',
+            allowClear: true
+        });
+    }
+}
 
-    WCFCustomCode.init();
-})(jQuery);
-
-
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize visibility options based on code type
+function initializeVisibilityOptions() {
     const codeTypeSelect = document.getElementById('code-type');
     const visibilityPageSelect = document.getElementById('visibility-page');
 
@@ -788,13 +790,15 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('load', function() {
         updateVisibilityOptions();
     });
-});
+}
 
-document.addEventListener('DOMContentLoaded', function () {
+// Initialize load location options based on code type
+function initializeLoadLocationOptions() {
     const codeType = document.getElementById('code-type');
     const loadLocation = document.getElementById('load-location');
 
     if (!codeType || !loadLocation) return;
+
     function updateLoadLocations() {
         const value = codeType.value;
 
@@ -822,9 +826,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Listen for code type changes
     codeType.addEventListener('change', updateLoadLocations);
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
+// Initialize dependency toggles between load location and page location
+function initializeDependencyToggles() {
     const loadLocation = document.getElementById("load-location"); // head/footer/before/after select
     const pageLocation = document.getElementById("visibility-page"); // page condition select
 
@@ -867,12 +872,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Bind events
     loadLocation.addEventListener("change", toggleDependencies);
     pageLocation.addEventListener("change", toggleDependencies);
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
+// Initialize active toggle status
+function initializeActiveToggle() {
     const toggle = document.getElementById("active-toggle");
     const statusEl = document.querySelector(".aae-csp-active__status");
+
     if (!toggle || !statusEl) return;
+
     const statusText = statusEl.querySelector("span");
 
     if (toggle && statusEl && statusText) {
@@ -886,4 +894,23 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+}
+
+// ==========================================
+// MAIN INITIALIZATION
+// ==========================================
+
+// Single DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all modules
+    initializeEditorFunctionality();
+    initializeLocationToggle();
+    initializeVisibilityPageToggle();
+    initializePrioritySlider();
+    initializePHPVersionCheck();
+    initializeSelect2PageSelection();
+    initializeVisibilityOptions();
+    initializeLoadLocationOptions();
+    initializeDependencyToggles();
+    initializeActiveToggle();
 });
