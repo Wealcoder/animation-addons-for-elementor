@@ -58,6 +58,10 @@
     align-items: center;
     justify-content: space-between;
 
+    label {
+      width: 100%;
+    }
+
     input {
       width: 100%;
       padding: 10px;

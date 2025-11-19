@@ -71,7 +71,7 @@ class Animated_Heading extends Widget_Base {
 	 * @access public
 	 */
 	public function get_categories() {
-		return [ 'weal-coder-addon' ];
+		return array( 'weal-coder-addon' );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Animated_Heading extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'wcf--animated-heading' ];
+		return array( 'wcf--animated-heading' );
 	}
 
 	/**
@@ -100,156 +100,158 @@ class Animated_Heading extends Widget_Base {
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
-			[
+			array(
 				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading',
-			[
+			array(
 				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXTAREA,
 				'default'     => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
-				'dynamic'     => [
+				'dynamic'     => array(
 					'active' => true,
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_control(
 			'heading_tag',
-			[
+			array(
 				'label'   => esc_html__( 'HTML Tag', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
-				'options' => [
+				'options' => array(
 					'h1' => 'H1',
 					'h2' => 'H2',
 					'h3' => 'H3',
 					'h4' => 'H4',
 					'h5' => 'H5',
 					'h6' => 'H6',
-				],
+				),
 				'default' => 'h3',
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading_link',
-			[
+			array(
 				'label'       => esc_html__( 'Link', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::URL,
-				'options'     => [ 'url', 'is_external', 'nofollow' ],
-				'default'     => [
+				'options'     => array( 'url', 'is_external', 'nofollow' ),
+				'default'     => array(
 					'url'         => '',
 					'is_external' => true,
 					'nofollow'    => true,
-				],
+				),
+				'dynamic'     => array(
+					'active' => true,
+				),
 				'label_block' => false,
-			]
+			)
 		);
 
 		$this->add_responsive_control(
 			'align',
-			[
+			array(
 				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
-				'options'   => [
-					'left'   => [
+				'options'   => array(
+					'left'   => array(
 						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-left',
-					],
-					'center' => [
+					),
+					'center' => array(
 						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-center',
-					],
-					'right'  => [
+					),
+					'right'  => array(
 						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-right',
-					],
-				],
+					),
+				),
 				'default'   => '',
 				'separator' => 'before',
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}}' => 'text-align: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->end_controls_section();
 
-
 		// Style
 		$this->start_controls_section(
 			'section_style_image',
-			[
+			array(
 				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading_color',
-			[
-				'label'     => esc_html__( 'Start Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
+			array(
+				'label'       => esc_html__( 'Start Color', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::COLOR,
 				'render_type' => 'template',
-				'selectors' => [
+				'selectors'   => array(
 					'{{WRAPPER}} .animated--heading' => 'color: {{VALUE}}',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
-			[
+			array(
 				'name'     => 'heading_typo',
 				'selector' => '{{WRAPPER}} .animated--heading',
-			]
+			)
 		);
 
 		$repeater = new Repeater();
 
 		$repeater->add_control(
 			'heading_color',
-			[
+			array(
 				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'  => Controls_Manager::COLOR,
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading_colors',
-			[
+			array(
 				'label'       => esc_html__( 'Animation Colors', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'default'     => [
-					[
+				'default'     => array(
+					array(
 						'heading_color' => esc_html__( '#F9D371', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'heading_color' => esc_html__( '#F47340', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'heading_color' => esc_html__( '#EF2F88', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'heading_color' => esc_html__( '#8843F2', 'animation-addons-for-elementor' ),
-					],
-				],
+					),
+				),
 				'title_field' => '{{{ heading_color }}}',
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading_color_end',
-			[
+			array(
 				'label'   => esc_html__( 'End Color', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::COLOR,
 				'default' => '#c9f31d',
-			]
+			)
 		);
 
 		$this->end_controls_section();
@@ -267,34 +269,37 @@ class Animated_Heading extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$colors = [];
+		$colors = array();
 		if ( $settings['heading_colors'] ) {
 			foreach ( $settings['heading_colors'] as $color ) {
 				$colors[] = $color['heading_color'];
 			}
 		}
 
-		$this->add_render_attribute( 'wrapper', array(
-			'class'          => 'animated--heading',
-			'data-colors'    => wp_json_encode( $colors ),
-			'data-color-end' => $settings['heading_color_end'],
-		) );
+		$this->add_render_attribute(
+			'wrapper',
+			array(
+				'class'          => 'animated--heading',
+				'data-colors'    => wp_json_encode( $colors ),
+				'data-color-end' => $settings['heading_color_end'],
+			)
+		);
 
 		?>
-        <<?php Utils::print_validated_html_tag( $settings['heading_tag'] ); ?> <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+		<<?php Utils::print_validated_html_tag( $settings['heading_tag'] ); ?> <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
 		<?php
 		if ( ! empty( $settings['heading_link']['url'] ) ) {
 			$this->add_link_attributes( 'heading_link', $settings['heading_link'] );
 			?>
-            <a <?php $this->print_render_attribute_string( 'heading_link' ); ?>>
+			<a <?php $this->print_render_attribute_string( 'heading_link' ); ?>>
 				<?php echo esc_html( $settings['heading'] ); ?>
-            </a>
+			</a>
 			<?php
 		} else {
 			echo esc_html( $settings['heading'] );
 		}
 		?>
-        </<?php Utils::print_validated_html_tag( $settings['heading_tag'] ); ?>>
+		</<?php Utils::print_validated_html_tag( $settings['heading_tag'] ); ?>>
 		<?php
 	}
 }
