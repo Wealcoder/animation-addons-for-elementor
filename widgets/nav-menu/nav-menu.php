@@ -87,7 +87,7 @@ class Nav_Menu extends Widget_Base {
 	 */
 	public function get_style_depends() {
 		return [
-		        'wcf--nav-menu'
+		    'wcf--nav-menu'
 		];
 	}
 	
@@ -1493,8 +1493,9 @@ class Nav_Menu extends Widget_Base {
 
 		//necessary preloaded class for style breaking
 		$active_menu_class = 'mobile-menu-active';
-		if ( empty( $settings['mobile_menu_breakpoint'] ) ) {
-			$active_menu_class = 'desktop-menu-active';
+		if (  $settings['mobile_menu_breakpoint'] == '' ) {
+			$active_menu_class = 'desktop-menu-active';		
+	
 		}
 
 		//wrapper class
@@ -1503,12 +1504,12 @@ class Nav_Menu extends Widget_Base {
 			'mobile-menu-' . $settings['mobile_menu_position'],
 			'hover-pointer-' . $settings['menu_hover_pointer']
 		] );
+		
 		?>
         <div class="mobile-sub-back" style="display: none">
 			<?php Icons_Manager::render_icon( $settings['back_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 			<?php esc_html_e( 'Back', 'animation-addons-for-elementor' ) ?>
         </div>
-
         <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
             <button class="wcf-menu-hamburger" type="button" aria-label="hamburger-icon">
 	            <?php Icons_Manager::render_icon( $settings['hamburger_icon'], [ 'aria-hidden' => 'true' ] ); ?>
@@ -1516,6 +1517,7 @@ class Nav_Menu extends Widget_Base {
 			<?php wp_nav_menu( $arg ); ?>
             <div class="wcf-menu-overlay"></div>
 		</div>
+	
 		<?php if ( ! empty( $settings['mobile_menu_breakpoint'] ) && 'all' !== $settings['mobile_menu_breakpoint'] ): ?>
             <script type="text/javascript">
 				<?php $breakpoint = Plugin::$instance->breakpoints->get_active_breakpoints()[ $settings['mobile_menu_breakpoint'] ]->get_value(); ?>
