@@ -16,14 +16,18 @@ window.addEventListener("elementor/frontend/init", () => {
 
     run() {
       this.mobileMenu();
+
     }
 
     // Function to re-run only once when device < 767px
     reRunForMobile() {
       const width = window.innerWidth;
+      const bpSetting = this.getElementSettings("mobile_menu_breakpoint");
+      if (bpSetting === undefined) {
+        return;
+      }
       if (width < 767 && !this._rerunTriggered) {
-        this._rerunTriggered = true;
-        console.log("Re-running nav menu for mobile view");
+        this._rerunTriggered = true;       
         this.mobileMenu(); // call your existing logic again
       } else if (width >= 767) {
         this._rerunTriggered = false; // reset when back to desktop
@@ -34,17 +38,20 @@ window.addEventListener("elementor/frontend/init", () => {
       const adminbar = document.querySelector("#wpadminbar");
       const adminbarHeight = adminbar ? adminbar.offsetHeight : 0;
 
-      const deviceWidth = window.innerWidth;
-      const navMenu = this.findElement(".wcf__nav-menu");
-      const container = this.findElement(".wcf-nav-menu-container");
-      const navItems = this.findElements(".wcf-nav-menu-nav .menu-item-has-children");
+      const deviceWidth    = window.innerWidth;
+      const navMenu        = this.findElement(".wcf__nav-menu");
+      const container      = this.findElement(".wcf-nav-menu-container");
+      const navItems       = this.findElements(".wcf-nav-menu-nav .menu-item-has-children");
       const mobileBackHtml = this.findElement(".mobile-sub-back")?.innerHTML || "Back";
 
       // Get breakpoint
       let breakpoint = 0;
       const bpSetting = this.getElementSettings("mobile_menu_breakpoint");
+      if (bpSetting === undefined || bpSetting == '') {
+        return;
+      }
       const bpConfig = elementorFrontend.config.responsive.activeBreakpoints;
-
+     
       if (bpSetting && bpSetting !== "all") {
         breakpoint = bpConfig[bpSetting].value;
       } else {

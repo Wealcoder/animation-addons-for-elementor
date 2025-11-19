@@ -139,7 +139,7 @@ class Post_Feature_Image extends Widget_Base {
 				'dynamic'     => array(
 					'active' => true,
 				),
-				'placeholder' => esc_html__( 'https://your-link.com', 'animation-addons-for-elementor' ),
+				'placeholder' =>  'https://your-link.com',
 				'condition'   => array(
 					'link_type' => 'custom',
 				),
