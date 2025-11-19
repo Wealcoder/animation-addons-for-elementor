@@ -428,7 +428,7 @@ final class WCF_ADDONS_Plugin {
 
 			delete_option( 'aae_do_activation_redirect' );	
 
-			if ( isset( $_GET['activate-multi'] ) ) {
+			if ( isset( $_GET['activate-multi'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return;
 			}
 			wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_settings' ) );
