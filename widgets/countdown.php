@@ -350,7 +350,7 @@ class Countdown extends Widget_Base {
 		$this->add_responsive_control(
 			'columns',
 			array(
-				'label'              => __( 'Columns', 'animation-addons-for-elementor-pro' ),
+				'label'              => __( 'Columns', 'animation-addons-for-elementor' ),
 				'type'               => Controls_Manager::SELECT,
 				'default'            => '3',
 				'tablet_default'     => '2',

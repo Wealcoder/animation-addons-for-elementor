@@ -183,7 +183,7 @@ trait WCF_Button_Trait {
 		$this->add_responsive_control(
 			'load_more_spacing',
 			array(
-				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
 				'selectors'  => array(
