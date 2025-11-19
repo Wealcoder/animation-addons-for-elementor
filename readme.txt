@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.4.4
+Stable tag: 2.4.5
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -441,8 +441,32 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.4.5 – 19 November 2025
+
+  - **Feature:** Add new widget Loop Builder
+  - **Feature:** Add Dynamic Tag support in several widgets
+  - **Feature:** Add new controls in several widgets
+  - **Feature:** Add Current template Names in admin bar
+  - **Feature:** Add new Tag support in Extension Code Snippet HTML Editor
+  - **Fix: Extension** - Popup template and script issues
+  - **Fix: Extension** - Code Snippet Code Editor issues
+  - **Fix: Widget** - Toggle style and responsive issue
+  - **Fix: Widget** - Breadcrumb link and category link and name issue
+  - **Fix: Widget** - Image Box link issue
+  - **Fix: Widget** - Advanced Button style issue
+  - **Fix: Widget** - Nested Slider Pagination Control issues
+  - **Fix: Widget** - Brand Slider Responsive and image control issues
+  - **Fix: Widget** - Author Box link issue
+  - **Fix: Widget** - Post Ratings form issues
+  - **Fix: Widget** - Advanced Accordion image issue
+  - **Enhancement:** Remove unused code and Update code to the latest version php
+  - **Enhancement:** Compatible some code with WordPress 6.8 Coding Standards
+  - **Security:** Fix some nonce security issues
+  - **Security:** Fix some sanitizing and escaping issues
+
 = 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
-    - 🎨 **Added:** BlackFriday Offer  
+
+      -🎨 **Added:** BlackFriday Offer  
 
 = 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
   
@@ -470,6 +494,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - 🧩 **Fixed:** Resolved js on demand object
 
 = 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025
+
   - ⚡ **Improved:** On-demand JS loading for **Contact Form 7**, **Toggle Switcher**, and **Counter** widgets for faster performance.  
   - 📦 **Improved:** **Section Import Library** for smoother and more efficient section imports.  
   - 🎨 **Fixed:** Enhanced **UX for the plugin dashboard** with a cleaner and more user-friendly interface.  
