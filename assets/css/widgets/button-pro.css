@@ -147,7 +147,7 @@
 
 /* Style Five and Six */
 .aae-btn-pro-group {
-  display: flex;
+  display: inline-flex;
   width: -moz-fit-content;
   width: fit-content;
 }
@@ -254,6 +254,7 @@
   width: 50%;
   top: 4px;
   transform: translate(-50%, -100%);
+  z-index: 0;
 }
 .style-7 .aae--btn-pro::after {
   position: absolute;

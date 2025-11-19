@@ -48,6 +48,9 @@
   align-items: center;
   justify-content: space-between;
 }
+.aae--post-rating-form .anon-fields label {
+  width: 100%;
+}
 .aae--post-rating-form .anon-fields input {
   width: 100%;
   padding: 10px;

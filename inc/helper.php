@@ -98,28 +98,37 @@ if ( ! function_exists( 'wcf_addons_get_widget_element_settings' ) ) :
 	}
 endif;
 
-/**
- * Get database settings of a widget by widget id and post id
- *
- * @param number $post_id
- * @param string $widget_id
- *
- * @return false|mixed|string
- */
-if ( ! function_exists( 'wcf_addons_get_widget_settings' ) ) :
+if ( ! function_exists( 'wcf_addons_get_widget_settings' ) ) {
+	/**
+	 * Get database settings of a widget by widget id and post id
+	 *
+	 * @param number $post_id Post ID.
+	 * @param string $widget_id Widget ID.
+	 *
+	 * @return false|mixed|string
+	 */
 	function wcf_addons_get_widget_settings( $post_id, $widget_id ) {
+		$document = \Elementor\Plugin::$instance->documents->get( $post_id );
 
-		$elementor_data = @json_decode( get_post_meta( $post_id, '_elementor_data', true ), true );
-
-		if ( $elementor_data ) {
-			$element = wcf_addons_get_widget_element_settings( $elementor_data, $widget_id );
-
-			return isset( $element['settings'] ) ? $element['settings'] : '';
+		if ( $document ) {
+			$elementor_data = $document->get_elements_data();
 		}
 
-		return false;
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return array();
+		}
+
+		if ( empty( $elementor_data ) || ! is_array( $elementor_data ) ) {
+			return array();
+		}
+
+		$element = wcf_addons_get_widget_element_settings( $elementor_data, $widget_id );
+
+		return ! empty( $element['settings'] ) && is_array( $element['settings'] )
+			? $element['settings']
+			: array();
 	}
-endif;
+}
 
 /**
  * Get local plugin data
@@ -268,20 +277,20 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	}
 }
 
-if( !function_exists('wcf_get_nested_config_keys') ) {
-	function wcf_get_nested_config_keys($array, &$foundKeys, &$active) {
-		foreach ($array as $key => $value) {
+if ( ! function_exists( 'wcf_get_nested_config_keys' ) ) {
+	function wcf_get_nested_config_keys( $array, &$foundKeys, &$active ) {
+		foreach ( $array as $key => $value ) {
 			// Check if the current key is one we're looking for
-			if (isset($value['is_active']) && $value['is_active'] == true) {
+			if ( isset( $value['is_active'] ) && $value['is_active'] == true ) {
 				// Add to found keys list
 				$foundKeys[] = $key;
 				// Store the entire element in $active
-				$active[$key] = true;
+				$active[ $key ] = true;
 			}
-	
+
 			// If value is an array, recurse into it
-			if (is_array($value)) {
-				wcf_get_nested_config_keys($value,$foundKeys, $active);
+			if ( is_array( $value ) ) {
+				wcf_get_nested_config_keys( $value, $foundKeys, $active );
 			}
 		}
 	}
@@ -291,12 +300,12 @@ if ( ! function_exists( 'wcf_get_nested_active_config_keys' ) ) {
 	function wcf_get_nested_active_config_keys( $array, &$foundKeys, &$active ) {
 		foreach ( $array as $key => $value ) {
 			// Check if the current key is one we're looking for
-			if ( isset( $value['is_upcoming']) && isset( $value['is_pro']) && isset( $value['is_active'] ) && $value['is_active'] == true ) {
+			if ( isset( $value['is_upcoming'] ) && isset( $value['is_pro'] ) && isset( $value['is_active'] ) && $value['is_active'] == true ) {
 				// Add to found keys list
-				if(isset( $value['is_upcoming']) && $value['is_upcoming'] !== true){
-				$foundKeys[] = $key;
-				// Store the entire element in $active
-				$active[ $key ] = true;
+				if ( isset( $value['is_upcoming'] ) && $value['is_upcoming'] !== true ) {
+					$foundKeys[] = $key;
+					// Store the entire element in $active
+					$active[ $key ] = true;
 				}
 			}
 
@@ -478,49 +487,97 @@ function filter_search_by_date_and_category( $query ) {
 add_action( 'pre_get_posts', 'filter_search_by_date_and_category' );
 
 if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
-
+	/**
+	 * AAE Breadcrumbs.
+	 *
+	 * @param string $html_tag HTML tag to use for the breadcrumbs' container.
+	 * @param string $separator Separator to use between breadcrumbs.
+	 *
+	 * @return void
+	 */
 	function aae_addon_breadcrumbs( $html_tag = 'div', $separator = ' &raquo; ' ) {
 		global $post;
-		echo '<' . esc_attr( $html_tag ) . ' class="aae-breadcrumbs"><a href="' . esc_url( get_home_url() ) . '">' . esc_html__( 'Home', 'animation-addons-for-elementor' ) . '</a>';
+
+		$breadcrumbs   = array();
+		$home_url      = get_home_url();
+		$breadcrumbs[] = '<a href="' . esc_url( $home_url ) . '">' . esc_html__( 'Home', 'animation-addons-for-elementor' ) . '</a>';
 
 		if ( is_front_page() ) {
-			echo '</div>';
+			echo '<' . esc_attr( $html_tag ) . ' class="aae-breadcrumbs">';
+			echo wp_kses_post( implode( $separator, $breadcrumbs ) );
+			echo '</' . esc_attr( $html_tag ) . '>';
 			return;
 		}
 
-		echo wp_kses_post( $separator );
-
 		if ( is_category() || ( is_single() && get_post_type() === 'post' ) ) {
-			$cat = get_the_category();
-			if ( ! empty( $cat ) ) {
-				$category = $cat[0];
-				$parents  = get_category_parents( $category, true, $separator );
-				echo wp_kses_post( $parents );
-			}
+			if ( is_category() ) {
+				$category = get_queried_object();
 
-			if ( is_single() ) {
-				echo esc_html( get_the_title() );
+				if ( $category && ! is_wp_error( $category ) ) {
+					if ( $category->parent ) {
+						$category_parents = array();
+						$current_cat      = $category;
+
+						while ( $current_cat->parent ) {
+							$current_cat = get_category( $current_cat->parent );
+							if ( $current_cat && ! is_wp_error( $current_cat ) ) {
+								$category_parents[] = '<a href="' . esc_url( get_category_link( $current_cat->term_id ) ) . '">' . esc_html( $current_cat->name ) . '</a>';
+							}
+						}
+
+						$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $category_parents ) );
+					}
+
+					$breadcrumbs[] = esc_html( $category->name );
+				}
+			} elseif ( is_single() && get_post_type() === 'post' ) {
+				$cat = get_the_category();
+				if ( ! empty( $cat ) ) {
+					$category = $cat[0];
+
+					if ( $category->parent ) {
+						$category_parents = array();
+						$current_cat      = $category;
+
+						while ( $current_cat->parent ) {
+							$current_cat = get_category( $current_cat->parent );
+							if ( $current_cat && ! is_wp_error( $current_cat ) ) {
+								$category_parents[] = '<a href="' . esc_url( get_category_link( $current_cat->term_id ) ) . '">' . esc_html( $current_cat->name ) . '</a>';
+							}
+						}
+
+						$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $category_parents ) );
+					}
+
+					$breadcrumbs[] = '<a href="' . esc_url( get_category_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a>';
+
+					$breadcrumbs[] = esc_html( get_the_title() );
+				}
 			}
 		} elseif ( is_page() ) {
 			if ( $post->post_parent ) {
-				$parent_id   = $post->post_parent;
-				$breadcrumbs = array();
+				$parent_id     = $post->post_parent;
+				$parent_crumbs = array();
 
 				while ( $parent_id ) {
-					$page          = get_post( $parent_id );
-					$breadcrumbs[] = '<a href="' . esc_url( get_permalink( $page->ID ) ) . '">' . esc_html( get_the_title( $page->ID ) ) . '</a>';
-					$parent_id     = $page->post_parent;
+					$page = get_post( $parent_id );
+					if ( $page ) {
+						$parent_crumbs[] = '<a href="' . esc_url( get_permalink( $page->ID ) ) . '">' . esc_html( get_the_title( $page->ID ) ) . '</a>';
+						$parent_id       = $page->post_parent;
+					} else {
+						break;
+					}
 				}
 
-				echo wp_kses_post( implode( $separator, array_reverse( $breadcrumbs ) ) . $separator );
+				$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $parent_crumbs ) );
 			}
 
-			echo esc_html( get_the_title() );
+			$breadcrumbs[] = esc_html( get_the_title() );
 		} elseif ( is_singular() && ! is_page() ) {
 			$post_type = get_post_type_object( get_post_type() );
 
 			if ( $post_type && $post_type->has_archive ) {
-				echo wp_kses_post( '<a href="' . esc_url( get_post_type_archive_link( get_post_type() ) ) . '">' . esc_html( $post_type->labels->name ) . '</a>' . $separator );
+				$breadcrumbs[] = '<a href="' . esc_url( get_post_type_archive_link( get_post_type() ) ) . '">' . esc_html( $post_type->labels->name ) . '</a>';
 			}
 
 			$taxonomies = get_object_taxonomies( get_post_type() );
@@ -528,39 +585,106 @@ if ( ! function_exists( 'aae_addon_breadcrumbs' ) ) {
 				$terms = get_the_terms( get_the_ID(), $taxonomy );
 				if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 					$term = current( $terms );
-					echo wp_kses_post( '<a href="' . esc_url( get_term_link( $term ) ) . '">' . esc_html( $term->name ) . '</a>' . $separator );
+
+					if ( $term->parent ) {
+						$term_parents = array();
+						$current_term = $term;
+
+						while ( $current_term->parent ) {
+							$current_term = get_term( $current_term->parent, $taxonomy );
+							if ( $current_term && ! is_wp_error( $current_term ) ) {
+								$term_parents[] = '<a href="' . esc_url( get_term_link( $current_term ) ) . '">' . esc_html( $current_term->name ) . '</a>';
+							}
+						}
+
+						$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $term_parents ) );
+					}
+
+					$breadcrumbs[] = '<a href="' . esc_url( get_term_link( $term ) ) . '">' . esc_html( $term->name ) . '</a>';
 					break;
 				}
 			}
 
-			echo esc_html( get_the_title() );
+			$breadcrumbs[] = esc_html( get_the_title() );
 		} elseif ( is_archive() ) {
 			if ( is_post_type_archive() ) {
-				echo esc_html( post_type_archive_title( '', false ) );
-			} elseif ( is_tax() || is_tag() || is_category() ) {
+				$breadcrumbs[] = esc_html( post_type_archive_title( '', false ) );
+			} elseif ( is_tax() || is_tag() ) {
 				$term = get_queried_object();
-				if ( $term->parent ) {
-					$parent_term = get_term( $term->parent, $term->taxonomy );
-					echo wp_kses_post( '<a href="' . esc_url( get_term_link( $parent_term ) ) . '">' . esc_html( $parent_term->name ) . '</a>' . $separator );
+
+				if ( isset( $term->parent ) && $term->parent ) {
+					$term_parents = array();
+					$current_term = $term;
+
+					while ( $current_term->parent ) {
+						$current_term = get_term( $current_term->parent, $term->taxonomy );
+						if ( $current_term && ! is_wp_error( $current_term ) ) {
+							$term_parents[] = '<a href="' . esc_url( get_term_link( $current_term ) ) . '">' . esc_html( $current_term->name ) . '</a>';
+						}
+					}
+
+					$breadcrumbs = array_merge( $breadcrumbs, array_reverse( $term_parents ) );
 				}
-				echo esc_html( $term->name );
+
+				$breadcrumbs[] = esc_html( $term->name );
 			} elseif ( is_day() ) {
-				echo esc_html( get_the_date( 'F j, Y' ) );
+				$breadcrumbs[] = esc_html( get_the_date( 'F j, Y' ) );
 			} elseif ( is_month() ) {
-				echo esc_html( get_the_date( 'F Y' ) );
+				$breadcrumbs[] = esc_html( get_the_date( 'F Y' ) );
 			} elseif ( is_year() ) {
-				echo esc_html( get_the_date( 'Y' ) );
+				$breadcrumbs[] = esc_html( get_the_date( 'Y' ) );
 			} elseif ( is_author() ) {
-				echo esc_html__( 'Author: ', 'animation-addons-for-elementor' ) . esc_html( get_the_author() );
+				$breadcrumbs[] = esc_html__( 'Author: ', 'animation-addons-for-elementor' ) . esc_html( get_the_author() );
 			} else {
-				echo esc_html__( 'Archives', 'animation-addons-for-elementor' );
+				$breadcrumbs[] = esc_html__( 'Archives', 'animation-addons-for-elementor' );
 			}
 		} elseif ( is_search() ) {
-			echo esc_html__( 'Search Results for: ', 'animation-addons-for-elementor' ) . esc_html( get_search_query() );
+			$breadcrumbs[] = esc_html__( 'Search Results for: ', 'animation-addons-for-elementor' ) . esc_html( get_search_query() );
 		} elseif ( is_404() ) {
-			echo esc_html__( '404 - Page not found', 'animation-addons-for-elementor' );
+			$breadcrumbs[] = esc_html__( '404 - Page not found', 'animation-addons-for-elementor' );
 		}
 
+		echo '<' . esc_attr( $html_tag ) . ' class="aae-breadcrumbs">';
+		echo wp_kses_post( implode( $separator, $breadcrumbs ) );
 		echo '</' . esc_attr( $html_tag ) . '>';
 	}
 }
+
+/**
+ * Add AAE Loop to Elementor Edit Page
+ *
+ * @since 2.4.5
+ * @return void
+ */
+add_filter(
+	'elementor/frontend/admin_bar/settings',
+	function ( $settings ) {
+		foreach ( $settings['elementor_edit_page']['children'] as $id => $item ) {
+			$post_type = get_post_type( $id );
+
+			if ( 'wcf-addons-template' === $post_type ) {
+				switch ( get_post_meta( $id, 'wcf-addons-template-meta_type', true ) ) {
+					case 'loop-builder':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Loop';
+						break;
+					case 'footer':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Footer';
+						break;
+					case 'header':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Header';
+						break;
+					case 'popup':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Pop-Up';
+						break;
+					case 'single':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE Single';
+						break;
+					case 'archive':
+						$settings['elementor_edit_page']['children'][ $id ]['sub_title'] = 'AAE archive';
+						break;
+				}
+			}
+		}
+		return $settings;
+	}
+);

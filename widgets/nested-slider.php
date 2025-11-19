@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Nested_Slider extends Widget_Nested_Base {
 
 	use AAE_Nested_Slider_Trait;
+
 	public $num_of_carousel_items = 0;
 
 	public function get_name() {
@@ -29,12 +30,22 @@ class Nested_Slider extends Widget_Nested_Base {
 		return esc_html__( 'Nested Slider', 'animation-addons-for-elementor' );
 	}
 
+    /**
+     * Get widget categories.
+     *
+     * @since 2.4.5
+     * @return array
+     */
+    public function get_categories() {
+        return array( 'wcf-wc-addon' );
+    }
+
 	public function get_icon() {
 		return 'wcf eicon-nested-carousel';
 	}
 
 	public function get_keywords() {
-		return [ 'Carousel', 'Slides', 'Nested', 'Media', 'Gallery', 'Image' ];
+		return array( 'Carousel', 'Slides', 'Nested', 'Media', 'Gallery', 'Image' );
 	}
 
 	// TODO: Replace this check with `is_active_feature` on 3.28.0 to support is_active_feature second parameter.
@@ -57,7 +68,7 @@ class Nested_Slider extends Widget_Nested_Base {
 	 * @return array Widget style dependencies.
 	 */
 	public function get_style_depends(): array {
-		return [ 'swiper' ];
+		return array( 'swiper' );
 	}
 
 	/**
@@ -72,30 +83,30 @@ class Nested_Slider extends Widget_Nested_Base {
 	 */
 	public function get_script_depends(): array {
 
-		return [ 'swiper','aae--nested-slider' ];
+		return array( 'swiper', 'aae--nested-slider' );
 	}
 
 	protected function get_default_children_elements() {
-		return [
-			[
-				'elType' => 'container',
-				'settings' => [
+		return array(
+			array(
+				'elType'   => 'container',
+				'settings' => array(
 					'_title' => __( 'Slide #1', 'animation-addons-for-elementor' ),
-				],
-			],
-			[
-				'elType' => 'container',
-				'settings' => [
+				),
+			),
+			array(
+				'elType'   => 'container',
+				'settings' => array(
 					'_title' => __( 'Slide #2', 'animation-addons-for-elementor' ),
-				],
-			],
-			[
-				'elType' => 'container',
-				'settings' => [
+				),
+			),
+			array(
+				'elType'   => 'container',
+				'settings' => array(
 					'_title' => __( 'Slide #3', 'animation-addons-for-elementor' ),
-				],
-			],
-		];
+				),
+			),
+		);
 	}
 
 	protected function get_default_repeater_title_setting_key() {
@@ -123,177 +134,173 @@ class Nested_Slider extends Widget_Nested_Base {
 
 		$this->start_controls_section(
 			'section_slides',
-			[
+			array(
 				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
 		$repeater = new Repeater();
 
 		$repeater->add_control(
 			'slide_title',
-			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Slide Title', 'animation-addons-for-elementor' ),
+			array(
+				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Slide Title', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Slide Title', 'animation-addons-for-elementor' ),
-				'dynamic' => [
+				'dynamic'     => array(
 					'active' => true,
-				],
+				),
 				'label_block' => true,
-			]
+			)
 		);
 
 		$this->add_control(
 			'carousel_name',
-			[
-				'label' => esc_html__( 'Carousel Name', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Carousel', 'animation-addons-for-elementor' ),
-				'render_type'        => 'none', // template
-			]
+			array(
+				'label'       => esc_html__( 'Carousel Name', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Carousel', 'animation-addons-for-elementor' ),
+				'render_type' => 'none', // template
+			)
 		);
 
 		$this->add_control(
 			'carousel_items',
-			[
-				'label' => esc_html__( 'Carousel Items', 'animation-addons-for-elementor' ),
-				'type' => Control_Nested_Repeater::CONTROL_TYPE,				
-				'fields' => $repeater->get_controls(),
-				'default' => [
-					[
+			array(
+				'label'              => esc_html__( 'Carousel Items', 'animation-addons-for-elementor' ),
+				'type'               => Control_Nested_Repeater::CONTROL_TYPE,
+				'fields'             => $repeater->get_controls(),
+				'default'            => array(
+					array(
 						'slide_title' => esc_html__( 'Slide #1', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'slide_title' => esc_html__( 'Slide #2', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'slide_title' => esc_html__( 'Slide #3', 'animation-addons-for-elementor' ),
-					],
-				],
+					),
+				),
 				'frontend_available' => true,
-				'title_field' => '{{{ slide_title }}}',
-			]
+				'title_field'        => '{{{ slide_title }}}',
+			)
 		);
-
 
 		$this->end_controls_section();
-	
-		
+
 		$this->start_controls_section(
 			'section_slides_style',
-			[
+			array(
 				'label' => esc_html__( 'Slides', 'animation-addons-for-elementor' ),
-				'tab' => Controls_Manager::TAB_STYLE,
-			]
+				'tab'   => Controls_Manager::TAB_STYLE,
+			)
 		);
-
 
 		$this->add_group_control(
 			Group_Control_Background::get_type(),
-			[
-				'name' => 'content_background',
-				'types' => [ 'classic', 'gradient' ],
-				'exclude' => [ 'image' ],
-				'selector' => $low_specificity_slider_container_selector,
-				'fields_options' => [
-					'color' => [
+			array(
+				'name'           => 'content_background',
+				'types'          => array( 'classic', 'gradient' ),
+				'exclude'        => array( 'image' ),
+				'selector'       => $low_specificity_slider_container_selector,
+				'fields_options' => array(
+					'color' => array(
 						'label' => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
-					],
-				],
-			]
+					),
+				),
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
-			[
-				'name' => 'content_border',
-				'selector' => $low_specificity_slider_container_selector,
-				'fields_options' => [
-					'color' => [
+			array(
+				'name'           => 'content_border',
+				'selector'       => $low_specificity_slider_container_selector,
+				'fields_options' => array(
+					'color' => array(
 						'label' => esc_html__( 'Border Color', 'animation-addons-for-elementor' ),
-					],
-					'width' => [
+					),
+					'width' => array(
 						'label' => esc_html__( 'Border Width', 'animation-addons-for-elementor' ),
-					],
-				],
-			]
+					),
+				),
+			)
 		);
 
 		$this->add_responsive_control(
 			'border_radius',
-			[
-				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors' => [
+			array(
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'selectors'  => array(
 					$low_specificity_slider_container_selector => '--border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
+				),
+			)
 		);
-		
+
 		$logical_dimensions_inline_start = is_rtl() ? '{{RIGHT}}{{UNIT}}' : '{{LEFT}}{{UNIT}}';
-		$logical_dimensions_inline_end = is_rtl() ? '{{LEFT}}{{UNIT}}' : '{{RIGHT}}{{UNIT}}';
+		$logical_dimensions_inline_end   = is_rtl() ? '{{LEFT}}{{UNIT}}' : '{{RIGHT}}{{UNIT}}';
 
 		$this->add_responsive_control(
 			'content_padding',
-			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
-				'selectors'  => [
+			array(
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'vw', 'custom' ),
+				'selectors'  => array(
 					'{{WRAPPER}} .aaee-n-carousel .swiper-wrapper' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator' => 'before',
-			]
+				),
+				'separator'  => 'before',
+			)
 		);
 
 		$this->end_controls_section();
 
-				//slide controls
+				// slide controls
 				$this->start_controls_section(
 					'section_slider_options',
-					[
+					array(
 						'label' => esc_html__( 'Slider Options', 'animation-addons-for-elementor' ),
-					]
+					)
 				);
-		
-				$default = [
+
+				$default = array(
 					'slides_to_show' => 3,
 					'autoplay'       => 'no',
-				];
+				);
 				$this->register_slider_controls( $default );
 
-			$this->end_controls_section();
+				$this->end_controls_section();
 
-				//slider navigation style controls
-		$this->start_controls_section(
-			'section_slider_navigation_style',
-			[
-				'label'     => esc_html__( 'Slider Navigation', 'animation-addons-for-elementor' ),
-				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'navigation' => 'yes' ],
-			]
-		);
+				// slider navigation style controls
+				$this->start_controls_section(
+					'section_slider_navigation_style',
+					array(
+						'label'     => esc_html__( 'Slider Navigation', 'animation-addons-for-elementor' ),
+						'tab'       => Controls_Manager::TAB_STYLE,
+						'condition' => array( 'navigation' => 'yes' ),
+					)
+				);
 
 		$this->register_slider_navigation_style_controls();
 
 		$this->end_controls_section();
 
-		//slider pagination style controls
+		// slider pagination style controls
 		$this->start_controls_section(
 			'section_slider_pagination_style',
-			[
+			array(
 				'label'     => esc_html__( 'Slider Pagination', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'pagination' => 'yes' ],
-			]
+				'condition' => array( 'pagination' => 'yes' ),
+			)
 		);
 
 		$this->register_slider_pagination_style_controls();
 
 		$this->end_controls_section();
-	
 	}
 
 	protected function content_template_single_repeater_item() {
@@ -325,50 +332,55 @@ class Nested_Slider extends Widget_Nested_Base {
 
 		$slider_settings = $this->get_slider_attributes();
 
-		$this->num_of_carousel_items = count( $settings['carousel_items'] ?? [] );
-		$slides = $settings['carousel_items'];
-		$direction = isset($settings['direction']) ? $settings['direction'] : 'rtl';
-		$has_autoplay_enabled = true;
-		$outside_wrapper_classes = [ 'aaee-n-carousel', 'wcf__slider-wrapper' ];
+		$this->num_of_carousel_items = count( $settings['carousel_items'] ?? array() );
+		$slides                      = $settings['carousel_items'];
+		$direction                   = isset( $settings['direction'] ) ? $settings['direction'] : 'rtl';
+		$has_autoplay_enabled        = true;
+		$outside_wrapper_classes     = array( 'aaee-n-carousel', 'wcf__slider-wrapper' );
 
-		$this->add_render_attribute( [
-			'carousel-outside-wrapper' => [
-				'class'                => $outside_wrapper_classes,
-				'role'                 => 'region',
-				'aria-roledescription' => 'carousel',
-				'aria-label'           => $settings['carousel_name'],
+		$this->add_render_attribute(
+			array(
+				'carousel-outside-wrapper' => array(
+					'class'                => $outside_wrapper_classes,
+					'role'                 => 'region',
+					'aria-roledescription' => 'carousel',
+					'aria-label'           => $settings['carousel_name'],
 				'data-settings'        => json_encode( $slider_settings ),   //phpcs:ignore
-			],
-			'carousel-inside-wrapper' => [
-				'class' => 'swiper-wrapper',
-				'aria-live' => $has_autoplay_enabled ? 'off' : 'polite',
-			],
-		] );
+				),
+				'carousel-inside-wrapper'  => array(
+					'class'     => 'swiper-wrapper',
+					'aria-live' => $has_autoplay_enabled ? 'off' : 'polite',
+				),
+			)
+		);
 
 		if ( ! empty( $direction ) ) {
 			$this->add_render_attribute( 'carousel-outside-wrapper', 'dir', $direction );
 		}
 		?>
 			<div <?php $this->print_render_attribute_string( 'carousel-outside-wrapper' ); ?>>
-				<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ) ?>>
+				<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
 					<div <?php $this->print_render_attribute_string( 'carousel-inside-wrapper' ); ?>>
 						<?php
 						foreach ( $slides as $index => $slide ) {
-							$slide_count = $index + 1;
+							$slide_count       = $index + 1;
 							$slide_setting_key = $this->get_repeater_setting_key( 'slide_wrapper', 'slide', $index );
 
-							$this->add_render_attribute( $slide_setting_key, [
-								'class'                => 'swiper-slide',
-								'data-slide'           => $slide_count,
-								'role'                 => 'group',
-								'aria-roledescription' => 'slide',
-								'aria-label' => sprintf(
-									/* translators: 1: Slide number. 2: Total amount of slides. */
-									esc_attr__( '%1$s of %2$s', 'animation-addons-for-elementor' ),
-									$slide_count,
-									count( $slides )
-								),
-							] );
+							$this->add_render_attribute(
+								$slide_setting_key,
+								array(
+									'class'                => 'swiper-slide',
+									'data-slide'           => $slide_count,
+									'role'                 => 'group',
+									'aria-roledescription' => 'slide',
+									'aria-label'           => sprintf(
+										/* translators: 1: Slide number. 2: Total amount of slides. */
+										esc_attr__( '%1$s of %2$s', 'animation-addons-for-elementor' ),
+										$slide_count,
+										count( $slides )
+									),
+								)
+							);
 							?>
 								<div <?php $this->print_render_attribute_string( $slide_setting_key ); ?>>
 									<?php $this->print_child( $index ); ?>
@@ -386,17 +398,20 @@ class Nested_Slider extends Widget_Nested_Base {
 	}
 
 	protected function get_initial_config(): array {
-		return array_merge( parent::get_initial_config(), [
-			'support_improved_repeaters' => true,
-			'target_container'           => [ '.aaee-n-carousel > .swiper-wrapper' ],
-			'node'                       => 'div',
-			'is_interlaced'              => true,
-		] );
-	}	
+		return array_merge(
+			parent::get_initial_config(),
+			array(
+				'support_improved_repeaters' => true,
+				'target_container'           => array( '.aaee-n-carousel > .swiper-wrapper' ),
+				'node'                       => 'div',
+				'is_interlaced'              => true,
+			)
+		);
+	}
 
-	protected function content_template() {			
-		?>		
-		  <# 		 
+	protected function content_template() {
+		?>
+					<#         
 			function buildSliderConfig(settings, elementId, breakpointsConfig) {
 				
 			const config = {
@@ -446,20 +461,20 @@ class Nested_Slider extends Widget_Nested_Base {
 			}
 			config.breakpoints = {};
 			Object.entries(elementorFrontend.config.responsive.activeBreakpoints).forEach(([device, opts]) => {			
-				 config.breakpoints[opts.value] = {				
+				config.breakpoints[opts.value] = {             
 					slidesPerView: settings['slides_to_show'+'_'+device] ? settings['slides_to_show'+'_'+device] : settings['slides_to_show'],
 					spaceBetween:  settings['space_between'+'_'+device] ? settings['space_between'+'_'+device] : settings['space_between'],
-				 }; 
+				}; 
 			});
 			
 			return config;
 			}
  
-		  #>	
+			#>    
 
 			<# if ( settings['carousel_items'] ) {		
 			
-		     const slider_settings = buildSliderConfig(settings,view.$el.attr('data-id'));
+			const slider_settings = buildSliderConfig(settings,view.$el.attr('data-id'));
 			
 			const elementUid = view.getIDInt().toString().substr( 0, 3 ),
 				carouselOutsideWrapperKey = 'carousel-up' + elementUid,
@@ -517,9 +532,9 @@ class Nested_Slider extends Widget_Nested_Base {
 					</div>					
 				</div>	
 				<# if ( 'yes' === settings['navigation'] && shouldRenderPaginationAndArrows ) { #> 					
-				<?php $this->render_slider_navigation_temp('flex'); ?>
+				<?php $this->render_slider_navigation_temp( 'flex' ); ?>
 				<# }else{ #>	
-				<?php $this->render_slider_navigation_temp('none'); ?>
+				<?php $this->render_slider_navigation_temp( 'none' ); ?>
 				<# } #>									
 				<# if ( 'yes' === settings['pagination'] && shouldRenderPaginationAndArrows ) { #> 
 				<div class="ts-pagination">
@@ -533,59 +548,61 @@ class Nested_Slider extends Widget_Nested_Base {
 			
 			<# } #>
 		<?php
-	}	
+	}
 
-	protected function render_slider_navigation_temp($show='none') {
-		
+	protected function render_slider_navigation_temp( $show = 'none' ) {
+
 		?>
-        <div class="ts-navigation" style="display:<?php echo esc_attr( $show ); ?>">
-            <div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
+		<div class="ts-navigation" style="display:<?php echo esc_attr( $show ); ?>">
+			<div class="wcf-arrow wcf-arrow-prev" role="button" tabindex="0">
 				<?php $this->render_swiper_button_prev_temp( 'previous' ); ?>
-            </div>
-            <div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
+			</div>
+			<div class="wcf-arrow wcf-arrow-next" role="button" tabindex="0">
 				<?php $this->render_swiper_button_next_temp( 'next' ); ?>
-            </div>
-        </div>
+			</div>
+		</div>
 		<?php
 	}
 
-	private function render_swiper_button_prev_temp( $type ) {	
+	private function render_swiper_button_prev_temp( $type ) {
 		?>
 		<#
 			const aaenticonSettingsPrev = settings['navigation_previous_icon'],
 				aaiconprevHTML = elementor.helpers.renderIcon( view, aaenticonSettingsPrev, { 'aria-hidden': true }, 'i' , 'object' );
 			
 			if ( '' === aaenticonSettingsPrev['value'] ) { #>
-				<?php Icons_Manager::render_icon(
-					[
+				<?php
+				Icons_Manager::render_icon(
+					array(
 						'library' => 'eicons',
-						'value' => 'eicon-chevron-left',
-					]
-				); ?>
+						'value'   => 'eicon-chevron-left',
+					)
+				);
+				?>
 			<# } else if ( !! aaenticonSettingsPrev['value'] ) { #>
 				{{{ aaiconprevHTML.value }}}
 			<# } #>		
 		<?php
 	}
 
-	private function render_swiper_button_next_temp( $type ) {	
+	private function render_swiper_button_next_temp( $type ) {
 		?>
 		<#
 			const aaenticonSettingsNext = settings['navigation_next_icon'],
 				iconNextHTML = elementor.helpers.renderIcon( view, aaenticonSettingsNext, { 'aria-hidden': true }, 'i' , 'object' );
 
 			if ( '' === aaenticonSettingsNext['value'] ) { #>
-				<?php Icons_Manager::render_icon(
-					[
+				<?php
+				Icons_Manager::render_icon(
+					array(
 						'library' => 'eicons',
-						'value' => 'eicon-chevron-right',
-					]
-				); ?>
+						'value'   => 'eicon-chevron-right',
+					)
+				);
+				?>
 			<# } else if ( !! aaenticonSettingsNext['value'] ) { #>
 				{{{ iconNextHTML.value }}}
 			<# } #>		
 		<?php
 	}
-
-
 }
