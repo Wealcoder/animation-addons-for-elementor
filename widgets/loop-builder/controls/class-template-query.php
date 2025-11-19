@@ -33,14 +33,14 @@ class Template_Query extends \Elementor\Base_Data_Control {
 		?>
 		<div class="elementor-control-field">
 			<# if ( data.label ) { #>
-				<label for="<?php echo $control_uid; ?>" class="elementor-control-title">{{{ data.label }}}</label>
+				<label for="<?php echo esc_attr( $control_uid ); ?>" class="elementor-control-title">{{{ data.label }}}</label>
 			<# } #>
 			<div class="elementor-control-input-wrapper elementor-control-unit-5">
 				<# 
 				var multiple = ( data.multiple ) ? 'multiple' : '';
-				var placeholder = data.placeholder || '<?php echo __( 'Select Template', 'animation-addons-for-elementor' ); ?>';
+				var placeholder = data.placeholder || '<?php esc_html_e( 'Select Template', 'animation-addons-for-elementor' ); ?>';
 				#>
-				<select id="<?php echo $control_uid; ?>" class="elementor-select2 elementor-control-template-query" type="select2" {{ multiple }} data-setting="{{ data.name }}" data-placeholder="{{ placeholder }}">
+				<select id="<?php echo esc_attr( $control_uid ); ?>" class="elementor-select2 elementor-control-template-query" type="select2" {{ multiple }} data-setting="{{ data.name }}" data-placeholder="{{ placeholder }}">
 					<# 
 					var printOptions = function( options ) {
 						_.each( options, function( option_title, option_value ) { 

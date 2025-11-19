@@ -171,8 +171,8 @@ class AAE_Loop_Builder_Integration {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		$template_id = absint( wp_unslash( $_POST['template_id'] ) );
-		$settings    = $this->sanitize_widget_settings( wp_unslash( $_POST['settings'] ) ?? array() );
+		$template_id = isset( $_POST['template_id'] ) ?? absint( wp_unslash( $_POST['template_id'] ) );
+		$settings    = isset( $_POST['settings'] ) ?? $this->sanitize_widget_settings( wp_unslash( $_POST['settings'] ) ?? array() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		if ( ! $template_id ) {
 			wp_send_json_error( 'Invalid template ID' );
@@ -239,7 +239,7 @@ class AAE_Loop_Builder_Integration {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		$template_id = absint( wp_unslash( $_POST['template_id'] ) );
+		$template_id = isset( $_POST['template_id'] ) ?? absint( wp_unslash( $_POST['template_id'] ) );
 
 		if ( ! $template_id ) {
 			wp_send_json_error( 'Invalid template ID' );
