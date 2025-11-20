@@ -333,10 +333,6 @@ class Brand_Slider extends Widget_Base {
 						'step' => 1,
 					),
 				),
-				'default'    => array(
-					'unit' => '%',
-					'size' => 100,
-				),
 				'selectors'  => array(
 					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-wrapper .swiper-slide img' => 'width: {{SIZE}}{{UNIT}};',
 				),
@@ -381,10 +377,6 @@ class Brand_Slider extends Widget_Base {
 						'step' => 1,
 					),
 				),
-				'default'    => array(
-					'unit' => 'px',
-					'size' => 31,
-				),
 				'selectors'  => array(
 					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-wrapper .swiper-slide img' => 'height: {{SIZE}}{{UNIT}};',
 				),
@@ -396,7 +388,6 @@ class Brand_Slider extends Widget_Base {
 			array(
 				'label'     => esc_html__( 'Image Object Fit', 'animation-addons-for-elementor' ),
 				'type'      => \Elementor\Controls_Manager::SELECT,
-				'default'   => 'cover',
 				'options'   => array(
 					''           => esc_html__( 'Default', 'animation-addons-for-elementor' ),
 					'fill'       => esc_html__( 'Fill', 'animation-addons-for-elementor' ),
