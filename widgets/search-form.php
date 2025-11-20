@@ -1885,6 +1885,365 @@ class Search_Form extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
+		?>
+		<style>
+			.elementor-widget-wcf--blog--search--form {
+			svg {
+				height: 1em;
+				width: 1em;
+			}
+
+			.wcf-search-form button,
+			.wcf-search-form input[type=search] {
+				margin: 0;
+				border: 0;
+				outline: none;
+				display: inline-block;
+				vertical-align: middle;
+				white-space: normal;
+				background: none;
+				line-height: 1;
+				min-width: 0;
+				font-size: 15px;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+			}
+
+			.wcf-search-form__input {
+				flex-basis: 100%;
+				padding: 10px 20px;
+			}
+
+			.wcf-search-form {
+				display: flex;
+				background: #f1f2f3;
+				border-radius: 3px;
+				overflow: hidden;
+				border: 0 solid transparent;
+				min-height: 50px;
+
+				.wcf-search-form__submit {
+				background-color: #54595FFF;
+				color: #fff;
+				fill: #fff;
+				min-width: 60px;
+				transition: 0.3s;
+				cursor: pointer;
+				}
+			}
+
+			.wcf-search-form button:focus,
+			.wcf-search-form input[type=search]:focus {
+				outline: 0;
+				color: inherit
+			}
+
+			.wcf-search-form__input::-moz-placeholder {
+				color: inherit;
+				font-family: inherit;
+				opacity: .6
+			}
+
+			.wcf-search-form__input::placeholder {
+				color: inherit;
+				font-family: inherit;
+				opacity: .6
+			}
+
+
+			/*toggle
+			*/
+			.toggle--close,
+			.toggle--open {
+				line-height: 1;
+				cursor: pointer;
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.toggle--close {
+				display: none;
+			}
+
+			.wcf-search-toggle {
+				position: relative;
+				display: inline-flex;
+				justify-content: center;
+				vertical-align: middle;
+				background-color: rgba(0, 0, 0, .05);
+				border: 0 solid #33373d;
+				border-radius: 3px;
+				transition: 0.3s;
+			}
+
+			/*
+			//style classic
+			*/
+			
+			.search--wrapper.style-classic {
+
+			}
+
+			/*
+			//style dropdown
+			
+			*/
+			.search--wrapper.style-dropdown {
+
+				.wcf-search-container {
+				position: absolute;
+				width: 300px;
+				top: 100%;
+				opacity: 0;
+				z-index: 99;
+				visibility: hidden;
+				transition: all 0.5s;
+				transform: translateY(20px);
+
+				&.search-position-right {
+					right: 0;
+				}
+
+				&.search-position-left {
+					left: 0;
+				}
+				}
+
+				&.search-visible {
+				.toggle--open {
+					display: none;
+				}
+
+				.toggle--close {
+					display: flex;
+				}
+
+				.wcf-search-container {
+					opacity: 1;
+					visibility: visible;
+					transform: translateY(0);
+				}
+				}
+			}
+
+			/*
+			//style dropdown
+			*/
+			.search--wrapper.style-full-screen {
+				.wcf-search-container {
+				position: fixed;
+				width: 100%;
+				height: 100vh;
+				transform: scale(0);
+				background: #ddd;
+				top: 0;
+				left: 0;
+				z-index: 99;
+				display: flex;
+				align-items: center;
+				flex-direction: column;
+				justify-content: center;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.5s;
+
+				&.ajax-fs-wrap {
+					padding-top: 15px;
+					flex-direction: unset;
+					align-items: flex-start;
+
+					.selected-category-display {
+					position: absolute;
+					top: 70px;
+					}
+				}
+				}
+
+				.toggle--close {
+				display: flex;
+				cursor: pointer;
+				position: absolute;
+				right: 30px;
+				top: 30px;
+				transition: .3s;
+				}
+
+				.wcf-search-form {
+				width: 300px;
+				}
+
+				&.search-visible {
+				.wcf-search-container {
+					opacity: 1;
+					visibility: visible;
+					transform: scale(1);
+				}
+				}
+			}
+			}
+
+
+			/*
+			// Live Search Results
+			*/
+			.aae--live-search-results {
+			position: absolute;
+			width: 100%;
+			height: auto;
+			display: none;
+			gap: 10px;
+			padding: 30px;
+			border-radius: 5px;
+			background-color: #ddd;
+			z-index: 99;
+
+			.search-item {
+				gap: 12px;
+				display: grid;
+				grid-template-columns: 90px auto;
+				align-items: center;
+			}
+
+			.thumb {
+				height: 60px;
+				overflow: hidden;
+
+				img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				}
+			}
+
+			.title {
+				display: inline-block;
+			}
+
+			}
+
+			.elementor-widget-wcf--blog--search--form .search--wrapper.style-full-screen .wcf-search-container.ajax-search {
+			align-items: flex-start;
+			padding-top: 15px;
+			}
+
+			/*
+			// Search Filtering
+			*/
+			.aae--search-filter {
+			gap: 20px;
+			display: flex;
+			align-items: center;
+			margin-right: 15px;
+
+			button {
+				cursor: pointer;
+				padding: 0;
+			}
+
+			.date-container,
+			.category-container {
+				position: relative;
+			}
+
+			.date-toggle,
+			.category-toggle {
+				cursor: pointer;
+				font-size: 15px;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+
+				.icon {
+				line-height: 0;
+				}
+			}
+
+			.date-dropdown,
+			.category-dropdown {
+				display: none;
+				position: absolute;
+				top: 40px;
+				right: 0;
+				width: 300px;
+				background-color: #fff;
+				border: 1px solid #1212120D;
+				z-index: 100;
+			}
+
+			.date-container.active .date-dropdown,
+			.category-container.active .category-dropdown {
+				display: block;
+			}
+
+			.preset-options,
+			.category-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			.preset-options li,
+			.category-list li {
+				padding: 8px 15px;
+				cursor: pointer;
+				font-size: 14px;
+
+				&.selected {
+				background: #ddd;
+				}
+			}
+
+			.date-buttons,
+			.category-footer {
+				gap: 15px;
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
+				padding: 15px;
+			}
+
+			.custom-range {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				padding: 15px;
+
+				.wrap {
+				display: grid;
+				}
+			}
+
+			.custom-range label {
+				font-size: 14px;
+			}
+
+			.custom-range input[type="date"] {
+				padding: 8px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+			}
+
+			}
+
+			.active-filter {
+			.wcf-search-form {
+				overflow: unset;
+			}
+
+			}
+
+			.selected-category-display {
+			.category-pill {
+				font-size: 14px;
+			}
+
+
+			}
+		</style>
+		<?php
+
 		if ( 'yes' === $settings['show_search_filter'] ) {
 			$filter_class = 'active-filter';
 		} else {
