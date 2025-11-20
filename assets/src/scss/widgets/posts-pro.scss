@@ -46,6 +46,11 @@
       transform: translate(var(--tx), var(--tY));
       z-index: 2;
     }
+    a{
+      height: 100%;
+      width: 100%;
+      display: block;
+    }
   }
 
   .wcf-post {
@@ -602,7 +607,6 @@
         }
       }
 
-
     }
 
     .wcf-post-meta,
@@ -643,7 +647,6 @@
         justify-content: center;
         background-color: #0a0a0a;
         margin: 0 auto;
-
 
         iframe,
         img {

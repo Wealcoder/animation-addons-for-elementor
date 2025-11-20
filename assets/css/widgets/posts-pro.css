@@ -41,6 +41,11 @@
   transform: translate(var(--tx), var(--tY));
   z-index: 2;
 }
+.wcf__posts-pro .thumb a {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
 .wcf__posts-pro .wcf-post {
   position: relative;
   display: flex;
