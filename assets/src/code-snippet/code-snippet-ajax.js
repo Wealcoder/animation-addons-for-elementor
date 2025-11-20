@@ -197,6 +197,30 @@
          */
         updateItemsCount: function(total) {
             // Update the items count in the tablenav
+            if( total === 0 ) {
+                $('.tablenav .tablenav-pages').removeClass('no-pages');
+                $('#code-snippet-list-table-form .search-box').remove();
+            } else {
+                var html = `<p class="search-box">
+                    \t<label class="screen-reader-text" for="snippet-search-input">Search Snippets:</label>
+                    \t<input type="search" id="snippet-search-input" name="s" value="">
+                    \t\t<input type="submit" id="search-submit" class="button" value="Search Snippets"></p>`;
+                var tries = 0;
+                var maxTries = 50; // ~5 seconds at 100ms
+                var interval = setInterval(function(){
+                    var $ul = $('#code-snippet-list-table-form .subsubsub');
+                    if ($ul.length) {
+                        if ($('#code-snippet-list-table-form .search-box').length === 0) {
+                            $ul.first().after(html);
+                        }
+                        clearInterval(interval);
+                    }
+                    if (++tries >= maxTries) {
+                        clearInterval(interval); // give up
+                    }
+                }, 100);
+            }
+
             $('.tablenav .displaying-num').text(total + ' items');
             
             // Update any other count displays

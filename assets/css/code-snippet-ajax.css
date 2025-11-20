@@ -251,6 +251,10 @@
   color: #2271b1;
 }
 
+.wcf-code-snippet-admin .subsubsub a:focus {
+  box-shadow: unset;
+}
+
 .wcf-code-snippet-admin .subsubsub a.current {
   font-weight: 600;
 }
