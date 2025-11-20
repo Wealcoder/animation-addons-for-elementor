@@ -48,7 +48,7 @@ trait WCF_Post_Handler_Trait
 				global $post;
 				// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 				if (! empty($post->post_title)) {
-					$max_length             = (int) $this->get_settings('title_length');
+					$max_length             = absint( $this->get_settings('title_length'));
 					$title                  = $this->trim_words(get_the_title(), $max_length);
 					$highlight_title_length = (int) $this->get_settings('highlight_title_length');
 
