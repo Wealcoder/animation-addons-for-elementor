@@ -131,7 +131,8 @@ class Loop_Item extends \Elementor\Core\Base\Document {
 		$preview_id = $this->get_settings( 'preview_id' );
 
 		if ( empty( $preview_id ) ) {
-			$source_type = get_post_meta( $this->get_main_id(), '_elementor_source', true ) ?: 'post';
+			$source_type = get_post_meta( $this->get_main_id(), '_elementor_source', true );
+			$source_type = $source_type ? $source_type : 'post';
 			$sample_post = get_posts(
 				array(
 					'post_type'      => $source_type,

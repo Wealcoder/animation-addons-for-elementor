@@ -25,6 +25,8 @@ class Loop_Grid extends \Elementor\Widget_Base {
 	use AAE_Post_Handler_Trait;
 
 	/**
+	 * Query object.
+	 *
 	 * @var \WP_Query $query Post Query object.
 	 *
 	 * @since 2.4.16
@@ -1212,10 +1214,8 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		// Build base classes.
 		$container_classes = array(
 			'custom-loop-container',
-			// 'elementor-grid',
 			'aae-loop-grid-container',
 			'custom-loop-container-' . $settings['template_id'],
-			// 'wcf-posts',
 		);
 
 		$class_settings = array(
