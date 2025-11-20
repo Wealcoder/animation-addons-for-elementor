@@ -26,7 +26,6 @@ class Animated_Text extends Widget_Base {
 	 * @since 1.0.0
 	 *
 	 * @access public
-	 *
 	 */
 	public function get_name() {
 		return 'wcf--text';
@@ -51,7 +50,6 @@ class Animated_Text extends Widget_Base {
 	 * @since 1.0.0
 	 *
 	 * @access public
-	 *
 	 */
 	public function get_icon() {
 		return 'wcf eicon-text';
@@ -69,10 +67,9 @@ class Animated_Text extends Widget_Base {
 	 * @since 1.0.0
 	 *
 	 * @access public
-	 *
 	 */
 	public function get_categories() {
-		return [ 'weal-coder-addon' ];
+		return array( 'weal-coder-addon' );
 	}
 
 	/**
@@ -87,30 +84,30 @@ class Animated_Text extends Widget_Base {
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
-			[
+			array(
 				'label' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
 		$this->add_control(
 			'text',
-			[
+			array(
 				'label'   => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::WYSIWYG,
-				'dynamic'     => [
+				'dynamic' => array(
 					'active' => true,
-				],
+				),
 				'default' => esc_html__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
 		$this->add_responsive_control(
 			'text_cols',
-			[
+			array(
 				'label'     => esc_html__( 'Columns', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => '',
-				'options'   => [
+				'options'   => array(
 					''   => esc_html__( 'Default', 'animation-addons-for-elementor' ),
 					'1'  => esc_html__( '1', 'animation-addons-for-elementor' ),
 					'2'  => esc_html__( '2', 'animation-addons-for-elementor' ),
@@ -122,117 +119,117 @@ class Animated_Text extends Widget_Base {
 					'8'  => esc_html__( '8', 'animation-addons-for-elementor' ),
 					'9'  => esc_html__( '9', 'animation-addons-for-elementor' ),
 					'10' => esc_html__( '10', 'animation-addons-for-elementor' ),
-				],
-				'selectors' => [
+				),
+				'selectors' => array(
 					'{{WRAPPER}} .wcf--text' => 'columns: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_responsive_control(
 			'text_col_gap',
-			[
+			array(
 				'label'      => esc_html__( 'Columns Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => [ 'px' ],
-				'range'      => [
-					'px' => [
+				'size_units' => array( 'px' ),
+				'range'      => array(
+					'px' => array(
 						'min' => 0,
 						'max' => 300,
-					],
-				],
-				'selectors'  => [
+					),
+				),
+				'selectors'  => array(
 					'{{WRAPPER}} .wcf--text' => 'gap: {{SIZE}}{{UNIT}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_responsive_control(
 			'align',
-			[
+			array(
 				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
-				'options'   => [
-					'left'    => [
+				'options'   => array(
+					'left'    => array(
 						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-left',
-					],
-					'center'  => [
+					),
+					'center'  => array(
 						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-center',
-					],
-					'right'   => [
+					),
+					'right'   => array(
 						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-right',
-					],
-					'justify' => [
+					),
+					'justify' => array(
 						'title' => esc_html__( 'Justified', 'animation-addons-for-elementor' ),
 						'icon'  => 'eicon-text-align-justify',
-					],
-				],
+					),
+				),
 				'default'   => '',
 				'separator' => 'before',
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}}' => 'text-align: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->end_controls_section();
 
 		$this->start_controls_section(
 			'section_style',
-			[
+			array(
 				'label' => esc_html__( 'Style', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
-			]
+			)
 		);
 
 		$this->add_control(
 			'title_color',
-			[
+			array(
 				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}} .wcf--text' => 'color: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
-			[
+			array(
 				'name'     => 'typography',
 				'selector' => '{{WRAPPER}} .wcf--text, {{WRAPPER}} .wcf--text *',
-			]
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Text_Shadow::get_type(),
-			[
+			array(
 				'name'     => 'text_shadow',
 				'selector' => '{{WRAPPER}} .wcf--text',
-			]
+			)
 		);
 
 		$this->add_control(
 			'heading_link',
-			[
+			array(
 				'label'     => esc_html__( 'Link', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
-			]
+			)
 		);
 
 		$this->add_control(
 			'title_link_hover_color',
-			[
+			array(
 				'label'     => esc_html__( 'Hover Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}} .wcf--text a:hover,{{WRAPPER}} .wcf--text a:focus' => 'color: {{VALUE}} !important;',
-				],
-			]
+				),
+			)
 		);
 
 		$this->end_controls_section();

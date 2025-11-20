@@ -129,6 +129,9 @@ class Animated_Title extends Widget_Base
           'is_external' => false,
           'nofollow'    => true,
         ],
+          'dynamic'   => array(
+                  'active' => true,
+          ),
         'label_block' => true,
       ]
     );

@@ -3,7 +3,7 @@
  * Plugin Name:                Animation Addons
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
- * Version:                    2.4.4
+ * Version:                    2.4.5
  * Author:                     Wealcoder
  * Author URI:                 https://animation-addons.com/
  * License:                    GPL v2 or later
@@ -29,7 +29,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.4.4' );
+	define( 'WCF_ADDONS_VERSION', '2.4.5' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -93,7 +93,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.4.4';
+	const VERSION = '2.4.5';
 
 	/**
 	 * Minimum Elementor Version
@@ -118,6 +118,7 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function __construct() {
+		
         add_option( 'aae_installed', wp_date( 'U' ) );
 		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
 		register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
@@ -427,7 +428,7 @@ final class WCF_ADDONS_Plugin {
 
 			delete_option( 'aae_do_activation_redirect' );	
 
-			if ( isset( $_GET['activate-multi'] ) ) {
+			if ( isset( $_GET['activate-multi'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return;
 			}
 			wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_settings' ) );

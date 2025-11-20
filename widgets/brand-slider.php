@@ -78,7 +78,7 @@ class Brand_Slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_categories() {
-		return [ 'weal-coder-addon' ];
+		return array( 'weal-coder-addon' );
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Brand_Slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_script_depends() {
-		return [ 'swiper', 'wcf--slider' ];
+		return array( 'swiper', 'wcf--slider' );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Brand_Slider extends Widget_Base {
 	 * @access public
 	 */
 	public function get_style_depends() {
-		return [ 'swiper', 'wcf--brand-slider' ];
+		return array( 'swiper', 'wcf--brand-slider' );
 	}
 
 	/**
@@ -121,407 +121,155 @@ class Brand_Slider extends Widget_Base {
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
-			[
+			array(
 				'label' => esc_html__( 'Brand Slider', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
 		$this->add_control(
 			'slide_content',
-			[
+			array(
 				'label'   => esc_html__( 'Slide Content', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'text',
-				'options' => [
+				'options' => array(
 					'text'  => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 					'image' => esc_html__( 'Image', 'animation-addons-for-elementor' ),
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_control(
 			'wcf_brand_carousel',
-			[
+			array(
 				'label'      => esc_html__( 'Add Images', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::GALLERY,
-				'default'    => [],
+				'default'    => array(),
 				'show_label' => false,
-				'dynamic'    => [
+				'dynamic'    => array(
 					'active' => true,
-				],
-				'condition'  => [
+				),
+				'condition'  => array(
 					'slide_content' => 'image',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Image_Size::get_type(),
-			[
+			array(
 				'name'      => 'thumbnail',
 				'separator' => 'none',
-				'condition' => [
+				'condition' => array(
 					'slide_content' => 'image',
-				],
-			]
+				),
+			)
 		);
 
 		$repeater = new Repeater();
 
 		$repeater->add_control(
 			'list_text',
-			[
+			array(
 				'label'       => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
 				'default'     => esc_html__( 'Designer', 'animation-addons-for-elementor' ),
 				'label_block' => true,
-			]
+			)
 		);
 
 		$this->add_control(
 			'repeat_list_text',
-			[
+			array(
 				'label'       => esc_html__( 'Text List', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'default'     => [
-					[
+				'default'     => array(
+					array(
 						'list_text' => esc_html__( 'Content', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'list_text' => esc_html__( '(Health Advisor & Coach)', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'list_text' => esc_html__( 'News', 'animation-addons-for-elementor' ),
-					],
-					[
+					),
+					array(
 						'list_text' => esc_html__( 'Creative Director', 'animation-addons-for-elementor' ),
-					],
-				],
+					),
+				),
 				'title_field' => '{{{ list_text }}}',//phpcs:ignore
-				'condition'   => [
+				'condition'   => array(
 					'slide_content' => 'text',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_control(
 			'separator_icon',
-			[
+			array(
 				'label'     => esc_html__( 'Text Separator', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::ICONS,
-				'default'   => [
+				'default'   => array(
 					'value'   => 'far fa-star',
 					'library' => 'fa-brands',
-				],
-				'condition' => [
+				),
+				'condition' => array(
 					'slide_content' => 'text',
-				],
-			]
+				),
+			)
 		);
 
 		$this->end_controls_section();
 
-		//slide controls
+		// slide controls.
 		$this->start_controls_section(
 			'section_slider_options',
-			[
+			array(
 				'label' => esc_html__( 'Slider Options', 'animation-addons-for-elementor' ),
-			]
+			)
 		);
 
-		$default = [
+		$default = array(
 			'autoplay_delay' => 1,
 			'speed'          => 5000,
-		];
+		);
 
 		$this->register_slider_controls( $default );
 
 		$this->end_controls_section();
 
-		//image style control
+		// image style control.
 		$this->slider_image_style_controls();
 
-		//text style control
+		// text style control.
 		$this->slider_text_style_controls();
 
-		//slider navigation style controls
+		// slider navigation style controls.
 		$this->start_controls_section(
 			'section_slider_navigation_style',
-			[
+			array(
 				'label'     => esc_html__( 'Slider Navigation', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'navigation' => 'yes' ],
-			]
+				'condition' => array( 'navigation' => 'yes' ),
+			)
 		);
 
 		$this->register_slider_navigation_style_controls();
 
 		$this->end_controls_section();
 
-		//slider pagination style controls
+		// slider pagination style controls.
 		$this->start_controls_section(
 			'section_slider_pagination_style',
-			[
+			array(
 				'label'     => esc_html__( 'Slider Pagination', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [ 'pagination' => 'yes' ],
-			]
+				'condition' => array( 'pagination' => 'yes' ),
+			)
 		);
 
 		$this->register_slider_pagination_style_controls();
-
-		$this->end_controls_section();
-	}
-
-	/**
-	 * Register the slider controls.
-	 *
-	 * Adds different input fields to allow the user to change and customize the widget settings.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @access private
-	 */
-	private function slider_controls() {
-		$this->start_controls_section(
-			'section_slider_options',
-			[
-				'label' => esc_html__( 'Slider Options', 'animation-addons-for-elementor' ),
-			]
-		);
-
-		$this->add_control(
-			'autoplay',
-			[
-				'label'   => esc_html__( 'Autoplay', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'yes',
-				'options' => [
-					'yes' => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'no'  => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->add_control(
-			'autoplay_delay',
-			[
-				'label'     => esc_html__( 'Autoplay delay', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::NUMBER,
-				'default'   => 1,
-				'condition' => [
-					'autoplay' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'autoplay_interaction',
-			[
-				'label'     => esc_html__( 'Autoplay Interaction', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => 'true',
-				'options'   => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-				'condition' => [
-					'autoplay' => 'yes',
-				],
-			]
-		);
-
-		$this->add_control(
-			'allow_touch_move',
-			[
-				'label'     => esc_html__( 'Allow Touch Move', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'separator' => 'before',
-				'default'   => 'false',
-				'options'   => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		// Loop requires a re-render so no 'render_type = none'
-		$this->add_control(
-			'loop',
-			[
-				'label'   => esc_html__( 'Loop', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'true',
-				'options' => [
-					'true'  => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-					'false' => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->add_control(
-			'speed',
-			[
-				'label'   => esc_html__( 'Animation Speed', 'animation-addons-for-elementor' ),
-				'type'    => Controls_Manager::NUMBER,
-				'default' => 5000,
-			]
-		);
-
-		$this->add_control(
-			'space_between',
-			[
-				'label'       => esc_html__( 'Space Between', 'animation-addons-for-elementor' ),
-				'type'        => Controls_Manager::NUMBER,
-				'default'     => 20,
-				'render_type' => 'template',
-				'selectors'   => [
-					'{{WRAPPER}} .text-slide-content' => 'gap: {{VALUE}}px;',
-				],
-			]
-		);
-
-		//slider navigation
-		$this->add_control(
-			'navigation',
-			[
-				'label'     => esc_html__( 'Navigation', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'separator' => 'before',
-				'default'   => 'both',
-				'options'   => [
-					'both'   => esc_html__( 'Arrows and Dots', 'animation-addons-for-elementor' ),
-					'arrows' => esc_html__( 'Arrows', 'animation-addons-for-elementor' ),
-					'dots'   => esc_html__( 'Dots', 'animation-addons-for-elementor' ),
-					'none'   => esc_html__( 'None', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
-
-		$this->add_control(
-			'navigation_previous_icon',
-			[
-				'label'            => esc_html__( 'Previous Arrow Icon', 'animation-addons-for-elementor' ),
-				'type'             => Controls_Manager::ICONS,
-				'fa4compatibility' => 'icon',
-				'skin'             => 'inline',
-				'label_block'      => false,
-				'skin_settings'    => [
-					'inline' => [
-						'none' => [
-							'label' => 'Default',
-							'icon'  => 'eicon-chevron-left',
-						],
-						'icon' => [
-							'icon' => 'eicon-star',
-						],
-					],
-				],
-				'recommended'      => [
-					'fa-regular' => [
-						'arrow-alt-circle-left',
-						'caret-square-left',
-					],
-					'fa-solid'   => [
-						'angle-double-left',
-						'angle-left',
-						'arrow-alt-circle-left',
-						'arrow-circle-left',
-						'arrow-left',
-						'caret-left',
-						'caret-square-left',
-						'chevron-circle-left',
-						'chevron-left',
-						'long-arrow-alt-left',
-					],
-				],
-				'conditions'       => [
-					'relation' => 'or',
-					'terms'    => [
-						[
-							'name'     => 'navigation',
-							'operator' => '=',
-							'value'    => 'both',
-						],
-						[
-							'name'     => 'navigation',
-							'operator' => '=',
-							'value'    => 'arrows',
-						],
-					],
-				],
-			]
-		);
-
-		$this->add_control(
-			'navigation_next_icon',
-			[
-				'label'            => esc_html__( 'Next Arrow Icon', 'animation-addons-for-elementor' ),
-				'type'             => Controls_Manager::ICONS,
-				'fa4compatibility' => 'icon',
-				'skin'             => 'inline',
-				'label_block'      => false,
-				'skin_settings'    => [
-					'inline' => [
-						'none' => [
-							'label' => 'Default',
-							'icon'  => 'eicon-chevron-right',
-						],
-						'icon' => [
-							'icon' => 'eicon-star',
-						],
-					],
-				],
-				'recommended'      => [
-					'fa-regular' => [
-						'arrow-alt-circle-right',
-						'caret-square-right',
-					],
-					'fa-solid'   => [
-						'angle-double-right',
-						'angle-right',
-						'arrow-alt-circle-right',
-						'arrow-circle-right',
-						'arrow-right',
-						'caret-right',
-						'caret-square-right',
-						'chevron-circle-right',
-						'chevron-right',
-						'long-arrow-alt-right',
-					],
-				],
-				'conditions'       => [
-					'relation' => 'or',
-					'terms'    => [
-						[
-							'name'     => 'navigation',
-							'operator' => '=',
-							'value'    => 'both',
-						],
-						[
-							'name'     => 'navigation',
-							'operator' => '=',
-							'value'    => 'arrows',
-						],
-					],
-				],
-			]
-		);
-
-		$this->add_control(
-			'direction',
-			[
-				'label'     => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'separator' => 'before',
-				'default'   => 'ltr',
-				'options'   => [
-					'ltr' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
-					'rtl' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
-				],
-			]
-		);
 
 		$this->end_controls_section();
 	}
@@ -538,33 +286,173 @@ class Brand_Slider extends Widget_Base {
 	private function slider_image_style_controls() {
 		$this->start_controls_section(
 			'section_style_image',
-			[
+			array(
 				'label'     => esc_html__( 'Image', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [
+				'condition' => array(
 					'slide_content' => 'image',
-				],
-			]
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'image_width',
+			array(
+				'label'      => esc_html__( 'Image Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'vh', 'vw' ),
+				'range'      => array(
+					'px'  => array(
+						'min'  => 0,
+						'max'  => 1000,
+						'step' => 1,
+					),
+					'%'   => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+					'em'  => array(
+						'min'  => 0,
+						'max'  => 20,
+						'step' => .1,
+					),
+					'rem' => array(
+						'min'  => 0,
+						'max'  => 20,
+						'step' => .1,
+					),
+					'vh'  => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+					'vw'  => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+				),
+				'default'    => array(
+					'unit' => '%',
+					'size' => 100,
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-wrapper .swiper-slide img' => 'width: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'image_height',
+			array(
+				'label'      => esc_html__( 'Image Height', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'vh', 'vw' ),
+				'range'      => array(
+					'px'  => array(
+						'min'  => 0,
+						'max'  => 1000,
+						'step' => 1,
+					),
+					'%'   => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+					'em'  => array(
+						'min'  => 0,
+						'max'  => 20,
+						'step' => .1,
+					),
+					'rem' => array(
+						'min'  => 0,
+						'max'  => 20,
+						'step' => .1,
+					),
+					'vh'  => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+					'vw'  => array(
+						'min'  => 0,
+						'max'  => 100,
+						'step' => 1,
+					),
+				),
+				'default'    => array(
+					'unit' => 'px',
+					'size' => 31,
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-wrapper .swiper-slide img' => 'height: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'image_object_fit',
+			array(
+				'label'     => esc_html__( 'Image Object Fit', 'animation-addons-for-elementor' ),
+				'type'      => \Elementor\Controls_Manager::SELECT,
+				'default'   => 'cover',
+				'options'   => array(
+					''           => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+					'fill'       => esc_html__( 'Fill', 'animation-addons-for-elementor' ),
+					'contain'    => esc_html__( 'Contain', 'animation-addons-for-elementor' ),
+					'cover'      => esc_html__( 'Cover', 'animation-addons-for-elementor' ),
+					'none'       => esc_html__( 'None', 'animation-addons-for-elementor' ),
+					'scale-down' => esc_html__( 'Scale Down', 'animation-addons-for-elementor' ),
+					'inherit'    => esc_html__( 'Inherit', 'animation-addons-for-elementor' ),
+				),
+				'selectors' => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-slide img' => 'object-fit: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'item_bg_color',
+			array(
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-slide' => 'background-color: {{VALUE}};',
+				),
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Border::get_type(),
-			[
+			array(
 				'name'     => 'image_border',
-				'selector' => '{{WRAPPER}} .wcf--brand-slider img',
-			]
+				'selector' => '{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-slide',
+			)
 		);
 
 		$this->add_responsive_control(
 			'image_border_radius',
-			[
+			array(
 				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
-				'selectors'  => [
-					'{{WRAPPER}} .wcf--brand-slider img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-slide' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'item_padding',
+			array(
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', 'em', '%' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .wcf--brand-slider-wrapper .swiper-slide' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
 		);
 
 		$this->end_controls_section();
@@ -582,70 +470,70 @@ class Brand_Slider extends Widget_Base {
 	private function slider_text_style_controls() {
 		$this->start_controls_section(
 			'section_style_text',
-			[
+			array(
 				'label'     => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
-				'condition' => [
+				'condition' => array(
 					'slide_content' => 'text',
-				],
-			]
+				),
+			)
 		);
 		$this->add_control(
 			'title_color',
-			[
+			array(
 				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}} .title' => 'color: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
-			[
+			array(
 				'name'     => 'typography',
 				'selector' => '{{WRAPPER}} .title',
-			]
+			)
 		);
 
 		$this->add_group_control(
 			Group_Control_Text_Stroke::get_type(),
-			[
-				'name' => 'text_stroke',
+			array(
+				'name'     => 'text_stroke',
 				'selector' => '{{WRAPPER}} .title',
-			]
+			)
 		);
 
 		$this->add_control(
 			'separator_color',
-			[
+			array(
 				'label'     => esc_html__( 'Separator Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'separator' => 'before',
-				'selectors' => [
+				'selectors' => array(
 					'{{WRAPPER}} .elementor-icon i'   => 'color: {{VALUE}};',
 					'{{WRAPPER}} .elementor-icon svg' => 'fill: {{VALUE}};',
-				],
-			]
+				),
+			)
 		);
 
 		$this->add_responsive_control(
 			'separator_size',
-			[
+			array(
 				'label'      => esc_html__( 'Separator Size', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				// The `%' and `em` units are not supported as the widget implements icons differently then other icons.
-				'size_units' => [ 'px', 'rem', 'vw', 'custom' ],
-				'range'      => [
-					'px' => [
+				'size_units' => array( 'px', 'rem', 'vw', 'custom' ),
+				'range'      => array(
+					'px' => array(
 						'min' => 6,
 						'max' => 300,
-					],
-				],
-				'selectors'  => [
+					),
+				),
+				'selectors'  => array(
 					'{{WRAPPER}} .elementor-icon' => 'font-size: {{SIZE}}{{UNIT}}',
-				],
-			]
+				),
+			)
 		);
 		$this->end_controls_section();
 	}
@@ -675,13 +563,13 @@ class Brand_Slider extends Widget_Base {
 
 		$this->add_render_attribute(
 			'wrapper',
-			[
-				'class'         => [ 'wcf__slider-wrapper wcf--brand-slider-wrapper', $class_slide_width ],
+			array(
+				'class'         => array( 'wcf__slider-wrapper wcf--brand-slider-wrapper', $class_slide_width ),
 				'data-settings' => json_encode( $slider_settings ), //phpcs:ignore
-			]
+			)
 		);
 
-		$slides       = [];
+		$slides       = array();
 		$slides_count = 0;
 		if ( 'image' === $settings['slide_content'] ) {
 			$slides_count = count( $settings['wcf_brand_carousel'] );
@@ -702,7 +590,7 @@ class Brand_Slider extends Widget_Base {
 			$slides_count = count( $settings['repeat_list_text'] );
 			foreach ( $settings['repeat_list_text'] as $index => $item ) {
 				$title     = '<div class="title">' . $item['list_text'] . '</div>';
-				$separator = '<div class="elementor-icon">' . Icons_Manager::try_get_icon_html( $settings['separator_icon'], [ 'aria-hidden' => 'true' ] ) . '</div>';
+				$separator = '<div class="elementor-icon">' . Icons_Manager::try_get_icon_html( $settings['separator_icon'], array( 'aria-hidden' => 'true' ) ) . '</div>';
 
 				$slide_html = '<div  class="swiper-slide"><div class="text-slide-content">' . $title . $separator . '</div></div>';
 
@@ -723,36 +611,35 @@ class Brand_Slider extends Widget_Base {
 				'xmlns'           => true,
 				'width'           => true,
 				'height'          => true,
-				'viewbox'         => true // <= Must be lower case!
+				'viewbox'         => true, // <= Must be lower case!
 			),
 			'g'     => array( 'fill' => true ),
 			'title' => array( 'title' => true ),
 			'path'  => array(
 				'd'    => true,
-				'fill' => true
-			)
+				'fill' => true,
+			),
 		);
 
 		$allowed_tags = array_merge( wp_kses_allowed_html( 'post' ), $svg_args );
 		?>
-        <div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
-            <!-- Slider main container -->
-            <div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
-                <!-- Additional required wrapper -->
-                <div class="swiper-wrapper">
-                    <!-- Slides -->
+		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
+			<!-- Slider main container -->
+			<div <?php $this->print_render_attribute_string( 'carousel-wrapper' ); ?>>
+				<!-- Additional required wrapper -->
+				<div class="swiper-wrapper">
+					<!-- Slides -->
 					<?php echo wp_kses( implode( '', $slides ), $allowed_tags ); ?>
-                </div>
-                <!-- navigation and pagination -->
+				</div>
+				<!-- navigation and pagination -->
 				<?php if ( 1 < $slides_count ) : ?>
 					<?php $this->render_slider_navigation(); ?>
 
 					<?php $this->render_slider_pagination(); ?>
 				<?php endif; ?>
 
-            </div>
-        </div>
+			</div>
+		</div>
 		<?php
 	}
-
 }

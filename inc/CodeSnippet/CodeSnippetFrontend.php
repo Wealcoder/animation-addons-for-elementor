@@ -315,7 +315,7 @@ class CodeSnippetFrontend {
 
 			default:
 				// Check for custom post-types.
-				
+
 				if ( ! empty( $visibility_condition ) && str_contains( $visibility_condition, 'singulars' ) ) {
 					$post_type = str_replace( '-singulars', '', $visibility_condition );
 					return is_singular( $post_type );
@@ -481,6 +481,7 @@ class CodeSnippetFrontend {
 			$allowed_tags          = wp_kses_allowed_html( 'post' );
 			$allowed_tags['style'] = array();
 			$allowed_tags['meta']  = array(
+<<<<<<< HEAD
 			'name'       => true,
 			'content'    => true,
 			'http-equiv' => true,
@@ -497,6 +498,24 @@ class CodeSnippetFrontend {
 			'media' => true,
 			'title' => true,
 		);
+=======
+				'name'       => true,
+				'content'    => true,
+				'http-equiv' => true,
+				'property'   => true,
+				'itemprop'   => true,
+				'charset'    => true,
+				'scheme'     => true,
+			);
+
+			$allowed_tags['link'] = array(
+				'rel'   => true,
+				'href'  => true,
+				'type'  => true,
+				'media' => true,
+				'title' => true,
+			);
+>>>>>>> 7ea5841d2d04641b51b7680d3721cb7917dd142e
 			echo wp_kses( $content, $allowed_tags );
 		}
 	}
