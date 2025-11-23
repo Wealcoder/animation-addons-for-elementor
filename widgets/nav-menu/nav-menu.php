@@ -1324,7 +1324,7 @@ class Nav_Menu extends Widget_Base {
 					],
 				],
 				'default' => [
-					'unit' => '%',
+					'unit' => 'px',
 					'size' => 50,
 				],
 				'selectors' => [
