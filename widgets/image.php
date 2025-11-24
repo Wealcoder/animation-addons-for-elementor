@@ -122,9 +122,11 @@ class Image extends Widget_Base {
 		$this->add_group_control(
 			Group_Control_Image_Size::get_type(),
 			array(
-				'name'      => 'image',
-				'default'   => 'large',
+				'name'      => 'image_size',
 				'separator' => 'none',
+                    'exclude' => ['custom'],
+                    'include' => [],
+                    'default' => 'full',
 			)
 		);
 
@@ -488,7 +490,7 @@ class Image extends Widget_Base {
 			<?php if ( $link['url'] ) { ?>
 				<a <?php $this->print_render_attribute_string( 'link' ); ?>>
 				<?php } ?>
-				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'image', 'image' ); ?>
+				<?php echo Group_Control_Image_Size::get_attachment_image_html( $settings, 'image_size', 'image' ); ?>
 				<?php if ( $link['url'] ) { ?>
 				</a>
 			<?php } ?>
