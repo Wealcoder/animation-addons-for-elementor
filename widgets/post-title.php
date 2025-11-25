@@ -647,7 +647,7 @@ class Post_Title extends Widget_Base {
 		if ( ! empty( $settings['link']['url'] ) ) {
 			$this->add_link_attributes( 'url', $settings['link'] );
 			$title = sprintf( '<a %1$s>%2$s</a>', $this->get_render_attribute_string( 'url' ), $title );
-		} elseif ( $settings['current_link'] ) {
+		} elseif ( 'yes' === $settings['current_link'] ) {
 			$this->add_link_attributes(
 				'url',
 				array(
