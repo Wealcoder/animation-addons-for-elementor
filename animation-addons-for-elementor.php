@@ -13,8 +13,8 @@
  * Requires at least: 		   6.6
  * Requires PHP:               7.4
  * Tested up to:               6.8
- * Elementor tested up to:     3.32.5
- * Elementor Pro tested up to: 3.32.4
+ * Elementor tested up to:     3.33.2
+ * Elementor Pro tested up to: 3.33.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
