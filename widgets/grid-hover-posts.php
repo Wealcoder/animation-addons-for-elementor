@@ -1803,7 +1803,7 @@ class Grid_Hover_Posts extends Widget_Base
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'selected_icon',
 			[
 				'label'       => esc_html__('Icon', 'animation-addons-for-elementor'),
@@ -1813,7 +1813,7 @@ class Grid_Hover_Posts extends Widget_Base
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'icon_align',
 			[
 				'label'   => esc_html__('Icon Position', 'animation-addons-for-elementor'),
@@ -1826,7 +1826,7 @@ class Grid_Hover_Posts extends Widget_Base
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'icon_indend',
 			[
 				'label'     => esc_html__('Icon Spacing', 'animation-addons-for-elementor'),
