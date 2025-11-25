@@ -19,7 +19,7 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 220+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
-[Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
+[Buy Pro Now – Get 70% Off!](https://animation-addons.com/pricing/)
 
 https://youtu.be/tRbvgq2gJF4
 
