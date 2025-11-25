@@ -13,12 +13,12 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 
 == Description ==
 
-**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 100+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 200+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
+**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 100+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 220+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
 
 As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
-[Browse 200+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
+[Browse 220+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
 [Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
 
 https://youtu.be/tRbvgq2gJF4
@@ -249,7 +249,7 @@ Take your website design to the next level with 100+ Elementor widgets. Whether 
 ##  Animation Addons for Elementor: Key Features
 
 ###Massive Website Template Library
-Animation Addons for Elementor offers an extensive collection of high-quality templates, designed to streamline website creation. With **200+ pre-built website templates**, you can launch a fully designed website in seconds using the **one-click demo** import feature.
+Animation Addons for Elementor offers an extensive collection of high-quality templates, designed to streamline website creation. With **220+ pre-built website templates**, you can launch a fully designed website in seconds using the **one-click demo** import feature.
 
 🔹 **10,000+ Section Templates** – Mix and match to create a unique design effortlessly.
 🔹 **2,000+ Page Templates** – Choose from a diverse range of ready-made pages to suit any niche.
@@ -463,6 +463,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - **Enhancement:** Compatible some code with WordPress 6.8 Coding Standards
   - **Security:** Fix some nonce security issues
   - **Security:** Fix some sanitizing and escaping issues
+  - **Added:** 15+ RTL Website templates 
 
 = 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
 
@@ -514,7 +515,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - 🎨 Fixed: Mailchimp Widget subscribing issue to ensure seamless email marketing integration
   - 🎨 Fixed: Nested Element editor loading issue for faster, stable page building
   - 🆕 Added: Code Snippet visibility option to give you more control and flexibility in your projects
-  - ✏️ Improved: Dashboard Starter Template design and filter for easier access to 200+ websites & 10,000+ sections
+  - ✏️ Improved: Dashboard Starter Template design and filter for easier access to 220+ websites & 10,000+ sections
 
 = Animation Addons for Elementor v2.3.11 – 19 august 2025 = 
   - 🆕 **Added:** Starter Template Menu
