@@ -307,6 +307,6 @@
   align-self: auto;
 }
 
-.elementor.elementor .e-con > .elementor-widget {
+.custom-loop-wrapper .elementor.elementor .e-con > .elementor-widget {
   width: 100%;
 }
