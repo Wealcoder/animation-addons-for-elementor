@@ -284,7 +284,7 @@ class WCF_Theme_Builder
 	public function has_template($tmpType = '')
 	{
 		$template_ID = self::get_current_post_by_condition($tmpType);
-		
+			
 		if ($template_ID) {
 			if($tmpType == 'header'){
 				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true );
@@ -371,7 +371,7 @@ class WCF_Theme_Builder
 
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
-
+		
 			if (! empty($location)) {
 				if ('specifics' === $location) {
 					
@@ -387,13 +387,27 @@ class WCF_Theme_Builder
 							'posts' => $splocation,
 						)
 					);
+				}elseif($location == '404'){
+					$templates['404'] = $post_id;
 				} else {
 					$templates[$location] = $post_id;
 				}
+
+				
 			}
 
 			if ($key === $count - 1 && ! empty($templates_specific['specifics'])) {
-				$templates = array_merge($templates, $templates_specific);
+				
+				if (!isset($templates['specifics'])) {
+					$templates['specifics'] = [];
+				}
+
+				// merge specifics without changing keys
+				$templates['specifics'] = array_merge(
+					$templates['specifics'],
+					$templates_specific['specifics']
+				);
+				
 			}
 		}
 
@@ -402,6 +416,8 @@ class WCF_Theme_Builder
 		if (empty($templates)) {
 			return false;
 		}
+
+		
 
 		// check for specific page and post
 		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {
@@ -412,9 +428,10 @@ class WCF_Theme_Builder
 				}
 			}
 		}
-
+		
+	
 		// check 404 page
-		if (is_404() && array_key_exists('404', $templates)) {
+		if (is_404() && array_key_exists('404', $templates)) {		
 			return $templates['404'];
 		}
 

@@ -84,7 +84,7 @@
           processResults: function (data) {
             let uniqueData = [];
             let seen = new Set();
-            console.log(data);
+          
             data.forEach((item) => {
               if (!seen.has(item.id)) {
                 seen.add(item.id);
@@ -241,7 +241,7 @@
 
             //display specific locations
             if (response.responseJSON.data.tmpSpLocation) {
-              console.log(response.responseJSON.data.tmpSpLocation);
+           
               $.each(
                 response.responseJSON.data.tmpSpLocation,
                 function (i, item) {
