@@ -321,6 +321,31 @@ class WCF_Theme_Builder
 		return false;
 	}
 
+	function get_ids_from_slugs_any_type($slugs = []) {
+
+		$clean_slugs = array_map('sanitize_title', $slugs);
+
+		// Query ALL posts from ALL post types that match these slugs
+		$query = new \WP_Query([
+			'post_type'      => 'any',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		]);
+
+		$results = [];
+
+		if ($query->have_posts()) {
+			foreach ($query->posts as $post) {
+				if (in_array($post->post_name, $clean_slugs)) {
+					$results[] = $post->ID;
+				}
+			}
+		}
+
+		return $results;
+	}
+
+
 	public function get_current_post_by_condition($tmpType = '')
 	{
 		$query_args         = array(
@@ -336,6 +361,7 @@ class WCF_Theme_Builder
 				),
 			),
 		);
+		
 		$query              = new \WP_Query($query_args);
 		$count              = $query->post_count;
 		$templates          = array();
@@ -348,11 +374,17 @@ class WCF_Theme_Builder
 
 			if (! empty($location)) {
 				if ('specifics' === $location) {
+					
+					$splocation = json_decode($splocation);
+					if(is_array($splocation) && !is_numeric($splocation[0])){
+						$splocation = $this->get_ids_from_slugs_any_type($splocation);
+					}
+					
 					array_push(
 						$templates_specific['specifics'],
 						array(
 							'id'    => $post_id,
-							'posts' => json_decode($splocation),
+							'posts' => $splocation,
 						)
 					);
 				} else {
@@ -589,6 +621,7 @@ class WCF_Theme_Builder
 			// to strong
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
+
 			$popup_trigger = get_post_meta($post_id, 'popup_trigger', true);
 			$popup_selector = get_post_meta($post_id, 'popup_selector', true);
 			$delayTime = get_post_meta($post_id, 'delayTime', true);
@@ -1616,7 +1649,7 @@ class WCF_Theme_Builder
 					}
 
 					// If it's a slug or string
-					elseif (is_string($item)) {
+					elseif (is_string($item) && ! is_numeric($item)) {
 
 						$slug  = sanitize_text_field($item);
 						$post  = get_page_by_path($slug, OBJECT);
