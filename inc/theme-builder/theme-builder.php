@@ -417,7 +417,6 @@ class WCF_Theme_Builder
 			return false;
 		}
 
-		
 
 		// check for specific page and post
 		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {

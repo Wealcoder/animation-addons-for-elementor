@@ -3,9 +3,9 @@ Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.4.6
+Stable tag: 2.4.7
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 [Check the Pro Version ](https://animation-addons.com/)
 [Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 220+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
-[Buy Pro Now – Get 70% Off!](https://animation-addons.com/pricing/)
+[Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
 
 https://youtu.be/tRbvgq2gJF4
 
@@ -327,9 +327,9 @@ This plugin using the modified version of [WP import 2.0] (https://github.com/hu
 
 = Minimum Requirements =
 
-* WordPress 6.5 or greater
+* WordPress 6.7 or greater
 * PHP version 7.4 or greater
-* MySQL version 5.0 or greater
+* MySQL version 5.7 or greater
 
 = Recommended Requirements =
 
@@ -441,11 +441,19 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.4.7 – 08 Dec 2025
+
+- **Fix: Animation Markup Control**  
+  Resolved an issue where animation markup controls were not rendering correctly, ensuring smoother and more consistent animation behavior.
+
+- **Fix: Theme Builder – Header/Footer Condition**  
+  Improved the trigger logic so header and footer conditions now work properly across all layouts.
+
 = 🌀 Animation Addons for Elementor v2.4.6 – 01 Dec 2025
 
-    - **Fix: Widget** - Loop grid style
-    - **Fix: Widget** - Youtube video
-    - **Fix: Widget** - Grid hover post responsive
+   - **Fix: Widget** - Loop grid style
+   - **Fix: Widget** - Youtube video
+   - **Fix: Widget** - Grid hover post responsive
 
 = 🌀 Animation Addons for Elementor v2.4.5 – 19 November 2025
 
