@@ -1603,9 +1603,31 @@ class WCF_Theme_Builder
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
+
 				foreach (json_decode($specificsDisplay) as $item) {
-					$sppost               = get_post(intval($item));
-					$spLocations[$item] = $sppost->post_title;
+
+					// If it's an ID
+					if (is_numeric($item)) {
+
+						$post = get_post(intval($item));
+
+						$spLocations[$item] = $post ? $post->post_title : '';
+
+					}
+
+					// If it's a slug or string
+					elseif (is_string($item)) {
+
+						$slug  = sanitize_text_field($item);
+						$post  = get_page_by_path($slug, OBJECT);
+
+						if ($post) {
+							$spLocations[$item] = $post->post_title; // Real title
+						} else {
+							// fallback title if page not found
+							$spLocations[$item] = ucwords(str_replace('-', ' ', $slug));
+						}
+					}
 				}
 			}
 
@@ -1688,8 +1710,10 @@ class WCF_Theme_Builder
 						$title  = get_the_title();
 						$title .= (0 != $query->post->post_parent) ? ' (' . get_the_title($query->post->post_parent) . ')' : '';
 						$id     = get_the_id();
+						
 						$data[] = array(
-							'id'   => $id,
+							'id' => get_post_field('post_name', $id),
+							//'id'   => $id,
 							'text' => $title,
 						);
 					}
