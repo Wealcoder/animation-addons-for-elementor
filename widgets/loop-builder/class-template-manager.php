@@ -64,9 +64,12 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function add_template_fields( $form ) {
+
 		if ( empty( $form ) ) {
 			return;
 		}
+
+		return;
 
 		$form->add_control(
 			'_elementor_source',

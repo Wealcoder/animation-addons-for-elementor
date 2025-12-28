@@ -47,6 +47,10 @@
   height: 100%;
 }
 
+.wcf-post-link {
+  display: flex;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .wcf-grid-hover-posts .wcf-post {

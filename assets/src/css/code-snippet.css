@@ -296,6 +296,9 @@ CSP STYLE
   box-shadow: none;
   outline-width: 0;
 }
+.aae-csp-editor .CodeMirror.fullscreen {
+  margin-top: 32px;
+}
 @media (max-width: 1200px) {
   .aae-csp-editor .CodeMirror {
     height: 300px;
