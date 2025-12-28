@@ -136,10 +136,7 @@ const DemoImporting = () => {
               `📦 Content Import: ${contentProgress}% (${importCount} of ${totalCount})\n`        
             );
 
-            if (totalProgress >= 100) {
-              shouldStop = true;
-              clearInterval(intervalId);
-            }
+           
           }
         }       
         

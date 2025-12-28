@@ -1,6 +1,107 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.4.8 – 21 December 2025
+
+  - **Fix:** ThemeBuilder slug and id while import demo
+  - **Fix:** Add Dynamic Tag support in several widgets
+
+= 🌀 Animation Addons for Elementor v2.4.7 – 08 Dec 2025
+
+- **Fix: Animation Markup Control**  
+  Resolved an issue where animation markup controls were not rendering correctly, ensuring smoother and more consistent animation behavior.
+
+- **Fix: Theme Builder – Header/Footer Condition**  
+  Improved the trigger logic so header and footer conditions now work properly across all layouts.
+
+= 🌀 Animation Addons for Elementor v2.4.6 – 01 Dec 2025
+
+   - **Fix: Widget** - Loop grid style
+   - **Fix: Widget** - Youtube video
+   - **Fix: Widget** - Grid hover post responsive
+
+= 🌀 Animation Addons for Elementor v2.4.5 – 19 November 2025
+
+  - **Feature:** Add new widget Loop Builder
+  - **Feature:** Add Dynamic Tag support in several widgets
+  - **Feature:** Add new controls in several widgets
+  - **Feature:** Add Current template Names in admin bar
+  - **Feature:** Add new Tag support in Extension Code Snippet HTML Editor
+  - **Fix: Extension** - Popup template and script issues
+  - **Fix: Extension** - Code Snippet Code Editor issues
+  - **Fix: Widget** - Toggle style and responsive issue
+  - **Fix: Widget** - Breadcrumb link and category link and name issue
+  - **Fix: Widget** - Image Box link issue
+  - **Fix: Widget** - Advanced Button style issue
+  - **Fix: Widget** - Nested Slider Pagination Control issues
+  - **Fix: Widget** - Brand Slider Responsive and image control issues
+  - **Fix: Widget** - Author Box link issue
+  - **Fix: Widget** - Post Ratings form issues
+  - **Fix: Widget** - Advanced Accordion image issue
+  - **Enhancement:** Remove unused code and Update code to the latest version php
+  - **Enhancement:** Compatible some code with WordPress 6.8 Coding Standards
+  - **Security:** Fix some nonce security issues
+  - **Security:** Fix some sanitizing and escaping issues
+  - **Added:** 15+ RTL Website templates 
+
+= 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
+
+      -🎨 **Added:** BlackFriday Offer  
+
+= 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
+  
+  - 🪟 **Offcanvas Widget:** Added new control options, updated markup for better flexibility, optimized CSS, and replaced jQuery with lightweight JavaScript for enhanced speed.
+
+  - 📱**Nav Menu Widget:**
+    - **Added** new control panel for customization.
+    - **Fixed** mobile menu click issue on devices under 767px by reloading JavaScript dynamically.
+    - **Converted** jQuery logic to pure JavaScript for improved performance.
+
+  - 🖼️ **Image Accordion Widget:** Fixed functionality issues and completely refactored to vanilla JavaScript.
+  - 🔘 **Toggle Switcher:** Resolved toggle issues and refactored to pure JavaScript.
+
+= 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025
+    - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
+
+= 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
+  - 🧩 **Added:** Dashboard new widget  
+
+= 🌀 Animation Addons for Elementor v2.4.0 – 23 October 2025
+  - 🧩 **Improved:** Dashboard interface
+  - 🧩 **Improved:** Notice interface
+
+= 🌀 Animation Addons for Elementor v2.3.15 – 13 October 2025
+  - 🧩 **Fixed:** Resolved js on demand object
+
+= 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025
+
+  - ⚡ **Improved:** On-demand JS loading for **Contact Form 7**, **Toggle Switcher**, and **Counter** widgets for faster performance.  
+  - 📦 **Improved:** **Section Import Library** for smoother and more efficient section imports.  
+  - 🎨 **Fixed:** Enhanced **UX for the plugin dashboard** with a cleaner and more user-friendly interface.  
+  - 🧩 **Fixed:** Resolved **page import notice issue** for a better importing experience. 
+
+= Animation Addons for Elementor v2.3.13 – 24 September 2025 =
+
+  - 🆕 Added: 660+ Pages in Page importer 
+  - ✏️ Improved: Code Snippet design and functionality 
+  - ✏️ Improved: Section Import Library,
+  - 🎨 Fixed: Native Sticky Header using smoother options
+  - 🎨 Fixed: ThemeBuilder post-singulars condition
+
+= Animation Addons for Elementor v2.3.12 – 02 September 2025 =
+
+  - 🎨 Fixed: Toggle Widget for smoother interaction and better user experience
+  - 🎨 Fixed: Mailchimp Widget subscribing issue to ensure seamless email marketing integration
+  - 🎨 Fixed: Nested Element editor loading issue for faster, stable page building
+  - 🆕 Added: Code Snippet visibility option to give you more control and flexibility in your projects
+  - ✏️ Improved: Dashboard Starter Template design and filter for easier access to 220+ websites & 10,000+ sections
+
+= Animation Addons for Elementor v2.3.11 – 19 august 2025 = 
+  - 🆕 **Added:** Starter Template Menu
+  - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
+  - 🆕 **Added:** Code Snippet extension, 
+  - ✏️ **Improved** Dashboard widget docs
+
 = Animation Addons for Elementor v2.3.10 – 11 august 2025 = 
   - 🆕 **Added:** 20+ premium widgets — now completely free for all users!
   - 🎨 **Fixed:** Mobile navigation overlay issue for smoother user experience
@@ -131,10 +232,10 @@
 
 = Animation Addons for Elementor v1.1.3 – 21 October 2024 =
   - 🎨 **UI Enhancements:**
-    - Introduced **responsive title margin controls** in the **Counter Widget** for improved layout customization.
+  - Introduced **responsive title margin controls** in the **Counter Widget** for improved layout customization.
   - 🔄 **Bug Fixes:**
-    - Resolved **meta description duplication** issue for better SEO indexing.
-    - Fixed **GoodShare console errors** to prevent script conflicts.
+  - Resolved **meta description duplication** issue for better SEO indexing.
+  - Fixed **GoodShare console errors** to prevent script conflicts.
 
 = Animation Addons for Elementor v1.1.2 – 22 September 2024 =
   - 🎨 **UI Enhancement:** Added **responsive input field height controls** in the **Contact Form 7 Widget** for better mobile optimization.
@@ -142,7 +243,7 @@
 = Animation Addons for Elementor v1.1.1 – 14 September 2024 =
   - ⚡ **Performance Upgrade:**
     - Replaced the outdated `Waypoints.js` library with the **native Intersection Observer API** for **faster and more efficient animations**.
-  - 🛠️ **Fixed:** **Progress Bar Widget** issue where progress was not displaying correctly.
+    - 🛠️ **Fixed:** **Progress Bar Widget** issue where progress was not displaying correctly.
 
 = Animation Addons for Elementor v1.0.0 – 1 April 2024 =
-- 🚀 **Initial Release**
+ - 🚀 **Initial Release**

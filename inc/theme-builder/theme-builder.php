@@ -284,7 +284,7 @@ class WCF_Theme_Builder
 	public function has_template($tmpType = '')
 	{
 		$template_ID = self::get_current_post_by_condition($tmpType);
-		
+			
 		if ($template_ID) {
 			if($tmpType == 'header'){
 				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true );
@@ -321,6 +321,31 @@ class WCF_Theme_Builder
 		return false;
 	}
 
+	function get_ids_from_slugs_any_type($slugs = []) {
+
+		$clean_slugs = array_map('sanitize_title', $slugs);
+
+		// Query ALL posts from ALL post types that match these slugs
+		$query = new \WP_Query([
+			'post_type'      => 'any',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		]);
+
+		$results = [];
+
+		if ($query->have_posts()) {
+			foreach ($query->posts as $post) {
+				if (in_array($post->post_name, $clean_slugs)) {
+					$results[] = $post->ID;
+				}
+			}
+		}
+
+		return $results;
+	}
+
+
 	public function get_current_post_by_condition($tmpType = '')
 	{
 		$query_args         = array(
@@ -336,6 +361,7 @@ class WCF_Theme_Builder
 				),
 			),
 		);
+		
 		$query              = new \WP_Query($query_args);
 		$count              = $query->post_count;
 		$templates          = array();
@@ -345,23 +371,43 @@ class WCF_Theme_Builder
 
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
-
+		
 			if (! empty($location)) {
 				if ('specifics' === $location) {
+					
+					$splocation = json_decode($splocation);
+					if(is_array($splocation) && !is_numeric($splocation[0])){
+						$splocation = $this->get_ids_from_slugs_any_type($splocation);
+					}
+					
 					array_push(
 						$templates_specific['specifics'],
 						array(
 							'id'    => $post_id,
-							'posts' => json_decode($splocation),
+							'posts' => $splocation,
 						)
 					);
+				}elseif($location == '404'){
+					$templates['404'] = $post_id;
 				} else {
 					$templates[$location] = $post_id;
 				}
+
+				
 			}
 
 			if ($key === $count - 1 && ! empty($templates_specific['specifics'])) {
-				$templates = array_merge($templates, $templates_specific);
+				
+				if (!isset($templates['specifics'])) {
+					$templates['specifics'] = [];
+				}
+
+				// merge specifics without changing keys
+				$templates['specifics'] = array_merge(
+					$templates['specifics'],
+					$templates_specific['specifics']
+				);
+				
 			}
 		}
 
@@ -370,6 +416,7 @@ class WCF_Theme_Builder
 		if (empty($templates)) {
 			return false;
 		}
+
 
 		// check for specific page and post
 		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {
@@ -380,9 +427,10 @@ class WCF_Theme_Builder
 				}
 			}
 		}
-
+		
+	
 		// check 404 page
-		if (is_404() && array_key_exists('404', $templates)) {
+		if (is_404() && array_key_exists('404', $templates)) {		
 			return $templates['404'];
 		}
 
@@ -589,6 +637,7 @@ class WCF_Theme_Builder
 			// to strong
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
+
 			$popup_trigger = get_post_meta($post_id, 'popup_trigger', true);
 			$popup_selector = get_post_meta($post_id, 'popup_selector', true);
 			$delayTime = get_post_meta($post_id, 'delayTime', true);
@@ -1603,9 +1652,31 @@ class WCF_Theme_Builder
 			$spLocations      = array();
 
 			if (! empty($specificsDisplay)) {
+
 				foreach (json_decode($specificsDisplay) as $item) {
-					$sppost               = get_post(intval($item));
-					$spLocations[$item] = $sppost->post_title;
+
+					// If it's an ID
+					if (is_numeric($item)) {
+
+						$post = get_post(intval($item));
+
+						$spLocations[$item] = $post ? $post->post_title : '';
+
+					}
+
+					// If it's a slug or string
+					elseif (is_string($item) && ! is_numeric($item)) {
+
+						$slug  = sanitize_text_field($item);
+						$post  = get_page_by_path($slug, OBJECT);
+
+						if ($post) {
+							$spLocations[$item] = $post->post_title; // Real title
+						} else {
+							// fallback title if page not found
+							$spLocations[$item] = ucwords(str_replace('-', ' ', $slug));
+						}
+					}
 				}
 			}
 
@@ -1688,8 +1759,10 @@ class WCF_Theme_Builder
 						$title  = get_the_title();
 						$title .= (0 != $query->post->post_parent) ? ' (' . get_the_title($query->post->post_parent) . ')' : '';
 						$id     = get_the_id();
+						
 						$data[] = array(
-							'id'   => $id,
+							'id' => get_post_field('post_name', $id),
+							//'id'   => $id,
 							'text' => $title,
 						);
 					}

@@ -84,6 +84,7 @@
           processResults: function (data) {
             let uniqueData = [];
             let seen = new Set();
+          
             data.forEach((item) => {
               if (!seen.has(item.id)) {
                 seen.add(item.id);
@@ -125,36 +126,36 @@
       const triggerType = $(this).val();
       WCFThemeBuilder.selectorFieldDisplay(triggerType);
     },
-    
+
     SmootherChange: function (e) {
       e.preventDefault();
       const SmoothType = $(this).val();
-      if(SmoothType === 'no'){
-         $(".aae-header-smoother-location.yoffset").removeClass("hidden");
-      }else{
-         $(".aae-header-smoother-location.yoffset").addClass("hidden");
+      if (SmoothType === 'no') {
+        $(".aae-header-smoother-location.yoffset").removeClass("hidden");
+      } else {
+        $(".aae-header-smoother-location.yoffset").addClass("hidden");
       }
     },
 
     selectorFieldDisplay: function (val) {
-       if (["page_scroll"].includes(val)) {
+      if (["page_scroll"].includes(val)) {
         $("#aae-popup-builder-scrollPostion")
           .parents(".aae-popup-builder-location")
           .removeClass("hidden");
-       }else{
-          $("#aae-popup-builder-scrollPostion")
+      } else {
+        $("#aae-popup-builder-scrollPostion")
           .parents(".aae-popup-builder-location")
           .addClass("hidden");
-       }
+      }
       if (["click",].includes(val)) {
         $("#aae-popup-builder-selector")
           .parents(".aae-popup-builder-location")
           .removeClass("hidden");
-        
+
       } else {
         $("#aae-popup-builder-selector")
           .parents(".aae-popup-builder-location")
-          .addClass("hidden");         
+          .addClass("hidden");
       }
     },
 
@@ -188,14 +189,14 @@
           },
           type: "POST",
 
-          beforeSend: function () {},
+          beforeSend: function () { },
 
           success: function (response) {
             //type
             document.querySelector(
               "#wcf-addons-template-type option[value='" +
-                response.data.tmpType +
-                "']"
+              response.data.tmpType +
+              "']"
             ).selected = "true";
             $("#wcf-addons-template-title").attr(
               "value",
@@ -216,6 +217,7 @@
               let category_option = Object.keys(
                 response.responseJSON.data.tmpSpLocation
               );
+
               if (
                 $("#wcf-addons-single-category-display-type").find(
                   "option[value='" + category_option[0] + "']"
@@ -239,11 +241,15 @@
 
             //display specific locations
             if (response.responseJSON.data.tmpSpLocation) {
+           
               $.each(
                 response.responseJSON.data.tmpSpLocation,
                 function (i, item) {
                   // Create a DOM Option and pre-select by default
                   let data = { id: i, text: item };
+                 if(item===null || item===''){
+                   data.text= i;
+                 }
                   let newOption = new Option(data.text, data.id, true, true);
                   // Append it to the select
                   $("#wcf-addons-hf-s-display-type")
@@ -253,7 +259,7 @@
               );
 
               // header
-              
+
               if (
                 response.responseJSON.data.tmpType &&
                 response.responseJSON.data.tmpType === "header"
@@ -269,11 +275,11 @@
                   response.responseJSON.data.tmpHeaderSmootherOffsetY
                 );
 
-                if(response.responseJSON.data.tmpHeaderSmoother !== 'no'){
-                 $(".aae-header-smoother-location.yoffset").addClass("hidden");
+                if (response.responseJSON.data.tmpHeaderSmoother !== 'no') {
+                  $(".aae-header-smoother-location.yoffset").addClass("hidden");
                 }
 
-              }else{
+              } else {
                 $(".aae-header-smoother-location").addClass("hidden");
               }
 
@@ -390,18 +396,18 @@
           ? $("#aae-popup-builder-selector").val()
           : "";
 
-           data["tmpScrollPostion"] = $("#aae-popup-builder-scrollPostion").val()
+        data["tmpScrollPostion"] = $("#aae-popup-builder-scrollPostion").val()
           ? $("#aae-popup-builder-scrollPostion").val()
           : 0;
       }
 
-      if(tmpType === 'header'){
-        
-         data["tmpHeaderSmoother"] = $("#aae-header-smoother-location").val()
+      if (tmpType === 'header') {
+
+        data["tmpHeaderSmoother"] = $("#aae-header-smoother-location").val()
           ? $("#aae-header-smoother-location").val()
           : "";
-          
-          data["tmpHeaderSmootherOffsetY"] = $("#aae-header-smoother-yoffset").val()
+
+        data["tmpHeaderSmootherOffsetY"] = $("#aae-header-smoother-yoffset").val()
           ? $("#aae-header-smoother-yoffset").val()
           : "";
       }
@@ -466,9 +472,9 @@
         $(".single-location").removeClass("hidden");
         $(".hf-location, .archive-location").addClass("hidden");
       } else if ("loop-builder" === type) {
-          $(".single-location").addClass("hidden");
-          $(".hf-location").addClass("hidden");
-          $(".hf-location, .archive-location").addClass("hidden");
+        $(".single-location").addClass("hidden");
+        $(".hf-location").addClass("hidden");
+        $(".hf-location, .archive-location").addClass("hidden");
       } else {
         $(".hf-location").removeClass("hidden");
         $(".single-location, .archive-location").addClass("hidden");
@@ -487,12 +493,12 @@
         $(".aae-popup-builder-location").addClass("hidden");
       }
 
-      if(type === 'header'){          
-        $(".aae-header-smoother-location").removeClass("hidden");       
-      }else{
-        $(".aae-header-smoother-location").addClass("hidden");      
+      if (type === 'header') {
+        $(".aae-header-smoother-location").removeClass("hidden");
+      } else {
+        $(".aae-header-smoother-location").addClass("hidden");
       }
-      
+
     },
   };
 
