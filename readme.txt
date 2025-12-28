@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.4.7
+Stable tag: 2.4.8
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,17 +13,17 @@ Top Elementor addons & GSAP animation plugin for WordPress with motion effects, 
 
 == Description ==
 
-**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 100+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, 220+ fully built websites (including all inner pages), and 10,000+ modern, ready-to-use section templates.**
+**Animation Addons for Elementor is the ultimate GSAP-powered animation plugin, featuring 220+ fully built websites (including all inner pages), 100+ exclusive widgets, 25+ advanced Elementor extensions, 2,000+ professionally designed page templates, and 10,000+ modern, ready-to-use section templates.**
 
 As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it enables you to create fully animated websites with advanced **GSAP functionality** —no coding required. Bring your designs to life with smooth animations, interactive effects, and seamless motion.
 [Check the Pro Version ](https://animation-addons.com/)
-[Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
 [Browse 220+ Pre-Built Websites](https://animation-addons.com/starter-templates/)
-[Buy Pro Now – Get 50% Off!](https://animation-addons.com/pricing/)
+[Explore 10,000+ Section Templates ](https://animation-addons.com/section-templates/)
+[Buy Pro Now – Get 70% Off!](https://animation-addons.com/pricing/)
 
-https://youtu.be/tRbvgq2gJF4
+https://youtu.be/z4Y3xbsLo0M
 
-**Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, and 404 Builder**. Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
+**Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, Code Snippet and 404 Builder.** Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
   
 https://youtu.be/LD2mr5dHEng
 
@@ -61,7 +61,9 @@ https://youtu.be/LD2mr5dHEng
 🏗️ Header Builder
 🦶 Footer Builder
 🌍 Dynamic Content
+🌍 Add animation to the existing design/layout
 🔌 [Elementor Extensions](https://animation-addons.com/extensions/)
+### No Coding Required
 🎨 [Preloader](https://animation-addons.com/docs/features/aae-preloader/)
 🗂️ Mega Menus
 ↔️ [Horizontal Scrolling](https://animation-addons.com/extensions/horizontal-scroll/)
@@ -75,186 +77,195 @@ https://youtu.be/LD2mr5dHEng
 ✒️ CodeSnippet
 🌍 Loop Builder
 
-Animation Addons for Elementor is a game-changer in animation-focused web design. The blend of its advanced animations, customizable features, and unique functionality set it apart from competitors. Whether you’re a web developer, designer, agency owner, or website owner, the plugin caters to your holistic professional needs.
+Animation Addons is a game-changer in animation-focused web design in WordPress. The blend of its advanced animations, customizable features, and unique functionality sets it apart from competitors. Whether you’re a web developer, designer, agency owner, or website owner, the plugin caters to your holistic professional needs.
 
 ### Animation Addons for Elementor: Must-Have Extensions for Enhanced Web Design
 Once your website is designed with all the essential elements, enhance its functionality, animations, and appearance with our advanced extensions. Explore our carefully curated list of exclusive extensions that elevate your Elementor-powered site to the next level.
 
 ##GSAP Extensions:
 
-**Smooth Scroller**: Allow users to navigate web pages more smoothly and naturally.
-**[Animation](https://animation-addons.com/docs/gsap-extensions/animation-extension-for-elementor/)**: Implement diverse, advanced animations for a visually appealing website.
-**[Pin Element](https://animation-addons.com/extensions/pin-elements/)**: Fix elements in a specific space during scrolling to keep them always visible.
-**[Text Animation](https://animation-addons.com/extensions/text-animation/)**: Create smooth text effects to make headings and content more engaging.
-**[Image Animation](https://animation-addons.com/extensions/image-animation/)**: Add dynamic animations to images to capture the user's attention.
-**[Cursor Hover Effect](https://animation-addons.com/extensions/cursor-hover-effect/)**: Add unique hover animations based on the cursor to increase interactivity.
-**[Hover Effect Image](https://animation-addons.com/extensions/image-hover-effect/)**: Implement hover-specific image transformations for a modern touch.
-**[Cursor Move Effect](https://animation-addons.com/extensions/cursor-move-effect/)**: Add immersive animations based on cursor movement.
-**[Horizontal ScrollTrigger](https://animation-addons.com/extensions/horizontal-scroll/)**: Create animations when the user performs horizontal scrolling.
-**[DrawSVG](https://animation-addons.com/widgets/aae-gsap-drawsvg/)**: Reveal or hide the stroke of an SVG progressively.
-**[Portfolio Filter](https://animation-addons.com/docs/gsap-extensions/portfolio-filter/)**: Implement animated filters to organize and showcase portfolio items.
-**Animation Builder**: Design powerful animations visually—no coding needed. Bring your Elementor pages to life in minutes!
+- **Smooth Scroller**: Allow users to navigate web pages more smoothly and naturally.
+- **[Animation](https://animation-addons.com/docs/gsap-extensions/animation-extension-for-elementor/)**: Implement diverse, advanced animations for a visually appealing website.
+- **[Pin Element](https://animation-addons.com/extensions/pin-elements/)**: Fix elements in a specific space during scrolling to keep them always visible.
+- **[Text Animation](https://animation-addons.com/extensions/text-animation/)**: Create smooth text effects to make headings and content more engaging.
+- **[Image Animation](https://animation-addons.com/extensions/image-animation/)**: Add dynamic animations to images to capture the user's attention.
+- **[Cursor Hover Effect](https://animation-addons.com/extensions/cursor-hover-effect/)**: Add unique hover animations based on the cursor to increase interactivity.
+- **[Image Reveal on Hover](https://animation-addons.com/extensions/image-reveal-on-hover/)**: Reveal images smoothly when users hover.
+- **[Cursor Move Effect](https://animation-addons.com/extensions/cursor-move-effect/)**: Add immersive animations based on cursor movement.
+- **[Horizontal ScrollTrigger](https://animation-addons.com/extensions/horizontal-scroll/)**: Create animations when the user performs horizontal scrolling.
+- **[Portfolio Filter](https://animation-addons.com/docs/gsap-extensions/portfolio-filter/)**: Implement animated filters to organize and showcase portfolio items.
+- **Animation Builder**: Design powerful animations visually—no coding needed. Bring your Elementor pages to life in minutes!
 
 
 ### General Extensions:
 
-**[CodeSnippet](https://animation-addons.com/docs/general-extensions/code-snippet/)**: Add custom CSS, JS or PHP right inside Elementor to fine-tune designs without extra plugins.
-**[Custom CSS](https://animation-addons.com/docs/general-extensions/custom-css/)**: Add custom CSS styles directly within Elementor for precise design control.
-**[Wrapper Link](https://animation-addons.com/docs/general-extensions/wrapper-link/)**: Transform entire container sections into clickable links for seamless navigation.
-**[Popup](https://animation-addons.com/extensions/pop-up/)**: Create engaging popups to enhance user interaction and showcase important content.
-**[Tilt Effect](https://animation-addons.com/docs/general-extensions/tilt-effect-extensions/)**: Tilt an element based on the visitor’s mouse movement for a dynamic visual experience.
-**[Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/)**: Display additional information about elements when users hover over them.
-**[Custom Fonts](https://animation-addons.com/docs/general-extensions/custom-fonts/)**: Integrate unique custom fonts to maintain a consistent brand identity.
-**[Custom Icon](https://animation-addons.com/docs/general-extensions/custom-icon/)**: Upload and use your own icon fonts, including IcoMoon, to keep your website perfectly on-brand.
-**[Custom PostType](https://animation-addons.com/docs/general-extensions/post-type-builder/)**: Create and manage custom post types easily without any coding—perfect for blogs, portfolios, or products.
-**Mega Menu**: Create a customizable, expansive mega menu for seamless navigation.
+- **[CodeSnippet](https://animation-addons.com/docs/general-extensions/code-snippet/)**: Easily insert and manage custom code anywhere on your website, including HTML, CSS, PHP, and JavaScript.
+- **[Custom CSS](https://animation-addons.com/docs/general-extensions/custom-css/)**: Add custom CSS styles directly within Elementor for precise design control.
+- **[Wrapper Link](https://animation-addons.com/docs/general-extensions/wrapper-link/)**: Transform entire container sections into clickable links for seamless navigation.
+- **[Popup](https://animation-addons.com/extensions/pop-up/)**: Create engaging popups to enhance user interaction and showcase important content.
+- **[Tilt Effect](https://animation-addons.com/docs/general-extensions/tilt-effect-extensions/)**: Tilt an element based on the visitor’s mouse movement for a dynamic visual experience.
+- **[Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/)**: Display additional information about elements when users hover over them.
+- **[Custom Fonts](https://animation-addons.com/docs/general-extensions/custom-fonts/)**: Integrate unique custom fonts to maintain a consistent brand identity.
+- **[Custom Icon](https://animation-addons.com/docs/general-extensions/custom-icon/)**: Upload and use your own icon fonts, including IcoMoon, to keep your website perfectly on-brand.
+- **[Custom PostType](https://animation-addons.com/docs/general-extensions/post-type-builder/)**: Create and manage custom post types easily without any coding—perfect for blogs, portfolios, or products.
+- **Mega Menu**: Create a customizable, expansive mega menu for seamless navigation.
 
 
 ## Animation Addons For Elementor Widget List
-Take your website design to the next level with 100+ Elementor widgets. Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, or excerpts, Animation Addons got you covered.
+Take your website design to the next level with **100+ Elementor widgets.** Whether you need dynamic sliders, service boxes, headers, portfolios, progress bars, breadcrumbs, accordions, post-feature images, excerpts, or engaging **animation widgets**, Animation Addons has you covered.
+
+## Animation Widgets
+Bring your website to life with animation-specific widgets, including:
+
+-  **[Animated Text](https://animation-addons.com/widgets/aae-animated-text/)** – Add motion to your text for dynamic effects.
+-  **[Animated Title](https://animation-addons.com/widgets/aae-animated-title/)** – Make your titles engaging with smooth animations.
+-  **[Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)** – Animate headings to grab attention.
+- **[Typewriter Widget](https://animation-addons.com/widgets/aae-typewriter/)** – Create classic typewriter text animations.
+- **[GSAP DrawSVG](https://animation-addons.com/widgets/aae-gsap-drawsvg/)** – Animate SVG paths for creative effects.
+- **[Lottie Widget](https://animation-addons.com/widgets/aae-lottie/)** – Add lightweight, interactive Lottie animations.
+- **Cube Scroll Reveal** – Reveal elements with 3D cube scrolling animations.
+These widgets make your content more engaging and visually appealing, all without writing any code.
+
 
 ### Header and Footer Widgets;
-**[Site Logo](https://animation-addons.com/widgets/aae-site-logo/)**: Display the website’s logo prominently to establish brand identity and recognition.
-**[Nav Menu](https://animation-addons.com/widgets/aae-nav-menu/)**: Present a collection of links or buttons that help users navigate different sections of the website easily.
+- **[Site Logo](https://animation-addons.com/widgets/aae-site-logo/)**: Display the website’s logo prominently to establish brand identity and recognition.
+- **[Nav Menu](https://animation-addons.com/widgets/aae-nav-menu/)**: Present a collection of links or buttons that help users navigate different sections of the website easily.
 
 ### Dynamic Widgets:
 
-**[Post Title](https://animation-addons.com/docs/dynamic-widgets/post-title/)**: Dynamically display the title of a specific post or page within the website’s layout.
+- **[Post Title](https://animation-addons.com/docs/dynamic-widgets/post-title/)**: Dynamically display the title of a specific post or page within the website’s layout.
 
-**[Post Featured Image](https://animation-addons.com/docs/dynamic-widgets/post-featured-image/)**: Display the featured image associated with a specific post or page.
+- **[Post Featured Image](https://animation-addons.com/docs/dynamic-widgets/post-featured-image/)**: Display the featured image associated with a specific post or page.
 
-**[Post Excerpt](https://animation-addons.com/docs/dynamic-widgets/post-excerpt/)**: Show a summary or excerpt of a specific post or page.
+- **[Post Excerpt](https://animation-addons.com/docs/dynamic-widgets/post-excerpt/)**: Show a summary or excerpt of a specific post or page.
 
-**Post Content**: Present the core content, including text, images, videos, and other multimedia elements.
+- **Post Content**: Present the core content, including text, images, videos, and other multimedia elements.
 
-**Post Comments**: Enable users to leave comments, feedback, and engage in discussions on individual posts or pages.
+- **Post Comments**: Enable users to leave comments, feedback, and engage in discussions on individual posts or pages.
 
-**[Post Meta Info](https://animation-addons.com/docs/dynamic-widgets/post-meta-info/)**: Provide supplementary details about individual posts or pages.
+- **[Post Meta Info](https://animation-addons.com/docs/dynamic-widgets/post-meta-info/)**: Provide supplementary details about individual posts or pages.
 
-**[Post Pagination](https://animation-addons.com/docs/dynamic-widgets/post-pagination/)**: Break down content into manageable pages, allowing users to browse multiple posts.
+- **[Post Pagination](https://animation-addons.com/docs/dynamic-widgets/post-pagination/)**: Break down content into manageable pages, allowing users to browse multiple posts.
 
-**[Post Social Share](https://animation-addons.com/widgets/aae-social-share/)**: Enable social media sharing of individual posts or articles to expand reach and visibility.
+- **[Post Social Share](https://animation-addons.com/widgets/aae-social-share/)**: Enable social media sharing of individual posts or articles to expand reach and visibility.
 
-**[Posts](https://animation-addons.com/widgets/aae-posts/)**: Showcase a list of blog posts or custom post types in multiple unique styles.
+- **[Posts](https://animation-addons.com/widgets/aae-posts/)**: Showcase a list of blog posts or custom post types in multiple unique styles.
 
-**[Archive Title](https://animation-addons.com/wcf-template/blog-archive/)**: Dynamically display the title of an archive page based on specific criteria such as date, category, tag, or author.
+- **[Archive Title](https://animation-addons.com/wcf-template/blog-archive/)**: Dynamically display the title of an archive page based on specific criteria such as date, category, tag, or author.
 
-**[Portfolio](https://animation-addons.com/widgets/aae-portfolio/)**: Display pages, posts, and custom post types in a filterable grid.
+- **[Portfolio](https://animation-addons.com/widgets/aae-portfolio/)**: Display pages, posts, and custom post types in a filterable grid.
 
-**[Search Form](https://animation-addons.com/wcf-template/search-form/)**: Provide users with a simple and intuitive interface to input search queries and retrieve relevant results.
+- **[Search Form](https://animation-addons.com/wcf-template/search-form/)**: Provide users with a simple and intuitive interface to input search queries and retrieve relevant results.
 
-**[Search Query](https://animation-addons.com/widgets/aae-search-query/)**: Display search results in real-time as users type their queries.
+- **[Search Query](https://animation-addons.com/widgets/aae-search-query/)**: Display search results in real-time as users type their queries.
 
-**[Search No Result](https://animation-addons.com/docs/dynamic-widgets/search-no-result/)**: Offer helpful guidance and options when no relevant search results are found.
+- **[Search No Result](https://animation-addons.com/docs/dynamic-widgets/search-no-result/)**: Offer helpful guidance and options when no relevant search results are found.
 
 ### Form Widgets
-**[Contact Form 7](https://animation-addons.com/widgets/aae-contact-form-7/)**: Customize Contact Form 7 forms to match specific needs.
+- **[Contact Form 7](https://animation-addons.com/widgets/aae-contact-form-7/)**: Customize Contact Form 7 forms to match specific needs.
 
-**[Mailchimp](https://animation-addons.com/widgets/aae-mailchimp)**: Enable users to add opt-in forms to collect emails.
+- **[Mailchimp](https://animation-addons.com/widgets/aae-mailchimp)**: Enable users to add opt-in forms to collect emails.
 
 ### Video Widgets
-**[Video Popup](https://animation-addons.com/widgets/aae-video-popup/)**: Display a video in a popup to enhance engagement.
+- **[Video Popup](https://animation-addons.com/widgets/aae-video-popup/)**: Display a video in a popup to enhance engagement.
 
-**[Video Box](https://animation-addons.com/widgets/aae-video-box)**: Showcase external and self-hosted videos from various sources.
+- **[Video Box](https://animation-addons.com/widgets/aae-video-box)**: Showcase external and self-hosted videos from various sources.
 
-**[Video Box Slider](https://animation-addons.com/widgets/aae-video-box-slider/)**: Create a slider with videos from multiple sources.
+- **[Video Box Slider](https://animation-addons.com/widgets/aae-video-box-slider/)**: Create a slider with videos from multiple sources.
 
-**[Video Mask](https://animation-addons.com/widgets/aae-video-mask/)**: Apply transitions, visual effects, and isolate video elements.
+- **[Video Mask](https://animation-addons.com/widgets/aae-video-mask/)**: Apply transitions, visual effects, and isolate video elements.
 
 ### Advanced Widgets
-**[Toggle Switcher](https://animation-addons.com/widgets/aae-toggle-switch/)**: Allow users to toggle between two mutually exclusive states (on/off).
 
-**[Advanced Portfolio](https://animation-addons.com/widgets/aae-advanced-portfolio)**: Add a responsive portfolio slider or grid to showcase images, videos, or projects
+- **[Stacked Cards](https://animation-addons.com/extensions/stacked-cards/)** – Display layered card layouts with animated stacking effects.
 
-**[Table of Contents](https://animation-addons.com/widgets/aae-table-of-content)**: Generate a list of navigation links to different sections of a page.
+- **Scrollmotion Cards** – Animate cards on scroll for interactive storytelling.
 
-**[Flip Box](https://animation-addons.com/widgets/aae-flip-box/)**: Provide interactive design effects such as flip, slide, fade, zoom-in, and zoom-out.
+- **[Toggle Switcher](https://animation-addons.com/widgets/aae-toggle-switch/)**: Allow users to toggle between two mutually exclusive states (on/off).
 
-**[Advanced Accordion](https://animation-addons.com/widgets/aae-advanced-accordion/)**: Enable collapsible content sections for better organization.
+- **[Advanced Portfolio](https://animation-addons.com/widgets/aae-advanced-portfolio)**: Add a responsive portfolio slider or grid to showcase images, videos, or projects
 
-**[Advanced Pricing Table](https://animation-addons.com/widgets/aae-advanced-pricing-table/)**: Display structured pricing information effectively.
+- **[Table of Contents](https://animation-addons.com/widgets/aae-table-of-content)**: Generate a list of navigation links to different sections of a page.
 
-**[Filterable Gallery](https://animation-addons.com/widgets/aae-filterable-gallery/)**: Create an attractive, well-organized image gallery.
+- **[Flip Box](https://animation-addons.com/widgets/aae-flip-box/)**: Provide interactive design effects such as flip, slide, fade, zoom-in, and zoom-out.
 
-**[Image Accordion](https://animation-addons.com/widgets/aae-image-accordion/)**: Display a series of images interactively and compactly.
+- **[Advanced Accordion](https://animation-addons.com/widgets/aae-advanced-accordion/)**: Enable collapsible content sections for better organization.
 
-**[Scroll Elements](https://animation-addons.com/widgets/aae-scroll-elements/)**: Implement scroll-driven interactions for enhanced engagement.
+- **[Advanced Pricing Table](https://animation-addons.com/widgets/aae-advanced-pricing-table/)**: Display structured pricing information effectively.
 
-**[Breadcrumbs](https://animation-addons.com/widgets/aae-breadcrumbs)**: Display the navigation path to the current page.
+- **[Filterable Gallery](https://animation-addons.com/widgets/aae-filterable-gallery/)**: Create an attractive, well-organized image gallery.
 
-**[Author Box](https://animation-addons.com/widgets/aae-author-box)**: Show detailed information about the author of a post or page.
+- **[Image Accordion](https://animation-addons.com/widgets/aae-image-accordion/)**: Display a series of images interactively and compactly.
 
-**[Filterable Slider](https://animation-addons.com/widgets/aae-filterable-slider)**: Allow users to filter data by removing unwanted content.
+- **[Scroll Elements](https://animation-addons.com/widgets/aae-scroll-elements/)**: Implement scroll-driven interactions for enhanced engagement.
+
+- **[Breadcrumbs](https://animation-addons.com/widgets/aae-breadcrumbs)**: Display the navigation path to the current page.
+
+- **[Author Box](https://animation-addons.com/widgets/aae-author-box)**: Show detailed information about the author of a post or page.
+
+- **[Filterable Slider](https://animation-addons.com/widgets/aae-filterable-slider)**: Allow users to filter data by removing unwanted content.
 
 ### General Widgets
 
-**[Animated Title](https://animation-addons.com/widgets/aae-animated-titl)**: Animate your titles with effects such as fade, character-based animation, word animation, text reveal, 3D movement, and more.
+- **[Image Box](https://animation-addons.com/widgets/aae-image-box)**: Present images with unique animations in five different styles.
 
-**[Animated Text](https://animation-addons.com/widgets/aae-animated-text)**: Animate text with various effects, including fade, character-based animation, word animation, text reveal, and more.
+- **[Image Box Slider](https://animation-addons.com/widgets/aae-image-box-slider)**: Showcase images in a slider with five different styles.
 
-**[Image Box](https://animation-addons.com/widgets/aae-image-box)**: Present images with unique animations in five different styles.
+- **[Image](https://animation-addons.com/widgets/aae-image)**: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
 
-**[Image Box Slider](https://animation-addons.com/widgets/aae-image-box-slider)**: Showcase images in a slider with five different styles.
+- **[Image Gallery](https://animation-addons.com/widgets/image-gallery-widget)**: Create an image gallery with multiple styles and animations.
 
-**[Image](https://animation-addons.com/widgets/aae-image)**: Display images such as company logos, photos, or illustrations in PNG, JPEG, WebP, or GIF format.
+- **[Brand Slider](https://animation-addons.com/widgets/aae-brand-slider)**: Showcase client or brand logos in a stylish slider with text and image options.
 
-**[Image Gallery](https://animation-addons.com/widgets/image-gallery-widget)**: Create an image gallery with multiple styles and animations.
+- **[Text Hover Image](https://animation-addons.com/widgets/aae-text-hover-image)**: Add a text overlay to an image on hover.
 
-**[Brand Slider](https://animation-addons.com/widgets/aae-brand-slider)**: Showcase client or brand logos in a stylish slider with text and image options.
+- **[Counter](https://animation-addons.com/widgets/aae-counter)**: Add an animated numbered counter to display statistics dynamically.
 
-**[Text Hover Image](https://animation-addons.com/widgets/aae-text-hover-image)**: Add a text overlay to an image on hover.
+- **[Icon Box](https://animation-addons.com/widgets/aae-icon-box)**: Showcase information using icons, titles, and descriptions in multiple styles.
 
-**[Counter](https://animation-addons.com/widgets/aae-counter)**: Add an animated numbered counter to display statistics dynamically.
+- **[Testimonial](https://animation-addons.com/widgets/aae-testimonial)**: Display client feedback with 15 unique styles.
 
-**[Icon Box](https://animation-addons.com/widgets/aae-icon-box)**: Showcase information using icons, titles, and descriptions in multiple styles.
+- **[Button](https://animation-addons.com/aae-button)**: Add modern buttons with seven different styles.
 
-**[Testimonial](https://animation-addons.com/widgets/aae-testimonial)**: Display client feedback with 15 unique styles.
+- **[Image Compare](https://animation-addons.com/widgets/aae-image-comparison)**: Compare two images side by side to highlight differences.
 
-**[Button](https://animation-addons.com/aae-button)**: Add modern buttons with seven different styles.
+- **[Progress Bar](https://animation-addons.com/aae-progress-bar)**: Display progress or completion status of tasks or processes in various styles.
 
-**[Image Compare](https://animation-addons.com/widgets/aae-image-comparison)**: Compare two images side by side to highlight differences.
+- **[Social Icons](https://animation-addons.com/widgets/aae-social-icons)**: Add social media icons that link to your profiles.
 
-**[Progress Bar](https://animation-addons.com/aae-progress-bar)**: Display progress or completion status of tasks or processes in various styles.
+- **[Team](https://animation-addons.com/widgets/aae-team)**: Showcase your team in style to build credibility effortlessly.
 
-**[Social Icons](https://animation-addons.com/widgets/aae-social-icons)**: Add social media icons that link to your profiles.
+- **[One Page Nav](https://animation-addons.com/widgets/aae-one-page-nav)**: Simplify navigation with a smooth scrolling effect.
 
-**[Team](https://animation-addons.com/widgets/aae-team)**: Showcase your team in style to build credibility effortlessly.
+- **[Timeline](https://animation-addons.com/widgets/aae-timeline)**: Create visually appealing timelines for events or personal journeys.
 
-**[One Page Nav](https://animation-addons.com/widgets/aae-one-page-nav)**: Simplify navigation with a smooth scrolling effect.
+- **[Tabs](https://animation-addons.com/widgets/aae-tabs)**: Enhance navigation and improve user experience with tabbed content.
 
-**[Timeline](https://animation-addons.com/widgets/aae-timeline)**: Create visually appealing timelines for events or personal journeys.
+- **[Services Tab](https://animation-addons.com/widgets/aae-services-tabs)**: Present services effectively with multiple styling options.
 
-**[Tabs](https://animation-addons.com/widgets/aae-tabs)**: Enhance navigation and improve user experience with tabbed content.
+- **[Floating Elements](https://animation-addons.com/widgets/aae-floating-elements)**: Add captivating animations like floating, moving, zooming in/out, and rotation.
 
-**[Services Tab](https://animation-addons.com/widgets/aae-services-tabs)**: Present services effectively with multiple styling options.
+- **[Event Slider](https://animation-addons.com/aae-event-slider)**: Showcase special events with dynamic sliders.
 
-**[Floating Elements](https://animation-addons.com/widgets/aae-floating-elements)**: Add captivating animations like floating, moving, zooming in/out, and rotation.
+- **[Content Slider](https://animation-addons.com/aae-content-slider)**: Create seamless content sliders for showcasing information effectively.
 
-**[Event Slider](https://animation-addons.com/aae-event-slider)**: Showcase special events with dynamic sliders.
+- **[Countdown](https://animation-addons.com/widgets/aae-countdown/)**: Add countdowns to create excitement for upcoming events or promotions.
 
-**[Content Slider](https://animation-addons.com/aae-content-slider)**: Create seamless content sliders for showcasing information effectively.
+- **[Scrollmotion Cards](https://animation-addons.com/docs/advanced-widgets/scrollmotion-cards/)**: Add stunning scroll-triggered animated cards.
 
-**[Countdown](https://animation-addons.com/widgets/aae-countdown/)**: Add countdowns to create excitement for upcoming events or promotions.
+- **[Nested Slider](https://animation-addons.com/widgets/nested-slider-widget-for-elementor/)**: Create advanced multi-layer sliders with smooth animations and full Elementor control.
 
-**[Typewriter](https://animation-addons.com/widgets/aae-typewriter/)**: Display a typing effect to engage users dynamically.
-
-**[Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)**: Create eye-catching and engaging animated headlines.
-
-**[Scrollmotion Cards](https://animation-addons.com/docs/advanced-widgets/scrollmotion-cards/)**: Add stunning scroll-triggered animated cards.
-
-**[Nested Slider](https://animation-addons.com/widgets/nested-slider-widget-for-elementor/)**: Create advanced multi-layer sliders with smooth animations and full Elementor control.
-
-**[Vertical Marquee](https://animation-addons.com/docs/advanced-widgets/vertical-marquee/)**: Add smooth, continuous vertical scrolling text or images to grab attention effortlessly.
+- **[Vertical Marquee](https://animation-addons.com/docs/advanced-widgets/vertical-marquee/)**: Add smooth, continuous vertical scrolling text or images to grab attention effortlessly.
 
 ##  Animation Addons for Elementor: Key Features
 
 ###Massive Website Template Library
-Animation Addons for Elementor offers an extensive collection of high-quality templates, designed to streamline website creation. With **220+ pre-built website templates**, you can launch a fully designed website in seconds using the **one-click demo** import feature.
+Animation Addons for Elementor offers an extensive collection of high-quality templates, designed to streamline website creation. With **220+ pre-built [animation website templates](https://animation-addons.com/starter-templates/)**, you can launch a fully designed website in seconds using the **one-click demo** import feature.
 
 🔹 **10,000+ Section Templates** – Mix and match to create a unique design effortlessly.
 🔹 **2,000+ Page Templates** – Choose from a diverse range of ready-made pages to suit any niche.
 
-This template library is specifically crafted for developers, designers, and agencies to build professional websites **without writing a single line of code**. 🚀
+This template library is specifically crafted for developers, designers, and agencies to build professional websites **faster than ever.**. 🚀
 
 ### GSAP Animation Features in Animation Addons
 🚀 Enhance your website with GSAP-powered animations in Animation Addons for Elementor. Create smooth motion effects, interactive scroll animations, dynamic text transitions, and stunning SVG effects—all without coding.
@@ -440,6 +451,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.4.8 – 28 December 2025
+
+  - **Fix:** ThemeBuilder slug and id while import demo
+  - **Fix:** Add Dynamic Tag support in several widgets
 
 = 🌀 Animation Addons for Elementor v2.4.7 – 08 Dec 2025
 
