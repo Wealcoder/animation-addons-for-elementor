@@ -2825,7 +2825,7 @@ $config = array(
 						),
 						'order'        => 20,
 						'icon'         => 'wcf-icon-Advanced-Accordion',
-						'demo_url'     => 'https://animation-addons.com/extensions/stacked-cards/',
+						'demo_url'     => 'https://animation-addons.com/widgets/stacked-cards/',
 						'doc_url'      => 'https://animation-addons.com/docs/advanced-widgets/stacked-cards/',
 						'youtube_url'  => '',
 						'description'  => '',

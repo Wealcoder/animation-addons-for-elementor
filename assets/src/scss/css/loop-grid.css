@@ -1,0 +1,312 @@
+.e-loop-empty-view__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.e-loop-empty-view__box {
+  display: flex;
+  min-height: 413px;
+  width: 100%;
+}
+
+.e-loop-empty-view__box-inner {
+  align-items: center;
+  border: 1px dashed #d5d8dc;
+  color: #9da5ae;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  justify-content: center;
+  margin: 10px;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.e-loop-empty-view__box-inner img {
+  margin-bottom: 28px;
+  max-height: 99px;
+}
+
+.e-loop-empty-view__box-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.e-loop-empty-view__box-description {
+  margin-bottom: 12px;
+}
+
+.aae-loop-builder__box-cta {
+  background-color: #9da5ae;
+  border-radius: 3px;
+  color: #fff;
+  padding: 6px 8px;
+  text-decoration: none;
+  transition-duration: 0.3s;
+  transition-property: background, color, box-shadow, opacity;
+}
+
+.aae-loop-builder__box-cta:hover {
+  background-color: #3f444b;
+  color: #fff;
+}
+
+.e-loop-empty-view__box--active {
+  border: 2px solid #5eead4;
+}
+
+.elementor-widget-loop-grid .elementor-grid.e-loop-empty-view__container {
+  grid-column-gap: calc(var(--grid-column-gap) - 20px);
+}
+
+.e-loop-empty-view__container .e-loop-empty-view__box {
+  opacity: 1;
+}
+
+.elementor-screen-only,
+.screen-reader-text,
+.screen-reader-text span,
+.ui-helper-hidden-accessible {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  top: -10000em;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.loading .custom-loop-loading-text {
+  display: block;
+  opacity: 1 !important;
+}
+
+/* AAE Loop Builder - Frontend Styles */
+/* Loop Items */
+.e-loop-item {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.e-loop-item * {
+  box-sizing: border-box;
+}
+
+.custom-loop-empty-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  border: 2px dashed #d5dadf;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.custom-loop-empty-view__wrapper {
+  text-align: center;
+  max-width: 400px;
+  padding: 40px 20px;
+}
+
+.custom-loop-empty-view__icon {
+  font-size: 48px;
+  color: #a4afb7;
+  margin-bottom: 20px;
+}
+
+.custom-loop-empty-view__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #495157;
+  margin-bottom: 10px;
+}
+
+.custom-loop-empty-view__description {
+  font-size: 14px;
+  color: #6d7882;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Nothing Found Message */
+.custom-loop-nothing-found {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 16px;
+  color: #6d7882;
+}
+
+/* Pagination */
+.custom-loop-pagination {
+  grid-column: 1/-1;
+  margin-top: 30px;
+  text-align: center;
+}
+
+.custom-loop-pagination .page-numbers {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 8px 12px;
+  background-color: #f1f3f4;
+  color: #495157;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.custom-loop-pagination .page-numbers:hover,
+.custom-loop-pagination .page-numbers.current {
+  background-color: #007cba;
+  color: #ffffff;
+}
+
+.custom-loop-pagination .page-numbers.dots {
+  background-color: transparent;
+  color: #6d7882;
+}
+
+/* Load More Button */
+.custom-loop-load-more {
+  display: block;
+  padding: 12px 24px;
+  background-color: #007cba;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.custom-loop-load-more:hover {
+  background-color: #005a87;
+}
+
+.custom-loop-load-more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.custom-loop-load-more.loading .custom-loop-load-more-text {
+  display: none;
+}
+
+.custom-loop-load-more.loading .custom-loop-loading-text {
+  display: inline;
+}
+
+@media (max-width: 1024px) {
+  .elementor-grid-tablet-2 .custom-loop-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .elementor-grid-tablet-1 .custom-loop-container {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 767px) {
+  .elementor-grid-mobile-2 .custom-loop-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .elementor-grid-mobile-1 .custom-loop-container {
+    grid-template-columns: 1fr;
+  }
+}
+/* Loading States */
+.custom-loop-container.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.custom-loop-container.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007cba;
+  border-radius: 50%;
+  animation: aae-loop-spin 1s linear infinite;
+}
+
+@keyframes aae-loop-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Fade in animation for new items */
+.e-loop-item {
+  animation: aae-fadeInUp 0.5s ease-out;
+}
+
+@keyframes aae-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.elementor-editor-active .custom-loop-empty-view {
+  min-height: 200px;
+}
+
+.elementor-editor-active .e-loop-item {
+  min-height: 100px;
+  border: 1px dashed #d5dadf;
+}
+
+.elementor-editor-active .e-loop-item:hover {
+  border-color: #007cba;
+}
+
+.custom-loop-masonry-yes .aae-loop-grid-container {
+  -moz-column-count: 3;
+       column-count: 3;
+}
+.custom-loop-masonry-yes .aae-loop-grid-container article.aae-loop-item {
+  -moz-column-break-inside: avoid;
+       break-inside: avoid;
+}
+
+.aae-loop-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.aae-loop-grid-container article.aae-loop-item {
+  align-self: flex-start;
+}
+
+.custom-loop-equal-height-yes .aae-loop-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.custom-loop-equal-height-yes .aae-loop-grid-container article.aae-loop-item {
+  align-self: auto;
+}
+
+.custom-loop-wrapper .elementor.elementor .e-con > .elementor-widget {
+  width: 100%;
+}/*# sourceMappingURL=loop-grid.css.map */
