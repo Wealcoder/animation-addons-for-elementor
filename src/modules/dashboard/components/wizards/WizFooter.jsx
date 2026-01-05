@@ -109,7 +109,7 @@ const WizFooter = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="px-6 py-[18px] bg-white flex justify-end items-center gap-11 shadow-[0px_-2px_8px_0px_rgba(10,13,20,0.06)] z-20 relative">
+    <div className="footer_section px-6 py-[18px] bg-white flex justify-end items-center gap-11 shadow-[0px_-2px_8px_0px_rgba(10,13,20,0.06)] z-20 relative">
       <div className="flex items-center gap-3">
         {getSerial(currentPath) > 1 ? (
           <Button

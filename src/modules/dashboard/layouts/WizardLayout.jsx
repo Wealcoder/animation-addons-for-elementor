@@ -54,14 +54,15 @@ const WizardLayout = () => {
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
         <WizHeader NavigateComponent={NavigateComponent} />
-        <div className="z-10 relative">
+        <div className="content_section z-10 relative">
           <ScrollArea className="h-[75vh] w-full">
             <Suspense fallback={<p>Loading...</p>}>
               {showContent(tabKey)}
             </Suspense>
           </ScrollArea>
         </div>
-        {tabKey !== "congratulations" && (
+        {tabKey !== "congratulations" &&
+        tabKey !== "terms" && (
           <WizFooter NavigateComponent={NavigateComponent} />
         )}
       </div>
@@ -70,3 +71,4 @@ const WizardLayout = () => {
 };
 
 export default WizardLayout;
+ 

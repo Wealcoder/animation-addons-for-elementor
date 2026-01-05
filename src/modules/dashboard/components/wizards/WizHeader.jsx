@@ -40,9 +40,9 @@ export const WizHeader = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="header_section flex justify-center items-center bg-[#FFF7EC] m-[30px_50px] rounded-[50px]">
       <ScrollArea className="w-[1200px] px-4 xl:px-8 py-6 ">
-        <div className="w-max flex justify-center items-center gap-3 xl:gap-4">
+        <div className="w-max flex justify-center items-center gap-2 xl:gap-3">
           {WizNavList.map((item, i) => (
             <React.Fragment key={item.serial + i}>
               <div
@@ -53,7 +53,7 @@ export const WizHeader = ({ NavigateComponent }) => {
               >
                 <p
                   className={cn(
-                    "w-7 h-7 rounded-full border flex justify-center items-center",
+                    "menu_item_round w-7 h-7 rounded-full border flex justify-center items-center bg-white",
                     getSerial(currentPath) >= item.serial
                       ? "text-button-secondary border-brand bg-brand"
                       : "text-text-secondary border-border"
@@ -62,10 +62,10 @@ export const WizHeader = ({ NavigateComponent }) => {
                   {item.serial}
                 </p>
                 <p
-                  className={cn(
+                  className={cn("font-Figtree" + 
                     getSerial(currentPath) >= item.serial
-                      ? "text-text"
-                      : "text-text-secondary"
+                      ? "text-text font-figtree"
+                      : "text-text-secondary font-Figtree"
                   )}
                 >
                   {item.title}
