@@ -550,6 +550,7 @@ class WCF_Admin_Init
 	public function save_settings()
 	{
 
+	
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {

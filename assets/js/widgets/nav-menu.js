@@ -27,7 +27,7 @@ window.addEventListener("elementor/frontend/init", () => {
         return;
       }
       if (width < 767 && !this._rerunTriggered) {
-        this._rerunTriggered = true;       
+        this._rerunTriggered = true;
         this.mobileMenu(); // call your existing logic again
       } else if (width >= 767) {
         this._rerunTriggered = false; // reset when back to desktop
@@ -38,10 +38,10 @@ window.addEventListener("elementor/frontend/init", () => {
       const adminbar = document.querySelector("#wpadminbar");
       const adminbarHeight = adminbar ? adminbar.offsetHeight : 0;
 
-      const deviceWidth    = window.innerWidth;
-      const navMenu        = this.findElement(".wcf__nav-menu");
-      const container      = this.findElement(".wcf-nav-menu-container");
-      const navItems       = this.findElements(".wcf-nav-menu-nav .menu-item-has-children");
+      const deviceWidth = window.innerWidth;
+      const navMenu = this.findElement(".wcf__nav-menu");
+      const container = this.findElement(".wcf-nav-menu-container");
+      const navItems = this.findElements(".wcf-nav-menu-nav .menu-item-has-children");
       const mobileBackHtml = this.findElement(".mobile-sub-back")?.innerHTML || "Back";
 
       // Get breakpoint
@@ -50,8 +50,9 @@ window.addEventListener("elementor/frontend/init", () => {
       if (bpSetting === undefined || bpSetting == '') {
         return;
       }
+
       const bpConfig = elementorFrontend.config.responsive.activeBreakpoints;
-     
+
       if (bpSetting && bpSetting !== "all") {
         breakpoint = bpConfig[bpSetting].value;
       } else {
@@ -115,6 +116,21 @@ window.addEventListener("elementor/frontend/init", () => {
       });
 
       // Open / Close menu buttons
+      // menu clone for mobile menu so we need to scope the selectors
+      document.addEventListener('click', function (e) {
+
+          if (e.target.classList.contains('wcf-menu-hamburger') || e.target.classList.contains('e-font-icon-svg')) {
+            if (e.target.closest('.wcf__nav-menu')) {
+              document.querySelectorAll('.wcf__nav-menu').forEach(function (nav) {             
+                nav.classList.remove("wcf-nav-is-toggled");
+                document.body.style.overflow = 'auto';
+              });
+              navMenu.classList.add("wcf-nav-is-toggled");
+              document.body.style.overflow = 'hidden';
+            }
+          }
+        });
+
       this.findElement(".wcf-menu-hamburger")?.addEventListener("click", () => {
         navMenu.classList.add("wcf-nav-is-toggled");
         document.body.style.overflow = 'hidden';
