@@ -1,5 +1,4 @@
 import TemplateTopBg from "../../../../../public/images/wizard/template-top-bg.png";
-import AnimationAddonLogo from "../../../../../public/images/Logo-2.png"; 
 import Shape1 from "../../../../../public/images/wizard/shape1.png";
 import Shape2 from "../../../../../public/images/wizard/shape2.png";
 import Shape3 from "../../../../../public/images/wizard/shape3.png";
@@ -10,25 +9,19 @@ import CredentialAlert from "@/components/wizards/CredentialAlert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSkip } from "@/hooks/app.hooks";
 
-import { Button } from "@/components/ui/button";
-import { WizNavList } from "@/config/nav/wiz-nav";
-
-
 const WizardTerms = () => {
   const { isSkipTerms, setIsSkipTerms } = useSkip();
-  const gotoDashboard = () => {
-    setTimeout(() => {
-      window.location.href = `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=dashboard`;
-    }, 100);
-  };
 
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
-      <div className="rounded-lg relative">
-        <div className="flex items-center min-h-[75vh] bg-no-repeat bg-container pb-6">
-          <div className="p-8 max-w-[730px] mx-auto text-center flex flex-col gap-3 bg-white ml-[25%] mr-[25%] rounded-4xl shadow-[0_14px_59px_0_rgba(217,202,180,0.25)]">
-            <div className="bg-white rounded-2xl relative top-[-50px] py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
-              {/* <span className="flex justify-center items-center">
+      <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg relative">
+        <div
+          className="min-h-[75vh] bg-no-repeat bg-container pb-6 "
+          style={{ backgroundImage: `url(${TemplateTopBg})` }}
+        >
+          <div className="pt-[80px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
+            <div className="bg-white rounded-full py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
+              <span className="flex justify-center items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -48,90 +41,62 @@ const WizardTerms = () => {
                     </clipPath>
                   </defs>
                 </svg>
-              </span> */}
-              {/* <p className="text-sm font-medium">
+              </span>
+              <p className="text-sm font-medium">
                 Version {WCF_ADDONS_ADMIN?.version}
-              </p> */}
-              <div className="w-[150px]">
-                <img src={AnimationAddonLogo} alt="Animation Addon Logo" />
-              </div>
-            </div>
-            <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
-              Starting Your Animation Journey with the Addon
-            </h1>
-            <div className="p-6">
-              <p className="text-base text-text-secondary text-center mt-[7px] mb-6">
-             Thank you for choosing Animation Addons for Elementor. 
-             Follow these simple steps of easy setup wizard & enjoy your Elementor web-building experience now!
               </p>
             </div>
-          
-            <div className="flex items-center justify-center gap-3">
-              <a
-                href={"#"}
-                className="secondary mt-7"
-              >
-                Skip This Step
-              </a>
-                <Button
-                  className="w-[249px] h-[46px] gap-1.5"
-                  onClick={gotoDashboard}
-                >
-                  Proceed to Next Step{" "}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <path
-                      d="M11.1248 10.3033L7 6.17851L8.17852 5L13.4818 10.3033L8.17852 15.6066L7 14.4281L11.1248 10.3033Z"
-                      fill="white"
-                    />
-                  </svg>
-                </Button>
+            <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
+              Get Started with with AAE Animation Addons
+            </h1>
+          </div>
+          <div className="mt-[40px] w-[600px] rounded-3xl mx-auto border-[10px] border-white overflow-hidden">
+            <div className="bg-[linear-gradient(180deg,#F0F4F8_0%,#FEF3EC_100%)] p-6">
+              <p className="text-base text-text-secondary text-center mt-[7px] mb-6">
+                Thank you for choosing Animation Addons for Elementor. Follow
+                these simple steps of easy setup wizard & enjoy your Elementor
+                web-building experience now!
+              </p>
             </div>
           </div>
-
-              {/* <div className="mt-[40px] w-[600px] mx-auto text-center">
-                <div className="flex justify-center items-center gap-2.5 ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]"> */}
-                {/* <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <g clip-path="url(#clip0_4477_529)">
-                    <path
-                      d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
-                      fill="#717784"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_4477_529">
-                      <rect width="20" height="20" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <p>By continuing, you allow this plugin to collect your data.</p> */}
-                {/* <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="aae-plugin-continuing-terms"
-                    checked={!isSkipTerms}
-                    onCheckedChange={() => setIsSkipTerms(!isSkipTerms)}
+          <div className="mt-[40px] w-[600px] mx-auto text-center">
+            <div className="flex justify-center items-center gap-2.5 ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]">
+              {/* <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <g clip-path="url(#clip0_4477_529)">
+                  <path
+                    d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
+                    fill="#717784"
                   />
-                  <label
-                    htmlFor="aae-plugin-continuing-terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    By continuing, you allow this plugin to collect your data.
-                  </label>
-                </div> */}
-                 {/* <CredentialAlert /> 
-                </div>
-              </div> */}
+                </g>
+                <defs>
+                  <clipPath id="clip0_4477_529">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <p>By continuing, you allow this plugin to collect your data.</p> */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="aae-plugin-continuing-terms"
+                  checked={!isSkipTerms}
+                  onCheckedChange={() => setIsSkipTerms(!isSkipTerms)}
+                />
+                <label
+                  htmlFor="aae-plugin-continuing-terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  By continuing, you allow this plugin to collect your data.
+                </label>
+              </div>
+              <CredentialAlert />
+            </div>
+          </div>
         </div>
 
         {/* shapes  */}
@@ -185,6 +150,5 @@ const WizardTerms = () => {
     </div>
   );
 };
-
 
 export default WizardTerms;

@@ -1,3 +1,4 @@
+import DashboardWraperBg from "../../../../public/images/wizard/dashboard_wraper_bg.webp";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import WizFooter from "@/components/wizards/WizFooter";
 import { WizHeader } from "@/components/wizards/WizHeader";
@@ -52,7 +53,8 @@ const WizardLayout = () => {
 
   return (
     <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]">
+      <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]"
+           style={{ backgroundImage: `url(${DashboardWraperBg})` }}>
         <WizHeader NavigateComponent={NavigateComponent} />
         <div className="content_section z-10 relative">
           <ScrollArea className="h-[75vh] w-full">
