@@ -7,7 +7,9 @@ import Shape4 from "../../../../../public/images/wizard/shape4.png";
 import Shape5 from "../../../../../public/images/wizard/shape5.png";
 import Shape6 from "../../../../../public/images/wizard/shape6.png";
 import CredentialAlert from "@/components/wizards/CredentialAlert";
+import  WizShaped  from "@/components/wizards/WizShaped";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useState } from "react";
 import { useSkip } from "@/hooks/app.hooks";
 
 import { Button } from "@/components/ui/button";
@@ -16,18 +18,95 @@ import { WizNavList } from "@/config/nav/wiz-nav";
 
 const WizardTerms = () => {
   const { isSkipTerms, setIsSkipTerms } = useSkip();
+  const [currentPath, setCurrentPath] = useState("getting-started");
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const tabValue = urlParams.get("tab");
+    if (tabValue) {
+      setCurrentPath(tabValue);
+    } else {
+      setCurrentPath("terms");
+    }
+  }, [urlParams]);
+  
   const gotoDashboard = () => {
     setTimeout(() => {
       window.location.href = `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=dashboard`;
     }, 100);
   };
+   const saveWidget = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: JSON.stringify(allWidgets),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_widgets",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {});
+  };
+
+  const saveExtension = async () => {
+    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+
+      body: new URLSearchParams({
+        action: "save_settings_with_ajax",
+        fields: JSON.stringify(allExtensions),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+        settings: "wcf_save_extensions",
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((return_content) => {});
+  };
+  const goToContinue = (currentPath) => {
+    const url = new URL(window.location.href);
+    const pageQuery = url.searchParams.get("page");
+
+    url.search = "";
+    url.hash = "";
+    url.search = `page=${pageQuery}`;
+    if (currentPath === "templates") {
+      try {
+        saveWidget();
+        saveExtension();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const value = WizNavList[getSerial(currentPath)].path;
+    url.searchParams.set("tab", value);
+    window.history.replaceState({}, "", url);
+    NavigateComponent(value);
+    setCurrentPath(value);
+  };
+  
 
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="rounded-lg relative">
-        <div className="flex items-center min-h-[75vh] bg-no-repeat bg-container pb-6">
-          <div className="p-8 max-w-[730px] mx-auto text-center flex flex-col gap-3 bg-white ml-[25%] mr-[25%] rounded-4xl shadow-[0_14px_59px_0_rgba(217,202,180,0.25)]">
-            <div className="bg-white rounded-2xl relative top-[-50px] py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px_0px_0px_1px_rgba(44,64,94,0.06),0px_1px_1px_0px_rgba(44,64,94,0.04),0px_2px_4px_0px_rgba(44,64,94,0.08)]">
+        <div className="flex items-center justity-center min-h-[75vh] bg-no-repeat bg-container pb-6">
+          <div className="p-8 max-w-[730px] mx-auto text-center flex flex-col gap-3 bg-white ml-[25%] mr-[25%] rounded-[24px] shadow-[0_14px_59px_0_rgba(217,202,180,0.25)]">
+            <div className="bg-white rounded-[24px] relative top-[-60px] py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px -25px 59px 0px #D9CAB41A]">
               {/* <span className="flex justify-center items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -69,15 +148,15 @@ const WizardTerms = () => {
             <div className="flex items-center justify-center gap-3">
               <a
                 href={"#"}
-                className="secondary mt-7"
+                className="secondary underline underline-offset-4"
               >
                 Skip This Step
               </a>
                 <Button
-                  className="w-[249px] h-[46px] gap-1.5"
-                  onClick={gotoDashboard}
+                  className="w-[249px] h-[46px] gap-1.5 rounded-full"
+                   onClick={() => goToContinue(currentPath)}
                 >
-                  Proceed to Next Step{" "}
+                  Proceed To Next Step{" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -93,94 +172,10 @@ const WizardTerms = () => {
                 </Button>
             </div>
           </div>
-
-              {/* <div className="mt-[40px] w-[600px] mx-auto text-center">
-                <div className="flex justify-center items-center gap-2.5 ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]"> */}
-                {/* <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <g clip-path="url(#clip0_4477_529)">
-                    <path
-                      d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
-                      fill="#717784"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_4477_529">
-                      <rect width="20" height="20" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <p>By continuing, you allow this plugin to collect your data.</p> */}
-                {/* <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="aae-plugin-continuing-terms"
-                    checked={!isSkipTerms}
-                    onCheckedChange={() => setIsSkipTerms(!isSkipTerms)}
-                  />
-                  <label
-                    htmlFor="aae-plugin-continuing-terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    By continuing, you allow this plugin to collect your data.
-                  </label>
-                </div> */}
-                 {/* <CredentialAlert /> 
-                </div>
-              </div> */}
         </div>
 
         {/* shapes  */}
-        <div className="hidden xl:block absolute top-[114px] left-[69px] w-[54px] h-[54px]">
-          <img
-            src={Shape1}
-            alt="Shape"
-            className="w-full h-full -rotate-[15deg] rounded-[14.4px] shadow-[3.36px_6.72px_16.8px_0px_rgba(17,22,49,0.04),0px_44.52px_26.88px_0px_rgba(0,0,0,0.02)]"
-          />
-        </div>
-        <div className="hidden xl:block absolute top-[310px] left-[137px] w-[56px] h-[56px]">
-          <img
-            src={Shape2}
-            alt="Shape"
-            className="w-full h-full -rotate-[15deg] rounded-[14px] shadow-[3.349px_6.698px_16.745px_0px_rgba(17,22,49,0.04),0px_44.374px_26.792px_0px_rgba(0,0,0,0.02)]"
-          />
-        </div>
-        <div className="hidden xl:block absolute top-[432px] left-[30px] w-[52px] h-[52px]">
-          <img
-            src={Shape3}
-            alt="Shape"
-            className="w-full h-full -rotate-[15deg] rounded-[13.87px]"
-            style={{
-              filter:
-                "drop-shadow(0px 36.747px 22.187px rgba(0, 0, 0, 0.02)) drop-shadow(2.773px 5.547px 13.867px rgba(17, 22, 49, 0.04))",
-            }}
-          />
-        </div>
-        <div className="hidden xl:block absolute top-[106px] right-[66px] w-[60px] h-[60px]">
-          <img
-            src={Shape4}
-            alt="Shape"
-            className="w-full h-full rotate-[15deg] rounded-[14.04px] shadow-[3.2px_6.4px_16px_0px_rgba(17,22,49,0.04),0px_42.4px_25.6px_0px_rgba(0,0,0,0.02)]"
-          />
-        </div>
-        <div className="hidden xl:block absolute top-[313px] right-[149px] w-[52px] h-[52px]">
-          <img
-            src={Shape5}
-            alt="Shape"
-            className="w-full h-full rotate-[15deg] rounded-[14.16px] shadow-[2.831px_5.662px_14.155px_0px_rgba(17,22,49,0.04),0px_37.512px_22.649px_0px_rgba(0,0,0,0.02)]"
-          />
-        </div>
-        <div className="hidden xl:block absolute top-[432px] right-[30px] w-[50px] h-[50px]">
-          <img
-            src={Shape6}
-            alt="Shape"
-            className="w-full h-full rotate-[18deg] rounded-[13.34px] shadow-[2.831px_5.662px_14.155px_0px_rgba(17,22,49,0.04),0px_37.512px_22.649px_0px_rgba(0,0,0,0.02)]"
-          />
-        </div>
+        <WizShaped/>
       </div>
     </div>
   );

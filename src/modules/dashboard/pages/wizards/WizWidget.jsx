@@ -1,4 +1,6 @@
 import ShowWizWidgets from "@/components/wizards/ShowWizWidgets";
+import  WizShaped  from "@/components/wizards/WizShaped";
+import AnimationAddonLogo from "../../../../../public/images/Logo-2.png"; 
 import WidgetTopBg from "../../../../../public/images/wizard/widget-top-bg.png";
 import { useSkip } from "@/hooks/app.hooks";
 import { useEffect } from "react";
@@ -65,12 +67,14 @@ const WizWidget = () => {
   }, []);
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
-      <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
-        <div
-          className="min-h-[65vh] bg-no-repeat bg-contain pb-6"
-          style={{ backgroundImage: `url(${WidgetTopBg})` }}
-        >
-          <div className="pt-[120px] max-w-[730px] mx-auto text-center flex flex-col gap-3">
+      <div className="rounded-lg relative">
+        <div className="flex items-center justify-center min-h-[75vh] bg-no-repeat bg-container pb-6 mt-[30px]">
+          <div className="p-8 max-w-[1288px] mx-auto mx-auto text-center flex flex-col gap-3 bg-white rounded-[24px] shadow-[0_14px_59px_0_rgba(217,202,180,0.25)]">
+            <div className="bg-white rounded-[24px] relative top-[-60px] py-[5px] ps-2 pe-2.5 mx-auto max-w-[180px] flex justify-center items-center gap-1.5 shadow-[0px -25px 59px 0px #D9CAB41A]">
+              <div className="w-[150px]">
+                <img src={AnimationAddonLogo} alt="Animation Addon Logo" />
+              </div>
+            </div>
             <h1 className="text-[44px] font-medium leading-[1.36] tracking-[-0.44px] p-0">
               Activate Widgets You Want to Use
             </h1>
@@ -78,11 +82,15 @@ const WizWidget = () => {
               Enhance your website's functionality by activating widgets that
               suit your needs.
             </p>
-          </div>
-          <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
-            <ShowWizWidgets />
+    
+            <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
+              <ShowWizWidgets />
+            </div>
           </div>
         </div>
+
+          {/* shapes  */}
+          <WizShaped/>
       </div>
     </div>
   );

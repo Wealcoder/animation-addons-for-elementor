@@ -56,7 +56,7 @@ const WizardLayout = () => {
       <div className="wcf-anim2024-style container overflow-x-hidden bg-background rounded-[10px]"
            style={{ backgroundImage: `url(${DashboardWraperBg})` }}>
         <WizHeader NavigateComponent={NavigateComponent} />
-        <div className="content_section z-10 relative">
+        <div className="content_section relative z-[2]">
           <ScrollArea className="h-[75vh] w-full">
             <Suspense fallback={<p>Loading...</p>}>
               {showContent(tabKey)}

@@ -58,15 +58,15 @@
 }
 
 .wcf-anim2024-style * {
-  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+  @apply font-figtree font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
 .wcf-animation-addon-sheet * {
-  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+  @apply font-figtree font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
 .wcf-dialog-content * {
-  @apply font-inter font-normal leading-[1.2] border-0 border-solid border-border;
+  @apply font-figtree font-normal leading-[1.2] border-0 border-solid border-border;
 }
 
 .wcf-anim2024-style {
@@ -78,7 +78,7 @@
   h4,
   h5,
   h6 {
-    @apply text-text font-inter overflow-x-hidden;
+    @apply text-text font-figtree overflow-x-hidden;
   }
 
   a {
