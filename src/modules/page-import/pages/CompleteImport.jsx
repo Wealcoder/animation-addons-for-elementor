@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import CompleteBG from "../../../../public/images/complete-bg.png";
 
 const CompleteImport = () => {
-  const [pageUrl, setPageUrl] = useState([])
+  const [pageUrl, setPageUrl] = useState([]);
   useEffect(() => {
     ConfettiAnimation();
     importedPage();
@@ -45,7 +45,15 @@ const CompleteImport = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setPageUrl(data?.data?.pages)
+      // query args aae-cache= 1
+
+      const pageUrl = data?.data?.pages[0]
+        ? data?.data?.pages[0].permalink +
+          (data?.data?.pages[0].permalink.includes("?") ? "&" : "?") +
+          "aae-cache=1"         
+        : "#";
+
+      setPageUrl(pageUrl);
     } catch (error) {
       console.log(error);
     }
@@ -69,7 +77,7 @@ const CompleteImport = () => {
         </div>
         <div className="flex flex-col gap-1.5">
           <a
-            href={pageUrl[0]?.permalink ?? "#"}
+            href={pageUrl ?? "#"}
             className={cn(buttonVariants(), "w-full h-11")}
           >
             Go to page

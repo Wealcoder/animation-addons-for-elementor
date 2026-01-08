@@ -267,20 +267,27 @@ class Nav_Menu extends Widget_Base {
 			'widescreen',
 		];
 
-		foreach ( Plugin::$instance->breakpoints->get_active_breakpoints() as $breakpoint_key => $breakpoint_instance ) {
-			// Exclude the larger breakpoints from the dropdown selector.
-			if ( in_array( $breakpoint_key, $excluded_breakpoints, true ) ) {
-				continue;
+		try {
+			foreach ( Plugin::$instance->breakpoints->get_active_breakpoints() as $breakpoint_key => $breakpoint_instance ) {
+				// Exclude the larger breakpoints from the dropdown selector.
+				if ( in_array( $breakpoint_key, $excluded_breakpoints, true ) ) {
+					continue;
+				}			
+			
+				
+				$dropdown_options[ $breakpoint_key ] = sprintf(
+				/* translators: 1: Breakpoint label, 2: `>` character, 3: Breakpoint value. */
+					esc_html__( '%1$s (%2$s %3$dpx)', 'animation-addons-for-elementor' ),
+					$breakpoint_instance->get_label(),
+					'>',
+					$breakpoint_instance->get_value()
+				);
 			}
-
-			$dropdown_options[ $breakpoint_key ] = sprintf(
-			/* translators: 1: Breakpoint label, 2: `>` character, 3: Breakpoint value. */
-				esc_html__( '%1$s (%2$s %3$dpx)', 'animation-addons-for-elementor' ),
-				$breakpoint_instance->get_label(),
-				'>',
-				$breakpoint_instance->get_value()
-			);
+		} catch ( \Exception $e ) {
+			// Do nothing.
 		}
+
+		
 
 		$this->add_control(
 			'mobile_menu_breakpoint',

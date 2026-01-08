@@ -119,17 +119,18 @@ window.addEventListener("elementor/frontend/init", () => {
       // menu clone for mobile menu so we need to scope the selectors
       document.addEventListener('click', function (e) {
 
-          if (e.target.classList.contains('wcf-menu-hamburger') || e.target.classList.contains('e-font-icon-svg')) {
-            if (e.target.closest('.wcf__nav-menu')) {
-              document.querySelectorAll('.wcf__nav-menu').forEach(function (nav) {             
-                nav.classList.remove("wcf-nav-is-toggled");
-                document.body.style.overflow = 'auto';
-              });
-              navMenu.classList.add("wcf-nav-is-toggled");
-              document.body.style.overflow = 'hidden';
-            }
+        if (e.target.classList.contains('wcf-menu-hamburger') || e.target.classList.contains('e-font-icon-svg')) {
+          if (e.target.closest('.wcf__nav-menu')) {
+            document.querySelectorAll('.wcf__nav-menu').forEach(function (nav) {
+              nav.classList.remove("wcf-nav-is-toggled");
+              document.body.style.overflow = 'auto';
+            });
+            navMenu.classList.add("wcf-nav-is-toggled");
+            document.body.style.overflow = 'hidden';
           }
-        });
+        }
+
+      });
 
       this.findElement(".wcf-menu-hamburger")?.addEventListener("click", () => {
         navMenu.classList.add("wcf-nav-is-toggled");
