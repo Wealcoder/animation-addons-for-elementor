@@ -40,8 +40,8 @@ export const WizHeader = ({ NavigateComponent }) => {
   };
 
   return (
-    <div className="header_section flex justify-center items-center bg-[#FFF7EC] m-[30px_50px] rounded-[50px]">
-      <ScrollArea className="w-[1200px] px-4 xl:px-8 py-6 ">
+    <div className="header_section flex justify-center items-center font-figtree">
+      <ScrollArea className="w-[1033px] px-4 xl:px-8 py-6 bg-[#FFF7EC] m-[30px_50px] rounded-[50px]">
         <div className="w-max flex justify-center items-center gap-2 xl:gap-3">
           {WizNavList.map((item, i) => (
             <React.Fragment key={item.serial + i}>
