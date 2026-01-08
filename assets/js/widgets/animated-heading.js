@@ -6,7 +6,7 @@
     const AnimatedHeading = function (scope) {
 
         const animatedHeading = scope.querySelector('.animated--heading');
-        console.log('Animated Heading Scope:', scope);
+      
         if (!animatedHeading) {
             return;
         }

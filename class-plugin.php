@@ -341,7 +341,7 @@ class Plugin {
 				'animated-heading'     => array(
 					'handler' => 'wcf--animated-heading',
 					'src'     => 'widgets/animated-heading.min.js',
-					'dep'     => array('jquery', 'gsap'),
+					'dep'     => array('gsap'),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
