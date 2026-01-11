@@ -3,6 +3,7 @@
 namespace WCF_ADDONS;
 
 use Elementor\Plugin as ElementorPlugin;
+use WCF_ADDONS\INC\WPML as WPML;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -990,6 +991,9 @@ class Plugin {
 		// Load Loop Builder Integration.
 		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/init.php';
 
+		include_once WCF_ADDONS_PATH . 'inc/wpml-manager.php';
+
+
 		// extensions.
 		$this->register_extensions();
 	}
@@ -1352,6 +1356,7 @@ class Plugin {
 		// add_action('wp_head', array($this, 'wp_head'), 4);
 
 		$this->include_files();
+		add_filter( 'wpml_elementor_widgets_to_translate', [  WPML\WPML_Manager::class, 'wpml_widgets_to_translate_filter' ] );
 
 		if ( class_exists( '\WCF_ADDONS\Library_Source' ) ) {
 
