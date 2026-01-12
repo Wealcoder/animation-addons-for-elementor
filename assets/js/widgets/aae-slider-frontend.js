@@ -20,20 +20,20 @@
                     this.run();
                 }
 
-                if(this.isEdit) {
-                    elementor.channels.editor.on('aae_nsslider:editor:savechnage', (sectionName, view) => {
-                        this.updateSliderOnOptionChange();
-                        sectionName.$el.parent().find('.elementor-control-center_slide .elementor-switch-input').trigger('change');
-                        sectionName.$el.find('button').text('Saving....')
-                        setTimeout(() => {
-                            sectionName.$el.find('button').text('Save Change');
-                        }, 500);
-                    });
-                }
+                // if (this.isEdit) {
+                //     elementor.channels.editor.on('aae_nsslider:editor:savechnage', (sectionName, view) => {
+                //         this.updateSliderOnOptionChange();
+                //         sectionName.$el.parent().find('.elementor-control-center_slide .elementor-switch-input').trigger('change');
+                //         sectionName.$el.find('button').text('Saving....')
+                //         setTimeout(() => {
+                //             sectionName.$el.find('button').text('Save Change');
+                //         }, 500);
+                //     });
+                // }
 
                 function debounce(func, delay = 1500) {
                     let timer;
-                    return function() {
+                    return function () {
                         clearTimeout(timer);
                         timer = setTimeout(() => func.apply(this, arguments), delay);
                     };
@@ -60,6 +60,14 @@
                         this.isActiveSlide(lastIndex);
                     }
                 });
+
+                // resize
+
+                window.addEventListener('resize', () => {
+                    if (this.swiper && this.isInitialized) {
+                        this.updateSlidesPerView(this.getResponsiveSetting(this.getElementSettings(), 'slides_to_show'));
+                    }
+                });
             }
 
             updateRows() {
@@ -73,6 +81,7 @@
             }
 
             onEditSettingsChange(propertyName, value) {
+
                 if ('activeItemIndex' === propertyName) {
                     this.changeActiveSlide(value, false, propertyName);
                 }
@@ -85,6 +94,11 @@
             }
 
             onElementChange(propertyName) {
+
+                if (propertyName.startsWith('slides_to_show')) {
+                    this.updateSlidesPerView(this.getResponsiveSetting(this.getElementSettings(), 'slides_to_show'));
+                }
+
                 if ('grid_rows' === propertyName) {
                     // this.updateRows();
                 }
@@ -270,6 +284,13 @@
                 this.swiper.update();
             }
 
+            updateSlidesPerView(count) {
+                if (!this.swiper) return;
+
+                this.swiper.params.slidesPerView = count;
+                this.swiper.update();
+            }
+
             run() {
                 // Prevent double initialization
                 if (this.isInitialized) {
@@ -290,6 +311,8 @@
                     nestedSlider.then((newSwiperInstance) => {
                         this.swiper = newSwiperInstance;
                         this.isInitialized = true;
+
+                        thisModule.updateSlidesPerView(thisModule.getResponsiveSetting(thisModule.getElementSettings(), 'slides_to_show'));
                     });
                 }
             }

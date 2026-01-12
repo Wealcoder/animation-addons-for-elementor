@@ -182,6 +182,46 @@ class Animated_Heading extends Widget_Base {
 
 		$this->end_controls_section();
 
+		/* ---------------- TRIGGER SETTINGS ---------------- */
+		$this->start_controls_section(
+			'section_trigger',
+			[
+				'label' => esc_html__( 'Animation Trigger', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'trigger_type',
+			[
+				'label'   => esc_html__( 'Trigger', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'viewport',
+				'options' => [
+					'viewport'       => esc_html__( 'On Viewport Enter', 'animation-addons-for-elementor' ),
+					'page_load'      => esc_html__( 'On Page Load', 'animation-addons-for-elementor' ),
+					'scroll' => esc_html__( 'OnScroll', 'animation-addons-for-elementor' ),
+				],
+			]
+		);
+		
+
+		$this->add_control(
+			'trigger_selector',
+			[
+				'label'       => esc_html__( 'Scroll Trigger Selector', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'placeholder' => '.elementor-container',
+				'description' => esc_html__( 'CSS selector that controls when the animation starts (e.g. .e-con, .elementor-container)', 'animation-addons-for-elementor' ),
+				'default'     => '',
+					'condition' => [
+					'trigger_type' => 'scroll',
+				],
+			]
+		);
+
+
+		$this->end_controls_section();
+
 		// Style
 		$this->start_controls_section(
 			'section_style_image',
@@ -189,6 +229,32 @@ class Animated_Heading extends Widget_Base {
 				'label' => esc_html__( 'Heading', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			)
+		);
+
+		$this->add_control(
+			'heading_color_mode',
+			[
+				'label'   => esc_html__( 'Color Mode', 'animation-addons-for-elementor' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'gradient',
+				'options' => [
+					'gradient'      => esc_html__( 'Gradient', 'animation-addons-for-elementor' ),
+					'gradient_loop' => esc_html__( 'Gradient Loop', 'animation-addons-for-elementor' ),
+					'gradient_pingpong' => esc_html__( 'Gradient Ping Pong', 'animation-addons-for-elementor' ),
+					'alternate'     => esc_html__( 'Alternate', 'animation-addons-for-elementor' ),
+					'edge_fade'     => esc_html__( 'Edge Fade', 'animation-addons-for-elementor' ),
+					'repeater'      => esc_html__( 'Custom Colors', 'animation-addons-for-elementor' ),
+					'glitch_flash'      => esc_html__( 'Glitch Flash', 'animation-addons-for-elementor' ),
+					'random_cycle'  => esc_html__( 'Random Cycle', 'animation-addons-for-elementor' ),
+					'center_focus'  => esc_html__( 'Center Focus', 'animation-addons-for-elementor' ),
+					'single'        => esc_html__( 'Single Color', 'animation-addons-for-elementor' ),
+					'random'        => esc_html__( 'Random Colors', 'animation-addons-for-elementor' ),
+					'wave'          => esc_html__( 'Wave Gradient', 'animation-addons-for-elementor' ),
+					'hover_reset'   => esc_html__( 'Animate then Reset', 'animation-addons-for-elementor' ),
+					'pulse'         => esc_html__( 'Pulse', 'animation-addons-for-elementor' ),
+					'spectrum_rotate'         => esc_html__( 'Spectrum Rotate', 'animation-addons-for-elementor' ),
+				],
+			]
 		);
 
 		$this->add_control(
@@ -200,6 +266,9 @@ class Animated_Heading extends Widget_Base {
 				'selectors'   => array(
 					'{{WRAPPER}} .animated--heading' => 'color: {{VALUE}}',
 				),
+				'condition' => [
+					'heading_color_mode' => ['gradient','single','wave','hover_reset', 'gradient_loop','center_focus','edge_fade','pulse','gradient_pingpong'],
+				],
 			)
 		);
 
@@ -216,8 +285,9 @@ class Animated_Heading extends Widget_Base {
 		$repeater->add_control(
 			'heading_color',
 			array(
-				'label' => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Start Color', 'animation-addons-for-elementor' ),
 				'type'  => Controls_Manager::COLOR,
+				 
 			)
 		);
 
@@ -242,6 +312,9 @@ class Animated_Heading extends Widget_Base {
 					),
 				),
 				'title_field' => '{{{ heading_color }}}',
+				'condition' => [
+					'heading_color_mode' => ['repeater','random','hover_reset','alternate','random_cycle','glitch_flash'],
+				],
 			)
 		);
 
@@ -251,6 +324,9 @@ class Animated_Heading extends Widget_Base {
 				'label'   => esc_html__( 'End Color', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::COLOR,
 				'default' => '#c9f31d',
+				 'condition' => [
+					'heading_color_mode' => ['gradient','wave', 'gradient_loop','center_focus','edge_fade','pulse','gradient_pingpong'],
+				],
 			)
 		);
 
@@ -278,11 +354,15 @@ class Animated_Heading extends Widget_Base {
 
 		$this->add_render_attribute(
 			'wrapper',
-			array(
-				'class'          => 'animated--heading',
-				'data-colors'    => wp_json_encode( $colors ),
-				'data-color-end' => $settings['heading_color_end'],
-			)
+			[
+				'class'               => 'animated--heading',
+				'data-colormode'     => esc_attr( $settings['heading_color_mode'] ),
+				'data-colorstart'    => esc_attr( $settings['heading_color'] ?? '' ),
+				'data-colorend'      => esc_attr( $settings['heading_color_end'] ?? '' ),
+				'data-colors'          => esc_attr( wp_json_encode( $colors ) ),
+				'data-trigger'        => esc_attr( $settings['trigger_type'] ),				
+				'data-triggerselector' => esc_attr( $settings['trigger_selector'] ),
+			]
 		);
 
 		?>
