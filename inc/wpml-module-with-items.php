@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS;
+namespace WCF_ADDONS\INC\WPML;
 
 defined( 'ABSPATH' ) || die();
 

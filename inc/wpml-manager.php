@@ -768,15 +768,37 @@ class WPML_Manager {
 				],
 			],
 
-			/**
-			 * Breadcrumbs Widget (no fields)
-			 */
-			'wcf--breadcrumbs' => [],
+			// 8) Breadcrumbs (separator text only)
+		    'wcf--breadcrumbs' => [
+				'conditions' => [ 'widgetType' => 'wcf--breadcrumbs' ],
+				'fields'     => [
+					[
+						'field'       => 'br_separator',
+						'type'        => esc_html__( 'Breadcrumbs: Separator Text', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+				],
+			],
 
 			/**
 			 * Site Logo Widget (no fields)
 			 */
-			'wcf--site-logo' => [],
+			// Site Logo
+			'wcf--site-logo' => [
+				'conditions' => [ 'widgetType' => 'wcf--site-logo' ],
+				'fields'     => [
+					[
+						'field'       => 'caption',
+						'type'        => esc_html__( 'Site Logo: Caption', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'link',
+						'type'        => esc_html__( 'Site Logo: Link', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINK',
+					],
+				],
+			],
 
 			/**
 			 * Current Date Widget

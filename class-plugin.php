@@ -1356,7 +1356,7 @@ class Plugin {
 		// add_action('wp_head', array($this, 'wp_head'), 4);
 
 		$this->include_files();
-		add_filter( 'wpml_elementor_widgets_to_translate', [  WPML\WPML_Manager::class, 'wpml_widgets_to_translate_filter' ] );
+		add_filter( 'wpml_elementor_widgets_to_translate', [  WPML\WPML_Manager::class, 'add_widgets_to_translate' ] );
 
 		if ( class_exists( '\WCF_ADDONS\Library_Source' ) ) {
 
