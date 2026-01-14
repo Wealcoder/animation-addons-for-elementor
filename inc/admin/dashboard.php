@@ -73,7 +73,7 @@ class WCF_Admin_Init
 		}
 
 		// Check if we are on the correct page
-		if ($screen && $screen->id === 'animation-addon_page_wcf_addons_settings') {
+		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 			$classes .= ' wcf-anim2024';
 		}
 
@@ -332,8 +332,12 @@ class WCF_Admin_Init
 	public function enqueue_scripts($hook)
 	{
 		$total_extensions = $total_widgets = 0;
-
-		if ($hook == 'animation-addon_page_wcf_addons_settings') {
+     
+		$screen = get_current_screen();
+		if ( ! $screen || strpos($screen->id, '_page_wcf_addons_settings') === false) {
+			return;
+		}
+		//if ($hook == 'animation-addon_page_wcf_addons_settings') {
 			// sync element manager
 			$this->disable_widgets_by_element_manager();
 			// CSS
@@ -364,6 +368,7 @@ class WCF_Admin_Init
 
 			$localize_data = array(
 				'ajaxurl'             => admin_url('admin-ajax.php'),
+				'isSettingsPage' => true, // 🔥 IMPORTANT
 				'nonce'               => wp_create_nonce('wcf_admin_nonce'),
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
@@ -389,7 +394,7 @@ class WCF_Admin_Init
 
 			);
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
-		}
+		//}
 	}
 
 	public function get_template_menu_data()
@@ -505,7 +510,7 @@ class WCF_Admin_Init
 		$screen = get_current_screen();
 
 		// Check if we are on the correct admin page
-		if ($screen && $screen->id === 'animation-addon_page_wcf_addons_settings') {
+		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 			echo '<div id="wcf-admin-toast"></div>';
 		}
 	}
@@ -528,7 +533,7 @@ class WCF_Admin_Init
 			'in_admin_header',
 			function () {
 				$screen = get_current_screen();
-				if ($screen && 'animation-addon_page_wcf_addons_settings' === $screen->id) {
+				if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 					remove_all_actions('admin_notices');
 					remove_all_actions('all_admin_notices');
 					remove_all_actions('user_admin_notices');

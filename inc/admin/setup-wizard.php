@@ -72,7 +72,8 @@ class WCF_Setup_Wizard_Init
 			return;
 		}
 
-		if ($screen->id === 'animation-addon_page_wcf_addons_setup_page') {
+		//if ($screen->id === 'animation-addon_page_wcf_addons_setup_page') {
+		if ($screen && strpos($screen->id, '_page_wcf_addons_setup_page') !== false) {
 			add_filter('admin_footer_text', '__return_empty_string');
 			add_filter('update_footer', '__return_empty_string', 11);
 		}
@@ -194,7 +195,12 @@ class WCF_Setup_Wizard_Init
 	public function enqueue_scripts($hook)
 	{
 		$total_extensions = $total_widgets = 0;
-		if ($hook == 'animation-addon_page_wcf_addons_setup_page') {
+		$screen = get_current_screen();
+		if ( ! $screen || strpos($screen->id, '_page_wcf_addons_setup_page') === false) {
+			return;
+		}
+
+		//if ($hook == 'animation-addon_page_wcf_addons_setup_page') {
 
 			// CSS
 
@@ -233,7 +239,7 @@ class WCF_Setup_Wizard_Init
 				]
 			];
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
-		}
+		//}
 	}
 
 	/**
@@ -301,13 +307,21 @@ class WCF_Setup_Wizard_Init
 	 */
 	public function remove_all_notices()
 	{
-
 		add_action('in_admin_header', function () {
+
 			$screen = get_current_screen();
-			if ($screen && in_array($screen->id, ['animation-addon_page_wcf_addons_setup_page', 'animation-addon_page_wcf-cpt-builder'], true)) {
+
+			if (
+				$screen &&
+				(
+					strpos($screen->id, '_page_wcf_addons_setup_page') !== false ||
+					strpos($screen->id, '_page_wcf-cpt-builder') !== false
+				)
+			) {
 				remove_all_actions('admin_notices');
 				remove_all_actions('all_admin_notices');
 			}
+
 		}, 1000);
 	}
 }

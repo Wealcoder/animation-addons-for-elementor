@@ -62,7 +62,7 @@ final class AAE_Admin_Page_Importer
     {
         $screen = get_current_screen();
 
-        if ($screen && ($screen->id === 'admin_page_aae-page-importer' || $screen->id === 'animation-addon_page_aae-page-importer')) {
+       if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
             remove_all_actions('admin_notices');
             remove_all_actions('all_admin_notices');
         }
@@ -79,7 +79,7 @@ final class AAE_Admin_Page_Importer
         }
 
         // Check if we are on the correct page
-        if ($screen && ($screen->id === 'admin_page_aae-page-importer' || $screen->id === 'animation-addon_page_aae-page-importer')) {
+        if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
             $classes .= ' wcf-anim2024';
         }
 
@@ -148,21 +148,27 @@ final class AAE_Admin_Page_Importer
             true
         );
 
+        $is_importer_page = ( $screen &&  strpos($screen->id, '_page_aae-page-importer') !== false );
+
         wp_localize_script(self::HANDLE, 'AAE_PAGE_IMPORT', [
-            'nonce'   => wp_create_nonce('aae_admin_nonce'),
-            'screen'  => $screen->id,
-            'post_id' => $post_id,
-            'logo' => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
-            'page_url'   => esc_url(admin_url('admin.php?page=aae-page-importer')),
+            'nonce'    => wp_create_nonce('aae_admin_nonce'),
+            'screen'   => $is_importer_page ? 'animation-addon_page_aae-page-importer' : '',
+            'post_id'  => $post_id,
+            'logo'     => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
+            'page_url' => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
 
+  
         wp_enqueue_script(self::HANDLE);
     }
 
     public function importer_assets($hook)
     {
-
-        if ($hook == 'admin_page_aae-page-importer' || $hook == 'animation-addon_page_aae-page-importer') {
+        $screen = get_current_screen();
+        if (! $screen) {
+            return;
+        }
+        if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
             // CSS
             wp_enqueue_style(
                 'aae-page-importer-admin', // Handle for the stylesheet
