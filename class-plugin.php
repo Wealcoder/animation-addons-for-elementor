@@ -73,6 +73,50 @@ class Plugin {
 		return self::$instance;
 	}
 
+	function get_elementor_breakpoints() {
+
+		// Default fallback (always safe)
+		$fallback = [
+			'desktop' => 1400,
+			'laptop'  => 1366,
+			'tablet'  => 1024,
+			'mobile'  => 767,
+		];
+
+		// Elementor not loaded
+		if ( ! class_exists( '\Elementor\Plugin' ) ) {
+			return $fallback;
+		}
+
+		$plugin = \Elementor\Plugin::$instance ?? null;
+
+		if ( ! $plugin || ! isset( $plugin->breakpoints ) ) {
+			return $fallback;
+		}
+
+		$manager = $plugin->breakpoints;
+
+		// Elementor does NOT have laptop breakpoint
+		$settings = [
+			'laptop' => method_exists( $manager, 'get_breakpoints' )
+				? $manager->get_breakpoints( 'laptop' )->get_value()
+				: $fallback['laptop'],
+
+			'tablet'  => method_exists( $manager, 'get_breakpoints' )
+				? $manager->get_breakpoints( 'tablet' )->get_value()
+				: $fallback['tablet'],
+
+			'mobile'  => method_exists( $manager, 'get_breakpoints' )
+				? $manager->get_breakpoints( 'mobile' )->get_value()
+				: $fallback['mobile'],
+		];
+
+		// Custom laptop breakpoint (Elementor does NOT provide this)
+		$settings['desktop'] = 1400;
+
+		return $settings;
+	}
+
 	/**
 	 * Widget_scripts
 	 *
@@ -111,6 +155,7 @@ class Plugin {
 				),
 				'smoothScroller' => json_decode( get_option( 'wcf_smooth_scroller' ) ),
 				'mode'           => \Elementor\Plugin::$instance->editor->is_edit_mode(),
+				'elementor_breakpoint' => $this->get_elementor_breakpoints()
 			)
 		);
 
