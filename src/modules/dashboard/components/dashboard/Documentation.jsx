@@ -33,7 +33,7 @@ const Documentation = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            View all <RiArrowRightUpLine size={18} className="ml-1" />
+            View all <RiArrowRightUpLine size={18} className="me-1" />
           </a>
         </div>
       </div>

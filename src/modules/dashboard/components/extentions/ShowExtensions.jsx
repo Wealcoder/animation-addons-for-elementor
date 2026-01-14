@@ -212,8 +212,8 @@ const ShowExtensions = ({
                       <ExtensionGsapSettings
                         extension={filteredGsapExtensions?.elements[extension]}
                         contentSx={{
-                          width: "425px",
-                          maxWidth: "425px",
+                          width: "500px",
+                          maxWidth: "500px",
                           borderRadius: "16px",
                         }}
                       >

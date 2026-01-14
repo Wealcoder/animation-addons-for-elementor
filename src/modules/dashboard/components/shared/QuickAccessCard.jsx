@@ -30,7 +30,7 @@ const QuickAccessCard = ({ item, className }) => {
         aria-disabled={item.url ? false : true}
         className={cn(item.url ? "" : "pointer-events-none")}
       >
-        <div className="flex items-center justify-between gap-3 ">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div
               className={cn(
@@ -70,14 +70,15 @@ const QuickAccessCard = ({ item, className }) => {
             <div>
               <RiArrowRightLine
                 size={24}
-                className="text-icon-secondary group-hover:text-brand"
+                // className="text-icon-secondary group-hover:text-brand"
+                className="text-icon-secondary group-hover:text-brand rtl:rotate-180"
               />
             </div>
           ) : (
             <div>
               <Badge
                 variant="pro"
-                className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] mr-1"
+                className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] me-1"
               >
                 COMING SOON!
               </Badge>
