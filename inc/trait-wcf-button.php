@@ -215,6 +215,7 @@ trait WCF_Button_Trait {
 				'selectors'  => array(
 					'{{WRAPPER}} .wcf__btn a i'   => 'font-size: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .wcf__btn a svg' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf__btn a svg' => 'width: {{SIZE}}{{UNIT}};',
 				),
 			)
 		);
