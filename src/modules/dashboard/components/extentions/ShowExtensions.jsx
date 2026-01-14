@@ -211,6 +211,11 @@ const ShowExtensions = ({
 
                       <ExtensionGsapSettings
                         extension={filteredGsapExtensions?.elements[extension]}
+                        contentSx={{
+                          width: "425px",
+                          maxWidth: "425px",
+                          borderRadius: "16px",
+                        }}
                       >
                         {
                           exSettings?.find((item) => item.key === extension)

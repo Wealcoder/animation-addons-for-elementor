@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { RiSettings2Line } from "react-icons/ri";
 
-const ExtensionGsapSettings = ({ extension, children }) => {
+const ExtensionGsapSettings = ({ extension, children, contentSx }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -36,7 +36,10 @@ const ExtensionGsapSettings = ({ extension, children }) => {
           Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[428px] max-w-[428px] rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4">
+      <DialogContent
+        style={{ width: "428px", maxWidth: "428px", ...contentSx }}
+        className="rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4"
+      >
         <DialogHeader className={"hidden"}>
           <DialogTitle></DialogTitle>
           <DialogDescription></DialogDescription>
