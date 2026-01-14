@@ -306,7 +306,3 @@
 .custom-loop-equal-height-yes .aae-loop-grid-container article.aae-loop-item {
   align-self: auto;
 }
-
-.custom-loop-wrapper .elementor.elementor .e-con > .elementor-widget {
-  width: 100%;
-}
