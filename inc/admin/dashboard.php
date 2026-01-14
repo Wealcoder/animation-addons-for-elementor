@@ -386,7 +386,7 @@ class WCF_Admin_Init
 				'template_menu' => $this->get_template_menu_data(),
 				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
 				'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
-
+				'root_url' => WCF_ADDONS_URL,
 			);
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 		}
@@ -550,7 +550,7 @@ class WCF_Admin_Init
 	public function save_settings()
 	{
 
-	
+
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
@@ -785,43 +785,102 @@ class WCF_Admin_Init
 	 * @return  void
 	 * @since 1.1.2
 	 */
+	// public function save_smooth_scroller_settings()
+	// {
+
+	// 	check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+	// 	if (! current_user_can('manage_options')) {
+	// 		wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
+	// 	}
+
+	// 	if (! isset($_POST['smooth'])) {
+	// 		return;
+	// 	}
+
+	// 	$settings = array(
+	// 		'smooth' => sanitize_text_field(wp_unslash($_POST['smooth'])),
+	// 	);
+
+	// 	if (isset($_POST['mobile'])) {
+	// 		$settings['mobile'] = sanitize_text_field(wp_unslash($_POST['mobile']));
+	// 	}
+	// 	if (isset($_POST['disableMode'])) {
+	// 		$settings['disableMode'] = sanitize_text_field(wp_unslash($_POST['disableMode']));
+	// 	}
+	// 	if (isset($_POST['media'])) {
+	// 		$settings['media'] = sanitize_text_field(wp_unslash($_POST['media']));
+	// 	}
+
+	// 	$option = wp_json_encode($settings);
+
+	// 	// update new settings
+	// 	if (! empty($_POST['smooth'])) {
+
+	// 		update_option('wcf_smooth_scroller', $option);
+	// 		wp_send_json($option);
+	// 	}
+
+	// 	wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
+	// }
+
+
 	public function save_smooth_scroller_settings()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		$raw  = file_get_contents('php://input');
+		$data = json_decode($raw, true);
+
+		if (! is_array($data)) {
+			wp_send_json_error(
+				esc_html__('Invalid request body', 'animation-addons-for-elementor')
+			);
+		}
+
+		if (
+			empty($data['nonce']) ||
+			! wp_verify_nonce($data['nonce'], 'wcf_admin_nonce')
+		) {
+			wp_send_json_error(
+				esc_html__('Invalid nonce', 'animation-addons-for-elementor')
+			);
+		}
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
+			wp_send_json_error(
+				esc_html__('You are not allowed to do this action', 'animation-addons-for-elementor')
+			);
 		}
 
-		if (! isset($_POST['smooth'])) {
-			return;
-		}
+		// if (empty($data['desktop'])) {
+		// 	wp_send_json_error(
+		// 		esc_html__('Settings data not found', 'animation-addons-for-elementor')
+		// 	);
+		// }
 
-		$settings = array(
-			'smooth' => sanitize_text_field(wp_unslash($_POST['smooth'])),
-		);
+		$sanitize_device = function ($device) {
+			return [
+				'enabled' => ! empty($device['enabled']),
+				'smotherLevel' => isset($device['smotherLevel'])
+					? (float) $device['smotherLevel']
+					: 1.35,
+			];
+		};
 
-		if (isset($_POST['mobile'])) {
-			$settings['mobile'] = sanitize_text_field(wp_unslash($_POST['mobile']));
-		}
-		if (isset($_POST['disableMode'])) {
-			$settings['disableMode'] = sanitize_text_field(wp_unslash($_POST['disableMode']));
-		}
-		if (isset($_POST['media'])) {
-			$settings['media'] = sanitize_text_field(wp_unslash($_POST['media']));
-		}
+		$settings = [
+			'desktop' => $sanitize_device($data['desktop'] ?? []),
+			'laptop'  => $sanitize_device($data['laptop'] ?? []),
+			'tablet'  => $sanitize_device($data['tablet'] ?? []),
+			'mobile'  => $sanitize_device($data['mobile'] ?? []),
+		];
 
 		$option = wp_json_encode($settings);
 
-		// update new settings
-		if (! empty($_POST['smooth'])) {
+		update_option('wcf_smooth_scroller', $option);
 
-			update_option('wcf_smooth_scroller', $option);
-			wp_send_json($option);
-		}
+		wp_send_json($option);
 
-		wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
+		// wp_send_json_success($settings);
 	}
 }
 
