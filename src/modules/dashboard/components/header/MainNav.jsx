@@ -27,6 +27,7 @@ const MainNav = () => {
       setCurrentPath("dashboard");
     }
   }, [urlParams]);
+  
 
   if (!(navItems && navItems.length)) return;
 

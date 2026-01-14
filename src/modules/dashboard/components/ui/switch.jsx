@@ -12,11 +12,23 @@ const Switch = React.forwardRef(({ className, ...props }, ref) => (
     {...props}
     ref={ref}
   >
-    <SwitchPrimitives.Thumb
-      className={cn(
-        "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0"
-      )}
-    />
+    {props.reverse ? (
+      <SwitchPrimitives.Thumb
+        className={cn(
+          "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform",
+          // LTR
+          "data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0",
+          // RTL
+          "rtl:data-[state=checked]:-translate-x-4 rtl:data-[state=unchecked]:translate-x-0"
+        )}
+      />
+    ) : (
+      <SwitchPrimitives.Thumb
+        className={cn(
+          "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0"
+        )}
+      />
+    )}
   </SwitchPrimitives.Root>
 ));
 Switch.displayName = SwitchPrimitives.Root.displayName;
