@@ -220,6 +220,18 @@ class Brand_Slider extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'aae_autocustom_p_notice',
+			[
+				'type' => \Elementor\Controls_Manager::NOTICE,
+				'notice_type' => 'warning',
+				'dismissible' => true,
+				'heading' => esc_html__( 'Notice', 'animation-addons-for-elementor' ),
+				'content' => esc_html__( 'Avoid using “Auto” for Slides Per View, as it may cause autoplay to stop in Safari browsers.', 'animation-addons-for-elementor' ),
+				
+			]
+		);
+
 		$this->end_controls_section();
 
 		// slide controls.
@@ -541,17 +553,20 @@ class Brand_Slider extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
+		
 		if ( empty( $settings['wcf_brand_carousel'] ) && empty( $settings['repeat_list_text'] ) ) {
 			return;
 		}
+		
 
 		$class_slide_width = '';
 		if ( 'auto' === $settings['slides_to_show'] ) {
 			$class_slide_width = 'slide-width-auto';
-		}
+		}		
 
-		$slider_settings = $this->get_slider_attributes();
-
+		$slider_settings = $this->get_slider_attributes();		
+		
+		
 		$this->add_render_attribute(
 			'wrapper',
 			array(

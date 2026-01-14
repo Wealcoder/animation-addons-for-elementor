@@ -48,19 +48,36 @@ trait WCF_Slider_Trait {
 		$slides_to_show = range( 1, 10 );
 		$slides_to_show = array_combine( $slides_to_show, $slides_to_show );
 
+	
+
 		$this->add_responsive_control(
 			'slides_to_show',
 			[
 				'label'       => esc_html__( 'Slides to Show', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => $default['slides_to_show'],
+				
 				'required'    => true,
 				'options'     => [
-					                 'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
+					               //  'auto' => esc_html__( 'Auto', 'animation-addons-for-elementor' ),
 				                 ] + $slides_to_show,
 				'render_type' => 'template',
 				'selectors'   => [
 					'{{WRAPPER}} .wcf__slider' => '--slides-to-show: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_control(
+			'aae_autocustom_panel_notice',
+			[
+				'type' => \Elementor\Controls_Manager::NOTICE,
+				'notice_type' => 'warning',
+				'dismissible' => true,
+				'heading' => esc_html__( 'Notice', 'animation-addons-for-elementor' ),
+				'content' => esc_html__( 'Avoid using “Auto” for Slides Per View, as it may cause autoplay to stop in Safari browsers.', 'animation-addons-for-elementor' ),
+				'condition' => [
+					'slides_to_show' => 'auto',
 				],
 			]
 		);
