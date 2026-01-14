@@ -991,7 +991,12 @@ class Plugin {
 		// Load Loop Builder Integration.
 		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/init.php';
 
-		include_once WCF_ADDONS_PATH . 'inc/wpml-manager.php';
+
+		$wpml_file = WCF_ADDONS_PATH . 'inc/wpml-manager.php';
+
+		if ( defined( 'ICL_SITEPRESS_VERSION' ) && file_exists( $wpml_file ) ) {
+			include_once $wpml_file;
+		}
 
 
 		// extensions.
