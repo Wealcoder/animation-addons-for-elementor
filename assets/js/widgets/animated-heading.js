@@ -33,7 +33,7 @@
         const startColor = el.dataset.colorstart || '#ff0000';
         const endColor = el.dataset.colorend || '#0000ff';
         const colors = el.dataset.colors ? JSON.parse(el.dataset.colors) : [];
-        console.log('Colors:', startColor, endColor, colors);
+
         const triggerType = el.dataset.trigger || 'viewport'; // page_load | scroll | viewport
         const triggerSelector = el.dataset.triggerselector || '';
 
@@ -283,11 +283,6 @@
                         }, '+=0.15');
                 }
                 break;
-
-
-
-
-
 
         }
 

@@ -19,6 +19,11 @@
   transition: all 0.5s;
   opacity: 0;
 }
+.wcf-grid-hover-posts .wcf-post .thumb a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .wcf-grid-hover-posts .wcf-post .thumb img {
   -o-object-fit: cover;
      object-fit: cover;
