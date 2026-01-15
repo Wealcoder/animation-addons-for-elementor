@@ -176,19 +176,26 @@ const ScrollSmootherSettings = () => {
   // console.log(tabValue);
 
   return (
-    <div className="py-5 px-7">
+    <div className="py-5 px-7 pb-7">
       <div className="flex items-center gap-2 mt-2">
         <img
           src={`${WCF_ADDONS_ADMIN.root_url}public/images/extensions/scroll_smother.png`}
           alt="logo"
-          className="w-[59px] h-[59px]"
+          className="w-[60px] h-[60px]"
         />
 
         <div>
-          <h2 className="text-xl text-text font-medium flex items-center gap-2">
-            <span>Smooth Scroller</span>
-
-            <Badge variant="pro">PRO</Badge>
+          <h2 className=" flex items-center gap-2">
+            <span className="text-[20px] font-medium text-[var(--900,#181B25)]">
+              {" "}
+              Smooth Scroller
+            </span>
+            <Badge
+              className="bg-[linear-gradient(109deg,#ffab472e_0%,#ffab472e_100%)] text-[#717784]"
+              variant="pro"
+            >
+              PRO
+            </Badge>
           </h2>
           <p className="text-sm text-text-secondary mt-2">
             Enter Smooth Scroller value below.
@@ -211,15 +218,14 @@ const ScrollSmootherSettings = () => {
                     : SmartphoneIcon;
 
                 return (
-                  <TabsTrigger key={device.id} value={device.id}>
-                    {/* <img
-                      src={`${WCF_ADDONS_ADMIN.root_url}${device.icon}`}
-                      alt={device.label}
-                      className="w-[15px] h-[15px] mr-1" #181B25
-                    /> */}
-
+                  <TabsTrigger
+                    key={device.id}
+                    value={device.id}
+                    className="data-[state=active]:bg-[#E1E4EA] bg-[#F5F7FA]"
+                    sx={{ boxShadow: "none" }}
+                  >
                     <TabIcon
-                      size={17}
+                      size={16}
                       color={tabValue === device.id ? "#181B25" : "#525866"}
                     />
 
@@ -227,7 +233,7 @@ const ScrollSmootherSettings = () => {
                       style={{
                         color: tabValue === device.id ? "#181B25" : "#525866",
                       }}
-                      className="text-12 ml-1"
+                      className="text-[12px] ml-1"
                     >
                       {device.label}
                     </span>
@@ -258,6 +264,7 @@ const ScrollSmootherSettings = () => {
                             <Switch
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              sx={{ marginTop: "0" }}
                             />
                           </FormControl>
                         </FormItem>
@@ -271,7 +278,7 @@ const ScrollSmootherSettings = () => {
                       name={`${device.id}.smotherLevel`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[13px] text-[#525866]">
+                          <FormLabel className="text-[12px] text-[var(--600,#525866)] mb-2">
                             Set the scroll smother level
                           </FormLabel>
                           <FormControl>
@@ -300,7 +307,7 @@ const ScrollSmootherSettings = () => {
                 </TabsContent>
               ))}
 
-              <div className="flex gap-2.5 items-center mt-6">
+              <div className="flex gap-2.5 items-center mt-9">
                 <Button variant="secondary" onClick={resetHandler}>
                   Reset
                 </Button>

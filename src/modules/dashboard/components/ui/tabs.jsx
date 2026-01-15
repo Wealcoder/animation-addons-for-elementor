@@ -20,6 +20,7 @@ TabsList.displayName = TabsPrimitive.List.displayName;
 const TabsTrigger = React.forwardRef(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
     ref={ref}
+    style={props.sx || {}}
     className={cn(
       "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm text-text-secondary font-medium ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none bg-transparent disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-text data-[state=active]:shadow-tab-trigger cursor-pointer",
       className
@@ -42,3 +43,29 @@ const TabsContent = React.forwardRef(({ className, ...props }, ref) => (
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };
+
+// const TabsTrigger = React.forwardRef<
+//   React.ElementRef<typeof TabsPrimitive.Trigger>,
+//   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+// >(({ className, ...props }, ref) => (
+//   <TabsPrimitive.Trigger
+//     ref={ref}
+//     className={cn(
+//       "inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-all",
+
+//       // Inactive / default state
+//       "bg-[#F5F7FA] text-gray-600 hover:bg-[#e8ebf2]",
+
+//       // Active / selected state
+//       "data-[state=active]:bg-[#E1E4EA] data-[state=active]:text-gray-900 data-[state=active]:shadow-sm",
+
+//       // Focus & disabled states
+//       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+//       "disabled:pointer-events-none disabled:opacity-50",
+
+//       className
+//     )}
+//     {...props}
+//   />
+// ));
+// TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;

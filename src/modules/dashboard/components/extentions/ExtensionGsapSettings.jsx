@@ -39,6 +39,7 @@ const ExtensionGsapSettings = ({ extension, children, contentSx }) => {
       <DialogContent
         style={{ width: "428px", maxWidth: "428px", ...contentSx }}
         className="rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4"
+        closeBtnCls="w-6 h-6 !text-[#525866]"
       >
         <DialogHeader className={"hidden"}>
           <DialogTitle></DialogTitle>

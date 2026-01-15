@@ -11,6 +11,7 @@ const Switch = React.forwardRef(({ className, ...props }, ref) => (
     )}
     {...props}
     ref={ref}
+    style={props.sx || {}}
   >
     {props.reverse ? (
       <SwitchPrimitives.Thumb
