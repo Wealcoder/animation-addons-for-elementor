@@ -31,9 +31,16 @@ const Documentation = () => {
           <a
             href={"https://animation-addons.com/docs"}
             target="_blank"
-            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "me-1"
+            )}
           >
-            View all <RiArrowRightUpLine size={18} className="me-1" />
+            View all{" "}
+            <RiArrowRightUpLine
+              size={18}
+              className="rtl:rotate-360 rtl:scale-x-[-1]"
+            />
           </a>
         </div>
       </div>
@@ -49,7 +56,8 @@ const Documentation = () => {
                   "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand"
                 )}
               >
-                {el.title} <RiArrowRightLine size={16} />
+                {el.title}
+                <RiArrowRightLine size={16} className="rtl:rotate-180" />
               </a>
               <p className="text-sm text-text-secondary">{el.subTitle}</p>
             </div>

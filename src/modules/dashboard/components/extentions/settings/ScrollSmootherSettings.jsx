@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { DesktopIcon } from "@radix-ui/react-icons";
+import logo from "../../../../../../public/images/extensions/scroll_smother.png";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -176,22 +177,30 @@ const ScrollSmootherSettings = () => {
   // console.log(tabValue);
 
   return (
-    <div className="py-5 px-7">
+    <div className="py-4 px-6 pb-7">
       <div className="flex items-center gap-2 mt-2">
         <img
-          src={`${WCF_ADDONS_ADMIN.root_url}public/images/extensions/scroll_smother.png`}
+          // src={`${WCF_ADDONS_ADMIN.root_url}public/images/extensions/scroll_smother.png`}
+          src={logo}
           alt="logo"
-          className="w-[59px] h-[59px]"
+          className="w-[65px] h-[65px]"
         />
 
         <div>
-          <h2 className="text-xl text-text font-medium flex items-center gap-2">
-            <span>Smooth Scroller</span>
-
-            <Badge variant="pro">PRO</Badge>
+          <h2 className=" flex items-center gap-2">
+            <span className="text-[20px] font-medium text-[var(--900,#181B25)]">
+              {" "}
+              Scroll Smother
+            </span>
+            <Badge
+              className="bg-[linear-gradient(109deg,#ffab472e_0%,#ffab472e_100%)] text-[#717784]"
+              variant="pro"
+            >
+              PRO
+            </Badge>
           </h2>
           <p className="text-sm text-text-secondary mt-2">
-            Enter Smooth Scroller value below.
+            Enter Smooth Scroller value below
           </p>
         </div>
       </div>
@@ -211,15 +220,14 @@ const ScrollSmootherSettings = () => {
                     : SmartphoneIcon;
 
                 return (
-                  <TabsTrigger key={device.id} value={device.id}>
-                    {/* <img
-                      src={`${WCF_ADDONS_ADMIN.root_url}${device.icon}`}
-                      alt={device.label}
-                      className="w-[15px] h-[15px] mr-1" #181B25
-                    /> */}
-
+                  <TabsTrigger
+                    key={device.id}
+                    value={device.id}
+                    className="data-[state=active]:bg-[#E1E4EA] bg-[#F5F7FA]"
+                    sx={{ boxShadow: "none" }}
+                  >
                     <TabIcon
-                      size={17}
+                      size={16}
                       color={tabValue === device.id ? "#181B25" : "#525866"}
                     />
 
@@ -227,7 +235,7 @@ const ScrollSmootherSettings = () => {
                       style={{
                         color: tabValue === device.id ? "#181B25" : "#525866",
                       }}
-                      className="text-12 ml-1"
+                      className="text-[12px] ml-1"
                     >
                       {device.label}
                     </span>
@@ -242,7 +250,7 @@ const ScrollSmootherSettings = () => {
               {deviceList.map((device) => (
                 <TabsContent
                   value={device.id}
-                  className="bg-background p-2.5 rounded-lg mt-0"
+                  className="bg-background p-4 rounded-lg mt-0"
                 >
                   <div className="mt-3">
                     <FormField
@@ -250,7 +258,7 @@ const ScrollSmootherSettings = () => {
                       name={`${device.id}.enabled`}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center gap-3">
-                          <FormLabel className="min-w-[130px]">
+                          <FormLabel className="min-w-[135px]">
                             {" "}
                             Enable On {device.label}
                           </FormLabel>
@@ -258,6 +266,7 @@ const ScrollSmootherSettings = () => {
                             <Switch
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              sx={{ marginTop: "0" }}
                             />
                           </FormControl>
                         </FormItem>
@@ -271,7 +280,7 @@ const ScrollSmootherSettings = () => {
                       name={`${device.id}.smotherLevel`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[13px] text-[#525866]">
+                          <FormLabel className="text-[12px] text-[var(--600,#525866)] mb-2">
                             Set the scroll smother level
                           </FormLabel>
                           <FormControl>
@@ -300,11 +309,18 @@ const ScrollSmootherSettings = () => {
                 </TabsContent>
               ))}
 
-              <div className="flex gap-2.5 items-center mt-6">
-                <Button variant="secondary" onClick={resetHandler}>
+              <div className="flex gap-2.5 items-center mt-9">
+                <Button
+                  className="p-[20px] rounded-[8px]"
+                  variant="secondary"
+                  onClick={resetHandler}
+                >
                   Reset
                 </Button>
-                <Button type="submit"> Save Settings </Button>
+                <Button className="p-[20px] rounded-[8px]" type="submit">
+                  {" "}
+                  Save Settings{" "}
+                </Button>
               </div>
             </form>
           </Form>
@@ -315,105 +331,3 @@ const ScrollSmootherSettings = () => {
 };
 
 export default ScrollSmootherSettings;
-
-// <Form {...form}>
-//   <form onSubmit={form.handleSubmit(onSubmit)}>
-//     <div className="px-6 py-5 space-y-4 border-b border-[#F2F5F8]">
-// <FormField
-//   control={form.control}
-//   name="smooth"
-//   render={({ field }) => (
-//     <FormItem>
-//       <FormLabel className="text-text">Smooth Value</FormLabel>
-//       <FormControl>
-//         <Input
-//           placeholder="Enter Value"
-//           type="number"
-//           className="h-11 text-base"
-//           {...field}
-//         />
-//       </FormControl>
-
-//       <FormMessage />
-//     </FormItem>
-//   )}
-// />
-//       <FormField
-//         control={form.control}
-//         name="mobile"
-//         render={({ field }) => (
-//           <FormItem className="flex items-center space-x-3 space-y-0">
-//             <FormControl>
-//               <Checkbox
-//                 checked={!!field.value}
-//                 onCheckedChange={field.onChange}
-//               />
-//             </FormControl>
-//             <div className="space-y-1.5 leading-none">
-//               <FormLabel className="text-[#0E121B]">
-//                 Enable on mobile
-//               </FormLabel>
-//             </div>
-//           </FormItem>
-//         )}
-//       />
-//       <FormField
-//         control={form.control}
-//         name="disableMode"
-//         render={({ field }) => (
-//           <FormItem className="flex items-center space-x-3 space-y-0">
-//             <FormControl>
-//               <Checkbox
-//                 checked={!!field.value}
-//                 onCheckedChange={field.onChange}
-//               />
-//             </FormControl>
-//             <div className="space-y-1.5 leading-none">
-//               <FormLabel className="text-[#0E121B]">
-//                 Disable on editor mode
-//               </FormLabel>
-//             </div>
-//           </FormItem>
-//         )}
-//       />
-//       <FormField
-//         control={form.control}
-//         name="media"
-//         render={({ field }) => (
-//           <FormItem>
-//             <FormLabel className="text-text">Media</FormLabel>
-//             <FormControl>
-//               <Input
-//                 placeholder="768px"
-//                 className="h-11 text-base"
-//                 {...field}
-//               />
-//             </FormControl>
-//             <FormDescription>
-//               {`Ex: 900px or min-width: 800px or max-width: 1024px`}
-//             </FormDescription>
-
-//             <FormMessage />
-//           </FormItem>
-//         )}
-//       />
-//     </div>
-
-//     <div className="px-8 pt-4 flex gap-3 justify-end items-center">
-//       <DialogClose asChild ref={dialogCloseRef}>
-//         <Button
-//           variant="secondary"
-//           className="h-11 shadow-common-2 text-base px-[18px]"
-//         >
-//           Cancel
-//         </Button>
-//       </DialogClose>
-//       <Button
-//         type="submit"
-//         className="h-11 shadow-common-2 text-base px-6"
-//       >
-//         Save
-//       </Button>
-//     </div>
-//   </form>
-// </Form>

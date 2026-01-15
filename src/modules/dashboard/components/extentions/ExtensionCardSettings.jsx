@@ -45,7 +45,10 @@ const ExtensionCardSettings = ({
           />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[428px] max-w-[428px] rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4">
+      <DialogContent
+        className="w-[428px] max-w-[428px] rounded-xl bg-background pr-0 [&>.wcf-dialog-close-button>svg]:text-[#99A0AE] [&>.wcf-dialog-close-button]:right-4 [&>.wcf-dialog-close-button]:top-4"
+        closeBtnCls="rtl:left-[-82%] rtl:right-auto"
+      >
         <DialogHeader className={"hidden"}>
           <DialogTitle></DialogTitle>
           <DialogDescription></DialogDescription>
