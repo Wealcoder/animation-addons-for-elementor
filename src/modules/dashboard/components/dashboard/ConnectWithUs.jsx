@@ -27,7 +27,10 @@ const ConnectWithUs = () => {
           <p className="text-[13px]">Help & Support</p>
         </div>
         <div id="help">
-          <h3 className="text-lg font-medium">Need Any Help?</h3>
+          <h3 className="text-lg font-medium text-start">
+            <span dir="ltr">Need Any Help?</span>
+          </h3>
+
           <p className="text-sm text-text-secondary mt-2">
             Feel like you want to consult with an expert? Take live chat support
             immediately from our{" "}

@@ -16,7 +16,7 @@ const ShowWidgets = ({
   searchParam,
   urlParams,
   setWidgetCount,
-  settingOpen
+  settingOpen,
 }) => {
   const widgetSettings = WidgetSettingConfig;
   const { allWidgets } = useWidgets();
