@@ -82,17 +82,18 @@
             };
           },
           processResults: function (data) {
-            let uniqueData = [];
-            let seen = new Set();
-          
-            data.forEach((item) => {
-              if (!seen.has(item.id)) {
-                seen.add(item.id);
-                uniqueData.push(item);
-              }
-            });
+            // let uniqueData = [];
+            // let seen = new Set();
+
+            // data.forEach((item) => {
+            //   if (!seen.has(item.id)) {
+            //     seen.add(item.id);
+            //     uniqueData.push(item);
+            //   }
+            // });
+
             return {
-              results: uniqueData,
+              results: data,
             };
           },
           cache: true,
@@ -241,15 +242,15 @@
 
             //display specific locations
             if (response.responseJSON.data.tmpSpLocation) {
-           
+
               $.each(
                 response.responseJSON.data.tmpSpLocation,
                 function (i, item) {
                   // Create a DOM Option and pre-select by default
                   let data = { id: i, text: item };
-                 if(item===null || item===''){
-                   data.text= i;
-                 }
+                  if (item === null || item === '') {
+                    data.text = i;
+                  }
                   let newOption = new Option(data.text, data.id, true, true);
                   // Append it to the select
                   $("#wcf-addons-hf-s-display-type")

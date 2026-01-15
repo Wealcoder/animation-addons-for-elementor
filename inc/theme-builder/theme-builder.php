@@ -1736,6 +1736,7 @@ class WCF_Theme_Builder
 			$post_types = get_post_types($args, $output, $operator);
 
 			unset($post_types[self::CPTTYPE]); // Exclude wcf post type templates.
+			unset($post_types['elementor_library']); // Exclude wcf elementor_library templates.
 
 			$post_types['Posts'] = 'post';
 			$post_types['Pages'] = 'page';
