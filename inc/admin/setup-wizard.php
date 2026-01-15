@@ -230,7 +230,8 @@ class WCF_Setup_Wizard_Init
 					'roles'    => $current_user->roles,
 					'display_name' => $current_user->display_name,
 					'f_name' => $current_user->first_name
-				]
+				],
+				'root_url' => WCF_ADDONS_URL,
 			];
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 		}

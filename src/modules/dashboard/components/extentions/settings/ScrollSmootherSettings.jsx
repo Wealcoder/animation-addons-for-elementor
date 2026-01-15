@@ -1,4 +1,8 @@
 import { useForm } from "react-hook-form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { DesktopIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,34 +19,91 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DialogClose } from "@/components/ui/dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { deviceList } from "@//config/data/deviceList";
+import { Badge } from "@/components/ui/badge";
+import {
+  LaptopIcon,
+  MonitorIcon,
+  SmartphoneIcon,
+  TabletIcon,
+} from "lucide-react";
 
-const FormSchema = z.object({
-  smooth: z.coerce
+const defaultValues = {
+  desktop: {
+    enabled: true,
+    smotherLevel: "1.35",
+  },
+  laptop: {
+    enabled: false,
+    smotherLevel: "1.35",
+  },
+  tablet: {
+    enabled: false,
+    smotherLevel: "1.35",
+  },
+  mobile: {
+    enabled: false,
+    smotherLevel: "1.35",
+  },
+};
+
+const deviceSchema = z.object({
+  enabled: z.boolean(),
+  // smotherLevel: z.number().optional(),
+  // smotherLevel: z.string().optional(),
+
+  smotherLevel: z.coerce
     .number({
       invalid_type_error: "Smooth must be a number",
     })
     .optional(),
-  mobile: z.boolean().optional(),
-  disableMode: z.boolean().optional(),
-  media: z.string().regex(/^(?:\d+px|min-width:\s?\d+px|max-width:\s?\d+px)$/, {
-    message:
-      "Invalid format. Use '900px', 'min-width: 800px', or 'max-width: 1024px'.",
-  }),
 });
+
+const FormSchema = z.object({
+  desktop: deviceSchema,
+  laptop: deviceSchema,
+  tablet: deviceSchema,
+  mobile: deviceSchema,
+});
+
+// const FormSchema = z.object({
+//   smooth: z.coerce
+//     .number({
+//       invalid_type_error: "Smooth must be a number",
+//     })
+//     .optional(),
+//   mobile: z.boolean().optional(),
+//   disableMode: z.boolean().optional(),
+//   media: z.string().regex(/^(?:\d+px|min-width:\s?\d+px|max-width:\s?\d+px)$/, {
+//     message:
+//       "Invalid format. Use '900px', 'min-width: 800px', or 'max-width: 1024px'.",
+//   }),
+// });
 
 const ScrollSmootherSettings = () => {
   const dialogCloseRef = useRef(null);
+  const [tabValue, setTabValue] = useState(deviceList[0].id);
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      smooth: WCF_ADDONS_ADMIN?.smoothScroller?.smooth || 1.35,
-      mobile:
-        WCF_ADDONS_ADMIN?.smoothScroller?.mobile === "true" ? true : false,
-      disableMode:
-        WCF_ADDONS_ADMIN?.smoothScroller?.disableMode === "true" ? true : false,
-      media: WCF_ADDONS_ADMIN?.smoothScroller?.media || "768px",
+      desktop: {
+        ...defaultValues.desktop,
+        ...WCF_ADDONS_ADMIN?.smoothScroller?.desktop,
+      },
+      laptop: {
+        ...defaultValues.laptop,
+        ...WCF_ADDONS_ADMIN?.smoothScroller?.laptop,
+      },
+      tablet: {
+        ...defaultValues.tablet,
+        ...WCF_ADDONS_ADMIN?.smoothScroller?.tablet,
+      },
+      mobile: {
+        ...defaultValues.mobile,
+        ...WCF_ADDONS_ADMIN?.smoothScroller?.mobile,
+      },
     },
   });
 
@@ -53,25 +114,44 @@ const ScrollSmootherSettings = () => {
     return value;
   };
 
-  async function onSubmit(data) {
-    const convertedMedia = convertToMinWidth(data.media);
+  async function onSubmit(formData) {
+    // const convertedMedia = convertToMinWidth(data.media);
 
-    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
-      },
+    // console.log(formData);
+    // return null;
 
-      body: new URLSearchParams({
-        action: "save_smooth_scroller_settings",
-        mobile: data.mobile,
-        disableMode: data.disableMode,
-        smooth: data.smooth,
-        media: convertedMedia,
-        nonce: WCF_ADDONS_ADMIN.nonce,
-      }),
-    })
+    if (!WCF_ADDONS_ADMIN.nonce || !WCF_ADDONS_ADMIN.ajaxurl) return null;
+
+    const payload = {
+      desktop: formData.desktop,
+      laptop: formData.laptop,
+      tablet: formData.tablet,
+      mobile: formData.mobile,
+      nonce: WCF_ADDONS_ADMIN.nonce ?? null,
+    };
+
+    await fetch(
+      // WCF_ADDONS_ADMIN.ajaxurl,
+      `${WCF_ADDONS_ADMIN.ajaxurl}?action=save_smooth_scroller_settings`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "same-origin",
+
+        // body: new URLSearchParams({
+        //   action: "save_smooth_scroller_settings",
+        //   mobile: data.mobile,
+        //   disableMode: data.disableMode,
+        //   smooth: data.smooth,
+        //   media: convertedMedia,
+        //   nonce: WCF_ADDONS_ADMIN.nonce,
+        // }),
+      }
+    )
       .then((response) => {
         return response.json();
       })
@@ -80,122 +160,260 @@ const ScrollSmootherSettings = () => {
         if (dialogCloseRef.current) {
           dialogCloseRef.current.click();
         }
+
+        toast.success("Save Successful", {
+          position: "top-right",
+        });
       });
   }
 
+  const resetHandler = async () => {
+    await onSubmit(defaultValues);
+    form.reset({ ...defaultValues });
+  };
+
+  // console.log(tabValue);
+  // console.log(tabValue);
+
   return (
-    <div className="py-5">
-      <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">Smooth Scroller</h2>
-        <p className="text-sm text-text-secondary mt-1">
-          Enter Smooth Scroller value below.
-        </p>
+    <div className="py-5 px-7">
+      <div className="flex items-center gap-2 mt-2">
+        <img
+          src={`${WCF_ADDONS_ADMIN.root_url}public/images/extensions/scroll_smother.png`}
+          alt="logo"
+          className="w-[59px] h-[59px]"
+        />
+
+        <div>
+          <h2 className="text-xl text-text font-medium flex items-center gap-2">
+            <span>Smooth Scroller</span>
+
+            <Badge variant="pro">PRO</Badge>
+          </h2>
+          <p className="text-sm text-text-secondary mt-2">
+            Enter Smooth Scroller value below.
+          </p>
+        </div>
       </div>
-      <div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="px-6 py-5 space-y-4 border-b border-[#F2F5F8]">
-              <FormField
-                control={form.control}
-                name="smooth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-text">Smooth Value</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Value"
-                        type="number"
-                        className="h-11 text-base"
-                        {...field}
-                      />
-                    </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="mobile"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={!!field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1.5 leading-none">
-                      <FormLabel className="text-[#0E121B]">
-                        Enable on mobile
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="disableMode"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={!!field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1.5 leading-none">
-                      <FormLabel className="text-[#0E121B]">
-                        Disable on editor mode
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="media"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-text">Media</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="768px"
-                        className="h-11 text-base"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {`Ex: 900px or min-width: 800px or max-width: 1024px`}
-                    </FormDescription>
+      <div className="mt-7">
+        <Tabs value={tabValue} onValueChange={setTabValue}>
+          <div className="flex justify-between items-center">
+            <TabsList className="gap-1 h-11">
+              {deviceList.map((device) => {
+                const TabIcon =
+                  device.id === "desktop"
+                    ? MonitorIcon
+                    : device.id === "laptop"
+                    ? LaptopIcon
+                    : device.id === "tablet"
+                    ? TabletIcon
+                    : SmartphoneIcon;
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                return (
+                  <TabsTrigger key={device.id} value={device.id}>
+                    {/* <img
+                      src={`${WCF_ADDONS_ADMIN.root_url}${device.icon}`}
+                      alt={device.label}
+                      className="w-[15px] h-[15px] mr-1" #181B25
+                    /> */}
 
-            <div className="px-8 pt-4 flex gap-3 justify-end items-center">
-              <DialogClose asChild ref={dialogCloseRef}>
-                <Button
-                  variant="secondary"
-                  className="h-11 shadow-common-2 text-base px-[18px]"
+                    <TabIcon
+                      size={17}
+                      color={tabValue === device.id ? "#181B25" : "#525866"}
+                    />
+
+                    <span
+                      style={{
+                        color: tabValue === device.id ? "#181B25" : "#525866",
+                      }}
+                      className="text-12 ml-1"
+                    >
+                      {device.label}
+                    </span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              {deviceList.map((device) => (
+                <TabsContent
+                  value={device.id}
+                  className="bg-background p-2.5 rounded-lg mt-0"
                 >
-                  Cancel
+                  <div className="mt-3">
+                    <FormField
+                      control={form.control}
+                      name={`${device.id}.enabled`}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center gap-3">
+                          <FormLabel className="min-w-[130px]">
+                            {" "}
+                            Enable On {device.label}
+                          </FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="mt-5 max-w-[180px]">
+                    <FormField
+                      control={form.control}
+                      name={`${device.id}.smotherLevel`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[13px] text-[#525866]">
+                            Set the scroll smother level
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+
+                                field.onChange(
+                                  value !== "" ? parseFloat(value) : ""
+                                );
+
+                                // field.onChange(
+                                //   value === "" ? undefined : Number(value)
+                                // );
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </TabsContent>
+              ))}
+
+              <div className="flex gap-2.5 items-center mt-6">
+                <Button variant="secondary" onClick={resetHandler}>
+                  Reset
                 </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                className="h-11 shadow-common-2 text-base px-6"
-              >
-                Save
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <Button type="submit"> Save Settings </Button>
+              </div>
+            </form>
+          </Form>
+        </Tabs>
       </div>
     </div>
   );
 };
 
 export default ScrollSmootherSettings;
+
+// <Form {...form}>
+//   <form onSubmit={form.handleSubmit(onSubmit)}>
+//     <div className="px-6 py-5 space-y-4 border-b border-[#F2F5F8]">
+// <FormField
+//   control={form.control}
+//   name="smooth"
+//   render={({ field }) => (
+//     <FormItem>
+//       <FormLabel className="text-text">Smooth Value</FormLabel>
+//       <FormControl>
+//         <Input
+//           placeholder="Enter Value"
+//           type="number"
+//           className="h-11 text-base"
+//           {...field}
+//         />
+//       </FormControl>
+
+//       <FormMessage />
+//     </FormItem>
+//   )}
+// />
+//       <FormField
+//         control={form.control}
+//         name="mobile"
+//         render={({ field }) => (
+//           <FormItem className="flex items-center space-x-3 space-y-0">
+//             <FormControl>
+//               <Checkbox
+//                 checked={!!field.value}
+//                 onCheckedChange={field.onChange}
+//               />
+//             </FormControl>
+//             <div className="space-y-1.5 leading-none">
+//               <FormLabel className="text-[#0E121B]">
+//                 Enable on mobile
+//               </FormLabel>
+//             </div>
+//           </FormItem>
+//         )}
+//       />
+//       <FormField
+//         control={form.control}
+//         name="disableMode"
+//         render={({ field }) => (
+//           <FormItem className="flex items-center space-x-3 space-y-0">
+//             <FormControl>
+//               <Checkbox
+//                 checked={!!field.value}
+//                 onCheckedChange={field.onChange}
+//               />
+//             </FormControl>
+//             <div className="space-y-1.5 leading-none">
+//               <FormLabel className="text-[#0E121B]">
+//                 Disable on editor mode
+//               </FormLabel>
+//             </div>
+//           </FormItem>
+//         )}
+//       />
+//       <FormField
+//         control={form.control}
+//         name="media"
+//         render={({ field }) => (
+//           <FormItem>
+//             <FormLabel className="text-text">Media</FormLabel>
+//             <FormControl>
+//               <Input
+//                 placeholder="768px"
+//                 className="h-11 text-base"
+//                 {...field}
+//               />
+//             </FormControl>
+//             <FormDescription>
+//               {`Ex: 900px or min-width: 800px or max-width: 1024px`}
+//             </FormDescription>
+
+//             <FormMessage />
+//           </FormItem>
+//         )}
+//       />
+//     </div>
+
+//     <div className="px-8 pt-4 flex gap-3 justify-end items-center">
+//       <DialogClose asChild ref={dialogCloseRef}>
+//         <Button
+//           variant="secondary"
+//           className="h-11 shadow-common-2 text-base px-[18px]"
+//         >
+//           Cancel
+//         </Button>
+//       </DialogClose>
+//       <Button
+//         type="submit"
+//         className="h-11 shadow-common-2 text-base px-6"
+//       >
+//         Save
+//       </Button>
+//     </div>
+//   </form>
+// </Form>

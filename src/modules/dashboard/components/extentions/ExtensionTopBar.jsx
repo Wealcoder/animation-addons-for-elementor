@@ -39,11 +39,12 @@ const ExtensionTopBar = ({ filterKey, setFilterKey, extensionCount }) => {
         </div>
       </div>
       <div className="flex justify-between xl:justify-end items-center gap-5">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-x-2">
           <Switch
             id="global-enable-all"
             checked={allExtensions.is_active}
             onCheckedChange={(value) => updateActiveFullExtension({ value })}
+            reverse
           />
           <Label htmlFor="global-enable-all">Enable All</Label>
         </div>
