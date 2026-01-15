@@ -376,7 +376,7 @@ class WCF_Theme_Builder
 				if ('specifics' === $location) {
 					
 					$splocation = json_decode($splocation);
-					if(is_array($splocation) && !is_numeric($splocation[0])){
+					if(is_array($splocation) && isset($splocation[0]) && !is_numeric($splocation[0])){
 						$splocation = $this->get_ids_from_slugs_any_type($splocation);
 					}
 					
