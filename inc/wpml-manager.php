@@ -48,6 +48,13 @@ class WPML_Manager {
 						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
 						'editor_type' => 'LINE',
 					],
+
+					[
+						'field'       => 'link',
+						'type'        => esc_html__( 'TItle: Link', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINK',
+					],
+					
 				],
 				'fields_in_item' => [
 					'title_prefix_list' => [
@@ -98,11 +105,13 @@ class WPML_Manager {
 						'type'        => __( 'Button: Text', 'animation-addons-for-elementor' ),
 						'editor_type' => 'LINE',
 					],
+
 					[
-						'field'       => 'btn_sub_text',
-						'type'        => __( 'Button: Sub Text', 'animation-addons-for-elementor' ),
-						'editor_type' => 'LINE',
+						'field'       => 'btn_link',
+						'type'        => __( 'Button: Link', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINK',
 					],
+					
 				],
 			],
 
