@@ -517,7 +517,7 @@ class Posts extends Widget_Base {
 					],
 				],
 				'selectors'  => [
-					'{{WRAPPER}} .posts_video_thumb' => 'flex: 0 0 {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .thumb img' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
