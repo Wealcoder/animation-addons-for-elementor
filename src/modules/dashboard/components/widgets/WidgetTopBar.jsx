@@ -49,11 +49,12 @@ const WidgetTopBar = ({
         </div>
       </div>
       <div className="flex justify-between xl:justify-end items-center">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-x-2">
           <Switch
             id="global-enable-all"
             checked={allWidgets.is_active}
             onCheckedChange={(value) => setCheck({ value })}
+            reverse
           />
           <Label htmlFor="global-enable-all">Enable All</Label>
         </div>

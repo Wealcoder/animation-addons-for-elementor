@@ -13,8 +13,8 @@ function isInOfferPeriod() {
   const currentYear = today.getFullYear();
 
   // Note: Months are 0-indexed in JavaScript (0 = January, 10 = November, 11 = December)
-  const offerStart = new Date(2025, 11, 1);  // 1 December 2025
-  const offerEnd   = new Date(2025, 11, 7); // 7 December 2025
+  const offerStart = new Date(2025, 11, 1); // 1 December 2025
+  const offerEnd = new Date(2025, 11, 7); // 7 December 2025
 
   return today >= offerStart && today <= offerEnd;
 }

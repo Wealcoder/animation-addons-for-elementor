@@ -9,7 +9,7 @@ import { buttonVariants } from "../ui/button";
 
 const AddonProWidget = () => {
   const [widgets, setWidgets] = useState(
-    WCF_ADDONS_ADMIN.addons_config.dashboardProWidget
+    WCF_ADDONS_ADMIN.addons_config.dashboardProWidget,
   );
 
   const { updateActiveWidget: proWidget } = useActiveItem();
@@ -23,7 +23,7 @@ const AddonProWidget = () => {
         } else {
           return [key, value];
         }
-      })
+      }),
     );
     setWidgets(result);
 
@@ -65,7 +65,11 @@ const AddonProWidget = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            Changelog <RiArrowRightUpLine size={18} className="ml-1" />
+            Changelog{" "}
+            <RiArrowRightUpLine
+              size={18}
+              className="rtl:rotate-360 rtl:scale-x-[-1] ms-1"
+            />
           </a>
         </div>
       </div>

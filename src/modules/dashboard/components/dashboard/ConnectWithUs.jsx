@@ -18,7 +18,7 @@ const ConnectWithUs = () => {
           "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-help-and-support"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : "shadow-common"
+            : "shadow-common",
         )}
         id="wcf-help-and-support"
       >
@@ -32,18 +32,20 @@ const ConnectWithUs = () => {
           </h3>
 
           <p className="text-sm text-text-secondary mt-2">
-            Feel like you want to consult with an expert? Take live chat support
-            immediately from our{" "}
-            {
-              <a
-                href="https://animation-addons.com"
-                target="_blank"
-                className="text-[#2587EC] underline underline-offset-2"
-              >
-                Website
-              </a>
-            }
-            .
+            <span dir="ltr">
+              Feel like you want to consult with an expert? Take live chat
+              support immediately from our{" "}
+              {
+                <a
+                  href="https://animation-addons.com"
+                  target="_blank"
+                  className="text-[#2587EC] underline underline-offset-2"
+                >
+                  Website
+                </a>
+              }
+              .
+            </span>
           </p>
         </div>
         <div>
@@ -55,7 +57,7 @@ const ConnectWithUs = () => {
             Create a ticket{" "}
             <RiArrowRightUpLine
               size={20}
-              className="ml-[6px]"
+              className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"
               color="#525866"
             />
           </a>
@@ -66,7 +68,7 @@ const ConnectWithUs = () => {
           "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-feedback"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : "shadow-common"
+            : "shadow-common",
         )}
         id="wcf-feedback"
       >
@@ -77,9 +79,11 @@ const ConnectWithUs = () => {
         <div>
           <h3 className="text-lg font-medium">Show Your Love</h3>
           <p className="text-sm text-text-secondary mt-2">
-            If you are happy with our product and support, please support us by
-            giving us <span className="text-[#FFA132]">★★★★★</span> 5 star
-            rating.
+            <span dir="ltr">
+              If you are happy with our product and support, please support us
+              by giving us <span className="text-[#FFA132]">★★★★★</span> 5 star
+              rating.
+            </span>
           </p>
         </div>
         <div>
@@ -91,7 +95,7 @@ const ConnectWithUs = () => {
             Give your feedback{" "}
             <RiArrowRightUpLine
               size={20}
-              className="ml-[6px]"
+              className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"
               color="#525866"
             />
           </a>
@@ -102,7 +106,7 @@ const ConnectWithUs = () => {
           "border rounded-2xl p-5 flex flex-col gap-[18px]",
           hashValue === "wcf-community"
             ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-            : "shadow-common"
+            : "shadow-common",
         )}
         id="wcf-community"
       >
@@ -113,8 +117,10 @@ const ConnectWithUs = () => {
         <div>
           <h3 className="text-lg font-medium">Contribute to Us</h3>
           <p className="text-sm text-text-secondary mt-2">
-            Join our community of developers and designers and help us by
-            recommending features.
+            <span dir="ltr">
+              Join our community of developers and designers and help us by
+              recommending features.
+            </span>
           </p>
         </div>
         <div>
@@ -126,7 +132,7 @@ const ConnectWithUs = () => {
             Join Our Community{" "}
             <RiArrowRightUpLine
               size={20}
-              className="ml-[6px]"
+              className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"
               color="#525866"
             />
           </a>

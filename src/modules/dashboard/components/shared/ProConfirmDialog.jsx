@@ -63,11 +63,15 @@ const ProConfirmDialog = ({ open, setOpen }) => {
             />
             <div className="p-6 pt-2">
               <h2 className="text-xl text-center font-medium">
-                Upgrade to premium plan and unlock every features!
+                <span dir="ltr">
+                  Upgrade to premium plan and unlock every features!
+                </span>
               </h2>
+
               <p className="mt-2.5 text-sm text-text-secondary text-center">
-                Upgrade and get access to every feature.
+                <span dir="ltr">Upgrade and get access to every feature.</span>
               </p>
+
               {activated.integrations.plugins.elements[
                 "animation-addon-for-elementorpro"
               ].action === "Active" ? (

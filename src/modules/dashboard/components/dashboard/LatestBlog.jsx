@@ -16,7 +16,7 @@ const LatestBlog = () => {
         "border rounded-2xl p-5",
         hashValue === "wcf-blog"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-          : "shadow-common"
+          : "shadow-common",
       )}
       id="wcf-blog"
     >
@@ -31,7 +31,11 @@ const LatestBlog = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            View all <RiArrowRightUpLine size={18} className="ml-1" />
+            View all{" "}
+            <RiArrowRightUpLine
+              size={18}
+              className="ml-1 rtl:rotate-360 rtl:scale-x-[-1]"
+            />
           </a>
         </div>
       </div>
@@ -52,10 +56,10 @@ const LatestBlog = () => {
             <div className="mt-3">
               <a href={blog.url} target="_blank">
                 <h3 className="text-sm font-medium group-hover:text-brand">
-                  {blog.title}
+                  <span dir="ltr">{blog.title}</span>
                 </h3>
               </a>
-              <div className="flex h-5 items-center space-x-1.5 text-xs text-text-secondary mt-2">
+              <div className="flex h-5 items-center gap-x-1.5 text-xs text-text-secondary mt-2">
                 <div>{blog.createAt}</div>
                 <Separator
                   orientation="vertical"

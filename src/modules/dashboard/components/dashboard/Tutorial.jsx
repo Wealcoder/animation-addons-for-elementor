@@ -11,8 +11,17 @@ const Tutorial = () => {
   return (
     <div className="col-span-2 border rounded-2xl p-5 ps-6 flex justify-between items-center gap-6 shadow-common">
       <div className="w-[362px]">
-        <h2 className="text-xl font-medium ">{`Watch The Beginner's Guide on How to Use Animation Addons.`}</h2>
-        <p className="text-sm mt-[10px] text-text-secondary">{`Get started with ease by watching our step-by-step beginner's tutorial on Elementor.`}</p>
+        <h2 className="text-xl font-medium ">
+          <span dir="ltr">
+            Watch The Beginner's Guide on How to Use Animation Addons.
+          </span>
+        </h2>
+        <p className="text-sm mt-[10px] text-text-secondary">
+          <span dir="ltr">
+            Get started with ease by watching our step-by-step beginner's
+            tutorial on Elementor.
+          </span>
+        </p>
         <a
           href={"https://www.youtube.com/@AnimationAddonsforElementor"}
           className={cn(buttonVariants({ variant: "secondary" }), "mt-7")}
