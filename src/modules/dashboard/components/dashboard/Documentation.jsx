@@ -59,7 +59,9 @@ const Documentation = () => {
                 {el.title}
                 <RiArrowRightLine size={16} className="rtl:rotate-180" />
               </a>
-              <p className="text-sm text-text-secondary">{el.subTitle}</p>
+              <p className="text-sm text-text-secondary">
+                <span dir="ltr"> {el.subTitle} </span>
+              </p>
             </div>
             {i + 1 !== documents.length ? (
               <Separator className="my-4 bg-border-secondary" />

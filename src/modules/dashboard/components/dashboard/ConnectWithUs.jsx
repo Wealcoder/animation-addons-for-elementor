@@ -32,6 +32,9 @@ const ConnectWithUs = () => {
           </h3>
 
           <p className="text-sm text-text-secondary mt-2">
+
+            <span dir="ltr">
+
             Feel like you want to consult with an expert? Take live chat support
             immediately from our{" "}
             {
@@ -44,6 +47,7 @@ const ConnectWithUs = () => {
               </a>
             }
             .
+            </span>
           </p>
         </div>
         <div>
@@ -77,9 +81,11 @@ const ConnectWithUs = () => {
         <div>
           <h3 className="text-lg font-medium">Show Your Love</h3>
           <p className="text-sm text-text-secondary mt-2">
-            If you are happy with our product and support, please support us by
-            giving us <span className="text-[#FFA132]">★★★★★</span> 5 star
-            rating.
+            <span dir="ltr">
+              If you are happy with our product and support, please support us
+              by giving us <span className="text-[#FFA132]">★★★★★</span> 5 star
+              rating.
+            </span>
           </p>
         </div>
         <div>
@@ -113,8 +119,10 @@ const ConnectWithUs = () => {
         <div>
           <h3 className="text-lg font-medium">Contribute to Us</h3>
           <p className="text-sm text-text-secondary mt-2">
-            Join our community of developers and designers and help us by
-            recommending features.
+            <span dir="ltr">
+              Join our community of developers and designers and help us by
+              recommending features.
+            </span>
           </p>
         </div>
         <div>

@@ -52,10 +52,10 @@ const LatestBlog = () => {
             <div className="mt-3">
               <a href={blog.url} target="_blank">
                 <h3 className="text-sm font-medium group-hover:text-brand">
-                  {blog.title}
+                  <span dir="ltr">{blog.title}</span>
                 </h3>
               </a>
-              <div className="flex h-5 items-center space-x-1.5 text-xs text-text-secondary mt-2">
+              <div className="flex h-5 items-center gap-x-1.5 text-xs text-text-secondary mt-2">
                 <div>{blog.createAt}</div>
                 <Separator
                   orientation="vertical"

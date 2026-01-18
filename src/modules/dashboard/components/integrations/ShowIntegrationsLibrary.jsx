@@ -68,8 +68,9 @@ const ShowIntegrationsLibrary = () => {
                       </>
                     )}
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-x-2">
                       <Switch
+                        reverse
                         index={library}
                         checked={allLibrary?.elements[library]?.is_active}
                         onCheckedChange={(value) => {

@@ -8,6 +8,7 @@ const Integrations = () => {
       <div className="pb-6 border-b">
         <IntegrationTopBar />
       </div>
+
       <div className="mt-4 space-y-11">
         {/* <ShowIntegrations /> */}
 

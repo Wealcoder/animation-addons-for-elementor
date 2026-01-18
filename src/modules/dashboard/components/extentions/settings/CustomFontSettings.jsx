@@ -71,7 +71,7 @@ const CustomFontSettings = () => {
                 name="load_in_head"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <div className="flex items-center space-x-3 ">
+                    <div className="flex items-center gap-x-3 ">
                       <FormControl>
                         <Checkbox
                           checked={!!field.value}
