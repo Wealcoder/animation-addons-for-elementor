@@ -758,8 +758,11 @@ class CustomCpt_Lite {
      * Loads necessary styles and scripts for the admin panel.
      */
     public function admin_scripts( $hook ) {
-  
-        if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
+        $screen = get_current_screen();
+  	if ( ! $screen || strpos($screen->id, '_page_wcf-cpt-builder') === false) {
+			return;
+		}
+        //if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
                 WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css'
@@ -777,7 +780,7 @@ class CustomCpt_Lite {
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'wcf_admin_nonce' ),
             ] );
-        }
+        //}
     }
 }
 

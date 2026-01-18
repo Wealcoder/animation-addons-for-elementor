@@ -73,7 +73,7 @@ class WCF_Admin_Init
 		}
 
 		// Check if we are on the correct page
-		if ($screen && $screen->id === 'animation-addon_page_wcf_addons_settings') {
+		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 			$classes .= ' wcf-anim2024';
 		}
 
@@ -332,8 +332,12 @@ class WCF_Admin_Init
 	public function enqueue_scripts($hook)
 	{
 		$total_extensions = $total_widgets = 0;
-
-		if ($hook == 'animation-addon_page_wcf_addons_settings') {
+     
+		$screen = get_current_screen();
+		if ( ! $screen || strpos($screen->id, '_page_wcf_addons_settings') === false) {
+			return;
+		}
+		//if ($hook == 'animation-addon_page_wcf_addons_settings') {
 			// sync element manager
 			$this->disable_widgets_by_element_manager();
 			// CSS
@@ -364,6 +368,7 @@ class WCF_Admin_Init
 
 			$localize_data = array(
 				'ajaxurl'             => admin_url('admin-ajax.php'),
+				'isSettingsPage' => true, // 🔥 IMPORTANT
 				'nonce'               => wp_create_nonce('wcf_admin_nonce'),
 				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
 				'adminURL'            => admin_url(),
@@ -382,14 +387,14 @@ class WCF_Admin_Init
 				'user_role'           => wcfaddon_get_current_user_roles(),
 				'version'             => WCF_ADDONS_VERSION,
 				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
-				'home_url'            => add_query_arg(['aae-cache' => 1], home_url('/')),
-				'template_menu'       => $this->get_template_menu_data(),
-				'hero'                => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
-				'hero_offer'          => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
-				'root_url'            => WCF_ADDONS_URL,
+				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
+				'template_menu' => $this->get_template_menu_data(),
+				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
+				'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
+
 			);
 			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
-		}
+		//}
 	}
 
 	public function get_template_menu_data()
@@ -505,7 +510,7 @@ class WCF_Admin_Init
 		$screen = get_current_screen();
 
 		// Check if we are on the correct admin page
-		if ($screen && $screen->id === 'animation-addon_page_wcf_addons_settings') {
+		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 			echo '<div id="wcf-admin-toast"></div>';
 		}
 	}
@@ -528,7 +533,7 @@ class WCF_Admin_Init
 			'in_admin_header',
 			function () {
 				$screen = get_current_screen();
-				if ($screen && 'animation-addon_page_wcf_addons_settings' === $screen->id) {
+				if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
 					remove_all_actions('admin_notices');
 					remove_all_actions('all_admin_notices');
 					remove_all_actions('user_admin_notices');
@@ -550,7 +555,7 @@ class WCF_Admin_Init
 	public function save_settings()
 	{
 
-
+	
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
@@ -785,102 +790,43 @@ class WCF_Admin_Init
 	 * @return  void
 	 * @since 1.1.2
 	 */
-	// public function save_smooth_scroller_settings()
-	// {
-
-	// 	check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-	// 	if (! current_user_can('manage_options')) {
-	// 		wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
-	// 	}
-
-	// 	if (! isset($_POST['smooth'])) {
-	// 		return;
-	// 	}
-
-	// 	$settings = array(
-	// 		'smooth' => sanitize_text_field(wp_unslash($_POST['smooth'])),
-	// 	);
-
-	// 	if (isset($_POST['mobile'])) {
-	// 		$settings['mobile'] = sanitize_text_field(wp_unslash($_POST['mobile']));
-	// 	}
-	// 	if (isset($_POST['disableMode'])) {
-	// 		$settings['disableMode'] = sanitize_text_field(wp_unslash($_POST['disableMode']));
-	// 	}
-	// 	if (isset($_POST['media'])) {
-	// 		$settings['media'] = sanitize_text_field(wp_unslash($_POST['media']));
-	// 	}
-
-	// 	$option = wp_json_encode($settings);
-
-	// 	// update new settings
-	// 	if (! empty($_POST['smooth'])) {
-
-	// 		update_option('wcf_smooth_scroller', $option);
-	// 		wp_send_json($option);
-	// 	}
-
-	// 	wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
-	// }
-
-
 	public function save_smooth_scroller_settings()
 	{
 
-		$raw  = file_get_contents('php://input');
-		$data = json_decode($raw, true);
-
-		if (! is_array($data)) {
-			wp_send_json_error(
-				esc_html__('Invalid request body', 'animation-addons-for-elementor')
-			);
-		}
-
-		if (
-			empty($data['nonce']) ||
-			! wp_verify_nonce($data['nonce'], 'wcf_admin_nonce')
-		) {
-			wp_send_json_error(
-				esc_html__('Invalid nonce', 'animation-addons-for-elementor')
-			);
-		}
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(
-				esc_html__('You are not allowed to do this action', 'animation-addons-for-elementor')
-			);
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
 		}
 
-		// if (empty($data['desktop'])) {
-		// 	wp_send_json_error(
-		// 		esc_html__('Settings data not found', 'animation-addons-for-elementor')
-		// 	);
-		// }
+		if (! isset($_POST['smooth'])) {
+			return;
+		}
 
-		$sanitize_device = function ($device) {
-			return [
-				'enabled' => ! empty($device['enabled']),
-				'smotherLevel' => isset($device['smotherLevel'])
-					? (float) $device['smotherLevel']
-					: 1.35,
-			];
-		};
+		$settings = array(
+			'smooth' => sanitize_text_field(wp_unslash($_POST['smooth'])),
+		);
 
-		$settings = [
-			'desktop' => $sanitize_device($data['desktop'] ?? []),
-			'laptop'  => $sanitize_device($data['laptop'] ?? []),
-			'tablet'  => $sanitize_device($data['tablet'] ?? []),
-			'mobile'  => $sanitize_device($data['mobile'] ?? []),
-		];
+		if (isset($_POST['mobile'])) {
+			$settings['mobile'] = sanitize_text_field(wp_unslash($_POST['mobile']));
+		}
+		if (isset($_POST['disableMode'])) {
+			$settings['disableMode'] = sanitize_text_field(wp_unslash($_POST['disableMode']));
+		}
+		if (isset($_POST['media'])) {
+			$settings['media'] = sanitize_text_field(wp_unslash($_POST['media']));
+		}
 
 		$option = wp_json_encode($settings);
 
-		update_option('wcf_smooth_scroller', $option);
+		// update new settings
+		if (! empty($_POST['smooth'])) {
 
-		wp_send_json($option);
+			update_option('wcf_smooth_scroller', $option);
+			wp_send_json($option);
+		}
 
-		// wp_send_json_success($settings);
+		wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
 	}
 }
 
