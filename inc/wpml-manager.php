@@ -1,12 +1,15 @@
 <?php
+
 /**
  * WPML integration and compatibility manager
  */
+
 namespace WCF_ADDONS\INC\WPML;
 
-defined( 'ABSPATH' ) || die();
+defined('ABSPATH') || die();
 
-class WPML_Manager {
+class WPML_Manager
+{
 
 	/**
 	 * Recreate HappyAddons widgets usage on transtion save
@@ -28,12 +31,14 @@ class WPML_Manager {
 	// 	}
 	// }
 
-	public static function load_integration_files() {
+	public static function load_integration_files()
+	{
 		// Load repeatable module class
-		include_once( WCF_ADDONS_PATH . 'inc/wpml-module-with-items.php' );
+		include_once(WCF_ADDONS_PATH . 'inc/wpml-module-with-items.php');
 	}
 
-	public static function add_widgets_to_translate( $widgets ) {
+	public static function add_widgets_to_translate($widgets)
+	{
 		//self::load_integration_files();
 
 		$widgets_map = [
@@ -45,36 +50,36 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 
 					[
 						'field'       => 'link',
-						'type'        => esc_html__( 'TItle: Link', 'animation-addons-for-elementor' ),
+						'type'        => esc_html__('TItle: Link', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINK',
 					],
-					
+
 				],
-				'fields_in_item' => [
-					'title_prefix_list' => [
-						[
-							'field'       => 'label',
-							'type'        => __( 'Animated Title: Label', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'label_on',
-							'type'        => __( 'Animated Title: Label On', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'label_off',
-							'type'        => __( 'Animated Title: Label Off', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'title_prefix_list' => [
+				// 		[
+				// 			'field'       => 'label',
+				// 			'type'        => __('Animated Title: Label', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'label_on',
+				// 			'type'        => __('Animated Title: Label On', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'label_off',
+				// 			'type'        => __('Animated Title: Label Off', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 	],
+				// ],
 			],
 
 			/**
@@ -84,12 +89,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'btn_text',
-						'type'        => __( 'Button: Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'btn_sub_text',
-						'type'        => __( 'Button: Sub Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -102,16 +107,16 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'btn_text',
-						'type'        => __( 'Button: Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 
 					[
 						'field'       => 'btn_link',
-						'type'        => __( 'Button: Link', 'animation-addons-for-elementor' ),
+						'type'        => __('Button: Link', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINK',
 					],
-					
+
 				],
 			],
 
@@ -122,12 +127,17 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'subtitle',
+						'type'        => __('Content: Sub Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -138,20 +148,25 @@ class WPML_Manager {
 			 */
 			'wcf--image-box-slider' => [
 				'fields_in_item' => [
-					'slider_list' => [
+					'image_box_slider' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Slider Item: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider Item: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'subtitle',
+							'type'        => __('Slider Item: Sub Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'description',
-							'type'        => __( 'Slider Item: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider Item: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 						[
-							'field'       => 'button_text',
-							'type'        => __( 'Slider Item: Button Text', 'animation-addons-for-elementor' ),
+							'field'       => 'btn_text',
+							'type'        => __('Slider Item: Button Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -165,12 +180,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title_text',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description_text',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -184,17 +199,17 @@ class WPML_Manager {
 					'testimonials' => [
 						[
 							'field'       => 'testimonial_name',
-							'type'        => __( 'Testimonial: Name', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Name', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_job',
-							'type'        => __( 'Testimonial: Designation', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_content',
-							'type'        => __( 'Testimonial: Content', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -209,17 +224,17 @@ class WPML_Manager {
 					'testimonials' => [
 						[
 							'field'       => 'testimonial_name',
-							'type'        => __( 'Testimonial: Name', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Name', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_job',
-							'type'        => __( 'Testimonial: Designation', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_content',
-							'type'        => __( 'Testimonial: Content', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -230,21 +245,30 @@ class WPML_Manager {
 			 * Testimonial 3 Widget
 			 */
 			'wcf--testimonial3' => [
+
+				'fields' => [
+					[
+						'field'       => 'testimonial_sect_title',
+						'type'        => __('Content: Section Title', 'animation-addons-for-elementor'),
+						'editor_type' => 'AREA',
+					],
+				],
+
 				'fields_in_item' => [
 					'testimonials' => [
 						[
 							'field'       => 'testimonial_name',
-							'type'        => __( 'Testimonial: Name', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Name', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_job',
-							'type'        => __( 'Testimonial: Designation', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'testimonial_content',
-							'type'        => __( 'Testimonial: Content', 'animation-addons-for-elementor' ),
+							'type'        => __('Testimonial: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -257,21 +281,33 @@ class WPML_Manager {
 			'wcf--a-testimonial' => [
 				'fields_in_item' => [
 					'testimonials' => [
+
 						[
-							'field'       => 'testimonial_name',
-							'type'        => __( 'Testimonial: Name', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'testimonial_job',
-							'type'        => __( 'Testimonial: Designation', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'testimonial_content',
-							'type'        => __( 'Testimonial: Content', 'animation-addons-for-elementor' ),
+							'field'       => 'tsm_content',
+							'type'        => __('Testimonial: Feedback', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
+						[
+							'field'       => 'tsm_reason',
+							'type'        => __('Testimonial: Feedback Reason', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'tsm_rating',
+							'type'        => __('Testimonial: Rating', 'animation-addons-for-elementor'),
+							'editor_type' => 'NUMBER',
+						],
+						[
+							'field'       => 'tsm_name',
+							'type'        => __('Testimonial: Client Name', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'tsm_role',
+							'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+
 					],
 				],
 			],
@@ -283,17 +319,17 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'member_name',
-						'type'        => __( 'Content: Name', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Name', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'member_position',
-						'type'        => __( 'Content: Position', 'animation-addons-for-elementor' ),
+						'field'       => 'member_designation',
+						'type'        => __('Content: Designation', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'member_description',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -302,22 +338,22 @@ class WPML_Manager {
 			/**
 			 * Team Slider Widget
 			 */
-			'wcf--team-slider' => [
+			'wfc--team-slider' => [
 				'fields_in_item' => [
-					'team_list' => [
+					'team_slides' => [
 						[
-							'field'       => 'member_name',
-							'type'        => __( 'Team: Name', 'animation-addons-for-elementor' ),
+							'field'       => 'title',
+							'type'        => __('Team: Name', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
-							'field'       => 'member_position',
-							'type'        => __( 'Team: Position', 'animation-addons-for-elementor' ),
+							'field'       => 'desc',
+							'type'        => __('Team: Position', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'member_description',
-							'type'        => __( 'Team: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Team: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -331,17 +367,17 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'suffix',
-						'type'        => __( 'Content: Suffix', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Suffix', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'prefix',
-						'type'        => __( 'Content: Prefix', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Prefix', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -352,11 +388,11 @@ class WPML_Manager {
 			 */
 			'wcf--progressbar' => [
 				'fields' => [
-					[
-						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
-						'editor_type' => 'LINE',
-					],
+					// [
+					// 	'field'       => 'title',
+					// 	'type'        => __('Content: Title', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
 				],
 			],
 
@@ -366,16 +402,16 @@ class WPML_Manager {
 			'wcf--typewriter' => [
 				'fields' => [
 					[
-						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'field'       => 'typewriter_normal_text',
+						'type'        => __('Content: Non-Animated Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
 				'fields_in_item' => [
-					'typewriter_list' => [
+					'typewriter_animated_text' => [
 						[
-							'field'       => 'text',
-							'type'        => __( 'Typewriter: Text', 'animation-addons-for-elementor' ),
+							'field'       => 'list_text',
+							'type'        => __('Typewriter: Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -388,20 +424,20 @@ class WPML_Manager {
 			'wcf--animated-heading' => [
 				'fields' => [
 					[
-						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'field'       => 'heading',
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
-				'fields_in_item' => [
-					'animated_text_list' => [
-						[
-							'field'       => 'text',
-							'type'        => __( 'Animated Heading: Text', 'animation-addons-for-elementor' ),
-							'editor_type' => 'LINE',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'animated_text_list' => [
+				// 		[
+				// 			'field'       => 'text',
+				// 			'type'        => __('Animated Heading: Text', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 	],
+				// ],
 			],
 
 			/**
@@ -411,8 +447,8 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'text',
-						'type'        => __( 'Content: Text', 'animation-addons-for-elementor' ),
-						'editor_type' => 'LINE',
+						'type'        => __('Content: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'VISUAL',
 					],
 				],
 			],
@@ -423,13 +459,18 @@ class WPML_Manager {
 			'wcf--t-h-image' => [
 				'fields' => [
 					[
-						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'field'       => 'before_hover_text',
+						'type'        => __('Content: Before Hover Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'description',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'field'       => 'hover_text',
+						'type'        => __('Content: Hover Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'AREA',
+					],
+					[
+						'field'       => 'after_hover_text',
+						'type'        => __('Content: After Hover Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -440,15 +481,31 @@ class WPML_Manager {
 			 */
 			'wcf--timeline' => [
 				'fields_in_item' => [
-					'timeline_list' => [
+					'timelines' => [
+
 						[
-							'field'       => 'title',
-							'type'        => __( 'Timeline: Title', 'animation-addons-for-elementor' ),
+							'field'       => 'step_text',
+							'type'        => __('Timeline: Step Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
-							'field'       => 'content',
-							'type'        => __( 'Timeline: Content', 'animation-addons-for-elementor' ),
+							'field'       => 'timeline_date',
+							'type'        => __('Timeline: Date', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'timeline_title',
+							'type'        => __('Timeline: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'timeline_sub',
+							'type'        => __('Timeline: Sub Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'timeline_desc',
+							'type'        => __('Timeline: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -460,16 +517,16 @@ class WPML_Manager {
 			 */
 			'wcf--tabs' => [
 				'fields_in_item' => [
-					'tabs_list' => [
+					'tabs' => [
 						[
 							'field'       => 'tab_title',
-							'type'        => __( 'Tab: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Tab: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'tab_content',
-							'type'        => __( 'Tab: Content', 'animation-addons-for-elementor' ),
-							'editor_type' => 'AREA',
+							'type'        => __('Tab: Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -479,17 +536,31 @@ class WPML_Manager {
 			 * Services Tab Widget
 			 */
 			'wcf--services-tab' => [
+
+				'fields' => [
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+
 				'fields_in_item' => [
-					'services_list' => [
+					'tabs' => [
 						[
-							'field'       => 'title',
-							'type'        => __( 'Service: Title', 'animation-addons-for-elementor' ),
+							'field'       => 'tab_number',
+							'type'        => __('Service: Tab Number', 'animation-addons-for-elementor'),
+							'editor_type' => 'NUMBER',
+						],
+						[
+							'field'       => 'tab_title',
+							'type'        => __('Service: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
-							'field'       => 'description',
-							'type'        => __( 'Service: Description', 'animation-addons-for-elementor' ),
-							'editor_type' => 'AREA',
+							'field'       => 'tab_content',
+							'type'        => __('Service: Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -500,16 +571,22 @@ class WPML_Manager {
 			 */
 			'wcf--a-accordion' => [
 				'fields_in_item' => [
-					'accordion_list' => [
+					'tabs' => [
 						[
-							'field'       => 'title',
-							'type'        => __( 'Accordion: Title', 'animation-addons-for-elementor' ),
+							'field'       => 'tab_count',
+							'type'        => __('Accordion: Tab Count', 'animation-addons-for-elementor'),
+							'editor_type' => 'NUMBER',
+						],
+
+						[
+							'field'       => 'tab_title',
+							'type'        => __('Accordion: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
-							'field'       => 'content',
-							'type'        => __( 'Accordion: Content', 'animation-addons-for-elementor' ),
-							'editor_type' => 'AREA',
+							'field'       => 'tab_content',
+							'type'        => __('Accordion: Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -519,16 +596,30 @@ class WPML_Manager {
 			 * Image Accordion Widget
 			 */
 			'wcf--image-accordion' => [
+
+				'fields' => [
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+
 				'fields_in_item' => [
-					'accordion_list' => [
+					'accordions' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Accordion: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Accordion: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'subtitle',
+							'type'        => __('Accordion: Sub Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'description',
-							'type'        => __( 'Accordion: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Accordion: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -542,22 +633,22 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'label_days',
-						'type'        => __( 'Content: Label Days', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label Days', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'label_hours',
-						'type'        => __( 'Content: Label Hours', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label Hours', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'label_minutes',
-						'type'        => __( 'Content: Label Minutes', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label Minutes', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'label_seconds',
-						'type'        => __( 'Content: Label Seconds', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label Seconds', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -570,12 +661,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'read_more_text',
-						'type'        => __( 'Content: Read More Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'no_posts_message',
-						'type'        => __( 'Content: No Posts Message', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -588,12 +679,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'read_more_text',
-						'type'        => __( 'Content: Read More Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'no_posts_message',
-						'type'        => __( 'Content: No Posts Message', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -606,7 +697,7 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'read_more_text',
-						'type'        => __( 'Content: Read More Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -649,12 +740,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'prev_text',
-						'type'        => __( 'Content: Previous Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Previous Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'next_text',
-						'type'        => __( 'Content: Next Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Next Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -677,7 +768,7 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'submit_text',
-						'type'        => __( 'Content: Submit Button Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Submit Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -705,12 +796,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'placeholder',
-						'type'        => __( 'Content: Placeholder', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Placeholder', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'button_text',
-						'type'        => __( 'Content: Button Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -728,7 +819,7 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'no_results_message',
-						'type'        => __( 'Content: No Results Message', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: No Results Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -741,49 +832,49 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'author_name',
-						'type'        => __( 'Author Name', 'animation-addons-for-elementor' ),
+						'type'        => __('Author Name', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'author_bio',
-						'type'        => __( 'Author Biography', 'animation-addons-for-elementor' ),
+						'type'        => __('Author Biography', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 					[
 						'field'       => 'link_text',
-						'type'        => __( 'Archive Button Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Archive Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'contact_title',
-						'type'        => __( 'Contact Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Contact Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'email_label',
-						'type'        => __( 'Email Label', 'animation-addons-for-elementor' ),
+						'type'        => __('Email Label', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'phone_label',
-						'type'        => __( 'Phone Label', 'animation-addons-for-elementor' ),
+						'type'        => __('Phone Label', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'social_title',
-						'type'        => __( 'Social Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Social Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
 			],
 
 			// 8) Breadcrumbs (separator text only)
-		    'wcf--breadcrumbs' => [
-				'conditions' => [ 'widgetType' => 'wcf--breadcrumbs' ],
+			'wcf--breadcrumbs' => [
+				'conditions' => ['widgetType' => 'wcf--breadcrumbs'],
 				'fields'     => [
 					[
 						'field'       => 'br_separator',
-						'type'        => esc_html__( 'Breadcrumbs: Separator Text', 'animation-addons-for-elementor' ),
+						'type'        => esc_html__('Breadcrumbs: Separator Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -794,16 +885,16 @@ class WPML_Manager {
 			 */
 			// Site Logo
 			'wcf--site-logo' => [
-				'conditions' => [ 'widgetType' => 'wcf--site-logo' ],
+				'conditions' => ['widgetType' => 'wcf--site-logo'],
 				'fields'     => [
 					[
 						'field'       => 'caption',
-						'type'        => esc_html__( 'Site Logo: Caption', 'animation-addons-for-elementor' ),
+						'type'        => esc_html__('Site Logo: Caption', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'link',
-						'type'        => esc_html__( 'Site Logo: Link', 'animation-addons-for-elementor' ),
+						'type'        => esc_html__('Site Logo: Link', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINK',
 					],
 				],
@@ -816,7 +907,7 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'date_format',
-						'type'        => __( 'Content: Date Format', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Date Format', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -830,7 +921,7 @@ class WPML_Manager {
 					'social_icons_list' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Social Icon: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Social Icon: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -850,12 +941,12 @@ class WPML_Manager {
 					'wcf_one_page_nav' => [
 						[
 							'field'       => 'nav_text',
-							'type'        => __( 'One Page Nav: Text', 'animation-addons-for-elementor' ),
+							'type'        => __('One Page Nav: Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'section_id',
-							'type'        => __( 'One Page Nav: Section ID', 'animation-addons-for-elementor' ),
+							'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -869,16 +960,16 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'caption',
-						'type'        => __( 'Content: Caption', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Caption', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 
 					[
 						'field'       => 'link',
-						'type'        => __( 'Image: Link', 'animation-addons-for-elementor' ),
+						'type'        => __('Image: Link', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINK',
 					],
-					
+
 				],
 			],
 
@@ -890,7 +981,7 @@ class WPML_Manager {
 					'wcf_image_gallery' => [
 						[
 							'field'       => 'link',
-							'type'        => __( 'Image Gallery: Link', 'animation-addons-for-elementor' ),
+							'type'        => __('Image Gallery: Link', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINK',
 						],
 					],
@@ -905,12 +996,12 @@ class WPML_Manager {
 					'hotspot_list' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Hotspot: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Hotspot: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'description',
-							'type'        => __( 'Hotspot: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Hotspot: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -924,12 +1015,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'before_caption',
-						'type'        => __( 'Content: Before Caption', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Before Caption', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'after_caption',
-						'type'        => __( 'Content: After Caption', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: After Caption', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -943,7 +1034,7 @@ class WPML_Manager {
 					'repeat_list_text' => [
 						[
 							'field'       => 'list_text',
-							'type'        => __( 'Brand Slider: Text', 'animation-addons-for-elementor' ),
+							'type'        => __('Brand Slider: Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -963,17 +1054,17 @@ class WPML_Manager {
 					'slider_list' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Slider: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'description',
-							'type'        => __( 'Slider: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 						[
 							'field'       => 'button_text',
-							'type'        => __( 'Slider: Button Text', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider: Button Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -987,7 +1078,7 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'carousel_name',
-						'type'        => __( 'Carousel Name', 'animation-addons-for-elementor' ),
+						'type'        => __('Carousel Name', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -995,7 +1086,7 @@ class WPML_Manager {
 					'carousel_items' => [
 						[
 							'field'       => 'slide_title',
-							'type'        => __( 'Slide Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Slide Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
@@ -1010,19 +1101,19 @@ class WPML_Manager {
 					'filter_list' => [
 						[
 							'field'       => 'filter_label',
-							'type'        => __( 'Filter: Label', 'animation-addons-for-elementor' ),
+							'type'        => __('Filter: Label', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
 					'slider_list' => [
 						[
 							'field'       => 'title',
-							'type'        => __( 'Slider: Title', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
 							'field'       => 'description',
-							'type'        => __( 'Slider: Description', 'animation-addons-for-elementor' ),
+							'type'        => __('Slider: Description', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 					],
@@ -1051,22 +1142,22 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'placeholder',
-						'type'        => __( 'Content: Placeholder', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Placeholder', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'button_text',
-						'type'        => __( 'Content: Button Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'success_message',
-						'type'        => __( 'Content: Success Message', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Success Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'error_message',
-						'type'        => __( 'Content: Error Message', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Error Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -1079,17 +1170,17 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 					[
 						'field'       => 'button_text',
-						'type'        => __( 'Content: Button Text', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -1102,12 +1193,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'label_on',
-						'type'        => __( 'Content: Label On', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label On', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'label_off',
-						'type'        => __( 'Content: Label Off', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Label Off', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -1120,12 +1211,12 @@ class WPML_Manager {
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __( 'Content: Title', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description',
-						'type'        => __( 'Content: Description', 'animation-addons-for-elementor' ),
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -1145,7 +1236,7 @@ class WPML_Manager {
 		/**
 		 * Register widgets in WPML Elementor translation config
 		 */
-		foreach ( $widgets_map as $widget_name => $data ) {
+		foreach ($widgets_map as $widget_name => $data) {
 
 			$entry = [
 				'conditions' => [
@@ -1153,11 +1244,11 @@ class WPML_Manager {
 				],
 			];
 
-			if ( ! empty( $data['fields'] ) ) {
+			if (! empty($data['fields'])) {
 				$entry['fields'] = $data['fields'];
 			}
 
-			if ( ! empty( $data['fields_in_item'] ) ) {
+			if (! empty($data['fields_in_item'])) {
 				$entry['fields_in_item'] = $data['fields_in_item'];
 			}
 
@@ -1165,10 +1256,9 @@ class WPML_Manager {
 			// 	$entry['integration-class'] = $data['integration-class'];
 			// }
 
-			$widgets[ $widget_name ] = $entry;
+			$widgets[$widget_name] = $entry;
 		}
 
 		return $widgets;
 	}
-
 }
