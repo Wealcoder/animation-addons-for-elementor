@@ -19,7 +19,7 @@ const Documentation = () => {
         "border rounded-2xl p-5",
         hashValue === "wcf-documentation"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-          : "shadow-common"
+          : "shadow-common",
       )}
     >
       <div className="flex justify-between gap-11">
@@ -33,10 +33,10 @@ const Documentation = () => {
             target="_blank"
             className={cn(
               buttonVariants({ variant: "secondary", size: "sm" }),
-              "me-1"
+              "me-1",
             )}
           >
-            View all{" "}
+            View all
             <RiArrowRightUpLine
               size={18}
               className="rtl:rotate-360 rtl:scale-x-[-1]"
@@ -53,7 +53,7 @@ const Documentation = () => {
                 href={el.url}
                 target="_blank"
                 className={cn(
-                  "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand"
+                  "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand",
                 )}
               >
                 {el.title}

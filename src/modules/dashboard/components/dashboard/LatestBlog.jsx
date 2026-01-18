@@ -16,7 +16,7 @@ const LatestBlog = () => {
         "border rounded-2xl p-5",
         hashValue === "wcf-blog"
           ? "shadow-[0px_0px_0px_2px_rgba(252,104,72,0.25),0px_1px_2px_0px_rgba(10,13,20,0.03)]"
-          : "shadow-common"
+          : "shadow-common",
       )}
       id="wcf-blog"
     >
@@ -31,7 +31,11 @@ const LatestBlog = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            View all <RiArrowRightUpLine size={18} className="ml-1" />
+            View all{" "}
+            <RiArrowRightUpLine
+              size={18}
+              className="ml-1 rtl:rotate-360 rtl:scale-x-[-1]"
+            />
           </a>
         </div>
       </div>

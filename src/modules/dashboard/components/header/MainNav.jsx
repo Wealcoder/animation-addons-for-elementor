@@ -27,7 +27,6 @@ const MainNav = () => {
       setCurrentPath("dashboard");
     }
   }, [urlParams]);
-  
 
   if (!(navItems && navItems.length)) return;
 
@@ -63,7 +62,7 @@ const MainNav = () => {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList>
+      <NavigationMenuList className="rtl:flex-row-reverse">
         {navItems.map((item) => (
           <NavigationMenuItem key={item.path}>
             {item.targetBlank ? (
@@ -71,7 +70,7 @@ const MainNav = () => {
                 asChild
                 active={currentPath === item.path.split("/").pop()}
                 className={cn(
-                  hasCommonElement(item?.role, role) ? "" : "hidden"
+                  hasCommonElement(item?.role, role) ? "" : "hidden",
                 )}
               >
                 <a
@@ -79,7 +78,7 @@ const MainNav = () => {
                   target="_blank"
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "rounded-lg gap-2 text-base text-text-secondary"
+                    "rounded-lg gap-2 text-base text-text-secondary",
                   )}
                 >
                   {item.name}
@@ -93,13 +92,13 @@ const MainNav = () => {
                 asChild
                 active={currentPath === item.path.split("/").pop()}
                 className={cn(
-                  hasCommonElement(item?.role, role) ? "" : "hidden"
+                  hasCommonElement(item?.role, role) ? "" : "hidden",
                 )}
               >
                 <div
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    "rounded-lg gap-2 text-base text-text-secondary"
+                    "rounded-lg gap-2 text-base text-text-secondary",
                   )}
                   onClick={() => changeRoute(item.path)}
                 >
