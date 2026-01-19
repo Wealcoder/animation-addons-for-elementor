@@ -359,7 +359,7 @@ class WPML_Manager
 					],
 				],
 			],
-
+			+
 			/**
 			 * Counter Widget
 			 */
@@ -632,24 +632,35 @@ class WPML_Manager
 			'wcf--countdown' => [
 				'fields' => [
 					[
-						'field'       => 'label_days',
+						'field'       => 'countdown_timer_days_label',
 						'type'        => __('Content: Label Days', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'label_hours',
+						'field'       => 'countdown_timer_hours_label',
 						'type'        => __('Content: Label Hours', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'label_minutes',
+						'field'       => 'countdown_timer_minutes_label',
 						'type'        => __('Content: Label Minutes', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'label_seconds',
+						'field'       => 'countdown_timer_seconds_label',
 						'type'        => __('Content: Label Seconds', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
+					],
+
+					[
+						'field'       => 'time_expire_title',
+						'type'        => __('Time Expire: Title', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'time_expire_desc',
+						'type'        => __('Time Expire: Description', 'animation-addons-for-elementor'),
+						'editor_type' => 'AREA',
 					],
 				],
 			],
@@ -664,11 +675,11 @@ class WPML_Manager
 						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					[
-						'field'       => 'no_posts_message',
-						'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+					// [
+					// 	'field'       => 'no_posts_message',
+					// 	'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
 				],
 			],
 
@@ -682,11 +693,11 @@ class WPML_Manager
 						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					[
-						'field'       => 'no_posts_message',
-						'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+					// [
+					// 	'field'       => 'no_posts_message',
+					// 	'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
 				],
 			],
 
@@ -698,6 +709,11 @@ class WPML_Manager
 					[
 						'field'       => 'read_more_text',
 						'type'        => __('Content: Read More Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'post_by',
+						'type'        => __('Author: By', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -739,12 +755,12 @@ class WPML_Manager
 			'wcf--blog--post--paginate' => [
 				'fields' => [
 					[
-						'field'       => 'prev_text',
+						'field'       => 'prev_title',
 						'type'        => __('Content: Previous Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'next_text',
+						'field'       => 'next_title',
 						'type'        => __('Content: Next Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
@@ -754,7 +770,19 @@ class WPML_Manager
 			/**
 			 * Post Social Share Widget (no fields)
 			 */
-			'wcf--blog--post--social-share' => [],
+			'wcf--blog--post--social-share' => [
+
+				'fields_in_item' => [
+					'list' => [
+						[
+							'field'       => 'list_title',
+							'type'        => __('Icon: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+					],
+				],
+
+			],
 
 			/**
 			 * Post Rating Widget (no fields)
