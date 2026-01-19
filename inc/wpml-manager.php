@@ -810,7 +810,15 @@ class WPML_Manager
 			/**
 			 * Post Timeline Widget (no fields)
 			 */
-			'wcf--posts-timeline' => [],
+			'wcf--posts-timeline' => [
+				'fields' => [
+					[
+						'field'       => 'read_more_text',
+						'type'        => __('Content: Read More Button Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+			],
 
 			/**
 			 * Archive Title Widget (no fields)
@@ -838,7 +846,15 @@ class WPML_Manager
 			/**
 			 * Search Query Widget (no fields)
 			 */
-			'wcf--blog--search--query' => [],
+			'wcf--blog--search--query' => [
+				'fields' => [
+					[
+						'field'       => 'search_text',
+						'type'        => __('Search: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+			],
 
 			/**
 			 * Search No Result Widget
@@ -846,9 +862,14 @@ class WPML_Manager
 			'wcf--blog--search--result-message' => [
 				'fields' => [
 					[
-						'field'       => 'no_results_message',
+						'field'       => 'search_text',
 						'type'        => __('Content: No Results Message', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'search_content',
+						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
+						'editor_type' => 'VISUAL',
 					],
 				],
 			],
@@ -934,8 +955,8 @@ class WPML_Manager
 			'wcf--current-date' => [
 				'fields' => [
 					[
-						'field'       => 'date_format',
-						'type'        => __('Content: Date Format', 'animation-addons-for-elementor'),
+						'field'       => 'day_separator',
+						'type'        => __('Content: Date Separator', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -945,15 +966,15 @@ class WPML_Manager
 			 * Social Icons Widget
 			 */
 			'wcf--social-icons' => [
-				'fields_in_item' => [
-					'social_icons_list' => [
-						[
-							'field'       => 'title',
-							'type'        => __('Social Icon: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'social_icons_list' => [
+				// 		[
+				// 			'field'       => 'title',
+				// 			'type'        => __('Social Icon: Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 	],
+				// ],
 			],
 
 			/**
@@ -972,11 +993,11 @@ class WPML_Manager
 							'type'        => __('One Page Nav: Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
-						[
-							'field'       => 'section_id',
-							'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
+						// [
+						// 	'field'       => 'section_id',
+						// 	'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
+						// 	'editor_type' => 'LINE',
+						// ],
 					],
 				],
 			],
@@ -985,35 +1006,35 @@ class WPML_Manager
 			 * Image Widget
 			 */
 			'wcf--image' => [
-				'fields' => [
-					[
-						'field'       => 'caption',
-						'type'        => __('Content: Caption', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+				// 'fields' => [
+				// 	[
+				// 		'field'       => 'caption',
+				// 		'type'        => __('Content: Caption', 'animation-addons-for-elementor'),
+				// 		'editor_type' => 'LINE',
+				// 	],
 
-					[
-						'field'       => 'link',
-						'type'        => __('Image: Link', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINK',
-					],
+				// 	[
+				// 		'field'       => 'link',
+				// 		'type'        => __('Image: Link', 'animation-addons-for-elementor'),
+				// 		'editor_type' => 'LINK',
+				// 	],
 
-				],
+				// ],
 			],
 
 			/**
 			 * Image Gallery Widget (no fields)
 			 */
 			'wcf--image-gallery' => [
-				'fields_in_item' => [
-					'wcf_image_gallery' => [
-						[
-							'field'       => 'link',
-							'type'        => __('Image Gallery: Link', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINK',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'wcf_image_gallery' => [
+				// 		[
+				// 			'field'       => 'link',
+				// 			'type'        => __('Image Gallery: Link', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINK',
+				// 		],
+				// 	],
+				// ],
 			],
 
 			/**
@@ -1021,16 +1042,16 @@ class WPML_Manager
 			 */
 			'aae--image-hotspot' => [
 				'fields_in_item' => [
-					'hotspot_list' => [
+					'hsp_list' => [
 						[
-							'field'       => 'title',
+							'field'       => 'hsp_text',
 							'type'        => __('Hotspot: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
-							'field'       => 'description',
-							'type'        => __('Hotspot: Description', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
+							'field'       => 'tlp_content',
+							'type'        => __('Hotspot: Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -1079,21 +1100,11 @@ class WPML_Manager
 			 */
 			'wcf--content-slider' => [
 				'fields_in_item' => [
-					'slider_list' => [
+					'content_slider' => [
 						[
-							'field'       => 'title',
-							'type'        => __('Slider: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'description',
+							'field'       => 'slide_content',
 							'type'        => __('Slider: Description', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
-						],
-						[
-							'field'       => 'button_text',
-							'type'        => __('Slider: Button Text', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -1125,24 +1136,41 @@ class WPML_Manager
 			 * Filterable Slider Widget (multiple repeaters)
 			 */
 			'wcf--filterable-slider' => [
+				'fields' => [
+					[
+						'field'       => 'filter_all_label',
+						'type'        => __('Filter: All Label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
 				'fields_in_item' => [
-					'filter_list' => [
+					'filter_items' => [
 						[
-							'field'       => 'filter_label',
-							'type'        => __('Filter: Label', 'animation-addons-for-elementor'),
+							'field'       => 'filter_title',
+							'type'        => __('Filter: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					],
-					'slider_list' => [
+					'project_items' => [
+						// [
+						// 	'field'       => 'project_item_filter_name',
+						// 	'type'        => __('Slider: Title', 'animation-addons-for-elementor'),
+						// 	'editor_type' => 'Filter name',
+						// ],
 						[
 							'field'       => 'title',
 							'type'        => __('Slider: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
+							'field'       => 'subtitle',
+							'type'        => __('Slider: Sub Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
 							'field'       => 'description',
 							'type'        => __('Slider: Description', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
+							'editor_type' => 'VISUAL',
 						],
 					],
 				],
@@ -1197,17 +1225,12 @@ class WPML_Manager
 			'aae--notification' => [
 				'fields' => [
 					[
-						'field'       => 'title',
-						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
-					[
-						'field'       => 'description',
-						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
+						'field'       => 'notify_text',
+						'type'        => __('Content: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 					[
-						'field'       => 'button_text',
+						'field'       => 'btn_text',
 						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
@@ -1238,16 +1261,25 @@ class WPML_Manager
 			'aae--clickdrop' => [
 				'fields' => [
 					[
-						'field'       => 'title',
-						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
+						'field'       => 'login_label',
+						'type'        => __('Content: Login label', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
-						'field'       => 'description',
-						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
-						'editor_type' => 'AREA',
+						'field'       => 'logged_label',
+						'type'        => __('Content: Logged label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
 					],
 				],
+				'fields_in_item' => [
+					'menus_url' => [
+						[
+							'field'       => 'menu_title',
+							'type'        => __('Content: Menu title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+					]
+				]
 			],
 
 			/**
