@@ -803,21 +803,10 @@ class WCF_Admin_Init
 			return;
 		}
 
-		$settings = array(
-			'smooth' => sanitize_text_field(wp_unslash($_POST['smooth'])),
-		);
-
-		if (isset($_POST['mobile'])) {
-			$settings['mobile'] = sanitize_text_field(wp_unslash($_POST['mobile']));
-		}
-		if (isset($_POST['disableMode'])) {
-			$settings['disableMode'] = sanitize_text_field(wp_unslash($_POST['disableMode']));
-		}
-		if (isset($_POST['media'])) {
-			$settings['media'] = sanitize_text_field(wp_unslash($_POST['media']));
-		}
-
-		$option = wp_json_encode($settings);
+		$settings = sanitize_text_field(wp_unslash($_POST['smooth']));
+	
+		$decode = json_decode($settings);
+		$option = wp_json_encode($decode);
 
 		// update new settings
 		if (! empty($_POST['smooth'])) {

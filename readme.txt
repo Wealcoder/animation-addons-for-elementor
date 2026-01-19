@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.4.9
+Stable tag: 2.5.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -452,7 +452,20 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= 🌀 Animation Addons for Elementor v2.4.9 – 28 December 2025
+= 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026
+
+  - **Fix:** ScrollSmoother saving issue
+
+
+= 🌀 Animation Addons for Elementor v2.5.0 – 18 January 2026
+
+  - **Fix:** Dashboard RTL issues
+  - **Fix:** Korean Language design load issue
+  - **Fix:** ThemeBuilder Specific page search issue
+  - **Added:** ScrollSmoother responsive Controls
+  - **Added:** Animated Heading Color Mode
+
+= 🌀 Animation Addons for Elementor v2.4.9 – 04 Jan 2026
 
   - **Fix:** Stacking Card Url 
   - **Fix:** Dynamic Tag for taxonomy page
