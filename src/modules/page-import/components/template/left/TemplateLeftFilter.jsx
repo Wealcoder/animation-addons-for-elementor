@@ -26,7 +26,9 @@ const TemplateLeftFilter = ({
   const [allCategory, setAllCategory] = useState([]);
 
   useEffect(() => {
-    fetch(`${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page-type?per_page=30&page=1`)
+    fetch(
+      `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page-type?per_page=30&page=1`,
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllCategory(data);
@@ -34,13 +36,17 @@ const TemplateLeftFilter = ({
   }, []);
 
   return (
-    <div className="px-5 py-6 flex flex-col justify-between gap-5 h-full">
+    <div className="px-5 py-6 flex flex-col justify-between gap-5 h-full pr-0 rtl:pr-5">
       <div>
         <div className="flex gap-2 items-center pb-5">
           <RiFileTextLine size={20} className="text-icon-secondary" />
           <h3 className="font-medium">Filter Settings</h3>
         </div>
-        <ScrollArea className="h-[calc(100vh-180px)]">
+        <ScrollArea
+          className="h-[calc(100vh-180px)]"
+          viewportClassName="pr-4"
+          // className="h-[calc(100vh-180px)] w-full rounded-md border"
+        >
           <div>
             <Accordion
               type="multiple"

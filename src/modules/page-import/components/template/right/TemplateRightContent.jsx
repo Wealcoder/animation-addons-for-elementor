@@ -8,7 +8,7 @@ const TemplateRightContent = ({
   setFilterKey,
   setPageNum,
   allTemplate,
-  setOpenSidebar
+  setOpenSidebar,
 }) => {
   return (
     <div className="mx-[31px]">

@@ -44,7 +44,7 @@ const StaterTemplate = () => {
       setLoading(true);
       try {
         const url = new URL(
-          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`
+          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-templates`,
         );
 
         if (meta.searchKey) {
@@ -105,13 +105,13 @@ const StaterTemplate = () => {
         setLoading(false);
       }
     }),
-    []
+    [],
   );
 
   useEffect(() => {
     const handleScroll = () => {
       const viewport = viewportRef.current?.querySelector(
-        "[data-radix-scroll-area-viewport]"
+        "[data-radix-scroll-area-viewport]",
       );
 
       if (!viewport) return;
@@ -137,7 +137,7 @@ const StaterTemplate = () => {
     };
 
     const viewport = viewportRef.current?.querySelector(
-      "[data-radix-scroll-area-viewport]"
+      "[data-radix-scroll-area-viewport]",
     );
 
     if (viewport) {
@@ -222,7 +222,7 @@ const StaterTemplate = () => {
                         metaData?.filterData?.wishlist
                           ? "bg-[#F6502C] text-white [&>svg]:stroke-white [&>div]:bg-white [&>div]:text-[#121212]"
                           : "bg-transparent [&>svg]:stroke-[#F6502C] text-[#F6502C]",
-                        "cursor-pointer ps-3 pe-[3px] py-0 h-[26px] border border-[#F6502C]  rounded-full text-[16px] font-medium capitalize gap-1"
+                        "cursor-pointer ps-3 pe-[3px] py-0 h-[26px] border border-[#F6502C]  rounded-full text-[16px] font-medium capitalize gap-1",
                       )}
                     >
                       <svg
@@ -238,7 +238,7 @@ const StaterTemplate = () => {
                           stroke-linecap="round"
                           stroke-linejoin="round"
                         />
-                      </svg>           
+                      </svg>
                       <div className="px-1 py-1.5 bg-[#FEEEEA] rounded-full text-xs font-medium min-w-5 h-5 flex justify-center items-center">
                         {metaData?.wishlist?.length}
                       </div>
