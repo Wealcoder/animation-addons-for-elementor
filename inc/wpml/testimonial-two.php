@@ -32,13 +32,13 @@ class Testimonial_Two extends \WPML_Elementor_Module_With_Items {
 	protected function get_title( $field ) {
 		switch ( $field ) {
 			case 'testimonial_name':
-				return __( 'Testimonial: Name', 'animation-addons-for-elementor' );
+				return __( 'Classic Testimonial: Name', 'animation-addons-for-elementor' );
 
 			case 'testimonial_job':
-				return __( 'Testimonial: Designation', 'animation-addons-for-elementor' );
+				return __( 'Classic Testimonial: Designation', 'animation-addons-for-elementor' );
 
 			case 'testimonial_content':
-				return __( 'Testimonial: Content', 'animation-addons-for-elementor' );
+				return __( 'Classic Testimonial: Content', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

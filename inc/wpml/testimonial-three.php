@@ -33,13 +33,13 @@ class Testimonial_Three extends \WPML_Elementor_Module_With_Items {
 		switch ( $field ) {
 
 			case 'testimonial_name':
-				return __( 'Testimonial: Name', 'animation-addons-for-elementor' );
+				return __( 'Modern Testimonial: Name', 'animation-addons-for-elementor' );
 
 			case 'testimonial_job':
-				return __( 'Testimonial: Designation', 'animation-addons-for-elementor' );
+				return __( 'Modern Testimonial: Designation', 'animation-addons-for-elementor' );
 
 			case 'testimonial_content':
-				return __( 'Testimonial: Content', 'animation-addons-for-elementor' );
+				return __( 'Modern Testimonial: Content', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

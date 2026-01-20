@@ -40,16 +40,16 @@ class Advanced_Testimonial extends \WPML_Elementor_Module_With_Items {
 	protected function get_title( $field ) {
 		switch ( $field ) {
 			case 'tsm_content':
-				return __( 'Testimonial: Feedback', 'animation-addons-for-elementor' );
+				return __( 'Advanced Testimonial: Feedback', 'animation-addons-for-elementor' );
 
 			case 'tsm_reason':
-				return __( 'Testimonial: Reason', 'animation-addons-for-elementor' );
+				return __( 'Advanced Testimonial: Reason', 'animation-addons-for-elementor' );
 
 			case 'tsm_name':
-				return __( 'Client Name', 'animation-addons-for-elementor' );
+				return __( 'Advanced Testimonial: Client Name', 'animation-addons-for-elementor' );
 
 			case 'designation':
-				return __( 'Client Designation', 'animation-addons-for-elementor' );
+				return __( 'Advanced Testimonial: Client Designation', 'animation-addons-for-elementor' );
 
 			default:
 				return '';
