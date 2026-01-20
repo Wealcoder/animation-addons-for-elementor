@@ -369,7 +369,7 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'heading',
-						'type'        => __('Animation Heading: Title', 'animation-addons-for-elementor'),
+						'type'        => __('Animation Heading: Animated Heading', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -391,7 +391,7 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'text',
-						'type'        => __('Animated Text: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Animated Text: Animated Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'VISUAL',
 					],
 				],
