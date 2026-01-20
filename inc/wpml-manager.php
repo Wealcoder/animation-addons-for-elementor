@@ -57,32 +57,13 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 
-					[
-						'field'       => 'link',
-						'type'        => esc_html__('TItle: Link', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINK',
-					],
+					// [
+					// 	'field'       => 'link',
+					// 	'type'        => esc_html__('TItle: Link', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINK',
+					// ],
 
 				],
-				// 'fields_in_item' => [
-				// 	'title_prefix_list' => [
-				// 		[
-				// 			'field'       => 'label',
-				// 			'type'        => __('Animated Title: Label', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'label_on',
-				// 			'type'        => __('Animated Title: Label On', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'label_off',
-				// 			'type'        => __('Animated Title: Label Off', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 	],
-				// ],
 			],
 
 			/**
@@ -95,11 +76,11 @@ class WPML_Manager
 						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					[
-						'field'       => 'btn_sub_text',
-						'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+					// [
+					// 	'field'       => 'btn_sub_text',
+					// 	'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
 				],
 			],
 
@@ -114,11 +95,11 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 
-					[
-						'field'       => 'btn_link',
-						'type'        => __('Button: Link', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINK',
-					],
+					// [
+					// 	'field'       => 'btn_link',
+					// 	'type'        => __('Button: Link', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINK',
+					// ],
 
 				],
 			],
