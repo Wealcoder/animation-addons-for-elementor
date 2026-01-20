@@ -246,6 +246,7 @@ class WPML_Manager
 			 * Advanced Testimonial Widget
 			 */
 			'wcf--a-testimonial' => [
+				'conditions' => [ 'widgetType' => 'wcf--a-testimonial' ],
 			    'fields' => [
 				],
 
@@ -373,15 +374,6 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 				],
-				// 'fields_in_item' => [
-				// 	'animated_text_list' => [
-				// 		[
-				// 			'field'       => 'text',
-				// 			'type'        => __('Animated Heading: Text', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 	],
-				// ],
 			],
 
 			/**
@@ -424,36 +416,9 @@ class WPML_Manager
 			 * Timeline Widget
 			 */
 			'wcf--timeline' => [
-				// 'fields_in_item' => [
-				// 	'timelines' => [
-
-				// 		[
-				// 			'field'       => 'step_text',
-				// 			'type'        => __('Timeline: Step Text', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'timeline_date',
-				// 			'type'        => __('Timeline: Date', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'timeline_title',
-				// 			'type'        => __('Timeline: Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'timeline_sub',
-				// 			'type'        => __('Timeline: Sub Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'timeline_desc',
-				// 			'type'        => __('Timeline: Content', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'AREA',
-				// 		],
-				// 	],
-				// ],
+	
+				'fields' => [
+				],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Timeline']
 
@@ -463,21 +428,6 @@ class WPML_Manager
 			 * Tabs Widget
 			 */
 			'wcf--tabs' => [
-				// 'fields_in_item' => [
-				// 	'tabs' => [
-				// 		[
-				// 			'field'       => 'tab_title',
-				// 			'type'        => __('Tab: Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'tab_content',
-				// 			'type'        => __('Tab: Content', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'VISUAL',
-				// 		],
-				// 	],
-				// ],
-
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Tabs']
 			],
 
@@ -494,26 +444,6 @@ class WPML_Manager
 					],
 				],
 
-				// 'fields_in_item' => [
-				// 	'tabs' => [
-				// 		[
-				// 			'field'       => 'tab_number',
-				// 			'type'        => __('Services Tab: Tab Number', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'NUMBER',
-				// 		],
-				// 		[
-				// 			'field'       => 'tab_title',
-				// 			'type'        => __('Services Tab: Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'tab_content',
-				// 			'type'        => __('Services Tab: Content', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'VISUAL',
-				// 		],
-				// 	],
-				// ],
-
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Services_Tab']
 			],
 
@@ -521,32 +451,7 @@ class WPML_Manager
 			 * Advance Accordion Widget
 			 */
 			'wcf--a-accordion' => [
-				'fields_in_item' => [
-					'tabs' => [
-						[
-							'field'       => 'tab_count',
-							'type'        => __('Advanced Accordion: Tab Count', 'animation-addons-for-elementor'),
-							'editor_type' => 'NUMBER',
-						],
-
-						[
-							'field'       => 'tab_title',
-							'type'        => __('Advanced Accordion: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'tab_btn_text',
-							'type'        => __('Accordion: Button Text', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'tab_content',
-							'type'        => __('Advanced Accordion: Content', 'animation-addons-for-elementor'),
-							'editor_type' => 'VISUAL',
-						],
-					],
-				],
-
+				'fields'     => [],
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advanced_Accordion']
 			],
 
@@ -834,11 +739,7 @@ class WPML_Manager
 							'type'        => __('List: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
-						// [
-						// 	'field'       => 'section_id',
-						// 	'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
-						// 	'editor_type' => 'LINE',
-						// ],
+						
 					],
 				],
 			],
@@ -1130,15 +1031,7 @@ class WPML_Manager
 			 * Content Slider Widget
 			 */
 			'wcf--content-slider' => [
-				// 'fields_in_item' => [
-				// 	'content_slider' => [
-				// 		[
-				// 			'field'       => 'slide_content',
-				// 			'type'        => __('Content Slider: Description', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'VISUAL',
-				// 		],
-				// 	],
-				// ],
+
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Content_Slider']
 			],
@@ -1147,7 +1040,7 @@ class WPML_Manager
 			 * Nested Slider Widget (no fields)
 			 */
 			'wcf--nested-slider' => [
-
+				'conditions' => [ 'widgetType' => 'wcf--nested-slider' ],
 				'fields' => [
 					[
 						'field'       => 'carousel_name',
@@ -1155,16 +1048,6 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 				],
-
-				// 'fields_in_item' => [
-				// 	'carousel_items' => [
-				// 		[
-				// 			'field'       => 'slide_title',
-				// 			'type'        => __('Slide Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 	],
-				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Nested_Slider']
 			],
@@ -1320,7 +1203,7 @@ class WPML_Manager
 					'menus_url' => [
 						[
 							'field'       => 'menu_title',
-							'type'        => __('Content: Menu title', 'animation-addons-for-elementor'),
+							'type'        => __('Click Drop: Menu title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 					]
@@ -1357,9 +1240,9 @@ class WPML_Manager
 				$entry['fields_in_item'] = $data['fields_in_item'];
 			}
 
-			// if ( isset( $data['integration-class'] ) ) {
-			// 	$entry['integration-class'] = $data['integration-class'];
-			// }
+			if ( isset( $data['integration-class'] ) ) {
+				$entry['integration-class'] = $data['integration-class'];
+			}
 
 			$widgets[$widget_name] = $entry;
 		}
