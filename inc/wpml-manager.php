@@ -347,7 +347,7 @@ class WPML_Manager
 				],
 				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Team_Slider']
 			],
-			+
+			
 			/**
 			 * Counter Widget
 			 */
