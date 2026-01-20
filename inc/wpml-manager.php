@@ -64,25 +64,6 @@ class WPML_Manager
 					],
 
 				],
-				// 'fields_in_item' => [
-				// 	'title_prefix_list' => [
-				// 		[
-				// 			'field'       => 'label',
-				// 			'type'        => __('Animated Title: Label', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'label_on',
-				// 			'type'        => __('Animated Title: Label On', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 		[
-				// 			'field'       => 'label_off',
-				// 			'type'        => __('Animated Title: Label Off', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 	],
-				// ],
 			],
 
 			/**
@@ -95,11 +76,11 @@ class WPML_Manager
 						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					[
-						'field'       => 'btn_sub_text',
-						'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+					// [
+					// 	'field'       => 'btn_sub_text',
+					// 	'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
 				],
 			],
 
@@ -114,11 +95,11 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 
-					[
-						'field'       => 'btn_link',
-						'type'        => __('Button: Link', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINK',
-					],
+					// [
+					// 	'field'       => 'btn_link',
+					// 	'type'        => __('Button: Link', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINK',
+					// ],
 
 				],
 			],
@@ -168,7 +149,7 @@ class WPML_Manager
 					[
 						'field'       => 'description_text',
 						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
-						'editor_type' => 'AREA',
+						'editor_type' => 'VISUAL',
 					],
 				],
 			],
@@ -203,25 +184,25 @@ class WPML_Manager
 			 * Classic Testimonial Widget
 			 */
 			'wcf--testimonial2' => [
-				'fields_in_item' => [
-					'testimonials' => [
-						[
-							'field'       => 'testimonial_name',
-							'type'        => __('Testimonial: Name', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'testimonial_job',
-							'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'testimonial_content',
-							'type'        => __('Testimonial: Content', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'testimonials' => [
+				// 		[
+				// 			'field'       => 'testimonial_name',
+				// 			'type'        => __('Testimonial: Name', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'testimonial_job',
+				// 			'type'        => __('Testimonial: Designation', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'testimonial_content',
+				// 			'type'        => __('Testimonial: Content', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'AREA',
+				// 		],
+				// 	],
+				// ],
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Two',]
 			],
 
@@ -310,11 +291,12 @@ class WPML_Manager
 							'type'        => __('Team: Position', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
-						[
-							'field'       => 'member_description',
-							'type'        => __('Team: Description', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
-						],
+						// // not sure if it's exist
+						// [
+						// 	'field'       => 'member_description',
+						// 	'type'        => __('Team: Description', 'animation-addons-for-elementor'),
+						// 	'editor_type' => 'AREA',
+						// ],
 					],
 				],
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Team_Slider']
@@ -428,12 +410,12 @@ class WPML_Manager
 					[
 						'field'       => 'hover_text',
 						'type'        => __('Text Hover Image: Hover Text', 'animation-addons-for-elementor'),
-						'editor_type' => 'AREA',
+						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'after_hover_text',
 						'type'        => __('Text Hover Image: After Hover Text', 'animation-addons-for-elementor'),
-						'editor_type' => 'AREA',
+						'editor_type' => 'LINE',
 					],
 				],
 			],
@@ -442,36 +424,36 @@ class WPML_Manager
 			 * Timeline Widget
 			 */
 			'wcf--timeline' => [
-				'fields_in_item' => [
-					'timelines' => [
+				// 'fields_in_item' => [
+				// 	'timelines' => [
 
-						[
-							'field'       => 'step_text',
-							'type'        => __('Timeline: Step Text', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'timeline_date',
-							'type'        => __('Timeline: Date', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'timeline_title',
-							'type'        => __('Timeline: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'timeline_sub',
-							'type'        => __('Timeline: Sub Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'timeline_desc',
-							'type'        => __('Timeline: Content', 'animation-addons-for-elementor'),
-							'editor_type' => 'AREA',
-						],
-					],
-				],
+				// 		[
+				// 			'field'       => 'step_text',
+				// 			'type'        => __('Timeline: Step Text', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'timeline_date',
+				// 			'type'        => __('Timeline: Date', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'timeline_title',
+				// 			'type'        => __('Timeline: Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'timeline_sub',
+				// 			'type'        => __('Timeline: Sub Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'timeline_desc',
+				// 			'type'        => __('Timeline: Content', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'AREA',
+				// 		],
+				// 	],
+				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Timeline']
 
@@ -481,20 +463,20 @@ class WPML_Manager
 			 * Tabs Widget
 			 */
 			'wcf--tabs' => [
-				'fields_in_item' => [
-					'tabs' => [
-						[
-							'field'       => 'tab_title',
-							'type'        => __('Tab: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'tab_content',
-							'type'        => __('Tab: Content', 'animation-addons-for-elementor'),
-							'editor_type' => 'VISUAL',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'tabs' => [
+				// 		[
+				// 			'field'       => 'tab_title',
+				// 			'type'        => __('Tab: Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'tab_content',
+				// 			'type'        => __('Tab: Content', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'VISUAL',
+				// 		],
+				// 	],
+				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Tabs']
 			],
@@ -512,25 +494,25 @@ class WPML_Manager
 					],
 				],
 
-				'fields_in_item' => [
-					'tabs' => [
-						[
-							'field'       => 'tab_number',
-							'type'        => __('Services Tab: Tab Number', 'animation-addons-for-elementor'),
-							'editor_type' => 'NUMBER',
-						],
-						[
-							'field'       => 'tab_title',
-							'type'        => __('Services Tab: Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-						[
-							'field'       => 'tab_content',
-							'type'        => __('Services Tab: Content', 'animation-addons-for-elementor'),
-							'editor_type' => 'VISUAL',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'tabs' => [
+				// 		[
+				// 			'field'       => 'tab_number',
+				// 			'type'        => __('Services Tab: Tab Number', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'NUMBER',
+				// 		],
+				// 		[
+				// 			'field'       => 'tab_title',
+				// 			'type'        => __('Services Tab: Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 		[
+				// 			'field'       => 'tab_content',
+				// 			'type'        => __('Services Tab: Content', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'VISUAL',
+				// 		],
+				// 	],
+				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Services_Tab']
 			],
@@ -550,6 +532,11 @@ class WPML_Manager
 						[
 							'field'       => 'tab_title',
 							'type'        => __('Advanced Accordion: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'tab_btn_text',
+							'type'        => __('Accordion: Button Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
 						[
@@ -623,6 +610,11 @@ class WPML_Manager
 						'type'        => __('Post: Read More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
+					[
+						'field'       => 'load_more_btn_text',
+						'type'        => __('Content: Load More Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
 					// [
 					// 	'field'       => 'no_posts_message',
 					// 	'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
@@ -638,6 +630,7 @@ class WPML_Manager
 				'conditions' => ['widgetType' => 'wcf--feature-posts'],
 				'fields' => [
 					['field' => 'read_more_text', 'type' => 'Feature Posts: Read More Text', 'editor_type' => 'LINE'],
+					['field' => 'meta_separator', 'type' => 'Feature Posts: Separator Between', 'editor_type' => 'LINE'],
 					['field' => 'post_by', 'type' => 'Feature Posts: Posted By Text', 'editor_type' => 'LINE'],
 				],
 			],
@@ -649,6 +642,7 @@ class WPML_Manager
 				'conditions' => ['widgetType' => 'wcf--banner-posts'],
 				'fields' => [
 					['field' => 'read_more_text', 'type' => 'Banner Posts: Read More Text', 'editor_type' => 'LINE'],
+					['field' => 'meta_separator', 'type' => 'Banner Posts: Separator Between', 'editor_type' => 'LINE'],
 					['field' => 'post_by', 'type' => 'Banner Posts: Posted By Text', 'editor_type' => 'LINE'],
 				],
 			],
@@ -721,6 +715,14 @@ class WPML_Manager
 			 */
 			'wcf--blog--post--social-share' => [
 
+				'fields' => [
+					[
+						'field'       => 'share_text',
+						'type'        => __('Content: Share Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+
 				'fields_in_item' => [
 					'list' => [
 						[
@@ -750,6 +752,36 @@ class WPML_Manager
 						'type'        => __('Post Rating Form: Submit Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
+					[
+						'field'       => 'title',
+						'type'        => __('Post Rating Form: Title', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'text',
+						'type'        => __('Post Rating Form: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'name_plh_text',
+						'type'        => __('Post Rating Form: Name Placeholder Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'email_plh_text',
+						'type'        => __('Post Rating Form: Email Placeholder Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'review_placeholder',
+						'type'        => __('Post Rating Form: Review Placeholder Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Post Rating Form: Button Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
 				],
 			],
 
@@ -764,8 +796,23 @@ class WPML_Manager
 			'wcf--posts-timeline' => [
 				'fields' => [
 					[
+						'field'       => 'meta_separator',
+						'type'        => __('Content: Separator Between', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'post_by',
+						'type'        => __('Content: Author By', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
 						'field'       => 'read_more_text',
 						'type'        => __('Post Timeline: Read More Button Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'load_more_btn_text',
+						'type'        => __('Content: Load More Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -781,6 +828,11 @@ class WPML_Manager
 							'field'       => 'list_title',
 							'type'        => __('Archive Title: Title', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'list_content',
+							'type'        => __('List: Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'AREA',
 						],
 						// [
 						// 	'field'       => 'section_id',
@@ -843,7 +895,7 @@ class WPML_Manager
 			/**
 			 * Author Box Widget (no fields)
 			 */
-			'wcf-author-box' => [
+			'wcf--author-box' => [
 				'fields' => [
 					[
 						'field'       => 'author_name',
@@ -902,16 +954,16 @@ class WPML_Manager
 			'wcf--site-logo' => [
 				'conditions' => ['widgetType' => 'wcf--site-logo'],
 				'fields'     => [
-					[
-						'field'       => 'caption',
-						'type'        => esc_html__('Site Logo: Caption', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
-					[
-						'field'       => 'link',
-						'type'        => esc_html__('Site Logo: Link', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINK',
-					],
+					// [
+					// 	'field'       => 'caption',
+					// 	'type'        => esc_html__('Site Logo: Caption', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINE',
+					// ],
+					// [
+					// 	'field'       => 'link',
+					// 	'type'        => esc_html__('Site Logo: Link', 'animation-addons-for-elementor'),
+					// 	'editor_type' => 'LINK',
+					// ],
 				],
 			],
 
@@ -1063,21 +1115,30 @@ class WPML_Manager
 			/**
 			 * Category Slider Widget (no fields)
 			 */
-			'aae--category-slider' => [],
+			'aae--category-slider' => [
+				'fields' => [
+					[
+						'field'       => 'count_text',
+						'type'        => __('Article Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
+
+			],
 
 			/**
 			 * Content Slider Widget
 			 */
 			'wcf--content-slider' => [
-				'fields_in_item' => [
-					'content_slider' => [
-						[
-							'field'       => 'slide_content',
-							'type'        => __('Content Slider: Description', 'animation-addons-for-elementor'),
-							'editor_type' => 'VISUAL',
-						],
-					],
-				],
+				// 'fields_in_item' => [
+				// 	'content_slider' => [
+				// 		[
+				// 			'field'       => 'slide_content',
+				// 			'type'        => __('Content Slider: Description', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'VISUAL',
+				// 		],
+				// 	],
+				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Content_Slider']
 			],
@@ -1086,6 +1147,7 @@ class WPML_Manager
 			 * Nested Slider Widget (no fields)
 			 */
 			'wcf--nested-slider' => [
+
 				'fields' => [
 					[
 						'field'       => 'carousel_name',
@@ -1093,15 +1155,16 @@ class WPML_Manager
 						'editor_type' => 'LINE',
 					],
 				],
-				'fields_in_item' => [
-					'carousel_items' => [
-						[
-							'field'       => 'slide_title',
-							'type'        => __('Slide Title', 'animation-addons-for-elementor'),
-							'editor_type' => 'LINE',
-						],
-					],
-				],
+
+				// 'fields_in_item' => [
+				// 	'carousel_items' => [
+				// 		[
+				// 			'field'       => 'slide_title',
+				// 			'type'        => __('Slide Title', 'animation-addons-for-elementor'),
+				// 			'editor_type' => 'LINE',
+				// 		],
+				// 	],
+				// ],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Nested_Slider']
 			],
@@ -1214,7 +1277,6 @@ class WPML_Manager
 				'fields'     => [
 					['field' => 'notify_text', 'type' => 'Notification: Notification Text', 'editor_type' => 'AREA'],
 					['field' => 'btn_text',    'type' => 'Notification: Button Text',       'editor_type' => 'LINE'],
-					['field' => 'btn_link',    'type' => 'Notification: Button Link',       'editor_type' => 'LINK'],
 				],
 			],
 
