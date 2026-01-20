@@ -35,7 +35,7 @@ class WPML_Manager
 	{
 		// Load repeatable module class
 		include_once(WCF_ADDONS_PATH . 'inc/wpml-module-with-items.php');
-		foreach ( glob( WCF_ADDONS_PATH . 'inc/wpml/*.php' ) as $file ) {
+		foreach (glob(WCF_ADDONS_PATH . 'inc/wpml/*.php') as $file) {
 			include_once $file;
 		}
 	}
@@ -152,7 +152,7 @@ class WPML_Manager
 			'wcf--image-box-slider' => [
 				'fields' => [],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Image_Box_Slider',]
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Image_Box_Slider',]
 			],
 
 			/**
@@ -196,7 +196,7 @@ class WPML_Manager
 						],
 					],
 				],
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Testimonial',]
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial',]
 			],
 
 			/**
@@ -222,7 +222,7 @@ class WPML_Manager
 						],
 					],
 				],
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Two',]
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Two',]
 			],
 
 			/**
@@ -258,7 +258,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Three',]
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Three',]
 			],
 
 			/**
@@ -296,7 +296,7 @@ class WPML_Manager
 
 					],
 				],
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Advanced_Testimonial']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advanced_Testimonial']
 			],
 
 			/**
@@ -345,7 +345,7 @@ class WPML_Manager
 						],
 					],
 				],
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Team_Slider']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Team_Slider']
 			],
 			+
 			/**
@@ -404,8 +404,8 @@ class WPML_Manager
 						],
 					],
 				],
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\TypeWriter']
-				
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\TypeWriter']
+
 			],
 
 			/**
@@ -501,8 +501,8 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Timeline']
-				
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Timeline']
+
 			],
 
 			/**
@@ -524,7 +524,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Tabs']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Tabs']
 			],
 
 			/**
@@ -560,7 +560,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Services_Tab']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Services_Tab']
 			],
 
 			/**
@@ -588,18 +588,18 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Advanced_Accordion']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advanced_Accordion']
 			],
 
 			/*--------------------------------------------------------------
 			# Image Accordion
 			--------------------------------------------------------------*/
 			'wcf--image-accordion' => [
-				'conditions' => [ 'widgetType' => 'wcf--image-accordion' ],
+				'conditions' => ['widgetType' => 'wcf--image-accordion'],
 				'fields'     => [],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Image_Accordion',]
-				
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Image_Accordion',]
+
 			],
 
 			/**
@@ -663,10 +663,10 @@ class WPML_Manager
 			# Feature Posts
 			--------------------------------------------------------------*/
 			'wcf--feature-posts' => [
-				'conditions' => [ 'widgetType' => 'wcf--feature-posts' ],
+				'conditions' => ['widgetType' => 'wcf--feature-posts'],
 				'fields' => [
-					[ 'field' => 'read_more_text', 'type' => 'Feature Posts: Read More Text', 'editor_type' => 'LINE' ],
-					[ 'field' => 'post_by', 'type' => 'Feature Posts: Posted By Text', 'editor_type' => 'LINE' ],
+					['field' => 'read_more_text', 'type' => 'Feature Posts: Read More Text', 'editor_type' => 'LINE'],
+					['field' => 'post_by', 'type' => 'Feature Posts: Posted By Text', 'editor_type' => 'LINE'],
 				],
 			],
 
@@ -674,10 +674,10 @@ class WPML_Manager
 			# Banner Posts
 			--------------------------------------------------------------*/
 			'wcf--banner-posts' => [
-				'conditions' => [ 'widgetType' => 'wcf--banner-posts' ],
+				'conditions' => ['widgetType' => 'wcf--banner-posts'],
 				'fields' => [
-					[ 'field' => 'read_more_text', 'type' => 'Banner Posts: Read More Text', 'editor_type' => 'LINE' ],
-					[ 'field' => 'post_by', 'type' => 'Banner Posts: Posted By Text', 'editor_type' => 'LINE' ],
+					['field' => 'read_more_text', 'type' => 'Banner Posts: Read More Text', 'editor_type' => 'LINE'],
+					['field' => 'post_by', 'type' => 'Banner Posts: Posted By Text', 'editor_type' => 'LINE'],
 				],
 			],
 
@@ -699,7 +699,22 @@ class WPML_Manager
 			/**
 			 * Post Meta Info Widget (no fields)
 			 */
-			'wcf--blog--post--meta-info' => [],
+			'wcf--blog--post--meta-info' => [
+				'fields_in_item' => [
+					'list' => [
+						[
+							'field'       => 'list_title',
+							'type'        => __('List: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'meta_separator',
+							'type'        => __('List: Separator', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						]
+					]
+				],
+			],
 
 			/**
 			 * Post Feature Image Widget (no fields)
@@ -744,7 +759,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Post_Social_Share']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Post_Social_Share']
 
 			],
 
@@ -787,7 +802,22 @@ class WPML_Manager
 			/**
 			 * Archive Title Widget (no fields)
 			 */
-			'wcf--blog--archive--title' => [],
+			'wcf--blog--archive--title' => [
+				'fields_in_item' => [
+					'list' => [
+						[
+							'field'       => 'list_title',
+							'type'        => __('List: Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						// [
+						// 	'field'       => 'section_id',
+						// 	'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
+						// 	'editor_type' => 'LINE',
+						// ],
+					],
+				],
+			],
 
 			/**
 			 * Search Form Widget
@@ -965,7 +995,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\One_Page_Nav']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\One_Page_Nav']
 			],
 
 			/**
@@ -1055,7 +1085,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Brand_Slider']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Brand_Slider']
 			],
 
 			/**
@@ -1077,7 +1107,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Content_Slider']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Content_Slider']
 			],
 
 			/**
@@ -1101,20 +1131,20 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Nested_Slider']
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Nested_Slider']
 			],
 
 			/**
 			 * Filterable Slider Widget (multiple repeaters)
 			 */
 			'wcf--filterable-slider' => [
-					'conditions' => [ 'widgetType' => 'wcf--filterable-slider' ],
+				'conditions' => ['widgetType' => 'wcf--filterable-slider'],
 				'fields' => [
 					[
 						'field'       => 'filter_all_label',
-						'type'        => esc_html__( 'Filterable Slider: Filter All Text', 'animation-addons-for-elementor' ),
+						'type'        => esc_html__('Filterable Slider: Filter All Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
-						
+
 					],
 				],
 
@@ -1144,9 +1174,55 @@ class WPML_Manager
 			 */
 			'wcf--mailchimp' => [
 				'fields' => [
+
 					[
-						'field'       => 'placeholder',
-						'type'        => __('Content: Placeholder', 'animation-addons-for-elementor'),
+						'field'       => 'confirmation_message',
+						'type'        => __('Message: Confirmation Message', 'animation-addons-for-elementor'),
+						'editor_type' => 'AREA',
+					],
+					[
+						'field'       => 'success_message',
+						'type'        => __('Message: Success Message', 'animation-addons-for-elementor'),
+						'editor_type' => 'AREA',
+					],
+					[
+						'field'       => 'fname_label',
+						'type'        => __('First Name: Label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'fname_placeholder',
+						'type'        => __('First Name: Placeholder', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'lname_label',
+						'type'        => __('Last Name: Label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'lname_placeholder',
+						'type'        => __('Last Name: Placeholder', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'phone_label',
+						'type'        => __('Phone Name: Label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'phone_placeholder',
+						'type'        => __('Phone Name: Placeholder', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'email_label',
+						'type'        => __('Email: Label', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'email_placeholder',
+						'type'        => __('Email: Placeholder', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
@@ -1154,16 +1230,7 @@ class WPML_Manager
 						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					[
-						'field'       => 'success_message',
-						'type'        => __('Content: Success Message', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
-					[
-						'field'       => 'error_message',
-						'type'        => __('Content: Error Message', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
+
 				],
 			],
 
@@ -1171,11 +1238,11 @@ class WPML_Manager
 			# Notification
 			--------------------------------------------------------------*/
 			'aae--notification' => [
-				'conditions' => [ 'widgetType' => 'aae--notification' ],
+				'conditions' => ['widgetType' => 'aae--notification'],
 				'fields'     => [
-					[ 'field' => 'notify_text', 'type' => 'Notification: Notification Text', 'editor_type' => 'AREA' ],
-					[ 'field' => 'btn_text',    'type' => 'Notification: Button Text',       'editor_type' => 'LINE' ],
-					[ 'field' => 'btn_link',    'type' => 'Notification: Button Link',       'editor_type' => 'LINK' ],
+					['field' => 'notify_text', 'type' => 'Notification: Notification Text', 'editor_type' => 'AREA'],
+					['field' => 'btn_text',    'type' => 'Notification: Button Text',       'editor_type' => 'LINE'],
+					['field' => 'btn_link',    'type' => 'Notification: Button Link',       'editor_type' => 'LINK'],
 				],
 			],
 
@@ -1183,18 +1250,20 @@ class WPML_Manager
 			 * Toggle Switcher Widget
 			 */
 			'wcf--toggle-switch' => [
-				'fields' => [
-					[
-						'field'       => 'label_on',
-						'type'        => __('Content: Label On', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
-					[
-						'field'       => 'label_off',
-						'type'        => __('Content: Label Off', 'animation-addons-for-elementor'),
-						'editor_type' => 'LINE',
-					],
-				],
+				'fields_in_item' => [
+					'toggle_switcher' => [
+						[
+							'field'       => 'switch_title',
+							'type'        => __('Switch Title', 'animation-addons-for-elementor'),
+							'editor_type' => 'LINE',
+						],
+						[
+							'field'       => 'switch_content',
+							'type'        => __('Switch Content', 'animation-addons-for-elementor'),
+							'editor_type' => 'VISUAL',
+						],
+					]
+				]
 			],
 
 			/**
