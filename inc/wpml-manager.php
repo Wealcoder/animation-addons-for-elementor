@@ -451,8 +451,8 @@ class WPML_Manager
 			 * Advance Accordion Widget
 			 */
 			'wcf--a-accordion' => [
-				'fields'     => [],
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advanced_Accordion']
+			
+				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advance_Accordion']
 			],
 
 			/*--------------------------------------------------------------
@@ -494,12 +494,12 @@ class WPML_Manager
 
 					[
 						'field'       => 'time_expire_title',
-						'type'        => __('Counterdonw: Title', 'animation-addons-for-elementor'),
+						'type'        => __('Countdown: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'time_expire_desc',
-						'type'        => __('Counterdonw: Description', 'animation-addons-for-elementor'),
+						'type'        => __('Countdown: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -520,11 +520,7 @@ class WPML_Manager
 						'type'        => __('Content: Load More Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					// [
-					// 	'field'       => 'no_posts_message',
-					// 	'type'        => __('Content: No Posts Message', 'animation-addons-for-elementor'),
-					// 	'editor_type' => 'LINE',
-					// ],
+				
 				],
 			],
 
@@ -885,15 +881,6 @@ class WPML_Manager
 			 * Social Icons Widget
 			 */
 			'wcf--social-icons' => [
-				// 'fields_in_item' => [
-				// 	'social_icons_list' => [
-				// 		[
-				// 			'field'       => 'title',
-				// 			'type'        => __('Social Icon: Title', 'animation-addons-for-elementor'),
-				// 			'editor_type' => 'LINE',
-				// 		],
-				// 	],
-				// ],
 			],
 
 			/**
@@ -912,11 +899,7 @@ class WPML_Manager
 							'type'        => __('One Page Nav: Text', 'animation-addons-for-elementor'),
 							'editor_type' => 'LINE',
 						],
-						// [
-						// 	'field'       => 'section_id',
-						// 	'type'        => __('One Page Nav: Section ID', 'animation-addons-for-elementor'),
-						// 	'editor_type' => 'LINE',
-						// ],
+			
 					],
 				],
 

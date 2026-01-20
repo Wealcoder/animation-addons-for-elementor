@@ -40,16 +40,16 @@ class Advance_Accordion extends \WPML_Elementor_Module_With_Items
 		switch ($field) {
 
 			case 'tab_count':
-				return __('Accordion: Tab Count', 'animation-addons-for-elementor');
+				return __('Advanced Accordion: Tab Count', 'animation-addons-for-elementor');
 
 			case 'tab_title':
-				return __('Accordion: Title', 'animation-addons-for-elementor');
+				return __('Advanced Accordion: Title', 'animation-addons-for-elementor');
 
 			case 'tab_btn_text':
-				return __('Accordion: Button Text', 'animation-addons-for-elementor');
+				return __('Advanced Accordion: Button Text', 'animation-addons-for-elementor');
 
 			case 'tab_content':
-				return __('Accordion: Content', 'animation-addons-for-elementor');
+				return __('Advanced Accordion: Content', 'animation-addons-for-elementor');
 
 			default:
 				return '';

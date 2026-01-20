@@ -35,19 +35,19 @@ class Filterable_Slider_Projects extends \WPML_Elementor_Module_With_Items {
 		switch ( $field ) {
 
 			case 'project_item_filter_name':
-				return __( 'Project: Filter Name', 'animation-addons-for-elementor' );
+				return __( 'Filtarable Slider: Filter Name', 'animation-addons-for-elementor' );
 
 			case 'title':
-				return __( 'Project: Title', 'animation-addons-for-elementor' );
+				return __( 'Filtarable Slider: Title', 'animation-addons-for-elementor' );
 
 			case 'sub_title':
-				return __( 'Project: Sub Title', 'animation-addons-for-elementor' );
+				return __( 'Filtarable Slider: Sub Title', 'animation-addons-for-elementor' );
 
 			case 'description':
-				return __( 'Project: Description', 'animation-addons-for-elementor' );
+				return __( 'Filtarable Slider: Description', 'animation-addons-for-elementor' );
 
 			case 'link':
-				return __( 'Project: Link', 'animation-addons-for-elementor' );
+				return __( 'Filtarable Slider: Link', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

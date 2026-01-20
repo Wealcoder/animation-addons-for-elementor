@@ -31,10 +31,10 @@ class Image_Hotspot extends \WPML_Elementor_Module_With_Items {
 	protected function get_title( $field ) {
 		switch ( $field ) {
 			case 'hsp_text':
-				return __( 'Hotspot: Title', 'animation-addons-for-elementor' );
+				return __( 'Image Hotspot: Title', 'animation-addons-for-elementor' );
 
 			case 'tlp_content':
-				return __( 'Hotspot: Content', 'animation-addons-for-elementor' );
+				return __( 'Image Hotspot: Content', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

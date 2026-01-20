@@ -32,13 +32,13 @@ class Team_Slider extends \WPML_Elementor_Module_With_Items {
 	protected function get_title( $field ) {
 		switch ( $field ) {
 			case 'title':
-				return __( 'Team: Name', 'animation-addons-for-elementor' );
+				return __( 'Team Slider: Name', 'animation-addons-for-elementor' );
 
 			case 'desc':
-				return __( 'Team: Description', 'animation-addons-for-elementor' );
+				return __( 'Team Slider: Description', 'animation-addons-for-elementor' );
 
 			case 'team_link':
-				return __( 'Team: Link', 'animation-addons-for-elementor' );
+				return __( 'Team Slider: Link', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

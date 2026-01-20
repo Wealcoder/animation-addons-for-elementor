@@ -33,13 +33,13 @@ class Services_Tab extends \WPML_Elementor_Module_With_Items {
 		switch ( $field ) {
 
 			case 'tab_number':
-				return __( 'Service: Tab Number', 'animation-addons-for-elementor' );
+				return __( 'Service Tab: Number', 'animation-addons-for-elementor' );
 
 			case 'tab_title':
-				return __( 'Service: Title', 'animation-addons-for-elementor' );
+				return __( 'Service Tab: Title', 'animation-addons-for-elementor' );
 
 			case 'tab_content':
-				return __( 'Service: Content', 'animation-addons-for-elementor' );
+				return __( 'Service Tab: Content', 'animation-addons-for-elementor' );
 
 			default:
 				return '';
