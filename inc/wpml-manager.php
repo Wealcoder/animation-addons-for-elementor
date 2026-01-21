@@ -76,11 +76,6 @@ class WPML_Manager
 						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
-					// [
-					// 	'field'       => 'btn_sub_text',
-					// 	'type'        => __('Button: Sub Text', 'animation-addons-for-elementor'),
-					// 	'editor_type' => 'LINE',
-					// ],
 				],
 			],
 
@@ -124,6 +119,11 @@ class WPML_Manager
 						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
 				],
 			],
 
@@ -131,7 +131,13 @@ class WPML_Manager
 			 * Image Box Slider Widget
 			 */
 			'wcf--image-box-slider' => [
-				'fields' => [],
+				'fields' => [
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				],
 
 				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Image_Box_Slider',]
 			],
@@ -151,6 +157,14 @@ class WPML_Manager
 						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'VISUAL',
 					],
+
+					[
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+
+					
 				],
 			],
 
@@ -1058,7 +1072,15 @@ class WPML_Manager
 			/**
 			 * Event Slider Widget (no fields)
 			 */
-			'wcf--event-slider' => [],
+			'wcf--event-slider' => [
+				'fields' => [
+				    [
+						'field'       => 'btn_text',
+						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'editor_type' => 'LINE',
+					],
+				]
+			],
 
 			/**
 			 * Video Posts Tab Widget (no fields)

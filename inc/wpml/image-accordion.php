@@ -29,6 +29,7 @@ class Image_Accordion extends \WPML_Elementor_Module_With_Items
 			'subtitle',
 			'description',
 			'details_link',
+			'btn_text',
 		];
 	}
 
@@ -49,6 +50,9 @@ class Image_Accordion extends \WPML_Elementor_Module_With_Items
 
 			case 'details_link':
 				return __('Image Accordion: Link', 'animation-addons-for-elementor-pro');
+
+			case 'btn_text':
+				return __('Image Accordion: Button', 'animation-addons-for-elementor-pro');
 
 			default:
 				return '';
