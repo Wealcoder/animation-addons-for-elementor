@@ -87,6 +87,11 @@
   right: 15px;
 }
 
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.eicon-lock {
+  background: unset;
+  padding: 0;
+}
+
 .elementor-control-horizontal_scroll_breakpoint,
 .elementor-control-text_animation_breakpoint,
 .elementor-control-spin_text_scrub,
