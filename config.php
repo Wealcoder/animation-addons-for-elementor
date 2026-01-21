@@ -3102,7 +3102,7 @@ $config = array(
 								'youtube_url'  => '',
 							),
 							'pin-element'             => array(
-								'label'        => 'Sticky Elements',
+								'label'        => 'Sticky/Pin Element',
 								'location'     => array(
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller',
