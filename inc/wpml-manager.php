@@ -86,7 +86,7 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'btn_text',
-						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Advanced Button: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 
@@ -106,22 +106,22 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'title',
-						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
+						'type'        => __('Image Box: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'subtitle',
-						'type'        => __('Content: Sub Title', 'animation-addons-for-elementor'),
+						'type'        => __('Image Box: Sub Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description',
-						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
+						'type'        => __('Image Box: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 					[
 						'field'       => 'btn_text',
-						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Image Box: Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -134,7 +134,7 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'btn_text',
-						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Image Box Slider: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -149,18 +149,18 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'title_text',
-						'type'        => __('Content: Title', 'animation-addons-for-elementor'),
+						'type'        => __('Icon Box: Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'description_text',
-						'type'        => __('Content: Description', 'animation-addons-for-elementor'),
+						'type'        => __('Icon Box: Description', 'animation-addons-for-elementor'),
 						'editor_type' => 'VISUAL',
 					],
 
 					[
 						'field'       => 'btn_text',
-						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Icon Box: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 
@@ -228,7 +228,7 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'testimonial_sect_title',
-						'type'        => __('Content: Section Title', 'animation-addons-for-elementor'),
+						'type'        => __('Modern Testimonial: Section Title', 'animation-addons-for-elementor'),
 						'editor_type' => 'AREA',
 					],
 				],
@@ -712,12 +712,12 @@ class WPML_Manager
 				'fields' => [
 					[
 						'field'       => 'meta_separator',
-						'type'        => __('Content: Separator Between', 'animation-addons-for-elementor'),
+						'type'        => __('Post Timeline: Separator Between', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
 						'field'       => 'post_by',
-						'type'        => __('Content: Author By', 'animation-addons-for-elementor'),
+						'type'        => __('Post Timeline: Author By', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 					[
@@ -727,7 +727,7 @@ class WPML_Manager
 					],
 					[
 						'field'       => 'load_more_btn_text',
-						'type'        => __('Content: Load More Button Text', 'animation-addons-for-elementor'),
+						'type'        => __('Post Timeline: Load More Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -746,7 +746,7 @@ class WPML_Manager
 						],
 						[
 							'field'       => 'list_content',
-							'type'        => __('List: Content', 'animation-addons-for-elementor'),
+							'type'        => __('Archive Title: Content', 'animation-addons-for-elementor'),
 							'editor_type' => 'AREA',
 						],
 						
@@ -766,7 +766,7 @@ class WPML_Manager
 					],
 					[
 						'field'       => 'button_text',
-						'type'        => __('Content: Button Text', 'animation-addons-for-elementor'),
+						'type'        => __('Search Form: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				],
@@ -1076,7 +1076,7 @@ class WPML_Manager
 				'fields' => [
 				    [
 						'field'       => 'btn_text',
-						'type'        => __('Button: Text', 'animation-addons-for-elementor'),
+						'type'        => __('Event Slider: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
 				]
