@@ -103,7 +103,8 @@
     "watch-g": "NODE_ENV=development gulp watch",
     "build-win": "gulp build --production",
     "watch-win": "gulp watch --development",
-    "production": "gulp release",
+    "production": "gulp zip",
+    "release": "npm run build-win && npm run production",
     "build": "wp-scripts build",
     "start": "wp-scripts start",
     "i18n": "wp i18n make-pot ."

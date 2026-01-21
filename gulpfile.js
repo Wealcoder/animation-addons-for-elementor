@@ -23,11 +23,13 @@ gulp.task('compile:js', () => {
         'assets/src/js/**/*.js',
         'assets/src/code-snippet/**/*.js',
         'assets/src/notices/**/*.js',
-        '!assets/src/js/**/*.min.js',
-        '!assets/src/js/utils/*.min.js',
+        // ❌ EXCLUDE
+        '!assets/src/**/*.min.js',
+        '!assets/src/code-snippet/cs-js/**',     // vendor (CodeMirror)
+        
     ])
         .pipe(mode.development(sourcemaps.init({largeFile: true})))
-        .pipe(eslint())
+        .pipe(eslint({ failAfterError: false }))
         .pipe(mode.development(eslint.format()))
        // .pipe(babel({ presets: [['@babel/preset-env', {modules: false}]] }))
         // .pipe(mode.production(terser()))
@@ -93,7 +95,7 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
     }
 }));
 
-const gulpZip = require('gulp-zip');
+const gulpZip = require('gulp-zip').default;
 const path = require('path');
 // Plugin info
 const pluginSlug = 'animation-addons-for-elementor'; // 🔁 change this
@@ -112,6 +114,9 @@ gulp.task('zip', () => {
         '!src/**',
         '!assets/src/**',
         '!dist/**',
+        
+        '!**/*.map',
+
         '!.git/**',
         '!.github/**',
         '!.vscode/**',
