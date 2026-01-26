@@ -12,7 +12,7 @@ class WPML_Manager
 {
 
 	/**
-	 * Recreate HappyAddons widgets usage on transtion save
+	 * Recreate Animation Addoon widgets usage on transtion save
 	 *
 	 * @param int $new_post_id
 	 * @param array $fields
