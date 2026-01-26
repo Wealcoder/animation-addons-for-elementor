@@ -142,6 +142,9 @@ class Image extends Widget_Base {
 					'nofollow'    => true,
 				),
 				'label_block' => true,
+				'dynamic' => [
+					'active' => true,
+				],
 			)
 		);
 
