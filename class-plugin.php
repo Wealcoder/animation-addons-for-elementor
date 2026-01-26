@@ -3,6 +3,7 @@
 namespace WCF_ADDONS;
 
 use Elementor\Plugin as ElementorPlugin;
+use WCF_ADDONS\INC\WPML as WPML;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -1036,6 +1037,14 @@ class Plugin {
 		// Load Loop Builder Integration.
 		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/init.php';
 
+
+		$wpml_file = WCF_ADDONS_PATH . 'inc/wpml-manager.php';
+
+		if ( defined( 'ICL_SITEPRESS_VERSION' ) && file_exists( $wpml_file ) ) {
+			include_once $wpml_file;
+		}
+
+
 		// extensions.
 		$this->register_extensions();
 	}
@@ -1060,8 +1069,8 @@ class Plugin {
 		$active_plugins = get_option( 'active_plugins' );
 		$dahsboard_link = admin_url( 'admin.php?page=wcf_addons_settings' );
 		?>
-<script type="text/template" id="tmpl-wcf-templates-header">
-	<div class="dialog-header dialog-lightbox-header">
+		<script type="text/template" id="tmpl-wcf-templates-header">
+			<div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header wcf-template-library--header">
 					<div class="elementor-templates-modal__header__logo-area"></div>
 					<div class="elementor-templates-modal__header__menu-area" data-disabled="false">
@@ -1088,8 +1097,9 @@ class Plugin {
 				</div>
 			</div>
 		</script>
-<script type="text/template" id="tmpl-wcf-templates">
-	<div class="dialog-message dialog-lightbox-message">
+
+		<script type="text/template" id="tmpl-wcf-templates">
+			<div class="dialog-message dialog-lightbox-message">
 				<div class="dialog-content dialog-lightbox-content">
 					<div class="elementor-template-library-templates">
 						<!--toolbar-->
@@ -1187,6 +1197,7 @@ class Plugin {
 				</div>
 			</div>
 		</script>
+
 		<script type="text/template" id="tmpl-wcf-templates-single">
 			<div class="dialog-header dialog-lightbox-header">
 				<div class="elementor-templates-modal__header">
@@ -1405,6 +1416,10 @@ class Plugin {
 			// enqueue modal's preview css.
 			add_action( 'elementor/preview/enqueue_styles', array( $this, 'preview_styles' ) );
 		}
+		
+		// WPML Support 
+		add_filter( 'wpml_elementor_widgets_to_translate', [  WPML\WPML_Manager::class, 'add_widgets_to_translate' ] );
+
 	}
 }
 

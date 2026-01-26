@@ -237,7 +237,7 @@ final class WCF_ADDONS_Plugin {
 		add_action( 'current_screen', function ( $screen ) {
 			// Check if user has required capabilities
 			
-			if ( current_user_can( 'manage_options' ) && $screen->id === 'animation-addon_page_wcf_addons_settings' ) {
+			if ( current_user_can( 'manage_options' ) &&  strpos( $screen->id, '_page_wcf_addons_settings' ) !== false ) {
 				// Redirect if setup is incomplete
 				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
 					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
