@@ -1079,6 +1079,10 @@ class WPML_Manager
 						'type'        => __('Event Slider: Button Text', 'animation-addons-for-elementor'),
 						'editor_type' => 'LINE',
 					],
+				],
+
+				'integration-class' => [
+					'WCF_ADDONS\INC\WPML\WIDGET\Event_Slider',
 				]
 			],
 
