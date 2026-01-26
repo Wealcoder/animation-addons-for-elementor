@@ -455,6 +455,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 = 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026
 
   - **Updated:** Extensions Icons
+  - **Fixed:** Filterable Slider issue
 
 = 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026
 
