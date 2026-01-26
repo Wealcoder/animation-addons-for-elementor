@@ -32,6 +32,7 @@
 .elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-] {
   position: relative;
 }
+
 .elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-]:after {
   content: "";
   display: inline-block;
@@ -50,20 +51,24 @@
 .elementor-control-content .wcfaddon-pro-notice {
   padding: 15px 0;
 }
+
 .elementor-control-content .wcfaddon-pro-notice-content {
   text-align: center;
 }
+
 .elementor-control-content .wcfaddon-pro-notice-content h4 {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.4;
   margin-top: 20px;
 }
+
 .elementor-control-content .wcfaddon-pro-notice-content p {
   line-height: 1.8;
   font-size: 11px;
   margin-top: 5px;
 }
+
 .elementor-control-content .wcfaddon-pro-notice-content .elementor-button {
   background-color: #d30c5c;
   color: #fff;
@@ -85,6 +90,12 @@
   position: absolute;
   top: 14px;
   right: 15px;
+}
+
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.eicon-lock {
+  background: unset;
+  color: #000;
+  padding: 0;
 }
 
 .elementor-control-horizontal_scroll_breakpoint,
@@ -115,4 +126,6 @@
 
 .aae-motion-nested-card:has(.nmc-back-wrap) {
   pointer-events: none;
-}/*# sourceMappingURL=editor.css.map */
+}
+
+/*# sourceMappingURL=editor.css.map */

@@ -35,8 +35,8 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
 
       fetch(
         `https://www.themecrowdy.com/wp-json/wp/v2/starter-templates?title-search=yes&s=${encodeURIComponent(
-          searchQuery.toLowerCase()
-        )}`
+          searchQuery.toLowerCase(),
+        )}`,
       )
         .then((response) => response.json())
         .then((data) => {
@@ -79,7 +79,7 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < results.length - 1 ? prev + 1 : prev
+            prev < results.length - 1 ? prev + 1 : prev,
           );
           break;
         case "ArrowUp":
@@ -114,7 +114,7 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
     isSelectedValueRef.current = true; // Mark that next query change is from selection
     setQuery(result.title);
     setMetaData((prev) => ({ ...prev, searchKey: result.title, pageNum: 1 }));
-    setOpenSearch(false)
+    setOpenSearch(false);
     setIsOpen(false);
     setSelectedIndex(-1);
 
@@ -175,7 +175,6 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
         ) : (
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#797979] pointer-events-none" />
         )}
-
         {/* Input Field */}
         <Input
           ref={inputRef}
@@ -208,7 +207,7 @@ const TemplateSearch = ({ metaData, setMetaData, setOpenSearch }) => {
               onClick={() => handleSelectResult(result)}
               className={cn(
                 "w-full py-2.5 first:pt-0 text-left text-[#202020] hover:text-[#F6502C] transition-colors cursor-pointer",
-                selectedIndex === index && "text-[#F6502C]"
+                selectedIndex === index && "text-[#F6502C]",
               )}
             >
               <p className="text-sm font-medium">{result.title}</p>

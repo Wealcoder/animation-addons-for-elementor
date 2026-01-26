@@ -45,7 +45,7 @@ const StaterTemplate = () => {
       setLoading(true);
       try {
         const url = new URL(
-          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page`
+          `${WCF_ADDONS_ADMIN?.st_template_domain}wp-json/wp/v2/starter-page`,
         );
 
         if (meta.searchKey) {
@@ -76,7 +76,7 @@ const StaterTemplate = () => {
         if (meta.license) {
           url.searchParams.append(
             "premium",
-            meta.license === "pro" ? "yes" : "no"
+            meta.license === "pro" ? "yes" : "no",
           );
         }
 
@@ -101,13 +101,13 @@ const StaterTemplate = () => {
         setLoading(false);
       }
     }),
-    []
+    [],
   );
 
   useEffect(() => {
     const handleScroll = () => {
       const viewport = viewportRef.current?.querySelector(
-        "[data-radix-scroll-area-viewport]"
+        "[data-radix-scroll-area-viewport]",
       );
 
       if (!viewport) return;
@@ -133,7 +133,7 @@ const StaterTemplate = () => {
     };
 
     const viewport = viewportRef.current?.querySelector(
-      "[data-radix-scroll-area-viewport]"
+      "[data-radix-scroll-area-viewport]",
     );
 
     if (viewport) {

@@ -34,6 +34,8 @@ export const hideElements = () => {
   if (wpfooter) wpfooter.style.display = "none";
   if (wpcontent) wpcontent.style.marginLeft = "0px";
   if (wpcontent) wpcontent.style.paddingLeft = "0px";
+  if (wpcontent) wpcontent.style.marginRight = "0px";
+  if (wpcontent) wpcontent.style.paddingRight = "0px";
   if (wpbodyContent)
     wpbodyContent.style.setProperty("padding-bottom", "0px", "important");
   if (wrap) wrap.style.margin = "0px";

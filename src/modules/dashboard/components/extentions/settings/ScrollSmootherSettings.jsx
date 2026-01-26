@@ -123,35 +123,29 @@ const ScrollSmootherSettings = () => {
 
     if (!WCF_ADDONS_ADMIN.nonce || !WCF_ADDONS_ADMIN.ajaxurl) return null;
 
-    const payload = {
+    const smooth = {
       desktop: formData.desktop,
       laptop: formData.laptop,
       tablet: formData.tablet,
       mobile: formData.mobile,
-      nonce: WCF_ADDONS_ADMIN.nonce ?? null,
     };
 
     await fetch(
       // WCF_ADDONS_ADMIN.ajaxurl,
-      `${WCF_ADDONS_ADMIN.ajaxurl}?action=save_smooth_scroller_settings`,
+      `${WCF_ADDONS_ADMIN.ajaxurl}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
         },
-        body: JSON.stringify(payload),
         credentials: "same-origin",
-
-        // body: new URLSearchParams({
-        //   action: "save_smooth_scroller_settings",
-        //   mobile: data.mobile,
-        //   disableMode: data.disableMode,
-        //   smooth: data.smooth,
-        //   media: convertedMedia,
-        //   nonce: WCF_ADDONS_ADMIN.nonce,
-        // }),
-      }
+        body: new URLSearchParams({
+          action: "save_smooth_scroller_settings",
+          smooth: JSON.stringify(smooth),
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      },
     )
       .then((response) => {
         return response.json();
@@ -293,7 +287,7 @@ const ScrollSmootherSettings = () => {
                                 const value = e.target.value;
 
                                 field.onChange(
-                                  value !== "" ? parseFloat(value) : ""
+                                  value !== "" ? parseFloat(value) : "",
                                 );
 
                                 // field.onChange(

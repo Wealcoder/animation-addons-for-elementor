@@ -1451,7 +1451,7 @@ $config = [
 								'youtube_url'  => '',
 							],
 							'pin-element'             => [
-								'label'        => 'Pin Elements',
+								'label'        => 'Pin / Sticky Elements',
 								'location'     => [
 									'cTab'     => 'gsap',
 									'pluginId' => 'wcf-smooth-scroller'
