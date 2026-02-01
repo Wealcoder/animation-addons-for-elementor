@@ -1,6 +1,34 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026
+
+  - **Feature:** Add WPML Support for All Widgets.
+  - **Feature:** Add None Option of Ease Field at Animation Extension section.
+
+= 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026
+
+  - **Updated:** Extensions Icons
+  - **Fixed:** Filterable Slider issue
+
+= 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026
+
+  - **Fix:** ScrollSmoother saving issue
+
+
+= 🌀 Animation Addons for Elementor v2.5.0 – 18 January 2026
+
+  - **Fix:** Dashboard RTL issues
+  - **Fix:** Korean Language design load issue
+  - **Fix:** ThemeBuilder Specific page search issue
+  - **Added:** ScrollSmoother responsive Controls
+  - **Added:** Animated Heading Color Mode
+
+= 🌀 Animation Addons for Elementor v2.4.9 – 04 Jan 2026
+
+  - **Fix:** Stacking Card Url 
+  - **Fix:** Dynamic Tag for taxonomy page
+
 = 🌀 Animation Addons for Elementor v2.4.8 – 21 December 2025
 
   - **Fix:** ThemeBuilder slug and id while import demo

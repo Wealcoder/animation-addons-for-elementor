@@ -452,6 +452,11 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026
+
+  - **Feature:** Add WPML Support for All Widgets.
+  - **Feature:** Add None Option of Ease Field at Animation Extension section.
+
 = 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026
 
   - **Updated:** Extensions Icons
