@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,8 +24,8 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 https://youtu.be/z4Y3xbsLo0M
 
 **Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, Code Snippet and 404 Builder.** Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
-  
-https://youtu.be/LD2mr5dHEng
+
+https://youtu.be/KrAeGWxZbmo
 
 ### Powerful GSAP Features for Advanced Animations
 🌟 ScrollTrigger
