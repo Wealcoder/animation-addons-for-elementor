@@ -525,7 +525,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 = 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
 
-      -🎨 **Added:** BlackFriday Offer  
+  - 🎨 **Added:** BlackFriday Offer  
 
 = 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
   
