@@ -3,6 +3,8 @@ node_modules/
 .sass-cache/
 build/
 dist/
+assets/css/*
+assets/js/*
 log/
 composer.lock
 .DS_Store

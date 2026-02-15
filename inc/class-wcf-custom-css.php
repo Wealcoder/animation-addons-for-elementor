@@ -30,7 +30,7 @@ class WCF_Custom_CSS {
 		$element->start_controls_section(
 			'wcf_section_custom_css',
 			[
-				'label' =>  sprintf('%s <i class="wcf-logo"></i>', esc_html__('Custom CSS', 'animation-addons-for-elementor')),
+				'label' =>  sprintf('<i class="wcf-logo"></i> %s', esc_html__('Custom CSS', 'animation-addons-for-elementor')),
 				'tab' => Controls_Manager::TAB_ADVANCED,
 			]
 		);

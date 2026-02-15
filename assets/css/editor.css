@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .elementor-panel .elementor-element .icon .wcf::after {
   content: "";
   position: absolute;
@@ -87,6 +88,17 @@
   right: 15px;
 }
 
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.aae-icon-lock,
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.aae-icon-unlock,
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.eicon-lock {
+  background: unset;
+  padding: 0;
+  font-size: 30px;
+  line-height: 1;
+  color: #FC6848;
+  top: 9px;
+}
+
 .elementor-control-horizontal_scroll_breakpoint,
 .elementor-control-text_animation_breakpoint,
 .elementor-control-spin_text_scrub,
@@ -115,4 +127,33 @@
 
 .aae-motion-nested-card:has(.nmc-back-wrap) {
   pointer-events: none;
+}
+
+@font-face {
+  font-family: "aae-icomoon";
+  src: url("../fonts/aae-icomoon.ttf?ualb3j") format("truetype"), url("../fonts/aae-icomoon.woff?ualb3j") format("woff"), url("../fonts/aae-icomoon.svg?ualb3j#aae-icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+[class^=aae-icon-], [class*=" aae-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "aae-icomoon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.aae-icon-unlock:before {
+  content: "󥢕";
+}
+
+.aae-icon-lock:before {
+  content: "󤤁";
 }

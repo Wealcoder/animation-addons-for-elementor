@@ -1114,31 +1114,37 @@ class Filterable_Slider extends Widget_Base
 		}
 	?>
 		<div class="swiper-slide <?php echo esc_attr($filter_class); ?>">
-			<div class="thumb">
-				<?php
-				$image_url = Group_Control_Image_Size::get_attachment_image_src($item['project_image']['id'], 'image_size', $settings);
+			<?php if(isset($item['link']['url']) && $item['link']['url'] != '') {?>
+			<a href="<?php echo esc_url($item['link']['url']);?>">
+			<?php } ?>
+				<div class="thumb">
+					<?php
+					$image_url = Group_Control_Image_Size::get_attachment_image_src($item['project_image']['id'], 'image_size', $settings);
 
-				if (! $image_url && isset($item['project_image']['url'])) {
-					$image_url = $item['project_image']['url'];
-				}
-				$image_html = '<img class="swiper-slide-image" src="' . esc_url($image_url) . '" alt="' . esc_attr(Control_Media::get_image_alt($item['project_image'])) . '" />';
+					if (! $image_url && isset($item['project_image']['url'])) {
+						$image_url = $item['project_image']['url'];
+					}
+					$image_html = '<img class="swiper-slide-image" src="' . esc_url($image_url) . '" alt="' . esc_attr(Control_Media::get_image_alt($item['project_image'])) . '" />';
 
-				echo wp_kses_post($image_html);
-				?>
-			</div>
-			<div class="content">
-				<<?php Utils::print_validated_html_tag($settings['title_tag']); ?> class="title">
-					<?php $this->print_unescaped_setting('title', 'project_items', $index); ?>
-				</<?php Utils::print_validated_html_tag($settings['title_tag']); ?>>
+					echo wp_kses_post($image_html);
+					?>
+				</div>
+				<div class="content">
+					<<?php Utils::print_validated_html_tag($settings['title_tag']); ?> class="title">
+						<?php $this->print_unescaped_setting('title', 'project_items', $index); ?>
+					</<?php Utils::print_validated_html_tag($settings['title_tag']); ?>>
 
-				<?php if (! empty($item['subtitle'])) : ?>
-					<div class="subtitle"><?php echo esc_html($item['subtitle']); ?></div>
-				<?php endif; ?>
+					<?php if (! empty($item['subtitle'])) : ?>
+						<div class="subtitle"><?php echo esc_html($item['subtitle']); ?></div>
+					<?php endif; ?>
 
-				<?php if (! empty($item['description'])) : ?>
-					<div class="description"><?php echo wp_kses_post($this->parse_text_editor($item['description'])); ?></div>
-				<?php endif; ?>
-			</div>
+					<?php if (! empty($item['description'])) : ?>
+						<div class="description"><?php echo wp_kses_post($this->parse_text_editor($item['description'])); ?></div>
+					<?php endif; ?>
+				</div>
+				<?php if(isset($item['link']['url']) && $item['link']['url'] != '') {?>
+			</a>
+			<?php } ?>
 		</div>
 <?php
 	}

@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5.1
+Stable tag: 2.5.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,8 +24,8 @@ As the No.1 **[WordPress Animation Plugin](https://animation-addons.com/)**, it 
 https://youtu.be/z4Y3xbsLo0M
 
 **Animation Addons for Elementor** includes all essential website-building tools, such as the **Custom Header & Footer Builder, CPT Builder, Animation Builder, Single Page and Single Post Builder, Mega Menu Builder, Archive Page Builder, Code Snippet and 404 Builder.** Designed to be lightweight, it ensures fast page loading times for a seamless user experience.
-  
-https://youtu.be/LD2mr5dHEng
+
+https://youtu.be/KrAeGWxZbmo
 
 ### Powerful GSAP Features for Advanced Animations
 🌟 ScrollTrigger
@@ -452,6 +452,16 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026
+
+  - **Feature:** Add WPML Support for All Widgets.
+  - **Feature:** Add None Option of Ease Field at Animation Extension section.
+
+= 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026
+
+  - **Updated:** Extensions Icons
+  - **Fixed:** Filterable Slider issue
+
 = 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026
 
   - **Fix:** ScrollSmoother saving issue
@@ -515,7 +525,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 = 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
 
-      -🎨 **Added:** BlackFriday Offer  
+  - 🎨 **Added:** BlackFriday Offer  
 
 = 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
   
