@@ -452,6 +452,11 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026
+
+  - **Improved:** Cleaned up unnecessary code
+  - **Added:** 3+ Section's Added.
+  
 = 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026
 
   - **Feature:** Add WPML Support for All Widgets.
