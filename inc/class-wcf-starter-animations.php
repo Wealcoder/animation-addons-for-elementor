@@ -308,9 +308,30 @@ class WCF_Starter_Animations {
         );
 
         $element->add_control(
-            'wcf_char_translate_x',
+            'wcf_char_preset',
             [
-                'label' => esc_html__( 'Translate X (px)', 'animation-addons-for-elementor' ),
+                'label' => esc_html__( 'Character Preset', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SELECT,
+                'default' => 'revolve',
+                'options' => [
+                    'revolve'       => 'Revolve Scale',
+                    'ball'          => 'Ball Drop',
+                    'slide'         => 'Side Slide',
+                    'revolve_drop'  => 'Revolve Drop',
+                    'drop_vanish'   => 'Drop Vanish',
+                    'twister'       => 'Twister',
+                ],
+                'prefix_class' => 'wcf-char-preset-',
+                'condition' => [
+                    'wcf_starter_animations' => 'text-char-animate',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_char_revolve_x',
+            [
+                'label' => 'Translate X',
                 'type'  => Controls_Manager::NUMBER,
                 'default' => -150,
                 'selectors' => [
@@ -318,29 +339,45 @@ class WCF_Starter_Animations {
                 ],
                 'condition' => [
                     'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset'        => 'revolve',
                 ],
             ]
         );
 
         $element->add_control(
-            'wcf_char_translate_y',
+            'wcf_char_revolve_y',
             [
-                'label' => esc_html__( 'Translate Y (px)', 'animation-addons-for-elementor' ),
+                'label' => 'Translate Y',
                 'type'  => Controls_Manager::NUMBER,
-                'default' => 0,
+                'default' => -50,
                 'selectors' => [
                     '{{WRAPPER}}' => '--wcf-char-y: {{VALUE}}px;',
                 ],
                 'condition' => [
                     'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset'        => 'revolve',
                 ],
             ]
         );
-
         $element->add_control(
-            'wcf_char_rotate',
+            'wcf_char_ball_y',
             [
-                'label' => esc_html__( 'Rotate (deg)', 'animation-addons-for-elementor' ),
+                'label' => 'Drop Distance',
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 200,
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-char-y: {{VALUE}}px;',
+                ],
+                'condition' => [
+                    'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset'        => 'ball',
+                ],
+            ]
+        );
+        $element->add_control(
+            'wcf_char_twister_rotate',
+            [
+                'label' => 'Rotate Degree',
                 'type'  => Controls_Manager::NUMBER,
                 'default' => -180,
                 'selectors' => [
@@ -348,41 +385,54 @@ class WCF_Starter_Animations {
                 ],
                 'condition' => [
                     'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset'        => 'twister',
+                ],
+            ]
+        );
+        $element->add_control(
+            'wcf_char_custom_x',
+            [
+                'label' => 'Translate X',
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 0,
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-char-x: {{VALUE}}px;',
+                ],
+                'condition' => [
+                    'wcf_char_preset' => 'custom',
                 ],
             ]
         );
 
         $element->add_control(
-            'wcf_char_scale',
+            'wcf_char_custom_y',
             [
-                'label' => esc_html__( 'Scale', 'animation-addons-for-elementor' ),
+                'label' => 'Translate Y',
                 'type'  => Controls_Manager::NUMBER,
-                'default' => 2,
+                'default' => 0,
                 'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-char-scale: {{VALUE}};',
+                    '{{WRAPPER}}' => '--wcf-char-y: {{VALUE}}px;',
                 ],
                 'condition' => [
-                    'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset' => 'custom',
                 ],
             ]
         );
-
 
         $element->add_control(
-            'wcf_char_stagger',
+            'wcf_char_custom_rotate',
             [
-                'label' => esc_html__( 'Stagger Delay (s)', 'animation-addons-for-elementor' ),
+                'label' => 'Rotate',
                 'type'  => Controls_Manager::NUMBER,
-                'default' => 0.05,
+                'default' => 0,
                 'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-stagger: {{VALUE}}s;',
+                    '{{WRAPPER}}' => '--wcf-char-rotate: {{VALUE}}deg;',
                 ],
                 'condition' => [
-                    'wcf_starter_animations' => 'text-char-animate',
+                    'wcf_char_preset' => 'custom',
                 ],
             ]
         );
-
 
         $element->add_control(
             'wcf_play_animation',
@@ -396,12 +446,6 @@ class WCF_Starter_Animations {
                 ],
             ]
         );
-
-
-
-
-
-
 
         $element->end_controls_section();
     }
@@ -442,7 +486,7 @@ class WCF_Starter_Animations {
             $options['text-typewriter'] = esc_html__( 'Typewriter', 'animation-addons-for-elementor' );
             $options['text-mask-wipe'] = esc_html__( 'Mask Wipe', 'animation-addons-for-elementor' );
 
-            /* 🔥 NEW */
+            /* NEW */
             $options['text-wave'] = esc_html__( 'Water Wave', 'animation-addons-for-elementor' );
             $options['text-bg-clip'] = esc_html__( 'Background Clip Text', 'animation-addons-for-elementor' );
             $options['text-char-animate'] = esc_html__( 'Character Animation', 'animation-addons-for-elementor' );

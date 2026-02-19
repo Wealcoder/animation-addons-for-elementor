@@ -345,12 +345,63 @@
     background-position: left 0 top 50%;
   }
 }
-
 /* =====================================
-   CHARACTER ANIMATION ENGINE (FINAL FIX)
+   CHARACTER ANIMATION ENGINE (CLEAN)
 ===================================== */
 
-/* Parent */
+/* ===============================
+   PRESET DEFAULT VALUES
+================================ */
+
+/* Revolve */
+.wcf-char-preset-revolve {
+  --wcf-char-x: -150px;
+  --wcf-char-y: -50px;
+  --wcf-char-rotate: -180deg;
+  --wcf-char-scale: 2;
+}
+
+/* Ball Drop */
+.wcf-char-preset-ball {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -200px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 1;
+}
+
+/* Slide */
+.wcf-char-preset-slide {
+  --wcf-char-x: -100px;
+  --wcf-char-y: 0px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 1;
+}
+
+/* Revolve Drop */
+.wcf-char-preset-revolve_drop {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -150px;
+  --wcf-char-rotate: -360deg;
+  --wcf-char-scale: 1.5;
+}
+
+/* Drop Vanish */
+.wcf-char-preset-drop_vanish {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -250px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 0.3;
+}
+
+/* Twister */
+.wcf-char-preset-twister {
+  --wcf-char-x: 0px;
+  --wcf-char-y: 0px;
+  --wcf-char-rotate: -720deg;
+  --wcf-char-scale: 1;
+}
+
+/* Parent Fix */
 [class*="wcf-starter-animations-text-char"] 
 .elementor-widget-container > * {
   display: inline-block;
@@ -361,22 +412,27 @@
 .elementor-widget-container > * span {
   display: inline-block;
   opacity: 0;
+
   transform:
-    translate(var(--wcf-char-x,-150px), var(--wcf-char-y,0))
-    rotate(var(--wcf-char-rotate,-180deg))
-    scale(var(--wcf-char-scale,2));
-  animation-delay: calc(var(--wcf-stagger,0.05s) * var(--i));
+    translate(var(--wcf-char-x, -150px), var(--wcf-char-y, 0))
+    rotate(var(--wcf-char-rotate, -180deg))
+    scale(var(--wcf-char-scale, 2));
+
+  animation-delay: calc(var(--wcf-stagger, 0.05s) * var(--i));
+  will-change: transform, opacity;
 }
 
 /* Animate State */
 .wcf-animate[class*="wcf-starter-animations-text-char"] 
 .elementor-widget-container > * span {
+
   animation-name: wcf-char;
-  animation-duration: var(--wcf-duration,0.5s);
-  animation-timing-function: var(--wcf-ease,ease);
+  animation-duration: var(--wcf-duration, 0.5s);
+  animation-timing-function: var(--wcf-ease, ease);
   animation-fill-mode: forwards;
 }
 
+/* Keyframe */
 @keyframes wcf-char {
   to {
     opacity: 1;
