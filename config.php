@@ -2445,7 +2445,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'icon'         => 'wcf-icon-Advanced-Pricing-Table',
 						'keywords'     => array(
@@ -2753,7 +2753,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_upcoming'  => false,
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_extension' => false,
 						'keywords'     => array(
 							'live weather',
