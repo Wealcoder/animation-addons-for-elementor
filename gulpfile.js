@@ -112,7 +112,6 @@ gulp.task('zip', () => {
         '!node_modules/**',
         '!public/**',
         '!src/**',
-        '!assets/src/**',
         '!dist/**',
         
         '!**/*.map',
