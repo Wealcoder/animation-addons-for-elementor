@@ -1,6 +1,11 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026
+
+    - Added: Advanced Pricing Table -New Widget Introduce.
+    - Added: Weather -New Widget Introduce.
+
 = 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026
 
   - **Improved:** Cleaned up unnecessary code
