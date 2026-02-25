@@ -3,7 +3,9 @@
 ===================================== */
 
 [class*="wcf-starter-animations-"] 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+[class*="wcf-starter-animations-"] > *,
+.wcf-target-self[class*="wcf-starter-animations-"] {
   display: inline-block;
   will-change: transform, opacity, clip-path;
 }
@@ -13,7 +15,9 @@
 ===================================== */
 
 .wcf-animate[class*="wcf-starter-animations-"] 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate[class*="wcf-starter-animations-"] > *,
+.wcf-animate.wcf-target-self[class*="wcf-starter-animations-"] {
   animation-duration: var(--wcf-duration, 700ms);
   animation-delay: var(--wcf-delay, 0ms);
   animation-timing-function: var(--wcf-ease, ease);
@@ -22,7 +26,9 @@
 
 /* Base reveal initial state */
 .wcf-starter-animations-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal > *,
+.wcf-starter-animations-reveal.wcf-target-self {
   clip-path: inset(0 0 0 0);
   opacity: 1;
 }
@@ -31,33 +37,45 @@
 
 /* From Bottom */
 .wcf-starter-animations-reveal.wcf-reveal-bottom 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-bottom > *,
+.wcf-starter-animations-reveal.wcf-reveal-bottom.wcf-target-self {
   clip-path: inset(100% 0 0 0);
 }
 
 /* From Top */
 .wcf-starter-animations-reveal.wcf-reveal-top 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-top > *,
+.wcf-starter-animations-reveal.wcf-reveal-top.wcf-target-self {
   clip-path: inset(0 0 100% 0);
 }
 
 /* From Left */
 .wcf-starter-animations-reveal.wcf-reveal-left 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-left > *,
+.wcf-starter-animations-reveal.wcf-reveal-left.wcf-target-self {
   clip-path: inset(0 100% 0 0);
 }
 
 /* From Right */
 .wcf-starter-animations-reveal.wcf-reveal-right 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-right > *,
+.wcf-starter-animations-reveal.wcf-reveal-right.wcf-target-self {
   clip-path: inset(0 0 0 100%);
 }
 .wcf-starter-animations-reveal.wcf-reveal-fade 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-fade > *,
+.wcf-starter-animations-reveal.wcf-reveal-fade.wcf-target-self {
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-reveal > *,
+.wcf-animate.wcf-starter-animations-reveal.wcf-target-self {
   animation-name: wcf-reveal-anim;
 }
 
@@ -71,7 +89,9 @@
 // from center 
 /* From Center (Horizontal Expand) */
 .wcf-starter-animations-reveal.wcf-reveal-center 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal.wcf-reveal-center > *,
+.wcf-starter-animations-reveal.wcf-reveal-center.wcf-target-self {
   clip-path: inset(0 50% 0 50%);
 }
 
@@ -81,12 +101,16 @@
 
 /* Scale Up */
 .wcf-starter-animations-scale-up 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-scale-up > *,
+.wcf-starter-animations-scale-up.wcf-target-self {
   transform: scale(0.6);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-scale-up 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-scale-up > *,
+.wcf-animate.wcf-starter-animations-scale-up.wcf-target-self {
   animation-name: wcf-scale-up;
 }
 @keyframes wcf-scale-up {
@@ -95,12 +119,16 @@
 
 /* Rotate In */
 .wcf-starter-animations-rotate-in 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-rotate-in > *,
+.wcf-starter-animations-rotate-in.wcf-target-self {
   transform: rotate(-45deg);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-rotate-in 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-rotate-in > *,
+.wcf-animate.wcf-starter-animations-rotate-in.wcf-target-self {
   animation-name: wcf-rotate-in;
 }
 @keyframes wcf-rotate-in {
@@ -109,12 +137,16 @@
 
 /* Slide Up */
 .wcf-starter-animations-slide-up 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-slide-up > *,
+.wcf-starter-animations-slide-up.wcf-target-self {
   transform: translateY(40px);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-slide-up 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-slide-up > *,
+.wcf-animate.wcf-starter-animations-slide-up.wcf-target-self {
   animation-name: wcf-slide-up;
 }
 @keyframes wcf-slide-up {
@@ -123,12 +155,16 @@
 
 /* Skew Reveal */
 .wcf-starter-animations-skew-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-skew-reveal > *,
+.wcf-starter-animations-skew-reveal.wcf-target-self {
   transform: skewX(18deg) translateX(-40px);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-skew-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-skew-reveal > *,
+.wcf-animate.wcf-starter-animations-skew-reveal.wcf-target-self {
   animation-name: wcf-skew-reveal;
 }
 @keyframes wcf-skew-reveal {
@@ -137,13 +173,17 @@
 
 /* Flip X */
 .wcf-starter-animations-flip-x 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-flip-x > *,
+.wcf-starter-animations-flip-x.wcf-target-self {
   transform: rotateX(90deg);
   opacity: 0;
   transform-style: preserve-3d;
 }
 .wcf-animate.wcf-starter-animations-flip-x 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-flip-x > *,
+.wcf-animate.wcf-starter-animations-flip-x.wcf-target-self {
   animation-name: wcf-flip-x;
 }
 @keyframes wcf-flip-x {
@@ -152,12 +192,16 @@
 
 /* Zoom In */
 .wcf-starter-animations-zoom-in 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-zoom-in > *,
+.wcf-starter-animations-zoom-in.wcf-target-self {
   transform: scale(1.3);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-zoom-in 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-zoom-in > *,
+.wcf-animate.wcf-starter-animations-zoom-in.wcf-target-self {
   animation-name: wcf-zoom-in;
 }
 @keyframes wcf-zoom-in {
@@ -166,12 +210,16 @@
 
 /* Combo Reveal */
 .wcf-starter-animations-combo-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-combo-reveal > *,
+.wcf-starter-animations-combo-reveal.wcf-target-self {
   transform: translateY(40px) scale(0.9);
   opacity: 0;
 }
 .wcf-animate.wcf-starter-animations-combo-reveal 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-combo-reveal > *,
+.wcf-animate.wcf-starter-animations-combo-reveal.wcf-target-self {
   animation-name: wcf-combo-reveal;
 }
 @keyframes wcf-combo-reveal {
@@ -211,14 +259,18 @@
 }
 
 .wcf-starter-animations-text-typewriter 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-text-typewriter > *,
+.wcf-target-self.wcf-starter-animations-text-typewriter {
   overflow: hidden;
   white-space: nowrap;
   width: 0;
 }
 
 .wcf-animate.wcf-starter-animations-text-typewriter 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-text-typewriter > *,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-typewriter {
   animation: 
     wcf-typewriter var(--wcf-duration, 2s) steps(30) forwards,
     wcf-caret 1s step-end;
@@ -237,7 +289,9 @@
 ===================================== */
 
 .wcf-starter-animations-text-mask-wipe 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-text-mask-wipe > *,
+.wcf-target-self.wcf-starter-animations-text-mask-wipe {
   position: relative;
   display: inline-block;
   overflow: hidden;
@@ -245,7 +299,9 @@
 
 /* Mask layer */
 .wcf-starter-animations-text-mask-wipe 
-.elementor-widget-container > *::after {
+.elementor-widget-container > *::after,
+.wcf-starter-animations-text-mask-wipe > *::after,
+.wcf-target-self.wcf-starter-animations-text-mask-wipe::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -256,7 +312,9 @@
 
 /* Animate */
 .wcf-animate.wcf-starter-animations-text-mask-wipe 
-.elementor-widget-container > *::after {
+.elementor-widget-container > *::after,
+.wcf-animate.wcf-starter-animations-text-mask-wipe > *::after,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-mask-wipe::after {
   animation: wcf-mask-wipe 
             var(--wcf-duration, 1000ms)
             var(--wcf-ease, cubic-bezier(.77,0,.18,1))
@@ -281,14 +339,18 @@
 ===================================== */
 
 .wcf-starter-animations-text-wave 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-text-wave > *,
+.wcf-target-self.wcf-starter-animations-text-wave {
   position: relative;
   color: transparent;
 }
 
 /* Animated layer */
 .wcf-starter-animations-text-wave 
-.elementor-widget-container > *::after {
+.elementor-widget-container > *::after,
+.wcf-starter-animations-text-wave > *::after,
+.wcf-target-self.wcf-starter-animations-text-wave::after {
   content: attr(data-text);
   position: absolute;
   left: 0;
@@ -317,7 +379,9 @@
 ===================================== */
 
 .wcf-starter-animations-text-bg-clip 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-starter-animations-text-bg-clip > *,
+.wcf-target-self.wcf-starter-animations-text-bg-clip {
   position: relative;
   color: var(--wcf-bg-text-color, rgba(255,0,0,0.1));
   background-image: var(--wcf-bg-text-image);
@@ -330,7 +394,9 @@
 
 /* Animate only when triggered */
 .wcf-animate.wcf-starter-animations-text-bg-clip 
-.elementor-widget-container > * {
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-text-bg-clip > *,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-bg-clip {
   animation: wcf-bg-text-animation var(--wcf-bg-speed,15s) linear infinite;
 }
 
@@ -402,14 +468,16 @@
 }
 
 /* Parent Fix */
-[class*="wcf-starter-animations-text-char"] 
-.elementor-widget-container > * {
+[class*="wcf-starter-animations-text-char"] .elementor-widget-container > *,
+[class*="wcf-starter-animations-text-char"] > *,
+.wcf-target-self[class*="wcf-starter-animations-text-char"] {
   display: inline-block;
 }
 
 /* Initial State */
-[class*="wcf-starter-animations-text-char"] 
-.elementor-widget-container > * span {
+[class*="wcf-starter-animations-text-char"] .elementor-widget-container > * span,
+[class*="wcf-starter-animations-text-char"] > * span,
+.wcf-target-self[class*="wcf-starter-animations-text-char"] span {
   display: inline-block;
   opacity: 0;
 
@@ -423,8 +491,9 @@
 }
 
 /* Animate State */
-.wcf-animate[class*="wcf-starter-animations-text-char"] 
-.elementor-widget-container > * span {
+.wcf-animate[class*="wcf-starter-animations-text-char"] .elementor-widget-container > * span,
+.wcf-animate[class*="wcf-starter-animations-text-char"] > * span,
+.wcf-animate.wcf-target-self[class*="wcf-starter-animations-text-char"] span {
 
   animation-name: wcf-char;
   animation-duration: var(--wcf-duration, 0.5s);
