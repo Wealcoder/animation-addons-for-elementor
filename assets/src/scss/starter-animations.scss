@@ -24,59 +24,44 @@
   animation-fill-mode: forwards;
 }
 
-/* Base reveal initial state */
-.wcf-starter-animations-reveal 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal > *,
-.wcf-starter-animations-reveal.wcf-target-self {
+/* =====================================
+   REVEAL ENGINE (CORRECT TARGET)
+===================================== */
+
+/* Initial Hidden State */
+.wcf-starter-animations-reveal {
+  opacity: 0;
   clip-path: inset(0 0 0 0);
-  opacity: 1;
 }
 
-/* === Direction States === */
-
-/* From Bottom */
-.wcf-starter-animations-reveal.wcf-reveal-bottom 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-bottom > *,
-.wcf-starter-animations-reveal.wcf-reveal-bottom.wcf-target-self {
+/* Direction States */
+.wcf-starter-animations-reveal.wcf-reveal-bottom {
   clip-path: inset(100% 0 0 0);
 }
 
-/* From Top */
-.wcf-starter-animations-reveal.wcf-reveal-top 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-top > *,
-.wcf-starter-animations-reveal.wcf-reveal-top.wcf-target-self {
+.wcf-starter-animations-reveal.wcf-reveal-top {
   clip-path: inset(0 0 100% 0);
 }
 
-/* From Left */
-.wcf-starter-animations-reveal.wcf-reveal-left 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-left > *,
-.wcf-starter-animations-reveal.wcf-reveal-left.wcf-target-self {
+.wcf-starter-animations-reveal.wcf-reveal-left {
   clip-path: inset(0 100% 0 0);
 }
 
-/* From Right */
-.wcf-starter-animations-reveal.wcf-reveal-right 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-right > *,
-.wcf-starter-animations-reveal.wcf-reveal-right.wcf-target-self {
+.wcf-starter-animations-reveal.wcf-reveal-right {
   clip-path: inset(0 0 0 100%);
 }
-.wcf-starter-animations-reveal.wcf-reveal-fade 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-fade > *,
-.wcf-starter-animations-reveal.wcf-reveal-fade.wcf-target-self {
-  opacity: 0;
+
+.wcf-starter-animations-reveal.wcf-reveal-center {
+  clip-path: inset(0 50% 0 50%);
 }
-.wcf-animate.wcf-starter-animations-reveal 
-.elementor-widget-container > *,
-.wcf-animate.wcf-starter-animations-reveal > *,
-.wcf-animate.wcf-starter-animations-reveal.wcf-target-self {
+
+/* Animate State */
+.wcf-animate.wcf-starter-animations-reveal {
   animation-name: wcf-reveal-anim;
+  animation-duration: var(--wcf-duration, 700ms);
+  animation-timing-function: var(--wcf-ease, ease);
+  animation-delay: var(--wcf-delay, 0ms);
+  animation-fill-mode: forwards;
 }
 
 @keyframes wcf-reveal-anim {
@@ -84,15 +69,6 @@
     clip-path: inset(0 0 0 0);
     opacity: 1;
   }
-}
-
-// from center 
-/* From Center (Horizontal Expand) */
-.wcf-starter-animations-reveal.wcf-reveal-center 
-.elementor-widget-container > *,
-.wcf-starter-animations-reveal.wcf-reveal-center > *,
-.wcf-starter-animations-reveal.wcf-reveal-center.wcf-target-self {
-  clip-path: inset(0 50% 0 50%);
 }
 
 /* =====================================

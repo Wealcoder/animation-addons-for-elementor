@@ -248,6 +248,7 @@ class WCF_Starter_Animations {
                     'wcf_starter_animations' => 'reveal',
                 ],
                 'render_type' => 'ui',
+                'prefix_class' => 'wcf-reveal-',
                 'frontend_available' => true,
             ]
         );
@@ -618,130 +619,33 @@ class WCF_Starter_Animations {
     public static function editor_play_button_js() {
         ?>
         <script>
-        (function(){
-            document.addEventListener('click', function(e){
-                var btn = e.target.closest && e.target.closest('.wcf-play-animation-btn');
-                if (!btn) return;
+        document.addEventListener('click', function(e){
 
-                // Try to determine the widget id from the editor control DOM and panel APIs.
-                function findWidgetId(node) {
-                    var el = node;
-                    while (el && el !== document.body) {
-                        if (el.getAttribute) {
-                            if (el.getAttribute('data-element-id')) return el.getAttribute('data-element-id');
-                            if (el.getAttribute('data-element_id')) return el.getAttribute('data-element_id');
-                            if (el.getAttribute('data-id')) return el.getAttribute('data-id');
-                            if (el.getAttribute('data-widget-id')) return el.getAttribute('data-widget-id');
-                            if (el.getAttribute('data-widget_id')) return el.getAttribute('data-widget_id');
-                        }
-                        el = el.parentNode;
-                    }
+        const btn = e.target.closest('.wcf-play-animation-btn');
+        if (!btn) return;
 
-                    // Try to read from elementor panel model / current page view
-                    try {
-                        var panel = window.elementor && window.elementor.getPanelView && window.elementor.getPanelView();
-                        var currentPage = panel && panel.getCurrentPageView && panel.getCurrentPageView();
-                        var editedView = currentPage && currentPage.getOption && currentPage.getOption('editedElementView');
-                        if (!editedView && panel && panel.getOption) {
-                            editedView = panel.getOption && panel.getOption('editedElementView');
-                        }
-                        if (editedView && editedView.model) {
-                            var m = editedView.model;
-                            var id = (m.get && (m.get('id') || m.get('element_id') || m.get('elementId'))) || m.id || null;
-                            if (id) return id;
-                        }
-                        if (currentPage && currentPage.getOption) {
-                            var ev = currentPage.getOption('editedElementView');
-                            if (ev && ev.model) {
-                                var mm = ev.model;
-                                var iid = (mm.get && (mm.get('id') || mm.get('element_id'))) || mm.id || null;
-                                if (iid) return iid;
-                            }
-                        }
-                    } catch(e){}
+        // Find current edited widget
+        try {
+            const panel = elementor.getPanelView();
+            const page  = panel.getCurrentPageView();
+            const view  = page.getOption('editedElementView');
+            const model = view.model;
+            const id    = model.get('id');
 
-                    return null;
-                }
+            const iframe = document.querySelector('iframe');
+            const target = iframe.contentDocument.querySelector(
+            '.elementor-element-' + id
+            );
 
-                var widgetId = findWidgetId(btn) || null;
-
-                try { console.log('wcf-play detected widgetId:', widgetId); } catch(e){}
-
-                var widgetText = null;
-                try {
-                    var panel = window.elementor && window.elementor.getPanelView && window.elementor.getPanelView();
-                    var currentPage = panel && panel.getCurrentPageView && panel.getCurrentPageView();
-                    var editedView = currentPage && currentPage.getOption && currentPage.getOption('editedElementView');
-                    if (!editedView && panel && panel.getOption) editedView = panel.getOption && panel.getOption('editedElementView');
-                    var model = editedView && editedView.model ? editedView.model : (editedView && editedView.options && editedView.options.model ? editedView.options.model : null);
-                    if (model) {
-                        var settings = null;
-                        try { settings = (model.get && model.get('settings')) || model.settings || model.attributes && model.attributes.settings; } catch(e) { settings = null; }
-                        if (settings) {
-                            var keys = ['title','text','editor','content','heading','html'];
-                            for (var i=0;i<keys.length;i++) {
-                                var k = keys[i];
-                                if (settings[k]) { widgetText = settings[k]; break; }
-                            }
-                        }
-                    }
-                } catch(e) {}
-
-                var payload = { wcfReplay: true, widgetId: widgetId, widgetText: widgetText, __debug: { foundOnButton: !!widgetId, modelText: !!widgetText } };
-                var iframes = document.querySelectorAll('iframe');
-                iframes.forEach(function(iframe){
-                    try {
-                        iframe.contentWindow.postMessage(JSON.stringify(payload), '*');
-                    } catch(err) {
-                        try { iframe.contentWindow.postMessage(payload, '*'); } catch(e){}
-                    }
-                });
-
-            });
-
-            function editorInitCharSplits(){
-                try{
-                    var all = document.querySelectorAll('[class*="wcf-starter-animations-text-char"]');
-                    all.forEach(function(wrapper){
-                        try{
-                            if (wrapper.dataset && wrapper.dataset.wcfEditorCharInit) return;
-
-                            var target = wrapper.querySelector('.elementor-widget-container > *') || wrapper.querySelector('.elementor-heading-title') || Array.from(wrapper.children).find(function(c){ return c.nodeType === 1; });
-                            if (target && target.classList && target.classList.contains('elementor-inline-editing')) return;
-                            if (!target) return;
-
-                            if (target.querySelector && target.querySelector('span')) { if (wrapper.dataset) wrapper.dataset.wcfEditorCharInit = '1'; return; }
-
-                            var text = (target.textContent || target.innerText || '').trim();
-                            if (!text) { if (wrapper.dataset) wrapper.dataset.wcfEditorCharInit = '1'; return; }
-
-                            var frag = document.createDocumentFragment();
-                            text.split('').forEach(function(ch,i){
-                                var span = document.createElement('span');
-                                span.textContent = ch;
-                                span.style.setProperty('--i', i);
-                                frag.appendChild(span);
-                            });
-
-                            target.innerHTML = '';
-                            target.appendChild(frag);
-                            if (wrapper.dataset) wrapper.dataset.wcfEditorCharInit = '1';
-                            try{ target.setAttribute('data-char-init','true'); } catch(e){}
-                        }catch(e){}
-                    });
-                }catch(e){}
+            if (target && iframe.contentWindow.wcfReplayAnimation) {
+            iframe.contentWindow.wcfReplayAnimation(target);
             }
 
-            try{ editorInitCharSplits(); } catch(e){}
-            try{
-                var _wcf_editor_interval_count = 0;
-                var _wcf_editor_interval = setInterval(function(){
-                    try{ editorInitCharSplits(); } catch(e){}
-                    _wcf_editor_interval_count++;
-                    if (_wcf_editor_interval_count > 12) { clearInterval(_wcf_editor_interval); }
-                }, 500);
-            } catch(e){}
-        })();
+        } catch(err){
+            console.log('Replay error', err);
+        }
+
+        });
         </script>
         <?php
     }
