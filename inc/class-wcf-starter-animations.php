@@ -14,6 +14,13 @@ class WCF_Starter_Animations {
             [ 'name' => 'e-heading',   'section' => 'section_title' ],
             [ 'name' => 'text-editor', 'section' => 'section_editor' ],
             [ 'name' => 'image',       'section' => 'section_image' ],
+            [ 'name' => 'wcf--blog--post--title', 'section' => 'section_content' ],
+            [ 'name' => 'wcf--animated-heading', 'section' => 'section_content' ],
+            [ 'name' => 'wcf--title', 'section' => 'section_content' ],
+            [ 'name' => 'wcf--blog--archive--title', 'section' => 'section_content' ],
+            [ 'name' => 'wcf--text', 'section' => 'section_content' ],
+            [ 'name' => 'wcf--theme-post-content', 'section' => 'wcf_starter_animations_section' ],
+            [ 'name' => 'wcf--blog--post--excerpt', 'section' => 'section_content' ]
         ];
     }
 
@@ -253,19 +260,6 @@ class WCF_Starter_Animations {
             ]
         );
 
-        $element->add_control(
-            'wcf_wave_stroke_color',
-            [
-                'label' => esc_html__( 'Wave Stroke Color', 'animation-addons-for-elementor' ),
-                'type'  => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-wave-stroke: {{VALUE}};',
-                ],
-                'condition' => [
-                    'wcf_starter_animations' => 'text-wave',
-                ],
-            ]
-        );
 
         $element->add_control(
             'wcf_wave_fill_color',
@@ -437,6 +431,217 @@ class WCF_Starter_Animations {
             ]
         );
 
+
+        $element->add_control(
+            'wcf_scale_start',
+            [
+                'label' => esc_html__( 'Start Scale', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 0.6,
+                'step' => 0.1,
+                'min'  => 0,
+                'max'  => 3,
+                'condition' => [
+                    'wcf_starter_animations' => 'scale-up',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-scale-start: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_scale_end',
+            [
+                'label' => esc_html__( 'End Scale', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 1,
+                'step' => 0.1,
+                'min'  => 0,
+                'max'  => 3,
+                'condition' => [
+                    'wcf_starter_animations' => 'scale-up',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-scale-end: {{VALUE}};',
+                ],
+            ]
+        );
+
+
+        $element->add_control(
+            'wcf_scale_origin',
+            [
+                'label' => esc_html__( 'Scale From', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SELECT,
+                'default' => 'center',
+                'options' => [
+                    'center' => 'Center',
+                    'top'    => 'Top',
+                    'bottom' => 'Bottom',
+                    'left'   => 'Left',
+                    'right'  => 'Right',
+                ],
+                'condition' => [
+                    'wcf_starter_animations' => 'scale-up',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-scale-origin: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_scale_opacity_toggle',
+            [
+                'label' => esc_html__( 'Animate Opacity', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SWITCHER,
+                'default' => 'yes',
+                'condition' => [
+                    'wcf_starter_animations' => 'scale-up',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-scale-opacity: 0;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_slide_direction',
+            [
+                'label' => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SELECT,
+                'default' => 'bottom',
+                'options' => [
+                    'bottom' => 'Bottom → Top',
+                    'top'    => 'Top → Bottom',
+                    'left'   => 'Left → Right',
+                    'right'  => 'Right → Left',
+                ],
+                'condition' => [
+                    'wcf_starter_animations' => 'slide',
+                ],
+                'prefix_class' => 'wcf-slide-',
+                'render_type' => 'ui',
+                'frontend_available' => true,
+            ]
+        );
+
+        $element->add_control(
+            'wcf_slide_distance',
+            [
+                'label' => esc_html__( 'Distance (px)', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 60,
+                'min' => 0,
+                'max' => 500,
+                'step' => 5,
+                'condition' => [
+                    'wcf_starter_animations' => 'slide',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-slide-distance: {{VALUE}}px;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_skew_angle',
+            [
+                'label' => 'Skew Angle',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 18,
+                'condition' => [
+                    'wcf_starter_animations' => 'skew-reveal',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-skew-angle: {{VALUE}}deg;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_skew_distance',
+            [
+                'label' => 'Translate Distance',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 40,
+                'condition' => [
+                    'wcf_starter_animations' => 'skew-reveal',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-skew-distance: {{VALUE}}px;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_flip_axis',
+            [
+                'label' => 'Flip Direction',
+                'type' => Controls_Manager::SELECT,
+                'default' => 'x',
+                'options' => [
+                    'x' => 'Flip X',
+                    'y' => 'Flip Y',
+                ],
+                'condition' => [
+                    'wcf_starter_animations' => 'flip',
+                ],
+                'prefix_class' => 'wcf-flip-axis-',
+            ]
+        );
+
+        $element->add_control(
+            'wcf_flip_angle',
+            [
+                'label' => 'Flip Angle',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 90,
+                'condition' => [
+                    'wcf_starter_animations' => 'flip',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-flip-angle: {{VALUE}}deg;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_flip_perspective',
+            [
+                'label' => 'Perspective',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 800,
+                'condition' => [
+                    'wcf_starter_animations' => 'flip',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-flip-perspective: {{VALUE}}px;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_repeat_on_enter',
+            [
+                'label' => esc_html__( 'Repeat Animation?', 'animation-addons-for-elementor' ),
+                'description' => esc_html__( 'Choose whether the animation should play only once or replay every time the element enters the screen while scrolling.', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SELECT,
+                'default' => 'no',
+                'options' => [
+                    'no'  => esc_html__( 'Play Once', 'animation-addons-for-elementor' ),
+                    'yes' => esc_html__( 'Every Time', 'animation-addons-for-elementor' ),
+                ],
+                'condition' => [
+                    'wcf_starter_animations!' => 'none',
+                ],
+                'prefix_class' => 'wcf-repeat-',
+                'frontend_available' => true,
+                'render_type' => 'ui',
+            ]
+        );
+
         $element->add_control(
             'wcf_play_animation',
             [
@@ -452,6 +657,7 @@ class WCF_Starter_Animations {
 
         $element->end_controls_section();
     }
+
     public static function register_controls_container( Element_Base $element ) {
 
         $widget_name = $element->get_name();
@@ -468,131 +674,168 @@ class WCF_Starter_Animations {
             ]
         );
 
-        $element->add_responsive_control(
+        /* =========================================
+        Container Animation: Slide
+        ========================================= */
+
+        $element->add_control(
             'wcf_starter_container_animations_list',
             [
                 'label' => esc_html__( 'Animation', 'animation-addons-for-elementor' ),
-                'type'  => Controls_Manager::SELECT2,
+                'type'  => Controls_Manager::SELECT,
                 'label_block' => true,
-                'multiple' => false,
-                'render_type' => 'ui',
-                'frontend_available' => true,
-                'classes' => 'wcf-select-scroll',
                 'options' => [
-                    'none' => esc_html__( 'None', 'animation-addons-for-elementor' ),
-                    'reveal' => esc_html__( 'Reveal', 'animation-addons-for-elementor' ),
-                    'slide-up' => esc_html__( 'Slide Up', 'animation-addons-for-elementor' ),
-                    'skew-reveal' => esc_html__( 'Skew Reveal', 'animation-addons-for-elementor' ),
-                    'flip-x' => esc_html__( 'Flip X', 'animation-addons-for-elementor' ),
+                    'none'  => esc_html__( 'None', 'animation-addons-for-elementor' ),
+                    'slide' => esc_html__( 'Slide', 'animation-addons-for-elementor' ),
+                    'flip' => esc_html__( 'Flip', 'animation-addons-for-elementor' ),
                 ],
-                'default' => '',
+                'default' => 'none',
                 'prefix_class' => 'wcf-starter-animations-',
             ]
         );
 
-        // Duration / Delay / Easing for container
-        $element->add_responsive_control(
-            'wcf_anim_duration',
+        /* Slide Direction */
+
+        $element->add_control(
+            'wcf_slide_direction_container',
+            [
+                'label' => esc_html__( 'Slide Direction', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::SELECT,
+                'default' => 'bottom',
+                'options' => [
+                    'bottom' => 'Bottom → Top',
+                    'top'    => 'Top → Bottom',
+                    'left'   => 'Left → Right',
+                    'right'  => 'Right → Left',
+                ],
+                'condition' => [
+                    'wcf_starter_container_animations_list' => 'slide',
+                ],
+                'prefix_class' => 'wcf-slide-',
+            ]
+        );
+
+        /* Distance */
+
+        $element->add_control(
+            'wcf_slide_distance_container',
+            [
+                'label' => esc_html__( 'Distance (px)', 'animation-addons-for-elementor' ),
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 40,
+                'condition' => [
+                    'wcf_starter_container_animations_list' => 'slide',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-slide-distance: {{VALUE}}px;',
+                ],
+            ]
+        );
+
+        /* Duration */
+
+        $element->add_control(
+            'wcf_slide_duration_container',
             [
                 'label' => esc_html__( 'Duration (ms)', 'animation-addons-for-elementor' ),
-                'type' => Controls_Manager::NUMBER,
-                'default' => 1000,
-                'min' => 100,
-                'max' => 10000,
-                'step' => 50,
-                'frontend_available' => true,
-                'render_type' => 'ui',
+                'type'  => Controls_Manager::NUMBER,
+                'default' => 600,
                 'condition' => [
-                    'wcf_starter_container_animations_list!' => '',
+                    'wcf_starter_container_animations_list' => 'slide',
                 ],
                 'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-duration: {{VALUE}}ms;',
+                    '{{WRAPPER}}' => '--wcf-slide-duration: {{VALUE}}ms;',
                 ],
             ]
         );
 
-        $element->add_responsive_control(
-            'wcf_anim_delay',
+        /* Delay */
+
+        $element->add_control(
+            'wcf_slide_delay_container',
             [
                 'label' => esc_html__( 'Delay (ms)', 'animation-addons-for-elementor' ),
-                'type' => Controls_Manager::NUMBER,
+                'type'  => Controls_Manager::NUMBER,
                 'default' => 0,
-                'min' => 0,
-                'max' => 10000,
-                'step' => 50,
-                'frontend_available' => true,
-                'render_type' => 'ui',
                 'condition' => [
-                    'wcf_starter_container_animations_list!' => '',
+                    'wcf_starter_container_animations_list' => 'slide',
                 ],
                 'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-delay: {{VALUE}}ms;',
+                    '{{WRAPPER}}' => '--wcf-slide-delay: {{VALUE}}ms;',
                 ],
             ]
         );
 
-        $element->add_responsive_control(
-            'wcf_anim_ease',
+        /* Easing */
+
+        $element->add_control(
+            'wcf_slide_ease_container',
             [
                 'label' => esc_html__( 'Easing', 'animation-addons-for-elementor' ),
                 'type'  => Controls_Manager::SELECT,
                 'default' => 'ease',
-                'frontend_available' => true,
-                'render_type' => 'ui',
-
                 'options' => [
-                    'ease'            => esc_html__( 'Ease (Default)', 'animation-addons-for-elementor' ),
-                    'linear'          => esc_html__( 'Linear', 'animation-addons-for-elementor' ),
-                    'ease-in'         => esc_html__( 'Ease In', 'animation-addons-for-elementor' ),
-                    'ease-out'        => esc_html__( 'Ease Out', 'animation-addons-for-elementor' ),
-                    'ease-in-out'     => esc_html__( 'Ease In Out', 'animation-addons-for-elementor' ),
-                    'cubic-bezier(.25,.8,.25,1)' => esc_html__( 'Smooth Cubic', 'animation-addons-for-elementor' ),
-                    'cubic-bezier(.17,.67,.83,.67)' => esc_html__( 'Elastic Feel', 'animation-addons-for-elementor' ),
+                    'ease'        => 'Ease',
+                    'ease-in'     => 'Ease In',
+                    'ease-out'    => 'Ease Out',
+                    'ease-in-out' => 'Ease In Out',
+                    'linear'      => 'Linear',
                 ],
-
                 'condition' => [
-                    'wcf_starter_container_animations_list!' => '',
+                    'wcf_starter_container_animations_list' => 'slide',
                 ],
-
                 'selectors' => [
-                    '{{WRAPPER}}' => '--wcf-ease: {{VALUE}};',
+                    '{{WRAPPER}}' => '--wcf-slide-ease: {{VALUE}};',
                 ],
             ]
         );
 
+        // flip animation controls
+        
         $element->add_control(
-            'wcf_reveal_direction',
+            'wcf_flip_axis_container',
             [
-                'label' => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
-                'type'  => Controls_Manager::SELECT,
-                'default' => 'bottom',
+                'label' => 'Flip Direction',
+                'type' => Controls_Manager::SELECT,
+                'default' => 'x',
                 'options' => [
-                    'bottom' => esc_html__( 'Bottom -> Top', 'animation-addons-for-elementor' ),
-                    'top'    => esc_html__( 'Top -> Bottom', 'animation-addons-for-elementor' ),
-                    'left'   => esc_html__( 'Left -> Right', 'animation-addons-for-elementor' ),
-                    'right'  => esc_html__( 'Right -> Left', 'animation-addons-for-elementor' ),
-                    'center' => esc_html__( 'Center Expand', 'animation-addons-for-elementor' ),
+                    'x' => 'Flip X',
+                    'y' => 'Flip Y',
                 ],
                 'condition' => [
-                    'wcf_starter_container_animations_list' => 'reveal',
+                    'wcf_starter_container_animations_list' => 'flip',
                 ],
-                'prefix_class' => 'wcf-reveal-',
-                'render_type' => 'ui',
-                'frontend_available' => true,
+                'prefix_class' => 'wcf-flip-axis-container-',
             ]
         );
 
         $element->add_control(
-            'wcf_reveal_fade',
+            'wcf_flip_angle_container',
             [
-                'label' => esc_html__( 'Enable Fade', 'animation-addons-for-elementor' ),
-                'type'  => Controls_Manager::SWITCHER,
-                'default' => '',
+                'label' => 'Flip Angle',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 90,
                 'condition' => [
-                    'wcf_starter_container_animations_list' => 'reveal',
+                    'wcf_starter_container_animations_list' => 'flip',
                 ],
-                'render_type' => 'ui',
-                'frontend_available' => true,
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-flip-angle-container: {{VALUE}}deg;',
+                ],
+            ]
+        );
+
+        $element->add_control(
+            'wcf_flip_perspective_container',
+            [
+                'label' => 'Perspective',
+                'type' => Controls_Manager::NUMBER,
+                'default' => 800,
+                'condition' => [
+                    'wcf_starter_container_animations_list' => 'flip',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--wcf-flip-perspective-container: {{VALUE}}px;',
+                ],
             ]
         );
 
@@ -655,12 +898,13 @@ class WCF_Starter_Animations {
         $options = [
             'none' => esc_html__( 'None', 'animation-addons-for-elementor' ),
             'reveal' => esc_html__( 'Reveal', 'animation-addons-for-elementor' ),
-            'slide-up' => esc_html__( 'Slide Up', 'animation-addons-for-elementor' ),
+            'scale-up' => esc_html__( 'Scale', 'animation-addons-for-elementor' ),
+            'slide' => esc_html__( 'Slide', 'animation-addons-for-elementor' ),
             'skew-reveal' => esc_html__( 'Skew Reveal', 'animation-addons-for-elementor' ),
-            'flip-x' => esc_html__( 'Flip X', 'animation-addons-for-elementor' ),
+            'flip' => esc_html__( 'Flip', 'animation-addons-for-elementor' ),
         ];
 
-        if ( in_array( $widget_name, [ 'heading', 'e-heading', 'text-editor' ], true ) ) {
+        if ( in_array( $widget_name, [ 'heading', 'e-heading', 'text-editor','wcf--animated-heading','wcf--blog--post--title','wcf--title','wcf--blog--archive--title','wcf--text','wcf--theme-post-content','wcf--blog--post--excerpt' ], true ) ) {
             $options['__text_effect'] = esc_html__( '-- Text Effects --', 'animation-addons-for-elementor' );
 
             $options['text-glow'] = esc_html__( 'Glow Pulse', 'animation-addons-for-elementor' );
