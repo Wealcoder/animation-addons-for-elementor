@@ -1394,6 +1394,45 @@ class Plugin
 		echo '<script id="wcf-addons-data">const WCF_ADDONS_JS = ' . wp_json_encode($data) . ';</script>';
 	}
 
+	/**
+	 * Editor style
+	 *
+	 * Enqueue plugin css integrations for Elementor editor.
+	 *
+	 * @since 1.2.1
+	 * @access public
+	 */
+	public function register_starter_animation_style() {
+
+		
+
+	}
+
+	public function register_starter_animation_script() {
+
+		wp_register_script(
+			'aae-starter-animations',
+			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
+			[],
+			time(),
+			true
+		);
+		
+		wp_enqueue_script('aae-starter-animations');
+
+		wp_register_style(
+			'aae-starter-animations',
+			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
+			[],
+			WCF_ADDONS_VERSION
+		);
+
+		wp_enqueue_style('aae-starter-animations');
+		
+	}
+
+
+
 
 	/**
 	 *  Plugin class constructor
@@ -1426,6 +1465,30 @@ class Plugin
 		add_filter('elementor/document/urls/preview', array($this, 'elementor_editor_url'), 4);
 		add_filter('elementor/document/urls/wp_preview', array($this, 'elementor_editor_url'), 4);
 		// add_action('wp_head', array($this, 'wp_head'), 4);
+
+		/* ===============================
+			Starter Animations Assets
+		=============================== */
+
+		// Register assets
+		add_action('elementor/frontend/after_register_styles', [$this, 'register_starter_animation_style']);
+		add_action('elementor/frontend/after_register_scripts', [$this, 'register_starter_animation_script']);
+
+		add_action(
+			'elementor/editor/after_enqueue_scripts',
+			function() {
+				wp_enqueue_script('aae-starter-animations');
+			}
+		);
+
+		add_action(
+			'elementor/editor/after_enqueue_styles',
+			function() {
+				wp_enqueue_style('aae-starter-animations');
+			}
+		);
+
+
 
 		$this->include_files();
 
