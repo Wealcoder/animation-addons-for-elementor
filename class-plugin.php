@@ -540,6 +540,7 @@ class Plugin
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
+
 			)
 		);
 	}
@@ -881,6 +882,22 @@ class Plugin
 			'loop-grid'          => array(
 				'handler' => 'wcf--loop-grid',
 				'src'     => 'widgets/loop-grid.min.css',
+				'dep'     => array(),
+				'version' => false,
+				'media'   => 'all',
+			),
+
+			'advance-pricing-table' => array(
+				'handler' => 'wcf--advance-pricing-table',
+				'src'     => 'widgets/advance-pricing-table.min.css',
+				'dep'     => array(),
+				'version' => false,
+				'media'   => 'all',
+			),
+
+			'weather'               => array(
+				'handler' => 'aae--weather',
+				'src'     => 'widgets/weather.min.css',
 				'dep'     => array(),
 				'version' => false,
 				'media'   => 'all',
@@ -1371,8 +1388,95 @@ class Plugin
 		}
 	}
 
-	public function wp_head()
-	{
+		/**
+	 * Get Widget Skins List.
+	 *
+	 * @return array
+	 */
+	public static function get_widget_skins() {
+
+		return apply_filters(
+			'wcf_widget_skins',
+			array(
+				'advance-pricing-table' => array( // widget file/dir name.
+					'label'       => __( 'Advanced Pricing Table', 'animation-addons-for-elementor-pro' ),
+					'widget_name' => 'wcf--a-pricing-table',
+					'is_active'   => true,
+					'skins'       => array( // skin file names.
+						'skin-pricing-table-base' => array(
+							'is_active'    => true,
+							'is_base_skin' => true,
+						),
+						'skin-pricing-table-1'    => array( 'is_active' => true ),
+						'skin-pricing-table-2'    => array( 'is_active' => true ),
+					),
+				),
+	
+			)
+		);
+	}
+
+		/**
+	 * Include Widgets skins
+	 *
+	 * Load widgets skins
+	 *
+	 * @since 0.0.1
+	 * @access private
+	 */
+	private function include_skins_files() {
+		foreach ( self::get_widget_skins() as $slug => $data ) {
+
+			// is widget all skins are not active
+			if ( ! $data['is_active'] ) {
+				continue;
+			}
+
+			foreach ( $data['skins'] as $skin_slug => $skin ) {
+				if ( ! $skin['is_active'] ) {
+					continue;
+				}
+
+				require_once WCF_ADDONS_WIDGETS_PATH . $slug . '/skins/' . $skin_slug . '.php';
+
+				$class = explode( '-', $skin_slug );
+				$class = array_map( 'ucfirst', $class );
+				$class = implode( '_', $class );
+				$class = 'WCF_ADDONS\\Widgets\\Skin\\' . $class;
+
+				// has base base skin dont need register
+				if ( isset( $skin['is_base_skin'] ) ) {
+					continue;
+				}
+
+				add_action(
+					'elementor/widget/' . $data['widget_name'] . '/skins_init',
+					function ( $widget ) use ( $class ) {
+						$widget->add_skin( new $class( $widget ) );
+					}
+				);
+			}
+		}
+	}
+
+		/**
+	 * Initialize the elementor plugin
+	 *
+	 * Validates that Elementor is already loaded.
+	 * Checks for basic plugin requirements, if one check fail don't continue,
+	 *
+	 * Fired by `plugins_loaded` action hook.
+	 *
+	 * @since 1.2.0
+	 * @access public
+	 */
+	public function elementor_init() {
+
+		$this->include_skins_files();
+	}
+
+
+	public function wp_head() {
 
 		$data = apply_filters(
 			'wcf-addons/js/data',
@@ -1492,7 +1596,9 @@ class Plugin
 
 		$this->include_files();
 
-		if (class_exists('\WCF_ADDONS\Library_Source')) {
+		add_action( 'elementor/init', array( $this, 'elementor_init' ), 0 );
+
+		if ( class_exists( '\WCF_ADDONS\Library_Source' ) ) {
 
 			add_action('elementor/editor/footer', array($this, 'print_templates'));
 			// enqueue modal's preview css.
