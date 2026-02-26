@@ -14,6 +14,7 @@ class WCF_Starter_Animations {
             [ 'name' => 'e-heading',   'section' => 'section_title' ],
             [ 'name' => 'text-editor', 'section' => 'section_editor' ],
             [ 'name' => 'image',       'section' => 'section_image' ],
+            [ 'name' => 'wcf--image',       'section' => 'section_content' ],
             [ 'name' => 'wcf--blog--post--title', 'section' => 'section_content' ],
             [ 'name' => 'wcf--animated-heading', 'section' => 'section_content' ],
             [ 'name' => 'wcf--title', 'section' => 'section_content' ],
