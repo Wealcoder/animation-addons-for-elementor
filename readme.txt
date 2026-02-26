@@ -346,19 +346,18 @@ Design beautiful, dynamic websites with 100+ exclusive Elementor widgets — and
 - #### [Current Date](https://animation-addons.com/widgets/aae-current-date): Show the current date dynamically.
 
 ### Search & Utility Widgets
-#### [Search Form](https://animation-addons.com/wcf-template/search-form/): Add a WordPress search form.
-#### Search Query / Search No Result
- Display search results and fallback messages.
 
-- [Search Query](https://animation-addons.com/widgets/aae-search-query/): Display search results in real-time as users type their queries.
-- [Search No Result](https://animation-addons.com/docs/dynamic-widgets/search-no-result/): Offer helpful guidance and options when no relevant search results are found
+#### [Search Form](https://animation-addons.com/wcf-template/search-form/): Add a WordPress search form.
+
+#### [Search Query](https://animation-addons.com/widgets/aae-search-query/): Display search results in real-time as users type their queries.
+
+#### [Search No Result](https://animation-addons.com/docs/dynamic-widgets/search-no-result/): Offer helpful guidance and options when no relevant search results are found
 
 ### Form & Integration Widgets
 
  #### [Contact Form 7](https://animation-addons.com/widgets/aae-contact-form-7/): Style and customize Contact Form 7 in Elementor.
 
  #### [Mailchimp / Advanced Mailchimp](https://animation-addons.com/widgets/aae-advanced-mailchimp/): Add email subscription forms for lead generation.
-
 
 ### Media & Special Widgets
 
@@ -367,11 +366,10 @@ Design beautiful, dynamic websites with 100+ exclusive Elementor widgets — and
  #### [Author Box](https://animation-addons.com/widgets/aae-author-box): Show author information below posts.
 
 ### Animation Widgets 
-#### Animated Text / Animated Title / Animated Heading
-Add text animations inside Elementor.
-  - [Animated Text](https://animation-addons.com/widgets/aae-animated-text/)
-  - [Animated Title](https://animation-addons.com/widgets/aae-animated-title/)
-  - [Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)
+
+#### [Animated Text](https://animation-addons.com/widgets/aae-animated-text/)
+#### [Animated Title](https://animation-addons.com/widgets/aae-animated-title/)
+#### [Animated Heading](https://animation-addons.com/widgets/aae-animated-heading/)
 
 #### [Typewriter Widget](https://animation-addons.com/widgets/aae-typewriter/): Create classic typewriter text effects.
 
