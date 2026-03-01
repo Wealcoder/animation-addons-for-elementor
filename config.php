@@ -2910,8 +2910,8 @@ $config = array(
 						'is_extension' => false,
 						'is_upcoming'  => false,
 						'icon'         => 'wcf-icon-Custom-CSS',
-						'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-css/',
-						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/custom-css/',
+						'demo_url'     => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
+						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
 						'youtube_url'  => '',
 					),
 
