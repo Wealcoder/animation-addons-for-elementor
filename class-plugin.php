@@ -1404,7 +1404,14 @@ class Plugin
 	 */
 	public function register_starter_animation_style() {
 
-		
+		wp_register_style(
+			'aae-starter-animations',
+			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
+			[],
+			WCF_ADDONS_VERSION
+		);
+
+		wp_enqueue_style('aae-starter-animations');
 
 	}
 
@@ -1419,15 +1426,6 @@ class Plugin
 		);
 		
 		wp_enqueue_script('aae-starter-animations');
-
-		wp_register_style(
-			'aae-starter-animations',
-			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
-			[],
-			WCF_ADDONS_VERSION
-		);
-
-		wp_enqueue_style('aae-starter-animations');
 		
 	}
 

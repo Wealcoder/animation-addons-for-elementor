@@ -78,7 +78,7 @@ class WCF_Starter_Animations {
                 'frontend_available' => true,
                 'classes' => 'wcf-select-scroll',
                 'options' => self::get_animation_options_by_widget( $widget_name ),
-                'default' => '',
+                'default' => 'none',
                 'prefix_class' => 'wcf-starter-animations-',
             ]
         );
