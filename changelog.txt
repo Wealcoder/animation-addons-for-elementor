@@ -1,6 +1,13 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026
+
+    - Added: New Free Starter Animation For Text, Image, Container .
+    - Added: Advanced Pricing Table -New Widget Introduce.
+    - Added: Weather -New Widget Introduce.
+    - Added: 27 Free templates.
+    
 = 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026
 
   - **Improved:** Cleaned up unnecessary code
