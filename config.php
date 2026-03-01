@@ -2905,7 +2905,7 @@ $config = array(
 							'cTab' => 'general',
 						),
 						'is_pro'       => false,
-						'is_active'    => false,
+						'is_active'    => true,
 						'setup'        => array('basic'),
 						'is_extension' => false,
 						'is_upcoming'  => false,
