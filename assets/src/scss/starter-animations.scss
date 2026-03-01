@@ -1,0 +1,700 @@
+/* =====================================
+   COMMON BASE TARGET
+===================================== */
+
+[class*="wcf-starter-animations-"] 
+.elementor-widget-container > *,
+[class*="wcf-starter-animations-"] > *,
+.wcf-target-self[class*="wcf-starter-animations-"] {
+  // display: inline-block;
+  will-change: transform, opacity, clip-path;
+}
+
+/* =====================================
+   COMMON ANIMATION SETTINGS
+===================================== */
+
+.wcf-animate[class*="wcf-starter-animations-"] 
+.elementor-widget-container > *,
+.wcf-animate[class*="wcf-starter-animations-"] > *,
+.wcf-animate.wcf-target-self[class*="wcf-starter-animations-"] {
+  animation-duration: var(--wcf-duration, 700ms);
+  animation-delay: var(--wcf-delay, 0ms);
+  animation-timing-function: var(--wcf-ease, ease);
+  animation-fill-mode: forwards;
+}
+
+/* =====================================
+   REVEAL ENGINE (FIXED TARGET)
+===================================== */
+
+/* Initial Hidden State */
+.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-starter-animations-reveal > *,
+.wcf-starter-animations-reveal.wcf-target-self {
+  opacity: 0;
+}
+
+/* Bottom */
+.wcf-reveal-bottom.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-reveal-bottom.wcf-starter-animations-reveal > *,
+.wcf-reveal-bottom.wcf-starter-animations-reveal.wcf-target-self {
+  clip-path: inset(100% 0 0 0);
+}
+
+/* Top */
+.wcf-reveal-top.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-reveal-top.wcf-starter-animations-reveal > *,
+.wcf-reveal-top.wcf-starter-animations-reveal.wcf-target-self {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Left */
+.wcf-reveal-left.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-reveal-left.wcf-starter-animations-reveal > *,
+.wcf-reveal-left.wcf-starter-animations-reveal.wcf-target-self {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Right */
+.wcf-reveal-right.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-reveal-right.wcf-starter-animations-reveal > *,
+.wcf-reveal-right.wcf-starter-animations-reveal.wcf-target-self {
+  clip-path: inset(0 0 0 100%);
+}
+
+/* Center */
+.wcf-reveal-center.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-reveal-center.wcf-starter-animations-reveal > *,
+.wcf-reveal-center.wcf-starter-animations-reveal.wcf-target-self {
+  clip-path: inset(0 50% 0 50%);
+}
+
+/* Animate */
+.wcf-animate.wcf-starter-animations-reveal 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-reveal > *,
+.wcf-animate.wcf-starter-animations-reveal.wcf-target-self {
+  animation: wcf-reveal-anim var(--wcf-duration, 700ms) var(--wcf-ease, ease) forwards;
+}
+
+@keyframes wcf-reveal-anim {
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+/* =====================================
+   TRANSFORM ANIMATIONS
+===================================== */
+
+/* Scale Up */
+.wcf-starter-animations-scale-up 
+.elementor-widget-container > *,
+.wcf-starter-animations-scale-up > *,
+.wcf-starter-animations-scale-up.wcf-target-self {
+
+  transform: scale(var(--wcf-scale-start, 0.6));
+  opacity: var(--wcf-scale-opacity, 0);
+  transform-origin: var(--wcf-scale-origin, center);
+}
+
+.wcf-animate.wcf-starter-animations-scale-up 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-scale-up > *,
+.wcf-animate.wcf-starter-animations-scale-up.wcf-target-self {
+  animation-name: wcf-scale-up;
+}
+
+@keyframes wcf-scale-up {
+  to { 
+    transform: scale(var(--wcf-scale-end, 1)); 
+    opacity: 1; 
+  }
+}
+
+/* Rotate In */
+.wcf-starter-animations-rotate-in 
+.elementor-widget-container > *,
+.wcf-starter-animations-rotate-in > *,
+.wcf-starter-animations-rotate-in.wcf-target-self {
+  transform: rotate(-45deg);
+  opacity: 0;
+}
+.wcf-animate.wcf-starter-animations-rotate-in 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-rotate-in > *,
+.wcf-animate.wcf-starter-animations-rotate-in.wcf-target-self {
+  animation-name: wcf-rotate-in;
+}
+@keyframes wcf-rotate-in {
+  to { transform: rotate(0); opacity: 1; }
+}
+
+/* Slide Up */
+/* Base Slide State */
+.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-starter-animations-slide > *,
+.wcf-starter-animations-slide.wcf-target-self {
+  opacity: 0;
+}
+
+/* Bottom → Top */
+.wcf-slide-bottom.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-slide-bottom.wcf-starter-animations-slide > *,
+.wcf-slide-bottom.wcf-starter-animations-slide.wcf-target-self {
+  transform: translateY(var(--wcf-slide-distance, 60px));
+}
+
+/* Top → Bottom */
+.wcf-slide-top.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-slide-top.wcf-starter-animations-slide > *,
+.wcf-slide-top.wcf-starter-animations-slide.wcf-target-self {
+  transform: translateY(calc(var(--wcf-slide-distance, 60px) * -1));
+}
+
+/* Left → Right */
+.wcf-slide-left.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-slide-left.wcf-starter-animations-slide > *,
+.wcf-slide-left.wcf-starter-animations-slide.wcf-target-self {
+  transform: translateX(calc(var(--wcf-slide-distance, 60px) * -1));
+}
+
+/* Right → Left */
+.wcf-slide-right.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-slide-right.wcf-starter-animations-slide > *,
+.wcf-slide-right.wcf-starter-animations-slide.wcf-target-self {
+  transform: translateX(var(--wcf-slide-distance, 60px));
+}
+
+/* Animate */
+.wcf-animate.wcf-starter-animations-slide 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-slide > *,
+.wcf-animate.wcf-starter-animations-slide.wcf-target-self {
+  animation: wcf-slide var(--wcf-duration, 700ms) var(--wcf-ease, ease) forwards;
+}
+
+@keyframes wcf-slide {
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   Skew Reveal (Variable Driven)
+========================================= */
+
+.wcf-starter-animations-skew-reveal 
+.elementor-widget-container > *,
+.wcf-starter-animations-skew-reveal > *,
+.wcf-starter-animations-skew-reveal.wcf-target-self {
+
+  transform: 
+    skewX(var(--wcf-skew-angle, 18deg)) 
+    translateX(var(--wcf-skew-distance, -40px));
+
+  opacity: var(--wcf-skew-opacity-start, 0);
+
+  animation-duration: var(--wcf-duration, 0.6s);
+  animation-delay: var(--wcf-skew-delay, 0s);
+  animation-timing-function: var(--wcf-skew-ease, ease);
+  animation-fill-mode: forwards;
+
+  will-change: transform, opacity;
+}
+
+/* Trigger */
+.wcf-animate.wcf-starter-animations-skew-reveal 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-skew-reveal > *,
+.wcf-animate.wcf-starter-animations-skew-reveal.wcf-target-self {
+
+  animation-name: wcf-skew-reveal;
+}
+
+/* Keyframes */
+@keyframes wcf-skew-reveal {
+  to {
+    transform: skewX(0deg) translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Flip Animation Base */
+
+.wcf-starter-animations-flip 
+.elementor-widget-container > *,
+.wcf-starter-animations-flip > *,
+.wcf-starter-animations-flip.wcf-target-self {
+
+  opacity: 0;
+  transform-style: preserve-3d;
+  perspective: var(--wcf-flip-perspective, 800px);
+
+  animation-duration: var(--wcf-flip-duration, 0.6s);
+  animation-delay: var(--wcf-flip-delay, 0s);
+  animation-timing-function: var(--wcf-flip-ease, ease);
+  animation-fill-mode: forwards;
+
+  will-change: transform, opacity;
+}
+
+/* X Axis */
+.wcf-flip-axis-x.wcf-starter-animations-flip 
+.elementor-widget-container > *,
+.wcf-flip-axis-x.wcf-starter-animations-flip > *,
+.wcf-flip-axis-x.wcf-starter-animations-flip.wcf-target-self {
+  transform: rotateX(var(--wcf-flip-angle, 90deg));
+}
+
+/* Y Axis */
+.wcf-flip-axis-y.wcf-starter-animations-flip 
+.elementor-widget-container > *,
+.wcf-flip-axis-y.wcf-starter-animations-flip > *,
+.wcf-flip-axis-y.wcf-starter-animations-flip.wcf-target-self {
+  transform: rotateY(var(--wcf-flip-angle, 90deg));
+}
+
+/* Trigger */
+.wcf-animate.wcf-starter-animations-flip 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-flip > *,
+.wcf-animate.wcf-starter-animations-flip.wcf-target-self {
+  animation-name: wcf-flip;
+}
+
+/* Keyframes */
+@keyframes wcf-flip {
+  to {
+    transform: rotateX(0deg) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+/* Zoom In */
+.wcf-starter-animations-zoom-in 
+.elementor-widget-container > *,
+.wcf-starter-animations-zoom-in > *,
+.wcf-starter-animations-zoom-in.wcf-target-self {
+  transform: scale(1.3);
+  opacity: 0;
+}
+.wcf-animate.wcf-starter-animations-zoom-in 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-zoom-in > *,
+.wcf-animate.wcf-starter-animations-zoom-in.wcf-target-self {
+  animation-name: wcf-zoom-in;
+}
+@keyframes wcf-zoom-in {
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Combo Reveal */
+.wcf-starter-animations-combo-reveal 
+.elementor-widget-container > *,
+.wcf-starter-animations-combo-reveal > *,
+.wcf-starter-animations-combo-reveal.wcf-target-self {
+  transform: translateY(40px) scale(0.9);
+  opacity: 0;
+}
+.wcf-animate.wcf-starter-animations-combo-reveal 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-combo-reveal > *,
+.wcf-animate.wcf-starter-animations-combo-reveal.wcf-target-self {
+  animation-name: wcf-combo-reveal;
+}
+@keyframes wcf-combo-reveal {
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Glow Pulse */
+.wcf-animate.wcf-starter-animations-text-glow {
+  animation: wcf-glow 
+             var(--wcf-duration,2s) 
+             var(--wcf-ease,ease-in-out) 
+             alternate;
+  animation-iteration-count: var(--wcf-iteration, infinite);
+
+}
+
+@keyframes wcf-glow {
+  from {
+    text-shadow: 0 0 5px var(--wcf-glow-color,#fff);
+  }
+  to {
+    text-shadow: 0 0 var(--wcf-glow-size,20px) var(--wcf-glow-color,#00f);
+  }
+}
+
+/* Pop Scale */
+.wcf-starter-animations-text-pop {
+  transform: scale(0.6);
+  opacity: 0;
+}
+.wcf-animate.wcf-starter-animations-text-pop {
+  animation: wcf-text-pop 0.6s ease forwards;
+}
+@keyframes wcf-text-pop {
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.wcf-starter-animations-text-typewriter 
+.elementor-widget-container > *,
+.wcf-starter-animations-text-typewriter > *,
+.wcf-target-self.wcf-starter-animations-text-typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+}
+
+.wcf-animate.wcf-starter-animations-text-typewriter 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-text-typewriter > *,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-typewriter {
+  animation: 
+    wcf-typewriter var(--wcf-duration, 2s) steps(30) forwards,
+    wcf-caret 1s step-end;
+}
+
+@keyframes wcf-typewriter {
+  to { width: 100%; }
+}
+
+@keyframes wcf-caret {
+  50% { border-color: transparent; }
+}
+
+/* =====================================
+   Cinematic Mask Wipe
+===================================== */
+
+.wcf-starter-animations-text-mask-wipe 
+.elementor-widget-container > *,
+.wcf-starter-animations-text-mask-wipe > *,
+.wcf-target-self.wcf-starter-animations-text-mask-wipe {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+/* Mask layer */
+.wcf-starter-animations-text-mask-wipe 
+.elementor-widget-container > *::after,
+.wcf-starter-animations-text-mask-wipe > *::after,
+.wcf-target-self.wcf-starter-animations-text-mask-wipe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--wcf-mask-bg, #000);
+  transform: translateX(0%);
+  z-index: 2;
+}
+
+/* Animate */
+.wcf-animate.wcf-starter-animations-text-mask-wipe 
+.elementor-widget-container > *::after,
+.wcf-animate.wcf-starter-animations-text-mask-wipe > *::after,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-mask-wipe::after {
+  animation: wcf-mask-wipe 
+            var(--wcf-duration, 1000ms)
+            var(--wcf-ease, cubic-bezier(.77,0,.18,1))
+            var(--wcf-delay, 0ms)
+            forwards;
+}
+
+@keyframes wcf-mask-wipe {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Scrollable Select2 Dropdown */
+.wcf-select-scroll .select2-results__options {
+    max-height: 150px !important;
+    overflow-y: auto !important;
+}
+
+/* =====================================
+   TEXT WAVE (Water Stroke Effect)
+===================================== */
+
+.wcf-starter-animations-text-wave 
+.elementor-widget-container > *,
+.wcf-starter-animations-text-wave > *,
+.wcf-target-self.wcf-starter-animations-text-wave {
+  position: relative;
+  color: transparent;
+}
+
+/* Animated layer */
+.wcf-starter-animations-text-wave 
+.elementor-widget-container > *::after,
+.wcf-starter-animations-text-wave > *::after,
+.wcf-target-self.wcf-starter-animations-text-wave::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--wcf-wave-fill, #03a9f4);
+  animation: wcf-wave 4s ease-in-out infinite;
+}
+
+@keyframes wcf-wave {
+
+  0%,100% {
+    clip-path: polygon(
+      0% 45%,16% 44%,33% 50%,54% 60%,70% 61%,84% 59%,100% 52%,100% 100%,0% 100%
+    );
+  }
+
+  50% {
+    clip-path: polygon(
+      0% 60%,15% 65%,34% 66%,51% 62%,67% 50%,84% 45%,100% 46%,100% 100%,0% 100%
+    );
+  }
+
+}
+/* =====================================
+   BACKGROUND CLIP TEXT ANIMATION
+===================================== */
+
+.wcf-starter-animations-text-bg-clip 
+.elementor-widget-container > *,
+.wcf-starter-animations-text-bg-clip > *,
+.wcf-target-self.wcf-starter-animations-text-bg-clip {
+  position: relative;
+  color: var(--wcf-bg-text-color, rgba(255,0,0,0.1));
+  background-image: var(--wcf-bg-text-image);
+  background-size: var(--wcf-bg-text-size, cover);
+  background-repeat: repeat;
+  background-position: left 0 top 50%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animate only when triggered */
+.wcf-animate.wcf-starter-animations-text-bg-clip 
+.elementor-widget-container > *,
+.wcf-animate.wcf-starter-animations-text-bg-clip > *,
+.wcf-animate.wcf-target-self.wcf-starter-animations-text-bg-clip {
+  animation: wcf-bg-text-animation var(--wcf-bg-speed,15s) linear infinite;
+}
+
+@keyframes wcf-bg-text-animation {
+  0%{
+    background-position: left 0 top 50%;
+  }
+  50%{
+    background-position: left 1500px top 50%;
+  }
+  100%{
+    background-position: left 0 top 50%;
+  }
+}
+/* =====================================
+   CHARACTER ANIMATION ENGINE (CLEAN)
+===================================== */
+
+/* ===============================
+   PRESET DEFAULT VALUES
+================================ */
+
+/* Revolve */
+.wcf-char-preset-revolve {
+  --wcf-char-x: -150px;
+  --wcf-char-y: -50px;
+  --wcf-char-rotate: -180deg;
+  --wcf-char-scale: 2;
+}
+
+/* Ball Drop */
+.wcf-char-preset-ball {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -200px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 1;
+}
+
+/* Slide */
+.wcf-char-preset-slide {
+  --wcf-char-x: -100px;
+  --wcf-char-y: 0px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 1;
+}
+
+/* Revolve Drop */
+.wcf-char-preset-revolve_drop {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -150px;
+  --wcf-char-rotate: -360deg;
+  --wcf-char-scale: 1.5;
+}
+
+/* Drop Vanish */
+.wcf-char-preset-drop_vanish {
+  --wcf-char-x: 0px;
+  --wcf-char-y: -250px;
+  --wcf-char-rotate: 0deg;
+  --wcf-char-scale: 0.3;
+}
+
+/* Twister */
+.wcf-char-preset-twister {
+  --wcf-char-x: 0px;
+  --wcf-char-y: 0px;
+  --wcf-char-rotate: -720deg;
+  --wcf-char-scale: 1;
+}
+
+/* Parent Fix */
+[class*="wcf-starter-animations-text-char"] .elementor-widget-container > *,
+[class*="wcf-starter-animations-text-char"] > *,
+.wcf-target-self[class*="wcf-starter-animations-text-char"] {
+  display: inline-block;
+}
+
+/* Initial State */
+[class*="wcf-starter-animations-text-char"] .elementor-widget-container > * span,
+[class*="wcf-starter-animations-text-char"] > * span,
+.wcf-target-self[class*="wcf-starter-animations-text-char"] span {
+  display: inline-block;
+  opacity: 0;
+
+  transform:
+    translate(var(--wcf-char-x, -150px), var(--wcf-char-y, 0))
+    rotate(var(--wcf-char-rotate, -180deg))
+    scale(var(--wcf-char-scale, 2));
+
+  animation-delay: calc(var(--wcf-stagger, 0.05s) * var(--i));
+  will-change: transform, opacity;
+}
+
+/* Animate State */
+.wcf-animate[class*="wcf-starter-animations-text-char"] .elementor-widget-container > * span,
+.wcf-animate[class*="wcf-starter-animations-text-char"] > * span,
+.wcf-animate.wcf-target-self[class*="wcf-starter-animations-text-char"] span {
+  animation-name: wcf-char;
+  animation-duration: var(--wcf-duration, 0.5s);
+  animation-timing-function: var(--wcf-ease, ease);
+  animation-fill-mode: forwards;
+}
+
+/* Keyframe */
+@keyframes wcf-char {
+  to {
+    opacity: 1;
+    transform: translate(0,0) rotate(0deg) scale(1);
+  }
+}
+
+/* =========================================
+   Container Slide Animation (Stable)
+========================================= */
+
+/* Initial */
+
+.wcf-starter-animations-slide.e-con {
+
+  opacity: 0;
+
+  animation-duration: var(--wcf-slide-duration, 600ms);
+  animation-delay: var(--wcf-slide-delay, 0ms);
+  animation-timing-function: var(--wcf-slide-ease, ease);
+  animation-fill-mode: forwards;
+
+  will-change: transform, opacity;
+}
+
+/* Direction */
+
+.wcf-slide-bottom.wcf-starter-animations-slide.e-con {
+  transform: translateY(var(--wcf-slide-distance, 40px));
+}
+
+.wcf-slide-top.wcf-starter-animations-slide.e-con {
+  transform: translateY(calc(-1 * var(--wcf-slide-distance, 40px)));
+}
+
+.wcf-slide-left.wcf-starter-animations-slide.e-con {
+  transform: translateX(calc(-1 * var(--wcf-slide-distance, 40px)));
+}
+
+.wcf-slide-right.wcf-starter-animations-slide.e-con {
+  transform: translateX(var(--wcf-slide-distance, 40px));
+}
+
+/* Trigger */
+
+.wcf-animate.wcf-starter-animations-slide.e-con {
+  animation-name: wcf-container-slide;
+}
+
+@keyframes wcf-container-slide {
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   CONTAINER FLIP ANIMATION (SELF ONLY)
+========================================= */
+
+/* Initial State */
+
+.wcf-starter-animations-flip.e-con {
+
+  opacity: 0;
+  transform-style: preserve-3d;
+
+  perspective: var(--wcf-flip-perspective-container, 800px);
+
+  animation-duration: var(--wcf-duration, 700ms);
+  animation-delay: var(--wcf-delay, 0ms);
+  animation-timing-function: var(--wcf-ease, ease);
+  animation-fill-mode: forwards;
+
+  will-change: transform, opacity;
+}
+
+/* Axis X */
+
+.wcf-flip-axis-container-x.wcf-starter-animations-flip.e-con {
+  transform: rotateX(var(--wcf-flip-angle-container, 90deg));
+}
+
+/* Axis Y */
+
+.wcf-flip-axis-container-y.wcf-starter-animations-flip.e-con {
+  transform: rotateY(var(--wcf-flip-angle-container, 90deg));
+}
+
+/* Trigger */
+
+.wcf-animate.wcf-starter-animations-flip.e-con {
+  animation-name: wcf-container-flip;
+}
+
+/* Keyframes */
+
+@keyframes wcf-container-flip {
+  to {
+    transform: rotateX(0deg) rotateY(0deg);
+    opacity: 1;
+  }
+}

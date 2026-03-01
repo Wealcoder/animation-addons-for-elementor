@@ -28,14 +28,14 @@ export const deviceMediaMatch = () => {
 export const generateSearchContent = (
   fullContent = [],
   categoryKey,
-  subItems,
+  subItems
 ) => {
   if (subItems) {
     const allItems = [];
     fullContent?.map((el) =>
       el?.[subItems].map((item) => {
         allItems.push(item);
-      }),
+      })
     );
 
     const result = {
@@ -61,7 +61,7 @@ export const disableAllWidget = (mainContent) => {
         const filteredElements = Object.fromEntries(
           Object.entries(value.elements || {}).map(([key2, value2]) => {
             return [key2, { ...value2, is_active: false }];
-          }),
+          })
         );
 
         return [
@@ -69,7 +69,7 @@ export const disableAllWidget = (mainContent) => {
           { ...value, is_active: false, elements: filteredElements },
         ];
       })
-      .filter(([key, value]) => Object.keys(value.elements).length > 0),
+      .filter(([key, value]) => Object.keys(value.elements).length > 0)
   );
 
   return result;
@@ -81,11 +81,11 @@ export const disableGsapExtension = (mainContent) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).map(([key2, value2]) => {
           return [key2, { ...value2, is_active: false }];
-        }),
+        })
       );
 
       return [key, { ...value, is_active: false, elements: filteredElements }];
-    }),
+    })
   );
 
   return {
@@ -99,7 +99,7 @@ export const disableGeneralExtension = (mainContent) => {
   const result = Object.fromEntries(
     Object.entries(mainContent.elements || {}).map(([key2, value2]) => {
       return [key2, { ...value2, is_active: false }];
-    }),
+    })
   );
   return {
     ...mainContent,
@@ -123,12 +123,12 @@ export const filterWidgets = (mainContent, filterKey) => {
             } else {
               return [key2, value2];
             }
-          }),
+          })
         );
 
         return [key, { ...value, elements: filteredElements }];
       })
-      .filter(([key, value]) => Object.keys(value.elements).length > 0),
+      .filter(([key, value]) => Object.keys(value.elements).length > 0)
   );
 
   return result;
@@ -146,7 +146,7 @@ export const filterGeneralExtension = (mainContent, filterKey) => {
       } else {
         return [key2, value2];
       }
-    }),
+    })
   );
   return {
     ...mainContent,
@@ -168,11 +168,11 @@ export const filterGsapExtension = (mainContent, filterKey) => {
           } else {
             return [key2, value2];
           }
-        }),
+        })
       );
 
       return [key, { ...value, elements: filteredElements }];
-    }),
+    })
   );
 
   return {
