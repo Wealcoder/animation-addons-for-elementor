@@ -2899,21 +2899,7 @@ $config = array(
 				'title'     => 'General Extensions',
 				'is_active' => false,
 				'elements'  => array(
-					'starter-animations'       => array(
-						'label'        => 'Starter Animations',
-						'location'     => array(
-							'cTab' => 'general',
-						),
-						'is_pro'       => false,
-						'is_active'    => true,
-						'setup'        => array('basic'),
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => 'wcf-icon-Custom-CSS',
-						'demo_url'     => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
-						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
-						'youtube_url'  => '',
-					),
+					
 
 					'custom-css'       => array(
 						'label'        => 'Custom CSS',

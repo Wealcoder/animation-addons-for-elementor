@@ -1178,15 +1178,15 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		foreach ( $templates as $template ) {
 			$source_type  = get_post_meta( $template->ID, '_elementor_source', true );
 			$source_label = '';
-
+		
 			if ( $source_type ) {
 				$post_type_obj = get_post_type_object( $source_type );
 				$source_label  = $post_type_obj ? ' (' . $post_type_obj->label . ')' : ' (' . ucfirst( $source_type ) . ')';
 			}
 
-			$options[ $template->ID ] = $template->post_title . $source_label;
+			$options[ $template->post_name ] = $template->post_title . $source_label;
 		}
-
+		
 		return $options;
 	}
 
@@ -1210,19 +1210,30 @@ class Loop_Grid extends \Elementor\Widget_Base {
 
 		$query_manager = Query_Manager::instance();
 		$query         = $query_manager->get_query( $settings );
+		$template_id = $settings['template_id'];
 
+		if(!is_numeric($template_id)){
+			$template = get_page_by_path( $template_id, OBJECT, 'wcf-addons-template' );
+			if ( $template ) {
+				$template_id = $template->ID;
+			} 
+			else {
+				$this->render_empty_view();
+				return;
+			}
+		}
 		// Build base classes.
 		$container_classes = array(
 			'custom-loop-container',
 			'aae-loop-grid-container',
-			'custom-loop-container-' . $settings['template_id'],
+			'custom-loop-container-' . $template_id,
 		);
 
 		$class_settings = array(
 			'class'         => $container_classes,
 			'data-settings' => wp_json_encode(
 				array(
-					'template_id'          => $settings['template_id'],
+					'template_id'          => $template_id,
 					'posts_per_page'       => $settings['posts_per_page'],
 					'pagination_type'      => isset( $settings['pagination_type'] ) ? $settings['pagination_type'] : '',
 					'pagination_load_type' => isset( $settings['pagination_load_type'] ) ? $settings['pagination_load_type'] : 'page_reload',
@@ -1253,7 +1264,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 				if ( $query->have_posts() ) {
 					while ( $query->have_posts() ) {
 						$query->the_post();
-						$this->render_loop_item( $settings['template_id'] );
+						$this->render_loop_item( $template_id );
 					}
 					wp_reset_postdata();
 				} else {
