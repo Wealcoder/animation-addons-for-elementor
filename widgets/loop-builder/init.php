@@ -39,6 +39,10 @@ class AAE_Loop_Builder_Integration {
 	 * @return void
 	 */
 	public function __construct() {
+		// if elementor pro is active retun
+		if ( defined( 'ELEMENTOR_PRO_VERSION' ) ) {
+			return;
+		}
 		add_action( 'plugins_loaded', array( $this, 'init' ), 20 );
 	}
 
