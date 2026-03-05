@@ -600,6 +600,19 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026
+
+  - **Fixed:** Starter Animation Issue Fixed.
+  - **Fixed:** Loop grid widget conflict with Elmentor Loop grid issue fixed.
+  - **Imporved:** Starter Animation Dependancy remove as extension.
+
+= 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026
+
+  - **Added:** New Free Starter Animation For Text, Image, Container .
+  - **Added:** Advanced Pricing Table -New Widget Introduce.
+  - **Added:** Weather -New Widget Introduce.
+  - **Added:** 27 Free templates.
+
 = 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026
 
   - **Improved:** Cleaned up unnecessary code
