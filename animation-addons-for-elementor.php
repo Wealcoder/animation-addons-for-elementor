@@ -119,7 +119,6 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function __construct() {
 		
-        add_option( 'aae_installed', wp_date( 'U' ) );
 		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
 		register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
 		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
@@ -137,6 +136,8 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_activation_hook() {
+		
+		add_option( 'aae_installed', wp_date( 'U' ) );  // Move this code from constructor at version 2.5.9
 		//set setup wizard
 		update_option('aae_do_activation_redirect', 'new');
 		if ( !get_option( 'wcf_addons_version' ) && !get_option( 'wcf_addons_setup_wizard' ) ) {

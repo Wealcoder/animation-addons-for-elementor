@@ -275,8 +275,10 @@ class Plugin
 					'nonce'          => wp_create_nonce('wcf-template-library'),
 					'dashboard_link' => admin_url('admin.php?page=wcf_addons_settings'),
 					'config'         => apply_filters('wcf_addons_editor_config', array()),
-					'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
-					'pro_active'     => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+					'pro_installed'  => file_exists(WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro'), // change below code at version 2.5.9
+					'pro_active' 	 => class_exists('\AAE_ADDONS_Plugin_Pro'),
+					// 'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+					// 'pro_active'     => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
 				)
 			);
 
