@@ -1,6 +1,14 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.8 – 12th March 2026
+
+    - Fixed: Nav menu widget conflict issues.
+
+= 🌀 Animation Addons for Elementor v2.5.7 – 10th March 2026
+
+    - Fixed: Starter Animation conflict issues.
+
 = 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026
 
     - Fixed: Starter Animation Issue Fixed.
