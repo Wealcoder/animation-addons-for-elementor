@@ -6,10 +6,8 @@
 .elementor-widget-container > *,
 [class*="wcf-starter-animations-"] > *,
 .wcf-target-self[class*="wcf-starter-animations-"] {
-  // display: inline-block;
-  will-change: transform, opacity, clip-path;
+  // will-change: transform, opacity, clip-path;
 }
-
 /* =====================================
    COMMON ANIMATION SETTINGS
 ===================================== */
