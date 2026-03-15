@@ -99,23 +99,45 @@ class Contact_Form_7 extends Widget_Base {
 	public function get_script_depends() {
 		return [ 'aae--contact-form' ];
 	}
+
 	public function contactform_forms() {
-		$formlist   = array();
-		$forms_args = array(
-			'posts_per_page' => - 1,
-			'post_type'      => 'wpcf7_contact_form',
-		);
-		$forms      = get_posts( $forms_args );
-		if ( $forms ) {
-			foreach ( $forms as $form ) {
-				$formlist[ $form->ID ] = $form->post_title;
-			}
-		} else {
-			$formlist['0'] = esc_html__( 'Form not found', 'animation-addons-for-elementor' );
+
+	static $cache = null;
+
+	if ($cache !== null) {
+		return $cache;
+	}
+
+	$formlist = [];
+
+	$query = new \WP_Query([
+		'post_type'              => 'wpcf7_contact_form',
+		'post_status'            => 'publish',
+		'posts_per_page'         => -1,
+		'fields'                 => 'ids',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'cache_results'          => true,
+	]);
+
+	if (!empty($query->posts)) {
+
+		foreach ($query->posts as $form_id) {
+			$formlist[$form_id] = get_the_title($form_id);
 		}
 
-		return $formlist;
+	} else {
+
+		$formlist['0'] = esc_html__('Form not found', 'animation-addons-for-elementor');
+
 	}
+
+	$cache = $formlist;
+
+	return $formlist;
+}
+
 
 	/**
 	 * Register the widget controls.
