@@ -155,55 +155,60 @@ class Banner_Posts extends Widget_Base
 	{
 		$this->start_controls_section(
 			'section_query',
-			array(
+			[
 				'label' => __('Query', 'animation-addons-for-elementor'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
-			)
+			]
 		);
 
 		$this->add_control(
 			'query_type',
-			array(
-				'label'    => __('Query Type', 'animation-addons-for-elementor'),
-				'type'     => Controls_Manager::SELECT,
-				'multiple' => true,
-				'options'  => array(
+			[
+				'label'   => __('Query Type', 'animation-addons-for-elementor'),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
 					'recent'      => __('Recent Post', 'animation-addons-for-elementor'),
 					'select_post' => __('Selected Post', 'animation-addons-for-elementor'),
-				),
-			)
+				],
+			]
 		);
 
-		$args = array(
-			'post_type'      => 'post',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-		);
+		$blog_post = [];
 
-		// we get an array of posts objects
-		$posts = get_posts($args);
+		$query = new \WP_Query([
+			'post_type'              => 'post',
+			'post_status'            => 'publish',
+			'posts_per_page'         => 50, // limit results
+			'orderby'                => 'date',
+			'order'                  => 'DESC',
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		]);
 
-		$blog_post = array();
-
-		foreach ((array) $posts as $single_post) {
-			$blog_post[$single_post->ID] = $single_post->post_title;
+		if (!empty($query->posts)) {
+			foreach ($query->posts as $post_id) {
+				$blog_post[$post_id] = get_the_title($post_id);
+			}
 		}
 
 		$this->add_control(
 			'select_post',
-			array(
+			[
 				'label'     => __('Select Post', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::SELECT2,
 				'multiple'  => true,
 				'options'   => $blog_post,
-				'condition' => array(
-					'query_type' => array('select_post'),
-				),
-			)
+				'condition' => [
+					'query_type' => ['select_post'],
+				],
+			]
 		);
 
 		$this->end_controls_section();
 	}
+
 
 	protected function register_settings_controls()
 	{

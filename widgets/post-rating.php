@@ -608,33 +608,41 @@ class Post_Rating extends Widget_Base
 	{
 		$post_id = get_the_ID();
 
-		$reviews = new WP_Query([
-			'post_type'      => 'aaeaddon_post_rating',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => [
+		$query = new WP_Query([
+			'post_type'              => 'aaeaddon_post_rating',
+			'post_status'            => 'publish',
+			'fields'                 => 'ids',
+			'posts_per_page'         => 50,
+			'meta_query'             => [
 				[
 					'key'   => 'post_id',
 					'value' => $post_id,
 				]
-			]
+			],
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => true,
+			'update_post_term_cache' => false,
 		]);
 
-		if ($reviews->have_posts()) {
-			while ($reviews->have_posts()) {
-				$reviews->the_post();
+		if (!empty($query->posts)) {
 
-				$rating  = get_post_meta(get_the_ID(), 'rating', true);
-				$review  = get_post_meta(get_the_ID(), 'review', true);
-				$date    = get_the_date();
-				$user_id = get_post_meta(get_the_ID(), 'user_id', true);
+			foreach ($query->posts as $review_id) {
+
+				$meta = get_post_meta($review_id);
+
+				$rating  = intval($meta['rating'][0] ?? 0);
+				$review  = $meta['review'][0] ?? '';
+				$user_id = $meta['user_id'][0] ?? '';
+				$name    = '';
 
 				if ($user_id) {
 					$name = get_the_author_meta('display_name', $user_id);
 				} else {
-					$name = get_post_meta(get_the_ID(), 'name', true);
+					$name = $meta['name'][0] ?? '';
 				}
-		?>
+
+				$date = get_the_date('', $review_id);
+				?>
 				<div class="rating-item">
 					<div class="content">
 						<div class="name-wrap">
@@ -642,27 +650,28 @@ class Post_Rating extends Widget_Base
 							<span class="dash"></span>
 							<div class="date"><?php echo esc_html($date); ?></div>
 						</div>
+
 						<div class="stars">
-							<?php
-							for ($i = 1; $i <= 5; $i++) {
+							<?php for ($i = 1; $i <= 5; $i++) :
 								$color = ($i <= $rating) ? $settings['star_active_color'] : $settings['star_color'];
 							?>
 								<span class="star" style="color:<?php echo esc_attr($color); ?>; fill:<?php echo esc_attr($color); ?>;">
-									<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
+									<?php \Elementor\Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 								</span>
-							<?php
-							}
-							?>
+							<?php endfor; ?>
 						</div>
+
 					</div>
+
 					<p class="review"><?php echo esc_html($review); ?></p>
 				</div>
-			<?php
+				<?php
 			}
-			wp_reset_postdata();
+
 		} else {
+
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-			?>
+				?>
 				<div class="rating-item">
 					<div class="content">
 						<div class="name-wrap">
@@ -671,44 +680,20 @@ class Post_Rating extends Widget_Base
 							<div class="date">June 17, 2025</div>
 						</div>
 						<div class="stars">
-							<?php
-							for ($i = 1; $i <= 5; $i++) {
+							<?php for ($i = 1; $i <= 5; $i++) :
 								$color = ($i <= 4) ? $settings['star_active_color'] : $settings['star_color'];
 							?>
 								<span class="star" style="color:<?php echo esc_attr($color); ?>; fill:<?php echo esc_attr($color); ?>;">
-									<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
+									<?php \Elementor\Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 								</span>
-							<?php
-							}
-							?>
+							<?php endfor; ?>
 						</div>
 					</div>
 					<p class="review">Absolutely loved the content — informative and well-presented!</p>
 				</div>
-				<div class="rating-item">
-					<div class="content">
-						<div class="name-wrap">
-							<div class="name">Baby Charles</div>
-							<span class="dash"></span>
-							<div class="date">July 17, 2025</div>
-						</div>
-						<div class="stars">
-							<?php
-							for ($i = 1; $i <= 5; $i++) {
-								$color = ($i <= 4) ? $settings['star_active_color'] : $settings['star_color'];
-							?>
-								<span class="star" style="color:<?php echo esc_attr($color); ?>; fill:<?php echo esc_attr($color); ?>;">
-									<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
-								</span>
-							<?php
-							}
-							?>
-						</div>
-					</div>
-					<p class="review">Great post overall, but could use a bit more depth in certain areas.</p>
-				</div>
-<?php
+				<?php
 			}
 		}
 	}
+
 }

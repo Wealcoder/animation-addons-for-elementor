@@ -1158,37 +1158,62 @@ class Loop_Grid extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	private function get_loop_templates_options() {
-		$templates = get_posts(
-			array(
-				'post_type'      => 'wcf-addons-template',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-						array(
-								'key'     => 'wcf-addons-template-meta_type',
-								'value'   => 'loop-builder',
-								'compare' => '=',
-						),
-				),
-			)
-		);
 
-		$options = array( '' => __( 'Select Template', 'animation-addons-for-elementor' ) );
+		static $cache = null;
 
-		foreach ( $templates as $template ) {
-			$source_type  = get_post_meta( $template->ID, '_elementor_source', true );
-			$source_label = '';
-		
-			if ( $source_type ) {
-				$post_type_obj = get_post_type_object( $source_type );
-				$source_label  = $post_type_obj ? ' (' . $post_type_obj->label . ')' : ' (' . ucfirst( $source_type ) . ')';
-			}
-
-			$options[ $template->post_name ] = $template->post_title . $source_label;
+		if ($cache !== null) {
+			return $cache;
 		}
-		
+
+		$options = [
+			'' => __('Select Template', 'animation-addons-for-elementor'),
+		];
+
+		$query = new \WP_Query([
+			'post_type'              => 'wcf-addons-template',
+			'post_status'            => 'publish',
+			'posts_per_page'         => -1,
+			'fields'                 => 'ids',
+			'meta_query'             => [
+				[
+					'key'   => 'wcf-addons-template-meta_type',
+					'value' => 'loop-builder',
+				],
+			],
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => true,
+			'update_post_term_cache' => false,
+			'cache_results'          => true,
+		]);
+
+		if (!empty($query->posts)) {
+
+			foreach ($query->posts as $template_id) {
+
+				$title = get_the_title($template_id);
+				$slug  = get_post_field('post_name', $template_id);
+
+				$meta = get_post_meta($template_id);
+
+				$source_type  = $meta['_elementor_source'][0] ?? '';
+				$source_label = '';
+
+				if ($source_type) {
+					$post_type_obj = get_post_type_object($source_type);
+					$source_label  = $post_type_obj
+						? ' (' . $post_type_obj->label . ')'
+						: ' (' . ucfirst($source_type) . ')';
+				}
+
+				$options[$slug] = $title . $source_label;
+			}
+		}
+
+		$cache = $options;
+
 		return $options;
 	}
+
 
 	/**
 	 * Render widget output.
