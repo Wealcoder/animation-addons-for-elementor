@@ -164,10 +164,18 @@ endif;
  */
 if ( ! function_exists( 'wcf_addons_get_all_widgets_count' ) ) :
 	function wcf_addons_get_all_widgets_count() {
-		$total   = 0;
-		$widgets = $GLOBALS['wcf_addons_config']['widgets'];
-		foreach ( $widgets as $group ) {
-			$total = $total + count( $group['elements'] );
+
+		$total  = 0;
+		$config = wcf_get_config();
+
+		if ( empty( $config['widgets'] ) ) {
+			return 0;
+		}
+
+		foreach ( $config['widgets'] as $group ) {
+			if ( ! empty( $group['elements'] ) ) {
+				$total += count( $group['elements'] );
+			}
 		}
 
 		return $total;
@@ -203,11 +211,20 @@ endif;
  */
 if ( ! function_exists( 'wcf_addons_get_all_extensions_count' ) ) :
 	function wcf_addons_get_all_extensions_count() {
-		$total   = 0;
-		$widgets = $GLOBALS['wcf_addons_config']['extensions'];
-		foreach ( $widgets as $group ) {
-			$total = $total + count( $group['elements'] );
+
+		$total  = 0;
+		$config = wcf_get_config();
+
+		if ( empty( $config['extensions'] ) ) {
+			return 0;
 		}
+
+		foreach ( $config['extensions'] as $group ) {
+			if ( ! empty( $group['elements'] ) ) {
+				$total += count( $group['elements'] );
+			}
+		}
+
 		return $total;
 	}
 endif;
@@ -688,3 +705,19 @@ add_filter(
 		return $settings;
 	}
 );
+
+
+function wcf_get_config() {
+
+    $config = wp_cache_get('wcf_addons_config');
+
+    if ($config === false) {
+        $config = require WCF_ADDONS_PATH . 'config.php';
+        wp_cache_set('wcf_addons_config', $config);
+    }
+
+    return $config;
+
+}
+
+

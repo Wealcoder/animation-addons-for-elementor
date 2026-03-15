@@ -1031,7 +1031,7 @@ class Plugin
 	private function include_files()
 	{
 
-		require_once WCF_ADDONS_PATH . 'config.php';
+		//require_once WCF_ADDONS_PATH . 'config.php';
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
 		if (is_admin()) {
 			if (get_option('wcf_addons_setup_wizard') !== 'complete') {

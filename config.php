@@ -4,7 +4,7 @@ if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
 
-$config = array(
+return array(
 	'widgets'            => array(
 		'is_active' => false,
 		'elements'  => array(
@@ -3572,4 +3572,5 @@ $config = array(
 	),
 );
 
-$GLOBALS['wcf_addons_config'] = $config;
+//$GLOBALS['wcf_addons_config'] = $config;
+//return $config;
