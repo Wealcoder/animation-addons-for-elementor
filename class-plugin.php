@@ -68,6 +68,9 @@ class Plugin
 	 * @since 1.2.0
 	 * @access public
 	 */
+
+	private $preview_post_id = null;
+
 	public static function instance()
 	{
 		if (is_null(self::$instance)) {
@@ -230,7 +233,8 @@ class Plugin
 				'wp-element',
 				'jquery',
 			),
-			time(),
+			//time(),
+			WCF_ADDONS_VERSION,
 			true
 		);
 		wp_enqueue_script(
@@ -301,7 +305,7 @@ class Plugin
 	 */
 	public function editor_styles()
 	{
-		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), time(), 'all');
+		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), WCF_ADDONS_VERSION, 'all');
 	}
 
 	/**
@@ -1081,19 +1085,42 @@ class Plugin
 		$this->register_extensions();
 	}
 
-	public function elementor_editor_url($url)
-	{
-		$args         = array(
+	// public function elementor_editor_url($url)
+	// {
+	// 	$args         = array(
+	// 		'numberposts' => 1,
+	// 		'post_type'   => 'post',
+	// 		'orderby'     => 'menu_order',
+	// 		'order'       => 'ASC',
+	// 	);
+	// 	$latest_posts = get_posts($args);
+	// 	if (! is_wp_error($latest_posts) && ! empty($latest_posts) && isset($latest_posts[0])) {
+	// 		return add_query_arg('aaeid', $latest_posts[0]->ID, $url);
+	// 	}
+	// 	return add_query_arg('aaeid', 1, $url);
+	// }
+
+	
+	public function elementor_editor_url($url) {
+
+		// If already fetched, reuse it
+		if ($this->preview_post_id !== null) {
+			return add_query_arg('aaeid', $this->preview_post_id, $url);
+		}
+
+		$args = [
 			'numberposts' => 1,
 			'post_type'   => 'post',
 			'orderby'     => 'menu_order',
 			'order'       => 'ASC',
-		);
-		$latest_posts = get_posts($args);
-		if (! is_wp_error($latest_posts) && ! empty($latest_posts) && isset($latest_posts[0])) {
-			return add_query_arg('aaeid', $latest_posts[0]->ID, $url);
-		}
-		return add_query_arg('aaeid', 1, $url);
+			'fields'      => 'ids', // performance optimization
+		];
+
+		$posts = get_posts($args);
+
+		$this->preview_post_id = (!empty($posts)) ? $posts[0] : 1;
+
+		return add_query_arg('aaeid', $this->preview_post_id, $url);
 	}
 
 	public function print_templates()
@@ -1528,7 +1555,7 @@ class Plugin
 			'aae-starter-animations',
 			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
 			[],
-			time(),
+			WCF_ADDONS_VERSION,
 			true
 		);
 		
