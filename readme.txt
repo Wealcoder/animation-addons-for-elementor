@@ -5,7 +5,7 @@ Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
 Requires at least: 6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5.8
+Stable tag: 2.5.9
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -600,6 +600,18 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.5.9 – 16th March 2026
+
+    - Improved: Boost performance in both the builder and frontend.
+
+= 🌀 Animation Addons for Elementor v2.5.8 – 12th March 2026
+
+    - Fixed: Nav menu widget conflict issues.
+
+= 🌀 Animation Addons for Elementor v2.5.7 – 10th March 2026
+
+    - Fixed: Starter Animation conflict issues.
+    
 = 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026
 
   - **Fixed:** Starter Animation Issue Fixed.
