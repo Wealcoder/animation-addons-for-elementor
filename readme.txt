@@ -1,7 +1,7 @@
-=== Animation Addons for Elementor – GSAP Motion & Website Templates ===
+=== Animation Addons for Elementor – GSAP Motion Elementor Addons & Website Templates ===
 Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
-Tags: Elementor, Elementor Addons, Elementor Templates, Animation, Templates
+Tags: animation, elementor, elementor addons, elementor templates, elementor widgets
 Requires at least: 6
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -9,7 +9,7 @@ Stable tag: 2.5.9
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-GSAP Animation Powered Elementor Addon & Motion Hub with 300+ Website Templates, Advanced Extensions, and 100+ Elementor Widgets
+GSAP Animation-Powered Free Elementor Addons with Motion Effects, Free Elementor Templates, Free Elementor Extensions, Free Elementor Widgets, and Free Header Footer Builder.
 
 == Description ==
 
