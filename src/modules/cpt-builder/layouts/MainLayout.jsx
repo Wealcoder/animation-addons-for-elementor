@@ -1,11 +1,10 @@
 import MainHeader from "S/components/header/MainHeader";
 import { usePostType, useTab, useTaxonomy } from "S/hooks/app.hooks";
+import PostTypes from "S/pages/postTypes";
+import EditPostType from "S/pages/postTypes/EditPostType";
 import Taxonomy from "S/pages/taxonomy";
 import EditTaxonomy from "S/pages/taxonomy/EditTaxonomy";
-import { useEffect, lazy, Suspense } from "react";
-
-const PostTypes = lazy(() => import("S/pages/postTypes"));
-const EditPostType = lazy(() => import("S/pages/postTypes/EditPostType"));
+import { useEffect } from "react";
 
 const MainLayout = () => {
   const { tabKey, updateTabKey } = useTab();
@@ -95,9 +94,7 @@ const MainLayout = () => {
       <div className="wcfcb2024-style container overflow-x-hidden bg-background rounded-[10px]">
         <MainHeader />
         <div className="px-5 2xl:px-24 py-8">
-          <Suspense fallback={<p>Loading...</p>}>
-            {showContent(tabKey)}
-          </Suspense>
+          {showContent(tabKey)}
         </div>
       </div>
     </div>

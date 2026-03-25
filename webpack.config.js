@@ -6,8 +6,7 @@ const path = require("path");
 module.exports = {
   ...defaultConfig,
   externals: {
-    react: "React",
-    "react-dom": "ReactDOM",
+    
   },
   entry: {
     ...getWebpackEntryPoints(),
