@@ -1989,7 +1989,7 @@ return array(
 							'cTab' => 'all',
 						),
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'keywords'     => array(
