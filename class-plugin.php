@@ -1053,7 +1053,10 @@ class Plugin
 			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
-		require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
+		// Only load theme builder when needed. added this condition at v-2.6.0
+		if ( is_admin() || ! wp_doing_ajax() ) {
+			require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';  
+		}
 
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
@@ -1358,7 +1361,7 @@ class Plugin
 
 		if ($force_update || false === $templates_data) {
 
-			$timeout = ($force_update) ? 30 : 45;
+			$timeout = ($force_update) ? 15 : 25;
 
 			$response = wp_remote_get(
 				esc_url_raw(self::$instance->api_url),
@@ -1391,7 +1394,7 @@ class Plugin
 				update_option(self::LIBRARY_OPTION_KEY, $templates_data['library'], 'no');
 				unset($templates_data['library']);
 			}
-			set_transient($cache_key, $templates_data, 1 * HOUR_IN_SECONDS);
+			set_transient($cache_key, $templates_data, 12 * HOUR_IN_SECONDS);
 		}
 
 		return $templates_data;
@@ -1506,27 +1509,6 @@ class Plugin
 	}
 
 
-	public function wp_head() {
-
-		$data = apply_filters(
-			'wcf-addons/js/data',
-			array(
-				'ajaxUrl'        => admin_url('admin-ajax.php'),
-				'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
-				'post_id'        => get_the_ID(),
-				'i18n'           => array(
-					'okay'    => esc_html__('Okay', 'animation-addons-for-elementor'),
-					'cancel'  => esc_html__('Cancel', 'animation-addons-for-elementor'),
-					'submit'  => esc_html__('Submit', 'animation-addons-for-elementor'),
-					'success' => esc_html__('Success', 'animation-addons-for-elementor'),
-					'warning' => esc_html__('Warning', 'animation-addons-for-elementor'),
-				),
-				'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
-				'mode'           => \Elementor\Plugin::$instance->editor->is_edit_mode(),
-			)
-		);
-		echo '<script id="wcf-addons-data">const WCF_ADDONS_JS = ' . wp_json_encode($data) . ';</script>';
-	}
 
 	/**
 	 * Editor style
