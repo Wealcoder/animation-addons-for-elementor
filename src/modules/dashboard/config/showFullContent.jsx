@@ -1,16 +1,14 @@
-import { lazy } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import CompleteImport from "@/pages/CompleteImport";
+import Dashboard from "@/pages/Dashboard";
+import DemoImporting from "@/pages/DemoImporting";
+import Extensions from "@/pages/Extensions";
 import FailImport from "@/pages/FailImport";
-
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Extensions = lazy(() => import("@/pages/Extensions"));
-const FreePro = lazy(() => import("@/pages/FreePro"));
-const Widgets = lazy(() => import("@/pages/Widgets"));
-const Integrations = lazy(() => import("@/pages/Integrations"));
-const StaterTemplate = lazy(() => import("@/pages/StaterTemplate"));
-const RequiredFeatures = lazy(() => import("@/pages/RequiredFeatures"));
-const DemoImporting = lazy(() => import("@/pages/DemoImporting"));
+import FreePro from "@/pages/FreePro";
+import Integrations from "@/pages/Integrations";
+import RequiredFeatures from "@/pages/RequiredFeatures";
+import StaterTemplate from "@/pages/StaterTemplate";
+import Widgets from "@/pages/Widgets";
 
 export const ShowContent = (item) => {
   switch (item.tabKey) {
