@@ -332,70 +332,100 @@ class WCF_Admin_Init
 	public function enqueue_scripts($hook)
 	{
 		$total_extensions = $total_widgets = 0;
-     
+
 		$screen = get_current_screen();
 		if ( ! $screen || strpos($screen->id, '_page_wcf_addons_settings') === false) {
 			return;
 		}
-		//if ($hook == 'animation-addon_page_wcf_addons_settings') {
-			// sync element manager
-			$this->disable_widgets_by_element_manager();
-			// CSS
-			wp_enqueue_style(
-				'wcf-admin', // Handle for the stylesheet
-				WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
-				array(), // Dependencies (none in this case)
-				time()
-			);
 
-			wp_enqueue_script('wcf-admin', WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.js', array('react', 'react-dom', 'wp-element', 'wp-i18n'), time(), true);
-			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['extensions'], $total_extensions);
-			wcf_get_total_config_elements_by_key($GLOBALS['wcf_addons_config']['widgets'], $total_widgets);
+		// Load config once
+		$config = wcf_get_config();
 
-			$widgets       = get_option('wcf_save_widgets');
-			$saved_widgets = is_array($widgets) ? array_keys($widgets) : array();
+		// sync element manager
+		$this->disable_widgets_by_element_manager();
 
-			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['widgets'], $saved_widgets, $foundKeys, $awidgets);
+		// CSS
+		wp_enqueue_style(
+			'wcf-admin',
+			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
+			array(),
+			time()
+		);
 
-			$extensions       = get_option('wcf_save_extensions');
-			$saved_extensions = is_array($extensions) ? array_keys($extensions) : array();
+		wp_enqueue_script(
+			'wcf-admin',
+			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.js',
+			array('react', 'react-dom', 'wp-element', 'wp-i18n'),
+			time(),
+			true
+		);
 
-			wcf_get_search_active_keys($GLOBALS['wcf_addons_config']['extensions'], $saved_extensions, $foundext, $activeext);
+		// Count widgets/extensions
+		wcf_get_total_config_elements_by_key($config['extensions'], $total_extensions);
+		wcf_get_total_config_elements_by_key($config['widgets'], $total_widgets);
 
-			$active_widgets = self::get_widgets();
-			$active_ext     = self::get_extensions();
-			$font_settings  = wp_unslash(get_option('wcf_custom_font_setting'));
+		// Widgets
+		$widgets       = get_option('wcf_save_widgets');
+		$saved_widgets = is_array($widgets) ? array_keys($widgets) : array();
 
-			$localize_data = array(
-				'ajaxurl'             => admin_url('admin-ajax.php'),
-				'isSettingsPage' => true, // 🔥 IMPORTANT
-				'nonce'               => wp_create_nonce('wcf_admin_nonce'),
-				'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
-				'adminURL'            => admin_url(),
-				'smoothScroller'      => json_decode(get_option('wcf_smooth_scroller')),
-				'cf_settings'         => is_string($font_settings) ? json_decode($font_settings) : array(),
-				'extensions'          => array(
-					'total'  => $total_extensions,
-					'active' => is_array($active_ext) ? count($active_ext) : 0,
-				),
-				'widgets'             => array(
-					'total'  => $total_widgets,
-					'active' => is_array($active_widgets) ? count($active_widgets) : 0,
-				),
-				'global_settings_url' => $this->get_elementor_active_edit_url(),
-				'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
-				'user_role'           => wcfaddon_get_current_user_roles(),
-				'version'             => WCF_ADDONS_VERSION,
-				'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
-				'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
-				'template_menu' => $this->get_template_menu_data(),
-				'hero' => file_exists($this->plugin_file) ? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg' : 'no',
-				'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
+		wcf_get_search_active_keys($config['widgets'], $saved_widgets, $foundKeys, $awidgets);
 
-			);
-			wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
-		//}
+		// Extensions
+		$extensions       = get_option('wcf_save_extensions');
+		$saved_extensions = is_array($extensions) ? array_keys($extensions) : array();
+
+		wcf_get_search_active_keys($config['extensions'], $saved_extensions, $foundext, $activeext);
+
+		$active_widgets = self::get_widgets();
+		$active_ext     = self::get_extensions();
+
+		$font_settings = wp_unslash(get_option('wcf_custom_font_setting'));
+
+		$localize_data = array(
+			'ajaxurl'        => admin_url('admin-ajax.php'),
+			'isSettingsPage' => true,
+			'nonce'          => wp_create_nonce('wcf_admin_nonce'),
+
+			'addons_config'  => apply_filters('wcf_addons_dashboard_config', $config),
+
+			'adminURL'       => admin_url(),
+			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
+
+			'cf_settings' => is_string($font_settings)
+				? json_decode($font_settings)
+				: array(),
+
+			'extensions' => array(
+				'total'  => $total_extensions,
+				'active' => is_array($active_ext) ? count($active_ext) : 0,
+			),
+
+			'widgets' => array(
+				'total'  => $total_widgets,
+				'active' => is_array($active_widgets) ? count($active_widgets) : 0,
+			),
+
+			'global_settings_url' => $this->get_elementor_active_edit_url(),
+			'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
+			'user_role'           => wcfaddon_get_current_user_roles(),
+
+			'version'            => WCF_ADDONS_VERSION,
+			'st_template_domain' => WCF_TEMPLATE_STARTER_BASE_URL,
+
+			'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
+
+			'template_menu' => $this->get_template_menu_data(),
+
+			'hero'       => file_exists($this->plugin_file)
+				? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg'
+				: 'no',
+
+			'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
+		);
+
+		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 	}
+
 
 	public function get_template_menu_data()
 	{

@@ -20,30 +20,73 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @see WP_Query
  */
+// if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) : // remove this function at 2.6.0 version
+// 	function wcf_addons_get_saved_template_list( $args = null ) {
+
+// 		$post_list     = array();
+// 		$user          = wp_get_current_user();
+// 		$allowed_roles = array( 'editor', 'administrator', 'author' );
+
+// 		if ( array_intersect( $allowed_roles, $user->roles ) || is_super_admin() ) {
+
+// 			$defaults = array(
+// 				'post_type'   => 'elementor_library',
+// 				'post_status' => 'publish',
+// 				'numberposts' => -1,
+// 			);
+
+// 			$parsed_args              = wp_parse_args( $args, $defaults );
+// 			$parsed_args['post_type'] = 'elementor_library'; // don't overwrite post type
+// 			$posts                    = get_posts( $parsed_args );
+// 			if ( $posts ) {
+// 				foreach ( $posts as $post ) {
+// 					$post_list[ $post->ID ] = esc_html( $post->post_title );
+// 				}
+// 			}
+// 		}
+
+// 		return $post_list;
+// 	}
+// endif;
+
 if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 	function wcf_addons_get_saved_template_list( $args = null ) {
 
-		$post_list     = array();
-		$user          = wp_get_current_user();
-		$allowed_roles = array( 'editor', 'administrator', 'author' );
+		static $cache = null;
 
-		if ( array_intersect( $allowed_roles, $user->roles ) || is_super_admin() ) {
+		if ( $cache !== null ) {
+			return $cache;
+		}
 
-			$defaults = array(
-				'post_type'   => 'elementor_library',
-				'post_status' => 'publish',
-				'numberposts' => -1,
-			);
+		$post_list = array();
 
-			$parsed_args              = wp_parse_args( $args, $defaults );
-			$parsed_args['post_type'] = 'elementor_library'; // don't overwrite post type
-			$posts                    = get_posts( $parsed_args );
-			if ( $posts ) {
-				foreach ( $posts as $post ) {
-					$post_list[ $post->ID ] = esc_html( $post->post_title );
-				}
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return $post_list;
+		}
+
+		$defaults = array(
+			'post_type'      => 'elementor_library',
+			'post_status'    => 'publish',
+			'posts_per_page' => 50, // ⚠️ avoid -1 for performance
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'no_found_rows'  => true, // 🚀 performance boost
+		);
+
+		$parsed_args = wp_parse_args( $args, $defaults );
+
+		$parsed_args['post_type'] = 'elementor_library';
+
+		$posts = get_posts( $parsed_args );
+
+		if ( ! empty( $posts ) ) {
+			foreach ( $posts as $post ) {
+				// ⚠️ No escaping here → escape on output
+				$post_list[ $post->ID ] = $post->post_title;
 			}
 		}
+
+		$cache = $post_list;
 
 		return $post_list;
 	}
@@ -164,10 +207,18 @@ endif;
  */
 if ( ! function_exists( 'wcf_addons_get_all_widgets_count' ) ) :
 	function wcf_addons_get_all_widgets_count() {
-		$total   = 0;
-		$widgets = $GLOBALS['wcf_addons_config']['widgets'];
-		foreach ( $widgets as $group ) {
-			$total = $total + count( $group['elements'] );
+
+		$total  = 0;
+		$config = wcf_get_config();
+
+		if ( empty( $config['widgets'] ) ) {
+			return 0;
+		}
+
+		foreach ( $config['widgets'] as $group ) {
+			if ( ! empty( $group['elements'] ) ) {
+				$total += count( $group['elements'] );
+			}
 		}
 
 		return $total;
@@ -203,11 +254,20 @@ endif;
  */
 if ( ! function_exists( 'wcf_addons_get_all_extensions_count' ) ) :
 	function wcf_addons_get_all_extensions_count() {
-		$total   = 0;
-		$widgets = $GLOBALS['wcf_addons_config']['extensions'];
-		foreach ( $widgets as $group ) {
-			$total = $total + count( $group['elements'] );
+
+		$total  = 0;
+		$config = wcf_get_config();
+
+		if ( empty( $config['extensions'] ) ) {
+			return 0;
 		}
+
+		foreach ( $config['extensions'] as $group ) {
+			if ( ! empty( $group['elements'] ) ) {
+				$total += count( $group['elements'] );
+			}
+		}
+
 		return $total;
 	}
 endif;
@@ -456,6 +516,9 @@ if ( ! function_exists( 'aaeaddon_format_number_count' ) ) {
 
 // Search Filtering
 function filter_search_by_date_and_category( $query ) {
+	if ( is_admin() || wp_doing_ajax() ) return; // added v-2.6.0
+ 	if ( ! $query->is_search() || ! $query->is_main_query() ) return; // added v-2.6.0
+
 	if ( $query->is_search() && $query->is_main_query() && ! is_admin() ) {
 
 		// ==== Date range filter ====
@@ -688,3 +751,19 @@ add_filter(
 		return $settings;
 	}
 );
+
+
+function wcf_get_config() {
+
+    $config = wp_cache_get('wcf_addons_config');
+
+    if ($config === false) {
+        $config = require WCF_ADDONS_PATH . 'config.php';
+        wp_cache_set('wcf_addons_config', $config);
+    }
+
+    return $config;
+
+}
+
+

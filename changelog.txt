@@ -1,6 +1,29 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.0 – 29th March 2026
+
+    - Fixed: React Lazyload issues.
+    - Improved: Modarate performance issues solved in both the builder and frontend.
+
+= 🌀 Animation Addons for Elementor v2.5.9 – 16th March 2026
+
+    - Improved: Boost performance in both the builder and frontend.
+
+= 🌀 Animation Addons for Elementor v2.5.8 – 12th March 2026
+
+    - Fixed: Nav menu widget conflict issues.
+
+= 🌀 Animation Addons for Elementor v2.5.7 – 10th March 2026
+
+    - Fixed: Starter Animation conflict issues.
+
+= 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026
+
+    - Fixed: Starter Animation Issue Fixed.
+    - Fixed: Loop grid widget conflict with Elmentor Loop grid issue fixed.
+    - Imporved: Starter Animation Dependancy remove as extension.
+
 = 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026
 
     - Added: New Free Starter Animation For Text, Image, Container .

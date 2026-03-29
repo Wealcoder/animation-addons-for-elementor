@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShowContent } from "@/config/showFullContent";
 import { useNotification, useTNavigation } from "@/hooks/app.hooks";
 import { hideElements } from "@/lib/utils";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 
 const MainLayout = () => {
   const { tabKey, setTabKey } = useTNavigation();
@@ -47,15 +47,7 @@ const MainLayout = () => {
   return (
     <div className="wcf-anim2024-wrapper">
       <div className="wcf-anim2024-style">
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen">
-              <p className="text-lg font-semibold">Loading...</p>
-            </div>
-          }
-        >
-          {ShowContent({ tabKey })}
-        </Suspense>
+        {ShowContent({ tabKey })}
       </div>
     </div>
   );

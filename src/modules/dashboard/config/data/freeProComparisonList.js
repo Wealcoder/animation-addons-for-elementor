@@ -5,11 +5,11 @@ export const freeProComparisonList = [
     name: "Access to Prebuilt Sites",
     helpText: "",
     free: {
-      text: "20 Templates",
+      text: "50 Templates",
       icon: "",
     },
     pro1: {
-      text: "200 Templates",
+      text: "300+ Templates",
       icon: "",
     },
   },
@@ -17,7 +17,7 @@ export const freeProComparisonList = [
     name: "Access to Section Templates",
     helpText: "",
     free: {
-      text: "100",
+      text: "500",
       icon: "",
     },
     pro1: {
@@ -233,7 +233,7 @@ export const freeProComparisonList = [
     name: "Access to Page Templates",
     helpText: "",
     free: {
-      text: "20",
+      text: "100",
       icon: "",
     },
     pro1: {
@@ -245,11 +245,11 @@ export const freeProComparisonList = [
     name: "Widgets",
     helpText: "",
     free: {
-      text: "73",
+      text: "70",
       icon: "",
     },
     pro1: {
-      text: "102+",
+      text: "100+",
       icon: "",
     },
   },
@@ -261,8 +261,140 @@ export const freeProComparisonList = [
       icon: "",
     },
     pro1: {
+      text: "Full",
+      icon: "",
+    },
+  },
+  {
+    name: "Reveal",
+    helpText: "",
+    free: {
+      text: "Basic",
+      icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
+    },
+  },
+  {
+    name: "Scale",
+    helpText: "",
+    free: {
+      text: "Basic",
+      icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
+    },
+  },
+  {
+    name: "Slide",
+    helpText: "",
+    free: {
+      text: "Basic",
+      icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
+    },
+  },
+  {
+    name: "Skew Reveal",
+    helpText: "",
+    free: {
+      text: "Basic",
+      icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
+    },
+  },
+  {
+    name: "Flip",
+    helpText: "",
+    free: {
       text: "",
       icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Glow Pulse",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Typewriter",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Mask Wipe",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Water Wave",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Background Clip Text",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: "Charecter Animation",
+    helpText: "",
+    free: {
+      text: "Basic",
+      icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
     },
   },
   {
@@ -271,6 +403,18 @@ export const freeProComparisonList = [
     free: {
       text: "Basic",
       icon: "",
+    },
+    pro1: {
+      text: "Advanced",
+      icon: "",
+    },
+  },
+  {
+    name: "Code Snippet",
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
     },
     pro1: {
       text: "",

@@ -68,6 +68,9 @@ class Plugin
 	 * @since 1.2.0
 	 * @access public
 	 */
+
+	private $preview_post_id = null;
+
 	public static function instance()
 	{
 		if (is_null(self::$instance)) {
@@ -230,7 +233,8 @@ class Plugin
 				'wp-element',
 				'jquery',
 			),
-			time(),
+			//time(),
+			WCF_ADDONS_VERSION,
 			true
 		);
 		wp_enqueue_script(
@@ -275,8 +279,10 @@ class Plugin
 					'nonce'          => wp_create_nonce('wcf-template-library'),
 					'dashboard_link' => admin_url('admin.php?page=wcf_addons_settings'),
 					'config'         => apply_filters('wcf_addons_editor_config', array()),
-					'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
-					'pro_active'     => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+					'pro_installed'  => file_exists(WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro'), // change below code at version 2.5.9
+					'pro_active' 	 => class_exists('\AAE_ADDONS_Plugin_Pro'),
+					// 'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+					// 'pro_active'     => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
 				)
 			);
 
@@ -299,7 +305,7 @@ class Plugin
 	 */
 	public function editor_styles()
 	{
-		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), time(), 'all');
+		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), WCF_ADDONS_VERSION, 'all');
 	}
 
 	/**
@@ -967,7 +973,6 @@ class Plugin
 
 			if (! $data['is_pro'] && ! $data['is_extension']) {
 				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
-
 					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 				}
 			}
@@ -1026,7 +1031,7 @@ class Plugin
 	private function include_files()
 	{
 
-		require_once WCF_ADDONS_PATH . 'config.php';
+		//require_once WCF_ADDONS_PATH . 'config.php';
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
 		if (is_admin()) {
 			if (get_option('wcf_addons_setup_wizard') !== 'complete') {
@@ -1048,7 +1053,10 @@ class Plugin
 			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
-		require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
+		// Only load theme builder when needed. added this condition at v-2.6.0
+		if ( is_admin() || ! wp_doing_ajax() ) {
+			require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';  
+		}
 
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
@@ -1062,6 +1070,8 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
 		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-nested-slider.php';
+		include_once WCF_ADDONS_PATH . 'inc/class-wcf-starter-animations.php';
+
 
 		// Load Loop Builder Integration.
 		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/init.php';
@@ -1078,19 +1088,42 @@ class Plugin
 		$this->register_extensions();
 	}
 
-	public function elementor_editor_url($url)
-	{
-		$args         = array(
+	// public function elementor_editor_url($url)
+	// {
+	// 	$args         = array(
+	// 		'numberposts' => 1,
+	// 		'post_type'   => 'post',
+	// 		'orderby'     => 'menu_order',
+	// 		'order'       => 'ASC',
+	// 	);
+	// 	$latest_posts = get_posts($args);
+	// 	if (! is_wp_error($latest_posts) && ! empty($latest_posts) && isset($latest_posts[0])) {
+	// 		return add_query_arg('aaeid', $latest_posts[0]->ID, $url);
+	// 	}
+	// 	return add_query_arg('aaeid', 1, $url);
+	// }
+
+	
+	public function elementor_editor_url($url) {
+
+		// If already fetched, reuse it
+		if ($this->preview_post_id !== null) {
+			return add_query_arg('aaeid', $this->preview_post_id, $url);
+		}
+
+		$args = [
 			'numberposts' => 1,
 			'post_type'   => 'post',
 			'orderby'     => 'menu_order',
 			'order'       => 'ASC',
-		);
-		$latest_posts = get_posts($args);
-		if (! is_wp_error($latest_posts) && ! empty($latest_posts) && isset($latest_posts[0])) {
-			return add_query_arg('aaeid', $latest_posts[0]->ID, $url);
-		}
-		return add_query_arg('aaeid', 1, $url);
+			'fields'      => 'ids', // performance optimization
+		];
+
+		$posts = get_posts($args);
+
+		$this->preview_post_id = (!empty($posts)) ? $posts[0] : 1;
+
+		return add_query_arg('aaeid', $this->preview_post_id, $url);
 	}
 
 	public function print_templates()
@@ -1328,7 +1361,7 @@ class Plugin
 
 		if ($force_update || false === $templates_data) {
 
-			$timeout = ($force_update) ? 30 : 45;
+			$timeout = ($force_update) ? 15 : 25;
 
 			$response = wp_remote_get(
 				esc_url_raw(self::$instance->api_url),
@@ -1361,7 +1394,7 @@ class Plugin
 				update_option(self::LIBRARY_OPTION_KEY, $templates_data['library'], 'no');
 				unset($templates_data['library']);
 			}
-			set_transient($cache_key, $templates_data, 1 * HOUR_IN_SECONDS);
+			set_transient($cache_key, $templates_data, 12 * HOUR_IN_SECONDS);
 		}
 
 		return $templates_data;
@@ -1476,27 +1509,6 @@ class Plugin
 	}
 
 
-	public function wp_head() {
-
-		$data = apply_filters(
-			'wcf-addons/js/data',
-			array(
-				'ajaxUrl'        => admin_url('admin-ajax.php'),
-				'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
-				'post_id'        => get_the_ID(),
-				'i18n'           => array(
-					'okay'    => esc_html__('Okay', 'animation-addons-for-elementor'),
-					'cancel'  => esc_html__('Cancel', 'animation-addons-for-elementor'),
-					'submit'  => esc_html__('Submit', 'animation-addons-for-elementor'),
-					'success' => esc_html__('Success', 'animation-addons-for-elementor'),
-					'warning' => esc_html__('Warning', 'animation-addons-for-elementor'),
-				),
-				'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
-				'mode'           => \Elementor\Plugin::$instance->editor->is_edit_mode(),
-			)
-		);
-		echo '<script id="wcf-addons-data">const WCF_ADDONS_JS = ' . wp_json_encode($data) . ';</script>';
-	}
 
 	/**
 	 * Editor style
@@ -1525,7 +1537,7 @@ class Plugin
 			'aae-starter-animations',
 			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
 			[],
-			time(),
+			WCF_ADDONS_VERSION,
 			true
 		);
 		

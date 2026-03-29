@@ -162,36 +162,56 @@ final class AAE_Admin_Page_Importer
         wp_enqueue_script(self::HANDLE);
     }
 
-    public function importer_assets($hook)
+   public function importer_assets($hook)
     {
         $screen = get_current_screen();
         if (! $screen) {
             return;
         }
-        if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
+
+        if (strpos($screen->id, '_page_aae-page-importer') !== false) {
+
+            // Load config once
+            $config = wcf_get_config();
+
             // CSS
             wp_enqueue_style(
-                'aae-page-importer-admin', // Handle for the stylesheet
+                'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.css',
-                array(), // Dependencies (none in this case)
+                array(),
                 time()
             );
-            wp_enqueue_script('aae-page-importer-admin', WCF_ADDONS_URL . 'assets/build/modules/page-import/index.js', array('wp-element', 'wp-i18n'), time(), true);
+
+            wp_enqueue_script(
+                'aae-page-importer-admin',
+                WCF_ADDONS_URL . 'assets/build/modules/page-import/index.js',
+                array('wp-element', 'wp-i18n'),
+                time(),
+                true
+            );
+
             $localize_data = array(
-                'ajaxurl'             => admin_url('admin-ajax.php'),
-                'nonce'               => wp_create_nonce('wcf_admin_nonce'),
-                'addons_config'       => apply_filters('wcf_addons_dashboard_config', $GLOBALS['wcf_addons_config']),
-                'adminURL'            => admin_url(),
-                'page_url'   => esc_url(admin_url('edit.php?post_type=page')),
-                'user_role'           => wcfaddon_get_current_user_roles(),
-                'version'             => WCF_ADDONS_VERSION,
-                'st_template_domain'  => WCF_TEMPLATE_STARTER_BASE_URL,
-                'home_url'            => home_url('/'),
+                'ajaxurl'      => admin_url('admin-ajax.php'),
+                'nonce'        => wp_create_nonce('wcf_admin_nonce'),
+
+                'addons_config' => apply_filters(
+                    'wcf_addons_dashboard_config',
+                    $config
+                ),
+
+                'adminURL'     => admin_url(),
+                'page_url'     => esc_url(admin_url('edit.php?post_type=page')),
+                'user_role'    => wcfaddon_get_current_user_roles(),
+
+                'version'            => WCF_ADDONS_VERSION,
+                'st_template_domain' => WCF_TEMPLATE_STARTER_BASE_URL,
+                'home_url'           => home_url('/'),
             );
 
             wp_localize_script('aae-page-importer-admin', 'WCF_ADDONS_ADMIN', $localize_data);
         }
     }
+
 }
 if (is_admin()) {
     new AAE_Admin_Page_Importer();

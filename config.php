@@ -4,7 +4,7 @@ if (! defined('ABSPATH')) {
 	exit;  // Exit if accessed directly.
 }
 
-$config = array(
+return array(
 	'widgets'            => array(
 		'is_active' => false,
 		'elements'  => array(
@@ -1989,7 +1989,7 @@ $config = array(
 							'cTab' => 'all',
 						),
 						'is_active'    => false,
-						'is_pro'       => false,
+						'is_pro'       => true,
 						'is_extension' => true,
 						'is_upcoming'  => false,
 						'keywords'     => array(
@@ -2899,21 +2899,7 @@ $config = array(
 				'title'     => 'General Extensions',
 				'is_active' => false,
 				'elements'  => array(
-					'starter-animations'       => array(
-						'label'        => 'Starter Animations',
-						'location'     => array(
-							'cTab' => 'general',
-						),
-						'is_pro'       => false,
-						'is_active'    => true,
-						'setup'        => array('basic'),
-						'is_extension' => false,
-						'is_upcoming'  => false,
-						'icon'         => 'wcf-icon-Custom-CSS',
-						'demo_url'     => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
-						'doc_url'      => 'https://animation-addons.com/docs/general-extensions/starter-animations/',
-						'youtube_url'  => '',
-					),
+					
 
 					'custom-css'       => array(
 						'label'        => 'Custom CSS',
@@ -3586,4 +3572,5 @@ $config = array(
 	),
 );
 
-$GLOBALS['wcf_addons_config'] = $config;
+//$GLOBALS['wcf_addons_config'] = $config;
+//return $config;
