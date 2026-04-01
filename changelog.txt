@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026
+
+    - Fixed: Single Post Template Issues.
+
 = 🌀 Animation Addons for Elementor v2.6.0 – 29th March 2026
 
     - Fixed: React Lazyload issues.
