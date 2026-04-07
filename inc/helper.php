@@ -315,25 +315,26 @@ if ( ! function_exists( 'wcf_set_postview' ) ) {
 	/**
 	 * save single post view count
 	 */
-	function wcf_set_postview( $template ) {
-		if ( ! is_singular() ) {
+	function wcf_set_postview() {
+
+		// Avoid admin / ajax
+		if ( is_admin() || wp_doing_ajax() ) {
 			return;
 		}
-		$postID    = get_the_ID();
-		$count_key = 'wcf_post_views_count';
-		$count     = get_post_meta( $postID, $count_key, true );
 
-		if ( $count == '' ) {
-			$count = 0;
-			delete_post_meta( $postID, $count_key );
-			add_post_meta( $postID, $count_key, '0' );
-		} else {
-			++$count;
-			delete_post_meta( $postID, $count_key );
-			update_post_meta( $postID, $count_key, $count );
+		// Only single posts (change if needed)
+		if ( ! is_singular('post') ) {
+			return;
 		}
 
-		return $template;
+		$post_id  = get_the_ID();
+		$meta_key = 'wcf_post_views_count';
+
+		$count = (int) get_post_meta($post_id, $meta_key, true);
+
+		$count++;
+
+		update_post_meta($post_id, $meta_key, $count);
 	}
 }
 

@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 use Elementor\Plugin;
 
 if (function_exists('wcf_set_postview')) {
-    add_action('wp_head', 'wcf_set_postview');
+   add_action('wp', 'wcf_set_postview');
 }
 
 function aaeaddonlight_hk_allow_svg_uploads($mimes)
