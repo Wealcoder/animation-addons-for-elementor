@@ -278,22 +278,44 @@ final class WCF_ADDONS_Plugin {
 		}
 	}
 	
-	function enqueue_elementor_install_script() {
-		// Check if the plugin is not active
-		wp_enqueue_style( 'aaeaddon-common', WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css' );
-		if ( !is_plugin_active('elementor/elementor.php') ) {
+	public function enqueue_elementor_install_script($hook) {
+
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return;
+		}
+
+		// ✅ Allow only your plugin pages (pattern-based)
+		if (
+			strpos($screen->id, 'animation-addon_page_') === false &&
+			strpos($screen->id, 'toplevel_page_animation-addon') === false
+		) {
+			return;
+		}
+
+		// ✅ Load CSS
+		wp_enqueue_style(
+			'aaeaddon-common',
+			WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css',
+			[],
+			WCF_ADDONS_VERSION
+		);
+
+		// ✅ Load script only if Elementor not active
+		if ( ! is_plugin_active('elementor/elementor.php') ) {
+
 			wp_enqueue_script(
 				'wcf-install-elementor-script',
-				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js', // Replace with your JS file path
-				['jquery'], // Dependencies
-				time(), // Version
-				true // Load in footer
+				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js',
+				['jquery'],
+				WCF_ADDONS_VERSION,
+				true
 			);
-	
-			// Localize script to pass AJAX data
+
 			wp_localize_script('wcf-install-elementor-script', 'wcfelementorAjax', [
-				'ajax_url'    => admin_url('admin-ajax.php'),
-				'nonce'       => wp_create_nonce('wcfinstall_elementor_nonce'),
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce'    => wp_create_nonce('wcfinstall_elementor_nonce'),
 			]);
 		}
 	}
