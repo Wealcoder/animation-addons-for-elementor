@@ -136,29 +136,27 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_activation_hook() {
-		
-		add_option( 'aae_installed', wp_date( 'U' ) );  // Move this code from constructor at version 2.5.9
-		//set setup wizard
-		update_option('aae_do_activation_redirect', 'new');
-		if ( !get_option( 'wcf_addons_version' ) && !get_option( 'wcf_addons_setup_wizard' ) ) {
-			update_option( 'wcf_addons_setup_wizard', 'redirect' );
+
+		if ( ! get_option('aae_installed') ) {
+			add_option('aae_installed', time(), '', false);
 		}
-		$count = (int) get_option('aae_activation_count', 0);		
-		if(!$count){
-			wp_remote_post(
-				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated',
-				[
-					'timeout'  => 2,                           // keep it snappy
-					'blocking' => false,                       // fire-and-forget
-					'headers'  => ['Content-Type' => 'application/json'],				
-				]
-			);
-		}			
-		
-    	update_option('aae_activation_count', $count + 1, true);
-		update_option('aae_last_activated', current_time('mysql'), true);
+
+		update_option('aae_do_activation_redirect', 'new', false);
+
+		if ( ! get_option('wcf_addons_setup_wizard') ) {
+			update_option('wcf_addons_setup_wizard', 'redirect', false);
+		}
+
+		$count = (int) get_option('aae_activation_count', 0);
+
+		if ( ! $count ) {
+			update_option('aae_send_activation_event', true, false);
+		}
+
+		update_option('aae_activation_count', $count + 1, false);
+		update_option('aae_last_activated', current_time('mysql'), false);
+
 		flush_rewrite_rules();
-		
 	}
 	/**
 	 * Plugin dactivation hook
@@ -166,20 +164,17 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_deactivation_hook() {
-		
-		$count = (int) get_option('aae_dactivation_count', 0);
-		if(!$count){
-			update_option('aae_dactivation_count', $count + 1, true);
-			update_option('aae_last_dactivated', current_time('mysql'), true);	
-			wp_remote_post(
-				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
-				[
-					'timeout'  => 2,                           // keep it snappy
-					'blocking' => false,                       // fire-and-forget
-					'headers'  => ['Content-Type' => 'application/json'],				
-				]
-			);	
+
+		$count = (int) get_option('aae_deactivation_count', 0);
+
+		if ( ! $count ) {
+			update_option('aae_send_deactivation_event', true, false);
 		}
+
+		update_option('aae_deactivation_count', $count + 1, false);
+		update_option('aae_last_deactivated', current_time('mysql'), false);
+
+		flush_rewrite_rules();
 	}
 
 	/**
@@ -189,6 +184,25 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public static function plugin_unregister_hook() {
 
+		$options = [
+			'aae_installed',
+			'aae_do_activation_redirect',
+			'wcf_addons_setup_wizard',
+			'wcf_addons_version',
+
+			'aae_activation_count',
+			'aae_deactivation_count',
+
+			'aae_last_activated',
+			'aae_last_deactivated',
+
+			'aae_send_activation_event',
+			'aae_send_deactivation_event',
+		];
+
+		foreach ($options as $option) {
+			delete_option($option);
+		}
 	}
 
 	/**
@@ -458,8 +472,32 @@ final class WCF_ADDONS_Plugin {
 			exit;
 		}
 
+		if ( get_option('aae_send_activation_event') ) {
+			delete_option('aae_send_activation_event');
+
+			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated', [
+				'timeout'  => 2,
+				'blocking' => false,
+			]);
+		}
+
+		if ( get_option('aae_send_deactivation_event') ) {
+			delete_option('aae_send_deactivation_event');
+
+			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated', [
+				'timeout'  => 2,
+				'blocking' => false,
+			]);
+		}
+
 	}
 }
+
+
+// ✅ Register hooks here (outside class)
+register_activation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_activation_hook'] );
+register_deactivation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_deactivation_hook'] );
+register_uninstall_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_unregister_hook'] );
 
 // Instantiate WCF_ADDONS_Plugin.
 new WCF_ADDONS_Plugin();
