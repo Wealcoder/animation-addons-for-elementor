@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { cn } from "@/lib/utils";
 import { RiArrowRightLine } from "react-icons/ri";
 import { Badge } from "../ui/badge";
@@ -80,7 +81,7 @@ const QuickAccessCard = ({ item, className }) => {
                 variant="pro"
                 className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] me-1"
               >
-                COMING SOON!
+                {__("COMING SOON!", "animation-addons-for-elementor")}
               </Badge>
             </div>
           )}

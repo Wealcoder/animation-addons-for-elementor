@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RiArrowRightUpLine, RiNewsLine } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,7 @@ const LatestBlog = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">
           <RiNewsLine size={20} color="#47C2FF" />
-          <p className="font-medium">Latest Blogs & Articles</p>
+          <p className="font-medium">{__("Latest Blogs & Articles", "animation-addons-for-elementor")}</p>
         </div>
         <div>
           <a
@@ -31,7 +32,7 @@ const LatestBlog = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            View all{" "}
+            {__("View all", "animation-addons-for-elementor")}{" "}
             <RiArrowRightUpLine
               size={18}
               className="ml-1 rtl:rotate-360 rtl:scale-x-[-1]"
@@ -50,7 +51,7 @@ const LatestBlog = () => {
                 onError={(e) => {
                   e.currentTarget.src = SampleImage;
                 }}
-                alt="Thumbnail"
+                alt={__("Thumbnail", "animation-addons-for-elementor")}
               />
             </div>
             <div className="mt-3">

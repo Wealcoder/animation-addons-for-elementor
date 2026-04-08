@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { useForm } from "react-hook-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -156,7 +157,7 @@ const ScrollSmootherSettings = () => {
           dialogCloseRef.current.click();
         }
 
-        toast.success("Save Successful", {
+        toast.success(__("Save Successful", "animation-addons-for-elementor"), {
           position: "top-right",
         });
       });
@@ -176,7 +177,7 @@ const ScrollSmootherSettings = () => {
         <img
           // src={`${WCF_ADDONS_ADMIN.root_url}public/images/extensions/scroll_smother.png`}
           src={logo}
-          alt="logo"
+          alt={__("logo", "animation-addons-for-elementor")}
           className="w-[65px] h-[65px]"
         />
 
@@ -184,17 +185,17 @@ const ScrollSmootherSettings = () => {
           <h2 className=" flex items-center gap-2">
             <span className="text-[20px] font-medium text-[var(--900,#181B25)]">
               {" "}
-              Scroll Smother
+              {__("Scroll Smoother", "animation-addons-for-elementor")}
             </span>
             <Badge
               className="bg-[linear-gradient(109deg,#ffab472e_0%,#ffab472e_100%)] text-[#717784]"
               variant="pro"
             >
-              PRO
+              {__("PRO", "animation-addons-for-elementor")}
             </Badge>
           </h2>
           <p className="text-sm text-text-secondary mt-2">
-            Enter Smooth Scroller value below
+            {__("Enter Smooth Scroller value below", "animation-addons-for-elementor")}
           </p>
         </div>
       </div>
@@ -254,7 +255,7 @@ const ScrollSmootherSettings = () => {
                         <FormItem className="flex flex-row items-center gap-3">
                           <FormLabel className="min-w-[135px]">
                             {" "}
-                            Enable On {device.label}
+                            {__("Enable On", "animation-addons-for-elementor")} {device.label}
                           </FormLabel>
                           <FormControl>
                             <Switch
@@ -275,7 +276,7 @@ const ScrollSmootherSettings = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[12px] text-[var(--600,#525866)] mb-2">
-                            Set the scroll smother level
+                            {__("Set the scroll smoother level", "animation-addons-for-elementor")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -309,11 +310,11 @@ const ScrollSmootherSettings = () => {
                   variant="secondary"
                   onClick={resetHandler}
                 >
-                  Reset
+                  {__("Reset", "animation-addons-for-elementor")}
                 </Button>
                 <Button className="p-[20px] rounded-[8px]" type="submit">
                   {" "}
-                  Save Settings{" "}
+                  {__("Save Settings", "animation-addons-for-elementor")}{" "}
                 </Button>
               </div>
             </form>

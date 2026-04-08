@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RiCloseLine, RiCommandLine, RiSearchLine } from "react-icons/ri";
 import { Dot } from "lucide-react";
 import { Switch } from "../ui/switch";
@@ -35,15 +36,15 @@ const WidgetTopBar = ({
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center">
-            <h2 className="text-[18px] font-medium ">Widgets</h2>
+            <h2 className="text-[18px] font-medium ">{__("Widgets", "animation-addons-for-elementor")}</h2>
           </div>
           <div className="flex items-center">
             <p className="text-sm text-label ">
-              {widgetCount?.total} Total Widgets
+              {widgetCount?.total} {__("Total Widgets", "animation-addons-for-elementor")}
             </p>
             <Dot className="w-4 h-4 text-icon-secondary" strokeWidth={4} />
             <p className="text-sm text-label ">
-              {widgetCount?.active} Active Widgets
+              {widgetCount?.active} {__("Active Widgets", "animation-addons-for-elementor")}
             </p>
           </div>
         </div>
@@ -56,7 +57,7 @@ const WidgetTopBar = ({
             onCheckedChange={(value) => setCheck({ value })}
             reverse
           />
-          <Label htmlFor="global-enable-all">Enable All</Label>
+          <Label htmlFor="global-enable-all">{__("Enable All", "animation-addons-for-elementor")}</Label>
         </div>
         <div className="ml-6 mr-2">
           <div className="relative">
@@ -64,7 +65,7 @@ const WidgetTopBar = ({
             <Input
               value={searchKey}
               onChange={(e) => setSearchKey(e.target.value)}
-              placeholder="Search Widgets"
+              placeholder={__("Search Widgets", "animation-addons-for-elementor")}
               className="px-9"
             />
             {searchKey ? (
@@ -80,13 +81,13 @@ const WidgetTopBar = ({
         <div>
           <Select value={filterKey} onValueChange={setFilterKey}>
             <SelectTrigger className="w-[119px] rounded-[10px] h-10">
-              <SelectValue placeholder="Filter" />
+              <SelectValue placeholder={__("Filter", "animation-addons-for-elementor")} />
             </SelectTrigger>
             <SelectContent className="w-[119px] rounded-[10px]" align="end">
               <SelectGroup>
-                <SelectItem value="free-pro">Free + Pro</SelectItem>
-                <SelectItem value="free">Free</SelectItem>
-                <SelectItem value="pro">Pro</SelectItem>
+                <SelectItem value="free-pro">{__("Free + Pro", "animation-addons-for-elementor")}</SelectItem>
+                <SelectItem value="free">{__("Free", "animation-addons-for-elementor")}</SelectItem>
+                <SelectItem value="pro">{__("Pro", "animation-addons-for-elementor")}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

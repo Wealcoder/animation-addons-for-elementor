@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -33,7 +34,7 @@ const ExtensionGsapSettings = ({ extension, children, contentSx }) => {
             )}
             size={20}
           />
-          Settings
+          {__("Settings", "animation-addons-for-elementor")}
         </Button>
       </DialogTrigger>
       <DialogContent

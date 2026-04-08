@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -222,9 +223,9 @@ const WeatherSettings = () => {
   return (
     <div className="py-5">
       <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">Weather</h2>
+        <h2 className="text-xl text-text font-medium">{__("Weather", "animation-addons-for-elementor")}</h2>
         <p className="text-sm text-text-secondary mt-1">
-          Add credentials to your Weather
+          {__("Add credentials to your Weather", "animation-addons-for-elementor")}
         </p>
       </div>
       <div>
@@ -236,10 +237,10 @@ const WeatherSettings = () => {
                 name="api_key"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">API Key</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("API Key", "animation-addons-for-elementor")}</FormLabel>
                     <div className="relative">
                       <FormControl>
-                        <Input placeholder="Enter your API key" {...field} />
+                        <Input placeholder={__("Enter your API key", "animation-addons-for-elementor")} {...field} />
                       </FormControl>
                       {validationStatus.api_key !== null && (
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 flex">
@@ -252,7 +253,7 @@ const WeatherSettings = () => {
                       )}
                     </div>
                     <FormDescription>
-                      This key will be validated.
+                      {__("This key will be validated.", "animation-addons-for-elementor")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -263,11 +264,11 @@ const WeatherSettings = () => {
                 name="country_name"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">Location</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("Location", "animation-addons-for-elementor")}</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder="Enter your country/city name"
+                          placeholder={__("Enter your country/city name", "animation-addons-for-elementor")}
                           {...field}
                         />
                       </FormControl>
@@ -282,7 +283,7 @@ const WeatherSettings = () => {
                       )}
                     </div>
                     <FormDescription>
-                      Add your Location to get the weather information.
+                      {__("Add your Location to get the weather information.", "animation-addons-for-elementor")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -293,21 +294,21 @@ const WeatherSettings = () => {
                 name="unit"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">Unit</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("Unit", "animation-addons-for-elementor")}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a verified email to display" />
+                          <SelectValue placeholder={__("Select a verified email to display", "animation-addons-for-elementor")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="standard">Standard</SelectItem>
-                        <SelectItem value="metric">Metric</SelectItem>
-                        <SelectItem value="imperial">Imperial</SelectItem>
+                        <SelectItem value="standard">{__("Standard", "animation-addons-for-elementor")}</SelectItem>
+                        <SelectItem value="metric">{__("Metric", "animation-addons-for-elementor")}</SelectItem>
+                        <SelectItem value="imperial">{__("Imperial", "animation-addons-for-elementor")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      Select the unit of measurement for temperature.
+                      {__("Select the unit of measurement for temperature.", "animation-addons-for-elementor")}
                     </FormDescription>
                   </FormItem>
                 )}
@@ -320,14 +321,14 @@ const WeatherSettings = () => {
                   variant="secondary"
                   className="h-11 shadow-common-2 text-base px-[18px]"
                 >
-                  Cancel
+                  {__("Cancel", "animation-addons-for-elementor")}
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 className="h-11 shadow-common-2 text-base px-6"
               >
-                Save
+                {__("Save", "animation-addons-for-elementor")}
               </Button>
             </div>
           </form>

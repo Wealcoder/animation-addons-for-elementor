@@ -424,6 +424,7 @@ class WCF_Admin_Init
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
+		wp_set_script_translations('wcf-admin', 'animation-addons-for-elementor', WCF_ADDONS_PATH . 'languages');
 	}
 
 

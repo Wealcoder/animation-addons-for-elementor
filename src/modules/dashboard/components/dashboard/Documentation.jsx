@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { cn } from "@/lib/utils";
 import {
   RiArrowRightLine,
@@ -25,7 +26,7 @@ const Documentation = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center" id="wcf-documentation">
           <RiFileTextLine size={20} color="#4870FF" />
-          <p className="font-medium">Documentation</p>
+          <p className="font-medium">{__("Documentation", "animation-addons-for-elementor")}</p>
         </div>
         <div>
           <a
@@ -36,7 +37,7 @@ const Documentation = () => {
               "me-1",
             )}
           >
-            View all
+            {__("View all", "animation-addons-for-elementor")}
             <RiArrowRightUpLine
               size={18}
               className="rtl:rotate-360 rtl:scale-x-[-1]"

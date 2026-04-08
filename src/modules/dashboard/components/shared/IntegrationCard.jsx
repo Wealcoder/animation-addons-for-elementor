@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { cn } from "@/lib/utils";
 import { Dot } from "lucide-react";
 import { Button, buttonVariants } from "../ui/button";
@@ -37,9 +38,9 @@ const IntegrationCard = ({ item, className }) => {
 
           const sampleData = {
             type: "notice",
-            title: "Integration Status",
+            title: __("Integration Status", "animation-addons-for-elementor"),
             description:
-              "You have successfully deactivated Animation Addon Pro",
+              __("You have successfully deactivated Animation Addon Pro", "animation-addons-for-elementor"),
             date: utcDate,
           };
 
@@ -78,9 +79,9 @@ const IntegrationCard = ({ item, className }) => {
 
           const sampleData = {
             type: "notice",
-            title: "Integration Status",
+            title: __("Integration Status", "animation-addons-for-elementor"),
             description:
-              "You have successfully activated Animation Addon Pro",
+              __("You have successfully activated Animation Addon Pro", "animation-addons-for-elementor"),
             date: utcDate,
           };
 
@@ -108,7 +109,7 @@ const IntegrationCard = ({ item, className }) => {
                     className="w-3.5 h-3.5 text-icon-secondary"
                     strokeWidth={2}
                   />
-                  <Badge variant="pro">PRO</Badge>
+                  <Badge variant="pro">{__("PRO", "animation-addons-for-elementor")}</Badge>
                 </>
               ) : (
                 ""
@@ -119,7 +120,7 @@ const IntegrationCard = ({ item, className }) => {
                 href={item?.doc_url}
                 className="text-sm text-label hover:text-text cursor-pointer"
               >
-                Documentation
+                {__("Documentation", "animation-addons-for-elementor")}
               </a>
               <Dot
                 className="w-3.5 h-3.5 text-icon-secondary"
@@ -130,7 +131,7 @@ const IntegrationCard = ({ item, className }) => {
                 aria-disabled="true"
                 className="text-sm text-[#CACFD8] hover:text-text pointer-events-none "
               >
-                Preview
+                {__("Preview", "animation-addons-for-elementor")}
               </a>
             </div>
           </div>
@@ -142,7 +143,7 @@ const IntegrationCard = ({ item, className }) => {
                   onClick={() => deactivate(item)}
                 >
                   <RiCheckLine size={18} className="mr-1.5" />
-                  Activated
+                  {__("Activated", "animation-addons-for-elementor")}
                 </Button>
               ) : (
                 <Button
@@ -150,7 +151,7 @@ const IntegrationCard = ({ item, className }) => {
                   onClick={() => activePlugin()}
                 >
                   <RiCheckLine size={18} className="mr-1.5" />
-                  Deactivated
+                  {__("Deactivated", "animation-addons-for-elementor")}
                 </Button>
               )
             ) : item.action === "Activated" ? (
@@ -159,7 +160,7 @@ const IntegrationCard = ({ item, className }) => {
                 onClick={() => deactivate(item)}
               >
                 <RiCheckLine size={18} className="mr-1.5" />
-                Activated
+                {__("Activated", "animation-addons-for-elementor")}
               </Button>
             ) : (
               <a
@@ -171,7 +172,7 @@ const IntegrationCard = ({ item, className }) => {
                 )}
               >
                 <RiDownloadLine size={18} className="mr-1.5" />
-                Download
+                {__("Download", "animation-addons-for-elementor")}
               </a>
             )}
           </div>

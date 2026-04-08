@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { SquareArrowUp } from "lucide-react";
 import {
   RiImageCircleLine,
@@ -11,39 +12,39 @@ import { cn } from "@/lib/utils";
 
 const AccessData = [
   {
-    title: "Global Settings",
-    subTitle: "Customize global settings",
+    title: __("Global Settings", "animation-addons-for-elementor"),
+    subTitle: __("Customize global settings", "animation-addons-for-elementor"),
     url: WCF_ADDONS_ADMIN.global_settings_url,
     icon: <RiSettings2Line size={22} className="text-[#46A1FF]" />,
   },
   {
-    title: "Theme Builder",
-    subTitle: "Customize theme builder",
+    title: __("Theme Builder", "animation-addons-for-elementor"),
+    subTitle: __("Customize theme builder", "animation-addons-for-elementor"),
     url: WCF_ADDONS_ADMIN.theme_builder_url,
     icon: <RiLayout3Line size={22} className="text-[#7772FC]" />,
   },
   {
-    title: "Pro Widgets",
-    subTitle: "Customize pro widgets",
+    title: __("Pro Widgets", "animation-addons-for-elementor"),
+    subTitle: __("Customize pro widgets", "animation-addons-for-elementor"),
     url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=widgets&filter=pro`,
     icon: <RiVipCrown2Line size={22} className="text-[#FFA132]" />,
   },
   {
-    title: "Custom Fonts",
+    title: __("Custom Fonts", "animation-addons-for-elementor"),
     slug: "custom-fonts",
-    subTitle: "Upload Custom fonts",
+    subTitle: __("Upload Custom fonts", "animation-addons-for-elementor"),
     url: `${WCF_ADDONS_ADMIN.adminURL}/edit.php?post_type=wcf-custom-fonts`,
     icon: <RiTextSnippet size={22} className="text-[#A281FF]" />,
   },
   {
-    title: "Popup",
-    subTitle: "Customize popups",
+    title: __("Popup", "animation-addons-for-elementor"),
+    subTitle: __("Customize popups", "animation-addons-for-elementor"),
     url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#popup`,
     icon: <SquareArrowUp size={22} className="text-[#A281FF]" />,
   },
   {
-    title: "Custom Icons",
-    subTitle: "Upload custom icons",
+    title: __("Custom Icons", "animation-addons-for-elementor"),
+    subTitle: __("Upload custom icons", "animation-addons-for-elementor"),
     url: `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=extensions&cTab=general#custom-icon`,
     icon: <RiImageCircleLine size={22} className="text-[#A281FF]" />,
   },
