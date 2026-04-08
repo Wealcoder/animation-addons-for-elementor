@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ const CustomFontSettings = () => {
         return response.json();
       })
       .then((return_content) => {
-     
+
         WCF_ADDONS_ADMIN.cf_settings = JSON.parse( return_content );
         if (dialogCloseRef.current) {
           dialogCloseRef.current.click();
@@ -57,9 +58,9 @@ const CustomFontSettings = () => {
   return (
     <div className="py-5">
       <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">Font Load in Head</h2>
+        <h2 className="text-xl text-text font-medium">{__("Font Load in Head", "animation-addons-for-elementor")}</h2>
         <p className="text-sm text-text-secondary mt-1">
-          Check for load font in head
+          {__("Check for load font in head", "animation-addons-for-elementor")}
         </p>
       </div>
       <div>
@@ -80,12 +81,12 @@ const CustomFontSettings = () => {
                       </FormControl>
                       <div className="space-y-1.5 leading-none">
                         <FormLabel className="text-[#0E121B]">
-                          Load Head
+                          {__("Load Head", "animation-addons-for-elementor")}
                         </FormLabel>
                       </div>
                     </div>
                     <FormDescription>
-                      {`The font will be loaded in the head section`}
+                      {__("The font will be loaded in the head section", "animation-addons-for-elementor")}
                     </FormDescription>
                   </FormItem>
                 )}
@@ -98,14 +99,14 @@ const CustomFontSettings = () => {
                   variant="secondary"
                   className="h-11 shadow-common-2 text-base px-[18px]"
                 >
-                  Cancel
+                  {__("Cancel", "animation-addons-for-elementor")}
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 className="h-11 shadow-common-2 text-base px-6"
               >
-                Save
+                {__("Save", "animation-addons-for-elementor")}
               </Button>
             </div>
           </form>

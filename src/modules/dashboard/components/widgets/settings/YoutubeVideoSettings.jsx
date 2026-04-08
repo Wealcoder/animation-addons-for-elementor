@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -219,9 +220,9 @@ const YoutubeVideoSettings = () => {
   return (
     <div className="py-5">
       <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">Youtube Video</h2>
+        <h2 className="text-xl text-text font-medium">{__("Youtube Video", "animation-addons-for-elementor")}</h2>
         <p className="text-sm text-text-secondary mt-1">
-          Add credentials to your Youtube video
+          {__("Add credentials to your Youtube video", "animation-addons-for-elementor")}
         </p>
       </div>
       <div>
@@ -233,10 +234,10 @@ const YoutubeVideoSettings = () => {
                 name="api_key"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">API Key</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("API Key", "animation-addons-for-elementor")}</FormLabel>
                     <div className="relative">
                       <FormControl>
-                        <Input placeholder="Enter your API key" {...field} />
+                        <Input placeholder={__("Enter your API key", "animation-addons-for-elementor")} {...field} />
                       </FormControl>
                       {validationStatus.api_key !== null && (
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 flex">
@@ -249,7 +250,7 @@ const YoutubeVideoSettings = () => {
                       )}
                     </div>
                     <FormDescription>
-                      This key will be validated.
+                      {__("This key will be validated.", "animation-addons-for-elementor")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -260,12 +261,12 @@ const YoutubeVideoSettings = () => {
                 name="username"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">User Name</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("User Name", "animation-addons-for-elementor")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your username" {...field} />
+                      <Input placeholder={__("Enter your username", "animation-addons-for-elementor")} {...field} />
                     </FormControl>
                     <FormDescription>
-                      Add your Youtube username to get videos from your channel.
+                      {__("Add your Youtube username to get videos from your channel.", "animation-addons-for-elementor")}
                     </FormDescription>
                   </FormItem>
                 )}
@@ -276,12 +277,12 @@ const YoutubeVideoSettings = () => {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-[#0E121B]">
-                      Playlist Id
+                      {__("Playlist Id", "animation-addons-for-elementor")}
                     </FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder="Enter your playlist id"
+                          placeholder={__("Enter your playlist id", "animation-addons-for-elementor")}
                           {...field}
                         />
                       </FormControl>
@@ -296,8 +297,7 @@ const YoutubeVideoSettings = () => {
                       )}
                     </div>
                     <FormDescription>
-                      Add your Youtube playlist id to get videos from your
-                      playlist.
+                      {__("Add your Youtube playlist id to get videos from your playlist.", "animation-addons-for-elementor")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -311,14 +311,14 @@ const YoutubeVideoSettings = () => {
                   variant="secondary"
                   className="h-11 shadow-common-2 text-base px-[18px]"
                 >
-                  Cancel
+                  {__("Cancel", "animation-addons-for-elementor")}
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 className="h-11 shadow-common-2 text-base px-6"
               >
-                Save
+                {__("Save", "animation-addons-for-elementor")}
               </Button>
             </div>
           </form>

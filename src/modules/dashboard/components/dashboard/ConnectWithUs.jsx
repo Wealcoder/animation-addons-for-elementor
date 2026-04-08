@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import {
   RiArrowRightUpLine,
   RiCustomerServiceLine,
@@ -24,24 +25,30 @@ const ConnectWithUs = () => {
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiCustomerServiceLine size={20} color="#1FC16B" />
-          <p className="text-[13px]">Help & Support</p>
+          <p className="text-[13px]">
+            {__("Help & Support", "animation-addons-for-elementor")}
+          </p>
         </div>
         <div id="help">
           <h3 className="text-lg font-medium text-start">
-            <span dir="ltr">Need Any Help?</span>
+            <span dir="ltr">
+              {__("Need Any Help?", "animation-addons-for-elementor")}
+            </span>
           </h3>
 
           <p className="text-sm text-text-secondary mt-2">
             <span dir="ltr">
-              Feel like you want to consult with an expert? Take live chat
-              support immediately from our{" "}
+              {__(
+                "Feel like you want to consult with an expert? Take live chat support immediately from our",
+                "animation-addons-for-elementor",
+              )}{" "}
               {
                 <a
                   href="https://animation-addons.com"
                   target="_blank"
                   className="text-[#2587EC] underline underline-offset-2"
                 >
-                  Website
+                  {__("Website", "animation-addons-for-elementor")}
                 </a>
               }
               .
@@ -54,7 +61,7 @@ const ConnectWithUs = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
-            Create a ticket{" "}
+            {__("Create a ticket", "animation-addons-for-elementor")}{" "}
             <RiArrowRightUpLine
               size={20}
               className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"
@@ -74,15 +81,22 @@ const ConnectWithUs = () => {
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiStarLine size={20} color="#FFA132" />
-          <p className="text-[13px]">Feedback</p>
+          <p className="text-[13px]">
+            {__("Feedback", "animation-addons-for-elementor")}
+          </p>
         </div>
         <div>
-          <h3 className="text-lg font-medium">Show Your Love</h3>
+          <h3 className="text-lg font-medium">
+            {__("Show Your Love", "animation-addons-for-elementor")}
+          </h3>
           <p className="text-sm text-text-secondary mt-2">
             <span dir="ltr">
-              If you are happy with our product and support, please support us
-              by giving us <span className="text-[#FFA132]">★★★★★</span> 5 star
-              rating.
+              {__(
+                "If you are happy with our product and support, please support us by giving us",
+                "animation-addons-for-elementor",
+              )}{" "}
+              <span className="text-[#FFA132]">★★★★★</span>{" "}
+              {__("5 star rating.", "animation-addons-for-elementor")}
             </span>
           </p>
         </div>
@@ -92,7 +106,7 @@ const ConnectWithUs = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
-            Give your feedback{" "}
+            {__("Give your feedback", "animation-addons-for-elementor")}{" "}
             <RiArrowRightUpLine
               size={20}
               className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"
@@ -112,14 +126,20 @@ const ConnectWithUs = () => {
       >
         <div className="inline-flex items-center gap-2 bg-background-secondary self-start py-1 ps-1.5 pe-2 rounded">
           <RiGroup3Line size={20} color="#7D52F4" />
-          <p className="text-[13px]">Join Community</p>
+          <p className="text-[13px]">
+            {__("Join Community", "animation-addons-for-elementor")}
+          </p>
         </div>
         <div>
-          <h3 className="text-lg font-medium">Contribute to Us</h3>
+          <h3 className="text-lg font-medium">
+            {__("Contribute to Us", "animation-addons-for-elementor")}
+          </h3>
           <p className="text-sm text-text-secondary mt-2">
             <span dir="ltr">
-              Join our community of developers and designers and help us by
-              recommending features.
+              {__(
+                "Join our community of developers and designers and help us by recommending features.",
+                "animation-addons-for-elementor",
+              )}
             </span>
           </p>
         </div>
@@ -129,7 +149,7 @@ const ConnectWithUs = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary" }), "w-full")}
           >
-            Join Our Community{" "}
+            {__("Join Our Community", "animation-addons-for-elementor")}{" "}
             <RiArrowRightUpLine
               size={20}
               className="ml-[6px] rtl:rotate-360 rtl:scale-x-[-1]"

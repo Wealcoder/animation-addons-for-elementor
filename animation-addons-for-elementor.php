@@ -219,6 +219,13 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function init() {
 
+		// Load plugin textdomain for translations
+		load_plugin_textdomain(
+			'animation-addons-for-elementor',
+			false,
+			dirname( plugin_basename( WCF_ADDONS_FILE ) ) . '/languages'
+		);
+
 		// Check if Elementor installed and activated
 		if ( ! did_action( 'elementor/loaded' ) ) {			
 			return;

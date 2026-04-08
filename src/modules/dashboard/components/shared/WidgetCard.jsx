@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { Dot } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
@@ -101,7 +102,7 @@ const WidgetCard = ({
                         className="w-3.5 h-3.5 text-icon-secondary"
                         strokeWidth={2}
                       />
-                      <Badge variant="pro">COMING</Badge>
+                      <Badge variant="pro">{__("COMING", "animation-addons-for-elementor")}</Badge>
                     </>
                   ) : widget?.is_pro ? (
                     <>
@@ -109,7 +110,7 @@ const WidgetCard = ({
                         className="w-3.5 h-3.5 text-icon-secondary"
                         strokeWidth={2}
                       />
-                      <Badge variant="pro">PRO</Badge>
+                      <Badge variant="pro">{__("PRO", "animation-addons-for-elementor")}</Badge>
                     </>
                   ) : (
                     ""
@@ -126,7 +127,7 @@ const WidgetCard = ({
                         : "pointer-events-none text-[#CACFD8]"
                     )}
                   >
-                    Documentation
+                    {__("Documentation", "animation-addons-for-elementor")}
                   </a>
 
                   {preview && (
@@ -145,7 +146,7 @@ const WidgetCard = ({
                             : "pointer-events-none text-[#CACFD8]"
                         )}
                       >
-                        Preview
+                        {__("Preview", "animation-addons-for-elementor")}
                       </a>
                     </>
                   )}

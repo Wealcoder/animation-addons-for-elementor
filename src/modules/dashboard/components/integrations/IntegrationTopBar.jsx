@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RiPuzzle2Line } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ const IntegrationTopBar = () => {
         return response.json();
       })
       .then((return_content) => {
-        toast.success("Save Successful", {
+        toast.success(__("Save Successful", "animation-addons-for-elementor"), {
           position: "top-right",
         });
       });
@@ -42,7 +43,7 @@ const IntegrationTopBar = () => {
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center">
-            <h2 className="text-[18px] font-medium ">Integrations</h2>
+            <h2 className="text-[18px] font-medium ">{__("Integrations", "animation-addons-for-elementor")}</h2>
           </div>
           <div className="flex items-center">
             <p className="text-sm text-label">
@@ -52,14 +53,14 @@ const IntegrationTopBar = () => {
                     ?.elements
                 ).length
               }{" "}
-              Total Integrations
+              {__("Total Integrations", "animation-addons-for-elementor")}
             </p>
           </div>
         </div>
       </div>
       <div className="flex gap-2.5 items-center justify-end">
         {/* <Button variant="secondary">Reset</Button> */}
-        <Button onClick={() => saveIntegration()}>Save Settings</Button>
+        <Button onClick={() => saveIntegration()}>{__("Save Settings", "animation-addons-for-elementor")}</Button>
       </div>
     </div>
   );

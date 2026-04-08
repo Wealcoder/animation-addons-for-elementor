@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { cn } from "@/lib/utils";
 import { RiPlayCircleLine } from "react-icons/ri";
 import { buttonVariants } from "../ui/button";
@@ -13,13 +14,12 @@ const Tutorial = () => {
       <div className="w-[362px]">
         <h2 className="text-xl font-medium ">
           <span dir="ltr">
-            Watch The Beginner's Guide on How to Use Animation Addons.
+            {__("Watch The Beginner's Guide on How to Use Animation Addons.", "animation-addons-for-elementor")}
           </span>
         </h2>
         <p className="text-sm mt-[10px] text-text-secondary">
           <span dir="ltr">
-            Get started with ease by watching our step-by-step beginner's
-            tutorial on Elementor.
+            {__("Get started with ease by watching our step-by-step beginner's tutorial on Elementor.", "animation-addons-for-elementor")}
           </span>
         </p>
         <a
@@ -30,7 +30,7 @@ const Tutorial = () => {
           <span className="me-1.5 flex">
             <RiPlayCircleLine size={20} />
           </span>
-          Watch Tutorials
+          {__("Watch Tutorials", "animation-addons-for-elementor")}
         </a>
       </div>
       <div className="flex-1">
@@ -38,13 +38,13 @@ const Tutorial = () => {
           <img
             className="w-full h-full object-cover"
             src={TutorialThumb}
-            alt="thumbnail"
+            alt={__("thumbnail", "animation-addons-for-elementor")}
           />
           <div
             className="absolute top-[93px] left-0 right-0 mx-auto w-fit cursor-pointer"
             onClick={() => setOpen(true)}
           >
-            <img width={50} height={50} src={PlayButton} alt="play" />
+            <img width={50} height={50} src={PlayButton} alt={__("play", "animation-addons-for-elementor")} />
           </div>
         </div>
       </div>

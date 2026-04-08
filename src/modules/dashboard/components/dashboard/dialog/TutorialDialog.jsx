@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +29,7 @@ const TutorialDialog = ({ open, setOpen }) => {
               width="100%"
               height="100%"
               src="https://www.youtube.com/embed/tRbvgq2gJF4?si=Ft1slmDRA316RZCr"
-              title="Create Stunning Animated Websites"
+              title={__("Create Stunning Animated Websites", "animation-addons-for-elementor")}
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin"

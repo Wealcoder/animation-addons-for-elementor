@@ -424,6 +424,32 @@ class WCF_Admin_Init
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
+
+		// WordPress.org translations take priority, bundled translations in plugin's languages/ folder serve as fallback
+		wp_set_script_translations('wcf-admin', 'animation-addons-for-elementor', WCF_ADDONS_PATH . 'languages');
+
+		// Support user-level locale (when user sets language in their profile)
+		$user_locale = get_user_locale();
+		$site_locale = get_locale();
+
+		if ($user_locale !== $site_locale && $user_locale !== 'en_US') {
+			$md5    = md5('assets/build/modules/dashboard/index.js');
+			$json_file = WCF_ADDONS_PATH . "languages/animation-addons-for-elementor-{$user_locale}-{$md5}.json";
+
+			if (file_exists($json_file)) {
+				$json    = file_get_contents($json_file);
+				$decoded = json_decode($json, true);
+
+				if ($decoded && isset($decoded['locale_data']['messages'])) {
+					$locale_data = wp_json_encode($decoded['locale_data']['messages']);
+					wp_add_inline_script(
+						'wcf-admin',
+						"wp.i18n.setLocaleData({$locale_data}, 'animation-addons-for-elementor');",
+						'before'
+					);
+				}
+			}
+		}
 	}
 
 

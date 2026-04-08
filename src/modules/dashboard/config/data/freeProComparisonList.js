@@ -1,20 +1,21 @@
+import { __ } from "@wordpress/i18n";
 import { CheckIcon, CrossIcon } from "@/lib/icons";
 
 export const freeProComparisonList = [
   {
-    name: "Access to Prebuilt Sites",
+    name: __("Access to Prebuilt Sites", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "50 Templates",
+      text: __("50 Templates", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "300+ Templates",
+      text: __("300+ Templates", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Access to Section Templates",
+    name: __("Access to Section Templates", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "500",
@@ -26,7 +27,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "GSAP Features Access",
+    name: __("GSAP Features Access", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -38,7 +39,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Animation Builder",
+    name: __("Animation Builder", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -50,7 +51,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Loop Builder",
+    name: __("Loop Builder", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -62,7 +63,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Nested Slider",
+    name: __("Nested Slider", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -74,43 +75,43 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Text & Image Animations",
+    name: __("Text & Image Animations", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Advanced",
+      text: __("Advanced", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Preset Animations",
+    name: __("Preset Animations", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Limited",
+      text: __("Limited", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Full",
+      text: __("Full", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Smooth Scrolling",
+    name: __("Smooth Scrolling", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Advanced",
+      text: __("Advanced", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Pinning Elements",
+    name: __("Pinning Elements", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -122,7 +123,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Horizontal Scrolling",
+    name: __("Horizontal Scrolling", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -146,7 +147,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Flip Animation",
+    name: __("Flip Animation", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -158,7 +159,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Split Text Animation",
+    name: __("Split Text Animation", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -170,7 +171,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Timeline-Based Animation",
+    name: __("Timeline-Based Animation", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -182,7 +183,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Scroll To",
+    name: __("Scroll To", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -194,7 +195,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Draw SVG",
+    name: __("Draw SVG", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -206,7 +207,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "SVG Animations",
+    name: __("SVG Animations", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -218,19 +219,19 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Lottie Animations",
+    name: __("Lottie Animations", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Limited",
+      text: __("Limited", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Full",
+      text: __("Full", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Access to Page Templates",
+    name: __("Access to Page Templates", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "100",
@@ -242,7 +243,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Widgets",
+    name: __("Widgets", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "70",
@@ -254,163 +255,67 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "CPT Builder",
+    name: __("CPT Builder", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Limited",
+      text: __("Limited", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Full",
-      icon: "",
-    },
-  },
-  {
-    name: "Reveal",
-    helpText: "",
-    free: {
-      text: "Basic",
-      icon: "",
-    },
-    pro1: {
-      text: "Advanced",
+      text: __("Full", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Scale",
+    name: __("Reveal", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Advanced",
-      icon: "",
-    },
-  },
-  {
-    name: "Slide",
-    helpText: "",
-    free: {
-      text: "Basic",
-      icon: "",
-    },
-    pro1: {
-      text: "Advanced",
+      text: __("Advanced", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Skew Reveal",
+    name: __("Scale", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Advanced",
-      icon: "",
-    },
-  },
-  {
-    name: "Flip",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Glow Pulse",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Typewriter",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Mask Wipe",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Water Wave",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Background Clip Text",
-    helpText: "",
-    free: {
-      text: "",
-      icon: CheckIcon,
-    },
-    pro1: {
-      text: "",
-      icon: CheckIcon,
-    },
-  },
-  {
-    name: "Charecter Animation",
-    helpText: "",
-    free: {
-      text: "Basic",
-      icon: "",
-    },
-    pro1: {
-      text: "Advanced",
+      text: __("Advanced", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Elementor Extensions",
+    name: __("Slide", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "Advanced",
+      text: __("Advanced", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Code Snippet",
+    name: __("Skew Reveal", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: __("Basic", "animation-addons-for-elementor"),
+      icon: "",
+    },
+    pro1: {
+      text: __("Advanced", "animation-addons-for-elementor"),
+      icon: "",
+    },
+  },
+  {
+    name: __("Flip", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -422,7 +327,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Header Builder",
+    name: __("Glow Pulse", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -434,7 +339,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Footer Builder",
+    name: __("Typewriter", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -446,7 +351,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Dynamic Content",
+    name: __("Mask Wipe", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -458,7 +363,103 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Live Copy Paste",
+    name: __("Water Wave", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Background Clip Text", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Character Animation", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: __("Basic", "animation-addons-for-elementor"),
+      icon: "",
+    },
+    pro1: {
+      text: __("Advanced", "animation-addons-for-elementor"),
+      icon: "",
+    },
+  },
+  {
+    name: __("Elementor Extensions", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: __("Basic", "animation-addons-for-elementor"),
+      icon: "",
+    },
+    pro1: {
+      text: __("Advanced", "animation-addons-for-elementor"),
+      icon: "",
+    },
+  },
+  {
+    name: __("Code Snippet", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Header Builder", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Footer Builder", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Dynamic Content", "animation-addons-for-elementor"),
+    helpText: "",
+    free: {
+      text: "",
+      icon: CheckIcon,
+    },
+    pro1: {
+      text: "",
+      icon: CheckIcon,
+    },
+  },
+  {
+    name: __("Live Copy Paste", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -470,19 +471,19 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Supports",
+    name: __("Supports", "animation-addons-for-elementor"),
     helpText: "",
     free: {
-      text: "Basic",
+      text: __("Basic", "animation-addons-for-elementor"),
       icon: "",
     },
     pro1: {
-      text: "24/7 Support",
+      text: __("24/7 Support", "animation-addons-for-elementor"),
       icon: "",
     },
   },
   {
-    name: "Custom Font Uploader",
+    name: __("Custom Font Uploader", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -494,7 +495,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Custom Icon Generator",
+    name: __("Custom Icon Generator", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -506,7 +507,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Custom CSS",
+    name: __("Custom CSS", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -518,7 +519,7 @@ export const freeProComparisonList = [
     },
   },
   {
-    name: "Filterable Gallery",
+    name: __("Filterable Gallery", "animation-addons-for-elementor"),
     helpText: "",
     free: {
       text: "",
@@ -530,29 +531,3 @@ export const freeProComparisonList = [
     },
   },
 ];
-
-// {
-//   name: "Custom Font Builder",
-//   helpText: "",
-//   free: {
-//     text: "",
-//     icon: CrossIcon,
-//   },
-//   pro: {
-//     text: "",
-//     icon: CheckIcon,
-//   },
-// },
-
-// {
-//   name: "AAE Fields",
-//   helpText: "",
-//   free: {
-//     text: "Coming Soon",
-//     icon: "",
-//   },
-//   pro: {
-//     text: "Coming Soon",
-//     icon: "",
-//   },
-// },

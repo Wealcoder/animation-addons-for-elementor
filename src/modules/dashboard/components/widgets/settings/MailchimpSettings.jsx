@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,9 +89,9 @@ const MailchimpSettings = () => {
   return (
     <div className="py-5">
       <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">Mailchimp API</h2>
+        <h2 className="text-xl text-text font-medium">{__("Mailchimp API", "animation-addons-for-elementor")}</h2>
         <p className="text-sm text-text-secondary mt-1">
-          Add credentials to your Mailchimp
+          {__("Add credentials to your Mailchimp", "animation-addons-for-elementor")}
         </p>
       </div>
       <div>
@@ -102,10 +103,10 @@ const MailchimpSettings = () => {
                 name="api_key"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-[#0E121B]">API Key</FormLabel>
+                    <FormLabel className="text-[#0E121B]">{__("API Key", "animation-addons-for-elementor")}</FormLabel>
                     <div className="relative">
                       <FormControl>
-                        <Input placeholder="Enter your API key" {...field} />
+                        <Input placeholder={__("Enter your API key", "animation-addons-for-elementor")} {...field} />
                       </FormControl>
                     </div>
 
@@ -121,14 +122,14 @@ const MailchimpSettings = () => {
                   variant="secondary"
                   className="h-11 shadow-common-2 text-base px-[18px]"
                 >
-                  Cancel
+                  {__("Cancel", "animation-addons-for-elementor")}
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 className="h-11 shadow-common-2 text-base px-6"
               >
-                Save
+                {__("Save", "animation-addons-for-elementor")}
               </Button>
             </div>
           </form>

@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,9 +92,9 @@ const TikTokSettings = () => {
   return (
     <div className="py-5">
       <div className="px-6 pb-4 border-b border-[#F2F5F8]">
-        <h2 className="text-xl text-text font-medium">TikTok Feed</h2>
+        <h2 className="text-xl text-text font-medium">{__("TikTok Feed", "animation-addons-for-elementor")}</h2>
         <p className="text-sm text-text-secondary mt-1">
-          Add credentials to your TikTok Feed
+          {__("Add credentials to your TikTok Feed", "animation-addons-for-elementor")}
         </p>
       </div>
       <div className="px-6 py-5 border-b border-[#F2F5F8]">
@@ -109,34 +110,34 @@ const TikTokSettings = () => {
               : ""
           )}
         >
-          Add TikTok Account
+          {__("Add TikTok Account", "animation-addons-for-elementor")}
         </a>
       </div>
       <div className="px-6 py-5 space-y-4">
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="access-token">Access Token</Label>
+          <Label htmlFor="access-token">{__("Access Token", "animation-addons-for-elementor")}</Label>
           <Input
             id="access-token"
             disabled
-            placeholder="Access Token"
+            placeholder={__("Access Token", "animation-addons-for-elementor")}
             value={token.accessToken}
           />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="refresh-token">Refresh Token</Label>
+          <Label htmlFor="refresh-token">{__("Refresh Token", "animation-addons-for-elementor")}</Label>
           <Input
             id="refresh-token"
             disabled
-            placeholder="Refresh Token"
+            placeholder={__("Refresh Token", "animation-addons-for-elementor")}
             value={token.refreshToken}
           />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="refresh-token">Open ID</Label>
+          <Label htmlFor="refresh-token">{__("Open ID", "animation-addons-for-elementor")}</Label>
           <Input
             id="open-id"
             disabled
-            placeholder="Open ID"
+            placeholder={__("Open ID", "animation-addons-for-elementor")}
             value={token.openId}
           />
         </div>

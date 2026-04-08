@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import {
   Accordion,
   AccordionContent,
@@ -45,7 +46,7 @@ const ShowIntegrationsLibrary = () => {
                               className="w-3.5 h-3.5 text-icon-secondary"
                               strokeWidth={2}
                             />
-                            <Badge variant="pro">PRO</Badge>
+                            <Badge variant="pro">{__("PRO", "animation-addons-for-elementor")}</Badge>
                           </>
                         ) : (
                           ""
@@ -63,7 +64,7 @@ const ShowIntegrationsLibrary = () => {
                           variant="pro"
                           className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] mr-1"
                         >
-                          COMING SOON!
+                          {__("COMING SOON!", "animation-addons-for-elementor")}
                         </Badge>
                       </>
                     )}
@@ -89,7 +90,7 @@ const ShowIntegrationsLibrary = () => {
                             ?.length
                         }
                       />
-                      <Label htmlFor={library}>Enable All</Label>
+                      <Label htmlFor={library}>{__("Enable All", "animation-addons-for-elementor")}</Label>
                     </div>
                   </div>
                 </div>
@@ -134,7 +135,7 @@ const ShowIntegrationsLibrary = () => {
                     </>
                   ) : (
                     <div className="col-span-3 px-4 py-[15px] bg-background rounded-lg  box-border">
-                      <p className="text-center">Coming soon...</p>
+                      <p className="text-center">{__("Coming soon...", "animation-addons-for-elementor")}</p>
                     </div>
                   )}
                 </div>

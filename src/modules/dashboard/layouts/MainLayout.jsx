@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,9 +47,7 @@ const MainLayout = () => {
 
   return (
     <div className="wcf-anim2024-wrapper">
-      <div className="wcf-anim2024-style">
-        {ShowContent({ tabKey })}
-      </div>
+      <div className="wcf-anim2024-style">{ShowContent({ tabKey })}</div>
     </div>
   );
 };
@@ -81,7 +80,7 @@ MainLayout.FirstLayout = ({ children }) => {
             {
               root: null,
               threshold: 0.5,
-            }
+            },
           );
 
           observer.observe(element);
@@ -102,7 +101,9 @@ MainLayout.FirstLayout = ({ children }) => {
     <>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <p className="text-lg font-semibold">Loading...</p>
+          <p className="text-lg font-semibold">
+            {__("Loading", "animation-addons-for-elementor") + "..."}
+          </p>
         </div>
       ) : (
         <div className="container overflow-x-hidden bg-background rounded-[10px]">
@@ -130,7 +131,9 @@ MainLayout.SecondLayout = ({ children }) => {
     <>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <p className="text-lg font-semibold">Loading...</p>
+          <p className="text-lg font-semibold">
+            {__("Loading...", "animation-addons-for-elementor")}
+          </p>
         </div>
       ) : (
         <div className="bg-background">{children}</div>
@@ -155,7 +158,9 @@ MainLayout.ThirdLayout = ({ children }) => {
     <>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <p className="text-lg font-semibold">Loading...</p>
+          <p className="text-lg font-semibold">
+            {__("Loading...", "animation-addons-for-elementor")}
+          </p>
         </div>
       ) : (
         <div className="bg-background-secondary">
