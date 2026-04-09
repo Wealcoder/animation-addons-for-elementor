@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import AddonProWidget from "@/components/dashboard/AddonProWidget";
 import ConnectWithUs from "@/components/dashboard/ConnectWithUs";
 import Documentation from "@/components/dashboard/Documentation";
@@ -7,6 +8,7 @@ import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
 import HeroBanner from "../../../../public/images/hero-banner.jpg";
 import QuickAccess from "@/components/dashboard/QuickAccess";
+import { RiH2 } from "react-icons/ri";
 
 function isInOfferPeriod() {
   const today = new Date();
@@ -27,13 +29,14 @@ const Dashboard = () => {
           <img
             src={WCF_ADDONS_ADMIN.hero}
             className="w-full h-full rounded-[10px]"
-            alt="Banner"
+            alt={__("Banner", "animation-addons-for-elementor")}
           />
           <Badge
             className="absolute bottom-[34px] right-[20px] bg-white"
             variant="version"
           >
-            Ver. {WCF_ADDONS_ADMIN?.version}
+            {__("Ver", "animation-addons-for-elementor") + "."}{" "}
+            {WCF_ADDONS_ADMIN?.version}
           </Badge>
         </div>
       ) : isInOfferPeriod() ? (
@@ -42,7 +45,7 @@ const Dashboard = () => {
             {/* <img
               src={WCF_ADDONS_ADMIN.hero_offer}
               className="w-full h-full rounded-[10px]"
-              alt="Banner"
+              alt={__("Banner", "animation-addons-for-elementor")}
             /> */}
             <video
               src={WCF_ADDONS_ADMIN.hero_offer}
@@ -57,7 +60,8 @@ const Dashboard = () => {
               className="absolute bottom-[34px] right-[20px] bg-white"
               variant="version"
             >
-              Ver. {WCF_ADDONS_ADMIN?.version}
+              {__("Ver.", "animation-addons-for-elementor")}{" "}
+              {WCF_ADDONS_ADMIN?.version}
             </Badge>
           </div>
         </a>
@@ -66,13 +70,14 @@ const Dashboard = () => {
           <img
             src={HeroBanner}
             className="w-full h-full rounded-[10px]"
-            alt="Banner"
+            alt={__("Banner", "animation-addons-for-elementor")}
           />
           <Badge
             className="absolute bottom-[34px] right-[20px] bg-white"
             variant="version"
           >
-            Ver. {WCF_ADDONS_ADMIN?.version}
+            {__("Ver.", "animation-addons-for-elementor")}{" "}
+            {WCF_ADDONS_ADMIN?.version}
           </Badge>
         </div>
       )}

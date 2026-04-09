@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import ComparisonTable from "@/components/freePro/ComparisonTable";
 import { RiVipCrown2Line } from "react-icons/ri";
 
@@ -11,11 +12,11 @@ const FreePro = () => {
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex items-center">
-              <h2 className="text-[18px] font-medium">Free vs. Pro </h2>
+              <h2 className="text-[18px] font-medium">{__("Free vs. Pro", "animation-addons-for-elementor")} </h2>
             </div>
             <div>
               <p className="text-sm text-label">
-                Compare our free vs. pro features.
+                {__("Compare our free vs. pro features.", "animation-addons-for-elementor")}
               </p>
             </div>
           </div>

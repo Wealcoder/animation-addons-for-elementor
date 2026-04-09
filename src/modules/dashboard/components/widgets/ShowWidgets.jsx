@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "../ui/button";
 import WidgetCard from "../shared/WidgetCard";
@@ -109,9 +110,9 @@ const ShowWidgets = ({
 
       const sampleData = {
         type: "notice",
-        title: "Widgets Activity Log",
+        title: __("Widgets Activity Log", "animation-addons-for-elementor"),
         description:
-          "Your widget settings have been successfully updated in the following time period.",
+          __("Your widget settings have been successfully updated in the following time period.", "animation-addons-for-elementor"),
         date: utcDate,
       };
 
@@ -137,7 +138,7 @@ const ShowWidgets = ({
       })
       .then((return_content) => {
         setWidgetCount((prev) => ({ ...prev, active: return_content.total }));
-        toast.success("Save Successful", {
+        toast.success(__("Save Successful", "animation-addons-for-elementor"), {
           position: "top-right",
         });
       });
@@ -149,7 +150,7 @@ const ShowWidgets = ({
         <ScrollArea className="max-w-[500px] lg:max-w-[565px] xl:max-w-[900px] rounded-lg bg-background-secondary">
           <TabsList className="h-11">
             <TabsTrigger key={"all-widgets_tab"} value={"all"} className="px-4">
-              All
+              {__("All", "animation-addons-for-elementor")}
             </TabsTrigger>
 
             {widgetTabList?.map((tab) => (
@@ -163,7 +164,7 @@ const ShowWidgets = ({
 
         <div className="flex gap-2.5 items-center justify-end">
           {/* <Button variant="secondary">Reset</Button> */}
-          <Button onClick={() => saveWidget()}>Save Settings</Button>
+          <Button onClick={() => saveWidget()}>{__("Save Settings", "animation-addons-for-elementor")}</Button>
         </div>
       </div>
       <TabsContent
@@ -173,7 +174,7 @@ const ShowWidgets = ({
       >
         {norResult ? (
           <div className="bg-background flex justify-center items-center p-5 rounded">
-            <h3 className="text-base font-medium">No Result Found</h3>
+            <h3 className="text-base font-medium">{__("No Result Found", "animation-addons-for-elementor")}</h3>
           </div>
         ) : (
           Object.keys(catWidgets)?.map((tab) => (
@@ -188,7 +189,7 @@ const ShowWidgets = ({
                     checked={catWidgets[tab].is_active}
                     onCheckedChange={(value) => setCheck({ value, slug: tab })}
                   />
-                  <Label htmlFor={tab}>Enable All</Label>
+                  <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
                 </div>
               </div>
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
@@ -242,7 +243,7 @@ const ShowWidgets = ({
                   checked={catWidgets[tab].is_active}
                   onCheckedChange={(value) => setCheck({ value, slug: tab })}
                 />
-                <Label htmlFor={tab}>Enable All</Label>
+                <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
               </div>
             </div>
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">

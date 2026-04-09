@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "../ui/button";
 import WidgetCard from "../shared/WidgetCard";
@@ -94,9 +95,9 @@ const ShowExtensions = ({
 
       const sampleData = {
         type: "notice",
-        title: "Extensions Activity Log",
+        title: __("Extensions Activity Log", "animation-addons-for-elementor"),
         description:
-          "Your extension settings have been successfully updated in the following time period.",
+          __("Your extension settings have been successfully updated in the following time period.", "animation-addons-for-elementor"),
         date: utcDate,
       };
 
@@ -125,7 +126,7 @@ const ShowExtensions = ({
           ...prev,
           active: return_content.total,
         }));
-        toast.success("Save Successful", {
+        toast.success(__("Save Successful", "animation-addons-for-elementor"), {
           position: "top-right",
         });
       });
@@ -135,12 +136,12 @@ const ShowExtensions = ({
     <Tabs value={tabValue} onValueChange={setTabValue}>
       <div className="flex justify-between items-center">
         <TabsList className="gap-1 h-11">
-          <TabsTrigger value={"gsap"}>GSAP Extensions</TabsTrigger>
-          <TabsTrigger value={"general"}>General Extensions</TabsTrigger>
+          <TabsTrigger value={"gsap"}>{__("GSAP Extensions", "animation-addons-for-elementor")}</TabsTrigger>
+          <TabsTrigger value={"general"}>{__("General Extensions", "animation-addons-for-elementor")}</TabsTrigger>
         </TabsList>
         <div className="flex gap-2.5 items-center justify-end">
           {/* <Button variant="secondary">Reset</Button> */}
-          <Button onClick={() => saveExtension()}>Save Settings</Button>
+          <Button onClick={() => saveExtension()}>{__("Save Settings", "animation-addons-for-elementor")}</Button>
         </div>
       </div>
       <TabsContent
@@ -160,7 +161,7 @@ const ShowExtensions = ({
                   updateActiveGsapAllExtension({ value })
                 }
               />
-              <Label htmlFor={`enable-gsap`}>Enable All</Label>
+              <Label htmlFor={`enable-gsap`}>{__("Enable All", "animation-addons-for-elementor")}</Label>
             </div>
           </div>
 
@@ -185,7 +186,7 @@ const ShowExtensions = ({
                                 className="w-3.5 h-3.5 text-icon-secondary"
                                 strokeWidth={2}
                               />
-                              <Badge variant="pro">PRO</Badge>
+                              <Badge variant="pro">{__("PRO", "animation-addons-for-elementor")}</Badge>
                             </>
                           ) : (
                             ""
@@ -204,7 +205,7 @@ const ShowExtensions = ({
                             variant="pro"
                             className="px-2.5 py-1.5 h-7 bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] mr-1"
                           >
-                            COMING SOON!
+                            {__("COMING SOON!", "animation-addons-for-elementor")}
                           </Badge>
                         </>
                       )}
@@ -296,7 +297,7 @@ const ShowExtensions = ({
                       </>
                     ) : (
                       <div className="col-span-3 px-4 py-[15px] bg-background rounded-lg  box-border">
-                        <p className="text-center">Coming soon...</p>
+                        <p className="text-center">{__("Coming soon...", "animation-addons-for-elementor")}</p>
                       </div>
                     )}
                   </div>
@@ -323,7 +324,7 @@ const ShowExtensions = ({
                   updateActiveGeneralGroupExtension({ value })
                 }
               />
-              <Label htmlFor={`enable-general`}>Enable All</Label>
+              <Label htmlFor={`enable-general`}>{__("Enable All", "animation-addons-for-elementor")}</Label>
             </div>
           </div>
 

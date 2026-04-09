@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RecommendedPluginsList } from "@/config/data/recoPluginsList";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
@@ -22,7 +23,7 @@ const RecoPlugins = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">
           <RiPuzzle2Line size={20} color="#7D52F4" />
-          <p className="font-medium">Recommended Themes</p>
+          <p className="font-medium">{__("Recommended Themes", "animation-addons-for-elementor")}</p>
         </div>
         <div>
           <a
@@ -30,7 +31,7 @@ const RecoPlugins = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            View all
+            {__("View all", "animation-addons-for-elementor")}
             <RiArrowRightUpLine
               size={18}
               className="rtl:rotate-360 rtl:scale-x-[-1]"
@@ -51,7 +52,7 @@ const RecoPlugins = () => {
                 <div>
                   <img
                     src={el.logo}
-                    alt="Plugins logo"
+                    alt={__("Plugins logo", "animation-addons-for-elementor")}
                     style={{ width: "40px", height: "40px" }}
                   />
                 </div>

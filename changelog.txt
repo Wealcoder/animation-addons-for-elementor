@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.1 – 9th April 2026
+  
+  - Improved: Modarate performance issues solved in both the builder and frontend.
+
 = 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026
 
     - Fixed: Single Post Template Issues.

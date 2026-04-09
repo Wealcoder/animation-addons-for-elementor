@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RiArrowRightUpLine, RiVipCrown2Line } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import WidgetCard from "../shared/WidgetCard";
@@ -46,7 +47,7 @@ const AddonProWidget = () => {
       })
       .then((return_content) => {
         proWidget(data);
-        toast.success("Save Successful", {
+        toast.success(__("Save Successful", "animation-addons-for-elementor"), {
           position: "top-right",
         });
       });
@@ -57,7 +58,7 @@ const AddonProWidget = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center">
           <RiVipCrown2Line size={20} color="#FFA132" />
-          <p className="font-medium">AAE Addons Pro Widgets</p>
+          <p className="font-medium">{__("AAE Addons Pro Widgets", "animation-addons-for-elementor")}</p>
         </div>
         <div>
           <a
@@ -65,7 +66,7 @@ const AddonProWidget = () => {
             target="_blank"
             className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            Changelog{" "}
+            {__("Changelog", "animation-addons-for-elementor")}{" "}
             <RiArrowRightUpLine
               size={18}
               className="rtl:rotate-360 rtl:scale-x-[-1] ms-1"

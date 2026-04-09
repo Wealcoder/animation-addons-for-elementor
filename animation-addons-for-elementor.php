@@ -3,7 +3,7 @@
  * Plugin Name:                Animation Addons
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
- * Version:                    2.6.1
+ * Version:                    2.6.2
  * Author:                     Wealcoder
  * Author URI:                 https://animation-addons.com/
  * License:                    GPL v2 or later
@@ -29,7 +29,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.6.1' );
+	define( 'WCF_ADDONS_VERSION', '2.6.2' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -93,7 +93,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.6.1';
+	const VERSION = '2.6.2';
 
 	/**
 	 * Minimum Elementor Version
@@ -136,29 +136,27 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_activation_hook() {
-		
-		add_option( 'aae_installed', wp_date( 'U' ) );  // Move this code from constructor at version 2.5.9
-		//set setup wizard
-		update_option('aae_do_activation_redirect', 'new');
-		if ( !get_option( 'wcf_addons_version' ) && !get_option( 'wcf_addons_setup_wizard' ) ) {
-			update_option( 'wcf_addons_setup_wizard', 'redirect' );
+
+		if ( ! get_option('aae_installed') ) {
+			add_option('aae_installed', time(), '', false);
 		}
-		$count = (int) get_option('aae_activation_count', 0);		
-		if(!$count){
-			wp_remote_post(
-				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated',
-				[
-					'timeout'  => 2,                           // keep it snappy
-					'blocking' => false,                       // fire-and-forget
-					'headers'  => ['Content-Type' => 'application/json'],				
-				]
-			);
-		}			
-		
-    	update_option('aae_activation_count', $count + 1, true);
-		update_option('aae_last_activated', current_time('mysql'), true);
+
+		update_option('aae_do_activation_redirect', 'new', false);
+
+		if ( ! get_option('wcf_addons_setup_wizard') ) {
+			update_option('wcf_addons_setup_wizard', 'redirect', false);
+		}
+
+		$count = (int) get_option('aae_activation_count', 0);
+
+		if ( ! $count ) {
+			update_option('aae_send_activation_event', true, false);
+		}
+
+		update_option('aae_activation_count', $count + 1, false);
+		update_option('aae_last_activated', current_time('mysql'), false);
+
 		flush_rewrite_rules();
-		
 	}
 	/**
 	 * Plugin dactivation hook
@@ -166,20 +164,17 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_deactivation_hook() {
-		
-		$count = (int) get_option('aae_dactivation_count', 0);
-		if(!$count){
-			update_option('aae_dactivation_count', $count + 1, true);
-			update_option('aae_last_dactivated', current_time('mysql'), true);	
-			wp_remote_post(
-				'https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated',
-				[
-					'timeout'  => 2,                           // keep it snappy
-					'blocking' => false,                       // fire-and-forget
-					'headers'  => ['Content-Type' => 'application/json'],				
-				]
-			);	
+
+		$count = (int) get_option('aae_deactivation_count', 0);
+
+		if ( ! $count ) {
+			update_option('aae_send_deactivation_event', true, false);
 		}
+
+		update_option('aae_deactivation_count', $count + 1, false);
+		update_option('aae_last_deactivated', current_time('mysql'), false);
+
+		flush_rewrite_rules();
 	}
 
 	/**
@@ -189,6 +184,25 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public static function plugin_unregister_hook() {
 
+		$options = [
+			'aae_installed',
+			'aae_do_activation_redirect',
+			'wcf_addons_setup_wizard',
+			'wcf_addons_version',
+
+			'aae_activation_count',
+			'aae_deactivation_count',
+
+			'aae_last_activated',
+			'aae_last_deactivated',
+
+			'aae_send_activation_event',
+			'aae_send_deactivation_event',
+		];
+
+		foreach ($options as $option) {
+			delete_option($option);
+		}
 	}
 
 	/**
@@ -204,6 +218,13 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function init() {
+
+		// Load plugin textdomain for translations
+		load_plugin_textdomain(
+			'animation-addons-for-elementor',
+			false,
+			dirname( plugin_basename( WCF_ADDONS_FILE ) ) . '/languages'
+		);
 
 		// Check if Elementor installed and activated
 		if ( ! did_action( 'elementor/loaded' ) ) {			
@@ -278,22 +299,44 @@ final class WCF_ADDONS_Plugin {
 		}
 	}
 	
-	function enqueue_elementor_install_script() {
-		// Check if the plugin is not active
-		wp_enqueue_style( 'aaeaddon-common', WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css' );
-		if ( !is_plugin_active('elementor/elementor.php') ) {
+	public function enqueue_elementor_install_script($hook) {
+
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return;
+		}
+
+		// ✅ Allow only your plugin pages (pattern-based)
+		if (
+			strpos($screen->id, 'animation-addon_page_') === false &&
+			strpos($screen->id, 'toplevel_page_animation-addon') === false
+		) {
+			return;
+		}
+
+		// ✅ Load CSS
+		wp_enqueue_style(
+			'aaeaddon-common',
+			WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css',
+			[],
+			WCF_ADDONS_VERSION
+		);
+
+		// ✅ Load script only if Elementor not active
+		if ( ! is_plugin_active('elementor/elementor.php') ) {
+
 			wp_enqueue_script(
 				'wcf-install-elementor-script',
-				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js', // Replace with your JS file path
-				['jquery'], // Dependencies
-				time(), // Version
-				true // Load in footer
+				plugin_dir_url(__FILE__) . 'assets/js/install-elementor.js',
+				['jquery'],
+				WCF_ADDONS_VERSION,
+				true
 			);
-	
-			// Localize script to pass AJAX data
+
 			wp_localize_script('wcf-install-elementor-script', 'wcfelementorAjax', [
-				'ajax_url'    => admin_url('admin-ajax.php'),
-				'nonce'       => wp_create_nonce('wcfinstall_elementor_nonce'),
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce'    => wp_create_nonce('wcfinstall_elementor_nonce'),
 			]);
 		}
 	}
@@ -436,8 +479,32 @@ final class WCF_ADDONS_Plugin {
 			exit;
 		}
 
+		if ( get_option('aae_send_activation_event') ) {
+			delete_option('aae_send_activation_event');
+
+			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated', [
+				'timeout'  => 2,
+				'blocking' => false,
+			]);
+		}
+
+		if ( get_option('aae_send_deactivation_event') ) {
+			delete_option('aae_send_deactivation_event');
+
+			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated', [
+				'timeout'  => 2,
+				'blocking' => false,
+			]);
+		}
+
 	}
 }
+
+
+// ✅ Register hooks here (outside class)
+register_activation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_activation_hook'] );
+register_deactivation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_deactivation_hook'] );
+register_uninstall_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_unregister_hook'] );
 
 // Instantiate WCF_ADDONS_Plugin.
 new WCF_ADDONS_Plugin();

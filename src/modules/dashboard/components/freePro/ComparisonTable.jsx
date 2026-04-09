@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import { RiInformation2Fill } from "react-icons/ri";
 import {
   Tooltip,
@@ -15,14 +16,14 @@ const ComparisonTable = () => {
     <div className="rounded-lg border border-border overflow-hidden">
       <div className="flex border-b border-border">
         <div className="w-[464px] p-6 border-r border-border">
-          <h3 className="text-xl font-medium">Feature</h3>
+          <h3 className="text-xl font-medium">{__("Feature", "animation-addons-for-elementor")}</h3>
         </div>
         <div className="w-[400px] p-6 border-r border-border">
-          <h3 className="text-xl font-medium">Free Site</h3>
+          <h3 className="text-xl font-medium">{__("Free Site", "animation-addons-for-elementor")}</h3>
         </div>
         <div className="w-[400px] p-6">
           <h3 className="text-xl font-medium flex gap-2.5 items-center">
-            Pro Sites
+            {__("Pro Sites", "animation-addons-for-elementor")}
           </h3>
         </div>
       </div>
