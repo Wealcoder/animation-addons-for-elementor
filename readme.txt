@@ -601,8 +601,8 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 == Changelog ==
 
 = 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
-  
-  - Improved: Modarate performance issues solved in both the builder and frontend.
+  - Added: Language Support at Dashboard.
+  - Improved: Moderate performance issues solved in both the builder and frontend.
 
 = 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026
 
