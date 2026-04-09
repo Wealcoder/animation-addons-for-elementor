@@ -119,9 +119,9 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function __construct() {
 		
-		register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
-		register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
-		register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
+		// register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
+		// register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
+		// register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
 		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
@@ -300,20 +300,6 @@ final class WCF_ADDONS_Plugin {
 	}
 	
 	public function enqueue_elementor_install_script($hook) {
-
-		$screen = get_current_screen();
-
-		if ( ! $screen ) {
-			return;
-		}
-
-		// ✅ Allow only your plugin pages (pattern-based)
-		if (
-			strpos($screen->id, 'animation-addon_page_') === false &&
-			strpos($screen->id, 'toplevel_page_animation-addon') === false
-		) {
-			return;
-		}
 
 		// ✅ Load CSS
 		wp_enqueue_style(
