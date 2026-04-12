@@ -434,6 +434,13 @@ class Plugin
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
+				'image-gallery'        => array(
+					'handler' => 'wcf--image-gallery-js',
+					'src'     => 'widgets/image-gallery.js',
+					'dep'     => array('jquery'),
+					'version' => WCF_ADDONS_VERSION,
+					'arg'     => true,
+				),
 				'wcf-posts'            => array(
 					'handler' => 'wcf--posts',
 					'src'     => 'widgets/post-pro.min.js',
