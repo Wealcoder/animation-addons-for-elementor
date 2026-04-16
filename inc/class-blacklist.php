@@ -24,6 +24,15 @@ class WCFAddon_BlackList_Notice {
 
 	const TD = 'animation-addons-for-elementor';
 
+	private static function pro_notice( $element, $id ) {
+		$element->add_control( $id, [
+			'label'           => esc_html__( 'Pro Note', self::TD ),
+			'type'            => Controls_Manager::RAW_HTML,
+			'raw'             => esc_html__( 'To use all below settings you must have to use Pro Animation Addons for Elementor', self::TD ),
+			'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
+		] );
+	}
+
 	public static function init() {
 
 		add_action( 'elementor/element/common/_section_style/after_section_end', [ __CLASS__, 'tooltip_controls_section' ], -1 );
@@ -73,6 +82,8 @@ class WCFAddon_BlackList_Notice {
 			'_section_wcf_text_animation',
 			[ 'label' => self::pro_label( __( 'Text Animation', self::TD ) ) ]
 		);
+
+		self::pro_notice( $element, 'pro_notice_text_animation' );
 
 		$animation = [
 			'none'        => esc_html__( 'none', self::TD ),
@@ -237,6 +248,8 @@ class WCFAddon_BlackList_Notice {
 			[ 'label' => self::pro_label( __( 'Image Animation', self::TD ) ) ]
 		);
 
+		self::pro_notice( $element, 'pro_notice_image_animation' );
+
 		$element->add_responsive_control( 'wcf-image-animation', [
 			'label'       => esc_html__( 'Animation', self::TD ),
 			'type'        => Controls_Manager::SELECT,
@@ -321,6 +334,8 @@ class WCFAddon_BlackList_Notice {
 			[ 'label' => self::pro_label( __( 'Cursor hover effect', self::TD ) ), 'tab' => $tab ]
 		);
 
+		self::pro_notice( $element, 'pro_notice_cursor_hover' );
+
 		$element->add_control( 'wcf_enable_cursor_hover_effect', [
 			'label'        => esc_html__( 'Enable', self::TD ),
 			'type'         => Controls_Manager::SWITCHER,
@@ -396,6 +411,8 @@ class WCFAddon_BlackList_Notice {
 				[ 'label' => self::pro_label( __( 'Image Reveal on Hover', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 			);
 
+			self::pro_notice( $element, 'pro_notice_hover_image' );
+
 			$element->add_control( 'wcf_enable_hover_image', [
 				'label'        => esc_html__( 'Enable', self::TD ),
 				'type'         => Controls_Manager::SWITCHER,
@@ -470,6 +487,8 @@ class WCFAddon_BlackList_Notice {
 				'_section_wcf_popup_area',
 				[ 'label' => self::pro_label( __( 'Popup', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 			);
+
+			self::pro_notice( $element, 'pro_notice_popup' );
 
 			$element->add_control( 'wcf_enable_popup', [
 				'label'        => esc_html__( 'Enable Popup', self::TD ),
@@ -608,6 +627,8 @@ class WCFAddon_BlackList_Notice {
 			'_section_wcf_advanced_tooltip',
 			[ 'label' => self::pro_label( __( 'Tooltip', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
+
+		self::pro_notice( $element, 'pro_notice_tooltip' );
 
 		$element->add_control( 'wcf_advanced_tooltip_enable', [
 			'label'        => __( 'Enable Tooltip?', self::TD ),
@@ -752,6 +773,8 @@ class WCFAddon_BlackList_Notice {
 			[ 'label' => self::pro_label( __( 'Tilt', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
+		self::pro_notice( $element, 'pro_notice_tilt' );
+
 		$element->add_control( 'wcf_enable_tilt', [
 			'label'        => esc_html__( 'Enable', self::TD ),
 			'type'         => Controls_Manager::SWITCHER,
@@ -804,6 +827,8 @@ class WCFAddon_BlackList_Notice {
 			'_section_wcf_mouse_move_area',
 			[ 'label' => self::pro_label( __( 'Mouse Move Effect', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
+
+		self::pro_notice( $element, 'pro_notice_mouse_move' );
 
 		$element->add_control( 'wcf_enable_mouse_move_effect', [
 			'label'        => esc_html__( 'Enable', self::TD ),
@@ -882,6 +907,8 @@ class WCFAddon_BlackList_Notice {
 			[ 'label' => self::pro_label( __( 'Horizontal Scroll', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
+		self::pro_notice( $element, 'pro_notice_horizontal_scroll' );
+
 		$element->add_control( 'important_note', [
 			'label'           => esc_html__( 'Important Note', self::TD ),
 			'type'            => Controls_Manager::RAW_HTML,
@@ -928,6 +955,8 @@ class WCFAddon_BlackList_Notice {
 			'_section_wcf_animation_area',
 			[ 'label' => self::pro_label( __( 'Animation', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
+
+		self::pro_notice( $element, 'pro_notice_animation' );
 
 		$anim_types = [ 'custom', 'fade', 'move' ];
 
@@ -1134,6 +1163,8 @@ class WCFAddon_BlackList_Notice {
 			'_section_pin-area',
 			[ 'label' => self::pro_label( __( 'Sticky/Pin Element', self::TD ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
+
+		self::pro_notice( $element, 'pro_notice_pin' );
 
 		$element->add_responsive_control( 'wcf_enable_pin_area', [
 			'label'       => esc_html__( 'Enable', self::TD ),
