@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 
 const defaultValues = {
+  disableInEditor: true,
   desktop: {
     enabled: true,
     smotherLevel: "1.35",
@@ -63,6 +64,7 @@ const deviceSchema = z.object({
 });
 
 const FormSchema = z.object({
+  disableInEditor: z.boolean().optional(),
   desktop: deviceSchema,
   laptop: deviceSchema,
   tablet: deviceSchema,
@@ -90,6 +92,9 @@ const ScrollSmootherSettings = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      disableInEditor:
+        WCF_ADDONS_ADMIN?.smoothScroller?.disableInEditor ??
+        defaultValues.disableInEditor,
       desktop: {
         ...defaultValues.desktop,
         ...WCF_ADDONS_ADMIN?.smoothScroller?.desktop,
@@ -125,6 +130,7 @@ const ScrollSmootherSettings = () => {
     if (!WCF_ADDONS_ADMIN.nonce || !WCF_ADDONS_ADMIN.ajaxurl) return null;
 
     const smooth = {
+      disableInEditor: !!formData.disableInEditor,
       desktop: formData.desktop,
       laptop: formData.laptop,
       tablet: formData.tablet,
@@ -242,6 +248,33 @@ const ScrollSmootherSettings = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="bg-background p-4 rounded-lg mt-4 mb-2">
+                <FormField
+                  control={form.control}
+                  name="disableInEditor"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-3">
+                      <FormLabel className="min-w-[220px]">
+                        {__("Disable in Editor Mode", "animation-addons-for-elementor")}
+                      </FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={!!field.value}
+                          onCheckedChange={field.onChange}
+                          sx={{ marginTop: "0" }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <p className="text-[12px] text-[var(--600,#525866)] mt-2">
+                  {__(
+                    "Turn off ScrollSmoother while editing pages in Elementor.",
+                    "animation-addons-for-elementor"
+                  )}
+                </p>
+              </div>
+
               {deviceList.map((device) => (
                 <TabsContent
                   value={device.id}

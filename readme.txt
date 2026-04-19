@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.6.2
+Stable tag: 2.6.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -599,6 +599,11 @@ Subscribing is optional—no data is collected unless you opt in.
 See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026
+  
+    - Added: Lightbox Feature Added at  Image Gallery Widget
+    - Imporoved: Dashboard Performance Improved.
 
 = 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
   - Added: Language Support at Dashboard.
