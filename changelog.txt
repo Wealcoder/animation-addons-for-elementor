@@ -1,11 +1,16 @@
 
 == Changelog ==
 
-= 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
+= 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026
   
-  - Added: Language Support at Dashboard.
-  - Improved: Modarate performance issues solved in both the builder and frontend.
+    - Added: Lightbox Feature Added at  Image Gallery Widget
+    - Imporoved: Dashboard Performance Improved.
 
+= 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
+
+  - Added: Language Support at Dashboard.
+  - Improved: Moderate performance issues solved in both the builder and frontend.
+ 
 = 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026
 
     - Fixed: Single Post Template Issues.
