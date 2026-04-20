@@ -604,6 +604,7 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   
     - Added: Lightbox Feature Added at  Image Gallery Widget
     - Imporoved: Dashboard Performance Improved.
+    - Added: Brand Slider Widget- New control auto slide width
 
 = 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
   - Added: Language Support at Dashboard.
