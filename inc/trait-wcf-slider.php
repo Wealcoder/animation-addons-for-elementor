@@ -1128,8 +1128,9 @@ trait WCF_Slider_Trait {
 
 		if ( 'yes' === $settings['autoplay'] ) {
 			$slider_settings['autoplay'] = [
-				'delay'                => $settings['autoplay_delay'],
-				'disableOnInteraction' => $settings['autoplay_interaction'],
+				'delay'                => (int) $settings['autoplay_delay'],
+				'disableOnInteraction' => 'true' === $settings['autoplay_interaction'],
+				'pauseOnMouseEnter'    => false,
 			];
 		}
 
