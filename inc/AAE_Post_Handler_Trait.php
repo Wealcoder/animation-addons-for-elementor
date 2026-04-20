@@ -390,7 +390,7 @@ trait AAE_Post_Handler_Trait {
 		?>
 			<span class="post-views">
 				<?php $this->render_meta_icon( $meta ); ?>
-				<?php echo $location; ?>
+				<?php echo esc_html( $location ); ?>
 			</span>
 		<?php
 	}

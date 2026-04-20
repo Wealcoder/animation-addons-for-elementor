@@ -75,8 +75,8 @@ class CodeSnippetAjax {
 			return false;
 		}
 
-		// Check permissions.
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		// Check permissions: snippet content is eval()'d, so require admin-level capability.
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
 			return false;
 		}
