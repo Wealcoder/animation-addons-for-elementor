@@ -249,6 +249,20 @@ class Brand_Slider extends Widget_Base {
 
 		$this->register_slider_controls( $default );
 
+		$this->add_control(
+			'auto_slide_width',
+			array(
+				'label'        => esc_html__( 'Auto Slide Width', 'animation-addons-for-elementor' ),
+				'description'  => esc_html__( 'Make each slide width fit its content. Useful for text slides with varying lengths to keep gaps visually consistent.', 'animation-addons-for-elementor' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'On', 'animation-addons-for-elementor' ),
+				'label_off'    => esc_html__( 'Off', 'animation-addons-for-elementor' ),
+				'return_value' => 'yes',
+				'default'      => '',
+				'separator'    => 'before',
+			)
+		);
+
 		$this->end_controls_section();
 
 		// image style control.
@@ -560,9 +574,9 @@ class Brand_Slider extends Widget_Base {
 		
 
 		$class_slide_width = '';
-		if ( 'auto' === $settings['slides_to_show'] ) {
+		if ( 'auto' === $settings['slides_to_show'] || 'yes' === $settings['auto_slide_width'] ) {
 			$class_slide_width = 'slide-width-auto';
-		}		
+		}
 
 		$slider_settings = $this->get_slider_attributes();		
 		
