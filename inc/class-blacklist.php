@@ -28,7 +28,12 @@ class WCFAddon_BlackList_Notice {
 		$element->add_control( $id, [
 			'label'           => esc_html__( 'Pro Note', self::TD ),
 			'type'            => Controls_Manager::RAW_HTML,
-			'raw'             => esc_html__( 'To use all below settings you must have to use Pro Animation Addons for Elementor', self::TD ),
+			'raw'             => sprintf(
+				/* translators: %1$s: opening <a> tag, %2$s: closing </a> tag */
+				esc_html__( 'These settings are available in the Pro version. %1$sUpgrade to Animation Addons Pro%2$s to unlock all extensions and advanced features.', self::TD ),
+				'<a href="' . esc_url( 'https://animation-addons.com/pricing/' ) . '" target="_blank" rel="noopener noreferrer">',
+				'</a>'
+			),
 			'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
 		] );
 	}
