@@ -465,6 +465,110 @@ class Image_Gallery extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// Icon style section
+		$this->start_controls_section(
+			'section_style_icon',
+			[
+				'label'     => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [ 'show_icon' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_align',
+			[
+				'label'     => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => [
+					'flex-start' => [
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-left',
+					],
+					'center'     => [
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-center',
+					],
+					'flex-end'   => [
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
+						'icon'  => 'eicon-h-align-right',
+					],
+				],
+				'default'   => 'center',
+				'selectors' => [
+					'{{WRAPPER}} .wcf--gallery-item .icon' => 'display: flex; align-items: center; justify-content: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--gallery-item .icon i'   => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wcf--gallery-item .icon svg' => 'fill: {{VALUE}}; color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_size',
+			[
+				'label'      => esc_html__( 'Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', 'rem' ],
+				'range'      => [
+					'px' => [ 'min' => 6, 'max' => 200, 'step' => 1 ],
+					'em' => [ 'min' => 0.5, 'max' => 10, 'step' => 0.1 ],
+					'rem' => [ 'min' => 0.5, 'max' => 10, 'step' => 0.1 ],
+				],
+				'default'    => [ 'unit' => 'px', 'size' => 20 ],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--gallery-item .icon i'   => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf--gallery-item .icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_bg_color',
+			[
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .wcf--gallery-item .icon' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--gallery-item .icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_border_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .wcf--gallery-item .icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
