@@ -1021,7 +1021,16 @@ class Plugin
 		);
 
 		$old_categories = $elements_manager->get_categories();
-		$categories     = array_merge($categories, $old_categories);
+
+		$top_categories = array();
+		foreach ( array( 'layout', 'basic' ) as $top_key ) {
+			if ( isset( $old_categories[ $top_key ] ) ) {
+				$top_categories[ $top_key ] = $old_categories[ $top_key ];
+				unset( $old_categories[ $top_key ] );
+			}
+		}
+
+		$categories = array_merge( $top_categories, $categories, $old_categories );
 
 		$set_categories = function ($categories) {
 			$this->categories = $categories;
