@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.6.3
+Stable tag: 2.6.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -600,6 +600,10 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026
+  
+    - Improved: Widget Categories Toggle Position reorder.
+    
 = 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026
   
     - Added: Lightbox Feature Added at  Image Gallery Widget
