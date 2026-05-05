@@ -303,6 +303,13 @@
     }
 }
 
+.wcf-post-pagination{
+  display: flex;
+}
+.wcf-post-pagination svg {
+    width: 1em;
+    height: 1em;
+}
 //  .custom-loop-wrapper .elementor.elementor .e-con > .elementor-widget {
 //    width: 100%;
 //  }
