@@ -2,8 +2,9 @@
 == Changelog ==
 
 = 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026
-  
+     
     - Improved: Widget Categories Toggle Position reorder.
+    - Improved: Loop Grid , weather, archive widget security maintain.
 
 = 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026
   
