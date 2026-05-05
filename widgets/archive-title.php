@@ -361,7 +361,7 @@ class Archive_Title extends Widget_Base {
 					if ( in_array( 'search_not_found', $list_types ) && $result = $this->get_custom_page_conditional_settings( 'search_not_found' ) ) {
 						if ( isset( $result['list_content'] ) ) {
 							$title = $result['list_content'];
-							$title = str_replace( array( '{search_query}' ), array( get_search_query() ), $title );
+							$title = str_replace( array( '{search_query}' ), array( esc_html( get_search_query() ) ), $title );
 						}
 					}
 				}
@@ -373,7 +373,7 @@ class Archive_Title extends Widget_Base {
 					if ( in_array( 'search', $list_types ) && $result = $this->get_custom_page_conditional_settings( 'search' ) ) {
 						if ( isset( $result['list_content'] ) ) {
 							$title = $result['list_content'];
-							$title = str_replace( array( '{search_query}' ), array( get_search_query() ), $title );
+							$title = str_replace( array( '{search_query}' ), array( esc_html( get_search_query() ) ), $title );
 						}
 					}
 				}

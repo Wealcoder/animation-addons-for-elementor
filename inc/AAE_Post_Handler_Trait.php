@@ -21,14 +21,14 @@ trait AAE_Post_Handler_Trait {
 			$wrapped_words   = array_slice( $words, 0, $n );
 			$remaining_words = array_slice( $words, $n );
 			// Create the wrapped portion
-			$wrapped = '<span class="' . $class . '">' . implode( ' ', $wrapped_words ) . '</span>';
+			$wrapped = '<span class="' . esc_attr( $class ) . '">' . esc_html( implode( ' ', $wrapped_words ) ) . '</span>';
 
 			// Combine the wrapped portion with the remaining words
-			return $wrapped . ' ' . implode( ' ', $remaining_words );
+			return $wrapped . ' ' . esc_html( implode( ' ', $remaining_words ) );
 		}
 
 		// If there are fewer words than N, wrap the whole text
-		return '<span class="' . $class . '">' . $text . '</span>';
+		return '<span class="' . esc_attr( $class ) . '">' . esc_html( $text ) . '</span>';
 	}
 
 	function render_title() {
@@ -390,7 +390,7 @@ trait AAE_Post_Handler_Trait {
 		?>
 			<span class="post-views">
 				<?php $this->render_meta_icon( $meta ); ?>
-				<?php echo $location; ?>
+				<?php echo esc_html( $location ); ?>
 			</span>
 		<?php
 	}
@@ -510,7 +510,7 @@ trait AAE_Post_Handler_Trait {
 					$time_ago = $years . ' year' . ( $years > 1 ? 's' : '' ) . ' ago';
 				}
 
-				echo $time_ago;
+				echo esc_html( $time_ago );
 				?>
 			</span>
 		<?php
