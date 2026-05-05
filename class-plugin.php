@@ -1448,7 +1448,7 @@ class Plugin
 			'wcf_widget_skins',
 			array(
 				'advance-pricing-table' => array( // widget file/dir name.
-					'label'       => __( 'Advanced Pricing Table', 'animation-addons-for-elementor-pro' ),
+					'label'       => __( 'Advanced Pricing Table', 'animation-addons-for-elementor' ),
 					'widget_name' => 'wcf--a-pricing-table',
 					'is_active'   => true,
 					'skins'       => array( // skin file names.

@@ -1237,13 +1237,13 @@ class Weather extends Widget_Base {
 		}
 
 		$current_temp = round( $current_data->main->temp );
-		$feels_like   = esc_html( $current_data->main->feels_like );
+		$feels_like   = $current_data->main->feels_like;
 		$current_desc = $current_data->weather[0]->description;
 		$current_icon = $current_data->weather[0]->icon;
 		$icon_url     = "https://openweathermap.org/img/wn/{$current_icon}.png";
 		?>
 
-        <div class="aae--weather style-<?php echo $settings['weather_style'] . ' ' . $settings['move_direction']; ?>">
+        <div class="aae--weather style-<?php echo esc_attr( $settings['weather_style'] . ' ' . $settings['move_direction'] ); ?>">
 			<?php if ( '2' === $settings['weather_style'] ) { ?>
                 <div class="weather-head">
                     <div class="left-wrap">
@@ -1252,14 +1252,14 @@ class Weather extends Widget_Base {
 							?>
                             <div class="location">
                                 <span class="icon"><?php Icons_Manager::render_icon( $settings['location_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
-								<?php echo $city; ?>
+								<?php echo esc_html( $city ); ?>
                             </div>
 							<?php
 						}
 						?>
                         <div class="temp">
-							<?php echo $current_temp; ?>
-                            <sup><?php echo $unit_symbol; ?></sup>
+							<?php echo esc_html( $current_temp ); ?>
+                            <sup><?php echo esc_html( $unit_symbol ); ?></sup>
                         </div>
 						<?php
 						if ( 'yes' === $settings['show_feel_like'] ) {
@@ -1268,7 +1268,7 @@ class Weather extends Widget_Base {
 								<?php if ( ! empty( $settings['feel_like_text'] ) ) { ?>
                                     <span><?php echo esc_html( $settings['feel_like_text'] ); ?></span>
 								<?php } ?>
-								<?php echo $feels_like; ?> <sup><?php echo $unit_symbol; ?></sup>
+								<?php echo esc_html( $feels_like ); ?> <sup><?php echo esc_html( $unit_symbol ); ?></sup>
                             </div>
 							<?php
 						}
@@ -1279,7 +1279,7 @@ class Weather extends Widget_Base {
 						if ( 'yes' === $settings['show_weather_icon'] ) {
 							?>
                             <div class="weather-img">
-                                <img src="<?php echo $icon_url; ?>" alt="<?php echo esc_html( $current_desc ); ?>">
+                                <img src="<?php echo esc_url( $icon_url ); ?>" alt="<?php echo esc_attr( $current_desc ); ?>">
                             </div>
 							<?php
 						}
@@ -1302,8 +1302,8 @@ class Weather extends Widget_Base {
 				?>
 			<?php } else { ?>
                 <div class="time-info">
-                    <div class="today"><?php echo date( 'l' ); ?></div>
-                    <div class="date"><?php echo date( 'F j, Y' ); ?></div>
+                    <div class="today"><?php echo esc_html( gmdate( 'l' ) ); ?></div>
+                    <div class="date"><?php echo esc_html( gmdate( 'F j, Y' ) ); ?></div>
                 </div>
                 <div class="weather-info">
                     <div class="temp-wrap">
@@ -1311,15 +1311,15 @@ class Weather extends Widget_Base {
 						if ( 'yes' === $settings['show_weather_icon'] ) {
 							?>
                             <div class="weather-img">
-                                <img src="<?php echo $icon_url; ?>"
-                                     alt="<?php echo esc_html( $current_desc ); ?>">
+                                <img src="<?php echo esc_url( $icon_url ); ?>"
+                                     alt="<?php echo esc_attr( $current_desc ); ?>">
                             </div>
 							<?php
 						}
 						?>
                         <div class="temp">
-							<?php echo $current_temp; ?>
-                            <sup><?php echo $unit_symbol; ?></sup>
+							<?php echo esc_html( $current_temp ); ?>
+                            <sup><?php echo esc_html( $unit_symbol ); ?></sup>
                         </div>
                     </div>
                     <div class="location-wrap">
@@ -1333,7 +1333,7 @@ class Weather extends Widget_Base {
 							?>
                             <div class="location">
                                 <span class="icon"><?php Icons_Manager::render_icon( $settings['location_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
-								<?php echo $city; ?>
+								<?php echo esc_html( $city ); ?>
                             </div>
 							<?php
 						}
@@ -1346,7 +1346,7 @@ class Weather extends Widget_Base {
 	}
 
 	protected function render_hourly_weather( $forecast_data, $unit_symbol ) {
-		$today = date( 'Y-m-d' );
+		$today = gmdate( 'Y-m-d' );
 		$count = 0;
 		?>
         <div class="hourly">
@@ -1355,14 +1355,14 @@ class Weather extends Widget_Base {
 				$entry_date = substr( $entry->dt_txt, 0, 10 );
 
 				if ( $entry_date === $today && $count < 4 ) {
-					$time = date( 'h:i A', strtotime( $entry->dt_txt ) );
+					$time = gmdate( 'h:i A', strtotime( $entry->dt_txt ) );
 					$temp = round( $entry->main->temp );
 					$icon = $entry->weather[0]->icon;
 					?>
                     <div class='hour-block'>
-                        <div class='hour-time'><?php echo $time; ?></div>
-                        <img src='https://openweathermap.org/img/wn/<?php echo $icon; ?>.png' alt='icon'/>
-                        <div class='hour-temp'><?php echo $temp; ?> <sup><?php echo $unit_symbol; ?></sup></div>
+                        <div class='hour-time'><?php echo esc_html( $time ); ?></div>
+                        <img src='<?php echo esc_url( 'https://openweathermap.org/img/wn/' . $icon . '.png' ); ?>' alt='icon'/>
+                        <div class='hour-temp'><?php echo esc_html( $temp ); ?> <sup><?php echo esc_html( $unit_symbol ); ?></sup></div>
                     </div>
 					<?php
 					$count ++;
@@ -1379,7 +1379,7 @@ class Weather extends Widget_Base {
 			<?php
 			$days = [];
 			foreach ( $forecast_data->list as $entry ) {
-				$date = date( 'Y-m-d', strtotime( $entry->dt_txt ) );
+				$date = gmdate( 'Y-m-d', strtotime( $entry->dt_txt ) );
 				if ( ! isset( $days[ $date ] ) ) {
 					$days[ $date ] = [
 						'temps' => [],
@@ -1396,7 +1396,7 @@ class Weather extends Widget_Base {
 					break;
 				}
 
-				$day_label = ( $i === 1 ) ? 'Today' : date( 'l', strtotime( $date ) );
+				$day_label = ( $i === 1 ) ? 'Today' : gmdate( 'l', strtotime( $date ) );
 				$avg_temp  = round( array_sum( $data['temps'] ) / count( $data['temps'] ) );
 				$min_temp  = round( min( $data['temps'] ) );
 				$max_temp  = round( max( $data['temps'] ) );
@@ -1404,12 +1404,12 @@ class Weather extends Widget_Base {
 
 				?>
                 <div class='fc-block'>
-                    <div class='fc-day'><?php echo $day_label; ?></div>
-                    <img src='https://openweathermap.org/img/wn/<?php echo $icon; ?>.png'
-                         alt='<?php echo $day_label; ?>'/>
+                    <div class='fc-day'><?php echo esc_html( $day_label ); ?></div>
+                    <img src='<?php echo esc_url( 'https://openweathermap.org/img/wn/' . $icon . '.png' ); ?>'
+                         alt='<?php echo esc_attr( $day_label ); ?>'/>
                     <div class='fc-temp'>
-                        <span class="max-temp"><?php echo $max_temp; ?> <sup><?php echo $unit_symbol; ?></sup></span>
-                        <span class="min-temp"><?php echo $min_temp; ?> <sup><?php echo $unit_symbol; ?></sup></span>
+                        <span class="max-temp"><?php echo esc_html( $max_temp ); ?> <sup><?php echo esc_html( $unit_symbol ); ?></sup></span>
+                        <span class="min-temp"><?php echo esc_html( $min_temp ); ?> <sup><?php echo esc_html( $unit_symbol ); ?></sup></span>
                     </div>
                 </div>
 				<?php
