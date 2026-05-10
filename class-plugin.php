@@ -1075,6 +1075,7 @@ class Plugin
 		}
 
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
+		require_once WCF_ADDONS_PATH . 'inc/aae-atomic-extender.php';
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
