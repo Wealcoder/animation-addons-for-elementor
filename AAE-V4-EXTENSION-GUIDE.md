@@ -243,6 +243,8 @@ Size_Prop_Type::make()->units( ['px', 'em', '%'] );
 | `window.elementor.$preview[0].contentDocument` | ✅ | Preview iframe DOM access |
 | `window.elementor.documents.getCurrent()` | ✅ | Current document container tree |
 | `window.elementor.on('preview:loaded', fn)` | ✅ | Preview iframe ready event |
+| `frame.contentWindow.addEventListener('elementor/element/render', fn)` | ✅ **Recommended** | Per-widget re-render event (`detail.id/type/element`) |
+| `frame.contentWindow.addEventListener('elementor/element/destroy', fn)` | ✅ | Per-widget removal event |
 | `window.elementor.channels.editor.on('change', fn)` | ⚠️ Some changes fire, not all v4 atomic ones |
 | `window.$e.commands.on('run:after', fn)` | ⚠️ Fires for many cases but **NOT** reliably for atomic widget settings changes |
 | `window.elementorV2` | ✅ New v4 React namespace |
@@ -274,24 +276,55 @@ function readSetting( container, key ) {
 }
 ```
 
-### 6.3 Live preview detection — recommended approach
+### 6.3 Live preview detection — official Elementor event
 
-Since `$e.commands.on` fails for atomic widget setting changes, **MutationObserver-ই reliable**:
+V4 atomic widgets dispatch a CustomEvent **on the preview iframe's window** every time React re-renders the widget. This is the canonical way to detect live changes — no MutationObserver hack needed.
+
+**Source:** `wp-content/plugins/elementor/assets/js/atomic-widgets-editor.js:1473`
 
 ```js
-function installObserver( rebuildFn ) {
-    var doc = window.elementor.$preview[0].contentDocument;
-    var debounce;
-    var mo = new MutationObserver( function () {
-        clearTimeout( debounce );
-        debounce = setTimeout( rebuildFn, 50 );  // debounce React rapid renders
-    });
-    mo.observe( doc.body, {
-        childList: true, subtree: true, attributes: true,
-        attributeFilter: ['data-interaction-id', 'class']
-    });
-}
+// What Elementor's atomic-element view fires internally:
+elementor.$preview[0].contentWindow.dispatchEvent(
+    new CustomEvent( 'elementor/element/render', {
+        detail: { id, type, element }
+    })
+);
+// Also: 'elementor/element/destroy' on widget removal.
 ```
+
+**Subscribe pattern (from your editor JS, runs in parent window):**
+
+```js
+function attachPreviewListeners() {
+    var frame = window.elementor && window.elementor.$preview && window.elementor.$preview[0];
+    if ( ! frame || ! frame.contentWindow ) {
+        return setTimeout( attachPreviewListeners, 200 );  // preview iframe not ready yet
+    }
+    // De-dupe in case preview reloads:
+    frame.contentWindow.removeEventListener( 'elementor/element/render', onRender );
+    frame.contentWindow.addEventListener( 'elementor/element/render', onRender );
+}
+
+function onRender( e ) {
+    // e.detail.id    → element id of the re-rendered widget
+    // e.detail.type  → elType (widget/section/container/etc.)
+    // e.detail.element → the actual DOM node in the iframe
+    applyMyChange( e.detail.id );
+}
+
+// Re-attach on every preview reload (preview can fully reload on document switch):
+window.elementor.on( 'preview:loaded', attachPreviewListeners );
+attachPreviewListeners();
+```
+
+⚠️ **Common confusion:** The event fires on `frame.contentWindow` (preview iframe's window object), NOT on parent `window` or `elementor` event channel. You MUST use `addEventListener` on the iframe contentWindow.
+
+⚠️ **Old approaches that don't work for v4 atomic widgets:**
+- `$e.commands.on('run:after')` — fires for SOME settings changes but NOT for v4 atomic widget settings changes specifically
+- `elementor.channels.editor.on('change')` — v3 backbone era, mostly doesn't fire in v4
+- `elementor:loaded` jQuery event — doesn't fire reliably in v4 React bootstrap
+
+**MutationObserver fallback** is acceptable if `elementor/element/render` is ever unavailable in your Elementor version, but it's strictly worse: noisy (fires for many unrelated mutations), needs debouncing, and you have to scan the full container tree to find what changed. Use the official event whenever possible.
 
 ### 6.4 Bootstrap pattern
 
@@ -410,15 +443,19 @@ Just `@keyframes` definitions. Loaded in BOTH frontend and preview iframe (via `
 
 ### JS layer — `assets/js/aae-atomic-extender.js`
 
-Editor-only bridge:
+Editor-only bridge — pure vanilla, no jQuery:
 1. Poll `window.elementor` until ready
-2. Subscribe to `preview:loaded` event for initial sync
-3. Install `MutationObserver` on preview iframe body (debounced 50ms)
-4. On any trigger: walk container tree → find `e-heading` → read `aae_animation` value → write scoped `<style>` block in preview iframe `<head>`
+2. Get the preview iframe (`window.elementor.$preview[0]`)
+3. Subscribe to `'elementor/element/render'` CustomEvent on the iframe's `contentWindow`
+4. On each event: read `e.detail.id` → look up the container → read `aae_animation` value → diff-update one rule in scoped `<style>` block in preview iframe `<head>`
+5. Re-attach listener on every `preview:loaded` (full preview reload throws away the iframe)
 
-### Why MutationObserver instead of `$e.commands`?
+### Why the official `elementor/element/render` event?
 
-`$e.commands.on('run:after')` doesn't fire for v4 atomic widget setting changes (verified — the `event $e cmd` log never appeared in our debug output). MutationObserver catches the React re-render of the widget DOM and triggers our rebuild reliably.
+V4 atomic widgets dispatch this CustomEvent internally on every React re-render (source: `atomic-widgets-editor.js:1473`). It gives us the exact element id that changed, so we can update one CSS rule instead of rebuilding the whole sheet. Earlier approaches we tried and rejected:
+- `$e.commands.on('run:after')` — never fires for v4 atomic widget settings changes
+- `elementor.channels.editor.on('change')` — v3-era event, mostly silent in v4
+- MutationObserver — works but noisy, needs debouncing, requires full tree walk on every fire
 
 ### Why scoped `<style>` block instead of inline element style?
 
@@ -442,8 +479,8 @@ V4 React re-renders the widget DOM on every settings change, **wiping any inline
 
 - **Target via `[data-interaction-id="{ID}"]`** in CSS selectors
 - **Use `the_content` filter** for frontend rendering — universal, fires for editor preview iframe too
-- **Use MutationObserver** for live editor preview — most reliable v4 detection
-- **Debounce MutationObserver callbacks** — React fires many micro-mutations, debounce 50ms
+- **Subscribe to `'elementor/element/render'` CustomEvent on the preview iframe's `contentWindow`** for live editor preview — Elementor's official internal event
+- **Re-attach the listener on every `preview:loaded`** — the iframe is replaced on full preview reload, your old listener goes with it
 - **Wrap registration in `elementor/init`** action — ensures atomic-widgets module loaded
 - **Check widget name in controls filter** — global filter, fires for ALL atomic widgets
 - **Enqueue styles in BOTH `wp_enqueue_scripts` AND `elementor/preview/enqueue_styles`** — frontend + preview iframe need same CSS
@@ -525,32 +562,39 @@ add_action( 'elementor/editor/after_enqueue_scripts', fn() => wp_enqueue_script(
 ```
 
 ```js
-// === JS: editor live preview bridge ===
-( function ( $ ) {
+// === JS: editor live preview bridge (vanilla, no jQuery) ===
+( function () {
     function bind() {
         if ( ! window.elementor ) return setTimeout( bind, 250 );
 
-        var doc, debounce;
-        function rebuild() {
-            doc = doc || window.elementor.$preview[0].contentDocument;
-            // ... walk elementor.documents.getCurrent().container, write <style> in doc.head
+        function attach() {
+            var frame = window.elementor.$preview && window.elementor.$preview[0];
+            if ( ! frame || ! frame.contentWindow ) return setTimeout( attach, 200 );
+
+            // De-dupe across preview reloads.
+            frame.contentWindow.removeEventListener( 'elementor/element/render', onRender );
+            frame.contentWindow.addEventListener( 'elementor/element/render', onRender );
         }
 
-        window.elementor.on( 'preview:loaded', rebuild );
-        new MutationObserver( function () {
-            clearTimeout( debounce );
-            debounce = setTimeout( rebuild, 50 );
-        }).observe( window.elementor.$preview[0].contentDocument.body, {
-            childList: true, subtree: true, attributes: true
-        });
+        function onRender( e ) {
+            // e.detail = { id, type, element }
+            var id = e.detail && e.detail.id;
+            if ( ! id ) return;
+            // … look up container by id, read your prop, write/update a scoped
+            //   rule in a <style> block in frame.contentDocument.head
+        }
+
+        window.elementor.on( 'preview:loaded', attach );
+        attach();
     }
-    $( bind );
-})( jQuery );
+    bind();
+})();
 ```
 
 ---
 
 **Version history:**
 - v1 (2026-05-10) — Initial guide based on Elementor 4.0.7 source. Animation extender example working.
+- v2 (2026-05-10) — Replaced MutationObserver recommendation with the official `elementor/element/render` CustomEvent dispatched on the preview iframe's `contentWindow` (source: `atomic-widgets-editor.js:1473`). Vanilla JS, no jQuery dependency.
 
 **Maintainer note:** Re-verify hook names + signatures every Elementor major version until Elementor publishes official v4 docs.

@@ -1,91 +1,88 @@
 /**
- * AAE — Atomic Heading Animation, editor live preview bridge.
+ * AAE — Atomic Heading Style, manual-apply via "▶ Re-render" button.
  *
- * Subscribes to v4 settings updates and rewrites a single <style> block in the
- * preview iframe head. The block survives React re-renders because it lives in
- * <head>, not in the widget DOM.
- *
- * Run `window.aaeDebug()` in console to dump diagnostic state.
+ * Mirrors the PHP prop config (inc/aae-atomic-extender.php). Each entry binds
+ * one v4 prop key to one CSS property. Dropdown change does NOT auto-apply —
+ * user must click the "▶ Re-render" button injected into the AAE Style
+ * section in the editor panel.
  */
-( function ( $ ) {
-	'use strict';
+( function attach() {
+	var frame = window.elementor && window.elementor.$preview && window.elementor.$preview[ 0 ];
+	if ( ! frame ) { return setTimeout( attach, 200 ); }
 
-	var TAG         = '[AAE]';
-	var STYLE_ID    = 'aae-atomic-anim';
-	var WIDGET_TYPE = 'e-heading';
-	var PROP_KEY    = 'aae_animation';
-	var ALLOWED     = [ 'fade-in', 'slide-up', 'scale-in' ];
+	var WIDGET        = 'e-heading';
+	var STYLE_ID      = 'aae-atomic-style';
+	var SECTION_LABEL = 'AAE Style';
+	var BTN_CLASS     = 'aae-replay-btn';
 
-	function getPreviewDoc() {
-		var p = window.elementor && window.elementor.$preview && window.elementor.$preview[ 0 ];
-		return p ? p.contentDocument : null;
+	// Whitelisted prop → CSS property + allowed values map. Mirrors PHP.
+	var STYLE_MAP = [
+		{ prop: 'aae_color',      css: 'background-color', allowed: [ '#FF3B30', '#007AFF', '#34C759' ] },
+		{ prop: 'aae_text_color', css: 'color',            allowed: [ '#FFFFFF', '#000000', '#FFD60A' ] },
+		{ prop: 'aae_border',     css: 'border',           allowed: [ '1px solid #000000', '2px dashed #FF3B30', '3px dotted #007AFF' ] },
+		{ prop: 'aae_radius',     css: 'border-radius',    allowed: [ '4px', '12px', '999px' ] },
+	];
+
+	function findContainer( root, id ) {
+		if ( ! root ) { return null; }
+		if ( root.id === id ) { return root; }
+		if ( ! root.children || ! root.children.forEach ) { return null; }
+		for ( var i = 0; i < root.children.length; i++ ) {
+			var f = findContainer( root.children[ i ], id );
+			if ( f ) { return f; }
+		}
+		return null;
 	}
 
-	function readValue( container ) {
-		if ( ! container ) { return ''; }
-
-		var v;
-		if ( container.settings && typeof container.settings.get === 'function' ) {
-			try { v = container.settings.get( PROP_KEY ); } catch ( e ) {}
-		}
-		if ( typeof v === 'undefined' && container.settings && container.settings.attributes ) {
-			v = container.settings.attributes[ PROP_KEY ];
-		}
-		if ( typeof v === 'undefined' && container.model && typeof container.model.get === 'function' ) {
-			try {
-				var s = container.model.get( 'settings' );
-				if ( s && typeof s.get === 'function' ) { v = s.get( PROP_KEY ); }
-				else if ( s && typeof s === 'object' ) { v = s[ PROP_KEY ]; }
-			} catch ( e ) {}
-		}
-
-		if ( v && typeof v === 'object' && 'value' in v ) {
-			v = v.value;
-		}
+	function readSetting( container, propKey ) {
+		if ( ! container || ! container.settings ) { return ''; }
+		var v = container.settings.get ? container.settings.get( propKey )
+			: ( container.settings.attributes && container.settings.attributes[ propKey ] );
+		if ( v && typeof v === 'object' && 'value' in v ) { v = v.value; }
+		console.log( container, propKey );
 		return ( typeof v === 'string' ) ? v.trim() : '';
 	}
 
-	function isHeading( c ) {
-		if ( ! c ) { return false; }
-		var t;
-		if ( c.model && typeof c.model.get === 'function' ) {
-			t = c.model.get( 'widgetType' ) || c.model.get( 'elType' );
-		}
-		if ( ! t && c.type ) { t = c.type; }
-		return t === WIDGET_TYPE;
-	}
+	function buildRule( id ) {
+		var doc = window.elementor.documents.getCurrent();
+		if ( ! doc || ! doc.container ) { return null; }
+		var found = findContainer( doc.container, id );
+		console.log( 'found element',found );
+		if ( ! found || ! found.model || found.model.get( 'widgetType' ) !== WIDGET ) { return null; }
 
-	function walk( c, fn ) {
-		if ( ! c ) { return; }
-		fn( c );
-		if ( c.children && c.children.forEach ) {
-			c.children.forEach( function ( x ) { walk( x, fn ); } );
-		}
-	}
-
-	function rebuild() {
-		var doc = getPreviewDoc();
-		if ( ! doc || ! doc.head ) {
-			console.log( TAG, 'rebuild aborted: no preview doc/head' );
-			return;
-		}
-
-		var current = window.elementor && window.elementor.documents && window.elementor.documents.getCurrent();
-		if ( ! current || ! current.container ) {
-			console.log( TAG, 'rebuild aborted: no current document container' );
-			return;
-		}
-
-		var rules    = [];
-		var headings = 0;
-		walk( current.container, function ( c ) {
-			if ( ! isHeading( c ) ) { return; }
-			headings++;
-			var v = readValue( c );
-			if ( ALLOWED.indexOf( v ) !== -1 ) {
-				rules.push( '[data-interaction-id="' + c.id + '"]{animation:aae-' + v + ' 0.6s ease-out both;}' );
-			}
+		// Debug — log every prop value read from this heading container.
+		var debug = { id: id };
+		STYLE_MAP.forEach( function ( entry ) {
+			debug[ entry.prop ] = readSetting( found, entry.prop ) || '(empty)';
 		} );
+		console.table( [ debug ] );
+
+		var decls = [ 'padding:8px 16px', 'display:inline-block' ];
+		var hasAny = false;
+		STYLE_MAP.forEach( function ( entry ) {
+			var v = readSetting( found, entry.prop );
+			var accepted = !! v && entry.allowed.indexOf( v ) !== -1;
+			console.log(
+				'[AAE]',
+				'prop=' + entry.prop,
+				'css=' + entry.css,
+				'value=', v || '(empty)',
+				accepted ? '✓ accepted' : '✗ rejected (empty or not in allowed list)'
+			);
+			if ( ! accepted ) { return; }
+			decls.push( entry.css + ':' + v );
+			hasAny = true;
+		} );
+
+		if ( ! hasAny ) { return ''; }
+		var rule = '[data-interaction-id="' + id + '"]{' + decls.join( ';' ) + ';}';
+		console.log( '[AAE] final CSS rule →', rule );
+		return rule;
+	}
+
+	function applyTo( id ) {
+		var doc = frame.contentDocument;
+		if ( ! doc || ! doc.head ) { return; }
 
 		var styleEl = doc.getElementById( STYLE_ID );
 		if ( ! styleEl ) {
@@ -93,102 +90,90 @@
 			styleEl.id = STYLE_ID;
 			doc.head.appendChild( styleEl );
 		}
-		styleEl.textContent = rules.join( '' );
 
-		console.log( TAG, 'rebuild done. headings=', headings, 'rules=', rules.length );
+		var rules = {};
+		var re = /\[data-interaction-id="([^"]+)"\][^}]+\}/g;
+		var m;
+		while ( ( m = re.exec( styleEl.textContent || '' ) ) ) { rules[ m[ 1 ] ] = m[ 0 ]; }
+
+		var rule = buildRule( id );
+		if ( rule ) { rules[ id ] = rule; } else { delete rules[ id ]; }
+
+		styleEl.textContent = Object.keys( rules ).map( function ( k ) { return rules[ k ]; } ).join( '' );
 	}
 
-	function bind() {
-		if ( ! window.elementor ) {
-			return setTimeout( bind, 250 );
-		}
-		console.log( TAG, 'bind ready. elementor=', !!window.elementor, '$e=', !!window.$e );
-
-		if ( typeof window.elementor.on === 'function' ) {
-			window.elementor.on( 'preview:loaded', function () {
-				console.log( TAG, 'event preview:loaded' );
-				setTimeout( rebuild, 200 );
-			} );
-		}
-
-		if ( window.elementor.channels && window.elementor.channels.editor ) {
-			window.elementor.channels.editor.on( 'change', function () {
-				console.log( TAG, 'event channels.editor change' );
-				rebuild();
-			} );
-		}
-
-		if ( window.$e && window.$e.commands && typeof window.$e.commands.on === 'function' ) {
-			window.$e.commands.on( 'run:after', function ( _component, command ) {
-				if ( command && command.indexOf( 'document/elements/settings' ) !== -1 ) {
-					console.log( TAG, 'event $e cmd', command );
-					rebuild();
-				}
-			} );
-		}
-
-		setTimeout( rebuild, 1000 );
-
-		var observerInstalled = false;
-		function installObserver() {
-			if ( observerInstalled ) { return; }
-			var doc = getPreviewDoc();
-			if ( ! doc || ! doc.body || typeof MutationObserver === 'undefined' ) {
-				return setTimeout( installObserver, 500 );
+	function applyAll() {
+		var current = window.elementor.documents.getCurrent();
+		if ( ! current || ! current.container ) { return; }
+		( function walk( c ) {
+			if ( ! c ) { return; }
+			if ( c.model && c.model.get( 'widgetType' ) === WIDGET && c.id ) {
+				applyTo( c.id );
 			}
-			var debounce;
-			var mo = new MutationObserver( function () {
-				clearTimeout( debounce );
-				debounce = setTimeout( function () {
-					console.log( TAG, 'event MutationObserver' );
-					rebuild();
-				}, 50 );
-			} );
-			mo.observe( doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'data-interaction-id', 'class' ] } );
-			observerInstalled = true;
-			console.log( TAG, 'MutationObserver installed on preview body' );
-		}
-		setTimeout( installObserver, 500 );
-		if ( typeof window.elementor.on === 'function' ) {
-			window.elementor.on( 'preview:loaded', installObserver );
-		}
-
-		console.log( TAG, 'subscribed. Type aaeDebug() to inspect state.' );
+			if ( c.children && c.children.forEach ) { c.children.forEach( walk ); }
+		} )( current.container );
 	}
 
-	window.aaeDebug = function () {
-		var out = {
-			elementor:     !! window.elementor,
-			$e_commands:   !! ( window.$e && window.$e.commands ),
-			channels:      !! ( window.elementor && window.elementor.channels && window.elementor.channels.editor ),
-			previewDoc:    !! getPreviewDoc(),
-			document:      null,
-			rootContainer: null,
-			headings:      [],
-		};
-
-		var current = window.elementor && window.elementor.documents && window.elementor.documents.getCurrent();
-		out.document = current ? current.id : null;
-		out.rootContainer = ( current && current.container ) ? 'present' : null;
-
-		if ( current && current.container ) {
-			walk( current.container, function ( c ) {
-				if ( ! isHeading( c ) ) { return; }
-				out.headings.push( {
-					id:    c.id,
-					value: readValue( c ),
-					settingsType: c.settings ? typeof c.settings : 'none',
-					hasGet: !! ( c.settings && typeof c.settings.get === 'function' ),
-				} );
-			} );
+	function findLabelElement() {
+		var walker = document.createTreeWalker( document.body, NodeFilter.SHOW_TEXT, null, false );
+		var node;
+		while ( ( node = walker.nextNode() ) ) {
+			if ( node.nodeValue && node.nodeValue.trim() === SECTION_LABEL ) {
+				return node.parentElement;
+			}
 		}
+		return null;
+	}
 
-		console.table( out.headings );
-		console.log( out );
-		console.log( 'Manual trigger: window.aaeRebuild()' );
-		return out;
-	};
-	window.aaeRebuild = rebuild;
+	function findSectionContainer( labelEl ) {
+		var c = labelEl;
+		for ( var i = 0; i < 10 && c && c !== document.body; i++ ) {
+			if ( c.clientWidth >= 220 && c.clientHeight >= 60 ) { return c; }
+			c = c.parentElement;
+		}
+		return labelEl.parentElement;
+	}
 
-	$( bind );
-} )( jQuery );
+	var injectInProgress = false;
+	function injectButton() {
+		if ( injectInProgress ) { return; }
+		if ( document.querySelector( '.' + BTN_CLASS ) ) { return; }
+
+		var labelEl = findLabelElement();
+		if ( ! labelEl ) { return; }
+		var container = findSectionContainer( labelEl );
+		if ( ! container ) { return; }
+
+		injectInProgress = true;
+		try {
+			var btn = document.createElement( 'button' );
+			btn.type = 'button';
+			btn.className = BTN_CLASS;
+			btn.textContent = '▶ Re-render';
+			btn.style.cssText = [
+				'display:block', 'width:calc(100% - 32px)', 'margin:12px 16px',
+				'padding:10px 12px', 'border:0', 'border-radius:4px',
+				'background:#111', 'color:#fff',
+				'font:600 12px/1.4 system-ui, sans-serif', 'cursor:pointer',
+				'box-shadow:0 2px 6px rgba(0,0,0,.15)',
+			].join( ';' );
+			btn.addEventListener( 'click', applyAll );
+			container.appendChild( btn );
+			console.log( '[AAE] Button injected into', container );
+		} finally {
+			injectInProgress = false;
+		}
+	}
+
+	var debounce;
+	new MutationObserver( function () {
+		clearTimeout( debounce );
+		debounce = setTimeout( injectButton, 100 );
+	} ).observe( document.body, { childList: true, subtree: true } );
+
+	injectButton();
+
+	window.aaeApplyAll = applyAll;
+	window.aaeForceInject = injectButton;
+	console.log('frontend extender loaded');
+} )();
