@@ -19,6 +19,8 @@ module.exports = {
     "modules/cpt-builder/main": "./src/modules/cpt-builder/main.js",
     "modules/nested-slider/editor/index":
       "./src/modules/nested-slider/editor/index.js",
+    "modules/atomic/frontend": "./src/modules/atomic/frontend.js",
+    "modules/atomic/editor-bridge": "./src/modules/atomic/editor-bridge.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
