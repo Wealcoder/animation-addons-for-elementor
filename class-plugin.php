@@ -402,7 +402,7 @@ class Plugin
 				'animated-heading'     => array(
 					'handler' => 'wcf--animated-heading',
 					'src'     => 'widgets/animated-heading.min.js',
-					'dep'     => array('gsap'),
+					'dep'     => defined('WCF_ADDONS_PRO_VERSION') ? array('gsap') : array(),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),

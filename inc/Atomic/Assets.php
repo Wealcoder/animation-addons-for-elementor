@@ -11,10 +11,13 @@ final class Assets {
 	const BUILD_DIR   = 'assets/build/modules/atomic/';
 
 	public function register(): void {
-		add_action( 'wp_enqueue_scripts',                     [ $this, 'enqueue_frontend' ] );
-		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_frontend' ] );
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_bridge' ] );
+		add_action( 'wp_enqueue_scripts',                     [ $this, 'enqueue_frontend' ], 100 );
+		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_frontend' ], 100 );
+		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_bridge' ], 100 );
 	}
+
+	
+	
 
 	public function enqueue_frontend(): void {
 		$asset = $this->load_asset( 'frontend' );

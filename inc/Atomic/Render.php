@@ -5,38 +5,146 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Atomic widgets don't honour `_wrapper` render attributes (their Twig
+ * templates render their own root tag) and `Attributes_Transformer` returns
+ * null at resolve time, so adding to `settings.attributes` is also a dead end.
+ *
+ * The reliable path is `elementor/widget/render_content`, which receives the
+ * already-rendered HTML and the widget instance — we splice our data-attrs
+ * into the first opening tag.
+ */
 final class Render {
 
 	public function register(): void {
-		add_filter( 'elementor/frontend/element/attributes', [ $this, 'inject_attributes' ], 10, 2 );
+		add_filter( 'elementor/widget/render_content', [ $this, 'inject_into_html' ], 10, 2 );
 	}
 
-	public function inject_attributes( array $attrs, $element ): array {
-		if ( ! is_object( $element ) || ! method_exists( $element, 'get_element_type' ) ) {
-			return $attrs;
+	public function inject_into_html( $html, $widget ): string {
+		if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_element_type' ) ) {
+			return $html;
 		}
 
-		if ( ! in_array( $element->get_element_type(), Bootstrap::target_element_types(), true ) ) {
-			return $attrs;
+		$type = $widget->get_element_type();
+
+		$is_text = in_array( $type, Schema::text_animation_widgets(), true );
+		$is_anim = in_array( $type, Bootstrap::target_element_types(), true );
+
+		if ( ! $is_text && ! $is_anim ) {
+			return $html;
 		}
 
-		$settings = method_exists( $element, 'get_atomic_settings' )
-			? $element->get_atomic_settings()
+		$settings = method_exists( $widget, 'get_atomic_settings' )
+			? $widget->get_atomic_settings()
 			: [];
 
-		$animation = $settings[ Schema::PROP_KEY ] ?? [];
-
-		if ( empty( $animation['effect'] ) || 'none' === $animation['effect'] ) {
-			return $attrs;
+		// Text-animation widgets may also carry regular animation settings —
+		// merge both attribute sets. Text attrs win on `data-aae-anim` since
+		// the text builder treats that as the legacy alias for its effect.
+		$attrs = [];
+		if ( $is_anim ) {
+			$attrs = array_merge( $attrs, $this->build_anim_attrs( $settings ) );
+		}
+		if ( $is_text ) {
+			$attrs = array_merge( $attrs, $this->build_text_attrs( $settings ) );
 		}
 
-		$attrs['data-aae-anim']     = esc_attr( $animation['effect'] );
-		$attrs['data-aae-trigger']  = esc_attr( $animation['trigger']  ?? 'in-view' );
-		$attrs['data-aae-duration'] = esc_attr( $animation['duration'] ?? '600' );
-		$attrs['data-aae-delay']    = esc_attr( $animation['delay']    ?? '0' );
-		$attrs['data-aae-easing']   = esc_attr( $animation['easing']   ?? 'power2.out' );
-		$attrs['data-aae-repeat']   = esc_attr( $animation['repeat']   ?? '0' );
+		if ( empty( $attrs ) ) {
+			return $html;
+		}
+
+		return $this->splice_attrs_into_first_tag( $html, $attrs );
+	}
+
+	private function build_anim_attrs( array $settings ): array {
+		$effect = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
+
+		if ( ! $effect || 'none' === $effect ) {
+			return [];
+		}
+
+		return [
+			'data-aae-anim'     => $effect,
+			'data-aae-trigger'  => $settings[ Schema::ANIM_TRIGGER ]  ?? 'in-view',
+			'data-aae-duration' => (string) ( $settings[ Schema::ANIM_DURATION ] ?? 600 ),
+			'data-aae-delay'    => (string) ( $settings[ Schema::ANIM_DELAY ]    ?? 0 ),
+			'data-aae-easing'   => $settings[ Schema::ANIM_EASING ]   ?? 'power2.out',
+			'data-aae-repeat'   => (string) ( $settings[ Schema::ANIM_REPEAT ]   ?? 0 ),
+		];
+	}
+
+	private function build_text_attrs( array $settings ): array {
+		$effect = $settings[ Schema::TEXT_EFFECT ] ?? 'none';
+
+		if ( ! $effect || 'none' === $effect ) {
+			return [];
+		}
+
+		// Every responsive setting → [ data-attr base, default value ].
+		// Desktop emits the bare attr; each active extra breakpoint emits "-{bp}"
+		// suffixed variants. Empty / null per-breakpoint values fall back to desktop.
+		$responsive_map = [
+			Schema::TEXT_EFFECT           => [ 'data-aae-text-anim',             'none' ],
+			Schema::TEXT_TRIGGER          => [ 'data-aae-text-trigger',          'on_scroll' ],
+			Schema::TEXT_TRIGGER_SELECTOR => [ 'data-aae-text-trigger-selector', '' ],
+			Schema::TEXT_WRAPPER          => [ 'data-aae-text-wrapper',          'default' ],
+			Schema::TEXT_WRAPPER_SELECTOR => [ 'data-aae-text-wrapper-selector', '' ],
+			Schema::TEXT_DELAY            => [ 'data-aae-text-delay',            0.15 ],
+			Schema::TEXT_DURATION         => [ 'data-aae-text-duration',         1 ],
+			Schema::TEXT_STAGGER          => [ 'data-aae-text-stagger',          0.02 ],
+			Schema::TEXT_TRANSLATE_X      => [ 'data-aae-text-translate-x',      20 ],
+			Schema::TEXT_TRANSLATE_Y      => [ 'data-aae-text-translate-y',      0 ],
+			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x' ],
+			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         -80 ],
+			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50' ],
+		];
+
+		// Non-responsive attrs (toggle + legacy alias).
+		$attrs = [
+			'data-aae-anim'               => $effect,
+			'data-aae-text-enable-editor' => ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ? '1' : '0',
+		];
+
+		$extra_bps = Schema::get_extra_breakpoints();
+
+		foreach ( $responsive_map as $base_key => [ $base_attr, $default ] ) {
+			$desktop_value = $settings[ $base_key ] ?? $default;
+			$attrs[ $base_attr ] = (string) $desktop_value;
+
+			foreach ( $extra_bps as $bp ) {
+				$prop  = Schema::breakpoint_prop( $base_key, $bp );
+				$value = $settings[ $prop ] ?? null;
+				if ( null === $value || '' === $value ) {
+					$value = $desktop_value; // inherit
+				}
+				$attrs[ $base_attr . '-' . $bp ] = (string) $value;
+			}
+		}
 
 		return $attrs;
+	}
+
+	/**
+	 * Splice key="value" pairs into the first opening tag of $html.
+	 * Uses a single regex with a callback so we never touch later tags.
+	 */
+	private function splice_attrs_into_first_tag( string $html, array $attrs ): string {
+		$serialized = '';
+		foreach ( $attrs as $key => $value ) {
+			$serialized .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+		}
+
+		$count = 0;
+		$out   = preg_replace_callback(
+			'/<([a-zA-Z][a-zA-Z0-9]*)\b/',
+			static function ( $matches ) use ( $serialized ) {
+				return $matches[0] . $serialized;
+			},
+			$html,
+			1, // only replace the first opening tag
+			$count
+		);
+
+		return $count > 0 && is_string( $out ) ? $out : $html;
 	}
 }
