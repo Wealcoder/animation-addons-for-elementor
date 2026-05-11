@@ -11,26 +11,41 @@ final class Assets {
 	const BUILD_DIR   = 'assets/build/modules/atomic/';
 
 	public function register(): void {
-		add_action( 'wp_enqueue_scripts',                     [ $this, 'enqueue_frontend' ], 100 );
-		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_frontend' ], 100 );
+		// Public frontend: register only. Render.php triggers wp_enqueue_script()
+		// per-widget when an animation actually applies. Editor preview keeps the
+		// blanket enqueue because the user may toggle effects on/off live and the
+		// runtime must already be loaded.
+		add_action( 'wp_enqueue_scripts',                     [ $this, 'register_frontend' ], 100 );
+		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_frontend' ],  100 );
 		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_bridge' ], 100 );
 	}
 
-	
-	
+	/**
+	 * Stable handle so Render.php (or any other call site that decides this
+	 * widget needs the runtime) can pass it to wp_enqueue_script().
+	 */
+	public static function frontend_handle(): string {
+		return self::HANDLE;
+	}
 
+	/** Public-frontend path: register the handle but do not enqueue. */
+	public function register_frontend(): void {
+		$asset = $this->load_asset( 'frontend' );
+		$deps  = $this->frontend_deps( $asset['dependencies'] );
+
+		wp_register_script(
+			self::HANDLE,
+			WCF_ADDONS_URL . self::BUILD_DIR . 'frontend.js',
+			$deps,
+			$asset['version'],
+			true
+		);
+	}
+
+	/** Editor preview path: always load the runtime (live editing needs it). */
 	public function enqueue_frontend(): void {
 		$asset = $this->load_asset( 'frontend' );
-
-		$deps = $asset['dependencies'];
-
-		if ( wp_script_is( 'gsap', 'registered' ) ) {
-			$deps[] = 'gsap';
-		}
-
-		if ( wp_script_is( 'ScrollTrigger', 'registered' ) ) {
-			$deps[] = 'ScrollTrigger';
-		}
+		$deps  = $this->frontend_deps( $asset['dependencies'] );
 
 		wp_enqueue_script(
 			self::HANDLE,
@@ -39,6 +54,17 @@ final class Assets {
 			$asset['version'],
 			true
 		);
+	}
+
+	/** Merge GSAP / ScrollTrigger into the dep list if they're registered. */
+	private function frontend_deps( array $deps ): array {
+		if ( wp_script_is( 'gsap', 'registered' ) ) {
+			$deps[] = 'gsap';
+		}
+		if ( wp_script_is( 'ScrollTrigger', 'registered' ) ) {
+			$deps[] = 'ScrollTrigger';
+		}
+		return $deps;
 	}
 
 	public function enqueue_editor_bridge(): void {

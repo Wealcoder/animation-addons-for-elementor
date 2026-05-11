@@ -1,6 +1,7 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
+use WCF_ADDONS\Atomic\Assets;
 use WCF_ADDONS\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -53,6 +54,15 @@ final class Render {
 
 		if ( empty( $attrs ) ) {
 			return $html;
+		}
+
+		// This widget actually carries an animation, so pull the runtime in.
+		// Safe to call repeatedly; WordPress dedupes. On the public frontend
+		// Assets::register_frontend() registered the handle without enqueuing
+		// — this line is the trigger. On the editor preview the handle is
+		// already enqueued, so wp_enqueue_script() is a no-op.
+		if ( ! is_admin() ) {
+			wp_enqueue_script( Assets::frontend_handle() );
 		}
 
 		return $this->splice_attrs_into_first_tag( $html, $attrs );
