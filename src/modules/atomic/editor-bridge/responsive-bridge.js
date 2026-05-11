@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { track } from './disposables';
+import { panelLabels } from './panel-rows';
 import { applyResponsiveVisibility } from './responsive-visibility';
 import { applyResponsivePlaceholders } from './responsive-placeholders';
 import { allowFloatStepsOnNumberInputs } from './float-step-fix';
@@ -22,9 +23,11 @@ export function queueResponsiveScan() {
 	responsiveScanQueued = true;
 	requestAnimationFrame(() => {
 		responsiveScanQueued = false;
-		applyResponsiveVisibility();
-		applyResponsivePlaceholders();
-		allowFloatStepsOnNumberInputs();
+		// Walk the panel once and share the label list across all 3 passes.
+		const labels = panelLabels();
+		applyResponsiveVisibility(labels);
+		applyResponsivePlaceholders(labels);
+		allowFloatStepsOnNumberInputs(labels);
 	});
 }
 

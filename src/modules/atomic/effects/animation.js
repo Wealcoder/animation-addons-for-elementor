@@ -42,10 +42,10 @@ function readRegular(el) {
 	return {
 		effect,
 		trigger:  el.dataset.aaeTrigger || 'in-view',
-		duration: (parseFloat(el.dataset.aaeDuration) || 600) / 1000,
-		delay:    (parseFloat(el.dataset.aaeDelay)    || 0)   / 1000,
+		duration: numOr(el.dataset.aaeDuration, 600) / 1000,
+		delay:    numOr(el.dataset.aaeDelay,    0)   / 1000,
 		easing:   el.dataset.aaeEasing || 'power2.out',
-		repeat:   parseInt(el.dataset.aaeRepeat, 10) || 0,
+		repeat:   numOr(el.dataset.aaeRepeat,   0),
 	};
 }
 

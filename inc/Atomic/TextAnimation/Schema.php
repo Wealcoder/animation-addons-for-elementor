@@ -5,6 +5,7 @@ use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manag
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use WCF_ADDONS\Atomic\Schema_Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -20,16 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * prop being inspected. effect = 'hide' removes the control from the panel.
  */
 final class Schema {
-
-	/* ---- regular animation prop names ---- */
-	const ANIM_EFFECT        = 'aae_anim_effect';
-	const ANIM_TRIGGER       = 'aae_anim_trigger';
-	const ANIM_DURATION      = 'aae_anim_duration';
-	const ANIM_DELAY         = 'aae_anim_delay';
-	const ANIM_EASING        = 'aae_anim_easing';
-	const ANIM_REPEAT        = 'aae_anim_repeat';
-	const ANIM_ENABLE_EDITOR = 'aae_anim_enable_editor';
-	const ANIM_PLAY_TOKEN    = 'aae_anim_play_token';
 
 	/* ---- text animation prop names ---- */
 	const TEXT_EFFECT           = 'aae_text_effect';
@@ -114,8 +105,13 @@ final class Schema {
 	/** Effects that expose Duration / Stagger (V3 excludes spin/invert). */
 	const TEXT_DURATION_EFFECTS = [ 'char', 'word', 'text_reveal', 'text_move', 'text_scale' ];
 
-	/** Effects that expose Transform-X / Transform-Y. */
+	/** Effects that expose Transform-X / Transform-Y (and Rotation / Transform-Origin). */
 	const TEXT_TRANSLATE_EFFECTS = [ 'char', 'word' ];
+
+	/** Single-effect families — named so Render.php / Schema deps don't carry string literals. */
+	const TEXT_INVERT_EFFECTS = [ 'text_invert' ];
+	const TEXT_SPIN_EFFECTS   = [ 'text_spin' ];
+	const TEXT_SCALE_EFFECTS  = [ 'text_scale' ];
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_animation_props' ] );
@@ -126,69 +122,12 @@ final class Schema {
 			return $schema;
 		}
 
-		/* ---------- regular animation ---------- */
-
-		$schema[ self::ANIM_EFFECT ] = String_Prop_Type::make()
-			->enum( self::effects() )
-			->default( 'none' );
-
-		$anim_active = $this->dep_ne( self::ANIM_EFFECT, 'none' );
-
-		$schema[ self::ANIM_TRIGGER ] = String_Prop_Type::make()
-			->enum( [ 'in-view', 'page-load', 'scroll-progress' ] )
-			->default( 'in-view' )
-			->set_dependencies( $anim_active );
-
-		$schema[ self::ANIM_DURATION ] = Number_Prop_Type::make()->float()
-			->default( 600 )
-			->set_dependencies( $anim_active );
-
-		$schema[ self::ANIM_DELAY ] = Number_Prop_Type::make()->float()
-			->default( 0 )
-			->set_dependencies( $anim_active );
-
-		$schema[ self::ANIM_EASING ] = String_Prop_Type::make()
-			->enum( [ 'none', 'power1.out', 'power2.out', 'power3.out', 'back.out', 'expo.out' ] )
-			->default( 'power2.out' )
-			->set_dependencies( $anim_active );
-
-		// Repeat count is integer — no .float() needed.
-		$schema[ self::ANIM_REPEAT ] = Number_Prop_Type::make()
-			->default( 0 )
-			->set_dependencies( $anim_active );
-
-		$schema[ self::ANIM_ENABLE_EDITOR ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies( $anim_active );
-
-		// Play Animation — only when an effect is selected AND Enable On Editor is ON.
-		// Switch_Control expects a Boolean bind; the JS shim in editor-bridge.js
-		// replaces its UI row with a "Play Now" button.
-		$schema[ self::ANIM_PLAY_TOKEN ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies(
-				Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-					->where( [
-						'operator' => 'ne',
-						'path'     => [ self::ANIM_EFFECT ],
-						'value'    => 'none',
-						'effect'   => 'hide',
-					] )
-					->where( [
-						'operator' => 'eq',
-						'path'     => [ self::ANIM_ENABLE_EDITOR ],
-						'value'    => true,
-						'effect'   => 'hide',
-					] )
-					->get()
-			);
-
 		/* ---------- text animation ---------- */
 
 		// EFFECT: top-level driver of all gating. Cannot itself depend on anything.
 		$this->register_responsive_string( $schema, self::TEXT_EFFECT, 'none', null, array_keys( self::text_effects() ) );
 
-		$text_active = $this->dep_in( self::TEXT_EFFECT, self::TEXT_ANIMATED_EFFECTS );
+		$text_active = Schema_Helpers::dep_in( self::TEXT_EFFECT, self::TEXT_ANIMATED_EFFECTS );
 
 		$this->register_responsive_string( $schema, self::TEXT_TRIGGER, 'on_scroll', $text_active, array_keys( self::text_triggers() ) );
 
@@ -227,11 +166,11 @@ final class Schema {
 		$this->register_responsive_string( $schema, self::TEXT_WRAPPER, 'default', $wrapper_deps, [ 'default', 'custom' ] );
 
 		// Custom wrapper selector only when wrapper = custom (on desktop — variants follow same gate).
-		$this->register_responsive_string( $schema, self::TEXT_WRAPPER_SELECTOR, '', $this->dep_eq( self::TEXT_WRAPPER, 'custom' ) );
+		$this->register_responsive_string( $schema, self::TEXT_WRAPPER_SELECTOR, '', Schema_Helpers::dep_eq( self::TEXT_WRAPPER, 'custom' ) );
 
-		$duration_deps  = $this->dep_in( self::TEXT_EFFECT, self::TEXT_DURATION_EFFECTS );
-		$translate_deps = $this->dep_in( self::TEXT_EFFECT, self::TEXT_TRANSLATE_EFFECTS );
-		$text_move_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_move' );
+		$duration_deps  = Schema_Helpers::dep_in( self::TEXT_EFFECT, self::TEXT_DURATION_EFFECTS );
+		$translate_deps = Schema_Helpers::dep_in( self::TEXT_EFFECT, self::TEXT_TRANSLATE_EFFECTS );
+		$text_move_deps = Schema_Helpers::dep_eq( self::TEXT_EFFECT, 'text_move' );
 
 		// Per-setting dependency map — desktop and all per-breakpoint variants share these.
 		$deps_by_base = [
@@ -335,13 +274,13 @@ final class Schema {
 
 		/* ---------- text-invert specific (effect = text_invert) ---------- */
 
-		$invert_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_invert' );
+		$invert_deps = Schema_Helpers::dep_eq( self::TEXT_EFFECT, 'text_invert' );
 		$this->register_responsive_string( $schema, self::TEXT_INVERT_START, 'top 85%',       $invert_deps );
 		$this->register_responsive_string( $schema, self::TEXT_INVERT_END,   'bottom center', $invert_deps );
 
 		/* ---------- text-spin specific (effect = text_spin) ---------- */
 
-		$spin_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_spin' );
+		$spin_deps = Schema_Helpers::dep_eq( self::TEXT_EFFECT, 'text_spin' );
 
 		// Spin color — single hex string, not responsive (v3 had no responsive on it).
 		$schema[ self::TEXT_SPIN_COLOR ] = String_Prop_Type::make()
@@ -384,7 +323,7 @@ final class Schema {
 
 		/* ---------- text-scale specific (effect = text_scale) ---------- */
 
-		$scale_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_scale' );
+		$scale_deps = Schema_Helpers::dep_eq( self::TEXT_EFFECT, 'text_scale' );
 
 		$this->register_responsive_string( $schema, self::TEXT_SCALE_EASE,  'back',  $scale_deps, array_keys( self::scale_eases() ) );
 		$this->register_responsive_number( $schema, self::TEXT_SCALE_NUM,   1.5,     $scale_deps );
@@ -463,49 +402,7 @@ final class Schema {
 		}
 	}
 
-	/* ---------- dependency helpers ---------- */
-
-	private function dep_eq( string $source, $value ): array {
-		return Dependency_Manager::make()
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ $source ],
-				'value'    => $value,
-				'effect'   => 'hide',
-			] )
-			->get();
-	}
-
-	private function dep_ne( string $source, $value ): array {
-		return Dependency_Manager::make()
-			->where( [
-				'operator' => 'ne',
-				'path'     => [ $source ],
-				'value'    => $value,
-				'effect'   => 'hide',
-			] )
-			->get();
-	}
-
-	private function dep_in( string $source, array $values ): array {
-		return Dependency_Manager::make()
-			->where( [
-				'operator' => 'in',
-				'path'     => [ $source ],
-				'value'    => $values,
-				'effect'   => 'hide',
-			] )
-			->get();
-	}
-
 	/* ---------- option lists ---------- */
-
-	public static function effects(): array {
-		return [
-			'none', 'fadeIn', 'fadeInUp', 'fadeInDown', 'fadeInLeft', 'fadeInRight',
-			'slideUp', 'slideDown', 'zoomIn', 'zoomOut', 'rotateIn', 'flipInX', 'flipInY',
-		];
-	}
 
 	public static function text_effects(): array {
 		return [

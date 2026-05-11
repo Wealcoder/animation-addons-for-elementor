@@ -118,7 +118,7 @@ function scan(root) {
 
 	for (const kind of KINDS) {
 		// Skip elements that an earlier kind already bound (same root may carry
-		// multiple data-attrs — e.g. text widgets also get data-aae-anim).
+		// multiple dispatch attrs when both Regular and Text effects are set).
 		const skipFlags = KINDS
 			.filter((k) => k !== kind && KINDS.indexOf(k) < KINDS.indexOf(kind))
 			.map((k) => `:not(.${k.boundFlag})`)
