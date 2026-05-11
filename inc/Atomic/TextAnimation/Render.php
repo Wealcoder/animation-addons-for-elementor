@@ -1,7 +1,6 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
-use WCF_ADDONS\Atomic\Assets;
 use WCF_ADDONS\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -56,13 +55,13 @@ final class Render {
 			return $html;
 		}
 
-		// This widget actually carries an animation, so pull the runtime in.
-		// Safe to call repeatedly; WordPress dedupes. On the public frontend
-		// Assets::register_frontend() registered the handle without enqueuing
-		// — this line is the trigger. On the editor preview the handle is
-		// already enqueued, so wp_enqueue_script() is a no-op.
+		// This widget actually carries a text or regular animation, so pull
+		// the matching effect bundle in. Its dependency chain (declared in
+		// Assets.php) automatically also enqueues the core runtime. Safe to
+		// call repeatedly; WordPress dedupes. On the editor preview every
+		// bundle is already enqueued, so this is a no-op there.
 		if ( ! is_admin() ) {
-			wp_enqueue_script( Assets::frontend_handle() );
+			wp_enqueue_script( 'aae-effect-animation' );
 		}
 
 		return $this->splice_attrs_into_first_tag( $html, $attrs );
