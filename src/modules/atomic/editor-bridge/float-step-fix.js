@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { rowFromLabel, originalLabelText } from './panel-rows';
+import { rowFromLabel, originalLabelText, matchSuffix, panelLabels } from './panel-rows';
 
 /**
  * Elementor's atomic Number_Control ships with `step="1"` on its native input,
@@ -22,10 +22,12 @@ const FLOAT_LABEL_BASES = new Set([
 ]);
 
 export function allowFloatStepsOnNumberInputs() {
-	const labels = document.querySelectorAll('label, .MuiFormLabel-root, .MuiTypography-root');
+	const labels = panelLabels();
 	for (const label of labels) {
-		const text = originalLabelText(label);
-		if (!FLOAT_LABEL_BASES.has(text)) continue;
+		const text   = originalLabelText(label);
+		const suffix = matchSuffix(text);
+		const base   = suffix ? text.slice(0, -suffix.length).trim() : text;
+		if (!FLOAT_LABEL_BASES.has(base)) continue;
 
 		const row = rowFromLabel(label);
 		if (!row) continue;

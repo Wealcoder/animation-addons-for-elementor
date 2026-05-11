@@ -4,6 +4,17 @@ import { PRESETS, RESET_TO } from '../presets';
 import { getGsap, getScrollTrigger, pickResponsive } from '../common';
 
 /**
+ * Parse a numeric data-attr while respecting the schema default. `|| fallback`
+ * would also replace a legitimate 0 — we want "attr missing OR not a number
+ * → fallback", but a real 0 should pass through.
+ */
+function numOr(raw, fallback) {
+	if (raw === undefined || raw === null || raw === '') return fallback;
+	const n = parseFloat(raw);
+	return Number.isFinite(n) ? n : fallback;
+}
+
+/**
  * Animation Effect Bundle — text + regular
  *
  * Self-registers with the core runtime (window.AAERegistry) when this file
@@ -108,13 +119,15 @@ function readText(el) {
 		triggerSelector: pickResponsive(el, 'aaeTextTriggerSelector') || '',
 		wrapper:         pickResponsive(el, 'aaeTextWrapper')         || 'default',
 		wrapperSelector: pickResponsive(el, 'aaeTextWrapperSelector') || '',
-		delay:           parseFloat(pickResponsive(el, 'aaeTextDelay'))      || 0,
-		duration:        parseFloat(pickResponsive(el, 'aaeTextDuration'))   || 1,
-		stagger:         parseFloat(pickResponsive(el, 'aaeTextStagger'))    || 0.02,
-		translateX:      parseFloat(pickResponsive(el, 'aaeTextTranslateX')) || 0,
-		translateY:      parseFloat(pickResponsive(el, 'aaeTextTranslateY')) || 0,
+		// Defaults match Schema::RESPONSIVE_NUMBER_SETTINGS — Render.php omits
+		// attrs whose value equals the default, so these fallbacks restore them.
+		delay:           numOr(pickResponsive(el, 'aaeTextDelay'),      0.15),
+		duration:        numOr(pickResponsive(el, 'aaeTextDuration'),   1),
+		stagger:         numOr(pickResponsive(el, 'aaeTextStagger'),    0.02),
+		translateX:      numOr(pickResponsive(el, 'aaeTextTranslateX'), 20),
+		translateY:      numOr(pickResponsive(el, 'aaeTextTranslateY'), 0),
 		rotationDir:     pickResponsive(el, 'aaeTextRotationDir')     || 'x',
-		rotation:        parseFloat(pickResponsive(el, 'aaeTextRotation'))   || 0,
+		rotation:        numOr(pickResponsive(el, 'aaeTextRotation'),  -80),
 		transformOrigin: pickResponsive(el, 'aaeTextTransformOrigin') || 'top center -50',
 	};
 }

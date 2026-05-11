@@ -4,6 +4,7 @@ import { getPreviewWindow, getSelectedContainer } from './helpers';
 import { featureFor } from './features';
 import { applySettingsToDom, replayInPreview } from './settings-bridge';
 import { track } from './disposables';
+import { panelLabels } from './panel-rows';
 
 /**
  * "Play Animation" row → "Play Now" button morpher.
@@ -93,8 +94,7 @@ function morphRowToButton(row) {
 }
 
 function scanPanelForPlayButton() {
-	const labels = document.querySelectorAll('label, .MuiFormLabel-root, .MuiTypography-root');
-	for (const label of labels) {
+	for (const label of panelLabels()) {
 		if ((label.textContent || '').trim() !== PLAY_LABEL_TEXT) continue;
 		const row =
 			label.closest('[data-control-id]')

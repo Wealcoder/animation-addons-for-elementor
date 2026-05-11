@@ -18,6 +18,26 @@ import { ALL_SUFFIXES } from './responsive-config';
  */
 
 /**
+ * All atomic control-row labels currently in the DOM.
+ *
+ * Scoped to descendants of `[data-type="settings-field"]` — that's the
+ * atomic wrapper around every actual control. Without this scope, queries
+ * like `MuiTypography-root` would catch sidebar tab names, section headers,
+ * panel breadcrumbs, etc. — and the visibility/strip passes would mangle
+ * the panel chrome whenever a header's text happened to collide with a
+ * known control label (e.g. an "Animation" heading).
+ */
+export function panelLabels() {
+	const wrappers = document.querySelectorAll('[data-type="settings-field"]');
+	const out = [];
+	for (const w of wrappers) {
+		const label = w.querySelector('label, .MuiFormLabel-root');
+		if (label) out.push(label);
+	}
+	return out;
+}
+
+/**
  * Walk up from a label DOM node to its full row container — the inner
  * MuiBox-root that Elementor toggles for show/hide. Falls back to the
  * legacy selectors for non-atomic panels.

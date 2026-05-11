@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { RESPONSIVE_SUFFIX_BY_MODE, currentDeviceMode } from './responsive-config';
-import { rowFromLabel, matchSuffix, stripVisibleSuffix, originalLabelText } from './panel-rows';
+import { rowFromLabel, matchSuffix, stripVisibleSuffix, originalLabelText, panelLabels } from './panel-rows';
 
 /**
  * Per-breakpoint row visibility.
@@ -17,7 +17,7 @@ export function applyResponsiveVisibility() {
 	const mode         = currentDeviceMode();
 	const activeSuffix = RESPONSIVE_SUFFIX_BY_MODE[mode] || null; // null = desktop
 
-	const labels = document.querySelectorAll('label, .MuiFormLabel-root, .MuiTypography-root');
+	const labels = panelLabels();
 
 	// Pass 1: collect base labels that have any breakpoint variant, so we can
 	// hide the corresponding desktop row when a non-desktop mode is active.

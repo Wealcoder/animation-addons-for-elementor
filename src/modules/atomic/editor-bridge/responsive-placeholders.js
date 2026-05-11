@@ -16,6 +16,7 @@ import {
 	isSelectRow,
 	inputFromRow,
 	selectDisplayCell,
+	panelLabels,
 } from './panel-rows';
 
 /**
@@ -93,7 +94,7 @@ export function applyResponsivePlaceholders() {
 	const container = getSelectedContainer();
 	if (!container?.settings) return;
 
-	const labels = document.querySelectorAll('label, .MuiFormLabel-root, .MuiTypography-root');
+	const labels = panelLabels();
 	for (const label of labels) {
 		const text = originalLabelText(label);
 		if (!text.endsWith(activeSuffix)) continue;
