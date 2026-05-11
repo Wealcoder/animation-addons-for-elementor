@@ -82,11 +82,8 @@ final class Render {
 			return [];
 		}
 
-		// Every responsive setting → [ data-attr base, default value ].
-		// Desktop emits the bare attr; each active extra breakpoint emits "-{bp}"
-		// suffixed variants. Empty / null per-breakpoint values fall back to desktop.
-		$responsive_map = [
-			Schema::TEXT_EFFECT           => [ 'data-aae-text-anim',             'none' ],
+		// Every prop → [ data-attr name, default value ]. Single emission, no per-breakpoint variants.
+		$attr_map = [
 			Schema::TEXT_TRIGGER          => [ 'data-aae-text-trigger',          'on_scroll' ],
 			Schema::TEXT_TRIGGER_SELECTOR => [ 'data-aae-text-trigger-selector', '' ],
 			Schema::TEXT_WRAPPER          => [ 'data-aae-text-wrapper',          'default' ],
@@ -122,9 +119,10 @@ final class Render {
 			Schema::TEXT_SCALE_BREAK      => [ 'data-aae-text-scale-break',      'lines' ],
 		];
 
-		// Non-responsive attrs (toggle + legacy alias + non-responsive v3 controls).
+		// Booleans + non-mapped attrs.
 		$attrs = [
 			'data-aae-anim'               => $effect,
+			'data-aae-text-anim'          => $effect,
 			'data-aae-text-enable-editor' => ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ? '1' : '0',
 			'data-aae-text-markers'       => ! empty( $settings[ Schema::TEXT_MARKERS ] )        ? 'true' : 'false',
 			'data-aae-text-scrub'         => ! empty( $settings[ Schema::TEXT_SCRUB ] )          ? 'yes'  : '',
@@ -132,20 +130,8 @@ final class Render {
 			'data-aae-text-spin-toggle'   => is_string( $settings[ Schema::TEXT_SPIN_TOGGLE ] ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_TOGGLE ] : 'play none none reverse',
 		];
 
-		$extra_bps = Schema::get_extra_breakpoints();
-
-		foreach ( $responsive_map as $base_key => [ $base_attr, $default ] ) {
-			$desktop_value = $settings[ $base_key ] ?? $default;
-			$attrs[ $base_attr ] = (string) $desktop_value;
-
-			foreach ( $extra_bps as $bp ) {
-				$prop  = Schema::breakpoint_prop( $base_key, $bp );
-				$value = $settings[ $prop ] ?? null;
-				if ( null === $value || '' === $value ) {
-					$value = $desktop_value; // inherit
-				}
-				$attrs[ $base_attr . '-' . $bp ] = (string) $value;
-			}
+		foreach ( $attr_map as $prop_key => [ $attr_name, $default ] ) {
+			$attrs[ $attr_name ] = (string) ( $settings[ $prop_key ] ?? $default );
 		}
 
 		return $attrs;
