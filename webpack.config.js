@@ -19,8 +19,13 @@ module.exports = {
     "modules/cpt-builder/main": "./src/modules/cpt-builder/main.js",
     "modules/nested-slider/editor/index":
       "./src/modules/nested-slider/editor/index.js",
-    "modules/atomic/frontend": "./src/modules/atomic/frontend.js",
+    // Core runtime — always loaded (when any AAE effect is on the page).
+    // Exposes window.AAERegistry that every effect bundle registers into.
+    "modules/atomic/common": "./src/modules/atomic/common.js",
     "modules/atomic/editor-bridge": "./src/modules/atomic/editor-bridge.js",
+    // Per-effect bundles. Each is loaded conditionally by Render.php only
+    // when a widget on the page actually uses that effect.
+    "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
