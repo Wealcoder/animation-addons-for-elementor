@@ -175,7 +175,7 @@ function applySettingsToDom(container) {
 		const desktopValue = desktopByAttr[baseAttr];
 
 		for (const bp of ALL_BREAKPOINT_KEYS) {
-			const variantKey  = base + '_' + bp;
+			const variantKey = base + '_' + bp;
 			const variantAttr = baseAttr + '-' + bp;
 
 			let value = unwrap(settings[variantKey]);
@@ -467,12 +467,12 @@ function startPanelObserver() {
  * is the device-mode value Elementor's channel emits.
  */
 const RESPONSIVE_SUFFIX_BY_MODE = {
-	widescreen:   '(Widescreen)',
-	laptop:       '(Laptop)',
+	widescreen: '(Widescreen)',
+	laptop: '(Laptop)',
 	tablet_extra: '(Tablet Extra)',
-	tablet:       '(Tablet)',
+	tablet: '(Tablet)',
 	mobile_extra: '(Mobile Extra)',
-	mobile:       '(Mobile)',
+	mobile: '(Mobile)',
 };
 
 /** Every suffix string we might encounter, ordered longest-first so " (Tablet Extra)"
@@ -648,7 +648,7 @@ function allowFloatStepsOnNumberInputs() {
 
 /** True if the row contains a select-like control (MUI / native / aria combobox). */
 function isSelectRow(row) {
-	return !! (
+	return !!(
 		row.querySelector('[role="combobox"]')
 		|| row.querySelector('[role="listbox"]')
 		|| row.querySelector('.MuiSelect-select')
@@ -778,9 +778,9 @@ function applyResponsivePlaceholders() {
 		const row = rowFromLabel(label);
 		if (!row) continue;
 
-		const ownKey   = base + '_' + mode;
+		const ownKey = base + '_' + mode;
 		const ownValue = readSetting(container, ownKey);
-		const hasOwn   = !isEmptyValue(ownValue);
+		const hasOwn = !isEmptyValue(ownValue);
 
 		const parentVal = cascadedParentValue(container, base, mode);
 
@@ -837,19 +837,19 @@ const AAE_RESPONSIVE_BASES = [
 // Maps the base-label (label text minus " (Tablet)"/"(Mobile)" suffix) to its
 // schema prop name. Used to look up the cascaded parent value for placeholders.
 const LABEL_TO_BASE = {
-	'Animation':                'aae_text_effect',
-	'Trigger':                  'aae_text_trigger',
-	'Trigger Selector':         'aae_text_trigger_selector',
-	'Text Wrapper':             'aae_text_wrapper',
-	'Custom Wrapper Selector':  'aae_text_wrapper_selector',
-	'Delay':                    'aae_text_delay',
-	'Duration':                 'aae_text_duration',
-	'Stagger':                  'aae_text_stagger',
-	'Transform-X':              'aae_text_translate_x',
-	'Transform-Y':              'aae_text_translate_y',
-	'Rotation Direction':       'aae_text_rotation_dir',
-	'Rotation Value':           'aae_text_rotation',
-	'Transform Origin':         'aae_text_transform_origin',
+	'Animation': 'aae_text_effect',
+	'Trigger': 'aae_text_trigger',
+	'Trigger Selector': 'aae_text_trigger_selector',
+	'Text Wrapper': 'aae_text_wrapper',
+	'Custom Wrapper Selector': 'aae_text_wrapper_selector',
+	'Delay': 'aae_text_delay',
+	'Duration': 'aae_text_duration',
+	'Stagger': 'aae_text_stagger',
+	'Transform-X': 'aae_text_translate_x',
+	'Transform-Y': 'aae_text_translate_y',
+	'Rotation Direction': 'aae_text_rotation_dir',
+	'Rotation Value': 'aae_text_rotation',
+	'Transform Origin': 'aae_text_transform_origin',
 };
 
 // Human-readable labels for select option values — used to render the
@@ -866,7 +866,7 @@ const HINT_VALUE_LABELS = {
 		play_with_scroll: 'Play With Scroll',
 		mouseover: 'On Hover', click: 'On Click',
 	},
-	aae_text_wrapper:      { default: 'Default', custom: 'Custom' },
+	aae_text_wrapper: { default: 'Default', custom: 'Custom' },
 	aae_text_rotation_dir: { x: 'X', y: 'Y' },
 };
 
@@ -877,12 +877,12 @@ function humanLabelFor(base, value) {
 // Cascade: for each non-desktop mode, list of parent breakpoint keys to walk
 // looking for the first non-empty value. Matches Schema::BREAKPOINT_LABELS order.
 const PARENT_CASCADE = {
-	mobile:       [ 'mobile_extra', 'tablet', 'tablet_extra', 'laptop', 'desktop' ],
-	mobile_extra: [ 'tablet', 'tablet_extra', 'laptop', 'desktop' ],
-	tablet:       [ 'tablet_extra', 'laptop', 'desktop' ],
-	tablet_extra: [ 'laptop', 'desktop' ],
-	laptop:       [ 'desktop' ],
-	widescreen:   [ 'desktop' ],
+	mobile: ['mobile_extra', 'tablet', 'tablet_extra', 'laptop', 'desktop'],
+	mobile_extra: ['tablet', 'tablet_extra', 'laptop', 'desktop'],
+	tablet: ['tablet_extra', 'laptop', 'desktop'],
+	tablet_extra: ['laptop', 'desktop'],
+	laptop: ['desktop'],
+	widescreen: ['desktop'],
 };
 
 function isEmptyValue(v) {
@@ -923,7 +923,7 @@ function autoInheritOnDeviceChange() {
 		let inheritedType = 'string';
 		for (const parent of cascade) {
 			const parentKey = (parent === 'desktop') ? base : (base + '_' + parent);
-			const wrapped   = readWrapped(container, parentKey);
+			const wrapped = readWrapped(container, parentKey);
 			const unwrapped = (wrapped && typeof wrapped === 'object' && '$$type' in wrapped) ? wrapped.value : wrapped;
 			if (!isEmptyValue(unwrapped)) {
 				inheritedValue = unwrapped;
@@ -943,9 +943,9 @@ function autoInheritOnDeviceChange() {
 		// Coerce the value to match the inherited $$type so atomic resolver accepts it.
 		let castValue;
 		switch (inheritedType) {
-			case 'number':  castValue = Number(inheritedValue); break;
+			case 'number': castValue = Number(inheritedValue); break;
 			case 'boolean': castValue = Boolean(inheritedValue); break;
-			default:        castValue = String(inheritedValue);
+			default: castValue = String(inheritedValue);
 		}
 
 		container.settings.set(targetKey, { $$type: inheritedType, value: castValue });
@@ -1018,3 +1018,4 @@ window.__aaeAtomicBridge = {
 	getActiveContainer: () => activeContainer,
 	getFeatures: () => FEATURES,
 };
+

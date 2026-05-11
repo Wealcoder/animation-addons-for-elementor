@@ -29,6 +29,7 @@ final class Schema {
 	const ANIM_EASING        = 'aae_anim_easing';
 	const ANIM_REPEAT        = 'aae_anim_repeat';
 	const ANIM_ENABLE_EDITOR = 'aae_anim_enable_editor';
+	const ANIM_PLAY_TOKEN    = 'aae_anim_play_token';
 
 	/* ---- text animation prop names ---- */
 	const TEXT_EFFECT           = 'aae_text_effect';
@@ -45,6 +46,7 @@ final class Schema {
 	const TEXT_ROTATION         = 'aae_text_rotation';
 	const TEXT_TRANSFORM_ORIGIN = 'aae_text_transform_origin';
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
+	const TEXT_PLAY_TOKEN       = 'aae_text_play_token';
 
 	/* ---- scroll trigger settings (wrapper=custom + scroll/play_with_scroll) ---- */
 	const TEXT_START_TRIGGER  = 'aae_text_start_trigger';   // v3 aae_anim_txt_s_t
@@ -159,6 +161,28 @@ final class Schema {
 			->default( false )
 			->set_dependencies( $anim_active );
 
+		// Play Animation — only when an effect is selected AND Enable On Editor is ON.
+		// Switch_Control expects a Boolean bind; the JS shim in editor-bridge.js
+		// replaces its UI row with a "Play Now" button.
+		$schema[ self::ANIM_PLAY_TOKEN ] = Boolean_Prop_Type::make()
+			->default( false )
+			->set_dependencies(
+				Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+					->where( [
+						'operator' => 'ne',
+						'path'     => [ self::ANIM_EFFECT ],
+						'value'    => 'none',
+						'effect'   => 'hide',
+					] )
+					->where( [
+						'operator' => 'eq',
+						'path'     => [ self::ANIM_ENABLE_EDITOR ],
+						'value'    => true,
+						'effect'   => 'hide',
+					] )
+					->get()
+			);
+
 		/* ---------- text animation ---------- */
 
 		// EFFECT: top-level driver of all gating. Cannot itself depend on anything.
@@ -235,6 +259,28 @@ final class Schema {
 		$schema[ self::TEXT_ENABLE_EDITOR ] = Boolean_Prop_Type::make()
 			->default( false )
 			->set_dependencies( $text_active );
+
+		// Play Animation — only when a text effect is animated AND Enable On Editor is ON.
+		// Switch_Control expects a Boolean bind; the JS shim in editor-bridge.js
+		// replaces its UI row with a "Play Now" button.
+		$schema[ self::TEXT_PLAY_TOKEN ] = Boolean_Prop_Type::make()
+			->default( false )
+			->set_dependencies(
+				Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+					->where( [
+						'operator' => 'in',
+						'path'     => [ self::TEXT_EFFECT ],
+						'value'    => self::TEXT_ANIMATED_EFFECTS,
+						'effect'   => 'hide',
+					] )
+					->where( [
+						'operator' => 'eq',
+						'path'     => [ self::TEXT_ENABLE_EDITOR ],
+						'value'    => true,
+						'effect'   => 'hide',
+					] )
+					->get()
+			);
 
 		/* ---------- scroll trigger settings (wrapper=custom + scroll/play_with_scroll) ---------- */
 

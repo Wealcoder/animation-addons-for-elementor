@@ -107,6 +107,19 @@ final class Assets {
 		return $deps;
 	}
 
+	/** Editor-only: enqueues the live-edit bridge that mirrors settings to the preview iframe. */
+	public function enqueue_editor_bridge(): void {
+		$asset = $this->load_asset( 'editor-bridge' );
+
+		wp_enqueue_script(
+			self::HANDLE . '-editor-bridge',
+			WCF_ADDONS_URL . self::BUILD_DIR . 'editor-bridge.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+	}
+
 	private function load_asset( string $entry ): array {
 		$file = WCF_ADDONS_PATH . self::BUILD_DIR . $entry . '.asset.php';
 
