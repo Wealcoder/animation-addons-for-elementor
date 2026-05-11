@@ -1,8 +1,6 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
-use WCF_ADDONS\Atomic\Bootstrap;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -29,10 +27,7 @@ final class Render {
 
 		$type = $widget->get_element_type();
 
-		$is_text = in_array( $type, Schema::text_animation_widgets(), true );
-		$is_anim = in_array( $type, Bootstrap::target_element_types(), true );
-
-		if ( ! $is_text && ! $is_anim ) {
+		if ( ! in_array( $type, Schema::text_animation_widgets(), true ) ) {
 			return $html;
 		}
 
@@ -40,48 +35,19 @@ final class Render {
 			? $widget->get_atomic_settings()
 			: [];
 
-		// Text-animation widgets may also carry regular animation settings —
-		// merge both attribute sets. Text attrs win on `data-aae-anim` since
-		// the text builder treats that as the legacy alias for its effect.
-		$attrs = [];
-		if ( $is_anim ) {
-			$attrs = array_merge( $attrs, $this->build_anim_attrs( $settings ) );
-		}
-		if ( $is_text ) {
-			$attrs = array_merge( $attrs, $this->build_text_attrs( $settings ) );
-		}
-
+		$attrs = $this->build_text_attrs( $settings );
 		if ( empty( $attrs ) ) {
 			return $html;
 		}
 
-		// This widget actually carries a text or regular animation, so pull
-		// the matching effect bundle in. Its dependency chain (declared in
-		// Assets.php) automatically also enqueues the core runtime. Safe to
-		// call repeatedly; WordPress dedupes. On the editor preview every
-		// bundle is already enqueued, so this is a no-op there.
+		// Enqueue the effect bundle on demand. Dependency chain (declared in
+		// Assets.php) auto-pulls the core runtime. WordPress dedupes; no-op
+		// on the editor preview (every bundle pre-enqueued there).
 		if ( ! is_admin() ) {
 			wp_enqueue_script( 'aae-effect-animation' );
 		}
 
 		return $this->splice_attrs_into_first_tag( $html, $attrs );
-	}
-
-	private function build_anim_attrs( array $settings ): array {
-		$effect = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
-
-		if ( ! $effect || 'none' === $effect ) {
-			return [];
-		}
-
-		return [
-			'data-aae-anim'     => $effect,
-			'data-aae-trigger'  => $settings[ Schema::ANIM_TRIGGER ]  ?? 'in-view',
-			'data-aae-duration' => (string) ( $settings[ Schema::ANIM_DURATION ] ?? 600 ),
-			'data-aae-delay'    => (string) ( $settings[ Schema::ANIM_DELAY ]    ?? 0 ),
-			'data-aae-easing'   => $settings[ Schema::ANIM_EASING ]   ?? 'power2.out',
-			'data-aae-repeat'   => (string) ( $settings[ Schema::ANIM_REPEAT ]   ?? 0 ),
-		];
 	}
 
 	private function build_text_attrs( array $settings ): array {
@@ -91,27 +57,26 @@ final class Render {
 			return [];
 		}
 
-		// Every responsive setting → [ data-attr base, default value ].
-		// Desktop emits the bare attr; each active extra breakpoint emits "-{bp}"
-		// suffixed variants. Empty / null per-breakpoint values fall back to desktop.
-		// Defaults match Schema::RESPONSIVE_NUMBER_SETTINGS / RESPONSIVE_STRING_SETTINGS,
-		// which is what the JS reader falls back to via `|| <default>`. When a value
-		// equals its default we skip the attr — the frontend supplies the same value
-		// in code. Effect-specific attrs are also gated to the active effect family.
+		// Per-attr table: [ data-attr base, default value, effect_family|null ].
+		// When a value equals its default we skip the attr — the JS reader uses
+		// `|| <default>` (or numOr in animation.js), so a missing attr lands on
+		// the same value. Defaults mirror Schema::RESPONSIVE_NUMBER_SETTINGS
+		// where they overlap; the dispatch attr (data-aae-text-anim) is emitted
+		// unconditionally below and is intentionally absent from this table.
+		$translate_family = Schema::TEXT_TRANSLATE_EFFECTS; // char + word
 		$responsive_map = [
-			Schema::TEXT_EFFECT           => [ 'data-aae-text-anim',             'none',            null ],
 			Schema::TEXT_TRIGGER          => [ 'data-aae-text-trigger',          'on_scroll',       null ],
 			Schema::TEXT_TRIGGER_SELECTOR => [ 'data-aae-text-trigger-selector', '',                null ],
 			Schema::TEXT_WRAPPER          => [ 'data-aae-text-wrapper',          'default',         null ],
 			Schema::TEXT_WRAPPER_SELECTOR => [ 'data-aae-text-wrapper-selector', '',                null ],
-			Schema::TEXT_DELAY            => [ 'data-aae-text-delay',            0.15,              null ],
-			Schema::TEXT_DURATION         => [ 'data-aae-text-duration',         1,                 Schema::TEXT_DURATION_EFFECTS ],
-			Schema::TEXT_STAGGER          => [ 'data-aae-text-stagger',          0.02,              Schema::TEXT_DURATION_EFFECTS ],
-			Schema::TEXT_TRANSLATE_X      => [ 'data-aae-text-translate-x',      20,                Schema::TEXT_TRANSLATE_EFFECTS ],
-			Schema::TEXT_TRANSLATE_Y      => [ 'data-aae-text-translate-y',      0,                 Schema::TEXT_TRANSLATE_EFFECTS ],
-			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x',               [ 'char', 'word' ] ],
-			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         -80,               [ 'char', 'word' ] ],
-			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50',  [ 'char', 'word' ] ],
+			Schema::TEXT_DELAY            => [ 'data-aae-text-delay',            Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],         null ],
+			Schema::TEXT_DURATION         => [ 'data-aae-text-duration',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],      Schema::TEXT_DURATION_EFFECTS ],
+			Schema::TEXT_STAGGER          => [ 'data-aae-text-stagger',          Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],       Schema::TEXT_DURATION_EFFECTS ],
+			Schema::TEXT_TRANSLATE_X      => [ 'data-aae-text-translate-x',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ],   $translate_family ],
+			Schema::TEXT_TRANSLATE_Y      => [ 'data-aae-text-translate-y',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ],   $translate_family ],
+			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x',                                                               $translate_family ],
+			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],      $translate_family ],
+			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50',                                                  $translate_family ],
 
 			/* scroll trigger settings — only when trigger=on_scroll */
 			Schema::TEXT_START_TRIGGER    => [ 'data-aae-text-start-trigger',    '',          null ],
@@ -122,24 +87,25 @@ final class Render {
 			Schema::TEXT_END_CUSTOM       => [ 'data-aae-text-end-custom',       'bottom top', null ],
 
 			/* text-invert specific */
-			Schema::TEXT_INVERT_START     => [ 'data-aae-text-invert-start',     'top 85%',        [ 'text_invert' ] ],
-			Schema::TEXT_INVERT_END       => [ 'data-aae-text-invert-end',       'bottom center',  [ 'text_invert' ] ],
+			Schema::TEXT_INVERT_START     => [ 'data-aae-text-invert-start',     'top 85%',        Schema::TEXT_INVERT_EFFECTS ],
+			Schema::TEXT_INVERT_END       => [ 'data-aae-text-invert-end',       'bottom center',  Schema::TEXT_INVERT_EFFECTS ],
 
 			/* text-spin specific */
-			Schema::TEXT_SPIN_START       => [ 'data-aae-text-spin-start',       'top 50%',        [ 'text_spin' ] ],
-			Schema::TEXT_SPIN_END         => [ 'data-aae-text-spin-end',         'bottom 30%',     [ 'text_spin' ] ],
+			Schema::TEXT_SPIN_START       => [ 'data-aae-text-spin-start',       'top 50%',        Schema::TEXT_SPIN_EFFECTS ],
+			Schema::TEXT_SPIN_END         => [ 'data-aae-text-spin-end',         'bottom 30%',     Schema::TEXT_SPIN_EFFECTS ],
 
 			/* text-scale specific */
-			Schema::TEXT_SCALE_EASE       => [ 'data-aae-text-scale-ease',       'back',           [ 'text_scale' ] ],
-			Schema::TEXT_SCALE_NUM        => [ 'data-aae-text-scale-num',        1.5,              [ 'text_scale' ] ],
-			Schema::TEXT_SCALE_BREAK      => [ 'data-aae-text-scale-break',      'lines',          [ 'text_scale' ] ],
+			Schema::TEXT_SCALE_EASE       => [ 'data-aae-text-scale-ease',       'back',                                                                Schema::TEXT_SCALE_EFFECTS ],
+			Schema::TEXT_SCALE_NUM        => [ 'data-aae-text-scale-num',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],          Schema::TEXT_SCALE_EFFECTS ],
+			Schema::TEXT_SCALE_BREAK      => [ 'data-aae-text-scale-break',      'lines',                                                               Schema::TEXT_SCALE_EFFECTS ],
 		];
 
-		// Non-responsive attrs (toggle + legacy alias + non-responsive v3 controls).
-		// Defaults intentionally omitted from emission — only present when truthy
-		// / non-default. The runtime falls back via `|| <default>` either way.
+		// Dispatch key always emits; the rest are emitted only when explicitly
+		// truthy. data-aae-anim belongs to RegularAnimation\Render and is NOT
+		// written here — both modules can co-render on the same element and
+		// the JS readers dispatch independently off their own dispatch attrs.
 		$attrs = [
-			'data-aae-anim' => $effect,
+			'data-aae-text-anim' => $effect,
 		];
 		if ( ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ) {
 			$attrs['data-aae-text-enable-editor'] = '1';
@@ -187,20 +153,15 @@ final class Render {
 
 			$desktop_value = $settings[ $base_key ] ?? $default;
 
-			// Emit desktop attr only when it actually overrides the JS default.
-			// The reader uses `pickResponsive(...) || <default>`, so a missing
-			// attr lands on the same value — but for the widget-effect attr
-			// (data-aae-text-anim) we always emit, since it's the dispatch key.
-			$emit_desktop = ( $base_key === Schema::TEXT_EFFECT )
-				|| ( (string) $desktop_value !== (string) $default );
-
-			if ( $emit_desktop ) {
+			// Desktop: skip when value equals the JS-side default — the reader
+			// supplies that value when the attr is missing.
+			if ( (string) $desktop_value !== (string) $default ) {
 				$attrs[ $base_attr ] = (string) $desktop_value;
 			}
 
-			// Emit a per-breakpoint attr only when its value actually overrides
-			// the cascaded parent. The frontend walks BP_CASCADE on read, so a
-			// missing attr inherits naturally — behavior unchanged, DOM smaller.
+			// Per-breakpoint: emit only when the value actually overrides the
+			// cascaded parent. JS walks BP_CASCADE on read, so missing attrs
+			// inherit naturally — behavior unchanged, DOM smaller.
 			$resolved_by_bp = [ 'desktop' => $desktop_value ];
 
 			foreach ( $extra_bps as $bp ) {

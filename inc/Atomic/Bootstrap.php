@@ -17,7 +17,12 @@ final class Bootstrap {
 		if ( version_compare( ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '<' ) ) {
 			return;
 		}
-	    //  text animation extentation for heading and paragraph
+		// Regular (preset-based) animation — applied to every atomic widget.
+		( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+
+		// Text animation — char/word/reveal/etc. for heading-class widgets.
 		( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();

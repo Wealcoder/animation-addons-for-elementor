@@ -21,8 +21,7 @@ const FLOAT_LABEL_BASES = new Set([
 	'Rotation Value',
 ]);
 
-export function allowFloatStepsOnNumberInputs() {
-	const labels = panelLabels();
+export function allowFloatStepsOnNumberInputs(labels = panelLabels()) {
 	for (const label of labels) {
 		const text   = originalLabelText(label);
 		const suffix = matchSuffix(text);

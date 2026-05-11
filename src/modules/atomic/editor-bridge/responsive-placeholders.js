@@ -65,8 +65,11 @@ function setInheritHint(row, hintText) {
 		overlay = document.createElement('span');
 		overlay.className = 'aae-select-placeholder';
 		overlay.setAttribute('aria-hidden', 'true');
+		// Inherit the cell's foreground color and dim via opacity so the hint
+		// stays legible in both Elementor's dark and light editor themes.
 		overlay.style.cssText = [
-			'color: rgba(255, 255, 255, 0.4)',
+			'color: inherit',
+			'opacity: 0.5',
 			'font-style: italic',
 			'pointer-events: none',
 			'user-select: none',
@@ -84,7 +87,7 @@ function setInheritHint(row, hintText) {
  * and set its placeholder/hint to the inherited parent value (or clear it
  * when the row already has its own value).
  */
-export function applyResponsivePlaceholders() {
+export function applyResponsivePlaceholders(labels = panelLabels()) {
 	const mode = currentDeviceMode();
 	if (mode === 'desktop') return; // Desktop rows don't inherit.
 
@@ -93,8 +96,6 @@ export function applyResponsivePlaceholders() {
 
 	const container = getSelectedContainer();
 	if (!container?.settings) return;
-
-	const labels = panelLabels();
 	for (const label of labels) {
 		const text = originalLabelText(label);
 		if (!text.endsWith(activeSuffix)) continue;

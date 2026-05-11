@@ -13,11 +13,9 @@ import { rowFromLabel, matchSuffix, stripVisibleSuffix, originalLabelText, panel
  * "Delay" instead of "Delay (Mobile)" — the original is cached so subsequent
  * scans still match the row to its breakpoint.
  */
-export function applyResponsiveVisibility() {
+export function applyResponsiveVisibility(labels = panelLabels()) {
 	const mode         = currentDeviceMode();
 	const activeSuffix = RESPONSIVE_SUFFIX_BY_MODE[mode] || null; // null = desktop
-
-	const labels = panelLabels();
 
 	// Pass 1: collect base labels that have any breakpoint variant, so we can
 	// hide the corresponding desktop row when a non-desktop mode is active.
