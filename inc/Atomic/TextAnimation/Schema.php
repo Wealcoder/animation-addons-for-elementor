@@ -75,6 +75,39 @@ final class Schema {
 	const TEXT_SCALE_NUM   = 'aae_text_scale_num';    // v3 text_scale_num
 	const TEXT_SCALE_BREAK = 'aae_text_scale_break';  // v3 text_scale_break
 
+	/**
+	 * Per-breakpoint prop names are derived dynamically as `<base>_<bp>`
+	 * (e.g. aae_text_delay_tablet, aae_text_delay_mobile_extra). Use
+	 * Schema::breakpoint_prop( $base, $bp ) wherever you need them.
+	 */
+	public static function breakpoint_prop( string $base, string $bp ): string {
+		return $base . '_' . $bp;
+	}
+
+	/**
+	 * Human-readable labels for every Elementor breakpoint we might generate
+	 * responsive controls for. Order matters: largest → smallest viewport.
+	 */
+	const BREAKPOINT_LABELS = [
+		'widescreen'   => 'Widescreen',
+		'laptop'       => 'Laptop',
+		'tablet_extra' => 'Tablet Extra',
+		'tablet'       => 'Tablet',
+		'mobile_extra' => 'Mobile Extra',
+		'mobile'       => 'Mobile',
+	];
+
+	/** Settings that get a per-breakpoint variant. */
+	const RESPONSIVE_NUMBER_SETTINGS = [
+		self::TEXT_DELAY       => 0.15,
+		self::TEXT_DURATION    => 1,
+		self::TEXT_STAGGER     => 0.02,
+		self::TEXT_TRANSLATE_X => 20,
+		self::TEXT_TRANSLATE_Y => 0,
+		self::TEXT_ROTATION    => -80,
+		self::TEXT_SCALE_NUM   => 1.5,
+	];
+
 	/** Effects that count as "animated" for general show/hide. */
 	const TEXT_ANIMATED_EFFECTS = [ 'char', 'word', 'text_move', 'text_reveal', 'text_scale', 'text_invert', 'text_spin' ];
 
@@ -153,64 +186,75 @@ final class Schema {
 		/* ---------- text animation ---------- */
 
 		// EFFECT: top-level driver of all gating. Cannot itself depend on anything.
-		// Non-responsive — the chosen effect type is the same across all devices.
-		$schema[ self::TEXT_EFFECT ] = String_Prop_Type::make()
-			->enum( array_keys( self::text_effects() ) )
-			->default( 'none' );
+		$this->register_responsive_string( $schema, self::TEXT_EFFECT, 'none', null, array_keys( self::text_effects() ) );
 
 		$text_active = $this->dep_in( self::TEXT_EFFECT, self::TEXT_ANIMATED_EFFECTS );
 
-		$schema[ self::TEXT_TRIGGER ] = String_Prop_Type::make()
-			->enum( array_keys( self::text_triggers() ) )
-			->default( 'on_scroll' )
-			->set_dependencies( $text_active );
+		$this->register_responsive_string( $schema, self::TEXT_TRIGGER, 'on_scroll', $text_active, array_keys( self::text_triggers() ) );
 
 		// Show only when trigger is hover/click AND an animation is selected.
 		$trigger_selector_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_EFFECT ],  'value' => self::TEXT_ANIMATED_EFFECTS,    'effect' => 'hide' ] )
-			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_TRIGGER ], 'value' => [ 'mouseover', 'click' ],       'effect' => 'hide' ] )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_EFFECT ],
+				'value'    => self::TEXT_ANIMATED_EFFECTS,
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_TRIGGER ],
+				'value'    => [ 'mouseover', 'click' ],
+				'effect'   => 'hide',
+			] )
 			->get();
-		$schema[ self::TEXT_TRIGGER_SELECTOR ] = String_Prop_Type::make()
-			->default( '' )
-			->set_dependencies( $trigger_selector_deps );
+		$this->register_responsive_string( $schema, self::TEXT_TRIGGER_SELECTOR, '', $trigger_selector_deps );
 
 		// Wrapper picker shows when trigger is on_scroll / play_with_scroll AND animation is selected.
 		$wrapper_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_EFFECT ],  'value' => self::TEXT_ANIMATED_EFFECTS,           'effect' => 'hide' ] )
-			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_TRIGGER ], 'value' => [ 'on_scroll', 'play_with_scroll' ], 'effect' => 'hide' ] )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_EFFECT ],
+				'value'    => self::TEXT_ANIMATED_EFFECTS,
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_TRIGGER ],
+				'value'    => [ 'on_scroll', 'play_with_scroll' ],
+				'effect'   => 'hide',
+			] )
 			->get();
-		$schema[ self::TEXT_WRAPPER ] = String_Prop_Type::make()
-			->enum( [ 'default', 'custom' ] )
-			->default( 'default' )
-			->set_dependencies( $wrapper_deps );
+		$this->register_responsive_string( $schema, self::TEXT_WRAPPER, 'default', $wrapper_deps, [ 'default', 'custom' ] );
 
-		// Custom wrapper selector only when wrapper = custom.
-		$schema[ self::TEXT_WRAPPER_SELECTOR ] = String_Prop_Type::make()
-			->default( '' )
-			->set_dependencies( $this->dep_eq( self::TEXT_WRAPPER, 'custom' ) );
+		// Custom wrapper selector only when wrapper = custom (on desktop — variants follow same gate).
+		$this->register_responsive_string( $schema, self::TEXT_WRAPPER_SELECTOR, '', $this->dep_eq( self::TEXT_WRAPPER, 'custom' ) );
 
 		$duration_deps  = $this->dep_in( self::TEXT_EFFECT, self::TEXT_DURATION_EFFECTS );
 		$translate_deps = $this->dep_in( self::TEXT_EFFECT, self::TEXT_TRANSLATE_EFFECTS );
 		$text_move_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_move' );
 
-		$schema[ self::TEXT_DELAY ]       = Number_Prop_Type::make()->float()->default( 0.15 )->set_dependencies( $text_active );
-		$schema[ self::TEXT_DURATION ]    = Number_Prop_Type::make()->float()->default( 1 )->set_dependencies( $duration_deps );
-		$schema[ self::TEXT_STAGGER ]     = Number_Prop_Type::make()->float()->default( 0.02 )->set_dependencies( $duration_deps );
-		$schema[ self::TEXT_TRANSLATE_X ] = Number_Prop_Type::make()->float()->default( 20 )->set_dependencies( $translate_deps );
-		$schema[ self::TEXT_TRANSLATE_Y ] = Number_Prop_Type::make()->float()->default( 0 )->set_dependencies( $translate_deps );
+		// Per-setting dependency map — desktop and all per-breakpoint variants share these.
+		$deps_by_base = [
+			self::TEXT_DELAY       => $text_active,
+			self::TEXT_DURATION    => $duration_deps,
+			self::TEXT_STAGGER     => $duration_deps,
+			self::TEXT_TRANSLATE_X => $translate_deps,
+			self::TEXT_TRANSLATE_Y => $translate_deps,
+		];
 
-		$schema[ self::TEXT_ROTATION_DIR ] = String_Prop_Type::make()
-			->enum( [ 'x', 'y' ] )
-			->default( 'x' )
-			->set_dependencies( $text_move_deps );
+		foreach ( $deps_by_base as $base => $deps ) {
+			$default = self::RESPONSIVE_NUMBER_SETTINGS[ $base ] ?? 0;
+			$this->register_responsive_number( $schema, $base, $default, $deps );
+		}
 
-		$schema[ self::TEXT_ROTATION ] = Number_Prop_Type::make()->float()
-			->default( -80 )
-			->set_dependencies( $text_move_deps );
+		/* rotation_dir — responsive (axis choice can differ per device) */
+		$this->register_responsive_string( $schema, self::TEXT_ROTATION_DIR, 'x', $text_move_deps, [ 'x', 'y' ] );
 
-		$schema[ self::TEXT_TRANSFORM_ORIGIN ] = String_Prop_Type::make()
-			->default( 'top center -50' )
-			->set_dependencies( $text_move_deps );
+		/* rotation — responsive */
+		$this->register_responsive_number( $schema, self::TEXT_ROTATION, -80, $text_move_deps );
+
+		/* transform_origin — responsive */
+		$this->register_responsive_string( $schema, self::TEXT_TRANSFORM_ORIGIN, 'top center -50', $text_move_deps );
 
 		$schema[ self::TEXT_ENABLE_EDITOR ] = Boolean_Prop_Type::make()
 			->default( false )
@@ -262,10 +306,10 @@ final class Schema {
 			] )
 			->get();
 
-		$schema[ self::TEXT_START_TRIGGER ]  = String_Prop_Type::make()->default( '' )->set_dependencies( $scroll_custom_deps );
-		$schema[ self::TEXT_END_TRIGGER ]    = String_Prop_Type::make()->default( '' )->set_dependencies( $scroll_custom_deps );
-		$schema[ self::TEXT_START_POSITION ] = String_Prop_Type::make()->enum( self::scroll_positions() )->default( 'top top' )->set_dependencies( $scroll_custom_deps );
-		$schema[ self::TEXT_END_POSITION ]   = String_Prop_Type::make()->enum( self::scroll_positions() )->default( 'bottom top' )->set_dependencies( $scroll_custom_deps );
+		$this->register_responsive_string( $schema, self::TEXT_START_TRIGGER,  '',          $scroll_custom_deps );
+		$this->register_responsive_string( $schema, self::TEXT_END_TRIGGER,    '',          $scroll_custom_deps );
+		$this->register_responsive_string( $schema, self::TEXT_START_POSITION, 'top top',   $scroll_custom_deps, self::scroll_positions() );
+		$this->register_responsive_string( $schema, self::TEXT_END_POSITION,   'bottom top', $scroll_custom_deps, self::scroll_positions() );
 
 		// Custom Start/End text inputs — show ONLY when corresponding position = 'custom'.
 		$custom_start_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
@@ -274,7 +318,7 @@ final class Schema {
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_WRAPPER ],         'value' => 'custom',                              'effect' => 'hide' ] )
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_START_POSITION ],  'value' => 'custom',                              'effect' => 'hide' ] )
 			->get();
-		$schema[ self::TEXT_START_CUSTOM ] = String_Prop_Type::make()->default( 'top top' )->set_dependencies( $custom_start_deps );
+		$this->register_responsive_string( $schema, self::TEXT_START_CUSTOM, 'top top', $custom_start_deps );
 
 		$custom_end_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
 			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_EFFECT ],         'value' => self::TEXT_ANIMATED_EFFECTS,           'effect' => 'hide' ] )
@@ -282,7 +326,7 @@ final class Schema {
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_WRAPPER ],        'value' => 'custom',                              'effect' => 'hide' ] )
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_END_POSITION ],   'value' => 'custom',                              'effect' => 'hide' ] )
 			->get();
-		$schema[ self::TEXT_END_CUSTOM ] = String_Prop_Type::make()->default( 'bottom top' )->set_dependencies( $custom_end_deps );
+		$this->register_responsive_string( $schema, self::TEXT_END_CUSTOM, 'bottom top', $custom_end_deps );
 
 		// Markers boolean — non-responsive in v3, same gating as scroll-custom block.
 		$schema[ self::TEXT_MARKERS ] = Boolean_Prop_Type::make()
@@ -292,8 +336,8 @@ final class Schema {
 		/* ---------- text-invert specific (effect = text_invert) ---------- */
 
 		$invert_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_invert' );
-		$schema[ self::TEXT_INVERT_START ] = String_Prop_Type::make()->default( 'top 85%' )->set_dependencies( $invert_deps );
-		$schema[ self::TEXT_INVERT_END ]   = String_Prop_Type::make()->default( 'bottom center' )->set_dependencies( $invert_deps );
+		$this->register_responsive_string( $schema, self::TEXT_INVERT_START, 'top 85%',       $invert_deps );
+		$this->register_responsive_string( $schema, self::TEXT_INVERT_END,   'bottom center', $invert_deps );
 
 		/* ---------- text-spin specific (effect = text_spin) ---------- */
 
@@ -309,8 +353,8 @@ final class Schema {
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_EFFECT ],  'value' => 'text_spin', 'effect' => 'hide' ] )
 			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_TRIGGER ], 'value' => 'on_scroll', 'effect' => 'hide' ] )
 			->get();
-		$schema[ self::TEXT_SPIN_START ] = String_Prop_Type::make()->default( 'top 50%' )->set_dependencies( $spin_scroll_deps );
-		$schema[ self::TEXT_SPIN_END ]   = String_Prop_Type::make()->default( 'bottom 30%' )->set_dependencies( $spin_scroll_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SPIN_START, 'top 50%',    $spin_scroll_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SPIN_END,   'bottom 30%', $spin_scroll_deps );
 
 		// Toggle action is non-responsive in v3.
 		$schema[ self::TEXT_SPIN_TOGGLE ] = String_Prop_Type::make()
@@ -342,11 +386,81 @@ final class Schema {
 
 		$scale_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_scale' );
 
-		$schema[ self::TEXT_SCALE_EASE ]  = String_Prop_Type::make()->enum( array_keys( self::scale_eases() ) )->default( 'back' )->set_dependencies( $scale_deps );
-		$schema[ self::TEXT_SCALE_NUM ]   = Number_Prop_Type::make()->float()->default( 1.5 )->set_dependencies( $scale_deps );
-		$schema[ self::TEXT_SCALE_BREAK ] = String_Prop_Type::make()->enum( array_keys( self::scale_break_modes() ) )->default( 'lines' )->set_dependencies( $scale_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SCALE_EASE,  'back',  $scale_deps, array_keys( self::scale_eases() ) );
+		$this->register_responsive_number( $schema, self::TEXT_SCALE_NUM,   1.5,     $scale_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SCALE_BREAK, 'lines', $scale_deps, array_keys( self::scale_break_modes() ) );
 
 		return $schema;
+	}
+
+	/* ---------- responsive helpers ---------- */
+
+	/**
+	 * Returns the active extra (non-desktop) breakpoint keys for the current site,
+	 * in a stable largest→smallest order — matches Elementor's device-mode switcher.
+	 * Falls back to ['tablet', 'mobile'] if the Breakpoints manager isn't available.
+	 */
+	public static function get_extra_breakpoints(): array {
+		
+		$active_keys = [];
+
+		if ( class_exists( \Elementor\Plugin::class )
+			&& isset( \Elementor\Plugin::$instance->breakpoints )
+			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
+			$active_keys = array_keys( \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints() );
+		}
+
+		if ( empty( $active_keys ) ) {
+			$active_keys = [ 'tablet', 'mobile' ];
+		}
+
+		// Filter to known keys in our stable order, exclude desktop (it's the base).
+		$ordered = [];
+		foreach ( array_keys( self::BREAKPOINT_LABELS ) as $bp ) {
+			if ( in_array( $bp, $active_keys, true ) && 'desktop' !== $bp ) {
+				$ordered[] = $bp;
+			}
+		}
+		return $ordered;
+	}
+
+	/**
+	 * Register a number prop with per-breakpoint variants. ONLY the desktop
+	 * variant carries a default value — extras intentionally have no default
+	 * so an "untouched" prop reads as null. The JS bridge uses that null to
+	 * detect emptiness and auto-inherit the parent breakpoint's value when
+	 * the user switches to that device for the first time. Once the user
+	 * types a value (even 0), the prop is no longer null and is preserved.
+	 */
+	private function register_responsive_number( array &$schema, string $base, $default, ?array $deps ): void {
+		$desktop = Number_Prop_Type::make()->float()->default( $default );
+		if ( $deps ) $desktop->set_dependencies( $deps );
+		$schema[ $base ] = $desktop;
+
+		foreach ( self::get_extra_breakpoints() as $bp ) {
+			$variant = Number_Prop_Type::make()->float();
+			if ( $deps ) $variant->set_dependencies( $deps );
+			$schema[ $base . '_' . $bp ] = $variant;
+		}
+	}
+
+	/**
+	 * Register a string prop with per-breakpoint variants. Same inheritance
+	 * model as numeric: desktop carries default (+ optional enum); extras
+	 * have no default and intentionally NO enum constraint, so they can
+	 * temporarily hold any string while the JS bridge inherits a parent value.
+	 */
+	private function register_responsive_string( array &$schema, string $base, string $default, ?array $deps, ?array $enum = null ): void {
+		$desktop = String_Prop_Type::make()->default( $default );
+		if ( $enum ) $desktop->enum( $enum );
+		if ( $deps ) $desktop->set_dependencies( $deps );
+		$schema[ $base ] = $desktop;
+
+		foreach ( self::get_extra_breakpoints() as $bp ) {
+			$variant = String_Prop_Type::make();
+			if ( $deps ) $variant->set_dependencies( $deps );
+			$schema[ $base . '_' . $bp ] = $variant;
+		}
 	}
 
 	/* ---------- dependency helpers ---------- */

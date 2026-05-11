@@ -120,75 +120,65 @@ final class Controls {
 			->set_label( __( 'Text Animation', self::TD ) )
 			->set_items( [
 
-				Select_Control::bind_to( Schema::TEXT_EFFECT )
-					->set_label( __( 'Animation', self::TD ) )
-					->set_options( $effect_opts ),
+				/* Animation effect — responsive */
+				...$this->responsive_rows( Schema::TEXT_EFFECT, __( 'Animation', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $effect_opts ) ),
 
-				Select_Control::bind_to( Schema::TEXT_TRIGGER )
-					->set_label( __( 'Trigger', self::TD ) )
-					->set_options( $trigger_opts ),
+				/* Trigger — responsive */
+				...$this->responsive_rows( Schema::TEXT_TRIGGER, __( 'Trigger', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $trigger_opts ) ),
 
-				Text_Control::bind_to( Schema::TEXT_TRIGGER_SELECTOR )
-					->set_label( __( 'Trigger Selector', self::TD ) )
-					->set_placeholder( '.my-class' ),
+				/* Trigger Selector — responsive */
+				...$this->responsive_rows( Schema::TEXT_TRIGGER_SELECTOR, __( 'Trigger Selector', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.my-class' ) ),
 
-				Select_Control::bind_to( Schema::TEXT_WRAPPER )
-					->set_label( __( 'Text Wrapper', self::TD ) )
-					->set_options( $wrapper_opts ),
+				/* Text Wrapper — responsive */
+				...$this->responsive_rows( Schema::TEXT_WRAPPER, __( 'Text Wrapper', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $wrapper_opts ) ),
 
-				Text_Control::bind_to( Schema::TEXT_WRAPPER_SELECTOR )
-					->set_label( __( 'Custom Wrapper Selector', self::TD ) )
-					->set_placeholder( '.my-wrapper' ),
+				/* Custom Wrapper Selector — responsive */
+				...$this->responsive_rows( Schema::TEXT_WRAPPER_SELECTOR, __( 'Custom Wrapper Selector', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.my-wrapper' ) ),
 
-				/* Scroll trigger settings — wrapper=custom + scroll trigger */
-				Text_Control::bind_to( Schema::TEXT_START_TRIGGER )
-					->set_label( __( 'Start Trigger', self::TD ) )
-					->set_placeholder( '.start_area' ),
+				/* Scroll trigger settings — only when wrapper=custom + scroll trigger */
+				...$this->responsive_rows( Schema::TEXT_START_TRIGGER, __( 'Start Trigger', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.start_area' ) ),
 
-				Text_Control::bind_to( Schema::TEXT_END_TRIGGER )
-					->set_label( __( 'End Trigger', self::TD ) )
-					->set_placeholder( '.end_area' ),
+				...$this->responsive_rows( Schema::TEXT_END_TRIGGER, __( 'End Trigger', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.end_area' ) ),
 
-				Select_Control::bind_to( Schema::TEXT_START_POSITION )
-					->set_label( __( 'Start', self::TD ) )
-					->set_options( $scroll_pos_opts ),
+				...$this->responsive_rows( Schema::TEXT_START_POSITION, __( 'Start', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scroll_pos_opts ) ),
 
-				Text_Control::bind_to( Schema::TEXT_START_CUSTOM )
-					->set_label( __( 'Custom Start', self::TD ) )
-					->set_placeholder( 'top top+=100' ),
+				...$this->responsive_rows( Schema::TEXT_START_CUSTOM, __( 'Custom Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top top+=100' ) ),
 
-				Select_Control::bind_to( Schema::TEXT_END_POSITION )
-					->set_label( __( 'End', self::TD ) )
-					->set_options( $scroll_pos_opts ),
+				...$this->responsive_rows( Schema::TEXT_END_POSITION, __( 'End', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scroll_pos_opts ) ),
 
-				Text_Control::bind_to( Schema::TEXT_END_CUSTOM )
-					->set_label( __( 'Custom End', self::TD ) )
-					->set_placeholder( 'bottom top+=100' ),
+				...$this->responsive_rows( Schema::TEXT_END_CUSTOM, __( 'Custom End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom top+=100' ) ),
 
 				Switch_Control::bind_to( Schema::TEXT_MARKERS )
 					->set_label( __( 'Markers', self::TD ) ),
 
-				/* Text-invert specific */
-				Text_Control::bind_to( Schema::TEXT_INVERT_START )
-					->set_label( __( 'Invert Start', self::TD ) )
-					->set_placeholder( 'top 85%' ),
+				/* Text-invert specific — only when effect=text_invert */
+				...$this->responsive_rows( Schema::TEXT_INVERT_START, __( 'Invert Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top 85%' ) ),
 
-				Text_Control::bind_to( Schema::TEXT_INVERT_END )
-					->set_label( __( 'Invert End', self::TD ) )
-					->set_placeholder( 'bottom center' ),
+				...$this->responsive_rows( Schema::TEXT_INVERT_END, __( 'Invert End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom center' ) ),
 
-				/* Text-spin specific */
+				/* Text-spin specific — only when effect=text_spin */
 				Text_Control::bind_to( Schema::TEXT_SPIN_COLOR )
 					->set_label( __( 'Spin Text Color', self::TD ) )
 					->set_placeholder( '#ff0000' ),
 
-				Text_Control::bind_to( Schema::TEXT_SPIN_START )
-					->set_label( __( 'Spin Start', self::TD ) )
-					->set_placeholder( 'top 50%' ),
+				...$this->responsive_rows( Schema::TEXT_SPIN_START, __( 'Spin Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top 50%' ) ),
 
-				Text_Control::bind_to( Schema::TEXT_SPIN_END )
-					->set_label( __( 'Spin End', self::TD ) )
-					->set_placeholder( 'bottom 30%' ),
+				...$this->responsive_rows( Schema::TEXT_SPIN_END, __( 'Spin End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom 30%' ) ),
 
 				Text_Control::bind_to( Schema::TEXT_SPIN_TOGGLE )
 					->set_label( __( 'Toggle Actions', self::TD ) )
@@ -198,51 +188,32 @@ final class Controls {
 				Switch_Control::bind_to( Schema::TEXT_SCRUB )
 					->set_label( __( 'Scrub', self::TD ) ),
 
-				/* Numeric settings */
-				Number_Control::bind_to( Schema::TEXT_DELAY )
-					->set_label( __( 'Delay', self::TD ) )
-					->set_should_force_int( false ),
+				/* Numeric responsive settings */
+				...$this->responsive_number( Schema::TEXT_DELAY,       __( 'Delay',       self::TD ) ),
+				...$this->responsive_number( Schema::TEXT_DURATION,    __( 'Duration',    self::TD ) ),
+				...$this->responsive_number( Schema::TEXT_STAGGER,     __( 'Stagger',     self::TD ) ),
+				...$this->responsive_number( Schema::TEXT_TRANSLATE_X, __( 'Transform-X', self::TD ) ),
+				...$this->responsive_number( Schema::TEXT_TRANSLATE_Y, __( 'Transform-Y', self::TD ) ),
 
-				Number_Control::bind_to( Schema::TEXT_DURATION )
-					->set_label( __( 'Duration', self::TD ) )
-					->set_should_force_int( false ),
+				/* Rotation Direction — responsive */
+				...$this->responsive_rows( Schema::TEXT_ROTATION_DIR, __( 'Rotation Direction', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $rot_dir_opts ) ),
 
-				Number_Control::bind_to( Schema::TEXT_STAGGER )
-					->set_label( __( 'Stagger', self::TD ) )
-					->set_should_force_int( false ),
+				/* Rotation Value — responsive */
+				...$this->responsive_number( Schema::TEXT_ROTATION, __( 'Rotation Value', self::TD ) ),
 
-				Number_Control::bind_to( Schema::TEXT_TRANSLATE_X )
-					->set_label( __( 'Transform-X', self::TD ) )
-					->set_should_force_int( false ),
+				/* Transform Origin — responsive */
+				...$this->responsive_rows( Schema::TEXT_TRANSFORM_ORIGIN, __( 'Transform Origin', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top center -50' ) ),
 
-				Number_Control::bind_to( Schema::TEXT_TRANSLATE_Y )
-					->set_label( __( 'Transform-Y', self::TD ) )
-					->set_should_force_int( false ),
+				/* Text-scale specific — only when effect=text_scale */
+				...$this->responsive_rows( Schema::TEXT_SCALE_EASE, __( 'Scale Ease', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scale_ease_opts ) ),
 
-				Select_Control::bind_to( Schema::TEXT_ROTATION_DIR )
-					->set_label( __( 'Rotation Direction', self::TD ) )
-					->set_options( $rot_dir_opts ),
+				...$this->responsive_number( Schema::TEXT_SCALE_NUM, __( 'Scale', self::TD ) ),
 
-				Number_Control::bind_to( Schema::TEXT_ROTATION )
-					->set_label( __( 'Rotation Value', self::TD ) )
-					->set_should_force_int( false ),
-
-				Text_Control::bind_to( Schema::TEXT_TRANSFORM_ORIGIN )
-					->set_label( __( 'Transform Origin', self::TD ) )
-					->set_placeholder( 'top center -50' ),
-
-				/* Text-scale specific */
-				Select_Control::bind_to( Schema::TEXT_SCALE_EASE )
-					->set_label( __( 'Scale Ease', self::TD ) )
-					->set_options( $scale_ease_opts ),
-
-				Number_Control::bind_to( Schema::TEXT_SCALE_NUM )
-					->set_label( __( 'Scale', self::TD ) )
-					->set_should_force_int( false ),
-
-				Select_Control::bind_to( Schema::TEXT_SCALE_BREAK )
-					->set_label( __( 'Text Break By', self::TD ) )
-					->set_options( $scale_break_opts ),
+				...$this->responsive_rows( Schema::TEXT_SCALE_BREAK, __( 'Text Break By', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scale_break_opts ) ),
 
 				Switch_Control::bind_to( Schema::TEXT_ENABLE_EDITOR )
 					->set_label( __( 'Enable On Editor', self::TD ) )
@@ -255,6 +226,35 @@ final class Controls {
 			] );
 	}
 
+	/**
+	 * Builds an array of Number_Controls for one responsive setting:
+	 * one row for desktop, plus one row per active extra breakpoint.
+	 */
+	private function responsive_number( string $base, string $label ): array {
+		return $this->responsive_rows( $base, $label, function ( $prop, $row_label ) {
+			return Number_Control::bind_to( $prop )
+				->set_label( $row_label )
+				->set_should_force_int( false );
+		} );
+	}
+
+	/**
+	 * Generic responsive-rows builder. Given a control factory $make($prop, $label),
+	 * returns rows for desktop + each active extra breakpoint. The factory is
+	 * called once per breakpoint with the per-breakpoint prop name and label.
+	 */
+	private function responsive_rows( string $base, string $label, callable $make ): array {
+		$rows = [ $make( $base, $label ) ];
+
+		foreach ( Schema::get_extra_breakpoints() as $bp ) {
+			$bp_label = Schema::BREAKPOINT_LABELS[ $bp ] ?? ucwords( str_replace( '_', ' ', $bp ) );
+			$prop     = Schema::breakpoint_prop( $base, $bp );
+			$rows[]   = $make( $prop, $label . ' (' . $bp_label . ')' );
+		}
+
+		return $rows;
+	}
+
 	private function options_from_map( array $map ): array {
 		$out = [];
 		foreach ( $map as $value => $label ) {
@@ -263,4 +263,3 @@ final class Controls {
 		return $out;
 	}
 }
-	
