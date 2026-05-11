@@ -401,6 +401,7 @@ final class Schema {
 	 * Falls back to ['tablet', 'mobile'] if the Breakpoints manager isn't available.
 	 */
 	public static function get_extra_breakpoints(): array {
+		
 		$active_keys = [];
 
 		if ( class_exists( \Elementor\Plugin::class )
