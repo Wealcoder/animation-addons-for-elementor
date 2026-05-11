@@ -48,6 +48,33 @@ final class Schema {
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
 	const TEXT_PLAY_TOKEN       = 'aae_text_play_token';
 
+	/* ---- scroll trigger settings (wrapper=custom + scroll/play_with_scroll) ---- */
+	const TEXT_START_TRIGGER  = 'aae_text_start_trigger';   // v3 aae_anim_txt_s_t
+	const TEXT_END_TRIGGER    = 'aae_text_end_trigger';     // v3 aae_anim_txt_e_t
+	const TEXT_START_POSITION = 'aae_text_start_position';  // v3 aae_anim_txt_s
+	const TEXT_START_CUSTOM   = 'aae_text_start_custom';    // v3 aae_anim_txt_s_cus
+	const TEXT_END_POSITION   = 'aae_text_end_position';    // v3 aae_anim_txt_e
+	const TEXT_END_CUSTOM     = 'aae_text_end_custom';      // v3 aae_anim_txt_e_cus
+	const TEXT_MARKERS        = 'aae_text_markers';         // v3 aae_anim_txt_markers (boolean)
+
+	/* ---- text-invert specific ---- */
+	const TEXT_INVERT_START = 'aae_text_invert_start';  // v3 aae_anim_invert_s
+	const TEXT_INVERT_END   = 'aae_text_invert_end';    // v3 aae_anim_invert_e
+
+	/* ---- text-spin specific ---- */
+	const TEXT_SPIN_COLOR  = 'aae_text_spin_color';   // v3 spin_text_color (hex string)
+	const TEXT_SPIN_START  = 'aae_text_spin_start';   // v3 spin_text_start
+	const TEXT_SPIN_END    = 'aae_text_spin_end';     // v3 spin_text_end
+	const TEXT_SPIN_TOGGLE = 'aae_text_spin_toggle';  // v3 spin_text_toggle_action
+
+	/* ---- cross-cutting (animated except text_invert + scroll trigger) ---- */
+	const TEXT_SCRUB = 'aae_text_scrub';  // v3 spin_text_scrub (boolean)
+
+	/* ---- text-scale specific ---- */
+	const TEXT_SCALE_EASE  = 'aae_text_scale_ease';   // v3 scale_text_ease
+	const TEXT_SCALE_NUM   = 'aae_text_scale_num';    // v3 text_scale_num
+	const TEXT_SCALE_BREAK = 'aae_text_scale_break';  // v3 text_scale_break
+
 	/**
 	 * Per-breakpoint prop names are derived dynamically as `<base>_<bp>`
 	 * (e.g. aae_text_delay_tablet, aae_text_delay_mobile_extra). Use
@@ -78,6 +105,7 @@ final class Schema {
 		self::TEXT_TRANSLATE_X => 20,
 		self::TEXT_TRANSLATE_Y => 0,
 		self::TEXT_ROTATION    => -80,
+		self::TEXT_SCALE_NUM   => 1.5,
 	];
 
 	/** Effects that count as "animated" for general show/hide. */
@@ -252,6 +280,114 @@ final class Schema {
 					->get()
 			);
 
+		/* ---------- scroll trigger settings (wrapper=custom + scroll/play_with_scroll) ---------- */
+
+		// Show only when: effect is animated AND trigger in [on_scroll, play_with_scroll] AND wrapper = custom.
+		$scroll_custom_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_EFFECT ],
+				'value'    => self::TEXT_ANIMATED_EFFECTS,
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_TRIGGER ],
+				'value'    => [ 'on_scroll', 'play_with_scroll' ],
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ self::TEXT_WRAPPER ],
+				'value'    => 'custom',
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		$this->register_responsive_string( $schema, self::TEXT_START_TRIGGER,  '',          $scroll_custom_deps );
+		$this->register_responsive_string( $schema, self::TEXT_END_TRIGGER,    '',          $scroll_custom_deps );
+		$this->register_responsive_string( $schema, self::TEXT_START_POSITION, 'top top',   $scroll_custom_deps, self::scroll_positions() );
+		$this->register_responsive_string( $schema, self::TEXT_END_POSITION,   'bottom top', $scroll_custom_deps, self::scroll_positions() );
+
+		// Custom Start/End text inputs — show ONLY when corresponding position = 'custom'.
+		$custom_start_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_EFFECT ],          'value' => self::TEXT_ANIMATED_EFFECTS,           'effect' => 'hide' ] )
+			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_TRIGGER ],         'value' => [ 'on_scroll', 'play_with_scroll' ],   'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_WRAPPER ],         'value' => 'custom',                              'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_START_POSITION ],  'value' => 'custom',                              'effect' => 'hide' ] )
+			->get();
+		$this->register_responsive_string( $schema, self::TEXT_START_CUSTOM, 'top top', $custom_start_deps );
+
+		$custom_end_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_EFFECT ],         'value' => self::TEXT_ANIMATED_EFFECTS,           'effect' => 'hide' ] )
+			->where( [ 'operator' => 'in', 'path' => [ self::TEXT_TRIGGER ],        'value' => [ 'on_scroll', 'play_with_scroll' ],   'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_WRAPPER ],        'value' => 'custom',                              'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_END_POSITION ],   'value' => 'custom',                              'effect' => 'hide' ] )
+			->get();
+		$this->register_responsive_string( $schema, self::TEXT_END_CUSTOM, 'bottom top', $custom_end_deps );
+
+		// Markers boolean — non-responsive in v3, same gating as scroll-custom block.
+		$schema[ self::TEXT_MARKERS ] = Boolean_Prop_Type::make()
+			->default( false )
+			->set_dependencies( $scroll_custom_deps );
+
+		/* ---------- text-invert specific (effect = text_invert) ---------- */
+
+		$invert_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_invert' );
+		$this->register_responsive_string( $schema, self::TEXT_INVERT_START, 'top 85%',       $invert_deps );
+		$this->register_responsive_string( $schema, self::TEXT_INVERT_END,   'bottom center', $invert_deps );
+
+		/* ---------- text-spin specific (effect = text_spin) ---------- */
+
+		$spin_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_spin' );
+
+		// Spin color — single hex string, not responsive (v3 had no responsive on it).
+		$schema[ self::TEXT_SPIN_COLOR ] = String_Prop_Type::make()
+			->default( '' )
+			->set_dependencies( $spin_deps );
+
+		// Spin Start / End / Toggle Action — only on spin + on_scroll trigger.
+		$spin_scroll_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_EFFECT ],  'value' => 'text_spin', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ self::TEXT_TRIGGER ], 'value' => 'on_scroll', 'effect' => 'hide' ] )
+			->get();
+		$this->register_responsive_string( $schema, self::TEXT_SPIN_START, 'top 50%',    $spin_scroll_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SPIN_END,   'bottom 30%', $spin_scroll_deps );
+
+		// Toggle action is non-responsive in v3.
+		$schema[ self::TEXT_SPIN_TOGGLE ] = String_Prop_Type::make()
+			->default( 'play none none reverse' )
+			->set_dependencies( $spin_scroll_deps );
+
+		/* ---------- cross-cutting: Scrub (animated except text_invert + trigger=on_scroll) ---------- */
+
+		$scrub_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [
+				'operator' => 'in',
+				'path'     => [ self::TEXT_EFFECT ],
+				'value'    => array_values( array_diff( self::TEXT_ANIMATED_EFFECTS, [ 'text_invert' ] ) ),
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ self::TEXT_TRIGGER ],
+				'value'    => 'on_scroll',
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		$schema[ self::TEXT_SCRUB ] = Boolean_Prop_Type::make()
+			->default( false )
+			->set_dependencies( $scrub_deps );
+
+		/* ---------- text-scale specific (effect = text_scale) ---------- */
+
+		$scale_deps = $this->dep_eq( self::TEXT_EFFECT, 'text_scale' );
+
+		$this->register_responsive_string( $schema, self::TEXT_SCALE_EASE,  'back',  $scale_deps, array_keys( self::scale_eases() ) );
+		$this->register_responsive_number( $schema, self::TEXT_SCALE_NUM,   1.5,     $scale_deps );
+		$this->register_responsive_string( $schema, self::TEXT_SCALE_BREAK, 'lines', $scale_deps, array_keys( self::scale_break_modes() ) );
+
 		return $schema;
 	}
 
@@ -393,5 +529,38 @@ final class Schema {
 
 	public static function text_animation_widgets(): array {
 		return [ 'e-heading' ];
+	}
+
+	/** Scroll position enum used by Start / End position SELECTs. */
+	public static function scroll_positions(): array {
+		return [
+			'top top', 'top center', 'top bottom',
+			'center top', 'center center', 'center bottom',
+			'bottom top', 'bottom center', 'bottom bottom',
+			'custom',
+		];
+	}
+
+	/** Easing options for text_scale animation. */
+	public static function scale_eases(): array {
+		return [
+			'power2.out' => 'Power2.out',
+			'bounce'     => 'Bounce',
+			'back'       => 'Back',
+			'elastic'    => 'Elastic',
+			'slowmo'     => 'Slowmo',
+			'stepped'    => 'Stepped',
+			'sine'       => 'Sine',
+			'expo'       => 'Expo',
+		];
+	}
+
+	/** Text-break modes for text_scale animation. */
+	public static function scale_break_modes(): array {
+		return [
+			'lines' => 'Lines',
+			'words' => 'Words',
+			'chars' => 'Chars',
+		];
 	}
 }

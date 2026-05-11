@@ -1,6 +1,8 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
+use WCF_ADDONS\Atomic\Bootstrap;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -97,12 +99,37 @@ final class Render {
 			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x' ],
 			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         -80 ],
 			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50' ],
+
+			/* scroll trigger settings */
+			Schema::TEXT_START_TRIGGER    => [ 'data-aae-text-start-trigger',    '' ],
+			Schema::TEXT_END_TRIGGER      => [ 'data-aae-text-end-trigger',      '' ],
+			Schema::TEXT_START_POSITION   => [ 'data-aae-text-start',            'top top' ],
+			Schema::TEXT_START_CUSTOM     => [ 'data-aae-text-start-custom',     'top top' ],
+			Schema::TEXT_END_POSITION     => [ 'data-aae-text-end',              'bottom top' ],
+			Schema::TEXT_END_CUSTOM       => [ 'data-aae-text-end-custom',       'bottom top' ],
+
+			/* text-invert specific */
+			Schema::TEXT_INVERT_START     => [ 'data-aae-text-invert-start',     'top 85%' ],
+			Schema::TEXT_INVERT_END       => [ 'data-aae-text-invert-end',       'bottom center' ],
+
+			/* text-spin specific */
+			Schema::TEXT_SPIN_START       => [ 'data-aae-text-spin-start',       'top 50%' ],
+			Schema::TEXT_SPIN_END         => [ 'data-aae-text-spin-end',         'bottom 30%' ],
+
+			/* text-scale specific */
+			Schema::TEXT_SCALE_EASE       => [ 'data-aae-text-scale-ease',       'back' ],
+			Schema::TEXT_SCALE_NUM        => [ 'data-aae-text-scale-num',        1.5 ],
+			Schema::TEXT_SCALE_BREAK      => [ 'data-aae-text-scale-break',      'lines' ],
 		];
 
-		// Non-responsive attrs (toggle + legacy alias).
+		// Non-responsive attrs (toggle + legacy alias + non-responsive v3 controls).
 		$attrs = [
 			'data-aae-anim'               => $effect,
 			'data-aae-text-enable-editor' => ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ? '1' : '0',
+			'data-aae-text-markers'       => ! empty( $settings[ Schema::TEXT_MARKERS ] )        ? 'true' : 'false',
+			'data-aae-text-scrub'         => ! empty( $settings[ Schema::TEXT_SCRUB ] )          ? 'yes'  : '',
+			'data-aae-text-spin-color'    => is_string( $settings[ Schema::TEXT_SPIN_COLOR ]  ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_COLOR ]  : '',
+			'data-aae-text-spin-toggle'   => is_string( $settings[ Schema::TEXT_SPIN_TOGGLE ] ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_TOGGLE ] : 'play none none reverse',
 		];
 
 		$extra_bps = Schema::get_extra_breakpoints();

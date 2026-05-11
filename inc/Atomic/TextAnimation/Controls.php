@@ -6,6 +6,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
+use WCF_ADDONS\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -98,16 +99,22 @@ final class Controls {
 	}
 
 	private function build_text_animation_section(): Section {
-		$effect_opts   = $this->options_from_map( Schema::text_effects() );
-		$trigger_opts  = $this->options_from_map( Schema::text_triggers() );
-		$wrapper_opts  = [
+		$effect_opts        = $this->options_from_map( Schema::text_effects() );
+		$trigger_opts       = $this->options_from_map( Schema::text_triggers() );
+		$wrapper_opts       = [
 			[ 'value' => 'default', 'label' => __( 'Default', self::TD ) ],
 			[ 'value' => 'custom',  'label' => __( 'Custom',  self::TD ) ],
 		];
-		$rot_dir_opts  = [
+		$rot_dir_opts       = [
 			[ 'value' => 'x', 'label' => 'X' ],
 			[ 'value' => 'y', 'label' => 'Y' ],
 		];
+		$scroll_pos_opts    = array_map(
+			static fn( $v ) => [ 'value' => $v, 'label' => ucwords( str_replace( '_', ' ', $v ) ) ],
+			Schema::scroll_positions()
+		);
+		$scale_ease_opts    = $this->options_from_map( Schema::scale_eases() );
+		$scale_break_opts   = $this->options_from_map( Schema::scale_break_modes() );
 
 		return Section::make()
 			->set_label( __( 'Text Animation', self::TD ) )
@@ -133,6 +140,54 @@ final class Controls {
 				...$this->responsive_rows( Schema::TEXT_WRAPPER_SELECTOR, __( 'Custom Wrapper Selector', self::TD ),
 					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.my-wrapper' ) ),
 
+				/* Scroll trigger settings — only when wrapper=custom + scroll trigger */
+				...$this->responsive_rows( Schema::TEXT_START_TRIGGER, __( 'Start Trigger', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.start_area' ) ),
+
+				...$this->responsive_rows( Schema::TEXT_END_TRIGGER, __( 'End Trigger', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( '.end_area' ) ),
+
+				...$this->responsive_rows( Schema::TEXT_START_POSITION, __( 'Start', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scroll_pos_opts ) ),
+
+				...$this->responsive_rows( Schema::TEXT_START_CUSTOM, __( 'Custom Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top top+=100' ) ),
+
+				...$this->responsive_rows( Schema::TEXT_END_POSITION, __( 'End', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scroll_pos_opts ) ),
+
+				...$this->responsive_rows( Schema::TEXT_END_CUSTOM, __( 'Custom End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom top+=100' ) ),
+
+				Switch_Control::bind_to( Schema::TEXT_MARKERS )
+					->set_label( __( 'Markers', self::TD ) ),
+
+				/* Text-invert specific — only when effect=text_invert */
+				...$this->responsive_rows( Schema::TEXT_INVERT_START, __( 'Invert Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top 85%' ) ),
+
+				...$this->responsive_rows( Schema::TEXT_INVERT_END, __( 'Invert End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom center' ) ),
+
+				/* Text-spin specific — only when effect=text_spin */
+				Text_Control::bind_to( Schema::TEXT_SPIN_COLOR )
+					->set_label( __( 'Spin Text Color', self::TD ) )
+					->set_placeholder( '#ff0000' ),
+
+				...$this->responsive_rows( Schema::TEXT_SPIN_START, __( 'Spin Start', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top 50%' ) ),
+
+				...$this->responsive_rows( Schema::TEXT_SPIN_END, __( 'Spin End', self::TD ),
+					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'bottom 30%' ) ),
+
+				Text_Control::bind_to( Schema::TEXT_SPIN_TOGGLE )
+					->set_label( __( 'Toggle Actions', self::TD ) )
+					->set_placeholder( 'play none none reverse' ),
+
+				/* Scrub — animated (not text_invert) + scroll trigger */
+				Switch_Control::bind_to( Schema::TEXT_SCRUB )
+					->set_label( __( 'Scrub', self::TD ) ),
+
 				/* Numeric responsive settings */
 				...$this->responsive_number( Schema::TEXT_DELAY,       __( 'Delay',       self::TD ) ),
 				...$this->responsive_number( Schema::TEXT_DURATION,    __( 'Duration',    self::TD ) ),
@@ -150,6 +205,15 @@ final class Controls {
 				/* Transform Origin — responsive */
 				...$this->responsive_rows( Schema::TEXT_TRANSFORM_ORIGIN, __( 'Transform Origin', self::TD ),
 					fn( $p, $l ) => Text_Control::bind_to( $p )->set_label( $l )->set_placeholder( 'top center -50' ) ),
+
+				/* Text-scale specific — only when effect=text_scale */
+				...$this->responsive_rows( Schema::TEXT_SCALE_EASE, __( 'Scale Ease', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scale_ease_opts ) ),
+
+				...$this->responsive_number( Schema::TEXT_SCALE_NUM, __( 'Scale', self::TD ) ),
+
+				...$this->responsive_rows( Schema::TEXT_SCALE_BREAK, __( 'Text Break By', self::TD ),
+					fn( $p, $l ) => Select_Control::bind_to( $p )->set_label( $l )->set_options( $scale_break_opts ) ),
 
 				Switch_Control::bind_to( Schema::TEXT_ENABLE_EDITOR )
 					->set_label( __( 'Enable On Editor', self::TD ) )
