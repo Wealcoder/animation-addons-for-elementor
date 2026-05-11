@@ -90,11 +90,6 @@ final class Controls {
 				Switch_Control::bind_to( Schema::ANIM_ENABLE_EDITOR )
 					->set_label( __( 'Enable On Editor', self::TD ) )
 					->set_description( __( 'For better performance in editor mode, keep the setting turned off.', self::TD ) ),
-
-				// Marker control — replaced in the panel by a "Play Now" button via editor-bridge.js.
-				Switch_Control::bind_to( Schema::ANIM_PLAY_TOKEN )
-					->set_label( __( 'Play Animation', self::TD ) )
-					->set_meta( [ 'aaePlayButton' => true ] ),
 			] );
 	}
 
@@ -218,11 +213,6 @@ final class Controls {
 				Switch_Control::bind_to( Schema::TEXT_ENABLE_EDITOR )
 					->set_label( __( 'Enable On Editor', self::TD ) )
 					->set_description( __( 'For better performance in editor mode, keep the setting turned off.', self::TD ) ),
-
-				// Marker control — replaced in the panel by a "Play Now" button via editor-bridge.js.
-				Switch_Control::bind_to( Schema::TEXT_PLAY_TOKEN )
-					->set_label( __( 'Play Animation', self::TD ) )
-					->set_meta( [ 'aaePlayButton' => true ] ),
 			] );
 	}
 
