@@ -11,9 +11,9 @@ final class Assets {
 	const BUILD_DIR   = 'assets/build/modules/atomic/';
 
 	public function register(): void {
-		add_action( 'wp_enqueue_scripts',                     [ $this, 'enqueue_frontend' ], 100 );
-		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_frontend' ], 100 );
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_bridge' ], 100 );
+		add_action( 'wp_enqueue_scripts',                [ $this, 'enqueue_frontend' ], 100 );
+		add_action( 'elementor/preview/enqueue_scripts', [ $this, 'enqueue_frontend' ], 100 );
+		// editor-bridge JS no longer needed — controls are now plain UI without aaePlayButton shim.
 	}
 
 	
@@ -36,18 +36,6 @@ final class Assets {
 			self::HANDLE,
 			WCF_ADDONS_URL . self::BUILD_DIR . 'frontend.js',
 			$deps,
-			$asset['version'],
-			true
-		);
-	}
-
-	public function enqueue_editor_bridge(): void {
-		$asset = $this->load_asset( 'editor-bridge' );
-
-		wp_enqueue_script(
-			self::HANDLE . '-editor-bridge',
-			WCF_ADDONS_URL . self::BUILD_DIR . 'editor-bridge.js',
-			$asset['dependencies'],
 			$asset['version'],
 			true
 		);
