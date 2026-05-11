@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic;
+namespace WCF_ADDONS\Atomic\TextAnimation;
 
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;

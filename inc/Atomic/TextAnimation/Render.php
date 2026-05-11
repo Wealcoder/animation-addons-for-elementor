@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic;
+namespace WCF_ADDONS\Atomic\TextAnimation;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

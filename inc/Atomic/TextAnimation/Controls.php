@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic;
+namespace WCF_ADDONS\Atomic\TextAnimation;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;

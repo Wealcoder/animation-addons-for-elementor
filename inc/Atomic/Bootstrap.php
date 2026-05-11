@@ -17,10 +17,11 @@ final class Bootstrap {
 		if ( version_compare( ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '<' ) ) {
 			return;
 		}
+	    //  text animation extentation for heading and paragraph
+		( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
 
-		( new Schema() )->register();
-		( new Controls() )->register();
-		( new Render() )->register();
 		( new Assets() )->register();
 	}
 
