@@ -201,8 +201,9 @@ export function morphPanelRowToReact({ label: targetLabel, render }) {
 
 		const host = document.createElement('div');
 		host.className = 'aae-react-control-host';
-		host.style.width = '100%';
-		host.style.flex  = '1 1 100%';
+		// !important via setProperty to defeat MUI inline-style overrides.
+		host.style.setProperty('width', '100%', 'important');
+		host.style.setProperty('flex',  '1 1 100%', 'important');
 
 		// Replace the row's existing editable area, but keep the label.
 		const editable = pickEditableCell(row);
@@ -210,18 +211,23 @@ export function morphPanelRowToReact({ label: targetLabel, render }) {
 		const parent = editable.parentElement;
 		parent.replaceChild(host, editable);
 
-		// Stack label above the React host. By default atomic rows are
-		// flex-direction:row (label left, control right) — but our React
-		// content is wider than a single input so we lay it out as a column
-		// and let the host take the full row width.
-		const previousStyles = {
-			flexDirection: parent.style.flexDirection,
-			alignItems:    parent.style.alignItems,
-			gap:           parent.style.gap,
-		};
-		parent.style.flexDirection = 'column';
-		parent.style.alignItems    = 'stretch';
-		if (!parent.style.gap) parent.style.gap = '8px';
+		// Force the row + the host's direct parent to stack as a column. MUI
+		// usually keeps a row flex-direction:row inline, so we override with
+		// !important and remember the previous values to restore on unmount.
+		const stylableAncestors = uniqueAncestors([ parent, row ]);
+		const previousStyles = stylableAncestors.map((el) => ({
+			el,
+			display:       el.style.display,
+			flexDirection: el.style.flexDirection,
+			alignItems:    el.style.alignItems,
+			gap:           el.style.gap,
+		}));
+		for (const el of stylableAncestors) {
+			el.style.setProperty('display',        'flex',    'important');
+			el.style.setProperty('flex-direction', 'column',  'important');
+			el.style.setProperty('align-items',    'stretch', 'important');
+			if (!el.style.gap) el.style.gap = '8px';
+		}
 
 		const root = createRoot(host);
 		root.render(render(container));
@@ -237,20 +243,39 @@ export function morphPanelRowToReact({ label: targetLabel, render }) {
 		row.dataset[MORPHED_FLAG] = '1';
 	}
 
+	function uniqueAncestors(nodes) {
+		const out = [];
+		const seen = new Set();
+		for (const n of nodes) {
+			if (n && !seen.has(n)) {
+				out.push(n);
+				seen.add(n);
+			}
+		}
+		return out;
+	}
+
 	function unmountRow(row) {
 		const entry = REACT_ROOTS.get(row);
 		if (!entry) return;
 		try { entry.root.unmount(); } catch (_) {}
 
-		// Restore the original editable node and the parent's pre-morph styles
-		// (so PHP's original control would still work if we toggle off the morph).
+		// Restore the original editable node and every ancestor's pre-morph
+		// styles (so PHP's original control would still work if morph is
+		// toggled off).
 		if (entry.host && entry.host.parentElement && entry.previousNode) {
 			entry.host.parentElement.replaceChild(entry.previousNode, entry.host);
 		}
-		if (entry.parent && entry.previousStyles) {
-			entry.parent.style.flexDirection = entry.previousStyles.flexDirection || '';
-			entry.parent.style.alignItems    = entry.previousStyles.alignItems    || '';
-			entry.parent.style.gap           = entry.previousStyles.gap           || '';
+		if (Array.isArray(entry.previousStyles)) {
+			for (const prev of entry.previousStyles) {
+				prev.el.style.removeProperty('display');
+				prev.el.style.removeProperty('flex-direction');
+				prev.el.style.removeProperty('align-items');
+				if (prev.display)       prev.el.style.display       = prev.display;
+				if (prev.flexDirection) prev.el.style.flexDirection = prev.flexDirection;
+				if (prev.alignItems)    prev.el.style.alignItems    = prev.alignItems;
+				prev.el.style.gap = prev.gap || '';
+			}
 		}
 
 		REACT_ROOTS.delete(row);
