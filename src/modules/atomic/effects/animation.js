@@ -1,23 +1,21 @@
 /* eslint-env browser */
 
 import { PRESETS, RESET_TO } from '../presets';
-import { getGsap, getScrollTrigger, pickResponsive } from '../common';
 
 /**
- * Parse a numeric data-attr while respecting the schema default. `|| fallback`
- * would also replace a legitimate 0 — we want "attr missing OR not a number
- * → fallback", but a real 0 should pass through.
+ * Shared helpers come from window.AAEADDON (set up by common.js). NEVER
+ * `import` from '../common' — that would inline ~1.5 KB of helper code into
+ * every effect bundle. With 4-5 effects on a page that's 6+ KB of duplication.
+ *
+ * Effect bundles are enqueued AFTER common.js by Assets.php (dep chain), so
+ * window.AAEADDON is always present by the time this module's top-level runs.
  */
-function numOr(raw, fallback) {
-	if (raw === undefined || raw === null || raw === '') return fallback;
-	const n = parseFloat(raw);
-	return Number.isFinite(n) ? n : fallback;
-}
+const { getGsap, getScrollTrigger, pickResponsive, numOr } = window.AAEADDON;
 
 /**
  * Animation Effect Bundle — text + regular
  *
- * Self-registers with the core runtime (window.AAERegistry) when this file
+ * Self-registers with the core runtime (window.AAEADDON) when this file
  * loads. Server-side Render.php enqueues this bundle only on pages that
  * actually use a text or regular animation; otherwise the bytes never ship.
  *
@@ -297,35 +295,26 @@ function bindText(el, config) {
  * Self-register with the core runtime
  *
  * register() is idempotent (deduped by name), so even if Render.php
- * accidentally enqueues this bundle twice nothing breaks.
+ * accidentally enqueues this bundle twice nothing breaks. Order matters:
+ * text registers first so co-rendered elements bind to text precedence.
  * =================================================================== */
 
-function registerWhenReady() {
-	if (!window.AAERegistry) {
-		// Core hasn't booted yet — retry on next microtask.
-		Promise.resolve().then(registerWhenReady);
-		return;
-	}
+window.AAEADDON.register({
+	name:      'text',
+	selector:  '[data-aae-text-anim]',
+	boundFlag: 'aae-text-anim-bound',
+	playedKey: TEXT_PLAYED,
+	read:      readText,
+	play:      playText,
+	bind:      bindText,
+});
 
-	window.AAERegistry.register({
-		name:      'text',
-		selector:  '[data-aae-text-anim]',
-		boundFlag: 'aae-text-anim-bound',
-		playedKey: TEXT_PLAYED,
-		read:      readText,
-		play:      playText,
-		bind:      bindText,
-	});
-
-	window.AAERegistry.register({
-		name:      'regular',
-		selector:  '[data-aae-anim]',
-		boundFlag: 'aae-anim-bound',
-		playedKey: REGULAR_PLAYED,
-		read:      readRegular,
-		play:      playRegular,
-		bind:      bindRegular,
-	});
-}
-
-registerWhenReady();
+window.AAEADDON.register({
+	name:      'regular',
+	selector:  '[data-aae-anim]',
+	boundFlag: 'aae-anim-bound',
+	playedKey: REGULAR_PLAYED,
+	read:      readRegular,
+	play:      playRegular,
+	bind:      bindRegular,
+});

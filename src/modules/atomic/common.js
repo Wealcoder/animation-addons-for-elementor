@@ -5,7 +5,7 @@
  *
  * This is the always-loaded core. Each animation kind lives in its own
  * per-bundle file under `effects/` and registers itself with the runtime
- * at load time via `window.AAERegistry.register(kind)`.
+ * at load time via `window.AAEADDONRegistry.register(kind)`.
  *
  * Loading flow (server-driven):
  *   1. Render.php sees an AAE setting on a widget and enqueues frontend.js.
@@ -33,19 +33,24 @@
  */
 
 /* =====================================================================
- * Shared helpers — exported for per-effect bundles
+ * Shared helpers
+ *
+ * Exposed on `window.AAEADDON` (see bottom of file). Per-effect bundles MUST
+ * NOT `import` these — that would inline them into every bundle. Read
+ * from window.AAEADDON at runtime instead. This keeps shared code in one
+ * file (common.js) and effect bundles small (~3-4 KB each).
  * =================================================================== */
 
-export function getGsap() {
+function getGsap() {
 	return typeof window !== 'undefined' ? window.gsap : null;
 }
 
-export function getScrollTrigger() {
+function getScrollTrigger() {
 	return typeof window !== 'undefined' ? window.ScrollTrigger : null;
 }
 
 /** Snake-case breakpoint key → camelCase suffix for dataset access. */
-export function bpToSuffix(bp) {
+function bpToSuffix(bp) {
 	return bp.split('_')
 		.map((p) => p.charAt(0).toUpperCase() + p.slice(1))
 		.join('');
@@ -55,7 +60,7 @@ export function bpToSuffix(bp) {
  * Active breakpoint key for the current viewport. Prefers Elementor's own
  * resolver. Falls back to a minimal width check.
  */
-export function currentBreakpoint() {
+function currentBreakpoint() {
 	const ef = window.elementorFrontend;
 	if (typeof ef?.getCurrentDeviceMode === 'function') {
 		try {
@@ -73,7 +78,7 @@ export function currentBreakpoint() {
 }
 
 /** Cascade: for each mode, parent chain to walk for a non-empty value. */
-export const BP_CASCADE = {
+const BP_CASCADE = {
 	mobile:       [ 'mobile', 'tablet' ],
 	mobile_extra: [ 'mobile_extra', 'mobile', 'tablet' ],
 	tablet:       [ 'tablet' ],
@@ -84,7 +89,7 @@ export const BP_CASCADE = {
 };
 
 /** Pick a `data-aae-*` value for the active breakpoint, walking the cascade. */
-export function pickResponsive(el, baseKey) {
+function pickResponsive(el, baseKey) {
 	const bp = currentBreakpoint();
 	const chain = BP_CASCADE[bp] || [];
 	for (const step of chain) {
@@ -92,6 +97,17 @@ export function pickResponsive(el, baseKey) {
 		if (v !== undefined && v !== '') return v;
 	}
 	return el.dataset[baseKey];
+}
+
+/**
+ * Parse a numeric data-attr while respecting the schema default. `|| fallback`
+ * would also replace a legitimate 0 — we want "attr missing OR not a number
+ * → fallback", but a real 0 should pass through.
+ */
+function numOr(raw, fallback) {
+	if (raw === undefined || raw === null || raw === '') return fallback;
+	const n = parseFloat(raw);
+	return Number.isFinite(n) ? n : fallback;
 }
 
 /* =====================================================================
@@ -197,9 +213,27 @@ const Registry = {
 	replay,
 };
 
-window.AAERegistry = Registry;
+// Single namespace for both runtime control AND shared helpers, so future
+// effect bundles never need to `import` anything from this file. Read
+// helpers off window.AAEADDON at module init time.
+window.AAEADDON = {
+	// helpers
+	getGsap,
+	getScrollTrigger,
+	bpToSuffix,
+	currentBreakpoint,
+	pickResponsive,
+	numOr,
+	BP_CASCADE,
+	// registry / dispatcher
+	register: Registry.register,
+	scan,
+	rebind,
+	replay,
+};
 
-// Backwards-compat alias used by editor-bridge.js — the existing API.
+// Legacy aliases — existing callers still work.
+window.AAEADDONRegistry = Registry;
 window.aaeAtomicAnimations = { scan, rebind, replay };
 
 /* =====================================================================
