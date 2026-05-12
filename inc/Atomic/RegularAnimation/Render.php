@@ -54,20 +54,108 @@ final class Render {
 	}
 
 	private function build_attrs( array $settings ): array {
-		$effect = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
+		$effect           = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
+		$parallax_enabled = ! empty( $settings[ Schema::PARALLAX_ENABLE ] );
 
-		if ( ! $effect || 'none' === $effect ) {
-			return [];
+		$attrs = [];
+
+		// --- Animation attrs (only when an effect is selected) ---
+		if ( $effect && 'none' !== $effect ) {
+			$attrs['data-aae-anim']     = $effect;
+			$attrs['data-aae-method']   = $settings[ Schema::ANIM_METHOD ]  ?? 'from';
+			$attrs['data-aae-trigger']  = $settings[ Schema::ANIM_TRIGGER ] ?? 'on_scroll';
+			$attrs['data-aae-easing']   = $settings[ Schema::ANIM_EASING ]  ?? 'power2.out';
+			$attrs['data-aae-duration'] = (string) ( $settings[ Schema::ANIM_DURATION ] ?? 1.5 );
+			$attrs['data-aae-delay']    = (string) ( $settings[ Schema::ANIM_DELAY ]    ?? 0.15 );
+
+			$trigger_selector = $settings[ Schema::ANIM_TRIGGER_SELECTOR ] ?? '';
+			if ( '' !== $trigger_selector ) {
+				$attrs['data-aae-trigger-selector'] = (string) $trigger_selector;
+			}
+
+			// Scroll-trigger block — only emit when wrapper=custom.
+			$wrapper = $settings[ Schema::ANIM_WRAPPER ] ?? 'default';
+			if ( 'custom' === $wrapper ) {
+				$attrs['data-aae-wrapper']        = 'custom';
+				$attrs['data-aae-start-trigger']  = (string) ( $settings[ Schema::ANIM_START_TRIGGER ]  ?? '' );
+				$attrs['data-aae-end-trigger']    = (string) ( $settings[ Schema::ANIM_END_TRIGGER ]    ?? '' );
+				$attrs['data-aae-start-position'] = (string) ( $settings[ Schema::ANIM_START_POSITION ] ?? 'top top' );
+				$attrs['data-aae-end-position']   = (string) ( $settings[ Schema::ANIM_END_POSITION ]   ?? 'bottom top' );
+
+				if ( 'custom' === ( $settings[ Schema::ANIM_START_POSITION ] ?? '' ) ) {
+					$attrs['data-aae-start-custom'] = (string) ( $settings[ Schema::ANIM_START_CUSTOM ] ?? '' );
+				}
+				if ( 'custom' === ( $settings[ Schema::ANIM_END_POSITION ] ?? '' ) ) {
+					$attrs['data-aae-end-custom'] = (string) ( $settings[ Schema::ANIM_END_CUSTOM ] ?? '' );
+				}
+
+				if ( ! empty( $settings[ Schema::ANIM_MARKERS ] ) ) {
+					$attrs['data-aae-markers'] = 'true';
+				}
+			}
+
+			// Fade-specific
+			if ( 'fade' === $effect ) {
+				$attrs['data-aae-fade-from']   = $settings[ Schema::ANIM_FADE_FROM ] ?? 'bottom';
+				$fade_offset = $settings[ Schema::ANIM_FADE_OFFSET ] ?? null;
+				if ( null !== $fade_offset && '' !== $fade_offset ) {
+					$attrs['data-aae-fade-offset'] = (string) $fade_offset;
+				}
+				if ( 'scale' === ( $settings[ Schema::ANIM_FADE_FROM ] ?? '' ) ) {
+					$attrs['data-aae-scale'] = (string) ( $settings[ Schema::ANIM_SCALE ] ?? 0.7 );
+				}
+			}
+
+			// 3D Move-specific
+			if ( 'move' === $effect ) {
+				$attrs['data-aae-rotation-dir']     = $settings[ Schema::ANIM_ROTATION_DIR ]     ?? 'x';
+				$attrs['data-aae-rotation']         = (string) ( $settings[ Schema::ANIM_ROTATION ] ?? -80 );
+				$attrs['data-aae-transform-origin'] = $settings[ Schema::ANIM_TRANSFORM_ORIGIN ] ?? 'top center -50';
+			}
+
+			// Custom-specific: zip the two parallel arrays (keys + values) by index
+			// into "property=value;property=value;..." for JS to split on ';' then '='.
+			// A row is emitted only when its property name is a non-empty, non-"none" string.
+			if ( 'custom' === $effect ) {
+				$keys   = $settings[ Schema::ANIM_CUSTOM_PROP_KEYS ]   ?? [];
+				$values = $settings[ Schema::ANIM_CUSTOM_PROP_VALUES ] ?? [];
+
+				if ( is_array( $keys ) && ! empty( $keys ) ) {
+					$pairs = [];
+					$count = count( $keys );
+					for ( $i = 0; $i < $count; $i++ ) {
+						$k = is_string( $keys[ $i ] ?? null ) ? trim( $keys[ $i ] ) : '';
+						if ( '' === $k || 'none' === $k ) {
+							continue;
+						}
+						$v = is_string( $values[ $i ] ?? null ) ? trim( $values[ $i ] ) : '';
+						$pairs[] = $k . '=' . $v;
+					}
+					if ( ! empty( $pairs ) ) {
+						$attrs['data-aae-custom-props'] = implode( ';', $pairs );
+					}
+				}
+			}
+
+			if ( ! empty( $settings[ Schema::ANIM_ENABLE_EDITOR ] ) ) {
+				$attrs['data-aae-enable-editor'] = '1';
+			}
 		}
 
-		return [
-			'data-aae-anim'     => $effect,
-			'data-aae-trigger'  => $settings[ Schema::ANIM_TRIGGER ]  ?? 'in-view',
-			'data-aae-duration' => (string) ( $settings[ Schema::ANIM_DURATION ] ?? 600 ),
-			'data-aae-delay'    => (string) ( $settings[ Schema::ANIM_DELAY ]    ?? 0 ),
-			'data-aae-easing'   => $settings[ Schema::ANIM_EASING ]   ?? 'power2.out',
-			'data-aae-repeat'   => (string) ( $settings[ Schema::ANIM_REPEAT ]   ?? 0 ),
-		];
+		// --- Parallax attrs (independent of animation effect) ---
+		if ( $parallax_enabled ) {
+			$attrs['data-aae-parallax'] = '1';
+			$speed = $settings[ Schema::PARALLAX_SPEED ] ?? null;
+			$lag   = $settings[ Schema::PARALLAX_LAG ]   ?? null;
+			if ( null !== $speed && '' !== $speed ) {
+				$attrs['data-speed'] = (string) $speed;
+			}
+			if ( null !== $lag && '' !== $lag ) {
+				$attrs['data-lag'] = (string) $lag;
+			}
+		}
+
+		return $attrs;
 	}
 
 	/**

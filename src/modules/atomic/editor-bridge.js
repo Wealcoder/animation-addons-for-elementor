@@ -6,6 +6,7 @@ import { tryPipe, resetPipeState } from './editor-bridge/preview-pipe';
 import { startLiveBridge, resetLiveBridgeFlag } from './editor-bridge/live-bridge';
 import { startPanelObserver } from './editor-bridge/play-button';
 import { startResponsiveBridge, queueResponsiveScan } from './editor-bridge/responsive-bridge';
+import { startCustomPropsBridge } from './editor-bridge/custom-props';
 
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
@@ -55,6 +56,7 @@ function bootstrap() {
 	startLiveBridge(queueResponsiveScan);
 
 	startResponsiveBridge();
+	startCustomPropsBridge();
 }
 
 if (window.elementor && window.elementor.on) {
