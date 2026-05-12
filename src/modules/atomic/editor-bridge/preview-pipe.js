@@ -2,15 +2,18 @@
 
 import { getPreviewWindow } from './helpers';
 import { track } from './disposables';
+import { runInitialReplayAll } from './initial-replay';
+import { seedAllAnimatedContainers } from './seed-canvas';
 
 /**
  * Preview-iframe event pipe.
  *
  * Atomic widget re-renders inside the iframe fire `elementor/element/render`.
  * The animation runtime needs to rebind+scan those elements so newly-rendered
- * nodes pick up their data-aae-* attributes. The runtime API is exposed on
- * the iframe window as `aaeAtomicAnimations` — we wait for it to appear and
- * then forward render events into rebind/scan.
+ * nodes pick up their entry in the per-feature interactions map (keyed by
+ * Elementor's universal `data-interaction-id`). The runtime API is exposed
+ * on the iframe window as `aaeAtomicAnimations` — we wait for it to appear
+ * and then forward render events into rebind/scan.
  */
 
 const MAX_PIPE_ATTEMPTS = 50;
@@ -31,6 +34,16 @@ function pipePreviewRenderEvents() {
 	win.addEventListener('elementor/element/render', handler);
 	track(() => {
 		try { win.removeEventListener('elementor/element/render', handler); } catch (_) { }
+	});
+
+	// Atomic widgets in the editor render via React client-side — the PHP
+	// Render hook never fires for them, so the iframe ships without any
+	// AAE_INTERACTIONS_* maps. Seed them from JS by walking Elementor's
+	// container tree. seed-canvas retries on its own (atomic widgets mount
+	// async after `preview:loaded`); we only kick off the first-load replay
+	// once it actually populates the maps.
+	seedAllAnimatedContainers(() => {
+		runInitialReplayAll();
 	});
 
 	return true;

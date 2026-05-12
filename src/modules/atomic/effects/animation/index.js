@@ -16,25 +16,35 @@
  * regular effect for legacy CSS). register() is idempotent (dedupe by name).
  */
 
-import { readRegular, playRegular, bindRegular, REGULAR_PLAYED } from './regular';
-import { readText,    playText,    bindText,    TEXT_PLAYED    } from './text';
+import { readRegular, playRegular, bindRegular, resetRegular, REGULAR_PLAYED, ANIM_MAP } from './regular';
+import { readText,    playText,    bindText,    resetText,    TEXT_PLAYED,    TEXT_MAP  } from './text';
+import { cleanupTriggerOn } from './triggers';
 
+// Every kind dispatches on Elementor's universal `data-interaction-id`
+// (no custom DOM attrs from us). Per-kind `mapName` is the disambiguator:
+// `text` reads window.AAE_INTERACTIONS_TEXT[id], `regular` reads
+// window.AAE_INTERACTIONS_ANIM[id]. An element can have entries in both
+// maps and gets bound by both kinds independently.
 window.AAEADDON.register({
-	name:      'text',
-	selector:  '[data-aae-text-anim]',
-	boundFlag: 'aae-text-anim-bound',
-	playedKey: TEXT_PLAYED,
-	read:      readText,
-	play:      playText,
-	bind:      bindText,
+	name:       'text',
+	mapName:    TEXT_MAP,
+	boundFlag:  'aae-text-anim-bound',
+	playedKey:  TEXT_PLAYED,
+	read:       readText,
+	play:       playText,
+	bind:       bindText,
+	unbind:     cleanupTriggerOn,
+	reset:      resetText,
 });
 
 window.AAEADDON.register({
-	name:      'regular',
-	selector:  '[data-aae-anim]',
-	boundFlag: 'aae-anim-bound',
-	playedKey: REGULAR_PLAYED,
-	read:      readRegular,
-	play:      playRegular,
-	bind:      bindRegular,
+	name:       'regular',
+	mapName:    ANIM_MAP,
+	boundFlag:  'aae-anim-bound',
+	playedKey:  REGULAR_PLAYED,
+	read:       readRegular,
+	play:       playRegular,
+	bind:       bindRegular,
+	unbind:     cleanupTriggerOn,
+	reset:      resetRegular,
 });

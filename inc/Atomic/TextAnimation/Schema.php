@@ -395,6 +395,7 @@ final class Schema {
 
 	public static function text_triggers(): array {
 		return [
+			'in-view'          => 'In View',
 			'on_scroll'        => 'On Scroll',
 			'on_page_load'     => 'On Page Load',
 			'play_with_scroll' => 'Play With Scroll',

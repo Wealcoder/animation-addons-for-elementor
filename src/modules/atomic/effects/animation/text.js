@@ -4,34 +4,44 @@ import { wireTrigger } from './triggers';
 
 /**
  * Text animation kind — char/word/move/reveal/scale/invert/spin.
- *   data-aae-text-anim → effect name
- *   data-aae-text-*    → per-effect config (responsive via pickResponsive)
+ *
+ * Reads its config from `window.AAE_INTERACTIONS_TEXT[el.dataset.aaeTextId]`.
+ * Responsive values are flat per-bp keys on the config (e.g. `duration`,
+ * `duration_tablet`, `duration_mobile`) resolved via `pickConfigResponsive`.
  *
  * Helpers come from window.AAEADDON. See note in regular.js.
  */
-const { getGsap, pickResponsive, numOr } = window.AAEADDON;
+const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
+
+export const TEXT_MAP = 'AAE_INTERACTIONS_TEXT';
+
+/** Read a config field with responsive cascade + a JS-side default. */
+function r(cfg, key, fallback) {
+	const v = pickConfigResponsive(cfg, key);
+	return (v === undefined || v === '') ? fallback : v;
+}
 
 export const TEXT_PLAYED = '__aaeTextPlayed';
 
 export function readText(el) {
-	const effect = pickResponsive(el, 'aaeTextAnim') || 'none';
-	if (!effect || effect === 'none') return null;
+	const cfg = configFor(el, TEXT_MAP);
+	if (!cfg || !cfg.effect || cfg.effect === 'none') return null;
 	return {
-		effect,
-		trigger:         pickResponsive(el, 'aaeTextTrigger')         || 'on_scroll',
-		triggerSelector: pickResponsive(el, 'aaeTextTriggerSelector') || '',
-		wrapper:         pickResponsive(el, 'aaeTextWrapper')         || 'default',
-		wrapperSelector: pickResponsive(el, 'aaeTextWrapperSelector') || '',
-		// Defaults match Schema::RESPONSIVE_NUMBER_SETTINGS — Render.php omits
-		// attrs whose value equals the default, so these fallbacks restore them.
-		delay:           numOr(pickResponsive(el, 'aaeTextDelay'),      0.15),
-		duration:        numOr(pickResponsive(el, 'aaeTextDuration'),   1),
-		stagger:         numOr(pickResponsive(el, 'aaeTextStagger'),    0.02),
-		translateX:      numOr(pickResponsive(el, 'aaeTextTranslateX'), 20),
-		translateY:      numOr(pickResponsive(el, 'aaeTextTranslateY'), 0),
-		rotationDir:     pickResponsive(el, 'aaeTextRotationDir')     || 'x',
-		rotation:        numOr(pickResponsive(el, 'aaeTextRotation'),  -80),
-		transformOrigin: pickResponsive(el, 'aaeTextTransformOrigin') || 'top center -50',
+		effect:          cfg.effect,
+		trigger:         r(cfg, 'trigger', 'on_scroll'),
+		triggerSelector: r(cfg, 'triggerSelector', ''),
+		wrapper:         r(cfg, 'wrapper', 'default'),
+		wrapperSelector: r(cfg, 'wrapperSelector', ''),
+		// Defaults mirror Schema::RESPONSIVE_NUMBER_SETTINGS — Render.php
+		// omits keys equal to the default, so these fallbacks restore them.
+		delay:           Number(r(cfg, 'delay',      0.15)),
+		duration:        Number(r(cfg, 'duration',   1)),
+		stagger:         Number(r(cfg, 'stagger',    0.02)),
+		translateX:      Number(r(cfg, 'translateX', 20)),
+		translateY:      Number(r(cfg, 'translateY', 0)),
+		rotationDir:     r(cfg, 'rotationDir', 'x'),
+		rotation:        Number(r(cfg, 'rotation', -80)),
+		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
 	};
 }
 
@@ -130,6 +140,25 @@ function textTween(effect, config, pieces) {
 	}
 }
 
+/**
+ * Restore the element to its pre-animation state — kill the tween and
+ * un-split the text pieces back into a single text node. Used when the
+ * editor's `Enable On Editor` toggle flips OFF so the canvas reflects
+ * "this widget won't animate" instead of getting stuck mid-tween.
+ */
+export function resetText(el) {
+	if (el[TEXT_PLAYED]) {
+		el[TEXT_PLAYED].kill();
+		delete el[TEXT_PLAYED];
+	}
+	// Flatten <span class="aae-text-piece"> back to plain text. textContent
+	// getter joins all descendant text, the setter replaces children with a
+	// single text node — un-splits in one step.
+	if (el.querySelector('span.aae-text-piece')) {
+		el.textContent = el.textContent;
+	}
+}
+
 export function playText(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
@@ -154,19 +183,63 @@ export function playText(el, config) {
 	});
 }
 
-/** Map text-anim's trigger vocabulary to the shared dispatcher's modes. */
+/** Build a PAUSED text tween used by `play_with_scroll` — ScrollTrigger
+ *  advances its progress to match scroll position (forward on wheel-down,
+ *  reverse on wheel-up). Returns null if GSAP isn't loaded or the effect
+ *  has no tween descriptor. */
+function buildScrubbedText(el, config) {
+	const gsap = getGsap();
+	if (!gsap) return null;
+
+	if (el[TEXT_PLAYED]) {
+		el[TEXT_PLAYED].kill();
+	}
+
+	const splitMode = config.effect === 'word' ? 'word' : 'char';
+	const pieces = splitTextInto(el, splitMode);
+	if (!pieces.length) return null;
+
+	const tween = textTween(config.effect, config, pieces);
+	if (!tween) return null;
+
+	el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, {
+		...tween.to,
+		duration: config.duration,
+		delay:    config.delay,
+		stagger:  config.stagger,
+		ease:     'none',   // scrub ignores easing — keep linear progress
+		paused:   true,
+	});
+	return el[TEXT_PLAYED];
+}
+
+/** Map text-anim's trigger vocabulary to the shared dispatcher's modes.
+ *  Mirrors TextAnimation\Schema::text_triggers(). */
 function modeFor(trigger) {
+	if (trigger === 'in-view')          return 'in-view';
+	if (trigger === 'on_scroll')        return 'scroll-tied';
+	if (trigger === 'play_with_scroll') return 'scrub';
 	if (trigger === 'on_page_load')     return 'page-load';
-	if (trigger === 'mouseover')         return 'hover';
-	if (trigger === 'click')             return 'click';
-	if (trigger === 'play_with_scroll')  return 'scroll-tied';
-	return 'in-view'; // 'on_scroll' and anything unrecognised
+	if (trigger === 'mouseover')        return 'hover';
+	if (trigger === 'click')            return 'click';
+	return 'in-view'; // safe default for unrecognised values
+}
+
+/** Resolve `triggerSelector` to a DOM node, but only for hover/click —
+ *  Schema gates the selector field to those triggers, and v3 only honours
+ *  it there. Empty string or no-match → undefined, dispatcher falls back to el. */
+function resolveTriggerEl(mode, selector) {
+	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
+	return document.querySelector(selector) || undefined;
 }
 
 export function bindText(el, config) {
+	const mode = modeFor(config.trigger);
 	wireTrigger({
 		el,
-		mode: modeFor(config.trigger),
-		play: () => playText(el, config),
+		mode,
+		triggerEl:     resolveTriggerEl(mode, config.triggerSelector),
+		play:          () => playText(el, config),
+		buildScrubbed: () => buildScrubbedText(el, config),
 	});
 }

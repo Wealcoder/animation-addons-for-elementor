@@ -1,18 +1,18 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
+use WCF_ADDONS\Atomic\InteractionsMap;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Atomic widgets don't honour `_wrapper` render attributes (their Twig
- * templates render their own root tag) and `Attributes_Transformer` returns
- * null at resolve time, so adding to `settings.attributes` is also a dead end.
+ * Renders Text Animation onto heading-class atomic widgets.
  *
- * The reliable path is `elementor/widget/render_content`, which receives the
- * already-rendered HTML and the widget instance — we splice our data-attrs
- * into the first opening tag.
+ * Migrated from per-element data-attrs to the InteractionsMap pattern:
+ * one `data-aae-id` attr per element + a single inline JS map at the end
+ * of <body> holding every animation config on the page.
  */
 final class Render {
 
@@ -26,7 +26,6 @@ final class Render {
 		}
 
 		$type = $widget->get_element_type();
-
 		if ( ! in_array( $type, Schema::text_animation_widgets(), true ) ) {
 			return $html;
 		}
@@ -35,98 +34,105 @@ final class Render {
 			? $widget->get_atomic_settings()
 			: [];
 
-		$attrs = $this->build_text_attrs( $settings );
-		if ( empty( $attrs ) ) {
+		$config = $this->build_config( $settings );
+		if ( null === $config ) {
 			return $html;
 		}
 
-		// Enqueue the effect bundle on demand. Dependency chain (declared in
-		// Assets.php) auto-pulls the core runtime. WordPress dedupes; no-op
-		// on the editor preview (every bundle pre-enqueued there).
+		$id = method_exists( $widget, 'get_id' ) ? (string) $widget->get_id() : '';
+		if ( '' === $id ) {
+			return $html;
+		}
+
+		InteractionsMap::register( 'text', $id, $config );
+
 		if ( ! is_admin() ) {
 			wp_enqueue_script( 'aae-effect-animation' );
 		}
 
-		return $this->splice_attrs_into_first_tag( $html, $attrs );
+		// No DOM attr to inject — we piggyback on Elementor's own
+		// `data-interaction-id` (universal on atomic widgets, frontend +
+		// editor). JS looks up window.AAE_INTERACTIONS_TEXT[interactionId].
+		return $html;
 	}
 
-	private function build_text_attrs( array $settings ): array {
+	/**
+	 * Build the JS-side text config. Returns null when no effect is selected.
+	 *
+	 * Responsive values are stored as flat per-breakpoint keys
+	 * (e.g. `duration`, `duration_tablet`, `duration_mobile`) — only emitted
+	 * when the breakpoint value actually overrides the cascaded parent. JS
+	 * walks BP_CASCADE at read time to pick the right value.
+	 */
+	private function build_config( array $settings ): ?array {
 		$effect = $settings[ Schema::TEXT_EFFECT ] ?? 'none';
-
 		if ( ! $effect || 'none' === $effect ) {
-			return [];
+			return null;
 		}
 
-		// Per-attr table: [ data-attr base, default value, effect_family|null ].
-		// When a value equals its default we skip the attr — the JS reader uses
-		// `|| <default>` (or numOr in animation.js), so a missing attr lands on
-		// the same value. Defaults mirror Schema::RESPONSIVE_NUMBER_SETTINGS
-		// where they overlap; the dispatch attr (data-aae-text-anim) is emitted
-		// unconditionally below and is intentionally absent from this table.
-		$translate_family = Schema::TEXT_TRANSLATE_EFFECTS; // char + word
+		// Per-attr table: [ config key, default value, effect_family|null ].
+		// effect_family null = always emit (subject to scroll-only gating).
+		// Defaults mirror RESPONSIVE_NUMBER_SETTINGS where they overlap.
+		$translate_family = Schema::TEXT_TRANSLATE_EFFECTS;
+
 		$responsive_map = [
-			Schema::TEXT_TRIGGER          => [ 'data-aae-text-trigger',          'on_scroll',       null ],
-			Schema::TEXT_TRIGGER_SELECTOR => [ 'data-aae-text-trigger-selector', '',                null ],
-			Schema::TEXT_WRAPPER          => [ 'data-aae-text-wrapper',          'default',         null ],
-			Schema::TEXT_WRAPPER_SELECTOR => [ 'data-aae-text-wrapper-selector', '',                null ],
-			Schema::TEXT_DELAY            => [ 'data-aae-text-delay',            Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],         null ],
-			Schema::TEXT_DURATION         => [ 'data-aae-text-duration',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],      Schema::TEXT_DURATION_EFFECTS ],
-			Schema::TEXT_STAGGER          => [ 'data-aae-text-stagger',          Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],       Schema::TEXT_DURATION_EFFECTS ],
-			Schema::TEXT_TRANSLATE_X      => [ 'data-aae-text-translate-x',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ],   $translate_family ],
-			Schema::TEXT_TRANSLATE_Y      => [ 'data-aae-text-translate-y',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ],   $translate_family ],
-			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x',                                                               $translate_family ],
-			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],      $translate_family ],
-			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50',                                                  $translate_family ],
+			Schema::TEXT_TRIGGER          => [ 'trigger',         'on_scroll',                                                       null ],
+			Schema::TEXT_TRIGGER_SELECTOR => [ 'triggerSelector', '',                                                                null ],
+			Schema::TEXT_WRAPPER          => [ 'wrapper',         'default',                                                         null ],
+			Schema::TEXT_WRAPPER_SELECTOR => [ 'wrapperSelector', '',                                                                null ],
+			Schema::TEXT_DELAY            => [ 'delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],          null ],
+			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],       Schema::TEXT_DURATION_EFFECTS ],
+			Schema::TEXT_STAGGER          => [ 'stagger',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],        Schema::TEXT_DURATION_EFFECTS ],
+			Schema::TEXT_TRANSLATE_X      => [ 'translateX',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ],    $translate_family ],
+			Schema::TEXT_TRANSLATE_Y      => [ 'translateY',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ],    $translate_family ],
+			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                               $translate_family ],
+			Schema::TEXT_ROTATION         => [ 'rotation',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],       $translate_family ],
+			Schema::TEXT_TRANSFORM_ORIGIN => [ 'transformOrigin', 'top center -50',                                                  $translate_family ],
 
-			/* scroll trigger settings — only when trigger=on_scroll */
-			Schema::TEXT_START_TRIGGER    => [ 'data-aae-text-start-trigger',    '',          null ],
-			Schema::TEXT_END_TRIGGER      => [ 'data-aae-text-end-trigger',      '',          null ],
-			Schema::TEXT_START_POSITION   => [ 'data-aae-text-start',            'top top',   null ],
-			Schema::TEXT_START_CUSTOM     => [ 'data-aae-text-start-custom',     'top top',   null ],
-			Schema::TEXT_END_POSITION     => [ 'data-aae-text-end',              'bottom top', null ],
-			Schema::TEXT_END_CUSTOM       => [ 'data-aae-text-end-custom',       'bottom top', null ],
+			/* scroll trigger settings — only when trigger=on_scroll/play_with_scroll */
+			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
+			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
+			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top top',    null ],
+			Schema::TEXT_START_CUSTOM     => [ 'startCustom',   'top top',    null ],
+			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom top', null ],
+			Schema::TEXT_END_CUSTOM       => [ 'endCustom',     'bottom top', null ],
 
-			/* text-invert specific */
-			Schema::TEXT_INVERT_START     => [ 'data-aae-text-invert-start',     'top 85%',        Schema::TEXT_INVERT_EFFECTS ],
-			Schema::TEXT_INVERT_END       => [ 'data-aae-text-invert-end',       'bottom center',  Schema::TEXT_INVERT_EFFECTS ],
+			Schema::TEXT_INVERT_START     => [ 'invertStart',   'top 85%',       Schema::TEXT_INVERT_EFFECTS ],
+			Schema::TEXT_INVERT_END       => [ 'invertEnd',     'bottom center', Schema::TEXT_INVERT_EFFECTS ],
 
-			/* text-spin specific */
-			Schema::TEXT_SPIN_START       => [ 'data-aae-text-spin-start',       'top 50%',        Schema::TEXT_SPIN_EFFECTS ],
-			Schema::TEXT_SPIN_END         => [ 'data-aae-text-spin-end',         'bottom 30%',     Schema::TEXT_SPIN_EFFECTS ],
+			Schema::TEXT_SPIN_START       => [ 'spinStart',     'top 50%',    Schema::TEXT_SPIN_EFFECTS ],
+			Schema::TEXT_SPIN_END         => [ 'spinEnd',       'bottom 30%', Schema::TEXT_SPIN_EFFECTS ],
 
-			/* text-scale specific */
-			Schema::TEXT_SCALE_EASE       => [ 'data-aae-text-scale-ease',       'back',                                                                Schema::TEXT_SCALE_EFFECTS ],
-			Schema::TEXT_SCALE_NUM        => [ 'data-aae-text-scale-num',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],          Schema::TEXT_SCALE_EFFECTS ],
-			Schema::TEXT_SCALE_BREAK      => [ 'data-aae-text-scale-break',      'lines',                                                               Schema::TEXT_SCALE_EFFECTS ],
+			Schema::TEXT_SCALE_EASE       => [ 'scaleEase',     'back',                                                                Schema::TEXT_SCALE_EFFECTS ],
+			Schema::TEXT_SCALE_NUM        => [ 'scaleNum',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],          Schema::TEXT_SCALE_EFFECTS ],
+			Schema::TEXT_SCALE_BREAK      => [ 'scaleBreak',    'lines',                                                               Schema::TEXT_SCALE_EFFECTS ],
 		];
 
-		// Dispatch key always emits; the rest are emitted only when explicitly
-		// truthy. data-aae-anim belongs to RegularAnimation\Render and is NOT
-		// written here — both modules can co-render on the same element and
-		// the JS readers dispatch independently off their own dispatch attrs.
-		$attrs = [
-			'data-aae-text-anim' => $effect,
+		$config = [
+			'effect' => $effect,
 		];
+
+		// Non-responsive single-value flags.
 		if ( ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ) {
-			$attrs['data-aae-text-enable-editor'] = '1';
+			$config['enableEditor'] = true;
 		}
 		if ( ! empty( $settings[ Schema::TEXT_MARKERS ] ) ) {
-			$attrs['data-aae-text-markers'] = 'true';
+			$config['markers'] = true;
 		}
 		if ( 'text_spin' === $effect ) {
 			$spin_color = is_string( $settings[ Schema::TEXT_SPIN_COLOR ] ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_COLOR ] : '';
 			if ( '' !== $spin_color ) {
-				$attrs['data-aae-text-spin-color'] = $spin_color;
+				$config['spinColor'] = $spin_color;
 			}
 			$spin_toggle = is_string( $settings[ Schema::TEXT_SPIN_TOGGLE ] ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_TOGGLE ] : '';
 			if ( '' !== $spin_toggle && 'play none none reverse' !== $spin_toggle ) {
-				$attrs['data-aae-text-spin-toggle'] = $spin_toggle;
+				$config['spinToggle'] = $spin_toggle;
 			}
 		}
 
-		// Skip scroll-trigger attrs entirely when the widget isn't on-scroll.
-		$is_on_scroll = ( $settings[ Schema::TEXT_TRIGGER ] ?? 'on_scroll' ) === 'on_scroll';
-		$scroll_only_attrs = [
+		$is_on_scroll = ( $settings[ Schema::TEXT_TRIGGER ] ?? 'on_scroll' ) === 'on_scroll'
+			|| ( $settings[ Schema::TEXT_TRIGGER ] ?? '' ) === 'play_with_scroll';
+		$scroll_only_keys = [
 			Schema::TEXT_START_TRIGGER,
 			Schema::TEXT_END_TRIGGER,
 			Schema::TEXT_START_POSITION,
@@ -137,28 +143,27 @@ final class Render {
 
 		$extra_bps = Schema::get_extra_breakpoints();
 
-		foreach ( $responsive_map as $base_key => [ $base_attr, $default, $effect_family ] ) {
-			// Skip effect-specific attrs when the chosen effect doesn't use them.
+		foreach ( $responsive_map as $base_key => [ $config_key, $default, $effect_family ] ) {
+			// Skip effect-specific keys when the chosen effect doesn't use them.
 			if ( null !== $effect_family && ! in_array( $effect, $effect_family, true ) ) {
 				continue;
 			}
 
-			// Skip scroll-trigger attrs entirely when not on-scroll.
-			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_attrs, true ) ) {
+			// Skip scroll-trigger keys entirely when not on a scroll-style trigger.
+			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_keys, true ) ) {
 				continue;
 			}
 
 			$desktop_value = $settings[ $base_key ] ?? $default;
 
-			// Desktop: skip when value equals the JS-side default — the reader
-			// supplies that value when the attr is missing.
+			// Desktop: skip when value equals JS-side default — the reader
+			// supplies that value when the key is missing.
 			if ( (string) $desktop_value !== (string) $default ) {
-				$attrs[ $base_attr ] = (string) $desktop_value;
+				$config[ $config_key ] = $this->cast_value( $desktop_value );
 			}
 
-			// Per-breakpoint: emit only when the value actually overrides the
-			// cascaded parent. JS walks BP_CASCADE on read, so missing attrs
-			// inherit naturally — behavior unchanged, DOM smaller.
+			// Per-breakpoint: emit only when the value actually overrides
+			// the cascaded parent. JS walks BP_CASCADE on read.
 			$resolved_by_bp = [ 'desktop' => $desktop_value ];
 
 			foreach ( $extra_bps as $bp ) {
@@ -169,26 +174,34 @@ final class Render {
 
 				if ( null === $own || '' === $own ) {
 					$resolved_by_bp[ $bp ] = $parent;
-					continue; // pure inherit — skip the attr
+					continue;
 				}
 
 				$resolved_by_bp[ $bp ] = $own;
 
 				if ( (string) $own === (string) $parent ) {
-					continue; // identical to inherited value — skip the attr
+					continue;
 				}
 
-				$attrs[ $base_attr . '-' . $bp ] = (string) $own;
+				$config[ $config_key . '_' . $bp ] = $this->cast_value( $own );
 			}
 		}
 
-		return $attrs;
+		return $config;
+	}
+
+	/** Numeric strings round-trip as numbers; other strings stay as strings. */
+	private function cast_value( $v ) {
+		if ( is_bool( $v ) || is_int( $v ) || is_float( $v ) ) return $v;
+		if ( is_string( $v ) && is_numeric( $v ) ) {
+			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
+		}
+		return $v;
 	}
 
 	/**
-	 * Mirror of common.js BP_CASCADE — for a given breakpoint, find the nearest
-	 * already-resolved ancestor value. Used to decide whether emitting the
-	 * per-bp data-attr is redundant.
+	 * Mirror of common.js BP_CASCADE — for a given breakpoint, find the
+	 * nearest already-resolved ancestor value.
 	 */
 	private function cascade_parent( string $bp, array $resolved, $desktop_value ) {
 		static $cascade = [
@@ -208,27 +221,4 @@ final class Render {
 		return $desktop_value;
 	}
 
-	/**
-	 * Splice key="value" pairs into the first opening tag of $html.
-	 * Uses a single regex with a callback so we never touch later tags.
-	 */
-	private function splice_attrs_into_first_tag( string $html, array $attrs ): string {
-		$serialized = '';
-		foreach ( $attrs as $key => $value ) {
-			$serialized .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
-		}
-
-		$count = 0;
-		$out   = preg_replace_callback(
-			'/<([a-zA-Z][a-zA-Z0-9]*)\b/',
-			static function ( $matches ) use ( $serialized ) {
-				return $matches[0] . $serialized;
-			},
-			$html,
-			1, // only replace the first opening tag
-			$count
-		);
-
-		return $count > 0 && is_string( $out ) ? $out : $html;
-	}
 }

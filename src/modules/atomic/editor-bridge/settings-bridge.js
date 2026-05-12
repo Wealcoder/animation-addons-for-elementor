@@ -2,33 +2,48 @@
 
 import { getPreviewWindow, unwrap } from './helpers';
 import { featureFor } from './features';
-import { ALL_BREAKPOINT_KEYS, AAE_RESPONSIVE_BASES } from './responsive-config';
 
 /**
- * Settings → preview-DOM bridge.
+ * Settings → preview-iframe bridge (interactions-map flavour).
  *
- * Mirrors atomic widget settings into data-aae-* attributes on the preview
- * iframe's DOM whenever the user edits a control. The runtime in the iframe
- * watches those attributes (via animation.js) and re-binds animations on
- * change. Per-breakpoint variants are written too so device-mode preview
- * matches the published frontend exactly.
+ * Old flow: copy every setting onto a `data-aae-*` attr on the preview
+ * element, observe attr changes from inside the iframe to rebind.
+ *
+ * New flow: build a config object from the container's settings (mirroring
+ * what server-side Render.php builds at publish), write it into the iframe
+ * window's `window.AAE_INTERACTIONS[id]`, ensure the target carries
+ * `data-aae-id="{id}"`, then call rebind() inside the iframe so it re-reads.
+ *
+ * The container.id is the same value Elementor uses for `data-id` and what
+ * Render.php passes to InteractionsMap::register() at publish time.
  */
 
-/** Remove every per-breakpoint variant we may have set for one base data-attr. */
-function clearAllVariantAttrs(target, baseAttr) {
-	for (const bp of ALL_BREAKPOINT_KEYS) {
-		target.removeAttribute(baseAttr + '-' + bp);
+/**
+ * Build the config object the JS reader expects. Per-feature shape lives
+ * on the feature object (`feature.buildConfig`) so each feature owns its
+ * own setting→config mapping. Returns null when feature is "off" (effect
+ * = none / not selected).
+ */
+function buildConfigFromSettings(feature, container) {
+	const settings = container.settings?.attributes || {};
+	const enableValue = unwrap(settings[feature.enableSetting]);
+	if (!enableValue || enableValue === 'none') return null;
+
+	if (typeof feature.buildConfig === 'function') {
+		return feature.buildConfig(settings, unwrap);
 	}
+	return null;
 }
 
 /**
- * Write the container's current settings onto its preview-iframe target node.
- * Returns { feature, target, active } so callers can chain replay logic, or
- * null if the bridge can't be applied (no feature / no preview / no target).
+ * Write the container's settings into the preview iframe's interactions map
+ * for THIS feature (text → AAE_INTERACTIONS_TEXT, anim → AAE_INTERACTIONS_ANIM)
+ * AND ensure the target element carries the feature's dispatch attr.
+ * Returns { feature, target, active } or null if the bridge can't apply.
  */
 export function applySettingsToDom(container) {
 	const feature = featureFor(container);
-	if (!feature) return null;
+	if (!feature || !feature.mapName) return null;
 
 	const win = getPreviewWindow();
 	if (!win) return null;
@@ -36,52 +51,30 @@ export function applySettingsToDom(container) {
 	const target = feature.findTarget(win.document, container.id);
 	if (!target) return null;
 
-	const settings = container.settings.attributes || {};
-	const enableValue = unwrap(settings[feature.enableSetting]);
+	// No DOM attr to set — Elementor's own `data-interaction-id` (or the
+	// fallback `data-id`) is already on the target. We only manage the
+	// per-feature JS map below.
 
-	// Strip stale attrs first — base + every per-breakpoint variant.
-	for (const attr of Object.values(feature.attrMap)) {
-		target.removeAttribute(attr);
-		clearAllVariantAttrs(target, attr);
-	}
+	const cfg = buildConfigFromSettings(feature, container);
 
-	if (!enableValue || enableValue === 'none') {
+	const map = win[feature.mapName] = win[feature.mapName] || {};
+	const api = win.aaeAtomicAnimations;
+
+	if (!cfg) {
+		// Feature toggled off — drop our entry from the map and rebind so any
+		// previously-installed listeners / ScrollTriggers tear down. The DOM
+		// attr can stay; an empty config simply means no animation.
+		delete map[container.id];
+		if (api?.rebind) api.rebind(target);
 		return { feature, target, active: false };
 	}
 
-	// Cache desktop values so variants can inherit from them.
-	const desktopByAttr = {};
+	map[container.id] = cfg;
 
-	for (const [key, attr] of Object.entries(feature.attrMap)) {
-		let value = unwrap(settings[key]);
-		if (value === undefined || value === null) continue;
-		if (typeof value === 'boolean') value = value ? '1' : '0';
-		target.setAttribute(attr, String(value));
-		desktopByAttr[attr] = value;
-	}
-
-	// Write per-breakpoint variants for responsive settings. Cascade:
-	// empty variant → use the desktop value (same logic Render.php applies).
-	for (const base of AAE_RESPONSIVE_BASES) {
-		const baseAttr = feature.attrMap[base];
-		if (!baseAttr) continue; // Not a feature-tracked attr (e.g. wrapper isn't in attrMap)
-
-		const desktopValue = desktopByAttr[baseAttr];
-
-		for (const bp of ALL_BREAKPOINT_KEYS) {
-			const variantKey  = base + '_' + bp;
-			const variantAttr = baseAttr + '-' + bp;
-
-			let value = unwrap(settings[variantKey]);
-			if (value === undefined || value === null || value === '') {
-				value = desktopValue; // inherit
-			}
-			if (value === undefined || value === null) continue;
-			if (typeof value === 'boolean') value = value ? '1' : '0';
-
-			target.setAttribute(variantAttr, String(value));
-		}
-	}
+	// Tell the runtime to re-read the map and reconfigure listeners /
+	// ScrollTriggers. Without this, e.g. switching from On Click → On Scroll
+	// would leave the old click listener live until the next page reload.
+	if (api?.rebind) api.rebind(target);
 
 	return { feature, target, active: true };
 }

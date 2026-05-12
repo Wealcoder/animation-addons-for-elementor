@@ -3,6 +3,8 @@
 import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { tryPipe, resetPipeState } from './editor-bridge/preview-pipe';
+import { resetInitialReplayFlag } from './editor-bridge/initial-replay';
+import { resetSeedFlag } from './editor-bridge/seed-canvas';
 import { startLiveBridge, resetLiveBridgeFlag } from './editor-bridge/live-bridge';
 import { startPanelObserver } from './editor-bridge/play-button';
 import { startResponsiveBridge, queueResponsiveScan } from './editor-bridge/responsive-bridge';
@@ -46,6 +48,8 @@ function bootstrap() {
 		bootstrapped = false;
 		resetLiveBridgeFlag();
 		resetPipeState();
+		resetInitialReplayFlag();
+		resetSeedFlag();
 	}
 	bootstrapped = true;
 

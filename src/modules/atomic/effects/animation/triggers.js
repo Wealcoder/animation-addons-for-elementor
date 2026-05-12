@@ -3,65 +3,138 @@
 /**
  * Shared trigger dispatcher for every animation kind.
  *
- * Each kind owns its own trigger-name vocabulary (regular: in-view /
- * page-load / scroll-progress; text: on_scroll / on_page_load /
- * play_with_scroll / mouseover / click). Both vocabularies map onto the
- * same handful of wiring patterns — this file is the single home for
- * those patterns so new kinds (image, tilt, parallax…) never re-implement
- * them.
+ * Each kind owns its own trigger-name vocabulary (regular and text use:
+ * on_scroll / on_page_load / play_with_scroll / mouseover / click). All
+ * vocabularies map onto the same handful of wiring patterns — this file
+ * is the single home for those patterns so new kinds (image, tilt,
+ * parallax…) never re-implement them.
  *
  * Usage from a kind:
  *
  *   wireTrigger({
  *     el,
- *     mode: normalizedTriggerMode(config.trigger),  // see canonical names below
- *     play: () => playRegular(el, config),
+ *     mode: modeFor(config.trigger),
+ *     play:          () => playRegular(el, config),
+ *     buildScrubbed: () => buildScrubbedRegular(el, config),  // optional, scrub-only
  *   });
  *
  * Canonical modes (every kind maps its raw trigger name to one of these):
- *   - 'page-load'      → fire play() immediately
- *   - 'hover'          → fire on mouseenter
- *   - 'click'          → fire on click
- *   - 'scroll-tied'    → ScrollTrigger replay onEnter/onEnterBack
- *   - 'in-view'        → IntersectionObserver, fire once on enter (DEFAULT)
+ *   - 'page-load'   → fire play() immediately
+ *   - 'hover'       → fire on mouseenter
+ *   - 'click'       → fire on click
+ *   - 'scroll-tied' → ScrollTrigger replay (toggleActions, runs once forward
+ *                     per scroll-down entry). Plays via the play() callback.
+ *   - 'scrub'       → ScrollTrigger scrub (tween progress follows scroll
+ *                     position; reverses on scroll-up). Requires the kind
+ *                     to provide `buildScrubbed` that returns a PAUSED tween.
+ *   - 'in-view'     → ScrollTrigger once:true on enter (DEFAULT fallback;
+ *                     IntersectionObserver fallback if ScrollTrigger absent).
  *
  * Anything unrecognised falls through to in-view, which is the universal
- * safe default. The `scroll-progress` mode (scrubbing the tween to scroll
- * progress) is NOT generic — only `regular` supports it today because the
- * scrubbed tween targets need preset-specific configuration. That stays
- * inside regular.js.
+ * safe default.
  */
 const { getScrollTrigger } = window.AAEADDON;
 
-export function wireTrigger({ el, mode, play }) {
+const DISPOSE_KEY = '__aaeTriggerDispose';
+
+/**
+ * Tear down whatever wireTrigger previously installed on this element —
+ * DOM listeners, ScrollTrigger instances, IntersectionObservers. Safe to
+ * call on elements with no prior bind (no-op). Called both internally on
+ * every wireTrigger invocation AND by the runtime's rebind() path so the
+ * editor can rebind continuously without stacking handlers.
+ */
+export function cleanupTriggerOn(el) {
+	if (!el) return;
+	const dispose = el[DISPOSE_KEY];
+	if (typeof dispose === 'function') {
+		try { dispose(); } catch (_) { /* never let cleanup throw */ }
+	}
+	el[DISPOSE_KEY] = null;
+}
+
+export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl }) {
+	// Always clean up the previous wiring first — in the editor, settings
+	// changes fire rebind() which can re-call us on the same element many
+	// times. Without this, listeners and ScrollTriggers stack up.
+	cleanupTriggerOn(el);
+
 	if (mode === 'page-load') {
 		play();
+		// page-load has nothing to dispose — the tween itself is tracked
+		// by the kind's playedKey and killed on rebind by common.js.
 		return;
 	}
 
+	// hover / click can listen on a separate element when the kind has
+	// resolved a Trigger Selector (e.g. "#atomic-btn"). Defaults to el.
 	if (mode === 'hover') {
-		el.addEventListener('mouseenter', play);
+		const target = triggerEl || el;
+		target.addEventListener('mouseenter', play);
+		el[DISPOSE_KEY] = () => target.removeEventListener('mouseenter', play);
 		return;
 	}
 
 	if (mode === 'click') {
-		el.addEventListener('click', play);
+		// Warn once per element — in the editor, rebind() fires on every
+		// settings change, so a per-call warn() would spam the console.
+		if (!el.__aaeClickWarned) {
+			el.__aaeClickWarned = true;
+			console.warn('Click trigger is not recommended for accessibility reasons — prefer hover or in-view where possible', el);
+		}
+		const target = triggerEl || el;
+		target.addEventListener('click', play);
+		el[DISPOSE_KEY] = () => target.removeEventListener('click', play);
 		return;
 	}
 
 	const ScrollTrigger = getScrollTrigger();
-	if (mode === 'scroll-tied' && ScrollTrigger) {
-		ScrollTrigger.create({
+
+	// Scrub mode: tween progress follows scroll position. The kind must
+	// build a PAUSED tween and return it from buildScrubbed(); we hand it
+	// to ScrollTrigger as the `animation` so it can advance/reverse it.
+	if (mode === 'scrub' && ScrollTrigger && typeof buildScrubbed === 'function') {
+		const tween = buildScrubbed();
+		if (!tween) return;
+		const st = ScrollTrigger.create({
 			trigger: el,
-			start: 'top bottom',
-			end:   'bottom top',
-			onEnter:     play,
-			onEnterBack: play,
+			animation: tween,
+			start: 'top 85%',
+			end: 'top 30%',
+			scrub: true,
+			invalidateOnRefresh: true,
 		});
+		el[DISPOSE_KEY] = () => { st.kill(); tween.kill?.(); };
 		return;
 	}
 
-	// Default: in-view, play once on entry.
+	if (mode === 'scroll-tied' && ScrollTrigger) {
+		const st = ScrollTrigger.create({
+			trigger: el,
+			start: 'top 85%',
+			end: 'top 30%',
+			toggleActions: 'play none none none',
+			onEnter: play,
+		});
+		el[DISPOSE_KEY] = () => st.kill();
+		return;
+	}
+
+	// Default: in-view, play once when the element scrolls into view.
+	// Prefer ScrollTrigger so the timing stays in sync with SmoothScroll
+	// and the rest of the GSAP pipeline. IntersectionObserver is the
+	// fallback path when ScrollTrigger isn't loaded (rare).
+	if (ScrollTrigger) {
+		const st = ScrollTrigger.create({
+			trigger: el,
+			start: 'top 85%',
+			once: true,
+			onEnter: play,
+		});
+		el[DISPOSE_KEY] = () => st.kill();
+		return;
+	}
+
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach((entry) => {
 			if (!entry.isIntersecting) return;
@@ -70,4 +143,5 @@ export function wireTrigger({ el, mode, play }) {
 		});
 	}, { threshold: 0.15 });
 	observer.observe(el);
+	el[DISPOSE_KEY] = () => observer.disconnect();
 }

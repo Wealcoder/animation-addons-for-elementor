@@ -79,8 +79,13 @@ function buildPlayButton() {
 }
 
 function morphRowToButton(row) {
-	if (row.dataset[REPLACED_FLAG]) return;
-	row.dataset[REPLACED_FLAG] = '1';
+	// Skip only if the row STILL has our injected button. Elementor's panel
+	// re-renders (e.g. when a sibling row's dependency flips) can preserve
+	// the row node but swap its contents back to the original switch — in
+	// that case the dataset flag is stale and we must morph again.
+	if (row.dataset[REPLACED_FLAG] && row.querySelector(':scope .aae-play-now-btn')) {
+		return;
+	}
 
 	const valueCell =
 		row.querySelector('.MuiSwitch-root')
@@ -91,6 +96,7 @@ function morphRowToButton(row) {
 	if (!target || !target.parentElement) return;
 
 	target.parentElement.replaceChild(buildPlayButton(), target);
+	row.dataset[REPLACED_FLAG] = '1';
 }
 
 function scanPanelForPlayButton() {

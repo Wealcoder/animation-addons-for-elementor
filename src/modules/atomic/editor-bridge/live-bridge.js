@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { getSelectedContainer, unwrap } from './helpers';
+import { getSelectedContainer, unwrap, getPreviewWindow } from './helpers';
 import { track } from './disposables';
 import { applySettingsToDom, replayInPreview } from './settings-bridge';
 
@@ -48,12 +48,30 @@ function attachLiveBridge(container, onChange) {
 		if (typeof onChange === 'function') onChange();
 
 		const result = applySettingsToDom(container);
-		if (!result || !result.active) return;
+		if (!result) {
+			console.debug('[AAE] live-bridge: applySettingsToDom returned null');
+			return;
+		}
 
 		const autoKey = result.feature.autoReplaySetting;
-		if (autoKey && unwrap(container.settings.attributes[autoKey])) {
-			replayInPreview(result.target);
+		const autoOn  = autoKey ? !!unwrap(container.settings.attributes[autoKey]) : false;
+
+		console.debug(
+			`[AAE] live-bridge: feature=${result.feature.name} active=${result.active} autoKey=${autoKey} autoOn=${autoOn}`,
+		);
+
+		if (!result.active || !autoOn) {
+			const win = getPreviewWindow();
+			const api = win && win.aaeAtomicAnimations;
+			if (api?.reset) {
+				console.debug('[AAE] live-bridge: reset target');
+				api.reset(result.target);
+			}
+			return;
 		}
+
+		console.debug('[AAE] live-bridge: replay target');
+		replayInPreview(result.target);
 	};
 
 	activeDestroyHandler = () => detachLiveBridge();
