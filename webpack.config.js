@@ -25,7 +25,7 @@ module.exports = {
     "modules/atomic/editor-bridge": "./src/modules/atomic/editor-bridge.js",
     // Per-effect bundles. Each is loaded conditionally by Render.php only
     // when a widget on the page actually uses that effect.
-    "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation.js",
+    "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
