@@ -113,9 +113,6 @@ final class Render {
 		if ( ! empty( $settings[ Schema::TEXT_MARKERS ] ) ) {
 			$attrs['data-aae-text-markers'] = 'true';
 		}
-		if ( ! empty( $settings[ Schema::TEXT_SCRUB ] ) ) {
-			$attrs['data-aae-text-scrub'] = 'yes';
-		}
 		if ( 'text_spin' === $effect ) {
 			$spin_color = is_string( $settings[ Schema::TEXT_SPIN_COLOR ] ?? '' ) ? (string) $settings[ Schema::TEXT_SPIN_COLOR ] : '';
 			if ( '' !== $spin_color ) {

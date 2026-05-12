@@ -58,9 +58,6 @@ final class Schema {
 	const TEXT_SPIN_END    = 'aae_text_spin_end';     // v3 spin_text_end
 	const TEXT_SPIN_TOGGLE = 'aae_text_spin_toggle';  // v3 spin_text_toggle_action
 
-	/* ---- cross-cutting (animated except text_invert + scroll trigger) ---- */
-	const TEXT_SCRUB = 'aae_text_scrub';  // v3 spin_text_scrub (boolean)
-
 	/* ---- text-scale specific ---- */
 	const TEXT_SCALE_EASE  = 'aae_text_scale_ease';   // v3 scale_text_ease
 	const TEXT_SCALE_NUM   = 'aae_text_scale_num';    // v3 text_scale_num
@@ -299,27 +296,6 @@ final class Schema {
 		$schema[ self::TEXT_SPIN_TOGGLE ] = String_Prop_Type::make()
 			->default( 'play none none reverse' )
 			->set_dependencies( $spin_scroll_deps );
-
-		/* ---------- cross-cutting: Scrub (animated except text_invert + trigger=on_scroll) ---------- */
-
-		$scrub_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::TEXT_EFFECT ],
-				'value'    => array_values( array_diff( self::TEXT_ANIMATED_EFFECTS, [ 'text_invert' ] ) ),
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ self::TEXT_TRIGGER ],
-				'value'    => 'on_scroll',
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		$schema[ self::TEXT_SCRUB ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies( $scrub_deps );
 
 		/* ---------- text-scale specific (effect = text_scale) ---------- */
 

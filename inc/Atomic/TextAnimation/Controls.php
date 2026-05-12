@@ -123,10 +123,6 @@ final class Controls {
 					->set_label( __( 'Toggle Actions', self::TD ) )
 					->set_placeholder( 'play none none reverse' ),
 
-				/* Scrub — animated (not text_invert) + scroll trigger */
-				Switch_Control::bind_to( Schema::TEXT_SCRUB )
-					->set_label( __( 'Scrub', self::TD ) ),
-
 				/* Numeric responsive settings */
 				...$this->responsive_number( Schema::TEXT_DELAY,       __( 'Delay',       self::TD ) ),
 				...$this->responsive_number( Schema::TEXT_DURATION,    __( 'Duration',    self::TD ) ),
