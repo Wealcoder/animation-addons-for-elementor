@@ -6,27 +6,50 @@ import { tryPipe, resetPipeState } from './editor-bridge/preview-pipe';
 import { resetInitialReplayFlag } from './editor-bridge/initial-replay';
 import { resetSeedFlag } from './editor-bridge/seed-canvas';
 import { startLiveBridge, resetLiveBridgeFlag } from './editor-bridge/live-bridge';
-import { startPanelObserver } from './editor-bridge/play-button';
-import { startResponsiveBridge, queueResponsiveScan } from './editor-bridge/responsive-bridge';
-import { startCustomPropsBridge } from './editor-bridge/custom-props';
+import { registerResponsiveSection } from './responsive-section';
+import regularAnimationSection from './extensions/regular-animation/config';
+import textAnimationSection from './extensions/text-animation/config';
+import parallaxSection from './extensions/parallax/config';
+import imageAnimationSection from './extensions/image-animation/config';
+import imageHoverSection from './extensions/image-hover/config';
+
+/* =====================================================================
+ * Responsive sections (one section per AAE extension)
+ *
+ * Each extension declares a config table of fields (bind, label, control
+ * type, options, visibility predicate). registerResponsiveSection() adds
+ * the table to the in-memory registry and lazily installs ONE shared
+ * registerControlReplacement dispatcher. When Elementor renders the
+ * placeholder Text_Control bound to an extension's Section_Anchor prop,
+ * the dispatcher inspects propType.key, looks up the matching config,
+ * and renders <ResponsiveSection> in place of the Text_Control row —
+ * which renders one <ResponsiveRow> per (active-bp-visible) field.
+ *
+ * Adding a new section = one new extensions/<name>/config.js + one
+ * import + one registerResponsiveSection() call below. The PHP side
+ * supplies a Section_Anchor_Prop_Type subclass and a single anchor
+ * Text_Control inside its Section::make().
+ * =================================================================== */
+
+registerResponsiveSection( regularAnimationSection );
+registerResponsiveSection( textAnimationSection );
+registerResponsiveSection( parallaxSection );
+registerResponsiveSection( imageAnimationSection );
+registerResponsiveSection( imageHoverSection );
 
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *
- * Three responsibilities, each implemented in its own module under
+ * Two responsibilities, each implemented in its own module under
  * `editor-bridge/`:
  *
  *   1. Mirror atomic widget settings into preview-iframe DOM data-attrs
  *      live, as the user edits.            → settings-bridge + live-bridge
  *   2. Re-bind the runtime animation handler when elements re-render
  *      inside the iframe.                  → preview-pipe
- *   3. Inject a "Play Now" button into the panel that replays the
- *      animation on the active selection.  → play-button
  *
- * Plus three editor-UX polish layers:
- *   - responsive-visibility   hide rows that don't match the active device
- *   - responsive-placeholders show cascaded parent value as input hint
- *   - float-step-fix          let Duration / Delay accept decimals
+ * The "Play Now" button lives inside the responsive-section as a React
+ * 'play-button' control — see responsive-section/inputs/PlayButtonInput.jsx.
  *
  * Adding a new widget/effect = add one entry to FEATURES in
  * `editor-bridge/features.js`. Everything else flows from that table.
@@ -54,25 +77,13 @@ function bootstrap() {
 	bootstrapped = true;
 
 	tryPipe();
-
-	// The live-bridge invokes queueResponsiveScan after every settings
-	// mutation so placeholder hints refresh in step with edits.
-	startLiveBridge(queueResponsiveScan);
-
-	startResponsiveBridge();
-	startCustomPropsBridge();
+	startLiveBridge();
 }
 
 if (window.elementor && window.elementor.on) {
 	window.elementor.on('preview:loaded', bootstrap);
 } else {
 	document.addEventListener('DOMContentLoaded', bootstrap);
-}
-
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', startPanelObserver);
-} else {
-	startPanelObserver();
 }
 
 // Tear down on page unload as a final safety net.

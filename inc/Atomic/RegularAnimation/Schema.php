@@ -1,12 +1,9 @@
 <?php
 namespace WCF_ADDONS\Atomic\RegularAnimation;
 
-use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Array_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use WCF_ADDONS\Atomic\Schema_Helpers;
+use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,9 +16,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Atomic widgets validate that every control's bind_to() points at a TOP-LEVEL
  * key in the props schema. So we register one top-level prop per control;
- * show/hide is expressed via Dependency_Manager attached to the dependent prop.
+ * show/hide for responsive props is JS-driven via the responsive-section
+ * config table (see src/modules/atomic/extensions/regular-animation/config.js).
  */
 final class Schema {
+
+	/* ---------- section anchors ---------- */
+
+	// The section anchor is a sentinel prop whose only role is to give the
+	// JS-side <ResponsiveSection> component a $$type to hook on via
+	// registerControlReplacement. When the placeholder Text_Control bound to
+	// this prop renders, our dispatcher swaps it for the full responsive
+	// section (label + input + dot + active-bp visibility for every field).
+	const ANIM_SECTION_ANCHOR = 'aae_anim_section_anchor';
 
 	/* ---------- main animation prop names ---------- */
 	const ANIM_EFFECT           = 'aae_anim_effect';            // v3 wcf-animation
@@ -55,53 +62,17 @@ final class Schema {
 	const ANIM_TRANSFORM_ORIGIN = 'aae_anim_transform_origin'; // v3 wcf_a_transform_origin
 
 	/* ---------- custom effect specific ---------- */
-	// v3 had a 2-field REPEATER (property SELECT + value TEXT). Atomic's
-	// Repeatable_Control supports only ONE child control type per row, so we
-	// store data in TWO parallel String_Array props (index-aligned) but render
-	// ONE combined UI via a React morph (editor-bridge/custom-props.jsx).
-	//
-	//   - ANIM_CUSTOM_PROP_KEYS    — array of property names  (data only)
-	//   - ANIM_CUSTOM_PROP_VALUES  — array of values          (data only)
-	//   - ANIM_CUSTOM_PROPS_TRIGGER — boolean placeholder; its panel row is
-	//                                what the React UI morphs into a full
-	//                                property+value repeater.
-	const ANIM_CUSTOM_PROP_KEYS     = 'aae_anim_custom_prop_keys';    // v3 repeater.property column
-	const ANIM_CUSTOM_PROP_VALUES   = 'aae_anim_custom_prop_values';  // v3 repeater.value column
-	const ANIM_CUSTOM_PROPS_TRIGGER = 'aae_anim_custom_props_trigger'; // React-morph placeholder
+	// v3 had a 2-field REPEATER (property SELECT + value TEXT). v4 stores
+	// this as a Responsive_Json_Prop_Type — a permissive transformable whose
+	// per-breakpoint value is a plain array of { enabled, property, value }
+	// row objects. JS owns the row contract entirely (RepeaterInput inside
+	// the responsive-section); PHP just round-trips the payload.
+	const ANIM_CUSTOM_PROPS         = 'aae_anim_custom_props';
 
-	/* ---------- editor + play button ---------- */
+	/* ---------- editor toggle ---------- */
 	const ANIM_ENABLE_EDITOR = 'aae_anim_enable_editor';  // v3 wcf_enable_animation_editor
-	const ANIM_PLAY_TOKEN    = 'aae_anim_play_token';     // v3 play_animation_content (button)
 
-	/* ---------- parallax (Scroll Smoother) ---------- */
-	const PARALLAX_ENABLE = 'aae_parallax_enable';  // v3 wcf_enable_scroll_smoother
-	const PARALLAX_SPEED  = 'aae_parallax_speed';   // v3 data-speed
-	const PARALLAX_LAG    = 'aae_parallax_lag';     // v3 data-lag
-
-	// TODO(repeater): v3 aae_ani_custom_props REPEATER not yet ported.
-	// v4 Repeatable_Control requires Object_Prop_Type composition — separate task.
-
-	/* ---------- effect families ---------- */
-
-	/** All non-"none" effect values. */
-	const ANIMATED_EFFECTS = [ 'fade', 'move', 'custom' ];
-
-	/** Effects that expose Duration / Delay (v3 excludes none + custom — custom has its own repeater). */
-	const DURATION_EFFECTS = [ 'fade', 'move' ];
-
-	/** Effects that expose Ease (v3: any effect except none). */
-	const EASE_EFFECTS = [ 'fade', 'move', 'custom' ];
-
-	/* ---------- responsive defaults ---------- */
-
-	const BREAKPOINT_LABELS = [
-		'widescreen'   => 'Widescreen',
-		'laptop'       => 'Laptop',
-		'tablet_extra' => 'Tablet Extra',
-		'tablet'       => 'Tablet',
-		'mobile_extra' => 'Mobile Extra',
-		'mobile'       => 'Mobile',
-	];
+	/* ---------- responsive numeric defaults ---------- */
 
 	const RESPONSIVE_NUMBER_SETTINGS = [
 		self::ANIM_DELAY       => 0.15,
@@ -110,10 +81,6 @@ final class Schema {
 		self::ANIM_SCALE       => 0.7,
 		self::ANIM_ROTATION    => -80,
 	];
-
-	public static function breakpoint_prop( string $base, string $bp ): string {
-		return $base . '_' . $bp;
-	}
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_animation_props' ] );
@@ -124,410 +91,71 @@ final class Schema {
 			return $schema;
 		}
 
-		/* ---------- main animation ---------- */
+		/* ---------- section anchor ---------- */
 
-		// EFFECT + TRIGGER: deliberately registered WITHOUT enum at the schema
-		// level. An earlier stub of this Schema shipped a different option set
-		// ('fadeIn'/'slideUp' for effect, 'in-view'/'page-load' for trigger);
-		// pages saved against that stub would now fail "invalid_value" on
-		// publish if we hardened the enum here. The Select_Control still
-		// constrains the panel UI to the current option list, so accepting
-		// any string at the prop layer is the safe, forward-compatible choice.
-		$this->register_responsive_string( $schema, self::ANIM_EFFECT, 'none', null );
+		// One placeholder prop per section. Controls.php binds a Text_Control
+		// to it inside Section::make(); the JS-side registerResponsiveSection
+		// dispatcher matches the unique $$type and renders the full
+		// <ResponsiveSection> tree (label + input + dot + per-bp visibility
+		// for every field, driven by the config table in
+		// src/modules/atomic/extensions/regular-animation/config.js).
+		$schema[ self::ANIM_SECTION_ANCHOR ] = Section_Anchor_Prop_Type::make()->default( '' );
 
-		$anim_active = Schema_Helpers::dep_in( self::ANIM_EFFECT, self::ANIMATED_EFFECTS );
+		/* ---------- responsive props (visibility is JS-driven via the section config; no PHP set_dependencies) ----------
+		 *
+		 * Every responsive field stores under a single permissive type —
+		 * Responsive_Json_Prop_Type — whose value is a plain breakpoint map
+		 * { desktop: <scalar>, tablet: <scalar>|null, … }. PHP only validates
+		 * the outer envelope shape; the JS section owns per-cell semantics.
+		 *
+		 * Defaults wrap a desktop seed; non-desktop breakpoints are absent so
+		 * the cascade inherits from desktop.
+		 */
+		$schema[ self::ANIM_EFFECT ]            = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'none' ] );
+		$schema[ self::ANIM_METHOD ]            = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'from' ] );
+		$schema[ self::ANIM_TRIGGER ]           = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'on_scroll' ] );
+		$schema[ self::ANIM_TRIGGER_SELECTOR ]  = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 
-		// Method (From/To) — shown for fade/move/custom.
-		$this->register_responsive_string( $schema, self::ANIM_METHOD, 'from', $anim_active, array_keys( self::methods() ) );
+		$schema[ self::ANIM_WRAPPER ]           = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'default' ] );
+		$schema[ self::ANIM_START_TRIGGER ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
+		$schema[ self::ANIM_END_TRIGGER ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
+		$schema[ self::ANIM_START_POSITION ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
+		$schema[ self::ANIM_END_POSITION ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
+		$schema[ self::ANIM_START_CUSTOM ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
+		$schema[ self::ANIM_END_CUSTOM ]        = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
 
-		// Trigger — shown for fade/move/custom. No enum (see ANIM_EFFECT comment above).
-		$this->register_responsive_string( $schema, self::ANIM_TRIGGER, 'on_scroll', $anim_active );
+		$schema[ self::ANIM_DELAY ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DELAY ] ] );
+		$schema[ self::ANIM_DURATION ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DURATION ] ] );
+		$schema[ self::ANIM_EASING ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'power2.out' ] );
 
-		// Trigger Selector — only when trigger is hover/click AND animation is selected.
-		$trigger_selector_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_EFFECT ],
-				'value'    => self::ANIMATED_EFFECTS,
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_TRIGGER ],
-				'value'    => [ 'mouseover', 'click' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-		$this->register_responsive_string( $schema, self::ANIM_TRIGGER_SELECTOR, '', $trigger_selector_deps );
+		$schema[ self::ANIM_FADE_FROM ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom' ] );
+		$schema[ self::ANIM_FADE_OFFSET ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_FADE_OFFSET ] ] );
+		$schema[ self::ANIM_SCALE ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_SCALE ] ] );
 
-		/* ---------- scroll trigger block (wrapper=custom + scroll/play_with_scroll) ---------- */
+		$schema[ self::ANIM_ROTATION_DIR ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'x' ] );
+		$schema[ self::ANIM_ROTATION ]         = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_ROTATION ] ] );
+		$schema[ self::ANIM_TRANSFORM_ORIGIN ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top center -50' ] );
 
-		// Wrapper picker shows when trigger is on_scroll / play_with_scroll AND animation is selected.
-		$wrapper_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_EFFECT ],
-				'value'    => self::ANIMATED_EFFECTS,
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_TRIGGER ],
-				'value'    => [ 'on_scroll', 'play_with_scroll' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-		$this->register_responsive_string( $schema, self::ANIM_WRAPPER, 'default', $wrapper_deps, [ 'default', 'custom' ] );
+		/* ---------- non-responsive props ----------
+		 *
+		 * These stay outside the responsive section:
+		 *   - ANIM_MARKERS: previously gated on ANIM_EFFECT/TRIGGER/WRAPPER
+		 *     (now responsive). Visibility moves up into the JS — rendered as
+		 *     a plain Section item with its deps dropped. Always-visible
+		 *     for now.
+		 *   - ANIM_CUSTOM_PROPS: Responsive_Json_Prop_Type — per-bp array of
+		 *     row objects. The JS-side <RepeaterInput> inside the section
+		 *     owns row shape semantics; PHP just round-trips the payload.
+		 *     Visibility (effect=custom) is JS-driven.
+		 *   - ANIM_ENABLE_EDITOR: rendered as a non-responsive 'switch' row
+		 *     inside the section config; Play Animation is rendered as a
+		 *     'play-button' control with no underlying prop.
+		 */
 
-		// All scroll-trigger block fields share this combined dependency.
-		$scroll_custom_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_EFFECT ],
-				'value'    => self::ANIMATED_EFFECTS,
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_TRIGGER ],
-				'value'    => [ 'on_scroll', 'play_with_scroll' ],
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ self::ANIM_WRAPPER ],
-				'value'    => 'custom',
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		$this->register_responsive_string( $schema, self::ANIM_START_TRIGGER,  '',           $scroll_custom_deps );
-		$this->register_responsive_string( $schema, self::ANIM_END_TRIGGER,    '',           $scroll_custom_deps );
-		$this->register_responsive_string( $schema, self::ANIM_START_POSITION, 'top top',    $scroll_custom_deps, self::scroll_positions() );
-		$this->register_responsive_string( $schema, self::ANIM_END_POSITION,   'bottom top', $scroll_custom_deps, self::scroll_positions() );
-
-		// Custom Start text — show only when start position = 'custom' (+ scroll-custom).
-		$custom_start_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [ 'operator' => 'in', 'path' => [ self::ANIM_EFFECT ],         'value' => self::ANIMATED_EFFECTS,             'effect' => 'hide' ] )
-			->where( [ 'operator' => 'in', 'path' => [ self::ANIM_TRIGGER ],        'value' => [ 'on_scroll', 'play_with_scroll' ], 'effect' => 'hide' ] )
-			->where( [ 'operator' => 'eq', 'path' => [ self::ANIM_WRAPPER ],        'value' => 'custom',                            'effect' => 'hide' ] )
-			->where( [ 'operator' => 'eq', 'path' => [ self::ANIM_START_POSITION ], 'value' => 'custom',                            'effect' => 'hide' ] )
-			->get();
-		$this->register_responsive_string( $schema, self::ANIM_START_CUSTOM, 'top top', $custom_start_deps );
-
-		$custom_end_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [ 'operator' => 'in', 'path' => [ self::ANIM_EFFECT ],       'value' => self::ANIMATED_EFFECTS,             'effect' => 'hide' ] )
-			->where( [ 'operator' => 'in', 'path' => [ self::ANIM_TRIGGER ],      'value' => [ 'on_scroll', 'play_with_scroll' ], 'effect' => 'hide' ] )
-			->where( [ 'operator' => 'eq', 'path' => [ self::ANIM_WRAPPER ],      'value' => 'custom',                            'effect' => 'hide' ] )
-			->where( [ 'operator' => 'eq', 'path' => [ self::ANIM_END_POSITION ], 'value' => 'custom',                            'effect' => 'hide' ] )
-			->get();
-		$this->register_responsive_string( $schema, self::ANIM_END_CUSTOM, 'bottom top', $custom_end_deps );
-
-		// Markers — boolean (v3 had string 'true'/'false' SELECT, atomic uses Boolean).
-		$schema[ self::ANIM_MARKERS ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies( $scroll_custom_deps );
-
-		/* ---------- shared numeric (delay / duration) ---------- */
-
-		$duration_deps = Schema_Helpers::dep_in( self::ANIM_EFFECT, self::DURATION_EFFECTS );
-
-		$this->register_responsive_number( $schema, self::ANIM_DELAY,    self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DELAY ],    $duration_deps );
-		$this->register_responsive_number( $schema, self::ANIM_DURATION, self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DURATION ], $duration_deps );
-
-		/* ---------- easing (shown for any non-none effect) ---------- */
-
-		$ease_deps = Schema_Helpers::dep_in( self::ANIM_EFFECT, self::EASE_EFFECTS );
-		$this->register_responsive_string( $schema, self::ANIM_EASING, 'power2.out', $ease_deps, array_keys( self::eases() ) );
-
-		/* ---------- fade-specific ---------- */
-
-		$fade_deps = Schema_Helpers::dep_eq( self::ANIM_EFFECT, 'fade' );
-		$this->register_responsive_string( $schema, self::ANIM_FADE_FROM, 'bottom', $fade_deps, array_keys( self::fade_directions() ) );
-
-		// Fade offset — show only when fade-from is a directional value (not 'in' / 'scale').
-		$fade_offset_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ self::ANIM_EFFECT ],
-				'value'    => 'fade',
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'in',
-				'path'     => [ self::ANIM_FADE_FROM ],
-				'value'    => [ 'top', 'bottom', 'left', 'right' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-		$this->register_responsive_number( $schema, self::ANIM_FADE_OFFSET, self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_FADE_OFFSET ], $fade_offset_deps );
-
-		// Start Scale — show only when fade-from = scale.
-		$scale_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ self::ANIM_EFFECT ],
-				'value'    => 'fade',
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ self::ANIM_FADE_FROM ],
-				'value'    => 'scale',
-				'effect'   => 'hide',
-			] )
-			->get();
-		$this->register_responsive_number( $schema, self::ANIM_SCALE, self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_SCALE ], $scale_deps );
-
-		/* ---------- 3D move specific ---------- */
-
-		$move_deps = Schema_Helpers::dep_eq( self::ANIM_EFFECT, 'move' );
-
-		$this->register_responsive_string( $schema, self::ANIM_ROTATION_DIR, 'x', $move_deps, [ 'x', 'y' ] );
-		$this->register_responsive_number( $schema, self::ANIM_ROTATION, self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_ROTATION ], $move_deps );
-		$this->register_responsive_string( $schema, self::ANIM_TRANSFORM_ORIGIN, 'top center -50', $move_deps );
-
-		/* ---------- custom effect — properties repeater (React-driven) ---------- */
-
-		$custom_deps = Schema_Helpers::dep_eq( self::ANIM_EFFECT, 'custom' );
-
-		// Data props — read/written by the React UI; never bound to a control directly.
-		$schema[ self::ANIM_CUSTOM_PROP_KEYS ] = String_Array_Prop_Type::make()
-			->default( [] )
-			->set_dependencies( $custom_deps );
-
-		$schema[ self::ANIM_CUSTOM_PROP_VALUES ] = String_Array_Prop_Type::make()
-			->default( [] )
-			->set_dependencies( $custom_deps );
-
-		// Placeholder boolean — exists only so a panel row is reserved with the
-		// label "Custom Properties". editor-bridge/custom-props.jsx finds that
-		// row and replaces its editable area with a real property+value repeater.
-		$schema[ self::ANIM_CUSTOM_PROPS_TRIGGER ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies( $custom_deps );
-
-		/* ---------- editor + play button ---------- */
-
-		$schema[ self::ANIM_ENABLE_EDITOR ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies( $anim_active );
-
-		// Play Animation — only when an effect is animated AND Enable On Editor is ON.
-		// Switch_Control expects a Boolean bind; the JS shim in editor-bridge.js
-		// replaces its UI row with a "Play Now" button.
-		$schema[ self::ANIM_PLAY_TOKEN ] = Boolean_Prop_Type::make()
-			->default( false )
-			->set_dependencies(
-				Dependency_Manager::make( Dependency_Manager::RELATION_AND )
-					->where( [
-						'operator' => 'in',
-						'path'     => [ self::ANIM_EFFECT ],
-						'value'    => self::ANIMATED_EFFECTS,
-						'effect'   => 'hide',
-					] )
-					->where( [
-						'operator' => 'eq',
-						'path'     => [ self::ANIM_ENABLE_EDITOR ],
-						'value'    => true,
-						'effect'   => 'hide',
-					] )
-					->get()
-			);
-
-		/* ---------- parallax / scroll smoother ---------- */
-
-		$schema[ self::PARALLAX_ENABLE ] = Boolean_Prop_Type::make()->default( false );
-
-		$parallax_active = Schema_Helpers::dep_eq( self::PARALLAX_ENABLE, true );
-
-		$schema[ self::PARALLAX_SPEED ] = Number_Prop_Type::make()->float()
-			->default( 0.9 )
-			->set_dependencies( $parallax_active );
-
-		$schema[ self::PARALLAX_LAG ] = Number_Prop_Type::make()->float()
-			->default( 0 )
-			->set_dependencies( $parallax_active );
+		$schema[ self::ANIM_MARKERS ]        = Boolean_Prop_Type::make()->default( false );
+		$schema[ self::ANIM_CUSTOM_PROPS ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => [] ] );
+		$schema[ self::ANIM_ENABLE_EDITOR ]  = Boolean_Prop_Type::make()->default( false );
 
 		return $schema;
-	}
-
-	/* ---------- responsive helpers (same pattern as TextAnimation\Schema) ---------- */
-
-	/**
-	 * Returns the active extra (non-desktop) breakpoint keys for the current site,
-	 * in stable largest→smallest order. Falls back to [tablet, mobile] if the
-	 * Breakpoints manager isn't available.
-	 */
-	public static function get_extra_breakpoints(): array {
-		$active_keys = [];
-
-		if ( class_exists( \Elementor\Plugin::class )
-			&& isset( \Elementor\Plugin::$instance->breakpoints )
-			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
-			$active_keys = array_keys( \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints() );
-		}
-
-		if ( empty( $active_keys ) ) {
-			$active_keys = [ 'tablet', 'mobile' ];
-		}
-
-		$ordered = [];
-		foreach ( array_keys( self::BREAKPOINT_LABELS ) as $bp ) {
-			if ( in_array( $bp, $active_keys, true ) && 'desktop' !== $bp ) {
-				$ordered[] = $bp;
-			}
-		}
-		return $ordered;
-	}
-
-	/**
-	 * Register a number prop with per-breakpoint variants. Only desktop carries
-	 * a default — extras have null so editor-bridge can inherit from parent BP.
-	 */
-	private function register_responsive_number( array &$schema, string $base, $default, ?array $deps ): void {
-		$desktop = Number_Prop_Type::make()->float()->default( $default );
-		if ( $deps ) {
-			$desktop->set_dependencies( $deps );
-		}
-		$schema[ $base ] = $desktop;
-
-		foreach ( self::get_extra_breakpoints() as $bp ) {
-			$variant = Number_Prop_Type::make()->float();
-			if ( $deps ) {
-				$variant->set_dependencies( $deps );
-			}
-			$schema[ $base . '_' . $bp ] = $variant;
-		}
-	}
-
-	/**
-	 * Register a string prop with per-breakpoint variants. Extras intentionally
-	 * have no default and no enum constraint so they can temporarily hold any
-	 * string while the JS bridge inherits a parent value.
-	 */
-	private function register_responsive_string( array &$schema, string $base, string $default, ?array $deps, ?array $enum = null ): void {
-		$desktop = String_Prop_Type::make()->default( $default );
-		if ( $enum ) {
-			$desktop->enum( $enum );
-		}
-		if ( $deps ) {
-			$desktop->set_dependencies( $deps );
-		}
-		$schema[ $base ] = $desktop;
-
-		foreach ( self::get_extra_breakpoints() as $bp ) {
-			$variant = String_Prop_Type::make();
-			if ( $deps ) {
-				$variant->set_dependencies( $deps );
-			}
-			$schema[ $base . '_' . $bp ] = $variant;
-		}
-	}
-
-	/* ---------- option lists ---------- */
-
-	public static function effects(): array {
-		return [
-			'none'   => 'None',
-			'fade'   => 'Fade animation',
-			'move'   => '3D Move',
-			'custom' => 'Custom',
-		];
-	}
-
-	public static function methods(): array {
-		return [
-			'from' => 'From',
-			'to'   => 'To',
-		];
-	}
-
-	public static function triggers(): array {
-		return [
-			'on_scroll'        => 'On Scroll',
-			'on_page_load'     => 'On Page Load',
-			'play_with_scroll' => 'Play With Scroll',
-			'mouseover'        => 'On Hover',
-			'click'            => 'On Click',
-		];
-	}
-
-	public static function fade_directions(): array {
-		return [
-			'top'    => 'Top',
-			'bottom' => 'Bottom',
-			'left'   => 'Left',
-			'right'  => 'Right',
-			'in'     => 'In',
-			'scale'  => 'Zoom',
-		];
-	}
-
-	public static function eases(): array {
-		return [
-			'power2.out' => 'Power2.out',
-			'bounce'     => 'Bounce',
-			'back'       => 'Back',
-			'elastic'    => 'Elastic',
-			'slowmo'     => 'Slowmo',
-			'stepped'    => 'Stepped',
-			'sine'       => 'Sine',
-			'expo'       => 'Expo',
-			'none'       => 'None',
-		];
-	}
-
-	/**
-	 * GSAP-compatible properties supported by v3's `aae_ani_custom_props` REPEATER,
-	 * as a {value, label} map ready to feed into a Select control's options.
-	 * Order matches the v3 dropdown.
-	 */
-	public static function custom_property_options(): array {
-		return [
-			[ 'value' => 'none',            'label' => 'None' ],
-			[ 'value' => 'opacity',         'label' => 'Opacity' ],
-			[ 'value' => 'x',               'label' => 'X' ],
-			[ 'value' => 'y',               'label' => 'Y' ],
-			[ 'value' => 'width',           'label' => 'Width' ],
-			[ 'value' => 'height',          'label' => 'Height' ],
-			[ 'value' => 'scale',           'label' => 'Scale' ],
-			[ 'value' => 'repeat',          'label' => 'Repeat' ],
-			[ 'value' => 'rotate',          'label' => 'Rotate' ],
-			[ 'value' => 'rotateX',         'label' => 'RotateX' ],
-			[ 'value' => 'rotateY',         'label' => 'RotateY' ],
-			[ 'value' => 'transformOrigin', 'label' => 'TransformOrigin' ],
-			[ 'value' => 'color',           'label' => 'Color' ],
-			[ 'value' => 'background',      'label' => 'Background' ],
-			[ 'value' => 'border',          'label' => 'Border' ],
-			[ 'value' => 'boxShadow',       'label' => 'BoxShadow' ],
-			[ 'value' => 'force3D',         'label' => 'Force3D' ],
-			[ 'value' => 'delay',           'label' => 'Delay' ],
-			[ 'value' => 'duration',        'label' => 'Duration' ],
-			[ 'value' => 'maxWidth',        'label' => 'Max Width' ],
-			[ 'value' => 'maxHeight',       'label' => 'Max Height' ],
-			[ 'value' => 'minWidth',        'label' => 'Min Width' ],
-			[ 'value' => 'minHeight',       'label' => 'Min Height' ],
-			[ 'value' => 'mixBlendMode',    'label' => 'Mix Blend Mode' ],
-			[ 'value' => 'padding',         'label' => 'Padding' ],
-			[ 'value' => 'borderRadius',    'label' => 'Border Radius' ],
-			[ 'value' => 'repeatDelay',     'label' => 'Repeat Delay' ],
-			[ 'value' => 'scaleX',          'label' => 'ScaleX' ],
-			[ 'value' => 'scaleY',          'label' => 'ScaleY' ],
-			[ 'value' => 'xPercent',        'label' => 'XPercent' ],
-			[ 'value' => 'yPercent',        'label' => 'YPercent' ],
-			[ 'value' => 'autoAlpha',       'label' => 'Auto Alpha' ],
-			[ 'value' => 'yoyo',            'label' => 'YoYo' ],
-		];
-	}
-
-	/** Scroll position enum used by Start / End SELECTs. */
-	public static function scroll_positions(): array {
-		return [
-			'top top', 'top center', 'top bottom',
-			'center top', 'center center', 'center bottom',
-			'bottom top', 'bottom center', 'bottom bottom',
-			'custom',
-		];
 	}
 }

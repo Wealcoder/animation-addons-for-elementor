@@ -149,25 +149,6 @@ function pickConfigResponsive(cfg, key) {
 
 const KINDS = [];
 
-/**
- * Find the first registered kind that owns this element.
- *
- * Dispatch model:
- *   - Modern kinds declare `mapName` (e.g. 'AAE_INTERACTIONS_TEXT'). They
- *     own the element when window[mapName][interactionId] exists. The DOM
- *     attr is universal (data-interaction-id); kinds disambiguate by map.
- *   - Legacy kinds may declare a CSS `selector` and are matched via
- *     el.matches(). Kept for future extensions that don't use the map.
- */
-function kindFor(el) {
-	if (!el || !el.matches) return null;
-	for (const kind of KINDS) {
-		if (kind.mapName && configFor(el, kind.mapName)) return kind;
-		if (kind.selector && el.matches(kind.selector)) return kind;
-	}
-	return null;
-}
-
 /* =====================================================================
  * Dispatcher: scan / rebind / replay
  * =================================================================== */
@@ -185,8 +166,7 @@ function kindFor(el) {
 function kindsFor(el) {
 	const result = [];
 	for (const kind of KINDS) {
-		if (kind.mapName && configFor(el, kind.mapName)) result.push(kind);
-		else if (kind.selector && el.matches?.(kind.selector)) result.push(kind);
+		if (configFor(el, kind.mapName)) result.push(kind);
 	}
 	return result;
 }
@@ -264,22 +244,11 @@ function chainCompletionDrain(el, kind) {
 function scan(root) {
 	const scope = root && root.querySelectorAll ? root : document;
 
-	// Map-backed kinds all share Elementor's universal data-interaction-id.
-	// Collect every potential animated node once, then per-element bind
-	// every owning kind (an element may carry multiple kinds at once —
-	// regular + text + future tilt — each on its own target).
-	const seen = new Set();
-	const candidates = [];
-
-	for (const kind of KINDS) {
-		const cssSelector = kind.mapName ? '[data-interaction-id]' : kind.selector;
-		if (!cssSelector) continue;
-		scope.querySelectorAll(cssSelector).forEach((el) => {
-			if (seen.has(el)) return;
-			seen.add(el);
-			candidates.push(el);
-		});
-	}
+	// Every kind shares Elementor's universal data-interaction-id, so one
+	// querySelectorAll covers all kinds. An element may carry multiple
+	// kinds at once (regular + text + future tilt) — each on its own target.
+	if (!KINDS.length) return;
+	const candidates = scope.querySelectorAll('[data-interaction-id]');
 
 	for (const el of candidates) {
 		for (const kind of kindsFor(el)) {
@@ -327,10 +296,7 @@ function rebind(el) {
 function resetEl(el) {
 	if (!el) return;
 	for (const kind of KINDS) {
-		const owns = kind.mapName
-			? !!configFor(el, kind.mapName)
-			: (kind.selector && el.matches?.(kind.selector));
-		if (!owns) continue;
+		if (!configFor(el, kind.mapName)) continue;
 
 		if (typeof kind.reset === 'function') {
 			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
@@ -390,15 +356,11 @@ function replay(el, fromChain = false) {
 		if (didPlay) return;
 	}
 
-	// No animation on this element — try descendants. Use one universal
-	// selector covering both map-backed and legacy-selector kinds.
+	// No animation on this element — try descendants. Every kind shares
+	// data-interaction-id, so one selector covers all of them.
 	if (!KINDS.length) return;
-	const selectors = KINDS
-		.map((k) => k.mapName ? '[data-interaction-id]' : k.selector)
-		.filter(Boolean);
-	if (!selectors.length) return;
 	// Wrap so forEach's `(el, idx, arr)` doesn't accidentally set fromChain.
-	el.querySelectorAll(Array.from(new Set(selectors)).join(', ')).forEach((node) => replay(node));
+	el.querySelectorAll('[data-interaction-id]').forEach((node) => replay(node));
 }
 
 /* =====================================================================
@@ -409,8 +371,7 @@ const Registry = {
 	/** Register a new animation kind. Triggers a rescan so already-rendered
 	 *  elements bind immediately. Returns the kind for chaining. */
 	register(kind) {
-		if (!kind || typeof kind.read !== 'function') return kind;
-		if (!kind.mapName && !kind.selector) return kind;
+		if (!kind || typeof kind.read !== 'function' || !kind.mapName) return kind;
 		if (KINDS.some((k) => k.name === kind.name)) return kind; // dedupe by name
 		KINDS.push(kind);
 		// Re-scan once the registration settles in the microtask queue, so

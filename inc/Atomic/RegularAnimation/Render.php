@@ -19,34 +19,45 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Render {
 
 	public function register(): void {
-		add_filter( 'elementor/widget/render_content', [ $this, 'inject_into_html' ], 10, 2 );
+		// `elementor/frontend/before_render` fires for EVERY element (widgets
+		// AND containers like e-flexbox / e-div-block). The widget-only
+		// `elementor/widget/render_content` filter would skip containers — we
+		// support both, so we use the universal hook and just call into the
+		// InteractionsMap (no HTML transformation needed).
+		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );
 	}
 
-	public function inject_into_html( $html, $widget ): string {
-		if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_element_type' ) ) {
-			return $html;
+	public function maybe_register( $element ): void {
+		if ( ! is_object( $element ) || ! method_exists( $element, 'get_element_type' ) ) {
+			return;
 		}
 
-		$type = $widget->get_element_type();
+		$type = $element->get_element_type();
 		if ( ! in_array( $type, Bootstrap::target_element_types(), true ) ) {
-			return $html;
+			return;
 		}
 
-		$settings = method_exists( $widget, 'get_atomic_settings' )
-			? $widget->get_atomic_settings()
+		// Use get_settings() (raw saved props), NOT get_atomic_settings().
+		// get_atomic_settings() runs every prop through Render_Props_Resolver
+		// which strips any transformable whose $$type has no registered
+		// transformer — and aae-rj intentionally doesn't register
+		// one. Reading raw lets normalize_responsive_settings walk the
+		// envelope ourselves.
+		$settings = method_exists( $element, 'get_settings' )
+			? $element->get_settings()
 			: [];
 
 		$config = $this->build_config( $settings );
 		if ( empty( $config ) ) {
-			return $html;
+			return;
 		}
 
 		// Same id Elementor exposes as data-interaction-id on the rendered tag
 		// (universal on atomic widgets, frontend + editor). JS looks up
 		// window.AAE_INTERACTIONS_ANIM[interactionId] — no custom attr needed.
-		$id = method_exists( $widget, 'get_id' ) ? (string) $widget->get_id() : '';
+		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
 		if ( '' === $id ) {
-			return $html;
+			return;
 		}
 
 		InteractionsMap::register( 'anim', $id, $config );
@@ -56,8 +67,6 @@ final class Render {
 		if ( ! is_admin() ) {
 			wp_enqueue_script( 'aae-effect-animation' );
 		}
-
-		return $html;
 	}
 
 	/**
@@ -66,8 +75,7 @@ final class Render {
 	 * (JS-side prefers it; no more `el.dataset.aaeFooBar` kebab→camel hops).
 	 */
 	private function build_config( array $settings ): array {
-		$effect           = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
-		$parallax_enabled = ! empty( $settings[ Schema::PARALLAX_ENABLE ] );
+		$effect = $this->read_primitive( $settings, Schema::ANIM_EFFECT, 'none' );
 
 		$config = [];
 
@@ -80,6 +88,11 @@ final class Render {
 			// default are skipped (the JS reader supplies the default when
 			// the key is missing).
 			$responsive_map = [
+				// Effect is responsive — user can pick a different preset per
+				// breakpoint or 'none' to disable on that bp. Default 'none'
+				// keeps the desktop value (already set above) as-is when no
+				// per-bp override exists.
+				Schema::ANIM_EFFECT           => [ 'effect',          'none',         null ],
 				Schema::ANIM_METHOD           => [ 'method',          'from',         null ],
 				Schema::ANIM_TRIGGER          => [ 'trigger',         'on_scroll',    null ],
 				Schema::ANIM_TRIGGER_SELECTOR => [ 'triggerSelector', '',             null ],
@@ -102,17 +115,37 @@ final class Render {
 			];
 
 			// Gate: scroll-trigger custom block requires wrapper=custom.
-			$wrapper_is_custom = ( $settings[ Schema::ANIM_WRAPPER ] ?? 'default' ) === 'custom';
+			$wrapper_is_custom = $this->read_primitive( $settings, Schema::ANIM_WRAPPER, 'default' ) === 'custom';
 			$scroll_custom_only = [
 				Schema::ANIM_START_TRIGGER,
 				Schema::ANIM_END_TRIGGER,
 				Schema::ANIM_START_POSITION,
 				Schema::ANIM_END_POSITION,
 			];
-			$start_is_custom = ( $settings[ Schema::ANIM_START_POSITION ] ?? '' ) === 'custom';
-			$end_is_custom   = ( $settings[ Schema::ANIM_END_POSITION ]   ?? '' ) === 'custom';
+			$start_is_custom = $this->read_primitive( $settings, Schema::ANIM_START_POSITION, '' ) === 'custom';
+			$end_is_custom   = $this->read_primitive( $settings, Schema::ANIM_END_POSITION,   '' ) === 'custom';
 
 			$extra_bps = $this->get_extra_breakpoints();
+
+			// Expand the effect envelope into flat <base>_<bp> keys so the
+			// cascade below can read it the legacy way.
+			$expanded = $this->normalize_responsive_settings( $settings, Schema::ANIM_EFFECT, $extra_bps );
+
+			// Pre-compute which breakpoints have the animation disabled
+			// (effect=none after cascade). emit_responsive uses this to
+			// skip emitting other per-bp keys for those breakpoints.
+			$disabled_bps    = [];
+			$effect_resolved = [ 'desktop' => $effect ];
+			foreach ( $extra_bps as $bp ) {
+				$prop = Schema::ANIM_EFFECT . '_' . $bp;
+				$own  = $expanded[ $prop ] ?? null;
+				$parent_eff = $this->cascade_parent( $bp, $effect_resolved, $effect );
+				$effective  = ( null === $own || '' === $own ) ? $parent_eff : $own;
+				$effect_resolved[ $bp ] = $effective;
+				if ( ! $effective || 'none' === $effective ) {
+					$disabled_bps[ $bp ] = true;
+				}
+			}
 
 			foreach ( $responsive_map as $base_key => [ $cfg_key, $default, $family ] ) {
 				if ( null !== $family && ! in_array( $effect, $family, true ) ) {
@@ -128,53 +161,53 @@ final class Render {
 					continue;
 				}
 
-				$this->emit_responsive( $config, $settings, $base_key, $cfg_key, $default, $extra_bps );
+				$this->emit_responsive( $config, $settings, $base_key, $cfg_key, $default, $extra_bps, $disabled_bps );
 			}
 
 			// wrapper=custom + markers — single-value flag.
-			if ( $wrapper_is_custom && ! empty( $settings[ Schema::ANIM_MARKERS ] ) ) {
+			if ( $wrapper_is_custom && (bool) $this->read_primitive( $settings, Schema::ANIM_MARKERS, false ) ) {
 				$config['markers'] = true;
 			}
 
-			// Custom-effect repeater (non-responsive).
+			// Custom-effect repeater. ANIM_CUSTOM_PROPS is now a
+			// Responsive_Json_Prop_Type whose value is a breakpoint map:
+			//   { $$type: 'aae-rj',
+			//     value: { desktop: [ {enabled,property,value}, ... ],
+			//              tablet:  [ ... ] | null, ... } }
+			//
+			// JS owns the row shape entirely — rows are plain objects, no
+			// transformable nesting per cell. Render emits desktop rows as
+			// the base `customProps` and any per-bp override rows as
+			// `customProps_<bp>` (the same convention used for scalar
+			// responsives, so the JS reader's cascade handles it).
 			if ( 'custom' === $effect ) {
-				$keys   = $settings[ Schema::ANIM_CUSTOM_PROP_KEYS ]   ?? [];
-				$values = $settings[ Schema::ANIM_CUSTOM_PROP_VALUES ] ?? [];
+				$custom_envelope = $settings[ Schema::ANIM_CUSTOM_PROPS ] ?? null;
+				$custom_map      = $this->responsive_json_to_map( $custom_envelope );
 
-				if ( is_array( $keys ) && ! empty( $keys ) ) {
-					$pairs = [];
-					$count = count( $keys );
-					for ( $i = 0; $i < $count; $i++ ) {
-						$k = is_string( $keys[ $i ] ?? null ) ? trim( $keys[ $i ] ) : '';
-						if ( '' === $k || 'none' === $k ) {
-							continue;
-						}
-						$v = is_string( $values[ $i ] ?? null ) ? trim( $values[ $i ] ) : '';
-						$pairs[] = [ 'k' => $k, 'v' => $v ];
+				$desktop_pairs = $this->custom_rows_to_pairs( $custom_map['desktop'] ?? [] );
+				if ( ! empty( $desktop_pairs ) ) {
+					$config['customProps'] = $desktop_pairs;
+				}
+
+				// Per-bp overrides: emit `customProps_<bp>` when the bp cell
+				// has its own non-empty row array AND those rows differ from
+				// the desktop pairs. Empty/null bp cells mean "inherit from
+				// the cascaded parent" — the JS reader walks BP_CASCADE.
+				foreach ( $extra_bps as $bp ) {
+					if ( ! array_key_exists( $bp, $custom_map ) || null === $custom_map[ $bp ] ) {
+						continue;
 					}
-					if ( ! empty( $pairs ) ) {
-						$config['customProps'] = $pairs;
+					$bp_pairs = $this->custom_rows_to_pairs( $custom_map[ $bp ] );
+					if ( $bp_pairs === $desktop_pairs ) {
+						continue;
 					}
+					$config[ 'customProps_' . $bp ] = $bp_pairs;
 				}
 			}
 
-			if ( ! empty( $settings[ Schema::ANIM_ENABLE_EDITOR ] ) ) {
+			if ( (bool) $this->read_primitive( $settings, Schema::ANIM_ENABLE_EDITOR, false ) ) {
 				$config['enableEditor'] = true;
 			}
-		}
-
-		// Parallax block — independent of animation effect, non-responsive.
-		if ( $parallax_enabled ) {
-			$parallax = [];
-			$speed = $settings[ Schema::PARALLAX_SPEED ] ?? null;
-			$lag   = $settings[ Schema::PARALLAX_LAG ]   ?? null;
-			if ( null !== $speed && '' !== $speed ) {
-				$parallax['speed'] = (float) $speed;
-			}
-			if ( null !== $lag && '' !== $lag ) {
-				$parallax['lag'] = (float) $lag;
-			}
-			$config['parallax'] = $parallax;
 		}
 
 		return $config;
@@ -183,10 +216,25 @@ final class Render {
 	/**
 	 * Emit a desktop value + per-breakpoint variants for a single setting.
 	 * Desktop is skipped when it equals `$default`; per-bp is skipped when
-	 * it equals the cascaded parent (matches the dedup pattern used by
-	 * TextAnimation\Render). JS rehydrates the default at read time.
+	 * it equals the cascaded parent. JS rehydrates the default at read time.
+	 *
+	 * Supports both prop-storage shapes during the responsive-prop migration:
+	 *
+	 *   NEW shape (Responsive_*_Prop_Type):
+	 *     $settings[$base_key] === [ 'desktop' => ..., 'tablet' => ..., ... ]
+	 *
+	 *   LEGACY shape (fanned-out scalar props):
+	 *     $settings[$base_key]          === <scalar>          // desktop
+	 *     $settings[$base_key.'_<bp>']  === <scalar> | null   // per-bp
+	 *
+	 * normalize_responsive_settings() converts the new shape into the
+	 * legacy lookup shape so the rest of this method stays untouched. After
+	 * every responsive prop is migrated and confirmed, the legacy branch
+	 * can be deleted.
 	 */
-	private function emit_responsive( array &$config, array $settings, string $base_key, string $cfg_key, $default, array $extra_bps ): void {
+	private function emit_responsive( array &$config, array $settings, string $base_key, string $cfg_key, $default, array $extra_bps, array $disabled_bps = [] ): void {
+		$settings = $this->normalize_responsive_settings( $settings, $base_key, $extra_bps );
+
 		$desktop_value = $settings[ $base_key ] ?? $default;
 
 		if ( (string) $desktop_value !== (string) $default ) {
@@ -208,8 +256,112 @@ final class Render {
 			if ( (string) $own === (string) $parent ) {
 				continue;
 			}
+			// Skip per-bp emission when the user disabled the animation
+			// on this breakpoint. The effect key itself is always emitted
+			// so the runtime can see effect_<bp>=none and short-circuit.
+			if ( isset( $disabled_bps[ $bp ] ) && 'effect' !== $cfg_key ) {
+				continue;
+			}
 			$config[ $cfg_key . '_' . $bp ] = $this->cast_value( $own );
 		}
+	}
+
+	/**
+	 * Expand a Responsive_Json_Prop_Type envelope into flat `<base>` +
+	 * `<base>_<bp>` lookup keys so emit_responsive can read it the
+	 * legacy-flat way without changes. Pass-through when absent.
+	 *
+	 * Storage shape:
+	 *   { $$type: 'aae-rj',
+	 *     value: { desktop: <scalar>, tablet: <scalar>|null, … } }
+	 *
+	 * Cells are bare scalars — no per-cell transformable nesting.
+	 */
+	private function normalize_responsive_settings( array $settings, string $base_key, array $extra_bps ): array {
+		$value = $settings[ $base_key ] ?? null;
+
+		if ( ! is_array( $value ) || ! isset( $value['value'] ) || ! is_array( $value['value'] ) ) {
+			return $settings;
+		}
+
+		$map = $value['value'];
+
+		$settings[ $base_key ] = $map['desktop'] ?? null;
+		foreach ( $extra_bps as $bp ) {
+			if ( array_key_exists( $bp, $map ) ) {
+				$settings[ $base_key . '_' . $bp ] = $map[ $bp ];
+			}
+		}
+		return $settings;
+	}
+
+	/**
+	 * Read a scalar out of $settings[$key] for non-responsive primitives.
+	 *
+	 * get_settings() returns raw saved props: non-responsive primitives arrive
+	 * as { $$type: 'boolean'|'string'|'number', value: <scalar> }; our
+	 * responsive props arrive as { $$type: 'aae-rj', value:
+	 * { desktop: <scalar>, … } } — in which case the desktop scalar is
+	 * returned as the "single-value" read for dep-style gates.
+	 *
+	 * Falls back to $default when the key is absent or empty.
+	 */
+	private function read_primitive( array $settings, string $key, $default ) {
+		$value = $settings[ $key ] ?? null;
+		if ( null === $value ) {
+			return $default;
+		}
+		if ( ! is_array( $value ) || ! array_key_exists( 'value', $value ) ) {
+			return ( null === $value || '' === $value ) ? $default : $value;
+		}
+		$inner = $value['value'];
+		// Responsive envelope: pull the desktop scalar.
+		if ( is_array( $inner ) && array_key_exists( 'desktop', $inner ) ) {
+			$d = $inner['desktop'];
+			return ( null === $d || '' === $d ) ? $default : $d;
+		}
+		return ( null === $inner || '' === $inner ) ? $default : $inner;
+	}
+
+	/**
+	 * Pull the breakpoint→rows map out of a Responsive_Json_Prop_Type
+	 * envelope. Returns [] for unset / malformed. Each per-bp value is an
+	 * array of plain row objects (or null = inherit).
+	 */
+	private function responsive_json_to_map( $envelope ): array {
+		if ( ! is_array( $envelope ) || ! isset( $envelope['value'] ) || ! is_array( $envelope['value'] ) ) {
+			return [];
+		}
+		return $envelope['value'];
+	}
+
+	/**
+	 * Filter a per-bp rows array into the emitted runtime contract: an array
+	 * of { k, v } pairs. Rows are skipped when enabled=false, property is
+	 * empty, or property === 'none'. The JS effect runtime accepts strings
+	 * for both — numbers are coerced from strings on the JS side.
+	 */
+	private function custom_rows_to_pairs( $rows ): array {
+		if ( ! is_array( $rows ) ) {
+			return [];
+		}
+		$pairs = [];
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$enabled = $row['enabled'] ?? true;
+			if ( false === $enabled ) {
+				continue;
+			}
+			$k = is_string( $row['property'] ?? null ) ? trim( $row['property'] ) : '';
+			if ( '' === $k || 'none' === $k ) {
+				continue;
+			}
+			$v = is_string( $row['value'] ?? null ) ? trim( $row['value'] ) : '';
+			$pairs[] = [ 'k' => $k, 'v' => $v ];
+		}
+		return $pairs;
 	}
 
 	/** Numeric strings round-trip as numbers; others stay strings. */

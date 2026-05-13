@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { wireTrigger } from './triggers';
+import { wireTrigger, modeFor, resolveTriggerEl } from './triggers';
 
 /**
  * Text animation kind — char/word/move/reveal/scale/invert/spin.
@@ -25,13 +25,20 @@ export const TEXT_PLAYED = '__aaeTextPlayed';
 
 export function readText(el) {
 	const cfg = configFor(el, TEXT_MAP);
-	if (!cfg || !cfg.effect || cfg.effect === 'none') return null;
+	if (!cfg) return null;
+	// effect is responsive — user can disable the animation on a specific
+	// breakpoint by setting effect to 'none' (or unsetting it) in that bp's
+	// row. The runtime treats that as "no animation for this device".
+	const effect = pickConfigResponsive(cfg, 'effect');
+	if (!effect || effect === 'none') return null;
 	return {
-		effect:          cfg.effect,
+		effect,
 		trigger:         r(cfg, 'trigger', 'on_scroll'),
 		triggerSelector: r(cfg, 'triggerSelector', ''),
 		wrapper:         r(cfg, 'wrapper', 'default'),
 		wrapperSelector: r(cfg, 'wrapperSelector', ''),
+		// Non-responsive: cfg.markers is a top-level boolean.
+		markers:         !!cfg.markers,
 		// Defaults mirror Schema::RESPONSIVE_NUMBER_SETTINGS — Render.php
 		// omits keys equal to the default, so these fallbacks restore them.
 		delay:           Number(r(cfg, 'delay',      0.15)),
@@ -213,32 +220,13 @@ function buildScrubbedText(el, config) {
 	return el[TEXT_PLAYED];
 }
 
-/** Map text-anim's trigger vocabulary to the shared dispatcher's modes.
- *  Mirrors TextAnimation\Schema::text_triggers(). */
-function modeFor(trigger) {
-	if (trigger === 'in-view')          return 'in-view';
-	if (trigger === 'on_scroll')        return 'scroll-tied';
-	if (trigger === 'play_with_scroll') return 'scrub';
-	if (trigger === 'on_page_load')     return 'page-load';
-	if (trigger === 'mouseover')        return 'hover';
-	if (trigger === 'click')            return 'click';
-	return 'in-view'; // safe default for unrecognised values
-}
-
-/** Resolve `triggerSelector` to a DOM node, but only for hover/click —
- *  Schema gates the selector field to those triggers, and v3 only honours
- *  it there. Empty string or no-match → undefined, dispatcher falls back to el. */
-function resolveTriggerEl(mode, selector) {
-	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
-	return document.querySelector(selector) || undefined;
-}
-
 export function bindText(el, config) {
 	const mode = modeFor(config.trigger);
 	wireTrigger({
 		el,
 		mode,
 		triggerEl:     resolveTriggerEl(mode, config.triggerSelector),
+		markers:       config.markers,
 		play:          () => playText(el, config),
 		buildScrubbed: () => buildScrubbedText(el, config),
 	});

@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { applySettingsToDom } from './settings-bridge';
-import { featureFor } from './features';
+import { featuresFor } from './features';
 
 /**
  * On editor first-load, atomic widgets in the canvas are React-rendered
@@ -54,7 +54,7 @@ function trySeed() {
 	const doc = documents?.getCurrent?.();
 	const root = doc?.container;
 	if (!root) {
-		scheduleRetry('no document yet');
+		scheduleRetry();
 		return;
 	}
 
@@ -63,15 +63,25 @@ function trySeed() {
 
 	walkContainers(root, (container) => {
 		visitedCount++;
-		const feature = featureFor(container);
-		if (!feature) return;
+		const features = featuresFor(container);
+		if (!features.length) return;
 
+		// Quick "is any feature × any breakpoint animated?" gate. The full
+		// cfg build happens in applySettingsToDom; here we just skip widgets
+		// where every applicable feature has effect=none on every bp.
+		//
+		// For `aae-rj` enableSettings we walk the per-bp map. For non-rj
+		// shapes (e.g. image-hover's enableSetting points at the image
+		// prop) we pass through and let the feature's buildConfig decide.
 		const settings = container.settings?.attributes || {};
-		const enableValue = settings[feature.enableSetting];
-		const effective = (enableValue && typeof enableValue === 'object' && '$$type' in enableValue)
-			? enableValue.value
-			: enableValue;
-		if (!effective || effective === 'none') return;
+		const anyActive = features.some((feature) => {
+			const env = settings[feature.enableSetting];
+			if (!env || typeof env !== 'object') return false;
+			if (env.$$type !== 'aae-rj') return true;
+			const map = env.value && typeof env.value === 'object' ? env.value : {};
+			return Object.values(map).some((v) => v && v !== 'none');
+		});
+		if (!anyActive) return;
 
 		applySettingsToDom(container);
 		seededCount++;
@@ -80,12 +90,11 @@ function trySeed() {
 	// Tree only has the root container? Atomic widgets haven't mounted yet
 	// — retry. Tree has descendants but none animated? Done.
 	if (visitedCount <= 1) {
-		scheduleRetry(`only root visited (${visitedCount})`);
+		scheduleRetry();
 		return;
 	}
 
 	seedDone = true;
-	console.debug(`[AAE] seed-canvas: seeded ${seededCount}/${visitedCount} containers (attempt ${seedAttempts})`);
 
 	// The caller (preview-pipe) wants to know when maps are populated so it
 	// can kick off the first-load replay. We call back here instead of having
@@ -95,10 +104,9 @@ function trySeed() {
 	}
 }
 
-function scheduleRetry(why) {
+function scheduleRetry() {
 	if (seedAttempts >= MAX_ATTEMPTS) {
 		seedDone = true;
-		console.debug(`[AAE] seed-canvas: gave up after ${seedAttempts} attempts (${why})`);
 		return;
 	}
 	if (seedTimer) clearTimeout(seedTimer);

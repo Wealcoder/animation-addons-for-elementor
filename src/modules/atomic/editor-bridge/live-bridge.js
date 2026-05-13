@@ -48,29 +48,25 @@ function attachLiveBridge(container, onChange) {
 		if (typeof onChange === 'function') onChange();
 
 		const result = applySettingsToDom(container);
-		if (!result) {
-			console.debug('[AAE] live-bridge: applySettingsToDom returned null');
-			return;
-		}
+		if (!result) return;
 
-		const autoKey = result.feature.autoReplaySetting;
-		const autoOn  = autoKey ? !!unwrap(container.settings.attributes[autoKey]) : false;
+		// A heading can have BOTH text + regular animations. Replay if ANY
+		// applicable feature is active AND has its Enable On Editor toggle
+		// on; otherwise reset (kills tweens / strips applied styles).
+		const settings = container.settings.attributes;
+		const shouldReplay = result.results.some((r) => {
+			if (!r.active) return false;
+			const autoKey = r.feature.autoReplaySetting;
+			return autoKey ? !!unwrap(settings[autoKey]) : false;
+		});
 
-		console.debug(
-			`[AAE] live-bridge: feature=${result.feature.name} active=${result.active} autoKey=${autoKey} autoOn=${autoOn}`,
-		);
-
-		if (!result.active || !autoOn) {
+		if (!shouldReplay) {
 			const win = getPreviewWindow();
 			const api = win && win.aaeAtomicAnimations;
-			if (api?.reset) {
-				console.debug('[AAE] live-bridge: reset target');
-				api.reset(result.target);
-			}
+			if (api?.reset) api.reset(result.target);
 			return;
 		}
 
-		console.debug('[AAE] live-bridge: replay target');
 		replayInPreview(result.target);
 	};
 

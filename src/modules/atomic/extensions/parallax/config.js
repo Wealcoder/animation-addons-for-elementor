@@ -1,0 +1,28 @@
+/* eslint-env browser */
+
+import { isParallaxEnabled } from './predicates';
+
+/**
+ * Declarative table for the Parallax section. Same structure as the other
+ * extensions — see regular-animation/config.js for full notes on the field
+ * shape and rendering path.
+ *
+ * All three fields are responsive (per-bp switch + numbers). Visibility of
+ * Speed / Lag is gated on the Enable toggle at the active breakpoint.
+ */
+const config = {
+	anchorKey:  'aae-section-aae-parallax',
+	bindPrefix: 'aae_plx_',
+	fields: [
+		{ bind: 'enable', label: 'Enable Scroll Smoother', control: 'switch',
+		  defaultValue: false },
+
+		{ bind: 'speed',  label: 'Speed', control: 'number',
+		  defaultValue: 0.9, when: isParallaxEnabled },
+
+		{ bind: 'lag',    label: 'Lag',   control: 'number',
+		  defaultValue: 0, when: isParallaxEnabled },
+	],
+};
+
+export default config;

@@ -37,6 +37,23 @@ const { getScrollTrigger } = window.AAEADDON;
 
 const DISPOSE_KEY = '__aaeTriggerDispose';
 
+const TRIGGER_MODES = {
+	on_scroll:        'scroll-tied',
+	play_with_scroll: 'scrub',
+	on_page_load:     'page-load',
+	mouseover:        'hover',
+	click:            'click',
+};
+
+export function modeFor(trigger) {
+	return TRIGGER_MODES[trigger] || 'in-view';
+}
+
+export function resolveTriggerEl(mode, selector) {
+	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
+	return document.querySelector(selector) || undefined;
+}
+
 /**
  * Tear down whatever wireTrigger previously installed on this element —
  * DOM listeners, ScrollTrigger instances, IntersectionObservers. Safe to
@@ -53,7 +70,7 @@ export function cleanupTriggerOn(el) {
 	el[DISPOSE_KEY] = null;
 }
 
-export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl }) {
+export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers }) {
 	// Always clean up the previous wiring first — in the editor, settings
 	// changes fire rebind() which can re-call us on the same element many
 	// times. Without this, listeners and ScrollTriggers stack up.
@@ -103,6 +120,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl }) {
 			end: 'top 30%',
 			scrub: true,
 			invalidateOnRefresh: true,
+			markers: !!markers,
 		});
 		el[DISPOSE_KEY] = () => { st.kill(); tween.kill?.(); };
 		return;
@@ -115,6 +133,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl }) {
 			end: 'top 30%',
 			toggleActions: 'play none none none',
 			onEnter: play,
+			markers: !!markers,
 		});
 		el[DISPOSE_KEY] = () => st.kill();
 		return;
@@ -130,6 +149,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl }) {
 			start: 'top 85%',
 			once: true,
 			onEnter: play,
+			markers: !!markers,
 		});
 		el[DISPOSE_KEY] = () => st.kill();
 		return;

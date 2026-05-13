@@ -21,7 +21,9 @@ final class Assets {
 	 * wp_enqueue_script( $handle ) for the effects a widget actually uses.
 	 */
 	const EFFECT_BUNDLES = [
-		'aae-effect-animation' => 'effects/animation.js',
+		'aae-effect-animation'       => 'effects/animation.js',
+		'aae-effect-image-animation' => 'effects/image-animation.js',
+		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		// 'aae-effect-tilt'      => 'effects/tilt.js',
 		// 'aae-effect-pin'       => 'effects/pin.js',
 		// add more as effects are ported
@@ -96,8 +98,14 @@ final class Assets {
 		}
 	}
 
-	/** Merge GSAP / ScrollTrigger into the dep list if they're registered. */
+	/**
+	 * Merge GSAP / ScrollTrigger into the dep list. Falls back to the Pro
+	 * plugin's bundled copies when nobody else has registered them — Pro
+	 * gates its own registration behind a dashboard setting, so on a plain
+	 * install our atomic widgets would otherwise tween-less.
+	 */
 	private function frontend_deps( array $deps ): array {
+		$this->ensure_gsap_registered();
 		if ( wp_script_is( 'gsap', 'registered' ) ) {
 			$deps[] = 'gsap';
 		}
@@ -107,14 +115,68 @@ final class Assets {
 		return $deps;
 	}
 
+	/**
+	 * Register gsap / ScrollTrigger from the Pro plugin's lib folder if no
+	 * one else has registered them yet. No-op when already registered, or
+	 * when Pro isn't installed (no fallback source).
+	 */
+	private function ensure_gsap_registered(): void {
+		if ( ! defined( 'WCF_ADDONS_PRO_URL' ) ) {
+			return;
+		}
+		if ( ! wp_script_is( 'gsap', 'registered' ) ) {
+			wp_register_script(
+				'gsap',
+				WCF_ADDONS_PRO_URL . 'assets/lib/gsap.min.js',
+				[],
+				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+		if ( ! wp_script_is( 'ScrollTrigger', 'registered' ) ) {
+			wp_register_script(
+				'ScrollTrigger',
+				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollTrigger.min.js',
+				[ 'gsap' ],
+				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+	}
+
+	/**
+	 * Script handles that the editor-bridge needs but @wordpress/scripts'
+	 * dependency-extraction-webpack-plugin cannot auto-detect (it only knows
+	 * about @wordpress/* packages, not @elementor/*). Listed here manually so
+	 * Elementor's editor packages are loaded before our bundle runs and the
+	 * `window.elementorV2.editorControls` global is available for the webpack
+	 * externals mapping to resolve at runtime.
+	 */
+	const EDITOR_BRIDGE_ELEMENTOR_DEPS = [
+		'elementor-v2-editor-controls',
+		'elementor-v2-editor-elements',
+		'elementor-v2-editor-props',
+		'elementor-v2-editor-responsive',
+		'elementor-v2-editor-ui',
+		'elementor-v2-ui',
+	];
+
 	/** Editor-only: enqueues the live-edit bridge that mirrors settings to the preview iframe. */
 	public function enqueue_editor_bridge(): void {
 		$asset = $this->load_asset( 'editor-bridge' );
-	
+
+		// Merge the auto-detected deps (@wordpress/*) with the manually-listed
+		// Elementor packages. dedup just in case future @wordpress/scripts
+		// versions start auto-detecting @elementor/* too.
+		$deps = array_values( array_unique( array_merge(
+			$asset['dependencies'],
+			self::EDITOR_BRIDGE_ELEMENTOR_DEPS
+		) ) );
+
 		wp_enqueue_script(
 			self::HANDLE . '-editor-bridge',
 			WCF_ADDONS_URL . self::BUILD_DIR . 'editor-bridge.js',
-			$asset['dependencies'],
+			$deps,
 			$asset['version'],
 			true
 		);

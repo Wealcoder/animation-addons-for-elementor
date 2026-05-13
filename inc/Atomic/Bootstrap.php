@@ -18,14 +18,33 @@ final class Bootstrap {
 			return;
 		}
 		// Regular (preset-based) animation — applied to every atomic widget.
+		// Frontend reads window.AAE_INTERACTIONS_ANIM[<id>].
 		( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+
+		// Parallax (ScrollSmoother) — applied to every atomic widget.
+		// Frontend reads window.AAE_INTERACTIONS_PLX[<id>].
+		( new \WCF_ADDONS\Atomic\Parallax\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\Parallax\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\Parallax\Render() )->register();
 
 		// Text animation — char/word/reveal/etc. for heading-class widgets.
 		( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
+
+		// Image animation — reveal/scale/stretch for e-image / e-svg.
+		// Frontend reads window.AAE_INTERACTIONS_IMG[<id>].
+		( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+
+		// Image hover — cursor-following floating image overlay on any
+		// atomic widget. Frontend reads window.AAE_INTERACTIONS_IH[<id>].
+		( new \WCF_ADDONS\Atomic\ImageHover\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
 
 		( new Assets() )->register();
 	}

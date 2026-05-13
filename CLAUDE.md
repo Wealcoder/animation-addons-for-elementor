@@ -85,9 +85,6 @@ Net effect: a page with no AAE animations loads zero AAE JavaScript.
 inc/Atomic/                              PHP (server-side)
 ├── Bootstrap.php                        Boot — registers all the *.php below
 ├── Assets.php                           Script registration + on-demand enqueue
-├── EffectRegistry.php                   (Reserved — for future per-effect classes)
-├── Effects/
-│   └── Effect_Interface.php             (Reserved — contract for future effects)
 └── TextAnimation/
     ├── Schema.php                       Props for both Text and Regular animation
     ├── Controls.php                     Panel sections for both

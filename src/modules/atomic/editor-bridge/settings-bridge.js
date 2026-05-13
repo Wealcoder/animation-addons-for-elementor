@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
-import { getPreviewWindow, unwrap } from './helpers';
-import { featureFor } from './features';
+import { getPreviewWindow } from './helpers';
+import { featuresFor } from './features';
 
 /**
  * Settings → preview-iframe bridge (interactions-map flavour).
@@ -26,57 +26,62 @@ import { featureFor } from './features';
  */
 function buildConfigFromSettings(feature, container) {
 	const settings = container.settings?.attributes || {};
-	const enableValue = unwrap(settings[feature.enableSetting]);
-	if (!enableValue || enableValue === 'none') return null;
-
 	if (typeof feature.buildConfig === 'function') {
-		return feature.buildConfig(settings, unwrap);
+		return feature.buildConfig(settings);
 	}
 	return null;
 }
 
 /**
- * Write the container's settings into the preview iframe's interactions map
- * for THIS feature (text → AAE_INTERACTIONS_TEXT, anim → AAE_INTERACTIONS_ANIM)
- * AND ensure the target element carries the feature's dispatch attr.
- * Returns { feature, target, active } or null if the bridge can't apply.
+ * Apply ALL features that target this widget type — a heading carries both
+ * text-animation and regular-animation, and the user may enable either /
+ * both. Each feature writes to its own preview-iframe map independently.
+ *
+ * Returns a summary { target, results: [{ feature, active }] } where
+ * `active` is true when that feature emitted a cfg, false when it cleared
+ * (effect=none / toggled off). Returns null when no preview / no target /
+ * no features for this widget type.
  */
 export function applySettingsToDom(container) {
-	const feature = featureFor(container);
-	if (!feature || !feature.mapName) return null;
+	const features = featuresFor(container);
+	if (!features.length) return null;
 
 	const win = getPreviewWindow();
 	if (!win) return null;
 
-	const target = feature.findTarget(win.document, container.id);
-	if (!target) return null;
-
-	// No DOM attr to set — Elementor's own `data-interaction-id` (or the
-	// fallback `data-id`) is already on the target. We only manage the
-	// per-feature JS map below.
-
-	const cfg = buildConfigFromSettings(feature, container);
-
-	const map = win[feature.mapName] = win[feature.mapName] || {};
 	const api = win.aaeAtomicAnimations;
 
-	if (!cfg) {
-		// Feature toggled off — drop our entry from the map and rebind so any
-		// previously-installed listeners / ScrollTriggers tear down. The DOM
-		// attr can stay; an empty config simply means no animation.
-		delete map[container.id];
-		if (api?.rebind) api.rebind(target);
-		return { feature, target, active: false };
+	// Every feature shares the same target lookup (data-interaction-id), so
+	// we resolve once. If the first feature can't find a target the others
+	// won't either.
+	const target = features[0].findTarget(win.document, container.id);
+	if (!target) return null;
+
+	const results = [];
+
+	for (const feature of features) {
+		if (!feature.mapName) continue;
+
+		const cfg = buildConfigFromSettings(feature, container);
+		const map = win[feature.mapName] = win[feature.mapName] || {};
+
+		if (!cfg) {
+			// Feature toggled off — drop our entry so previously-installed
+			// listeners / ScrollTriggers tear down on the rebind below.
+			delete map[container.id];
+			results.push({ feature, active: false });
+			continue;
+		}
+
+		map[container.id] = cfg;
+		results.push({ feature, active: true });
 	}
 
-	map[container.id] = cfg;
-
-	// Tell the runtime to re-read the map and reconfigure listeners /
-	// ScrollTriggers. Without this, e.g. switching from On Click → On Scroll
-	// would leave the old click listener live until the next page reload.
+	// Single rebind() per element regardless of how many features applied —
+	// common.js's rebind walks ALL kinds and re-reads each map.
 	if (api?.rebind) api.rebind(target);
 
-	return { feature, target, active: true };
+	return { target, results };
 }
 
 /**
