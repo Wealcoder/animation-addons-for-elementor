@@ -6,22 +6,14 @@ import { Button } from '@elementor/ui';
 
 import { getPreviewWindow, getSelectedContainer } from '../../editor-bridge/helpers';
 import { featuresFor } from '../../editor-bridge/features';
-import { applySettingsToDom, replayInPreview } from '../../editor-bridge/settings-bridge';
+import { replayInPreview } from '../../editor-bridge/settings-bridge';
 
 /**
- * "Play Now" button inside a <ResponsiveSection>. Unlike the other inputs
- * in this folder, this one has no underlying prop value to read/write — it
- * just triggers a replay of the animation on the currently-selected element
- * in the preview iframe. The Play Animation switch prop (TEXT_PLAY_TOKEN /
- * ANIM_PLAY_TOKEN) is no longer needed; the row's visibility predicate
- * gates this button instead.
+ * "Play Now" button inside a <ResponsiveSection>.
  *
- * Click flow:
- *   1. Resolve the selected container + its feature config.
- *   2. Mirror current settings into the preview-iframe DOM data-attrs
- *      (applySettingsToDom) so the animation reads the latest values.
- *   3. Find the iframe target node and call replayInPreview.
- *   4. Flash "Played" briefly so the user gets visual feedback.
+ * The live bridge already keeps `window.AAE_INTERACTIONS_*[id]` in sync
+ * on every settings mutation, so this button doesn't need to re-mirror
+ * settings — it just resolves the iframe target and replays.
  */
 export function PlayButtonInput() {
 	const [played, setPlayed] = useState(false);
@@ -40,14 +32,14 @@ export function PlayButtonInput() {
 			return;
 		}
 
-		const result = applySettingsToDom(container);
-		if (!result?.target) {
+		const target = features[0].findTarget(win.document, container.id);
+		if (!target) {
 			// eslint-disable-next-line no-console
 			console.warn('[AAE] Play: target element not found in preview.');
 			return;
 		}
 
-		if (!replayInPreview(result.target)) {
+		if (!replayInPreview(target)) {
 			// eslint-disable-next-line no-console
 			console.warn('[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?');
 			return;

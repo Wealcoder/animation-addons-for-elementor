@@ -58,6 +58,10 @@ function getScrollTrigger() {
 	return typeof window !== 'undefined' ? window.ScrollTrigger : null;
 }
 
+function getSplitText() {
+	return typeof window !== 'undefined' ? window.SplitText : null;
+}
+
 /**
  * Active breakpoint key for the current viewport. Prefers Elementor's own
  * resolver. Falls back to a minimal width check.
@@ -403,6 +407,7 @@ window.AAEADDON = {
 	// helpers
 	getGsap,
 	getScrollTrigger,
+	getSplitText,
 	currentBreakpoint,
 	interactionIdFor,       // shared id lookup (data-interaction-id)
 	configFor,              // interactions-map reader
@@ -428,8 +433,10 @@ window.aaeAtomicAnimations = { scan, rebind, replay, reset: resetEl };
 function init() {
 	const gsap = getGsap();
 	const ScrollTrigger = getScrollTrigger();
-	if (ScrollTrigger && gsap?.registerPlugin) {
-		gsap.registerPlugin(ScrollTrigger);
+	const SplitText = getSplitText();
+	if (gsap?.registerPlugin) {
+		if (ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+		if (SplitText)     gsap.registerPlugin(SplitText);
 	}
 
 	if (document.readyState === 'loading') {

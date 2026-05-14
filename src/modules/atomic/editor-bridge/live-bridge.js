@@ -1,8 +1,8 @@
 /* eslint-env browser */
 
-import { getSelectedContainer, unwrap, getPreviewWindow } from './helpers';
+import { getSelectedContainer, getPreviewWindow } from './helpers';
 import { track } from './disposables';
-import { applySettingsToDom, replayInPreview } from './settings-bridge';
+import { applySettingsToDom } from './settings-bridge';
 import { FEATURES } from './features';
 
 /**
@@ -92,18 +92,6 @@ function attachLiveBridge(container, onChange) {
 	detachLiveBridge();
 	activeContainer = container;
 
-	// Settings whose change should ALWAYS force a Play-button-style refresh,
-	// regardless of the per-feature `Enable On Editor` toggle. These are the
-	// fields whose visible result is built at bind time (effect family
-	// branches into a different tween shape; markers redraws the
-	// ScrollTrigger overlay) — without a forced replay the canvas keeps
-	// showing the previous ST's markers / the previous tween's end-state.
-	const FORCE_REPLAY_KEYS = new Set([
-		'aae_anim_effect',
-		'aae_anim_markers',
-		'aae_text_effect',
-	]);
-
 	// React inputs write via @elementor/editor-elements'
 	// `updateElementSettings`, which goes through the v4 Redux store. The
 	// Backbone `container.settings.attributes` mirror that we read in
@@ -115,12 +103,6 @@ function attachLiveBridge(container, onChange) {
 
 		const result = applySettingsToDom(container);
 		if (!result) return;
-
-		// `changedAttributes()` returns the keys mutated by the most recent
-		// `set()` call (Backbone). Falsy when this handler was invoked
-		// outside a change cycle (e.g. via the cmds hook below).
-		const changed = container.settings.changedAttributes?.() || {};
-		const forceReplay = Object.keys(changed).some((k) => FORCE_REPLAY_KEYS.has(k));
 
 		// Hard-destroy guarantee: if every feature came back inactive
 		// (effect set to none / image picker cleared / etc.), force a full
@@ -137,24 +119,15 @@ function attachLiveBridge(container, onChange) {
 			return;
 		}
 
-		// A heading can have BOTH text + regular animations. Replay if ANY
-		// applicable feature is active AND has its Enable On Editor toggle
-		// on; otherwise reset (kills tweens / strips applied styles).
-		const settings = container.settings.attributes;
-		const shouldReplay = forceReplay || result.results.some((r) => {
-			if (!r.active) return false;
-			const autoKey = r.feature.autoReplaySetting;
-			return autoKey ? !!unwrap(settings[autoKey]) : false;
-		});
-
-		if (!shouldReplay) {
-			const win = getPreviewWindow();
-			const api = win && win.aaeAtomicAnimations;
-			if (api?.reset) api.reset(result.target);
-			return;
-		}
-
-		replayInPreview(result.target);
+		// rebind() inside applySettingsToDom has already done everything:
+		//   - rewired triggers with the new config (scroll/hover/click)
+		//   - auto-played any page-load triggers with the new shape
+		// No explicit replay needed — that would double-fire page-load.
+		//
+		// Enable-On-Editor toggled OFF: nothing to do here either. The user
+		// will see the current tween's end state until they change another
+		// setting that triggers a new bind, which is the same behavior the
+		// preview shows for non-page-load triggers.
 	};
 
 	// Coalesce burst writes (one Backbone `change` event per attribute, and

@@ -27,8 +27,13 @@ function pipePreviewRenderEvents() {
 	const handler = (event) => {
 		const el = event.detail && event.detail.element;
 		if (!el) return;
+		// rebind handles the rendered element itself; scan its descendants
+		// for newly-mounted children that didn't get their own render event.
 		win.aaeAtomicAnimations.rebind(el);
-		win.aaeAtomicAnimations.scan(el);
+		// Walk descendants only — skip `el` itself since rebind covered it.
+		for (const child of el.querySelectorAll('[data-interaction-id]')) {
+			win.aaeAtomicAnimations.rebind(child);
+		}
 	};
 
 	win.addEventListener('elementor/element/render', handler);
