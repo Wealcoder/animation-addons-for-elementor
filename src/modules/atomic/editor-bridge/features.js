@@ -416,8 +416,6 @@ function buildImageHoverConfig(settings) {
 		imageUrl,
 	};
 
-	if (plain(settings, 'aae_ih_enable_editor')) cfg.enableEditor = true;
-
 	const zindex = settings.aae_ih_zindex;
 	if (zindex && typeof zindex === 'object' && typeof zindex.value === 'number') {
 		cfg.zindex = zindex.value;
@@ -476,7 +474,10 @@ export const FEATURES = [
 		// No standalone enable bool — gating happens inside buildImageHoverConfig
 		// (returns null when no real image is picked).
 		enableSetting: 'aae_ih_image',
-		autoReplaySetting: 'aae_ih_enable_editor',
+		// No editor auto-replay flag — there's no animation to replay; the
+		// hover effect is event-driven. The Play button in the panel pushes
+		// a manual rebind for native controls that don't auto-mirror.
+		autoReplaySetting: null,
 		mapName:    'AAE_INTERACTIONS_IMGHOVER',
 		buildConfig: buildImageHoverConfig,
 		findTarget: findByInteractionId,

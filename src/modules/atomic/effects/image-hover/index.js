@@ -50,11 +50,10 @@ export function readImageHover(el) {
  *     `el.innerHTML` when splitting text into per-character spans —
  *     which would also wipe our overlay if we hosted it inside `el`.
  *
- * Mouse coordinates still come from the parent's bounding box so the
- * overlay's absolute-positioning frame stays aligned with the event
- * origin. The hover effect's "hot area" is therefore the entire host
- * (parent), which matches user intent — hovering anywhere in the
- * widget's visible region triggers the reveal.
+ * The parent gives the overlay a stable mount point. Hover *listeners*
+ * stay on `el` so the hot area exactly matches the widget (not the
+ * larger parent), and mouse coordinates are translated into the host's
+ * frame so the absolute-positioned overlay tracks correctly.
  */
 function hostFor(el) {
 	return el.parentElement || el;
@@ -72,6 +71,15 @@ function ensureOverlay(el, config) {
 		el[IH_OVERLAY_KEY] = overlay;
 	}
 
+	// Sweep orphan overlays: in the editor, React re-renders replace the
+	// widget's DOM node — the old el's overlay is left behind in the host
+	// (we can't reach it via the new el's IH_OVERLAY_KEY). Remove any
+	// `.aae-ih-image` siblings that aren't the one we just bound.
+	const others = host.querySelectorAll(':scope > .aae-ih-image');
+	others.forEach((node) => {
+		if (node !== overlay) node.parentNode?.removeChild(node);
+	});
+
 	// Position absolutely inside the host. If host is static, promote it
 	// to relative so the overlay anchors to it.
 	if (getComputedStyle(host).position === 'static') {
@@ -83,8 +91,10 @@ function ensureOverlay(el, config) {
 		pointerEvents:      'none',
 		opacity:            '0',
 		visibility:         'hidden',
-		top:                `${config.top}px`,
-		left:               `${config.left}px`,
+		// Anchor at host's origin — the per-mousemove transform handles
+		// both the cursor follow and the user-configured offset.
+		top:                '0',
+		left:               '0',
 		width:              `${config.width}px`,
 		height:             `${config.height}px`,
 		zIndex:             String(config.zindex),
@@ -92,7 +102,10 @@ function ensureOverlay(el, config) {
 		backgroundSize:     'cover',
 		backgroundPosition: 'center',
 		backgroundRepeat:   'no-repeat',
-		// Anchor on center so the cursor sits in the middle of the image.
+		// Center the image on the cursor by default. translate(-50%,-50%)
+		// pulls the image back by half its size so the cursor sits at its
+		// center; the per-mousemove gsap.set adds the cursor coords + the
+		// user's Top/Left offset on top.
 		transform:          'translate(-50%, -50%)',
 		willChange:         'transform, opacity',
 	});
@@ -105,11 +118,7 @@ export function bindImageHover(el, config) {
 	if (!gsap) return;
 
 	const overlay = ensureOverlay(el, config);
-	// Hover listeners go on the host (the overlay's offset parent), not on
-	// `el` — when el is an <img>, mouse events relative to it work but the
-	// overlay is positioned inside the parent's box, so coordinates must
-	// match. Using host for both makes the math simple.
-	const host = hostFor(el);
+	const host    = hostFor(el);
 
 	const onEnter = () => {
 		gsap.to(overlay, { duration: 0, autoAlpha: 1 });
@@ -117,23 +126,28 @@ export function bindImageHover(el, config) {
 	const onLeave = () => {
 		gsap.to(overlay, { duration: 0, autoAlpha: 0 });
 	};
+	// Mouse coords arrive in viewport space. The overlay's absolute frame
+	// is the host (parent), so we subtract host.rect.left/top — that puts
+	// the cursor in host-local coordinates. Then we add the user-configured
+	// Top/Left as a positive offset (Left=50 → image shifts 50px right of
+	// cursor; Top=20 → 20px down). Listeners live on `el` so the hot area
+	// equals the widget, not the larger host.
 	const onMove = (e) => {
 		const box = host.getBoundingClientRect();
 		const dx  = e.clientX - box.left;
 		const dy  = e.clientY - box.top;
-		// Offset by configured top/left so user-set position acts as anchor.
-		gsap.set(overlay, { x: dx - config.left, y: dy - config.top });
+		gsap.set(overlay, { x: dx + config.left, y: dy + config.top });
 	};
 
-	host.addEventListener('mouseenter', onEnter);
-	host.addEventListener('mouseleave', onLeave);
-	host.addEventListener('mousemove',  onMove);
+	el.addEventListener('mouseenter', onEnter);
+	el.addEventListener('mouseleave', onLeave);
+	el.addEventListener('mousemove',  onMove);
 
 	el[IH_PLAYED]      = overlay;
 	el[IH_DISPOSE_KEY] = () => {
-		host.removeEventListener('mouseenter', onEnter);
-		host.removeEventListener('mouseleave', onLeave);
-		host.removeEventListener('mousemove',  onMove);
+		el.removeEventListener('mouseenter', onEnter);
+		el.removeEventListener('mouseleave', onLeave);
+		el.removeEventListener('mousemove',  onMove);
 	};
 }
 

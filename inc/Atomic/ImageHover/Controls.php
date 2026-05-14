@@ -4,7 +4,6 @@ namespace WCF_ADDONS\Atomic\ImageHover;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Image_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Image Hover panel — mixed Section with native primitives + a responsive
  * anchor.
  *
- *   - Enable + Enable On Editor + Image picker + Z-index render NATIVELY
- *     (non-responsive primitives — Elementor's native controls).
+ *   - Image picker + Z-Index render NATIVELY (non-responsive primitives —
+ *     Elementor's native controls).
  *   - The anchor Text_Control triggers the React replacement which renders
- *     a <ResponsiveSection> for Width / Height / Top / Left.
+ *     a <ResponsiveSection> for Width / Height / Top / Left + Play.
  */
 final class Controls {
 
@@ -56,14 +55,11 @@ final class Controls {
 				Image_Control::bind_to( Schema::IH_IMAGE )
 					->set_label( __( 'Hover Image', self::TD ) ),
 
-				Switch_Control::bind_to( Schema::IH_ENABLE_EDITOR )
-					->set_label( __( 'Enable On Editor', self::TD ) ),
-
 				Number_Control::bind_to( Schema::IH_ZINDEX )
 					->set_label( __( 'Z-Index', self::TD ) ),
 
 				// Anchor — React replacement renders Width / Height / Top / Left
-				// responsive rows in place of this placeholder.
+				// + Play button rows in place of this placeholder.
 				Text_Control::bind_to( Schema::IH_SECTION_ANCHOR ),
 			] );
 	}

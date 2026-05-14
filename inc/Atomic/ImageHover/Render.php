@@ -72,12 +72,6 @@ final class Render {
 			'imageUrl' => $image_url,
 		];
 
-		// Editor flag.
-		$editor = $settings[ Schema::IH_ENABLE_EDITOR ] ?? null;
-		if ( is_array( $editor ) && ! empty( $editor['value'] ) ) {
-			$config['enableEditor'] = true;
-		}
-
 		// Non-responsive number — z-index.
 		$zindex = $settings[ Schema::IH_ZINDEX ] ?? null;
 		if ( is_array( $zindex ) && isset( $zindex['value'] ) && is_numeric( $zindex['value'] ) ) {

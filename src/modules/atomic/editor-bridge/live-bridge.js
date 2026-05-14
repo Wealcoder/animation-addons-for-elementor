@@ -27,6 +27,11 @@ function detachLiveBridge() {
 		if (activeDestroyHandler) {
 			activeContainer.model?.off?.('destroy', activeDestroyHandler);
 		}
+		const cmdHook = activeContainer.__aaeCmdHook;
+		if (cmdHook && window.$e?.commands?.off) {
+			try { window.$e.commands.off('run:after', cmdHook); } catch (_) { /* ignore */ }
+			activeContainer.__aaeCmdHook = null;
+		}
 	}
 	activeContainer = null;
 	activeChangeHandler = null;
@@ -72,8 +77,34 @@ function attachLiveBridge(container, onChange) {
 
 	activeDestroyHandler = () => detachLiveBridge();
 
+	// Two listeners — same handler, two paths into the same widget settings:
+	//
+	// 1. `container.settings.on('change')` — Backbone-style. Fires for our
+	//    own React inputs (NumberInput / SwitchInput / etc.) that write via
+	//    @elementor/editor-elements' updateElementSettings.
+	//
+	// 2. `$e.commands.on('run:after', 'document/elements/settings')` — v4
+	//    atomic-widgets path. Fires when Elementor's NATIVE controls
+	//    (Image_Control, Switch_Control as a section item, etc.) commit a
+	//    change. The Backbone change event doesn't always propagate from
+	//    those, so without this hook the live preview misses native picks.
 	container.settings.on('change', activeChangeHandler);
 	container.model?.on?.('destroy', activeDestroyHandler);
+
+	const cmds = window.$e?.commands;
+	if (cmds?.on) {
+		const cmdHook = (command /* , args, results */) => {
+			if (command !== 'document/elements/settings') return;
+			// Only re-apply if the still-active container matches the one
+			// we're watching — `run:after` is global, fires for any element.
+			if (activeContainer !== container) return;
+			activeChangeHandler();
+		};
+		cmds.on('run:after', cmdHook);
+		// Track for detach. We can't off-hook a non-named handler safely
+		// across versions, so save it on the container ref for cleanup.
+		activeContainer.__aaeCmdHook = cmdHook;
+	}
 
 	applySettingsToDom(container);
 }
