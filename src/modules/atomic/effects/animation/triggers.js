@@ -122,7 +122,10 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 			invalidateOnRefresh: true,
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => { st.kill(); tween.kill?.(); };
+		// `st.kill(true)` reverts — removes the marker <div> nodes
+		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
+		// behind, which is what makes stale markers appear in the editor.
+		el[DISPOSE_KEY] = () => { st.kill(true); tween.kill?.(); };
 		return;
 	}
 
@@ -135,7 +138,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 			onEnter: play,
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => st.kill();
+		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
 
@@ -151,7 +154,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 			onEnter: play,
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => st.kill();
+		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
 

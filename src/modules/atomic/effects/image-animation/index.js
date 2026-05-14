@@ -136,7 +136,7 @@ function bindScale(el, config) {
 	if (parent) parent.style.overflow = 'hidden';
 
 	el[IMG_PLAYED] = tween;
-	el[IMG_DISPOSE_KEY] = () => { st.kill(); tween.kill(); };
+	el[IMG_DISPOSE_KEY] = () => { st.kill(true); tween.kill(); };
 }
 
 /* =====================================================================
@@ -176,7 +176,7 @@ function bindStretch(el, config) {
 	});
 
 	el[IMG_PLAYED] = tween;
-	el[IMG_DISPOSE_KEY] = () => { st.kill(); tween.kill(); };
+	el[IMG_DISPOSE_KEY] = () => { st.kill(true); tween.kill(); };
 
 	// Suppress unused-var lint — config kept for symmetry with the other
 	// effects in case future fields apply here.

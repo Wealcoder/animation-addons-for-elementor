@@ -3,6 +3,7 @@
 import { getSelectedContainer, unwrap, getPreviewWindow } from './helpers';
 import { track } from './disposables';
 import { applySettingsToDom, replayInPreview } from './settings-bridge';
+import { FEATURES } from './features';
 
 /**
  * Live-edit bridge — subscribes to the currently-selected atomic container's
@@ -18,6 +19,48 @@ let activeContainer       = null;
 let activeChangeHandler   = null;
 let activeDestroyHandler  = null;
 let liveBridgeStarted     = false;
+
+/**
+ * Tear down everything an element accumulated in the preview iframe:
+ *   - drop its entry from every feature's interactions map
+ *   - call rebind(target) so every kind's `unbind` fires (kills the
+ *     ScrollTrigger that was holding a ref to this DOM node)
+ *
+ * Looks up the target via the first feature's findTarget — every feature
+ * uses the same data-interaction-id strategy so any one of them suffices.
+ * If the iframe DOM node is already gone, fall back to a manual ScrollTrigger
+ * sweep keyed by id so orphan markers still get killed.
+ */
+function teardownPreviewForId(id) {
+	if (!id) return;
+	const win = getPreviewWindow();
+	if (!win) return;
+
+	for (const feature of FEATURES) {
+		const map = win[feature.mapName];
+		if (map && map[id]) delete map[id];
+	}
+
+	const target = FEATURES[0]?.findTarget?.(win.document, id);
+	const api = win.aaeAtomicAnimations;
+
+	if (target && api?.rebind) {
+		api.rebind(target);
+		return;
+	}
+
+	// Target already detached — sweep ScrollTriggers whose `.trigger`
+	// element is no longer in the document. Cheap, runs once per delete.
+	const ScrollTrigger = win.ScrollTrigger;
+	if (ScrollTrigger?.getAll) {
+		for (const st of ScrollTrigger.getAll()) {
+			const tEl = st.trigger;
+			if (tEl && !win.document.contains(tEl)) {
+				try { st.kill(true); } catch (_) { /* ignore */ }
+			}
+		}
+	}
+}
 
 function detachLiveBridge() {
 	if (activeContainer) {
@@ -49,17 +92,56 @@ function attachLiveBridge(container, onChange) {
 	detachLiveBridge();
 	activeContainer = container;
 
-	activeChangeHandler = () => {
-		if (typeof onChange === 'function') onChange();
+	// Settings whose change should ALWAYS force a Play-button-style refresh,
+	// regardless of the per-feature `Enable On Editor` toggle. These are the
+	// fields whose visible result is built at bind time (effect family
+	// branches into a different tween shape; markers redraws the
+	// ScrollTrigger overlay) — without a forced replay the canvas keeps
+	// showing the previous ST's markers / the previous tween's end-state.
+	const FORCE_REPLAY_KEYS = new Set([
+		'aae_anim_effect',
+		'aae_anim_markers',
+		'aae_text_effect',
+	]);
+
+	// React inputs write via @elementor/editor-elements'
+	// `updateElementSettings`, which goes through the v4 Redux store. The
+	// Backbone `container.settings.attributes` mirror that we read in
+	// `applySettingsToDom` only catches up AFTER the change event fires.
+	// Defer to a microtask so we read post-sync values, not stale ones.
+	let scheduled = false;
+	const runChange = () => {
+		scheduled = false;
 
 		const result = applySettingsToDom(container);
 		if (!result) return;
+
+		// `changedAttributes()` returns the keys mutated by the most recent
+		// `set()` call (Backbone). Falsy when this handler was invoked
+		// outside a change cycle (e.g. via the cmds hook below).
+		const changed = container.settings.changedAttributes?.() || {};
+		const forceReplay = Object.keys(changed).some((k) => FORCE_REPLAY_KEYS.has(k));
+
+		// Hard-destroy guarantee: if every feature came back inactive
+		// (effect set to none / image picker cleared / etc.), force a full
+		// reset so the killed tween's revert() runs and the bound-flag
+		// CSS class drops. applySettingsToDom already called rebind() which
+		// tore the ScrollTrigger down, but reset() also reverts inline
+		// styles GSAP applied — without it the element stays at the
+		// tween's end state.
+		const allInactive = result.results.length > 0 && result.results.every((r) => !r.active);
+		if (allInactive) {
+			const win = getPreviewWindow();
+			const api = win && win.aaeAtomicAnimations;
+			if (api?.reset) api.reset(result.target);
+			return;
+		}
 
 		// A heading can have BOTH text + regular animations. Replay if ANY
 		// applicable feature is active AND has its Enable On Editor toggle
 		// on; otherwise reset (kills tweens / strips applied styles).
 		const settings = container.settings.attributes;
-		const shouldReplay = result.results.some((r) => {
+		const shouldReplay = forceReplay || result.results.some((r) => {
 			if (!r.active) return false;
 			const autoKey = r.feature.autoReplaySetting;
 			return autoKey ? !!unwrap(settings[autoKey]) : false;
@@ -75,7 +157,29 @@ function attachLiveBridge(container, onChange) {
 		replayInPreview(result.target);
 	};
 
-	activeDestroyHandler = () => detachLiveBridge();
+	// Coalesce burst writes (one Backbone `change` event per attribute, and
+	// the cmds hook firing in parallel for native controls) into a single
+	// rAF-deferred run. rAF gives the v4 store enough time to mirror into
+	// container.settings.attributes; coalescing avoids N rebinds per click.
+	activeChangeHandler = () => {
+		// onChange (panel-scan refresh) stays synchronous — placeholder hint
+		// updates shouldn't lag a frame behind the user's keystroke.
+		if (typeof onChange === 'function') onChange();
+
+		if (scheduled) return;
+		scheduled = true;
+		requestAnimationFrame(runChange);
+	};
+
+	activeDestroyHandler = () => {
+		// Element removed from the canvas — wipe any registered configs so
+		// the runtime's rebind() tears down every kind's trigger (kills
+		// orphan ScrollTriggers, removes hover/click listeners, drops the
+		// CSS bound-flag). Without this the ScrollTrigger keeps drawing
+		// markers + holding a ref to the now-detached DOM node.
+		teardownPreviewForId(container.id);
+		detachLiveBridge();
+	};
 
 	// Two listeners — same handler, two paths into the same widget settings:
 	//
@@ -93,10 +197,9 @@ function attachLiveBridge(container, onChange) {
 
 	const cmds = window.$e?.commands;
 	if (cmds?.on) {
-		const cmdHook = (command /* , args, results */) => {
+		const cmdHook = (a, b) => {
+			const command = (typeof a === 'string') ? a : (typeof b === 'string' ? b : null);
 			if (command !== 'document/elements/settings') return;
-			// Only re-apply if the still-active container matches the one
-			// we're watching — `run:after` is global, fires for any element.
 			if (activeContainer !== container) return;
 			activeChangeHandler();
 		};
@@ -132,6 +235,37 @@ export function startLiveBridge(onChange) {
 	}
 
 	track(detachLiveBridge);
+
+	// Belt-and-braces: any element delete (selected or otherwise) sweeps
+	// orphan ScrollTriggers in the preview iframe. The selected-container
+	// model.on('destroy') hook above handles the targeted case; this
+	// catches deletions that bypass selection (multi-delete, navigator
+	// remove, undo/redo of a delete).
+	const cmds = window.$e?.commands;
+	if (cmds?.on) {
+		const deleteHook = (a, b) => {
+			// $e.commands `run:after` signature in current atomic editor is
+			// (component:Component, command:string, args). Older versions
+			// flipped it to (command:string, args, results) — handle both
+			// by picking whichever positional arg is a string.
+			const command = (typeof a === 'string') ? a : (typeof b === 'string' ? b : null);
+			if (!command) return;
+			if (!/elements\/(delete|remove|destroy)/.test(command)) return;
+
+			const win = getPreviewWindow();
+			const ScrollTrigger = win?.ScrollTrigger;
+			if (!ScrollTrigger?.getAll) return;
+			for (const st of ScrollTrigger.getAll()) {
+				const tEl = st.trigger;
+				if (tEl && !win.document.contains(tEl)) {
+					try { st.kill(true); } catch (_) { /* ignore */ }
+				}
+			}
+		};
+		cmds.on('run:after', deleteHook);
+		track(() => { try { cmds.off('run:after', deleteHook); } catch (_) { /* ignore */ } });
+	}
+
 	tryAttach();
 }
 

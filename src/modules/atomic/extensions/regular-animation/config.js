@@ -163,11 +163,6 @@ const config = {
 		{ bind: 'end_custom',     label: 'Custom End',    control: 'text',
 		  defaultValue: 'bottom top', placeholder: 'bottom top+=100', when: showEndCustom },
 
-		// Markers is non-responsive (stored as plain Boolean_Prop_Type) — see
-		// Schema.php. The ResponsiveRow wrapper expects responsive props, so
-		// markers stays in the PHP Section as a native Switch_Control, NOT
-		// rendered through this config table.
-
 		{ bind: 'delay',    label: 'Delay',    control: 'number', defaultValue: 0.15, when: isDurationEffect },
 		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5,  when: isDurationEffect },
 		{ bind: 'easing',   label: 'Ease',     control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect },
@@ -201,6 +196,11 @@ const config = {
 		  ] },
 
 		// Non-responsive control rows.
+		// Markers is a ScrollTrigger debug overlay — only meaningful for the
+		// scroll-tied triggers, but we surface it whenever an effect is
+		// selected (matches Animation/Method/Trigger visibility).
+		{ bind: 'markers', label: 'Markers', control: 'switch',
+		  responsive: false, defaultValue: false, when: isAnimated },
 		{ bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
 		  responsive: false, defaultValue: false, when: showEnableEditor },
 		{ control: 'play-button', when: showPlayButton },
