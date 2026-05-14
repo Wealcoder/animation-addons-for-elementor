@@ -1,7 +1,3 @@
-/* eslint-env browser */
-
-import { isHoverEnabled } from './predicates';
-
 /**
  * Image Hover (Reveal-on-Hover) responsive fields.
  *
@@ -17,13 +13,13 @@ const config = {
 	bindPrefix: 'aae_ih_',
 	fields: [
 		{ bind: 'width',  label: 'Width (px)',   control: 'number',
-		  defaultValue: 300, when: isHoverEnabled },
+		  defaultValue: 300},
 		{ bind: 'height', label: 'Height (px)',  control: 'number',
-		  defaultValue: 300, when: isHoverEnabled },
+		  defaultValue: 300 },
 		{ bind: 'top',    label: 'Top (px)',     control: 'number',
-		  defaultValue: 0,   when: isHoverEnabled },
+		  defaultValue: 0 },
 		{ bind: 'left',   label: 'Left (px)',    control: 'number',
-		  defaultValue: 0,   when: isHoverEnabled },
+		  defaultValue: 0 },
 	],
 };
 
