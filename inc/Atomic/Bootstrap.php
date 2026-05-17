@@ -46,6 +46,12 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
 
+
+		// Sticky — pin elements
+		( new \WCF_ADDONS\Atomic\Sticky\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
+
 		( new Assets() )->register();
 	}
 
