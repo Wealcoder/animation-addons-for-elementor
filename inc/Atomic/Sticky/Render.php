@@ -6,93 +6,181 @@ use WCF_ADDONS\Atomic\Bootstrap;
 use WCF_ADDONS\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 final class Render {
 
-    public function register(): void {
+	public function register(): void {
 
-        add_action(
-            'elementor/frontend/before_render',
-            [ $this, 'maybe_register' ]
-        );
-    }
+		add_action(
+			'elementor/frontend/before_render',
+			[ $this, 'maybe_register' ]
+		);
+	}
 
-    public function maybe_register( $element ): void {
+	public function maybe_register( $element ): void {
 
-        if (
-            ! is_object( $element ) ||
-            ! method_exists( $element, 'get_element_type' )
-        ) {
-            return;
-        }
+		if (
+			! is_object( $element ) ||
+			! method_exists( $element, 'get_element_type' )
+		) {
+			return;
+		}
 
-        if (
-            ! in_array(
-                $element->get_element_type(),
-                Bootstrap::target_element_types(),
-                true
-            )
-        ) {
-            return;
-        }
+		if (
+			! in_array(
+				$element->get_element_type(),
+				Bootstrap::target_element_types(),
+				true
+			)
+		) {
+			return;
+		}
 
-        $settings = method_exists( $element, 'get_settings' )
-            ? $element->get_settings()
-            : [];
+		$settings = method_exists( $element, 'get_settings' )
+			? $element->get_settings()
+			: [];
 
-        $config = $this->build_config( $settings );
+		$config = $this->build_config( $settings );
 
-        if ( empty( $config['enabled'] ) ) {
-            return;
-        }
+		if ( empty( $config['enabled'] ) ) {
+			return;
+		}
 
-        $id = method_exists( $element, 'get_id' )
-            ? $element->get_id()
-            : '';
+		$id = method_exists( $element, 'get_id' )
+			? $element->get_id()
+			: '';
 
-        if ( empty( $id ) ) {
-            return;
-        }
+		if ( empty( $id ) ) {
+			return;
+		}
 
-        InteractionsMap::register(
-            'sticky',
-            $id,
-            $config
-        );
-    }
+		InteractionsMap::register(
+			'sticky',
+			$id,
+			$config
+		);
+	}
 
-    private function build_config( array $settings ): array {
+	private function build_config( array $settings ): array {
 
-        $enabled = (bool) (
-            $settings[ Schema::STICKY_ENABLE ] ?? false
-        );
+		$enabled = (bool) (
+			$settings[ Schema::STICKY_ENABLE ] ?? false
+		);
 
-        return [
+		return [
 
-            'enabled' => $enabled,
+			/*
+			|--------------------------------------------------------------------------
+			| Base
+			|--------------------------------------------------------------------------
+			*/
 
-            'pinTrigger' => (
-                $settings[ Schema::STICKY_PIN_TRIGGER ]
-                ?? 'default'
-            ),
+			'enabled' => $enabled,
 
-            'customPinArea' => (
-                $settings[ Schema::STICKY_CUSTOM_PIN_AREA ]
-                ?? ''
-            ),
+			/*
+			|--------------------------------------------------------------------------
+			| Pin Trigger
+			|--------------------------------------------------------------------------
+			*/
 
-            'pinEndTrigger' => (
-                $settings[ Schema::STICKY_PIN_END_TRIGGER ]
-                ?? 'default'
-            ),
+			'pinTrigger' => (
+				$settings[ Schema::STICKY_PIN_TRIGGER ]
+				?? []
+			),
 
-            'customPinEndArea' => (
-                $settings[ Schema::STICKY_CUSTOM_PIN_AREA_FIELD ]
-                ?? ''
-            ),
+			'customPinArea' => (
+				$settings[ Schema::STICKY_CUSTOM_PIN_AREA ]
+				?? []
+			),
 
-        ];
-    }
+			/*
+			|--------------------------------------------------------------------------
+			| Pin End Trigger
+			|--------------------------------------------------------------------------
+			*/
+
+			'pinEndTrigger' => (
+				$settings[ Schema::STICKY_PIN_END_TRIGGER ]
+				?? []
+			),
+
+			'customPinEndArea' => (
+				$settings[ Schema::STICKY_CUSTOM_PIN_END_AREA ]
+				?? []
+			),
+
+			/*
+			|--------------------------------------------------------------------------
+			| Pin
+			|--------------------------------------------------------------------------
+			*/
+
+			'pin' => (
+				$settings[ Schema::STICKY_PIN ]
+				?? []
+			),
+
+			'customPin' => (
+				$settings[ Schema::STICKY_CUSTOM_PIN ]
+				?? []
+			),
+
+			/*
+			|--------------------------------------------------------------------------
+			| Pin Start
+			|--------------------------------------------------------------------------
+			*/
+
+			'pinStart' => (
+				$settings[ Schema::STICKY_PIN_START ]
+				?? []
+			),
+
+			'customPinStart' => (
+				$settings[ Schema::STICKY_CUSTOM_PIN_START ]
+				?? []
+			),
+
+			/*
+			|--------------------------------------------------------------------------
+			| Pin End
+			|--------------------------------------------------------------------------
+			*/
+
+			'pinEnd' => (
+				$settings[ Schema::STICKY_PIN_END ]
+				?? []
+			),
+
+			'customPinEnd' => (
+				$settings[ Schema::STICKY_CUSTOM_PIN_END ]
+				?? []
+			),
+
+			/*
+			|--------------------------------------------------------------------------
+			| Pin Spacing
+			|--------------------------------------------------------------------------
+			*/
+
+			'pinSpacing' => (
+				$settings[ Schema::STICKY_PIN_SPACING ]
+				?? []
+			),
+
+			/*
+			|--------------------------------------------------------------------------
+			| Pin Markers
+			|--------------------------------------------------------------------------
+			*/
+
+			'pinMarkers' => (
+				$settings[ Schema::STICKY_PIN_MARKERS ]
+				?? false
+			),
+
+		];
+	}
 }

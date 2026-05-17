@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Schema {
 
 	const STICKY_SECTION_ANCHOR      = 'aae_sticky_section_anchor';
+
 	const STICKY_ENABLE              = 'aae_sticky_enable';
 
 	const STICKY_PIN_TRIGGER         = 'aae_sticky_pin_trigger';
@@ -20,6 +21,19 @@ final class Schema {
 
 	const STICKY_PIN_END_TRIGGER     = 'aae_sticky_pin_end_trigger';
 	const STICKY_CUSTOM_PIN_END_AREA = 'aae_sticky_custom_pin_end_area';
+
+	const STICKY_PIN                 = 'aae_sticky_pin';
+	const STICKY_CUSTOM_PIN          = 'aae_sticky_custom_pin';
+
+	const STICKY_PIN_START           = 'aae_sticky_pin_start';
+	const STICKY_CUSTOM_PIN_START    = 'aae_sticky_custom_pin_start';
+
+	const STICKY_PIN_END             = 'aae_sticky_pin_end';
+	const STICKY_CUSTOM_PIN_END      = 'aae_sticky_custom_pin_end';
+
+	const STICKY_PIN_SPACING         = 'aae_sticky_pin_spacing';
+
+	const STICKY_PIN_MARKERS         = 'aae_sticky_pin_markers';
 
 	public function register(): void {
 
@@ -81,35 +95,11 @@ final class Schema {
 				])
 				->set_dependencies( $sticky_enabled_dependency );
 
-		/*
-		|--------------------------------------------------------------------------
-		| Custom Pin Area
-		|--------------------------------------------------------------------------
-		*/
-
-		$custom_pin_dependency = Dependency_Manager::make(
-			Dependency_Manager::RELATION_OR
-		)
-			->where([
-				'operator' => 'eq',
-				'path'     => [ self::STICKY_ENABLE ],
-				'value'    => false,
-				'effect'   => 'hide',
-			])
-			->where([
-				'operator' => 'ne',
-				'path'     => [ self::STICKY_PIN_TRIGGER ],
-				'value'    => 'custom',
-				'effect'   => 'hide',
-			])
-			->get();
-
 		$schema[ self::STICKY_CUSTOM_PIN_AREA ] =
 			Responsive_JSON_Prop_Type::make()
 				->default([
 					'desktop' => '',
-				])
-				->set_dependencies( $custom_pin_dependency );
+				]);
 
 		/*
 		|--------------------------------------------------------------------------
@@ -124,35 +114,92 @@ final class Schema {
 				])
 				->set_dependencies( $sticky_enabled_dependency );
 
-		/*
-		|--------------------------------------------------------------------------
-		| Custom Pin End Area
-		|--------------------------------------------------------------------------
-		*/
-
-		$custom_pin_end_dependency = Dependency_Manager::make(
-			Dependency_Manager::RELATION_OR
-		)
-			->where([
-				'operator' => 'eq',
-				'path'     => [ self::STICKY_ENABLE ],
-				'value'    => false,
-				'effect'   => 'hide',
-			])
-			->where([
-				'operator' => 'ne',
-				'path'     => [ self::STICKY_PIN_END_TRIGGER ],
-				'value'    => 'custom',
-				'effect'   => 'hide',
-			])
-			->get();
-
 		$schema[ self::STICKY_CUSTOM_PIN_END_AREA ] =
 			Responsive_JSON_Prop_Type::make()
 				->default([
 					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => true,
 				])
-				->set_dependencies( $custom_pin_end_dependency );
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Start
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_START ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'top top',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN_START ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin End
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_END ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'bottom bottom',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN_END ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Spacing
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_SPACING ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => true,
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Markers
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_MARKERS ] =
+			Boolean_Prop_Type::make()
+				->default( false )
+				->set_dependencies( $sticky_enabled_dependency );
 
 		return $schema;
 	}
