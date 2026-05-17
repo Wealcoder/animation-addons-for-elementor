@@ -85,13 +85,13 @@ function currentBreakpoint() {
 
 /** Cascade: for each mode, parent chain to walk for a non-empty value. */
 const BP_CASCADE = {
-	mobile:       [ 'mobile', 'tablet' ],
-	mobile_extra: [ 'mobile_extra', 'mobile', 'tablet' ],
-	tablet:       [ 'tablet' ],
-	tablet_extra: [ 'tablet_extra', 'tablet' ],
-	laptop:       [ 'laptop' ],
-	desktop:      [],
-	widescreen:   [ 'widescreen' ],
+	mobile: ['mobile', 'tablet'],
+	mobile_extra: ['mobile_extra', 'mobile', 'tablet'],
+	tablet: ['tablet'],
+	tablet_extra: ['tablet_extra', 'tablet'],
+	laptop: ['laptop'],
+	desktop: [],
+	widescreen: ['widescreen'],
 };
 
 /* =====================================================================
@@ -246,6 +246,7 @@ function chainCompletionDrain(el, kind) {
 
 /** Walk a root and bind every animated element. */
 function scan(root) {
+
 	const scope = root && root.querySelectorAll ? root : document;
 
 	// Every kind shares Elementor's universal data-interaction-id, so one
@@ -253,7 +254,7 @@ function scan(root) {
 	// kinds at once (regular + text + future tilt) — each on its own target.
 	if (!KINDS.length) return;
 	const candidates = scope.querySelectorAll('[data-interaction-id]');
-
+	
 	for (const el of candidates) {
 		for (const kind of kindsFor(el)) {
 			if (el.classList.contains(kind.boundFlag)) continue;
@@ -436,14 +437,14 @@ function init() {
 	const SplitText = getSplitText();
 	if (gsap?.registerPlugin) {
 		if (ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-		if (SplitText)     gsap.registerPlugin(SplitText);
+		if (SplitText) gsap.registerPlugin(SplitText);
 	}
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', () => scan(document));
-	} else {
-		scan(document);
-	}
+	// if (document.readyState === 'loading') {
+	// 	document.addEventListener('DOMContentLoaded', () => scan(document));
+	// } else {
+	// 	scan(document);
+	// }
 
 	// Frontend lazy-load / popup hook — handles widgets that aren't in the
 	// DOM at DOMContentLoaded time. Editor re-render path is owned by the

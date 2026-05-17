@@ -65,6 +65,7 @@ registerResponsiveSection( imageHoverSection );
 let bootstrapped = false;
 
 function bootstrap() {
+	
 	if (bootstrapped) {
 		// Document switched — tear down old listeners and re-init.
 		disposeAll();

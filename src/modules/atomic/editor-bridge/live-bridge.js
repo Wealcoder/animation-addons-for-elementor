@@ -15,10 +15,10 @@ import { FEATURES } from './features';
  * panel scan so placeholder hints refresh in step with edits.
  */
 
-let activeContainer       = null;
-let activeChangeHandler   = null;
-let activeDestroyHandler  = null;
-let liveBridgeStarted     = false;
+let activeContainer = null;
+let activeChangeHandler = null;
+let activeDestroyHandler = null;
+let liveBridgeStarted = false;
 
 /**
  * Tear down everything an element accumulated in the preview iframe:
@@ -182,7 +182,7 @@ function attachLiveBridge(container, onChange) {
 		activeContainer.__aaeCmdHook = cmdHook;
 	}
 
-	applySettingsToDom(container);0
+	applySettingsToDom(container); 0
 }
 
 /**
@@ -196,8 +196,10 @@ export function startLiveBridge(onChange) {
 	const tryAttach = () => attachLiveBridge(getSelectedContainer(), onChange);
 
 	const editorChannel = window.elementor?.channels?.editor;
+
 	if (editorChannel?.on) {
 		editorChannel.on('section:activated', tryAttach);
+		console.debug(editorChannel);
 		track(() => editorChannel.off?.('section:activated', tryAttach));
 	}
 
