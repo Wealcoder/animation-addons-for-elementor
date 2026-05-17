@@ -164,8 +164,10 @@ final class Render {
 				$this->emit_responsive( $config, $settings, $base_key, $cfg_key, $default, $extra_bps, $disabled_bps );
 			}
 
-			// wrapper=custom + markers — single-value flag.
-			if ( $wrapper_is_custom && (bool) $this->read_primitive( $settings, Schema::ANIM_MARKERS, false ) ) {
+			// Markers — single-value flag, ships independently of wrapper.
+			// Effect runtime only honors it for scroll-tied animations, but
+			// emitting it always keeps the editor toggle authoritative.
+			if ( (bool) $this->read_primitive( $settings, Schema::ANIM_MARKERS, false ) ) {
 				$config['markers'] = true;
 			}
 

@@ -237,8 +237,12 @@ function buildRegularConfig(settings) {
 		if (readAt(settings, 'aae_anim_end_position', 'desktop', 'bottom top') === 'custom') {
 			cfg.endCustom = String(readAt(settings, 'aae_anim_end_custom', 'desktop', '') || '');
 		}
-		if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
 	}
+
+	// Markers ships independently of wrapper/trigger — the effect-runtime
+	// only honors it for scroll-tied animations, but emitting it always
+	// keeps the editor toggle in sync with what the user sees.
+	if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
 
 	if (effect === 'fade') {
 		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_FADE, disabledBps);
@@ -491,7 +495,13 @@ export const FEATURES = [
  * regular alone, or both simultaneously.
  */
 export function featuresFor(container) {
-	const type = container?.model?.get?.('widgetType')
+	// Atomic widgets sometimes report `widgetType` as the bare name
+	// (`button`, `heading`) and sometimes pre-prefixed (`e-button`,
+	// `e-heading`). Our feature manifest uses the `e-` form, so add
+	// the prefix when missing before matching.
+	const raw = container?.model?.get?.('widgetType')
 		|| container?.model?.get?.('elType');
+	if (!raw) return [];
+	const type = raw.startsWith('e-') ? raw : `e-${raw}`;
 	return FEATURES.filter((f) => f.widgetTypes.includes(type));
 }

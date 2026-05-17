@@ -51,6 +51,8 @@ export function modeFor(trigger) {
 
 export function resolveTriggerEl(mode, selector) {
 	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
+	// check selectoor is html element or not
+	if (selector instanceof HTMLElement) return selector;
 	return document.querySelector(selector) || undefined;
 }
 
@@ -122,20 +124,35 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 			invalidateOnRefresh: true,
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => { st.kill(); tween.kill?.(); };
+		// `st.kill(true)` reverts — removes the marker <div> nodes
+		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
+		// behind, which is what makes stale markers appear in the editor.
+		el[DISPOSE_KEY] = () => { st.kill(true); tween.kill?.(); };
 		return;
 	}
 
 	if (mode === 'scroll-tied' && ScrollTrigger) {
+		// Guard against ScrollSmoother / ScrollTrigger.refresh() re-firing
+		// onEnter on already-played elements. Refresh re-runs init
+		// synchronously and re-checks viewport position — so a single bind
+		// can fire onEnter 2-3 times before the user scrolls anywhere.
+		// Per-bind `played` flag means each ScrollTrigger only fires play()
+		// once. cleanupTriggerOn() calls dispose, which destroys the ST and
+		// drops the closure — next bind starts fresh.
+		let played = false;
 		const st = ScrollTrigger.create({
 			trigger: el,
 			start: 'top 85%',
 			end: 'top 30%',
 			toggleActions: 'play none none none',
-			onEnter: play,
+			onEnter: () => {
+				if (played) return;
+				played = true;
+				play();
+			},
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => st.kill();
+		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
 
@@ -144,14 +161,23 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 	// and the rest of the GSAP pipeline. IntersectionObserver is the
 	// fallback path when ScrollTrigger isn't loaded (rare).
 	if (ScrollTrigger) {
+		// Same `played` guard as scroll-tied — in-view also fires onEnter on
+		// init/refresh when the element is already in the viewport. ST's
+		// `once:true` only stops re-fires on the SAME ScrollTrigger; if
+		// ScrollSmoother revert+recreates it, a new instance fires again.
+		let played = false;
 		const st = ScrollTrigger.create({
 			trigger: el,
 			start: 'top 85%',
 			once: true,
-			onEnter: play,
+			onEnter: () => {
+				if (played) return;
+				played = true;
+				play();
+			},
 			markers: !!markers,
 		});
-		el[DISPOSE_KEY] = () => st.kill();
+		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
 

@@ -76,7 +76,7 @@ final class Schema {
 		self::TEXT_ROTATION    => -80,
 		self::TEXT_SCALE_NUM   => 1.5,
 	];
-
+	
 	/** Effects that expose Duration / Stagger (v3 excludes spin/invert). */
 	const TEXT_DURATION_EFFECTS = [ 'char', 'word', 'text_reveal', 'text_move', 'text_scale' ];
 

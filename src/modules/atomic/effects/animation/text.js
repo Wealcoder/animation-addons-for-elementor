@@ -3,143 +3,145 @@
 import { wireTrigger, modeFor, resolveTriggerEl } from './triggers';
 
 /**
- * Text animation kind — char/word/move/reveal/scale/invert/spin.
+ * Text animation kind — char/word/text_move/text_reveal/text_scale/...
  *
- * Reads its config from `window.AAE_INTERACTIONS_TEXT[el.dataset.aaeTextId]`.
- * Responsive values are flat per-bp keys on the config (e.g. `duration`,
- * `duration_tablet`, `duration_mobile`) resolved via `pickConfigResponsive`.
+ * Reads its config from `window.AAE_INTERACTIONS_TEXT[interactionId]`.
+ * Splitting is done with GSAP's official SplitText plugin (Club / shipped
+ * by the Pro plugin). When SplitText isn't loaded we bail rather than fall
+ * back to a hand-rolled splitter — the Pro plugin already enqueues it.
  *
  * Helpers come from window.AAEADDON. See note in regular.js.
  */
-const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
+const { getGsap, getSplitText, configFor, pickConfigResponsive } = window.AAEADDON;
 
 export const TEXT_MAP = 'AAE_INTERACTIONS_TEXT';
+export const TEXT_PLAYED = '__aaeTextPlayed';
+const TEXT_SPLIT_KEY = '__aaeTextSplit';
 
-/** Read a config field with responsive cascade + a JS-side default. */
 function r(cfg, key, fallback) {
 	const v = pickConfigResponsive(cfg, key);
 	return (v === undefined || v === '') ? fallback : v;
 }
 
-export const TEXT_PLAYED = '__aaeTextPlayed';
-
 export function readText(el) {
 	const cfg = configFor(el, TEXT_MAP);
 	if (!cfg) return null;
-	// effect is responsive — user can disable the animation on a specific
-	// breakpoint by setting effect to 'none' (or unsetting it) in that bp's
-	// row. The runtime treats that as "no animation for this device".
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
 	return {
 		effect,
-		trigger:         r(cfg, 'trigger', 'on_scroll'),
+		trigger: r(cfg, 'trigger', 'on_scroll'),
 		triggerSelector: r(cfg, 'triggerSelector', ''),
-		wrapper:         r(cfg, 'wrapper', 'default'),
+		wrapper: r(cfg, 'wrapper', 'default'),
 		wrapperSelector: r(cfg, 'wrapperSelector', ''),
-		// Non-responsive: cfg.markers is a top-level boolean.
-		markers:         !!cfg.markers,
-		// Defaults mirror Schema::RESPONSIVE_NUMBER_SETTINGS — Render.php
-		// omits keys equal to the default, so these fallbacks restore them.
-		delay:           Number(r(cfg, 'delay',      0.15)),
-		duration:        Number(r(cfg, 'duration',   1)),
-		stagger:         Number(r(cfg, 'stagger',    0.02)),
-		translateX:      Number(r(cfg, 'translateX', 20)),
-		translateY:      Number(r(cfg, 'translateY', 0)),
-		rotationDir:     r(cfg, 'rotationDir', 'x'),
-		rotation:        Number(r(cfg, 'rotation', -80)),
+		markers: !!cfg.markers,
+		delay: Number(r(cfg, 'delay', 0.15)),
+		duration: Number(r(cfg, 'duration', 1)),
+		stagger: Number(r(cfg, 'stagger', 0.02)),
+		translateX: Number(r(cfg, 'translateX', 20)),
+		translateY: Number(r(cfg, 'translateY', 0)),
+		rotationDir: r(cfg, 'rotationDir', 'x'),
+		rotation: Number(r(cfg, 'rotation', -80)),
 		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
 	};
 }
 
 /**
- * Replace the element's text with per-piece <span>s. Idempotent: re-runs
- * read from textContent so they don't compound the previous split. Word
- * mode preserves whitespace; char mode skips whitespace (matches V3).
+ * Per-effect SplitText recipe. `type` is the SplitText `type` option;
+ * `target` is which split collection to tween (chars / words / lines /
+ * null = whole element, no split needed).
+ *
+ * Effects whose target is null skip SplitText entirely — they animate
+ * the full element (text_scale, text_invert, text_spin in this build).
  */
-function splitTextInto(el, mode) {
-	const text = el.textContent || '';
-	el.innerHTML = '';
-	const fragment = document.createDocumentFragment();
+const SPLIT_RECIPE = {
+	char: { type: 'chars,words', target: 'chars' },
+	word: { type: 'chars,words', target: 'words' },
+	text_move: { type: 'lines', target: 'lines', perspective: 400 },
+	text_reveal: { type: 'lines,words,chars', target: 'chars', linesClass: 'anim-reveal-line' },
+	text_scale: { type: null, target: null },
+	// V3 ships CSS for `.wcf-t-animation-text_invert .invert-line` — apply
+	// the parent class on the element so that ruleset (background gradient,
+	// background-clip:text, etc.) catches the split lines.
+	text_invert: { type: 'lines', target: 'lines', linesClass: 'invert-line', parentClass: 'wcf-t-animation-text_invert' },
+	text_spin: { type: null, target: null },
+};
 
-	if (mode === 'word') {
-		for (const token of text.split(/(\s+)/)) {
-			if (/^\s+$/.test(token)) {
-				fragment.appendChild(document.createTextNode(token));
-			} else if (token.length > 0) {
-				fragment.appendChild(makePiece(token));
-			}
-		}
-	} else {
-		for (const ch of text) {
-			if (ch === '\n' || ch === ' ' || ch === '\t') continue;
-			fragment.appendChild(makePiece(ch));
-		}
-	}
-
-	el.appendChild(fragment);
-	return el.querySelectorAll('span.aae-text-piece');
-}
-
-function makePiece(content) {
-	const span = document.createElement('span');
-	span.textContent = content;
-	span.className = 'aae-text-piece';
-	span.style.display = 'inline-block';
-	return span;
-}
-
-/** Build `from` / `to` tween targets for each text effect. */
+/**
+ * Per-effect tween descriptor. Matches V3's `gsap.from(target, props)`
+ * pattern — one call, no `to` state. `props` contains the FROM values plus
+ * shared timing (duration/delay/stagger). For text_invert we tween between
+ * two background-position-x states, so it returns `{method:'fromTo'}`.
+ *
+ * `text_spin` is the only effect that needs a complex multi-tween timeline
+ * (V3 builds it inline with cloning); we keep a placeholder for now.
+ */
 function textTween(effect, config, pieces) {
+	const shared = {
+		duration: config.duration,
+		delay: config.delay,
+		stagger: config.stagger,
+		ease: 'power2.out',
+	};
+
 	switch (effect) {
 		case 'char':
 		case 'word':
+			// V3 pattern: gsap.from(chars, { duration, delay, stagger,
+			// autoAlpha: 0, x: translateX, y: translateY })
 			return {
-				from: { x: config.translateX, y: config.translateY, opacity: 0 },
-				to:   { x: 0, y: 0, opacity: 1 },
+				method: 'from',
+				props: {
+					...shared,
+					autoAlpha: 0,
+					x: config.translateX,
+					y: config.translateY,
+				},
 			};
 
 		case 'text_move':
 			return {
-				from: {
-					opacity: 0,
+				method: 'from',
+				props: {
+					...shared,
+					autoAlpha: 0,
 					[config.rotationDir === 'y' ? 'rotationY' : 'rotationX']: config.rotation,
-					transformOrigin: config.transformOrigin,
-				},
-				to: {
-					opacity: 1,
-					rotationX: 0,
-					rotationY: 0,
 					transformOrigin: config.transformOrigin,
 				},
 			};
 
 		case 'text_reveal':
+			// Per-line clip wrapper — chars slide up from below their line.
 			pieces.forEach((p) => {
-				p.style.overflow = 'hidden';
-				p.style.verticalAlign = 'bottom';
+				const line = p.closest('.anim-reveal-line') || p.parentElement;
+				if (line) line.style.overflow = 'hidden';
 			});
 			return {
-				from: { yPercent: 100, opacity: 0 },
-				to:   { yPercent: 0,   opacity: 1 },
+				method: 'from',
+				props: { ...shared, yPercent: 100, autoAlpha: 0 },
 			};
 
 		case 'text_scale':
 			return {
-				from: { scale: 0, opacity: 0, transformOrigin: 'center center' },
-				to:   { scale: 1, opacity: 1, transformOrigin: 'center center' },
+				method: 'from',
+				props: { ...shared, scale: 0, autoAlpha: 0, transformOrigin: 'center center' },
 			};
 
 		case 'text_invert':
+			// CSS parks each .invert-line at background-position-x:100% (the
+			// transparent half showing). Tween to 0% to slide the opaque half
+			// across, revealing the line. fromTo so we don't depend on the
+			// computed start state — keeps the editor preview consistent.
 			return {
-				from: { rotationX: 180, opacity: 0, transformOrigin: 'center center' },
-				to:   { rotationX: 0,   opacity: 1, transformOrigin: 'center center' },
+				method: 'fromTo',
+				from: { backgroundPositionX: '100%' },
+				to: { ...shared, backgroundPositionX: '0%', ease: 'none' },
 			};
 
 		case 'text_spin':
 			return {
-				from: { rotationY: 180, opacity: 0, transformOrigin: 'center center' },
-				to:   { rotationY: 0,   opacity: 1, transformOrigin: 'center center' },
+				method: 'from',
+				props: { ...shared, rotationY: 180, autoAlpha: 0, transformOrigin: 'center center' },
 			};
 
 		default:
@@ -147,22 +149,62 @@ function textTween(effect, config, pieces) {
 	}
 }
 
+/** Build the SplitText instance for `effect` and return the tween targets.
+ *  Returns null when the effect needs no split (target the element itself). */
+function splitFor(el, effect) {
+	const recipe = SPLIT_RECIPE[effect];
+
+	if (!recipe || !recipe.type) return null;
+
+	const SplitText = getSplitText();
+	if (!SplitText) return null;
+
+	if (recipe.parentClass) el.classList.add(recipe.parentClass);
+
+	const opts = { type: recipe.type };
+
+	if (recipe.linesClass) opts.linesClass = recipe.linesClass;
+	const split = new SplitText(el, opts);
+
+	if (recipe.perspective) {
+		const gsap = getGsap();
+		gsap?.set(el, { perspective: recipe.perspective });
+	}
+
+	el[TEXT_SPLIT_KEY] = split;
+
+	return split[recipe.target] || null;
+}
+
+/** Pick the actual tween targets for `effect` — the split collection when
+ *  the recipe needs splitting, the element itself otherwise. */
+function targetsFor(el, effect) {
+	const pieces = splitFor(el, effect);
+
+	if (pieces && pieces.length) return pieces;
+
+	if (SPLIT_RECIPE[effect] && SPLIT_RECIPE[effect].target === null) return [el];
+	return null;
+}
+
 /**
  * Restore the element to its pre-animation state — kill the tween and
- * un-split the text pieces back into a single text node. Used when the
- * editor's `Enable On Editor` toggle flips OFF so the canvas reflects
- * "this widget won't animate" instead of getting stuck mid-tween.
+ * revert the SplitText so the original DOM (and any inline styles
+ * SplitText set) is back in place.
  */
 export function resetText(el) {
 	if (el[TEXT_PLAYED]) {
-		el[TEXT_PLAYED].kill();
+		try { el[TEXT_PLAYED].kill(); } catch (_) { /* ignore */ }
 		delete el[TEXT_PLAYED];
 	}
-	// Flatten <span class="aae-text-piece"> back to plain text. textContent
-	// getter joins all descendant text, the setter replaces children with a
-	// single text node — un-splits in one step.
-	if (el.querySelector('span.aae-text-piece')) {
-		el.textContent = el.textContent;
+	const split = el[TEXT_SPLIT_KEY];
+	if (split && typeof split.revert === 'function') {
+		try { split.revert(); } catch (_) { /* ignore */ }
+		delete el[TEXT_SPLIT_KEY];
+	}
+	// Drop any per-effect parent classes we attached in splitFor().
+	for (const recipe of Object.values(SPLIT_RECIPE)) {
+		if (recipe.parentClass) el.classList.remove(recipe.parentClass);
 	}
 }
 
@@ -170,64 +212,63 @@ export function playText(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
 
-	if (el[TEXT_PLAYED]) {
-		el[TEXT_PLAYED].kill();
-	}
+	// Always reset before re-splitting — split.revert() puts the original
+	// DOM back so a new SplitText doesn't compound on the previous output.
+	resetText(el);
 
-	const splitMode = config.effect === 'word' ? 'word' : 'char';
-	const pieces = splitTextInto(el, splitMode);
-	if (!pieces.length) return;
+	const pieces = targetsFor(el, config.effect);
+	if (!pieces) return;
 
 	const tween = textTween(config.effect, config, pieces);
 	if (!tween) return;
 
-	el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, {
-		...tween.to,
-		duration: config.duration,
-		delay:    config.delay,
-		stagger:  config.stagger,
-		ease:     'power2.out',
-	});
+	if (tween.method === 'fromTo') {
+		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, tween.to);
+	} else {
+		// 'from' — V3 default for every text effect
+		el[TEXT_PLAYED] = gsap.from(pieces, tween.props);
+	}
 }
 
 /** Build a PAUSED text tween used by `play_with_scroll` — ScrollTrigger
- *  advances its progress to match scroll position (forward on wheel-down,
- *  reverse on wheel-up). Returns null if GSAP isn't loaded or the effect
- *  has no tween descriptor. */
+ *  advances its progress to match scroll position. Returns null if GSAP
+ *  isn't loaded or the effect has no tween descriptor. */
 function buildScrubbedText(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return null;
 
-	if (el[TEXT_PLAYED]) {
-		el[TEXT_PLAYED].kill();
-	}
+	resetText(el);
 
-	const splitMode = config.effect === 'word' ? 'word' : 'char';
-	const pieces = splitTextInto(el, splitMode);
-	if (!pieces.length) return null;
+	const pieces = targetsFor(el, config.effect);
+	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces);
 	if (!tween) return null;
 
-	el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, {
-		...tween.to,
-		duration: config.duration,
-		delay:    config.delay,
-		stagger:  config.stagger,
-		ease:     'none',   // scrub ignores easing — keep linear progress
-		paused:   true,
-	});
+	// Force linear easing + paused for scrub regardless of effect default.
+	const overrides = { ease: 'none', paused: true };
+
+	if (tween.method === 'fromTo') {
+		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, { ...tween.to, ...overrides });
+	} else {
+		el[TEXT_PLAYED] = gsap.from(pieces, { ...tween.props, ...overrides });
+	}
 	return el[TEXT_PLAYED];
 }
 
 export function bindText(el, config) {
 	const mode = modeFor(config.trigger);
+
+	let triggerSelector = '';
+	if (config.wrapper === 'default' && config.triggerSelector == '') {
+		triggerSelector = el;
+	}
 	wireTrigger({
 		el,
 		mode,
-		triggerEl:     resolveTriggerEl(mode, config.triggerSelector),
-		markers:       config.markers,
-		play:          () => playText(el, config),
+		triggerEl: resolveTriggerEl(mode, triggerSelector),
+		markers: config.markers,
+		play: () => playText(el, config),
 		buildScrubbed: () => buildScrubbedText(el, config),
 	});
 }

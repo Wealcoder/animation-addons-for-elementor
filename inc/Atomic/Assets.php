@@ -112,6 +112,9 @@ final class Assets {
 		if ( wp_script_is( 'ScrollTrigger', 'registered' ) ) {
 			$deps[] = 'ScrollTrigger';
 		}
+		if ( wp_script_is( 'SplitText', 'registered' ) ) {
+			$deps[] = 'SplitText';
+		}
 		return $deps;
 	}
 
@@ -137,6 +140,15 @@ final class Assets {
 			wp_register_script(
 				'ScrollTrigger',
 				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollTrigger.min.js',
+				[ 'gsap' ],
+				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+		if ( ! wp_script_is( 'SplitText', 'registered' ) ) {
+			wp_register_script(
+				'SplitText',
+				WCF_ADDONS_PRO_URL . 'assets/lib/SplitText.min.js',
 				[ 'gsap' ],
 				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
 				true

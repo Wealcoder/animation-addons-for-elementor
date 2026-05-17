@@ -3,7 +3,6 @@ namespace WCF_ADDONS\Atomic\RegularAnimation;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use WCF_ADDONS\Atomic\Bootstrap;
 
@@ -49,20 +48,17 @@ final class Controls {
 		// renders as a real Text_Control — the React swap intercepts it.
 		//
 		// Custom Properties is a JS-side row inside the responsive section
-		// (control: 'repeater'). Markers stays as a native Switch — it never
-		// needed responsive treatment.
+		// (control: 'repeater'). Markers is also a JS-side non-responsive
+		// switch row inside the section so it can hide when no effect is
+		// selected — see config.js (`when: isAnimated`).
 		return Section::make()
 			->set_label( __( 'Animation', self::TD ) )
 			->set_items( [
 
 				// Anchor — React replacement renders the full responsive section
-				// here, including the Custom Properties repeater row.
+				// here, including the Custom Properties repeater row, the
+				// Markers switch, the Enable On Editor switch, and Play.
 				Text_Control::bind_to( Schema::ANIM_SECTION_ANCHOR ),
-
-				/* ---------- non-responsive controls ---------- */
-
-				Switch_Control::bind_to( Schema::ANIM_MARKERS )
-					->set_label( __( 'Markers', self::TD ) ),
 			] );
 	}
 }

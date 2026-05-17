@@ -43,6 +43,7 @@ function buildConfigFromSettings(feature, container) {
  * no features for this widget type.
  */
 export function applySettingsToDom(container) {
+	
 	const features = featuresFor(container);
 	if (!features.length) return null;
 

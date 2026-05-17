@@ -58,6 +58,10 @@ function getScrollTrigger() {
 	return typeof window !== 'undefined' ? window.ScrollTrigger : null;
 }
 
+function getSplitText() {
+	return typeof window !== 'undefined' ? window.SplitText : null;
+}
+
 /**
  * Active breakpoint key for the current viewport. Prefers Elementor's own
  * resolver. Falls back to a minimal width check.
@@ -265,10 +269,21 @@ function scan(root) {
 function rebind(el) {
 	if (!el) return;
 
-	// Tear down whatever any kind installed previously. Loop ALL kinds —
-	// not just current owners — so configs removed since last bind still
-	// get their listeners / ScrollTriggers torn down.
+	// Full destroy of the previous animation before re-binding:
+	//   1. kind.reset → tween.revert() (restores GSAP-applied inline styles,
+	//      un-splits text pieces, etc.) — a new effect should always start
+	//      from the original DOM state, not from the previous tween's output.
+	//   2. kind.unbind → kills the trigger (ScrollTrigger / hover listener /
+	//      page-load handle) so no leftover event keeps firing.
+	//   3. drop the playedKey handle and remove the bound class.
+	//
+	// Loop every KIND, not just current owners, so a config that was removed
+	// since the last bind (effect=none, deleted setting) still gets fully
+	// destroyed.
 	for (const kind of KINDS) {
+		if (typeof kind.reset === 'function') {
+			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
+		}
 		if (typeof kind.unbind === 'function') {
 			try { kind.unbind(el); } catch (_) { /* never let cleanup throw */ }
 		}
@@ -392,6 +407,7 @@ window.AAEADDON = {
 	// helpers
 	getGsap,
 	getScrollTrigger,
+	getSplitText,
 	currentBreakpoint,
 	interactionIdFor,       // shared id lookup (data-interaction-id)
 	configFor,              // interactions-map reader
@@ -417,8 +433,10 @@ window.aaeAtomicAnimations = { scan, rebind, replay, reset: resetEl };
 function init() {
 	const gsap = getGsap();
 	const ScrollTrigger = getScrollTrigger();
-	if (ScrollTrigger && gsap?.registerPlugin) {
-		gsap.registerPlugin(ScrollTrigger);
+	const SplitText = getSplitText();
+	if (gsap?.registerPlugin) {
+		if (ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+		if (SplitText)     gsap.registerPlugin(SplitText);
 	}
 
 	if (document.readyState === 'loading') {
