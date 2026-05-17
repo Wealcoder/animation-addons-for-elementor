@@ -89,7 +89,7 @@ final class Render {
             ),
 
             'customPinEndArea' => (
-                $settings[ Schema::STICKY_CUSTOM_PIN_END_AREA ]
+                $settings[ Schema::STICKY_CUSTOM_PIN_AREA_FIELD ]
                 ?? ''
             ),
 
