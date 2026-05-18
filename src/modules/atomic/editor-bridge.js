@@ -2,10 +2,6 @@
 
 import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
-import { tryPipe, resetPipeState } from './editor-bridge/preview-pipe';
-import { resetInitialReplayFlag } from './editor-bridge/initial-replay';
-import { resetSeedFlag } from './editor-bridge/seed-canvas';
-import { startLiveBridge, resetLiveBridgeFlag } from './editor-bridge/live-bridge';
 import { registerResponsiveSection } from './responsive-section';
 import regularAnimationSection from './extensions/regular-animation/config';
 import textAnimationSection from './extensions/text-animation/config';
@@ -69,17 +65,17 @@ function bootstrap() {
 	
 	if (bootstrapped) {
 		// Document switched — tear down old listeners and re-init.
-		disposeAll();
+		//disposeAll();
 		bootstrapped = false;
-		resetLiveBridgeFlag();
-		resetPipeState();
-		resetInitialReplayFlag();
-		resetSeedFlag();
+		//resetLiveBridgeFlag();
+		//resetPipeState();
+		//resetInitialReplayFlag();
+		//resetSeedFlag();
 	}
 	bootstrapped = true;
 
-	tryPipe();
-	startLiveBridge();
+	//tryPipe();
+	//startLiveBridge();
 }
 
 if (window.elementor && window.elementor.on) {

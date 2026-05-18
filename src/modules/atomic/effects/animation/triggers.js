@@ -50,8 +50,8 @@ export function modeFor(trigger) {
 }
 
 export function resolveTriggerEl(mode, selector, config) {
-	if (mode === 'hover' || mode === 'click') {		
-		if(config.triggerSelector && config.triggerSelector !== ''){
+	if (mode === 'hover' || mode === 'click') {
+		if (config.triggerSelector && config.triggerSelector !== '') {
 			selector = config.triggerSelector;
 		}
 	}
@@ -118,6 +118,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 	if (mode === 'scrub' && ScrollTrigger && typeof buildScrubbed === 'function') {
 		const tween = buildScrubbed();
 		if (!tween) return;
+		console.log('Built scrubbed tween for', el, 'with config', tween.vars);
 		const st = ScrollTrigger.create({
 			trigger: el,
 			animation: tween,

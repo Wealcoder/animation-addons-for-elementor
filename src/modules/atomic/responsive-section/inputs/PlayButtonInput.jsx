@@ -20,7 +20,7 @@ export function PlayButtonInput({ play_group = "" }) {
     e.stopPropagation();
 
     const container = getSelectedContainer();
-
+  
     let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.
 
     if (!replayInPreview(dom_settings.target)) {

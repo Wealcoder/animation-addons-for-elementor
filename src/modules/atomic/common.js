@@ -255,7 +255,7 @@ function scan(root) {
 	// kinds at once (regular + text + future tilt) — each on its own target.
 	if (!KINDS.length) return;
 	const candidates = scope.querySelectorAll('[data-interaction-id]');
-	
+
 	for (const el of candidates) {
 		for (const kind of kindsFor(el)) {
 			if (el.classList.contains(kind.boundFlag)) continue;
@@ -350,7 +350,7 @@ function resetEl(el) {
  *  triggered by an ancestor's drain (`fromChain=true`). */
 function replay(el, fromChain = false) {
 	if (!el) return;
-
+	
 	const owningKinds = kindsFor(el);
 
 	if (owningKinds.length) {
