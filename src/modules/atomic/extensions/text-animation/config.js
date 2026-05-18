@@ -1,6 +1,4 @@
 /* eslint-env browser */
-
-import { Group } from 'lucide-react';
 import {
 	isAnimated,
 	isDurationEffect,
@@ -16,8 +14,7 @@ import {
 	showSpinScrollFields,
 	showStartCustom,
 	showTriggerSelector,
-	showWrapper,
-	showWrapperSelector,
+	showWrapper	
 } from './predicates';
 
 /**
@@ -180,6 +177,11 @@ const config = {
 		{
 			bind: 'scale_break', label: 'Text Break By', control: 'select',
 			options: SCALE_BREAK_OPTIONS, defaultValue: 'lines', when: isScale
+		},
+
+		{
+			bind: 'spin_color', label: 'Spin Text Color', control: 'color',
+			defaultValue: '', when: isSpin, responsive: true
 		},
 
 		// Non-responsive control rows.

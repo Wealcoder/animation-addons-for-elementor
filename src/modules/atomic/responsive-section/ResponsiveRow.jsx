@@ -7,6 +7,7 @@ import { SelectInput } from "./inputs/SelectInput";
 import { NumberInput } from "./inputs/NumberInput";
 import { SwitchInput } from "./inputs/SwitchInput";
 import { TextInput } from "./inputs/TextInput";
+import { ColorInput } from "./inputs/Color";
 import { PlayButtonInput } from "./inputs/PlayButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
 import { useCellValue } from "./use-cell-value";
@@ -29,6 +30,7 @@ const CONTROL_REGISTRY = {
   text: { Component: TextInput, innerType: "string" },
   number: { Component: NumberInput, innerType: "number" },
   switch: { Component: SwitchInput, innerType: "boolean" },
+  color: { Component: ColorInput, innerType: "string" },
 };
 
 /* ---------- dot indicator ---------- */

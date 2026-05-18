@@ -41,6 +41,7 @@ final class Schema {
 	const TEXT_ROTATION_DIR     = 'aae_text_rotation_dir';
 	const TEXT_ROTATION         = 'aae_text_rotation';
 	const TEXT_TRANSFORM_ORIGIN = 'aae_text_transform_origin';
+	const TEXT_SPIN_COLOR       = 'aae_text_spin_color';
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
 
 	/* ---- scroll trigger settings ---- */
@@ -85,7 +86,7 @@ final class Schema {
 
 	/** Single-effect families — named so Render.php doesn't carry string literals. */
 	const TEXT_INVERT_EFFECTS = [ 'text_invert' ];
-	const TEXT_SPIN_EFFECTS   = [ 'text_spin' ];
+	const TEXT_SPIN_EFFECTS   = [ 'text_spin', 'text_spin_color' ];
 	const TEXT_SCALE_EFFECTS  = [ 'text_scale' ];
 
 	public function register(): void {
@@ -135,6 +136,7 @@ final class Schema {
 		$schema[ self::TEXT_SCALE_EASE ]  = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'back' ] );
 		$schema[ self::TEXT_SCALE_NUM ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_SCALE_NUM ] ] );
 		$schema[ self::TEXT_SCALE_BREAK ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'lines' ] );
+		$schema[ self::TEXT_SPIN_COLOR ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '#000000' ] );
 
 		/* ---------- non-responsive props (deps dropped — visibility now JS-driven) ---------- */
 

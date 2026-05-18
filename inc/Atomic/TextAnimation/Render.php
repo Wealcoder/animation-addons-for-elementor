@@ -141,6 +141,7 @@ final class Render {
 			Schema::TEXT_SCALE_EASE       => [ 'scaleEase',     'back',                                                            Schema::TEXT_SCALE_EFFECTS ],
 			Schema::TEXT_SCALE_NUM        => [ 'scaleNum',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],      Schema::TEXT_SCALE_EFFECTS ],
 			Schema::TEXT_SCALE_BREAK      => [ 'scaleBreak',    'lines',                                                           Schema::TEXT_SCALE_EFFECTS ],
+			'aae_text_spin_color'                 => [ 'spinColor',     '#000000',                                                Schema::TEXT_SPIN_EFFECTS ],
 		];
 
 		// Pre-compute breakpoints where the animation is disabled (effect=none
