@@ -1,13 +1,11 @@
 /* eslint-env browser */
 
-import * as React from 'react';
-import { useState } from 'react';
-import { Button } from '@elementor/ui';
-
-import { getPreviewWindow, getSelectedContainer } from '../../editor-bridge/helpers';
-import { featuresFor } from '../../editor-bridge/features';
-import { replayInPreview } from '../../editor-bridge/settings-bridge';
-
+import * as React from "react";
+import { useState } from "react";
+import { Button } from "@elementor/ui";
+import { getSelectedContainer } from "../../editor-bridge/helpers";
+import { replayInPreview } from "../../editor-bridge/settings-bridge";
+import { applySettingsToDom } from "../../editor-bridge/settings-bridge";
 /**
  * "Play Now" button inside a <ResponsiveSection>.
  *
@@ -15,55 +13,43 @@ import { replayInPreview } from '../../editor-bridge/settings-bridge';
  * on every settings mutation, so this button doesn't need to re-mirror
  * settings — it just resolves the iframe target and replays.
  */
-export function PlayButtonInput() {
-	const [played, setPlayed] = useState(false);
+export function PlayButtonInput({ play_group = "" }) {
+  const [played, setPlayed] = useState(false);
+  const onClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-	const onClick = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+    const container = getSelectedContainer();
 
-		const container = getSelectedContainer();
-		const features  = container ? featuresFor(container) : [];
-		const win       = getPreviewWindow();
+    let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.
 
-		if (!container || !features.length || !win) {
-			// eslint-disable-next-line no-console
-			console.warn('[AAE] Play: no selection / unsupported widget / preview not ready.');
-			return;
-		}
+    if (!replayInPreview(dom_settings.target)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?",
+      );
+      return;
+    }
 
-		const target = features[0].findTarget(win.document, container.id);
-		if (!target) {
-			// eslint-disable-next-line no-console
-			console.warn('[AAE] Play: target element not found in preview.');
-			return;
-		}
+    setPlayed(true);
+    setTimeout(() => setPlayed(false), 600);
+  };
 
-		if (!replayInPreview(target)) {
-			// eslint-disable-next-line no-console
-			console.warn('[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?');
-			return;
-		}
-
-		setPlayed(true);
-		setTimeout(() => setPlayed(false), 600);
-	};
-
-	return (
-		<Button
-			variant="contained"
-			size="small"
-			onClick={onClick}
-			disabled={played}
-			sx={{
-				background: '#0c977d',
-				color: '#fff',
-				'&:hover': { background: '#0b8870' },
-				minWidth: 90,
-				textTransform: 'none',
-			}}
-		>
-			{played ? 'Played' : 'Play Now'}
-		</Button>
-	);
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      onClick={onClick}
+      disabled={played}
+      sx={{
+        background: "#0c977d",
+        color: "#fff",
+        "&:hover": { background: "#0b8870", color: "#faf1f1" },
+        minWidth: 90,
+        textTransform: "none",
+      }}
+    >
+      {played ? "Played" : "Play Now"}
+    </Button>
+  );
 }

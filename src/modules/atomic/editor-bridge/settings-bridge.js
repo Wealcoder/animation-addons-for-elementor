@@ -43,8 +43,9 @@ function buildConfigFromSettings(feature, container) {
  * no features for this widget type.
  */
 export function applySettingsToDom(container) {
-	
+
 	const features = featuresFor(container);
+	
 	if (!features.length) return null;
 
 	const win = getPreviewWindow();
@@ -91,8 +92,13 @@ export function applySettingsToDom(container) {
  */
 export function replayInPreview(target) {
 	const win = getPreviewWindow();
+
 	const api = win && win.aaeAtomicAnimations;
 	if (!api || !target) return false;
+
+	if (typeof api.reset === 'function') {
+		api.reset(target);
+	}
 
 	if (typeof api.replay === 'function') {
 		api.replay(target);

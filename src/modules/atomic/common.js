@@ -85,13 +85,13 @@ function currentBreakpoint() {
 
 /** Cascade: for each mode, parent chain to walk for a non-empty value. */
 const BP_CASCADE = {
-	mobile:       [ 'mobile', 'tablet' ],
-	mobile_extra: [ 'mobile_extra', 'mobile', 'tablet' ],
-	tablet:       [ 'tablet' ],
-	tablet_extra: [ 'tablet_extra', 'tablet' ],
-	laptop:       [ 'laptop' ],
-	desktop:      [],
-	widescreen:   [ 'widescreen' ],
+	mobile: ['mobile', 'tablet'],
+	mobile_extra: ['mobile_extra', 'mobile', 'tablet'],
+	tablet: ['tablet'],
+	tablet_extra: ['tablet_extra', 'tablet'],
+	laptop: ['laptop'],
+	desktop: [],
+	widescreen: ['widescreen'],
 };
 
 /* =====================================================================
@@ -126,6 +126,7 @@ function interactionIdFor(el) {
  */
 function configFor(el, mapName) {
 	const id = interactionIdFor(el);
+	
 	if (!id) return null;
 	const map = window[mapName];
 	return (map && map[id]) || null;
@@ -246,6 +247,7 @@ function chainCompletionDrain(el, kind) {
 
 /** Walk a root and bind every animated element. */
 function scan(root) {
+
 	const scope = root && root.querySelectorAll ? root : document;
 
 	// Every kind shares Elementor's universal data-interaction-id, so one
@@ -309,16 +311,33 @@ function rebind(el) {
  * tears down the trigger so no further events fire.
  */
 function resetEl(el) {
+
+
 	if (!el) return;
+
+	// Kill all tweens
+	gsap.killTweensOf(el);
+
+	// Remove inline styles added by GSAP
+	gsap.set(el, {
+		clearProps: "all"
+	});
+
 	for (const kind of KINDS) {
 		if (!configFor(el, kind.mapName)) continue;
 
 		if (typeof kind.reset === 'function') {
-			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
+			try {
+				kind.reset(el);
+			} catch (_) { }
 		}
+
 		if (typeof kind.unbind === 'function') {
-			try { kind.unbind(el); } catch (_) { /* never let unbind throw */ }
+			try {
+				kind.unbind(el);
+			} catch (_) { }
 		}
+
 		el.classList.remove(kind.boundFlag);
 	}
 }
@@ -333,12 +352,14 @@ function replay(el, fromChain = false) {
 	if (!el) return;
 
 	const owningKinds = kindsFor(el);
+
 	if (owningKinds.length) {
 		// Chained nesting: if a parent has an active animation, queue this
 		// child to play when the parent's tween completes instead of firing
 		// now. fromChain=true means we ARE the drain — don't re-queue.
 		if (!fromChain) {
 			const found = findAnimatedAncestor(el);
+
 			if (found) {
 				// Parent is "still running" if any of its bound kinds has an
 				// in-flight tween. If none are tweening (all done or never
@@ -359,6 +380,7 @@ function replay(el, fromChain = false) {
 		let didPlay = false;
 		for (const kind of owningKinds) {
 			const config = kind.read(el);
+
 			if (!config) continue;
 			if (el[kind.playedKey]) {
 				el[kind.playedKey].kill?.();
@@ -436,14 +458,14 @@ function init() {
 	const SplitText = getSplitText();
 	if (gsap?.registerPlugin) {
 		if (ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-		if (SplitText)     gsap.registerPlugin(SplitText);
+		if (SplitText) gsap.registerPlugin(SplitText);
 	}
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', () => scan(document));
-	} else {
-		scan(document);
-	}
+	// if (document.readyState === 'loading') {
+	// 	document.addEventListener('DOMContentLoaded', () => scan(document));
+	// } else {
+	// 	scan(document);
+	// }
 
 	// Frontend lazy-load / popup hook — handles widgets that aren't in the
 	// DOM at DOMContentLoaded time. Editor re-render path is owned by the

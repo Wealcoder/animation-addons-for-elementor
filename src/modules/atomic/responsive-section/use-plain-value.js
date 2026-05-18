@@ -23,6 +23,7 @@ import { updateElementSettings } from '@elementor/editor-elements';
  *   setValue  — write a new primitive; pass null to clear the prop entirely
  */
 export function usePlainValue({ propValue, bind, innerType, elementId, defaultValue }) {
+
 	const stored = (propValue && typeof propValue === 'object' && '$$type' in propValue)
 		? propValue.value
 		: propValue;

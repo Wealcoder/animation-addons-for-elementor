@@ -1,8 +1,11 @@
 /* eslint-env browser */
 
 import { updateElementSettings } from '@elementor/editor-elements';
-
+import { __privateRunCommandSync as runCommandSync } from '@elementor/editor-v1-adapters';
+import { getContainer } from '@elementor/editor-elements';
 import { resolveAtBreakpoint } from './helpers';
+import { getSelectedContainer } from "../editor-bridge/helpers";
+import { applySettingsToDom } from '../editor-bridge/settings-bridge';
 
 /**
  * Stand-alone responsive cell read/write for primitive (scalar) values
@@ -48,16 +51,38 @@ export function useCellValue({ propValue, bind, activeBp, elementId, defaultValu
 			? (defaultValue ?? null)
 			: cascaded;
 	}
+	const container = getContainer(elementId);
+	if (!container) throw new Error('container not found');
 
 	const setValue = (next) => {
 		const nextMap = { ...map, [activeBp]: (next === undefined ? null : next) };
 		const nextEnvelope = { $$type: RESPONSIVE_KEY, value: nextMap };
 
-		updateElementSettings({
-			id: elementId,
-			props: { [bind]: nextEnvelope },
-			withHistory: true,
-		});
+		// value is none and bind end match with effect=none, we can clean up the setting to avoid cluttering the data with none values
+		if (next === 'none' && bind.endsWith('effect')) {
+			//const container = getSelectedContainer();
+			//let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.	
+			//console.log('cleanup none value for', bind, 'with dom settings', dom_settings);
+		}	
+		// updateElementSettings({
+		// 	id: elementId,
+		// 	props: { [bind]: nextEnvelope },
+		// 	withHistory: false,
+		// });
+
+		runCommandSync(
+			'document/elements/settings',
+			{
+				container,
+				settings: { [bind]: nextEnvelope },
+				// options object is forwarded to the set-settings call — use render/renderUI flags here
+				options: {
+					external: true,      // typical for external updates
+					render: false,       // try to disable render (some code paths check render)
+					renderUI: false,     // some code paths check renderUI — include both
+				},
+			}
+		);
 	};
 
 	const resetValue = () => setValue(null);

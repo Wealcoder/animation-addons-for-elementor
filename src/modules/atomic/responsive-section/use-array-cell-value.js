@@ -35,12 +35,12 @@ import { updateElementSettings } from '@elementor/editor-elements';
  */
 
 const PARENT_CASCADE = {
-	mobile:       ['mobile_extra', 'tablet', 'tablet_extra', 'laptop', 'desktop'],
+	mobile: ['mobile_extra', 'tablet', 'tablet_extra', 'laptop', 'desktop'],
 	mobile_extra: ['tablet', 'tablet_extra', 'laptop', 'desktop'],
-	tablet:       ['tablet_extra', 'laptop', 'desktop'],
+	tablet: ['tablet_extra', 'laptop', 'desktop'],
 	tablet_extra: ['laptop', 'desktop'],
-	laptop:       ['desktop'],
-	widescreen:   ['desktop'],
+	laptop: ['desktop'],
+	widescreen: ['desktop'],
 };
 
 const RESPONSIVE_JSON_KEY = 'aae-rj';
@@ -77,6 +77,8 @@ export function useArrayCellValue({ propValue, bind, activeBp, elementId, defaul
 			props: { [bind]: nextEnvelope },
 			withHistory: true,
 		});
+
+	
 	};
 
 	const resetValue = () => setValue(null);
