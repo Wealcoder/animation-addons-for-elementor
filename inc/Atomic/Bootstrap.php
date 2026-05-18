@@ -52,6 +52,11 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
 
+		// horizontal scroll animation
+		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
+
 		( new Assets() )->register();
 	}
 
