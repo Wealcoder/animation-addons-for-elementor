@@ -12,6 +12,7 @@ import textAnimationSection from './extensions/text-animation/config';
 import parallaxSection from './extensions/parallax/config';
 import imageAnimationSection from './extensions/image-animation/config';
 import imageHoverSection from './extensions/image-hover/config';
+import stickySection from './extensions/sticky/config';
 
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
@@ -36,7 +37,7 @@ registerResponsiveSection( textAnimationSection );
 registerResponsiveSection( parallaxSection );
 registerResponsiveSection( imageAnimationSection );
 registerResponsiveSection( imageHoverSection );
-
+registerResponsiveSection( stickySection );
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *

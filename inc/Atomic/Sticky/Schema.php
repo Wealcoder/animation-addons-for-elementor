@@ -4,138 +4,203 @@ namespace WCF_ADDONS\Atomic\Sticky;
 
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 final class Schema {
 
-    const STICKY_ENABLE              = 'aae_sticky_enable';
+	const STICKY_SECTION_ANCHOR      = 'aae_sticky_section_anchor';
 
-    const STICKY_PIN_TRIGGER         = 'aae_sticky_pin_trigger';
-    const STICKY_CUSTOM_PIN_AREA     = 'aae_sticky_custom_pin_area';
+	const STICKY_ENABLE              = 'aae_sticky_enable';
 
-    const STICKY_PIN_END_TRIGGER     = 'aae_sticky_pin_end_trigger';
-    const STICKY_CUSTOM_PIN_END_AREA = 'aae_sticky_custom_pin_end_area';
+	const STICKY_PIN_TRIGGER         = 'aae_sticky_pin_trigger';
+	const STICKY_CUSTOM_PIN_AREA     = 'aae_sticky_custom_pin_area';
 
-    public function register(): void {
+	const STICKY_PIN_END_TRIGGER     = 'aae_sticky_pin_end_trigger';
+	const STICKY_CUSTOM_PIN_END_AREA = 'aae_sticky_custom_pin_end_area';
 
-        add_filter(
-            'elementor/atomic-widgets/props-schema',
-            [ $this, 'add_sticky_props' ]
-        );
-    }
+	const STICKY_PIN                 = 'aae_sticky_pin';
+	const STICKY_CUSTOM_PIN          = 'aae_sticky_custom_pin';
 
-    public function add_sticky_props( array $schema ): array {
+	const STICKY_PIN_START           = 'aae_sticky_pin_start';
+	const STICKY_CUSTOM_PIN_START    = 'aae_sticky_custom_pin_start';
 
-        if ( ! class_exists( Boolean_Prop_Type::class ) ) {
-            return $schema;
-        }
+	const STICKY_PIN_END             = 'aae_sticky_pin_end';
+	const STICKY_CUSTOM_PIN_END      = 'aae_sticky_custom_pin_end';
 
-        /*
-        |--------------------------------------------------------------------------
-        | Enable Sticky
-        |--------------------------------------------------------------------------
-        */
+	const STICKY_PIN_SPACING         = 'aae_sticky_pin_spacing';
 
-        $schema[ self::STICKY_ENABLE ] =
-            Boolean_Prop_Type::make()->default( false );
+	const STICKY_PIN_MARKERS         = 'aae_sticky_pin_markers';
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sticky Enabled Dependency
-        |--------------------------------------------------------------------------
-        */
+	public function register(): void {
 
-        $sticky_enabled_dependency = Dependency_Manager::make()
-            ->where([
-                'operator' => 'eq',
-                'path'     => [ self::STICKY_ENABLE ],
-                'value'    => false,
-                'effect'   => 'hide',
-            ])
-            ->get();
+		add_filter(
+			'elementor/atomic-widgets/props-schema',
+			[ $this, 'add_sticky_props' ]
+		);
+	}
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pin Trigger
-        |--------------------------------------------------------------------------
-        */
+	public function add_sticky_props( array $schema ): array {
 
-        $schema[ self::STICKY_PIN_TRIGGER ] =
-            String_Prop_Type::make()
-                ->default( 'default' )
-                ->set_dependencies( $sticky_enabled_dependency );
+		if ( ! class_exists( Boolean_Prop_Type::class ) ) {
+			return $schema;
+		}
 
-        /*
-        |--------------------------------------------------------------------------
-        | Custom Pin Area
-        |--------------------------------------------------------------------------
-        */
+		/*
+		|--------------------------------------------------------------------------
+		| Anchor
+		|--------------------------------------------------------------------------
+		*/
 
-        $custom_pin_dependency = Dependency_Manager::make(
-            Dependency_Manager::RELATION_OR
-        )
-            ->where([
-                'operator' => 'eq',
-                'path'     => [ self::STICKY_ENABLE ],
-                'value'    => false,
-                'effect'   => 'hide',
-            ])
-            ->where([
-                'operator' => 'ne',
-                'path'     => [ self::STICKY_PIN_TRIGGER ],
-                'value'    => 'custom',
-                'effect'   => 'hide',
-            ])
-            ->get();
+		$schema[ self::STICKY_SECTION_ANCHOR ] =
+			Section_Anchor_Prop_Type::make()->default( '' );
 
-        $schema[ self::STICKY_CUSTOM_PIN_AREA ] =
-            String_Prop_Type::make()
-                ->default( '' )
-                ->set_dependencies( $custom_pin_dependency );
+		/*
+		|--------------------------------------------------------------------------
+		| Enable
+		|--------------------------------------------------------------------------
+		*/
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pin End Trigger
-        |--------------------------------------------------------------------------
-        */
+		$schema[ self::STICKY_ENABLE ] =
+			Boolean_Prop_Type::make()->default( false );
 
-        $schema[ self::STICKY_PIN_END_TRIGGER ] =
-            String_Prop_Type::make()
-                ->default( 'default' )
-                ->set_dependencies( $sticky_enabled_dependency );
+		/*
+		|--------------------------------------------------------------------------
+		| Sticky Enabled Dependency
+		|--------------------------------------------------------------------------
+		*/
 
-        /*
-        |--------------------------------------------------------------------------
-        | Custom Pin End Area
-        |--------------------------------------------------------------------------
-        */
+		$sticky_enabled_dependency = Dependency_Manager::make()
+			->where([
+				'operator' => 'eq',
+				'path'     => [ self::STICKY_ENABLE ],
+				'value'    => false,
+				'effect'   => 'hide',
+			])
+			->get();
 
-        $custom_pin_end_dependency = Dependency_Manager::make(
-            Dependency_Manager::RELATION_OR
-        )
-            ->where([
-                'operator' => 'eq',
-                'path'     => [ self::STICKY_ENABLE ],
-                'value'    => false,
-                'effect'   => 'hide',
-            ])
-            ->where([
-                'operator' => 'ne',
-                'path'     => [ self::STICKY_PIN_END_TRIGGER ],
-                'value'    => 'custom',
-                'effect'   => 'hide',
-            ])
-            ->get();
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Trigger
+		|--------------------------------------------------------------------------
+		*/
 
-        $schema[ self::STICKY_CUSTOM_PIN_END_AREA ] =
-            String_Prop_Type::make()
-                ->default( '' )
-                ->set_dependencies( $custom_pin_end_dependency );
+		$schema[ self::STICKY_PIN_TRIGGER ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'default',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
 
-        return $schema;
-    }
+		$schema[ self::STICKY_CUSTOM_PIN_AREA ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin End Trigger
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_END_TRIGGER ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'default',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN_END_AREA ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => true,
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Start
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_START ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'top top',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN_START ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin End
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_END ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => 'bottom bottom',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_PIN_END ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Spacing
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_SPACING ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => true,
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Pin Markers
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_PIN_MARKERS ] =
+			Boolean_Prop_Type::make()
+				->default( false )
+				->set_dependencies( $sticky_enabled_dependency );
+
+		return $schema;
+	}
 }
