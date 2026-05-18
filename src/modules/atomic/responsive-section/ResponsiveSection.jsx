@@ -61,6 +61,7 @@ export function ResponsiveSection({ config }) {
 						propValue={fullBind ? (settings[fullBind] ?? null) : null}
 						activeBp={activeBp}
 						elementId={element.id}
+						play_group={field?.play_group}
 					/>
 				);
 			})}

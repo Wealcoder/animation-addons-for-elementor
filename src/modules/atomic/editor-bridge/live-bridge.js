@@ -100,7 +100,7 @@ function attachLiveBridge(container, onChange) {
 	let scheduled = false;
 	const runChange = () => {
 		scheduled = false;
-
+	
 		const result = applySettingsToDom(container);
 		if (!result) return;
 
@@ -199,7 +199,7 @@ export function startLiveBridge(onChange) {
 
 	if (editorChannel?.on) {
 		editorChannel.on('section:activated', tryAttach);
-		console.debug(editorChannel);
+
 		track(() => editorChannel.off?.('section:activated', tryAttach));
 	}
 

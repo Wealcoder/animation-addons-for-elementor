@@ -126,6 +126,7 @@ function interactionIdFor(el) {
  */
 function configFor(el, mapName) {
 	const id = interactionIdFor(el);
+	
 	if (!id) return null;
 	const map = window[mapName];
 	return (map && map[id]) || null;
@@ -254,7 +255,7 @@ function scan(root) {
 	// kinds at once (regular + text + future tilt) — each on its own target.
 	if (!KINDS.length) return;
 	const candidates = scope.querySelectorAll('[data-interaction-id]');
-	
+
 	for (const el of candidates) {
 		for (const kind of kindsFor(el)) {
 			if (el.classList.contains(kind.boundFlag)) continue;
@@ -310,16 +311,33 @@ function rebind(el) {
  * tears down the trigger so no further events fire.
  */
 function resetEl(el) {
+
+
 	if (!el) return;
+
+	// Kill all tweens
+	gsap.killTweensOf(el);
+
+	// Remove inline styles added by GSAP
+	gsap.set(el, {
+		clearProps: "all"
+	});
+
 	for (const kind of KINDS) {
 		if (!configFor(el, kind.mapName)) continue;
 
 		if (typeof kind.reset === 'function') {
-			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
+			try {
+				kind.reset(el);
+			} catch (_) { }
 		}
+
 		if (typeof kind.unbind === 'function') {
-			try { kind.unbind(el); } catch (_) { /* never let unbind throw */ }
+			try {
+				kind.unbind(el);
+			} catch (_) { }
 		}
+
 		el.classList.remove(kind.boundFlag);
 	}
 }
@@ -334,12 +352,14 @@ function replay(el, fromChain = false) {
 	if (!el) return;
 
 	const owningKinds = kindsFor(el);
+
 	if (owningKinds.length) {
 		// Chained nesting: if a parent has an active animation, queue this
 		// child to play when the parent's tween completes instead of firing
 		// now. fromChain=true means we ARE the drain — don't re-queue.
 		if (!fromChain) {
 			const found = findAnimatedAncestor(el);
+
 			if (found) {
 				// Parent is "still running" if any of its bound kinds has an
 				// in-flight tween. If none are tweening (all done or never
@@ -360,6 +380,7 @@ function replay(el, fromChain = false) {
 		let didPlay = false;
 		for (const kind of owningKinds) {
 			const config = kind.read(el);
+
 			if (!config) continue;
 			if (el[kind.playedKey]) {
 				el[kind.playedKey].kill?.();

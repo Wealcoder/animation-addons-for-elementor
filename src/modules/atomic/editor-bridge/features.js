@@ -23,15 +23,15 @@
  * peels the envelope once and walks `.value[bp]` directly.
  * =================================================================== */
 
-const BPS = [ 'widescreen', 'laptop', 'tablet_extra', 'tablet', 'mobile_extra', 'mobile' ];
+const BPS = ['widescreen', 'laptop', 'tablet_extra', 'tablet', 'mobile_extra', 'mobile'];
 
 const BP_CASCADE = {
-	mobile_extra: [ 'mobile', 'tablet' ],
-	mobile:       [ 'tablet' ],
-	tablet_extra: [ 'tablet' ],
-	tablet:       [],
-	laptop:       [],
-	widescreen:   [],
+	mobile_extra: ['mobile', 'tablet'],
+	mobile: ['tablet'],
+	tablet_extra: ['tablet'],
+	tablet: [],
+	laptop: [],
+	widescreen: [],
 };
 
 function cascadeParent(bp, resolved, desktopValue) {
@@ -58,7 +58,7 @@ function readAt(settings, base, bp, defaultVal) {
 		const v = map.desktop;
 		return (v === undefined || v === null || v === '') ? defaultVal : v;
 	}
-	const chain = [ bp, ...(BP_CASCADE[bp] || []), 'desktop' ];
+	const chain = [bp, ...(BP_CASCADE[bp] || []), 'desktop'];
 	for (const step of chain) {
 		const v = map[step];
 		if (v !== undefined && v !== null && v !== '') return v;
@@ -135,28 +135,29 @@ function plain(settings, key) {
  * =================================================================== */
 
 const TEXT_RESPONSIVE = {
-	aae_text_effect:           { configKey: 'effect',          default: 'none' },
-	aae_text_trigger:          { configKey: 'trigger',         default: 'on_scroll' },
+	aae_text_effect: { configKey: 'effect', default: 'none' },
+	aae_text_trigger: { configKey: 'trigger', default: 'on_scroll' },
 	aae_text_trigger_selector: { configKey: 'triggerSelector', default: '' },
-	aae_text_wrapper:          { configKey: 'wrapper',         default: 'default' },
+	aae_text_wrapper: { configKey: 'wrapper', default: 'default' },
 	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
-	aae_text_delay:            { configKey: 'delay',           default: 0.15 },
-	aae_text_duration:         { configKey: 'duration',        default: 1 },
-	aae_text_stagger:          { configKey: 'stagger',         default: 0.02 },
-	aae_text_translate_x:      { configKey: 'translateX',      default: 20 },
-	aae_text_translate_y:      { configKey: 'translateY',      default: 0 },
-	aae_text_rotation_dir:     { configKey: 'rotationDir',     default: 'x' },
-	aae_text_rotation:         { configKey: 'rotation',        default: -80 },
+	aae_text_delay: { configKey: 'delay', default: 0.15 },
+	aae_text_duration: { configKey: 'duration', default: 1 },
+	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
+	aae_text_translate_x: { configKey: 'translateX', default: 20 },
+	aae_text_translate_y: { configKey: 'translateY', default: 0 },
+	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },
+	aae_text_rotation: { configKey: 'rotation', default: -80 },
 	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
 };
 
 function buildTextConfig(settings) {
+	
 	const effect = readAt(settings, 'aae_text_effect', 'desktop', 'none');
 	if (!effect || effect === 'none') return null;
 
 	const cfg = {};
 	if (plain(settings, 'aae_text_enable_editor')) cfg.enableEditor = true;
-	if (plain(settings, 'aae_text_markers'))       cfg.markers      = true;
+	if (plain(settings, 'aae_text_markers')) cfg.markers = true;
 
 	const resolvedEffect = resolveAllBreakpoints(settings, 'aae_text_effect', 'none');
 	const disabledBps = new Set();
@@ -180,33 +181,33 @@ function buildTextConfig(settings) {
  * =================================================================== */
 
 const REGULAR_RESPONSIVE_ALWAYS = {
-	aae_anim_effect:           { configKey: 'effect',          default: 'none' },
-	aae_anim_method:           { configKey: 'method',          default: 'from' },
-	aae_anim_trigger:          { configKey: 'trigger',         default: 'on_scroll' },
+	aae_anim_effect: { configKey: 'effect', default: 'none' },
+	aae_anim_method: { configKey: 'method', default: 'from' },
+	aae_anim_trigger: { configKey: 'trigger', default: 'on_scroll' },
 	aae_anim_trigger_selector: { configKey: 'triggerSelector', default: '' },
-	aae_anim_wrapper:          { configKey: 'wrapper',         default: 'default' },
-	aae_anim_delay:            { configKey: 'delay',           default: 0.15 },
-	aae_anim_duration:         { configKey: 'duration',        default: 1.5 },
-	aae_anim_easing:           { configKey: 'easing',          default: 'power2.out' },
+	aae_anim_wrapper: { configKey: 'wrapper', default: 'default' },
+	aae_anim_delay: { configKey: 'delay', default: 0.15 },
+	aae_anim_duration: { configKey: 'duration', default: 1.5 },
+	aae_anim_easing: { configKey: 'easing', default: 'power2.out' },
 };
 
 const REGULAR_RESPONSIVE_FADE = {
-	aae_anim_fade_from:   { configKey: 'fadeFrom',   default: 'bottom' },
+	aae_anim_fade_from: { configKey: 'fadeFrom', default: 'bottom' },
 	aae_anim_fade_offset: { configKey: 'fadeOffset', default: 50 },
-	aae_anim_scale:       { configKey: 'scale',      default: 0.7 },
+	aae_anim_scale: { configKey: 'scale', default: 0.7 },
 };
 
 const REGULAR_RESPONSIVE_MOVE = {
-	aae_anim_rotation_dir:     { configKey: 'rotationDir',     default: 'x' },
-	aae_anim_rotation:         { configKey: 'rotation',        default: -80 },
+	aae_anim_rotation_dir: { configKey: 'rotationDir', default: 'x' },
+	aae_anim_rotation: { configKey: 'rotation', default: -80 },
 	aae_anim_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
 };
 
 const REGULAR_RESPONSIVE_SCROLL_CUSTOM = {
-	aae_anim_start_trigger:  { configKey: 'startTrigger',  default: '' },
-	aae_anim_end_trigger:    { configKey: 'endTrigger',    default: '' },
+	aae_anim_start_trigger: { configKey: 'startTrigger', default: '' },
+	aae_anim_end_trigger: { configKey: 'endTrigger', default: '' },
 	aae_anim_start_position: { configKey: 'startPosition', default: 'top top' },
-	aae_anim_end_position:   { configKey: 'endPosition',   default: 'bottom top' },
+	aae_anim_end_position: { configKey: 'endPosition', default: 'bottom top' },
 };
 
 function buildRegularConfig(settings) {
@@ -297,12 +298,12 @@ const IMG_RESPONSIVE_ALWAYS = {
 
 const IMG_RESPONSIVE_REVEAL = {
 	aae_img_start_from: { configKey: 'startFrom', default: 'right' },
-	aae_img_ease:       { configKey: 'ease',      default: 'power2.out' },
+	aae_img_ease: { configKey: 'ease', default: 'power2.out' },
 };
 
 const IMG_RESPONSIVE_SCALE = {
 	aae_img_scale_start: { configKey: 'scaleStart', default: 0.5 },
-	aae_img_scale_end:   { configKey: 'scaleEnd',   default: 1 },
+	aae_img_scale_end: { configKey: 'scaleEnd', default: 1 },
 };
 
 const IMG_RESPONSIVE_REVEAL_OR_SCALE = {
@@ -359,10 +360,10 @@ function buildImgConfig(settings) {
  * =================================================================== */
 
 const IH_RESPONSIVE = {
-	aae_ih_width:  { configKey: 'width',  default: 300 },
+	aae_ih_width: { configKey: 'width', default: 300 },
 	aae_ih_height: { configKey: 'height', default: 300 },
-	aae_ih_top:    { configKey: 'top',    default: 0 },
-	aae_ih_left:   { configKey: 'left',   default: 0 },
+	aae_ih_top: { configKey: 'top', default: 0 },
+	aae_ih_left: { configKey: 'left', default: 0 },
 };
 
 /**
@@ -395,7 +396,7 @@ function imageUrlFrom(envelope) {
 		const size = envelope.value?.size?.value || 'full';
 		const sized = attrs.sizes?.[size]?.url;
 		if (sized) return sized;
-		if (attrs.url)  return attrs.url;
+		if (attrs.url) return attrs.url;
 	}
 
 	return '';
@@ -416,7 +417,7 @@ function buildImageHoverConfig(settings) {
 	if (!imageUrl || isPlaceholderUrl(imageUrl)) return null;
 
 	const cfg = {
-		enabled:  true,
+		enabled: true,
 		imageUrl,
 	};
 
@@ -450,7 +451,7 @@ export const FEATURES = [
 		widgetTypes: ['e-heading', 'e-paragraph'],
 		enableSetting: 'aae_text_effect',
 		autoReplaySetting: 'aae_text_enable_editor',
-		mapName:    'AAE_INTERACTIONS_TEXT',
+		mapName: 'AAE_INTERACTIONS_TEXT',
 		buildConfig: buildTextConfig,
 		findTarget: findByInteractionId,
 	},
@@ -459,7 +460,7 @@ export const FEATURES = [
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
 		enableSetting: 'aae_anim_effect',
 		autoReplaySetting: 'aae_anim_enable_editor',
-		mapName:    'AAE_INTERACTIONS_ANIM',
+		mapName: 'AAE_INTERACTIONS_ANIM',
 		buildConfig: buildRegularConfig,
 		findTarget: findByInteractionId,
 	},
@@ -468,7 +469,7 @@ export const FEATURES = [
 		widgetTypes: ['e-image', 'e-svg'],
 		enableSetting: 'aae_img_effect',
 		autoReplaySetting: 'aae_img_enable_editor',
-		mapName:    'AAE_INTERACTIONS_IMG',
+		mapName: 'AAE_INTERACTIONS_IMG',
 		buildConfig: buildImgConfig,
 		findTarget: findByInteractionId,
 	},
@@ -482,7 +483,7 @@ export const FEATURES = [
 		// hover effect is event-driven. The Play button in the panel pushes
 		// a manual rebind for native controls that don't auto-mirror.
 		autoReplaySetting: null,
-		mapName:    'AAE_INTERACTIONS_IMGHOVER',
+		mapName: 'AAE_INTERACTIONS_IMGHOVER',
 		buildConfig: buildImageHoverConfig,
 		findTarget: findByInteractionId,
 	},
