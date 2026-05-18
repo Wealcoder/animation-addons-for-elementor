@@ -40,11 +40,12 @@ const EFFECT_OPTIONS = [
 
 const TRIGGER_OPTIONS = [
 	{ value: 'in-view', label: 'In View' },
-	{ value: 'on_scroll', label: 'On Scroll' },
 	{ value: 'on_page_load', label: 'On Page Load' },
+	{ value: 'on_scroll', label: 'On Scroll' },
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
-	{ value: 'mouseover', label: 'On Hover' },
 	{ value: 'click', label: 'On Click' },
+	{ value: 'mouseover', label: 'On Hover' },
+
 ];
 
 const WRAPPER_OPTIONS = [
@@ -92,7 +93,7 @@ const config = {
 	fields: [
 		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none' },
 
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: isAnimated },
+		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'in-view', when: isAnimated },
 
 		{
 			bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
@@ -100,11 +101,6 @@ const config = {
 		},
 
 		{ bind: 'wrapper', label: 'Text Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper },
-
-		{
-			bind: 'wrapper_selector', label: 'Custom Wrapper Selector', control: 'text',
-			defaultValue: '', placeholder: '.my-wrapper', when: showWrapperSelector
-		},
 
 		{
 			bind: 'start_trigger', label: 'Start Trigger', control: 'text',

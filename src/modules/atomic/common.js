@@ -126,7 +126,7 @@ function interactionIdFor(el) {
  */
 function configFor(el, mapName) {
 	const id = interactionIdFor(el);
-	
+
 	if (!id) return null;
 	const map = window[mapName];
 	return (map && map[id]) || null;
@@ -350,7 +350,7 @@ function resetEl(el) {
  *  triggered by an ancestor's drain (`fromChain=true`). */
 function replay(el, fromChain = false) {
 	if (!el) return;
-
+	
 	const owningKinds = kindsFor(el);
 
 	if (owningKinds.length) {
@@ -408,6 +408,7 @@ const Registry = {
 	/** Register a new animation kind. Triggers a rescan so already-rendered
 	 *  elements bind immediately. Returns the kind for chaining. */
 	register(kind) {
+
 		if (!kind || typeof kind.read !== 'function' || !kind.mapName) return kind;
 		if (KINDS.some((k) => k.name === kind.name)) return kind; // dedupe by name
 		KINDS.push(kind);

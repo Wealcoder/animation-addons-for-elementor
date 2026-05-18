@@ -136,10 +136,9 @@ function plain(settings, key) {
 
 const TEXT_RESPONSIVE = {
 	aae_text_effect: { configKey: 'effect', default: 'none' },
-	aae_text_trigger: { configKey: 'trigger', default: 'on_scroll' },
+	aae_text_trigger: { configKey: 'trigger', default: 'in-view' },
 	aae_text_trigger_selector: { configKey: 'triggerSelector', default: '' },
 	aae_text_wrapper: { configKey: 'wrapper', default: 'default' },
-	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
 	aae_text_delay: { configKey: 'delay', default: 0.15 },
 	aae_text_duration: { configKey: 'duration', default: 1 },
 	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
@@ -151,7 +150,7 @@ const TEXT_RESPONSIVE = {
 };
 
 function buildTextConfig(settings) {
-	
+
 	const effect = readAt(settings, 'aae_text_effect', 'desktop', 'none');
 	if (!effect || effect === 'none') return null;
 
@@ -183,7 +182,7 @@ function buildTextConfig(settings) {
 const REGULAR_RESPONSIVE_ALWAYS = {
 	aae_anim_effect: { configKey: 'effect', default: 'none' },
 	aae_anim_method: { configKey: 'method', default: 'from' },
-	aae_anim_trigger: { configKey: 'trigger', default: 'on_scroll' },
+	aae_anim_trigger: { configKey: 'trigger', default: 'in-view' },
 	aae_anim_trigger_selector: { configKey: 'triggerSelector', default: '' },
 	aae_anim_wrapper: { configKey: 'wrapper', default: 'default' },
 	aae_anim_delay: { configKey: 'delay', default: 0.15 },

@@ -1,7 +1,8 @@
 /* eslint-env browser */
 
 import { updateElementSettings } from '@elementor/editor-elements';
-
+import { __privateRunCommandSync as runCommandSync } from '@elementor/editor-v1-adapters';
+import { getContainer } from '@elementor/editor-elements';
 /**
  * Stand-alone read/write for a Responsive_Json_Prop_Type cell — the
  * "whole list per-breakpoint" responsive shape used by RepeaterInput.
@@ -66,19 +67,34 @@ export function useArrayCellValue({ propValue, bind, activeBp, elementId, defaul
 			value = Array.isArray(defaultValue) ? defaultValue : [];
 		}
 	}
-
+	const container = getContainer(elementId);
+	if (!container) throw new Error('container not found');
 	const setValue = (nextRows) => {
 		const cellValue = (nextRows === null || nextRows === undefined) ? null : nextRows;
 		const nextMap = { ...map, [activeBp]: cellValue };
 		const nextEnvelope = { $$type: RESPONSIVE_JSON_KEY, value: nextMap };
 
-		updateElementSettings({
-			id: elementId,
-			props: { [bind]: nextEnvelope },
-			withHistory: true,
-		});
+		// updateElementSettings({
+		// 	id: elementId,
+		// 	props: { [bind]: nextEnvelope },
+		// 	withHistory: true,
+		// });
 
-	
+		runCommandSync(
+			'document/elements/settings',
+			{
+				container,
+				settings: { [bind]: nextEnvelope },
+				// options object is forwarded to the set-settings call — use render/renderUI flags here
+				options: {
+					external: true,      // typical for external updates
+					render: false,       // try to disable render (some code paths check render)
+					renderUI: false,     // some code paths check renderUI — include both
+				},
+			}
+		);
+
+
 	};
 
 	const resetValue = () => setValue(null);

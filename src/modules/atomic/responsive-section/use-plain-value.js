@@ -1,7 +1,8 @@
 /* eslint-env browser */
 
 import { updateElementSettings } from '@elementor/editor-elements';
-
+import { __privateRunCommandSync as runCommandSync } from '@elementor/editor-v1-adapters';
+import { getContainer } from '@elementor/editor-elements';
 /**
  * Stand-alone primitive read/write for non-responsive props inside a
  * <ResponsiveSection>. Pair to use-cell-value.js — that one wraps in a
@@ -30,17 +31,34 @@ export function usePlainValue({ propValue, bind, innerType, elementId, defaultVa
 	const value = (stored === null || stored === undefined)
 		? (defaultValue ?? null)
 		: stored;
+	const container = getContainer(elementId);
+	
+	if (!container) throw new Error('container not found');
 
 	const setValue = (next) => {
 		const envelope = (next === null || next === undefined)
 			? null
 			: { $$type: innerType, value: next };
 
-		updateElementSettings({
-			id: elementId,
-			props: { [bind]: envelope },
-			withHistory: true,
-		});
+		// updateElementSettings({
+		// 	id: elementId,
+		// 	props: { [bind]: envelope },
+		// 	withHistory: true,
+		// });
+
+		runCommandSync(
+			'document/elements/settings',
+			{
+				container,
+				settings: { [bind]: envelope },
+				// options object is forwarded to the set-settings call — use render/renderUI flags here
+				options: {
+					external: true,      // typical for external updates
+					render: false,       // try to disable render (some code paths check render)
+					renderUI: false,     // some code paths check renderUI — include both
+				},
+			}
+		);
 	};
 
 	return { value, setValue };
