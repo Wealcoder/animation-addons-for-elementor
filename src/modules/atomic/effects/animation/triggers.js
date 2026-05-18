@@ -38,18 +38,24 @@ const { getScrollTrigger } = window.AAEADDON;
 const DISPOSE_KEY = '__aaeTriggerDispose';
 
 const TRIGGER_MODES = {
-	on_scroll:        'scroll-tied',
+	on_scroll: 'scroll-tied',
 	play_with_scroll: 'scrub',
-	on_page_load:     'page-load',
-	mouseover:        'hover',
-	click:            'click',
+	on_page_load: 'page-load',
+	mouseover: 'hover',
+	click: 'click',
 };
 
 export function modeFor(trigger) {
 	return TRIGGER_MODES[trigger] || 'in-view';
 }
 
-export function resolveTriggerEl(mode, selector) {
+export function resolveTriggerEl(mode, selector, config) {
+	if (mode === 'hover' || mode === 'click') {		
+		if(config.triggerSelector && config.triggerSelector !== ''){
+			selector = config.triggerSelector;
+		}
+	}
+
 	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
 	// check selectoor is html element or not
 	if (selector instanceof HTMLElement) return selector;
@@ -96,11 +102,8 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 
 	if (mode === 'click') {
 		// Warn once per element — in the editor, rebind() fires on every
-		// settings change, so a per-call warn() would spam the console.
-		if (!el.__aaeClickWarned) {
-			el.__aaeClickWarned = true;
-			console.warn('Click trigger is not recommended for accessibility reasons — prefer hover or in-view where possible', el);
-		}
+		// settings change, so a per-call warn() would spam the console.	
+		console.log(triggerEl);
 		const target = triggerEl || el;
 		target.addEventListener('click', play);
 		el[DISPOSE_KEY] = () => target.removeEventListener('click', play);

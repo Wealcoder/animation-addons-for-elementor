@@ -56,14 +56,7 @@ export function useCellValue({ propValue, bind, activeBp, elementId, defaultValu
 
 	const setValue = (next) => {
 		const nextMap = { ...map, [activeBp]: (next === undefined ? null : next) };
-		const nextEnvelope = { $$type: RESPONSIVE_KEY, value: nextMap };
-
-		// value is none and bind end match with effect=none, we can clean up the setting to avoid cluttering the data with none values
-		if (next === 'none' && bind.endsWith('effect')) {
-			//const container = getSelectedContainer();
-			//let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.	
-			//console.log('cleanup none value for', bind, 'with dom settings', dom_settings);
-		}	
+		const nextEnvelope = { $$type: RESPONSIVE_KEY, value: nextMap };	
 		// updateElementSettings({
 		// 	id: elementId,
 		// 	props: { [bind]: nextEnvelope },

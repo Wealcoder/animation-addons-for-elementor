@@ -260,13 +260,13 @@ export function bindText(el, config) {
 	const mode = modeFor(config.trigger);
 
 	let triggerSelector = '';
-	if (config.wrapper === 'default' && config.triggerSelector == '') {
-		triggerSelector = el;
-	}
+	// if (config.wrapper === 'default' && config.triggerSelector == '') {
+	// 	triggerSelector = el;
+	// }
 	wireTrigger({
 		el,
 		mode,
-		triggerEl: resolveTriggerEl(mode, triggerSelector),
+		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
 		markers: config.markers,
 		play: () => playText(el, config),
 		buildScrubbed: () => buildScrubbedText(el, config),

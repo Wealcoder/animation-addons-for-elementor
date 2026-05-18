@@ -182,7 +182,7 @@ function attachLiveBridge(container, onChange) {
 		activeContainer.__aaeCmdHook = cmdHook;
 	}
 
-	applySettingsToDom(container); 0
+	applySettingsToDom(container); 
 }
 
 /**

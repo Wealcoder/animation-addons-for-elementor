@@ -20,11 +20,6 @@ import { readRegular, playRegular, bindRegular, resetRegular, REGULAR_PLAYED, AN
 import { readText,    playText,    bindText,    resetText,    TEXT_PLAYED,    TEXT_MAP  } from './text';
 import { cleanupTriggerOn } from './triggers';
 
-// Every kind dispatches on Elementor's universal `data-interaction-id`
-// (no custom DOM attrs from us). Per-kind `mapName` is the disambiguator:
-// `text` reads window.AAE_INTERACTIONS_TEXT[id], `regular` reads
-// window.AAE_INTERACTIONS_ANIM[id]. An element can have entries in both
-// maps and gets bound by both kinds independently.
 window.AAEADDON.register({
 	name:       'text',
 	mapName:    TEXT_MAP,
