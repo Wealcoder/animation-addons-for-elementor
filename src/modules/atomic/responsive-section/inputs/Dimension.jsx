@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Stack, TextField, ToggleButtonGroup, ToggleButton, Box, Typography, IconButton } from '@elementor/ui';
+import { Stack, TextField, ToggleButtonGroup, ToggleButton, Box, Typography, IconButton, Autocomplete } from '@elementor/ui';
 
 /* ---------- link icon ---------- */
 const LinkIcon = ({ linked }) => (
@@ -32,6 +32,8 @@ export function DimensionInput({
 	placeholder = '',
 	units = ['px', '%', 'em', 'rem', 'vh', 'vw'],
 	defaultUnit = 'px',
+	datalist,
+	step,
 }) {
 	// Parse value
 	let size = '';
@@ -56,10 +58,6 @@ export function DimensionInput({
 	}
 
 	const handleSizeChange = (newSize) => {
-		if (newSize === '') {
-			onChange(null);
-			return;
-		}
 		const num = Number(newSize);
 		const finalSize = Number.isFinite(num) ? num : newSize;
 
@@ -72,21 +70,54 @@ export function DimensionInput({
 	const handleUnitChange = (e, newUnit) => {
 		if (!newUnit) return;
 		onChange({
-			size: size === '' ? null : (Number.isFinite(Number(size)) ? Number(size) : size),
+			size: size === '' ? '' : (Number.isFinite(Number(size)) ? Number(size) : size),
 			unit: newUnit
 		});
 	};
 
 	return (
 		<Stack direction="row" alignItems="center" gap={1} sx={{ width: '100%' }}>
-			<TextField
-				size="tiny"
-				value={size}
-				placeholder={placeholder}
-				disabled={disabled}
-				onChange={(e) => handleSizeChange(e.target.value)}
-				sx={{ flex: 1 }}
-			/>
+			{datalist ? (
+				<Autocomplete
+					freeSolo
+					size="tiny"
+					disabled={disabled}
+					options={datalist.map((item) => typeof item === 'object' ? String(item.value) : String(item))}
+					value={size ? String(size) : ''}
+					onChange={(event, newValue) => {
+						handleSizeChange(newValue || '');
+					}}
+					onInputChange={(event, newInputValue) => {
+						handleSizeChange(newInputValue || '');
+					}}
+					sx={{ flex: 1 }}
+					renderInput={(params) => (
+						<TextField
+							{...params}
+							size="tiny"
+							type="number"
+							placeholder={placeholder}
+							inputProps={{
+								...params.inputProps,
+								step: step || 'any',
+							}}
+						/>
+					)}
+				/>
+			) : (
+				<TextField
+					size="tiny"
+					type="number"
+					value={size}
+					placeholder={placeholder}
+					disabled={disabled}
+					onChange={(e) => handleSizeChange(e.target.value)}
+					sx={{ flex: 1 }}
+					inputProps={{
+						step: step || 'any',
+					}}
+				/>
+			)}
 
 			{units.length > 0 && (
 				<ToggleButtonGroup
@@ -129,6 +160,8 @@ export function DimensionsInput({
 	placeholder = '',
 	units = ['px', '%', 'em', 'rem'],
 	defaultUnit = 'px',
+	datalist,
+	step,
 }) {
 	// Parse value
 	let top = '';
@@ -243,17 +276,49 @@ export function DimensionsInput({
 					{ key: 'left', label: 'Left', val: left },
 				].map(({ key, label, val }) => (
 					<Stack key={key} direction="column" alignItems="center" gap={0.25} sx={{ flex: 1, minWidth: 0 }}>
-						<TextField
-							size="tiny"
-							value={val}
-							placeholder={placeholder}
-							disabled={disabled}
-							onChange={(e) => handleValChange(key, e.target.value)}
-							inputProps={{
-								style: { textAlign: 'center', padding: '4px 2px' }
-							}}
-							fullWidth
-						/>
+						{datalist ? (
+							<Autocomplete
+								freeSolo
+								size="tiny"
+								disabled={disabled}
+								options={datalist.map((item) => typeof item === 'object' ? String(item.value) : String(item))}
+								value={val ? String(val) : ''}
+								onChange={(event, newValue) => {
+									handleValChange(key, newValue || '');
+								}}
+								onInputChange={(event, newInputValue) => {
+									handleValChange(key, newInputValue || '');
+								}}
+								fullWidth
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										size="tiny"
+										type="number"
+										placeholder={placeholder}
+										inputProps={{
+											...params.inputProps,
+											style: { textAlign: 'center', padding: '4px 2px' },
+											step: step || 'any',
+										}}
+									/>
+								)}
+							/>
+						) : (
+							<TextField
+								size="tiny"
+								type="number"
+								value={val}
+								placeholder={placeholder}
+								disabled={disabled}
+								onChange={(e) => handleValChange(key, e.target.value)}
+								inputProps={{
+									style: { textAlign: 'center', padding: '4px 2px' },
+									step: step || 'any',
+								}}
+								fullWidth
+							/>
+						)}
 						<Typography variant="caption" sx={{ fontSize: '9px', color: 'text.secondary' }}>
 							{label}
 						</Typography>

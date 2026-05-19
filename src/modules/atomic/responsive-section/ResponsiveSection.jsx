@@ -81,6 +81,7 @@ export function ResponsiveSection({ config }) {
 							step={field.step}
 							units={field.units}
 							defaultUnit={field.defaultUnit}
+							datalist={field.datalist}
 							cells={field.cells}
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}

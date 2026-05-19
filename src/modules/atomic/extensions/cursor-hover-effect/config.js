@@ -136,11 +136,13 @@ const config = {
 		{
 			bind: 'width_custom',
 
-			label: 'Custom Width',
+			label: 'Custom Widths',
 
 			control: 'dimension',
 
 			defaultValue: '120px',
+
+			datalist: ['80', '100', '120', '150', '200'],
 
 			when: showCustomWidth,
 		},
@@ -204,6 +206,8 @@ const config = {
 			control: 'dimension',
 
 			defaultValue: '120px',
+
+			datalist: ['80', '100', '120', '150', '200'],
 
 			when: showCustomHeight,
 		},

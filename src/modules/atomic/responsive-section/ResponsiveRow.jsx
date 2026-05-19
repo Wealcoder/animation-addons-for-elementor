@@ -88,6 +88,7 @@ export function ResponsiveRow({
   step,
   units,
   defaultUnit,
+  datalist,
   cells,
   addLabel,
   rowDefaults,
@@ -145,6 +146,7 @@ export function ResponsiveRow({
       step={step}
       units={units}
       defaultUnit={defaultUnit}
+      datalist={datalist}
       defaultValue={defaultValue}
       propValue={propValue}
       activeBp={activeBp}
@@ -164,6 +166,7 @@ export function ResponsiveRow({
         step={step}
         units={units}
         defaultUnit={defaultUnit}
+        datalist={datalist}
         defaultValue={defaultValue}
         propValue={propValue}
         elementId={elementId}
@@ -185,6 +188,7 @@ function ResponsiveCellRow({
   step,
   units,
   defaultUnit,
+  datalist,
   defaultValue,
   propValue,
   activeBp,
@@ -239,6 +243,7 @@ function ResponsiveCellRow({
         step={step}
         units={units}
         defaultUnit={defaultUnit}
+        datalist={datalist}
       />
     </Stack>
   );
@@ -321,6 +326,7 @@ function PlainRow({
   step,
   units,
   defaultUnit,
+  datalist,
   defaultValue,
   propValue,
   elementId,
@@ -354,6 +360,7 @@ function PlainRow({
         step={step}
         units={units}
         defaultUnit={defaultUnit}
+        datalist={datalist}
       />
     </Stack>
   );
