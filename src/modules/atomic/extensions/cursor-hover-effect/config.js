@@ -138,10 +138,11 @@ const config = {
 
 			label: 'Custom Width',
 
-			control: 'text',
+			control: 'dimension',
 
 			defaultValue: '120px',
 
+			when: showCustomWidth,
 		},
 
 		/*
@@ -200,7 +201,7 @@ const config = {
 
 			label: 'Custom Height',
 
-			control: 'text',
+			control: 'dimension',
 
 			defaultValue: '120px',
 
@@ -236,7 +237,7 @@ const config = {
 
 			label: 'Border Radius',
 
-			control: 'text',
+			control: 'dimensions',
 
 			defaultValue: '100%',
 

@@ -547,15 +547,30 @@ function findByInteractionId(doc, id) {
 
 // cursor hover effect config will be built in a similar way when needed, following the pattern above.
 
+const CURSOR_RESPONSIVE = {
+	aae_cursor_hover_text: { configKey: 'text', default: '' },
+	aae_cursor_hover_color: { configKey: 'color', default: '#ffffff' },
+	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
+	aae_cursor_hover_width: { configKey: 'width', default: '100px' },
+	aae_cursor_hover_height: { configKey: 'height', default: '100px' },
+	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
+};
+
+const CURSOR_OBJECTS = {
+	aae_cursor_hover_width_custom: { configKey: 'widthCustom', default: '' },
+	aae_cursor_hover_height_custom: { configKey: 'heightCustom', default: '' },
+	aae_cursor_hover_border_radius: { configKey: 'borderRadius', default: '100%' },
+};
+
 function buildCursorHoverEffectConfig(settings) {
 
-	const enabled = plain(settings, 'aae_cursor_hover_enable');
+	const enabled = plain(settings, 'aae_cursor_hover_enable_editor');
 	if (!enabled) return null;
-	const cfg = {};
+	const cfg = { enabled: true };
 
-	emitResponsive(cfg, settings, {
-		aae_cursor_hover_speed: { configKey: 'speed', default: 1 },
-	});
+	emitResponsive(cfg, settings, CURSOR_RESPONSIVE);
+	emitResponsiveObjects(cfg, settings, CURSOR_OBJECTS);
+	return cfg;
 }
 export const FEATURES = [
 	{
@@ -597,7 +612,7 @@ export const FEATURES = [
 	{
 		name: 'cursor-hover-effect',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
-		enableSetting: 'aae_che_image',
+		enableSetting: 'aae_cursor_hover_enable_editor',
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
 		buildConfig: buildCursorHoverEffectConfig,
