@@ -207,7 +207,7 @@ const config = {
 			options: BOOLEAN_OPTIONS,
 			defaultValue: true,
 			when: showPinFields,
-			tab: 'Style', // Goes to Content tab
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -223,7 +223,28 @@ const config = {
 			responsive: false,
 			defaultValue: false,
 			when: showPinFields,
-			tab: 'Style', // Goes to Content tab
+			tab: 'Content', // Goes to Content tab
+		},
+
+		/*
+		|--------------------------------------------------------------------------
+		| Border
+		|--------------------------------------------------------------------------
+		*/
+
+		{
+			bind: 'border',
+			label: 'Border',
+			control: 'border',
+			responsive: true,
+			defaultValue: {
+				style: '',
+				width: { top: '', right: '', bottom: '', left: '' },
+				color: '',
+				radius: '',
+			},
+			when: showPinFields,
+			tab: 'Style',
 		},
 
 		/*

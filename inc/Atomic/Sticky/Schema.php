@@ -35,6 +35,8 @@ final class Schema {
 
 	const STICKY_PIN_MARKERS         = 'aae_sticky_pin_markers';
 
+	const STICKY_BORDER              = 'aae_sticky_border';
+
 	const STICKY_ENABLE_EDITOR       = 'aae_sticky_enable_editor';
 
 	public function register(): void {
@@ -204,6 +206,29 @@ final class Schema {
 		$schema[ self::STICKY_PIN_MARKERS ] =
 			Boolean_Prop_Type::make()
 				->default( false )
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Border
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_BORDER ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => [
+						'style'  => '',
+						'width'  => [
+							'top'    => '',
+							'right'  => '',
+							'bottom' => '',
+							'left'   => '',
+						],
+						'color'  => '',
+						'radius' => '',
+					],
+				])
 				->set_dependencies( $sticky_enabled_dependency );
 
 		/*

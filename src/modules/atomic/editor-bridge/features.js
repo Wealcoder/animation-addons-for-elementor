@@ -123,6 +123,42 @@ function emitResponsive(cfg, settings, keys, disabledBps) {
 	}
 }
 
+/**
+ * Emit responsive OBJECT values (border, shadow, etc.) that cannot use
+ * emitResponsive (which relies on String() comparison for scalars).
+ *
+ * `keys` shape — same as emitResponsive but values are objects:
+ *   { 'aae_sticky_border': { configKey: 'border', isValid: (v) => !!v.style } }
+ *
+ * `isValid` is an optional predicate — when provided, only values that
+ * pass the test are emitted. Defaults to checking for a truthy object.
+ *
+ * Emits:
+ *   cfg[configKey]          = desktopObject
+ *   cfg[configKey + '_bp']  = bpObject
+ */
+function emitResponsiveObjects(cfg, settings, keys, disabledBps) {
+	for (const [base, info] of Object.entries(keys)) {
+		const map = envelopeToMap(settings[base]);
+		const check = typeof info.isValid === 'function'
+			? info.isValid
+			: (v) => v && typeof v === 'object';
+
+		const desktopVal = map.desktop || null;
+		if (desktopVal && check(desktopVal)) {
+			cfg[info.configKey] = desktopVal;
+		}
+
+		for (const bp of BPS) {
+			if (disabledBps && disabledBps.has(bp)) continue;
+			const bpVal = map[bp];
+			if (bpVal && check(bpVal)) {
+				cfg[info.configKey + '_' + bp] = bpVal;
+			}
+		}
+	}
+}
+
 /** Pull a non-responsive primitive (e.g. boolean) out of its envelope. */
 function plain(settings, key) {
 	const v = settings[key];
@@ -188,7 +224,14 @@ const STICKY_RESPONSIVE = {
 	aae_sticky_custom_pin_start: { configKey: 'customPinStart', default: '' },
 	aae_sticky_pin_end: { configKey: 'pinEnd', default: '' },
 	aae_sticky_custom_pin_end: { configKey: 'customPinEnd', default: '' },
-	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' }
+	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' },
+};
+
+const STICKY_OBJECTS = {
+	aae_sticky_border: {
+		configKey: 'border',
+		isValid: (v) => v && typeof v === 'object' && !!v.style && v.style !== 'none',
+	},
 };
 
 function buildStickyConfig(settings) {
@@ -209,8 +252,10 @@ function buildStickyConfig(settings) {
 	if (!('enable' in cfg)) {
 		cfg.enable = enabled;
 	}
-	console.log('Sticky config:', cfg);
-	// Return the configuration object
+
+	// --- Object-typed responsive values (border, shadow, etc.) ---
+	emitResponsiveObjects(cfg, settings, STICKY_OBJECTS, disabledBps);
+	console.log(cfg);
 	return cfg;
 }
 
