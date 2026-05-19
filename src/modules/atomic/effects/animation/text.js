@@ -20,7 +20,13 @@ const TEXT_SPLIT_KEY = '__aaeTextSplit';
 
 function r(cfg, key, fallback) {
 	const v = pickConfigResponsive(cfg, key);
-	return (v === undefined || v === '') ? fallback : v;
+	return (v === undefined || v === null || v === '') ? fallback : v;
+}
+
+function parseNum(val, fallback) {
+	if (val === undefined || val === null || val === '') return fallback;
+	const num = Number(val);
+	return Number.isFinite(num) ? num : fallback;
 }
 
 function parseTimeValue(val, fallback) {
@@ -53,7 +59,7 @@ export function readText(el) {
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
-
+	console.log('readText 22', cfg);
 	return {
 		effect,
 		trigger: r(cfg, 'trigger', 'on_scroll'),
@@ -63,15 +69,15 @@ export function readText(el) {
 		markers: !!cfg.markers,
 		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
 		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
-		stagger: Number(r(cfg, 'stagger', 0.02)),
-		translateX: Number(r(cfg, 'translateX', 20)),
-		translateY: Number(r(cfg, 'translateY', 0)),
+		stagger: parseNum(r(cfg, 'stagger', 0.02), 0.02),
+		translateX: parseNum(r(cfg, 'translateX', 20), 20),
+		translateY: parseNum(r(cfg, 'translateY', 0), 0),
 		rotationDir: r(cfg, 'rotationDir', 'x'),
-		rotation: Number(r(cfg, 'rotation', -80)),
+		rotation: parseNum(r(cfg, 'rotation', -80), -80),
 		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
 		spinColor: r(cfg, 'spinColor', '#000'),
-		spinStart: r(cfg, 'spinStart', 'top 85%'),
-		spinEnd: r(cfg, 'spinEnd', 'top 30%'),
+		spinStart: r(cfg, 'spinStart', 'top 50%'),
+		spinEnd: r(cfg, 'spinEnd', 'bottom 30%'),
 		spinToggle: r(cfg, 'spinToggle', 'play none none reverse'),
 	};
 }

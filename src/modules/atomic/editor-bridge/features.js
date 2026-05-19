@@ -175,6 +175,7 @@ const TEXT_RESPONSIVE = {
 	aae_text_trigger: { configKey: 'trigger', default: 'in-view' },
 	aae_text_trigger_selector: { configKey: 'triggerSelector', default: '' },
 	aae_text_wrapper: { configKey: 'wrapper', default: 'default' },
+	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
 	aae_text_delay: { configKey: 'delay', default: 0.15 },
 	aae_text_duration: { configKey: 'duration', default: 1 },
 	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
@@ -184,6 +185,20 @@ const TEXT_RESPONSIVE = {
 	aae_text_rotation: { configKey: 'rotation', default: -80 },
 	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
 	aae_text_spin_color: { configKey: 'spinColor', default: '#000000' },
+	aae_text_start_trigger: { configKey: 'startTrigger', default: '' },
+	aae_text_end_trigger: { configKey: 'endTrigger', default: '' },
+	aae_text_start_position: { configKey: 'startPosition', default: 'top top' },
+	aae_text_start_custom: { configKey: 'startCustom', default: 'top top' },
+	aae_text_end_position: { configKey: 'endPosition', default: 'bottom top' },
+	aae_text_end_custom: { configKey: 'endCustom', default: 'bottom top' },
+	aae_text_invert_start: { configKey: 'invertStart', default: 'top 85%' },
+	aae_text_invert_end: { configKey: 'invertEnd', default: 'bottom center' },
+	aae_text_spin_start: { configKey: 'spinStart', default: 'top 50%' },
+	aae_text_spin_end: { configKey: 'spinEnd', default: 'bottom 30%' },
+	aae_text_spin_toggle: { configKey: 'spinToggle', default: 'play none none reverse' },
+	aae_text_scale_ease: { configKey: 'scaleEase', default: 'back' },
+	aae_text_scale_num: { configKey: 'scaleNum', default: 1.5 },
+	aae_text_scale_break: { configKey: 'scaleBreak', default: 'lines' },
 };
 
 function buildTextConfig(settings) {
