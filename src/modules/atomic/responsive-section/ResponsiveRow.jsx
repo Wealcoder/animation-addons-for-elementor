@@ -11,6 +11,7 @@ import { ColorInput } from "./inputs/Color";
 import { PlayButtonInput } from "./inputs/PlayButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
 import { BorderInput } from "./inputs/BorderInput";
+import { TextareaInput } from "./inputs/TextareaInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
@@ -29,6 +30,7 @@ import { useArrayCellValue } from "./use-array-cell-value";
 const CONTROL_REGISTRY = {
   select: { Component: SelectInput, innerType: "string" },
   text: { Component: TextInput, innerType: "string" },
+  textarea: { Component: TextareaInput, innerType: "string" },
   number: { Component: NumberInput, innerType: "number" },
   switch: { Component: SwitchInput, innerType: "boolean" },
   color: { Component: ColorInput, innerType: "string" },

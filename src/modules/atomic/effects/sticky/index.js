@@ -98,6 +98,15 @@ function readSticky(el) {
 		*/
 
 		pinMarkers:       r(cfg, 'pinMarkers', false),
+
+		/*
+		|--------------------------------------------------------------------------
+		| Style (Border & Custom CSS)
+		|--------------------------------------------------------------------------
+		*/
+
+		border:           r(cfg, 'border', null),
+		customCSS:        r(cfg, 'customCSS', ''),
 	};
 }
 

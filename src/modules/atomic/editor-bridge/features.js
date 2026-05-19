@@ -241,6 +241,8 @@ function buildStickyConfig(settings) {
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
 	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
+	
+	if (plain(settings, 'aae_sticky_custom_css')) cfg.customCSS = plain(settings, 'aae_sticky_custom_css');
 
 	const disabledBps = new Set();
 	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);

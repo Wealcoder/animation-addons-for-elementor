@@ -4,6 +4,7 @@ namespace WCF_ADDONS\Atomic\Sticky;
 
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,6 +39,8 @@ final class Schema {
 	const STICKY_BORDER              = 'aae_sticky_border';
 
 	const STICKY_ENABLE_EDITOR       = 'aae_sticky_enable_editor';
+
+	const STICKY_CUSTOM_CSS          = 'aae_sticky_custom_css';
 
 	public function register(): void {
 
@@ -229,6 +232,11 @@ final class Schema {
 						'radius' => '',
 					],
 				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		$schema[ self::STICKY_CUSTOM_CSS ] =
+			String_Prop_Type::make()
+				->default( '' )
 				->set_dependencies( $sticky_enabled_dependency );
 
 		/*

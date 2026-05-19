@@ -247,6 +247,16 @@ const config = {
 			tab: 'Style',
 		},
 
+		{
+			bind: 'custom_css',
+			label: 'Custom CSS',
+			control: 'textarea',
+			responsive: false,
+			defaultValue: '',
+			when: showPinFields,
+			tab: 'Style',
+		},				
+
 		/*
 		|--------------------------------------------------------------------------
 		| Editor

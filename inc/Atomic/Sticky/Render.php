@@ -129,6 +129,28 @@ final class Render {
 			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
 		);
 
+		// Emit border object
+		$border_envelope = $settings[ Schema::STICKY_BORDER ] ?? null;
+		$border_map      = $this->envelope_to_map( $border_envelope );
+
+		$border_desktop = $border_map['desktop'] ?? null;
+		if ( $border_desktop && is_array( $border_desktop ) && ! empty( $border_desktop['style'] ) && $border_desktop['style'] !== 'none' ) {
+			$config['border'] = $border_desktop;
+		}
+
+		foreach ( $extra_bps as $bp ) {
+			$bp_border = $border_map[ $bp ] ?? null;
+			if ( $bp_border && is_array( $bp_border ) && ! empty( $bp_border['style'] ) && $bp_border['style'] !== 'none' ) {
+				$config[ 'border_' . $bp ] = $bp_border;
+			}
+		}
+
+		// Emit custom CSS (plain string)
+		$custom_css = $this->read_primitive( $settings, Schema::STICKY_CUSTOM_CSS, '' );
+		if ( ! empty( $custom_css ) ) {
+			$config['customCSS'] = $custom_css;
+		}
+
 		return $config;
 	}
 
@@ -216,5 +238,16 @@ final class Render {
 			}
 		}
 		return $ordered;
+	}
+
+	private function read_primitive( array $settings, string $key, $default ) {
+		$value = $settings[ $key ] ?? null;
+		if ( null === $value ) {
+			return $default;
+		}
+		if ( ! is_array( $value ) || ! array_key_exists( 'value', $value ) ) {
+			return ( null === $value || '' === $value ) ? $default : $value;
+		}
+		return ( null === $value['value'] || '' === $value['value'] ) ? $default : $value['value'];
 	}
 }
