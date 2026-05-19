@@ -137,7 +137,7 @@ const config = {
 		// Spin-specific (+ scroll trigger)
 		{
 			bind: 'spin_start', label: 'Spin Start', control: 'text',
-			defaultValue: 'top 50%', placeholder: 'top 50%', when: showSpinScrollFields
+			defaultValue: 'top 85%', placeholder: 'top 85%', when: showSpinScrollFields
 		},
 		{
 			bind: 'spin_end', label: 'Spin End', control: 'text',

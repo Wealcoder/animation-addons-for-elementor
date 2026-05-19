@@ -6,7 +6,7 @@ const ColorIndicator = styled(Box)(({ theme }) => ({
   width: '32px',
   height: '32px',
   borderRadius: '4px',
-  border: `2px solid ${theme.palette.divider}`,
+  border: `0px solid ${theme.palette.divider}`,
   cursor: 'pointer',
   backgroundColor: 'currentColor',
   '&:hover': {

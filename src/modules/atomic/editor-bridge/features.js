@@ -176,6 +176,45 @@ function buildTextConfig(settings) {
 	return cfg;
 }
 
+const STICKY_RESPONSIVE = {
+	aae_sticky_enable: { configKey: 'enable', default: false },
+	aae_sticky_pin_trigger: { configKey: 'pinTrigger', default: '' },
+	aae_sticky_custom_pin_area: { configKey: 'customPinArea', default: '' },
+	aae_sticky_pin_end_trigger: { configKey: 'pinEndTrigger', default: '' },
+	aae_sticky_custom_pin_end_area: { configKey: 'customPinEndArea', default: '' },
+	aae_sticky_pin: { configKey: 'pin', default: '' },
+	aae_sticky_custom_pin: { configKey: 'customPin', default: '' },
+	aae_sticky_pin_start: { configKey: 'pinStart', default: '' },
+	aae_sticky_custom_pin_start: { configKey: 'customPinStart', default: '' },
+	aae_sticky_pin_end: { configKey: 'pinEnd', default: '' },
+	aae_sticky_custom_pin_end: { configKey: 'customPinEnd', default: '' },
+	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' }
+};
+
+
+function buildStickyConfig(settings) {
+	const enabled = readAt(settings, 'aae_sticky_enable', 'desktop', false);
+	if (!enabled) return null;
+
+	const cfg = {};
+	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
+	if (plain(settings, 'aae_sticky_markers')) cfg.markers = true;
+
+	const disabledBps = new Set();
+	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
+	console.log('resolvedSwitcher', resolvedSwitcher);
+	console.log('settings', settings);
+	for (const bp of BPS) {
+		if (!resolvedSwitcher[bp] || resolvedSwitcher[bp] === 'none') disabledBps.add(bp);
+	}
+	emitResponsive(cfg, settings, STICKY_RESPONSIVE, disabledBps);
+	if (!('enable' in cfg)) {
+		cfg.enable = enabled;
+	}
+	// Return the configuration object
+	return cfg;
+}
+
 /* =====================================================================
  * Regular Animation feature
  * =================================================================== */
@@ -480,6 +519,15 @@ export const FEATURES = [
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_IMGHOVER',
 		buildConfig: buildImageHoverConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'sticky',
+		widgetTypes: ['e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_sticky_enable',
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_STICKY',
+		buildConfig: buildStickyConfig,
 		findTarget: findByInteractionId,
 	},
 ];

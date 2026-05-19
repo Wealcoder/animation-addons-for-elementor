@@ -17,29 +17,29 @@
  */
 
 import { readRegular, playRegular, bindRegular, resetRegular, REGULAR_PLAYED, ANIM_MAP } from './regular';
-import { readText,    playText,    bindText,    resetText,    TEXT_PLAYED,    TEXT_MAP  } from './text';
+import { readText, playText, bindText, resetText, TEXT_PLAYED, TEXT_MAP } from './text';
 import { cleanupTriggerOn } from './triggers';
 
 window.AAEADDON.register({
-	name:       'text',
-	mapName:    TEXT_MAP,
-	boundFlag:  'aae-text-anim-bound',
-	playedKey:  TEXT_PLAYED,
+	name: 'text',
+	mapName: TEXT_MAP,
+	boundFlag: 'aae-text-anim-bound',
+	playedKey: TEXT_PLAYED,
 	read:       readText,
-	play:       playText,
-	bind:       bindText,
-	unbind:     cleanupTriggerOn,
-	reset:      resetText,
+	play: playText,
+	bind: bindText,
+	unbind: cleanupTriggerOn,
+	reset: resetText,
 });
 
 window.AAEADDON.register({
-	name:       'regular',
-	mapName:    ANIM_MAP,
-	boundFlag:  'aae-anim-bound',
-	playedKey:  REGULAR_PLAYED,
-	read:       readRegular,
-	play:       playRegular,
-	bind:       bindRegular,
-	unbind:     cleanupTriggerOn,
-	reset:      resetRegular,
+	name: 'regular',
+	mapName: ANIM_MAP,
+	boundFlag: 'aae-anim-bound',
+	playedKey: REGULAR_PLAYED,
+	read: readRegular,
+	play: playRegular,
+	bind: bindRegular,
+	unbind: cleanupTriggerOn,
+	reset: resetRegular,
 });

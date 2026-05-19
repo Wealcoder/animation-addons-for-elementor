@@ -65,7 +65,10 @@ final class Schema {
 		*/
 
 		$schema[ self::STICKY_ENABLE ] =
-			Boolean_Prop_Type::make()->default( false );
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => false,
+				]);
 
 		/*
 		|--------------------------------------------------------------------------
@@ -197,10 +200,16 @@ final class Schema {
 		*/
 
 		$schema[ self::STICKY_PIN_MARKERS ] =
-			Boolean_Prop_Type::make()
-				->default( false )
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => false,
+				])
 				->set_dependencies( $sticky_enabled_dependency );
 
 		return $schema;
+	}
+
+	public static function targeted_elements(): array {
+		return [ 'e-flexbox', 'e-div-block', 'e-grid' ];
 	}
 }

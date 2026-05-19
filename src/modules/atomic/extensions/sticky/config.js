@@ -62,7 +62,7 @@ const config = {
 			bind: 'enable',
 			label: 'Enable Sticky',
 			control: 'switch',
-			responsive: false,
+			responsive: true,
 			defaultValue: false,
 		},
 

@@ -31,7 +31,7 @@ final class Render {
 		if (
 			! in_array(
 				$element->get_element_type(),
-				Bootstrap::target_element_types(),
+				Schema::targeted_elements(),
 				true
 			)
 		) {
@@ -44,7 +44,7 @@ final class Render {
 
 		$config = $this->build_config( $settings );
 
-		if ( empty( $config['enabled'] ) ) {
+		if ( empty( $config['enable'] ) ) {
 			return;
 		}
 
@@ -61,126 +61,160 @@ final class Render {
 			$id,
 			$config
 		);
+
+		if ( ! is_admin() ) {
+			wp_enqueue_script( 'aae-effect-sticky' );
+		}
 	}
 
 	private function build_config( array $settings ): array {
+		$config = [];
+		$extra_bps  = $this->get_extra_breakpoints();
 
-		$enabled = (bool) (
-			$settings[ Schema::STICKY_ENABLE ] ?? false
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_ENABLE, 'enable', false, $extra_bps,
+			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
 		);
 
-		return [
+		if ( empty( $config['enable'] ) ) {
+			return [];
+		}
 
-			/*
-			|--------------------------------------------------------------------------
-			| Base
-			|--------------------------------------------------------------------------
-			*/
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_TRIGGER, 'pinTrigger', 'default', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : 'default'
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_CUSTOM_PIN_AREA, 'customPinArea', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : ''
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_END_TRIGGER, 'pinEndTrigger', 'default', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : 'default'
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_CUSTOM_PIN_END_AREA, 'customPinEndArea', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : ''
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN, 'pin', true, $extra_bps,
+			static fn( $v ) => $v === 'custom' ? 'custom' : ( is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ) )
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_CUSTOM_PIN, 'customPin', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : ''
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_START, 'pinStart', 'top top', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : 'top top'
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_CUSTOM_PIN_START, 'customPinStart', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : ''
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_END, 'pinEnd', 'bottom bottom', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : 'bottom bottom'
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_CUSTOM_PIN_END, 'customPinEnd', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : ''
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', true, $extra_bps,
+			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_PIN_MARKERS, 'pinMarkers', false, $extra_bps,
+			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
+		);
 
-			'enabled' => $enabled,
+		return $config;
+	}
 
-			/*
-			|--------------------------------------------------------------------------
-			| Pin Trigger
-			|--------------------------------------------------------------------------
-			*/
+	private function emit_responsive(
+		array &$config,
+		array $settings,
+		string $base_key,
+		string $cfg_key,
+		$default,
+		array $extra_bps,
+		callable $cast
+	): void {
+		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 
-			'pinTrigger' => (
-				$settings[ Schema::STICKY_PIN_TRIGGER ]
-				?? []
-			),
+		$desktop_raw   = $map['desktop'] ?? $default;
+		$desktop_value = $cast( $desktop_raw );
 
-			'customPinArea' => (
-				$settings[ Schema::STICKY_CUSTOM_PIN_AREA ]
-				?? []
-			),
+		if ( $desktop_value !== $cast( $default ) ) {
+			$config[ $cfg_key ] = $desktop_value;
+		}
 
-			/*
-			|--------------------------------------------------------------------------
-			| Pin End Trigger
-			|--------------------------------------------------------------------------
-			*/
+		$resolved = [ 'desktop' => $desktop_value ];
 
-			'pinEndTrigger' => (
-				$settings[ Schema::STICKY_PIN_END_TRIGGER ]
-				?? []
-			),
+		foreach ( $extra_bps as $bp ) {
+			$own_raw = $map[ $bp ] ?? null;
+			$parent  = $this->cascade_parent( $bp, $resolved, $desktop_value );
 
-			'customPinEndArea' => (
-				$settings[ Schema::STICKY_CUSTOM_PIN_END_AREA ]
-				?? []
-			),
+			if ( null === $own_raw || '' === $own_raw ) {
+				$resolved[ $bp ] = $parent;
+				continue;
+			}
 
-			/*
-			|--------------------------------------------------------------------------
-			| Pin
-			|--------------------------------------------------------------------------
-			*/
+			$own_value = $cast( $own_raw );
+			$resolved[ $bp ] = $own_value;
 
-			'pin' => (
-				$settings[ Schema::STICKY_PIN ]
-				?? []
-			),
+			if ( $own_value === $parent ) {
+				continue;
+			}
+			$config[ $cfg_key . '_' . $bp ] = $own_value;
+		}
+	}
 
-			'customPin' => (
-				$settings[ Schema::STICKY_CUSTOM_PIN ]
-				?? []
-			),
+	private function envelope_to_map( $envelope ): array {
+		if ( ! is_array( $envelope ) || ! isset( $envelope['value'] ) || ! is_array( $envelope['value'] ) ) {
+			return [];
+		}
+		return $envelope['value'];
+	}
 
-			/*
-			|--------------------------------------------------------------------------
-			| Pin Start
-			|--------------------------------------------------------------------------
-			*/
-
-			'pinStart' => (
-				$settings[ Schema::STICKY_PIN_START ]
-				?? []
-			),
-
-			'customPinStart' => (
-				$settings[ Schema::STICKY_CUSTOM_PIN_START ]
-				?? []
-			),
-
-			/*
-			|--------------------------------------------------------------------------
-			| Pin End
-			|--------------------------------------------------------------------------
-			*/
-
-			'pinEnd' => (
-				$settings[ Schema::STICKY_PIN_END ]
-				?? []
-			),
-
-			'customPinEnd' => (
-				$settings[ Schema::STICKY_CUSTOM_PIN_END ]
-				?? []
-			),
-
-			/*
-			|--------------------------------------------------------------------------
-			| Pin Spacing
-			|--------------------------------------------------------------------------
-			*/
-
-			'pinSpacing' => (
-				$settings[ Schema::STICKY_PIN_SPACING ]
-				?? []
-			),
-
-			/*
-			|--------------------------------------------------------------------------
-			| Pin Markers
-			|--------------------------------------------------------------------------
-			*/
-
-			'pinMarkers' => (
-				$settings[ Schema::STICKY_PIN_MARKERS ]
-				?? false
-			),
-
+	private function cascade_parent( string $bp, array $resolved, $desktop_value ) {
+		static $cascade = [
+			'mobile_extra' => [ 'mobile', 'tablet' ],
+			'mobile'       => [ 'tablet' ],
+			'tablet_extra' => [ 'tablet' ],
+			'tablet'       => [],
+			'laptop'       => [],
+			'widescreen'   => [],
 		];
+		foreach ( $cascade[ $bp ] ?? [] as $step ) {
+			if ( array_key_exists( $step, $resolved ) ) {
+				return $resolved[ $step ];
+			}
+		}
+		return $desktop_value;
+	}
+
+	private function get_extra_breakpoints(): array {
+		$active_keys = [];
+
+		if ( class_exists( \Elementor\Plugin::class )
+			&& isset( \Elementor\Plugin::$instance->breakpoints )
+			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
+			$active_keys = array_keys( \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints() );
+		}
+
+		if ( empty( $active_keys ) ) {
+			$active_keys = [ 'tablet', 'mobile' ];
+		}
+
+		static $order = [ 'widescreen', 'laptop', 'tablet_extra', 'tablet', 'mobile_extra', 'mobile' ];
+		$ordered = [];
+		foreach ( $order as $bp ) {
+			if ( in_array( $bp, $active_keys, true ) ) {
+				$ordered[] = $bp;
+			}
+		}
+		return $ordered;
 	}
 }

@@ -25,7 +25,7 @@ final class Assets {
 		'aae-effect-image-animation' => 'effects/image-animation.js',
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		// 'aae-effect-tilt'      => 'effects/tilt.js',
-		// 'aae-effect-pin'       => 'effects/pin.js',
+		'aae-effect-sticky'          => 'effects/sticky.js',
 		// add more as effects are ported
 	];
 

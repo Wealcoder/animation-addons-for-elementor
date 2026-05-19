@@ -257,11 +257,13 @@ function scan(root) {
 	const candidates = scope.querySelectorAll('[data-interaction-id]');
 
 	for (const el of candidates) {
+
 		for (const kind of kindsFor(el)) {
 			if (el.classList.contains(kind.boundFlag)) continue;
-			const config = kind.read(el);
+			const config = kind.read(el);			
 			if (!config) continue;
 			el.classList.add(kind.boundFlag);
+
 			kind.bind(el, config);
 		}
 	}
@@ -350,7 +352,7 @@ function resetEl(el) {
  *  triggered by an ancestor's drain (`fromChain=true`). */
 function replay(el, fromChain = false) {
 	if (!el) return;
-	
+
 	const owningKinds = kindsFor(el);
 
 	if (owningKinds.length) {
@@ -449,36 +451,4 @@ window.AAEADDON = {
 // element) so it doesn't need to know about the kind registry.
 window.aaeAtomicAnimations = { scan, rebind, replay, reset: resetEl };
 
-/* =====================================================================
- * Bootstrap
- * =================================================================== */
 
-function init() {
-	const gsap = getGsap();
-	const ScrollTrigger = getScrollTrigger();
-	const SplitText = getSplitText();
-	if (gsap?.registerPlugin) {
-		if (ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-		if (SplitText) gsap.registerPlugin(SplitText);
-	}
-
-	// if (document.readyState === 'loading') {
-	// 	document.addEventListener('DOMContentLoaded', () => scan(document));
-	// } else {
-	// 	scan(document);
-	// }
-
-	// Frontend lazy-load / popup hook — handles widgets that aren't in the
-	// DOM at DOMContentLoaded time. Editor re-render path is owned by the
-	// editor-bridge's preview-pipe instead, so common.js stays frontend-
-	// focused and the editor wiring lives next to the rest of the bridge.
-	window.addEventListener('elementor/frontend/init', () => {
-		if (window.elementorFrontend?.hooks) {
-			window.elementorFrontend.hooks.addAction('frontend/element_ready/global', ($scope) => {
-				scan($scope && $scope[0]);
-			});
-		}
-	});
-}
-
-init();
