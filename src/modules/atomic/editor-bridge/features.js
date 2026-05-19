@@ -147,6 +147,7 @@ const TEXT_RESPONSIVE = {
 	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },
 	aae_text_rotation: { configKey: 'rotation', default: -80 },
 	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
+	aae_text_spin_color: { configKey: 'spinColor', default: '#000000' },
 };
 
 function buildTextConfig(settings) {
@@ -475,12 +476,7 @@ export const FEATURES = [
 	{
 		name: 'image-hover',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
-		// No standalone enable bool — gating happens inside buildImageHoverConfig
-		// (returns null when no real image is picked).
 		enableSetting: 'aae_ih_image',
-		// No editor auto-replay flag — there's no animation to replay; the
-		// hover effect is event-driven. The Play button in the panel pushes
-		// a manual rebind for native controls that don't auto-mirror.
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_IMGHOVER',
 		buildConfig: buildImageHoverConfig,
