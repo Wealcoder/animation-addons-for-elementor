@@ -175,7 +175,7 @@ final class Render {
 
 			// Desktop: skip when value equals JS-side default — the reader
 			// supplies that value when the key is missing.
-			if ( (string) $desktop_value !== (string) $default ) {
+			if ( ! $this->values_equal( $desktop_value, $default ) ) {
 				$config[ $config_key ] = $this->cast_value( $desktop_value );
 			}
 
@@ -195,7 +195,7 @@ final class Render {
 
 				$resolved_by_bp[ $bp ] = $own;
 
-				if ( (string) $own === (string) $parent ) {
+				if ( $this->values_equal( $own, $parent ) ) {
 					continue;
 				}
 
@@ -320,5 +320,12 @@ final class Render {
 			}
 		}
 		return $ordered;
+	}
+
+	private function values_equal( $a, $b ): bool {
+		if ( is_array( $a ) && is_array( $b ) ) {
+			return $a === $b;
+		}
+		return (string) $a === (string) $b;
 	}
 }

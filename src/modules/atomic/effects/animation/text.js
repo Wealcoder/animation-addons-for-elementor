@@ -23,6 +23,30 @@ function r(cfg, key, fallback) {
 	return (v === undefined || v === '') ? fallback : v;
 }
 
+function parseTimeValue(val, fallback) {
+	if (val === undefined || val === null || val === '') return fallback;
+	if (typeof val === 'number') return val;
+	if (typeof val === 'object') {
+		const size = val.size !== undefined ? val.size : val.value;
+		const unit = val.unit || 's';
+		if (size === undefined || size === null || size === '') return fallback;
+		const num = Number(size);
+		if (!Number.isFinite(num)) return fallback;
+		return unit === 'ms' ? num / 1000 : num;
+	}
+	const str = String(val).trim();
+	if (str.endsWith('ms')) {
+		const num = Number(str.slice(0, -2));
+		return Number.isFinite(num) ? num / 1000 : fallback;
+	}
+	if (str.endsWith('s')) {
+		const num = Number(str.slice(0, -1));
+		return Number.isFinite(num) ? num : fallback;
+	}
+	const num = Number(str);
+	return Number.isFinite(num) ? num : fallback;
+}
+
 export function readText(el) {
 	const cfg = configFor(el, TEXT_MAP);
 
@@ -37,8 +61,8 @@ export function readText(el) {
 		wrapper: r(cfg, 'wrapper', 'default'),
 		endWrapper: r(cfg, 'endWrapper', ''),
 		markers: !!cfg.markers,
-		delay: Number(r(cfg, 'delay', 0.15)),
-		duration: Number(r(cfg, 'duration', 1)),
+		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
+		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
 		stagger: Number(r(cfg, 'stagger', 0.02)),
 		translateX: Number(r(cfg, 'translateX', 20)),
 		translateY: Number(r(cfg, 'translateY', 0)),

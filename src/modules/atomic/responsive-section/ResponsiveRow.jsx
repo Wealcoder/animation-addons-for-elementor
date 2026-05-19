@@ -12,6 +12,7 @@ import { PlayButtonInput } from "./inputs/PlayButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
 import { BorderInput } from "./inputs/BorderInput";
 import { TextareaInput } from "./inputs/TextareaInput";
+import { SliderInput } from "./inputs/SliderInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
@@ -32,6 +33,7 @@ const CONTROL_REGISTRY = {
   text: { Component: TextInput, innerType: "string" },
   textarea: { Component: TextareaInput, innerType: "string" },
   number: { Component: NumberInput, innerType: "number" },
+  slider: { Component: SliderInput, innerType: "number" },
   switch: { Component: SwitchInput, innerType: "boolean" },
   color: { Component: ColorInput, innerType: "string" },
   border: { Component: BorderInput, innerType: "object" },
@@ -81,6 +83,8 @@ export function ResponsiveRow({
   min,
   max,
   step,
+  units,
+  defaultUnit,
   cells,
   addLabel,
   rowDefaults,
@@ -136,6 +140,8 @@ export function ResponsiveRow({
       min={min}
       max={max}
       step={step}
+      units={units}
+      defaultUnit={defaultUnit}
       defaultValue={defaultValue}
       propValue={propValue}
       activeBp={activeBp}
@@ -153,6 +159,8 @@ export function ResponsiveRow({
         min={min}
         max={max}
         step={step}
+        units={units}
+        defaultUnit={defaultUnit}
         defaultValue={defaultValue}
         propValue={propValue}
         elementId={elementId}
@@ -172,6 +180,8 @@ function ResponsiveCellRow({
   min,
   max,
   step,
+  units,
+  defaultUnit,
   defaultValue,
   propValue,
   activeBp,
@@ -224,6 +234,8 @@ function ResponsiveCellRow({
         min={min}
         max={max}
         step={step}
+        units={units}
+        defaultUnit={defaultUnit}
       />
     </Stack>
   );
@@ -304,6 +316,8 @@ function PlainRow({
   min,
   max,
   step,
+  units,
+  defaultUnit,
   defaultValue,
   propValue,
   elementId,
@@ -335,6 +349,8 @@ function PlainRow({
         min={min}
         max={max}
         step={step}
+        units={units}
+        defaultUnit={defaultUnit}
       />
     </Stack>
   );

@@ -148,9 +148,26 @@ const config = {
 			defaultValue: 'play none none reverse', placeholder: 'play none none reverse', when: isSpin
 		},
 
-		// Numerics (responsive)
-		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isAnimated },
-		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1, when: isDurationEffect },
+		{
+			bind: 'delay',
+			label: 'Delay',
+			control: 'slider',
+			min: 0,
+			max: 10,
+			step: 0.05,
+			defaultValue: 0.15,
+			when: isAnimated
+		},
+		{
+			bind: 'duration',
+			label: 'Duration',
+			control: 'slider',
+			min: 0,
+			max: 10,
+			step: 0.1,
+			defaultValue: 1,
+			when: isDurationEffect
+		},
 		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect },
 		{ bind: 'translate_x', label: 'Transform-X', control: 'number', defaultValue: 20, when: isTranslateEffect },
 		{ bind: 'translate_y', label: 'Transform-Y', control: 'number', defaultValue: 0, when: isTranslateEffect },

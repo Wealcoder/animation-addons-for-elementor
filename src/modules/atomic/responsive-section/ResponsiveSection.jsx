@@ -79,6 +79,8 @@ export function ResponsiveSection({ config }) {
 							min={field.min}
 							max={field.max}
 							step={field.step}
+							units={field.units}
+							defaultUnit={field.defaultUnit}
 							cells={field.cells}
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}
