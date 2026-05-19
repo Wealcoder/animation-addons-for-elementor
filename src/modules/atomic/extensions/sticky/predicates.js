@@ -1,87 +1,29 @@
-function getValue(settings, bind) {
-
-	const item = settings?.[bind];
-
-	if (!item) {
-		return item;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Responsive Atomic Value
-	|--------------------------------------------------------------------------
-	|
-	| Example:
-	| {
-	|   $$type: 'aae-rj',
-	|   value: {
-	|     desktop: 'custom'
-	|   }
-	| }
-	|
-	*/
-
-	if (
-		item.value &&
-		typeof item.value === 'object'
-	) {
-		return item.value.desktop;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Plain Atomic Value
-	|--------------------------------------------------------------------------
-	|
-	| Example:
-	| {
-	|   $$type: 'boolean',
-	|   value: true
-	| }
-	|
-	*/
-
-	if ('value' in item) {
-		return item.value;
-	}
-
-	return item;
-}
+import { valueAt, valueEq } from '../../responsive-section/helpers';
 
 /* ==========================================================================
    Base
    ========================================================================== */
 
-export function isStickyEnabled(settings) {
-
-	return !!getValue(
-		settings,
-		'aae_sticky_enable'
-	);
+export function isStickyEnabled(settings, bp) {
+	return !!valueAt(settings, 'aae_sticky_enable', bp);
 }
 
 /* ==========================================================================
    Pin Trigger
    ========================================================================== */
 
-export function pinTrigger(settings) {
-
-	return getValue(
-		settings,
-		'aae_sticky_pin_trigger'
-	);
+export function pinTrigger(settings, bp) {
+	return valueAt(settings, 'aae_sticky_pin_trigger', bp);
 }
 
-export function showPinTrigger(settings) {
-
-	return isStickyEnabled(settings);
+export function showPinTrigger(settings, bp) {
+	return isStickyEnabled(settings, bp);
 }
 
-export function showCustomPinArea(settings) {
-
+export function showCustomPinArea(settings, bp) {
 	return (
-		isStickyEnabled(settings) &&
-		pinTrigger(settings) === 'custom'
+		isStickyEnabled(settings, bp) &&
+		pinTrigger(settings, bp) === 'custom'
 	);
 }
 
@@ -89,24 +31,18 @@ export function showCustomPinArea(settings) {
    Pin End Trigger
    ========================================================================== */
 
-export function pinEndTrigger(settings) {
-
-	return getValue(
-		settings,
-		'aae_sticky_pin_end_trigger'
-	);
+export function pinEndTrigger(settings, bp) {
+	return valueAt(settings, 'aae_sticky_pin_end_trigger', bp);
 }
 
-export function showPinEndTrigger(settings) {
-
-	return isStickyEnabled(settings);
+export function showPinEndTrigger(settings, bp) {
+	return isStickyEnabled(settings, bp);
 }
 
-export function showCustomPinEndArea(settings) {
-
+export function showCustomPinEndArea(settings, bp) {
 	return (
-		isStickyEnabled(settings) &&
-		pinEndTrigger(settings) === 'custom'
+		isStickyEnabled(settings, bp) &&
+		pinEndTrigger(settings, bp) === 'custom'
 	);
 }
 
@@ -114,24 +50,18 @@ export function showCustomPinEndArea(settings) {
    Pin
    ========================================================================== */
 
-export function pin(settings) {
-
-	return getValue(
-		settings,
-		'aae_sticky_pin'
-	);
+export function pin(settings, bp) {
+	return valueAt(settings, 'aae_sticky_pin', bp);
 }
 
-export function showPinFields(settings) {
-
-	return isStickyEnabled(settings);
+export function showPinFields(settings, bp) {
+	return isStickyEnabled(settings, bp);
 }
 
-export function showCustomPin(settings) {
-
+export function showCustomPin(settings, bp) {
 	return (
-		isStickyEnabled(settings) &&
-		pin(settings) === 'custom'
+		isStickyEnabled(settings, bp) &&
+		pin(settings, bp) === 'custom'
 	);
 }
 
@@ -139,19 +69,14 @@ export function showCustomPin(settings) {
    Pin Start
    ========================================================================== */
 
-export function pinStart(settings) {
-
-	return getValue(
-		settings,
-		'aae_sticky_pin_start'
-	);
+export function pinStart(settings, bp) {
+	return valueAt(settings, 'aae_sticky_pin_start', bp);
 }
 
-export function showCustomPinStart(settings) {
-
+export function showCustomPinStart(settings, bp) {
 	return (
-		isStickyEnabled(settings) &&
-		pinStart(settings) === 'custom'
+		isStickyEnabled(settings, bp) &&
+		pinStart(settings, bp) === 'custom'
 	);
 }
 
@@ -159,29 +84,34 @@ export function showCustomPinStart(settings) {
    Pin End
    ========================================================================== */
 
-export function pinEnd(settings) {
+export function pinEnd(settings, bp) {
+	return valueAt(settings, 'aae_sticky_pin_end', bp);
+}
 
-	return getValue(
-		settings,
-		'aae_sticky_pin_end'
+export function showCustomPinEnd(settings, bp) {
+	return (
+		isStickyEnabled(settings, bp) &&
+		pinEnd(settings, bp) === 'custom'
 	);
 }
 
-export function showCustomPinEnd(settings) {
+/* ==========================================================================
+   Editor & Play
+   ========================================================================== */
 
-	return (
-		isStickyEnabled(settings) &&
-		pinEnd(settings) === 'custom'
-	);
+function plainBool(s, bind) {
+	const v = s?.[bind];
+	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
+	return !!v;
 }
 
-export function showEnableEditor(settings) {
-	return isStickyEnabled(settings);
+export function showEnableEditor(settings, bp) {
+	return isStickyEnabled(settings, bp);
 }
 
-export function showPlayButton(settings) {
+export function showPlayButton(settings, bp) {
 	return (
-		isStickyEnabled(settings) &&
-		!!getValue(settings, 'aae_sticky_enable_editor')
+		isStickyEnabled(settings, bp) &&
+		plainBool(settings, 'aae_sticky_enable_editor')
 	);
 }

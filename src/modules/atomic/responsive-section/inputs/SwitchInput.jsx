@@ -5,8 +5,7 @@ import { Switch } from "@elementor/ui";
 
 /** Plain Switch input. */
 export function SwitchInput({ value, onChange, disabled }) {
-  const handleChange = (_, checked) => {
-    console.log("Switch changed:", checked);
+  const handleChange = (_, checked) => {   
     onChange(checked);
   };
   return (
