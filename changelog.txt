@@ -1,6 +1,11 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.5 – 19th May 2026
+    - Fixed : Icon Box- Icon Hover Style add for Control Icon Hover Effect
+    - Fixed: Advance accordion- Close and Open Icon doesn't properly Synchronize. Now working fine.
+    - Imporoved : Animated-Heading- Text Decoration no need in heading style settings.
+
 = 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026
     - Fixed : Loop Grid Default pagination Icon size.
     - Fixed : Loop Grid Pagination alignment.
