@@ -277,6 +277,9 @@ class Animated_Heading extends Widget_Base {
 			array(
 				'name'     => 'heading_typo',
 				'selector' => '{{WRAPPER}} .animated--heading',
+				'exclude'  => [
+					'text_decoration',
+				],
 			)
 		);
 
