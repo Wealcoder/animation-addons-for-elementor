@@ -587,6 +587,36 @@ class Icon_Box extends Widget_Base
 		$this->end_controls_section();
 
 		//section hover
+
+		$this->start_controls_section(
+			'section_icon_hover_style',
+			[
+				'label'     => esc_html__('Icon Hover ', 'animation-addons-for-elementor'),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'element_list' => ['2'],
+				],
+			]
+		);
+
+		$this->add_control(
+			'enable_icon_hover_effect',
+			[
+				'label' => esc_html__('Enable Icon Hover Effect', 'animation-addons-for-elementor'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__('Show', 'animation-addons-for-elementor'),
+				'label_off' => esc_html__('Hide', 'animation-addons-for-elementor'),
+				'return_value' => 'yes',
+				'default' => 'yes',
+				'condition' => [
+					'element_list' => '2',
+				],
+			]
+			
+		);
+
+		$this->end_controls_section();
+
 		$this->start_controls_section(
 			'section_hover_style',
 			[
@@ -816,6 +846,10 @@ class Icon_Box extends Widget_Base
 		$this->add_render_attribute('wrapper', 'class', ['wcf__iconbox', 'style-' . $settings['element_list']]);
 		if ('3' === $settings['element_list']) {
 			$this->add_render_attribute('wrapper', 'class', 'service-rollover-left');
+		}
+
+		if ('2' === $settings['element_list'] && ( $settings['enable_icon_hover_effect'] ?? '' ) === 'yes') {
+			$this->add_render_attribute('wrapper', 'class', 'icon-hover-effect-enabled');
 		}
 
 		//link tag
