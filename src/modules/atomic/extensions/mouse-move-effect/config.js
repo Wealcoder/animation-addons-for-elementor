@@ -161,7 +161,7 @@ const config = {
 
             label: 'Customs',
 
-            control: 'textarea',
+            control: 'text',
 
             defaultValue: '',
 

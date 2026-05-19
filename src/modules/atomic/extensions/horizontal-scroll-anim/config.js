@@ -53,13 +53,14 @@ const config = {
 
 		{
 			bind: 'width_custom',
-
 			label: 'Custom Width',
-
-			control: 'text',
-
-			defaultValue: '50%',
-
+			control: 'slider',
+			min: 0,
+			max: 10,
+			step: 0.1,
+			defaultValue: 1,
+			units :['px', '%', 'vw'],
+			defaultUnit: 'px',
 			when: showCustomWidth,
 		},
 
