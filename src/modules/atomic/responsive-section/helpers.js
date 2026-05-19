@@ -73,3 +73,13 @@ export function valueIn(settings, bind, activeBp, allowed) {
 export function valueEq(settings, bind, activeBp, expected) {
 	return valueAt(settings, bind, activeBp) === expected;
 }
+
+/** 
+ * Resolves non-responsive boolean states (like enable_editor toggles) 
+ * properly unpacking their envelope if needed. 
+ */
+export function plainBool(settings, bind) {
+	const v = settings?.[bind];
+	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
+	return !!v;
+}
