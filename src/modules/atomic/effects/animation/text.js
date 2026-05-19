@@ -25,15 +25,17 @@ function r(cfg, key, fallback) {
 
 export function readText(el) {
 	const cfg = configFor(el, TEXT_MAP);
+
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
+
 	return {
 		effect,
 		trigger: r(cfg, 'trigger', 'on_scroll'),
 		triggerSelector: r(cfg, 'triggerSelector', ''),
 		wrapper: r(cfg, 'wrapper', 'default'),
-		wrapperSelector: r(cfg, 'wrapperSelector', ''),
+		endWrapper: r(cfg, 'endWrapper', ''),
 		markers: !!cfg.markers,
 		delay: Number(r(cfg, 'delay', 0.15)),
 		duration: Number(r(cfg, 'duration', 1)),
@@ -43,6 +45,10 @@ export function readText(el) {
 		rotationDir: r(cfg, 'rotationDir', 'x'),
 		rotation: Number(r(cfg, 'rotation', -80)),
 		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
+		spinColor: r(cfg, 'spinColor', '#000'),
+		spinStart: r(cfg, 'spinStart', 'top 85%'),
+		spinEnd: r(cfg, 'spinEnd', 'top 30%'),
+		spinToggle: r(cfg, 'spinToggle', 'play none none reverse'),
 	};
 }
 
@@ -60,9 +66,6 @@ const SPLIT_RECIPE = {
 	text_move: { type: 'lines', target: 'lines', perspective: 400 },
 	text_reveal: { type: 'lines,words,chars', target: 'chars', linesClass: 'anim-reveal-line' },
 	text_scale: { type: null, target: null },
-	// V3 ships CSS for `.wcf-t-animation-text_invert .invert-line` — apply
-	// the parent class on the element so that ruleset (background gradient,
-	// background-clip:text, etc.) catches the split lines.
 	text_invert: { type: 'lines', target: 'lines', linesClass: 'invert-line', parentClass: 'wcf-t-animation-text_invert' },
 	text_spin: { type: null, target: null },
 };
@@ -255,14 +258,15 @@ function buildScrubbedText(el, config) {
 	}
 	return el[TEXT_PLAYED];
 }
-
+// kind.bind() calls this to wire the animation to the element based on current
 export function bindText(el, config) {
 	const mode = modeFor(config.trigger);
 
 	let triggerSelector = '';
-	// if (config.wrapper === 'default' && config.triggerSelector == '') {
-	// 	triggerSelector = el;
-	// }
+	if (config.wrapper === 'default' && config.triggerSelector == '') {
+		triggerSelector = el;
+	}
+
 	wireTrigger({
 		el,
 		mode,
@@ -270,5 +274,6 @@ export function bindText(el, config) {
 		markers: config.markers,
 		play: () => playText(el, config),
 		buildScrubbed: () => buildScrubbedText(el, config),
+		config: config
 	});
 }

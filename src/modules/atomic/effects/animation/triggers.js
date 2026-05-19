@@ -78,7 +78,7 @@ export function cleanupTriggerOn(el) {
 	el[DISPOSE_KEY] = null;
 }
 
-export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers }) {
+export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers, config }) {
 	// Always clean up the previous wiring first — in the editor, settings
 	// changes fire rebind() which can re-call us on the same element many
 	// times. Without this, listeners and ScrollTriggers stack up.
@@ -111,6 +111,21 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 	}
 
 	const ScrollTrigger = getScrollTrigger();
+	console.log("Scrolling Triger", config);
+	let start = config.start || 'top 85%';
+	let end = config.end || 'top 30%';
+	let toggleActions = 'play none none none';
+	let triggerSelector = el;
+
+	if (config.triggerSelector && config.triggerSelector != '') {
+		triggerSelector = document.querySelector(config.triggerSelector);
+	}
+
+	if (config.effect == 'text_spin') {
+		start = config.spinStart;
+		end = config.spinEnd;
+		toggleActions = config.spinToggle;
+	}
 
 	// Scrub mode: tween progress follows scroll position. The kind must
 	// build a PAUSED tween and return it from buildScrubbed(); we hand it
@@ -118,12 +133,12 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 	if (mode === 'scrub' && ScrollTrigger && typeof buildScrubbed === 'function') {
 		const tween = buildScrubbed();
 		if (!tween) return;
-		console.log('Built scrubbed tween for', el, 'with config', tween.vars);
+
 		const st = ScrollTrigger.create({
-			trigger: el,
+			trigger: triggerSelector,
 			animation: tween,
-			start: 'top 85%',
-			end: 'top 30%',
+			start: start,
+			end: end,
 			scrub: true,
 			invalidateOnRefresh: true,
 			markers: !!markers,
@@ -145,10 +160,10 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers 
 		// drops the closure — next bind starts fresh.
 		let played = false;
 		const st = ScrollTrigger.create({
-			trigger: el,
-			start: 'top 85%',
-			end: 'top 30%',
-			toggleActions: 'play none none none',
+			trigger: triggerSelector,
+			start: start,
+			end: end,
+			toggleActions: toggleActions,
 			onEnter: () => {
 				if (played) return;
 				played = true;

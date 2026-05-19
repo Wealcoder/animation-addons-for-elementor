@@ -176,18 +176,41 @@ function buildTextConfig(settings) {
 	return cfg;
 }
 
-// cursor hover effect config will be built in a similar way when needed, following the pattern above.
+const STICKY_RESPONSIVE = {
+	aae_sticky_enable: { configKey: 'enable', default: false },
+	aae_sticky_pin_trigger: { configKey: 'pinTrigger', default: '' },
+	aae_sticky_custom_pin_area: { configKey: 'customPinArea', default: '' },
+	aae_sticky_pin_end_trigger: { configKey: 'pinEndTrigger', default: '' },
+	aae_sticky_custom_pin_end_area: { configKey: 'customPinEndArea', default: '' },
+	aae_sticky_pin: { configKey: 'pin', default: '' },
+	aae_sticky_custom_pin: { configKey: 'customPin', default: '' },
+	aae_sticky_pin_start: { configKey: 'pinStart', default: '' },
+	aae_sticky_custom_pin_start: { configKey: 'customPinStart', default: '' },
+	aae_sticky_pin_end: { configKey: 'pinEnd', default: '' },
+	aae_sticky_custom_pin_end: { configKey: 'customPinEnd', default: '' },
+	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' }
+};
 
-function buildCursorHoverEffectConfig(settings) {
-
-	const enabled = plain(settings, 'aae_cursor_hover_enable');
+function buildStickyConfig(settings) {
+	const enabled = readAt(settings, 'aae_sticky_enable', 'desktop', false);
 	if (!enabled) return null;
+
 	const cfg = {};
+	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
+	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
 
-	emitResponsive(cfg, settings, {
-		aae_cursor_hover_speed: { configKey: 'speed', default: 1 },
-	});
+	const disabledBps = new Set();
+	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
 
+	for (const bp of BPS) {
+		if (!resolvedSwitcher[bp] || resolvedSwitcher[bp] === 'none') disabledBps.add(bp);
+	}
+	emitResponsive(cfg, settings, STICKY_RESPONSIVE, disabledBps);
+	if (!('enable' in cfg)) {
+		cfg.enable = enabled;
+	}
+	console.log('Sticky config:', cfg);
+	// Return the configuration object
 	return cfg;
 }
 
@@ -460,6 +483,18 @@ function findByInteractionId(doc, id) {
 		|| doc.querySelector(`[data-id="${id}"]`);
 }
 
+// cursor hover effect config will be built in a similar way when needed, following the pattern above.
+
+function buildCursorHoverEffectConfig(settings) {
+
+	const enabled = plain(settings, 'aae_cursor_hover_enable');
+	if (!enabled) return null;
+	const cfg = {};
+
+	emitResponsive(cfg, settings, {
+		aae_cursor_hover_speed: { configKey: 'speed', default: 1 },
+	});
+}
 export const FEATURES = [
 	{
 		name: 'text-animation',
@@ -505,7 +540,16 @@ export const FEATURES = [
 		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
 		buildConfig: buildCursorHoverEffectConfig,
 		findTarget: findByInteractionId,
-	}
+	},
+	{
+		name: 'sticky',
+		widgetTypes: ['e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_sticky_enable',
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_STICKY',
+		buildConfig: buildStickyConfig,
+		findTarget: findByInteractionId,
+	},
 ];
 
 /**

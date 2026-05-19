@@ -10,9 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-final class Controls {
-
-    const TD = 'animation-addons-for-elementor';
+final class Controls {    
 
     public function register(): void {
         add_filter(
@@ -34,7 +32,7 @@ final class Controls {
 
         $type = $element->get_element_type();
 
-        if ( in_array( $type, Bootstrap::target_element_types(), true ) ) {
+        if ( in_array( $type, Schema::targeted_elements(), true ) ) {
             $controls[] = $this->build_sticky_section();
         }
 
@@ -44,7 +42,7 @@ final class Controls {
     private function build_sticky_section(): Section {
 
         return Section::make()
-            ->set_label( __( 'Sticky', self::TD ) )
+            ->set_label( __( 'Sticky', 'animation-addons-for-elementor') )
             ->set_items([
 
                 // Sticky anchor

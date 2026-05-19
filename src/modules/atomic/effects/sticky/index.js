@@ -2,6 +2,7 @@
 
 const {
 	configFor,
+	pickConfigResponsive
 } = window.AAEADDON;
 
 export const STICKY_MAP = 'AAE_INTERACTIONS_STICKY';
@@ -10,44 +11,9 @@ export const STICKY_MAP = 'AAE_INTERACTIONS_STICKY';
    Helpers
    ========================================================================== */
 
-function responsiveValue(value, fallback = null) {
-
-	if (!value) {
-		return fallback;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Responsive Atomic
-	|--------------------------------------------------------------------------
-	|
-	| {
-	|   $$type: 'aae-rj',
-	|   value: {
-	|     desktop: 'custom'
-	|   }
-	| }
-	|
-	*/
-
-	if (
-		value.value &&
-		typeof value.value === 'object'
-	) {
-		return value.value.desktop;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Plain Atomic
-	|--------------------------------------------------------------------------
-	*/
-
-	if ('value' in value) {
-		return value.value;
-	}
-
-	return value;
+function r(cfg, key, fallback) {
+	const v = pickConfigResponsive(cfg, key);
+	return (v === undefined || v === '') ? fallback : v;
 }
 
 /* ==========================================================================
@@ -58,7 +24,13 @@ function readSticky(el) {
 
 	const cfg = configFor(el, STICKY_MAP);
 
-	if (!cfg || !cfg.enabled) {
+	if (!cfg) {
+		return null;
+	}
+
+	const isEnabled = r(cfg, 'enable', false);
+
+	if (!isEnabled) {
 		return null;
 	}
 
@@ -72,17 +44,8 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinTrigger:
-			responsiveValue(
-				cfg.pinTrigger,
-				'default'
-			),
-
-		customPinArea:
-			responsiveValue(
-				cfg.customPinArea,
-				''
-			),
+		pinTrigger:       r(cfg, 'pinTrigger', 'default'),
+		customPinArea:    r(cfg, 'customPinArea', ''),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -90,17 +53,8 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinEndTrigger:
-			responsiveValue(
-				cfg.pinEndTrigger,
-				'default'
-			),
-
-		customPinEndArea:
-			responsiveValue(
-				cfg.customPinEndArea,
-				''
-			),
+		pinEndTrigger:    r(cfg, 'pinEndTrigger', 'default'),
+		customPinEndArea: r(cfg, 'customPinEndArea', ''),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -108,17 +62,8 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pin:
-			responsiveValue(
-				cfg.pin,
-				true
-			),
-
-		customPin:
-			responsiveValue(
-				cfg.customPin,
-				''
-			),
+		pin:              r(cfg, 'pin', true),
+		customPin:        r(cfg, 'customPin', ''),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -126,17 +71,8 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinStart:
-			responsiveValue(
-				cfg.pinStart,
-				'top top'
-			),
-
-		customPinStart:
-			responsiveValue(
-				cfg.customPinStart,
-				''
-			),
+		pinStart:         r(cfg, 'pinStart', 'top top'),
+		customPinStart:   r(cfg, 'customPinStart', ''),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -144,17 +80,8 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinEnd:
-			responsiveValue(
-				cfg.pinEnd,
-				'bottom bottom'
-			),
-
-		customPinEnd:
-			responsiveValue(
-				cfg.customPinEnd,
-				''
-			),
+		pinEnd:           r(cfg, 'pinEnd', 'bottom bottom'),
+		customPinEnd:     r(cfg, 'customPinEnd', ''),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -162,11 +89,7 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinSpacing:
-			responsiveValue(
-				cfg.pinSpacing,
-				true
-			),
+		pinSpacing:       r(cfg, 'pinSpacing', true),
 
 		/*
 		|--------------------------------------------------------------------------
@@ -174,8 +97,7 @@ function readSticky(el) {
 		|--------------------------------------------------------------------------
 		*/
 
-		pinMarkers:
-			cfg.pinMarkers ?? false,
+		pinMarkers:       r(cfg, 'pinMarkers', false),
 	};
 }
 
@@ -229,6 +151,11 @@ function resetSticky(el) {
 	cleanupSticky(el);
 }
 
+export function playSticky(el, config) {
+	cleanupSticky(el);
+	bindSticky(el, config);
+}
+
 /* ==========================================================================
    Register
    ========================================================================== */
@@ -242,6 +169,8 @@ window.AAEADDON.register({
 	boundFlag: 'aae-sticky-bound',
 
 	read:      readSticky,
+
+	play:      playSticky,
 
 	bind:      bindSticky,
 
