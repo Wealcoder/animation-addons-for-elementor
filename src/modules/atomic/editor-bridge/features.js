@@ -176,6 +176,21 @@ function buildTextConfig(settings) {
 	return cfg;
 }
 
+// cursor hover effect config will be built in a similar way when needed, following the pattern above.
+
+function buildCursorHoverEffectConfig(settings) {
+
+	const enabled = plain(settings, 'aae_cursor_hover_enable');
+	if (!enabled) return null;
+	const cfg = {};
+
+	emitResponsive(cfg, settings, {
+		aae_cursor_hover_speed: { configKey: 'speed', default: 1 },
+	});
+
+	return cfg;
+}
+
 /* =====================================================================
  * Regular Animation feature
  * =================================================================== */
@@ -482,6 +497,15 @@ export const FEATURES = [
 		buildConfig: buildImageHoverConfig,
 		findTarget: findByInteractionId,
 	},
+	{
+		name: 'cursor-hover-effect',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_che_image',
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
+		buildConfig: buildCursorHoverEffectConfig,
+		findTarget: findByInteractionId,
+	}
 ];
 
 /**

@@ -57,6 +57,13 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
 
+		// Cursor hover effect — cursor-following floating element on any
+		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
+
+	
+
 		( new Assets() )->register();
 	}
 
