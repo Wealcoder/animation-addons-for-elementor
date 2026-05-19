@@ -39,7 +39,7 @@
           img,
           svg,
           i {
-            transform: rotate(40deg);
+            transform: rotate(0deg);
           }
 
           &:after {
@@ -68,8 +68,6 @@
           width: 156px;
           height: 15px;
           flex-shrink: 0;
-          background: linear-gradient(90deg, rgba(42, 42, 90, 0.28) 0%, rgba(42, 42, 90, 0.00) 100%);
-          filter: blur(4px);
           inset-inline-start: 0;
           bottom: 8px;
           opacity: 0;
@@ -77,6 +75,38 @@
           transition: all .3s;
         }
       }
+
+      	/* only style-2 + enabled */
+      &.icon-hover-effect-enabled {
+         &:hover {
+          .icon {
+
+            img,
+            svg,
+            i {
+              transform: rotate(40deg);
+            }
+
+            &:after {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+        }
+        .icon {
+           
+          &:after {
+            background: linear-gradient(
+              90deg,
+              rgba(42, 42, 90, 0.28) 0%,
+              rgba(42, 42, 90, 0.00) 100%
+            );
+            filter: blur(4px);
+          }
+        }
+      }
+
+     
 
       .title {
         font-size: 30px;
