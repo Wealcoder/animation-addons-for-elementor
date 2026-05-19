@@ -138,20 +138,22 @@ export function ResponsiveRow({
       elementId={elementId}
     />
   ) : (
-    <PlainRow
-      Component={Component}
-      innerType={innerType}
-      bind={bind}
-      label={label}
-      options={options}
-      placeholder={placeholder}
-      min={min}
-      max={max}
-      step={step}
-      defaultValue={defaultValue}
-      propValue={propValue}
-      elementId={elementId}
-    />
+       
+      <PlainRow
+        Component={Component}
+        innerType={innerType}
+        bind={bind}
+        label={label}
+        options={options}
+        placeholder={placeholder}
+        min={min}
+        max={max}
+        step={step}
+        defaultValue={defaultValue}
+        propValue={propValue}
+        elementId={elementId}
+      />
+    
   );
 }
 

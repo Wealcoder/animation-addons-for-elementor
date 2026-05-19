@@ -66,6 +66,7 @@ const config = {
 			control: 'switch',
 			responsive: true,
 			defaultValue: false,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -81,6 +82,7 @@ const config = {
 			options: TRIGGER_OPTIONS,
 			defaultValue: 'default',
 			when: showPinTrigger,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		{
@@ -89,6 +91,7 @@ const config = {
 			control: 'text',
 			defaultValue: '',
 			when: showCustomPinArea,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -104,6 +107,7 @@ const config = {
 			options: TRIGGER_OPTIONS,
 			defaultValue: 'default',
 			when: showPinEndTrigger,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		{
@@ -112,6 +116,7 @@ const config = {
 			control: 'text',
 			defaultValue: '',
 			when: showCustomPinEndArea,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -127,6 +132,7 @@ const config = {
 			options: PIN_OPTIONS,
 			defaultValue: true,
 			when: showPinFields,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		{
@@ -135,6 +141,7 @@ const config = {
 			control: 'text',
 			defaultValue: '',
 			when: showCustomPin,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -150,6 +157,7 @@ const config = {
 			options: POSITION_OPTIONS,
 			defaultValue: 'top top',
 			when: showPinFields,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		{
@@ -158,6 +166,7 @@ const config = {
 			control: 'text',
 			defaultValue: '',
 			when: showCustomPinStart,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -173,6 +182,7 @@ const config = {
 			options: POSITION_OPTIONS,
 			defaultValue: 'bottom bottom',
 			when: showPinFields,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		{
@@ -181,6 +191,7 @@ const config = {
 			control: 'text',
 			defaultValue: '',
 			when: showCustomPinEnd,
+			tab: 'Content', // Goes to Content tab
 		},
 
 		/*
@@ -196,6 +207,7 @@ const config = {
 			options: BOOLEAN_OPTIONS,
 			defaultValue: true,
 			when: showPinFields,
+			tab: 'Style', // Goes to Content tab
 		},
 
 		/*
@@ -211,6 +223,7 @@ const config = {
 			responsive: false,
 			defaultValue: false,
 			when: showPinFields,
+			tab: 'Style', // Goes to Content tab
 		},
 
 		/*

@@ -90,19 +90,7 @@ final class Render {
 		array $settings
 	): array {
 
-		return [
-
-			'enabled' => (
-				$settings[
-					Schema::ENABLE
-				] ?? false
-			),
-
-			'speed' => (
-				$settings[
-					Schema::SPEED
-				] ?? []
-			),
+		return [			
 
 		];
 	}
