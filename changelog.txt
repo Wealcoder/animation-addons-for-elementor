@@ -2,7 +2,7 @@
 == Changelog ==
 
 = 🌀 Animation Addons for Elementor v2.6.5 – 19th May 2026
-    - Fixed : Icon Box- Icon Hover Style add for Control Icon Hover Effect
+    - Fixed : Icon Box- for style 2 Icon Hover Style add for Control Icon Hover Effect
     - Fixed: Advance accordion- Close and Open Icon doesn't properly Synchronize. Now working fine.
     - Imporoved : Animated-Heading- Text Decoration no need in heading style settings.
 
