@@ -35,6 +35,8 @@ final class Schema {
 
 	const STICKY_PIN_MARKERS         = 'aae_sticky_pin_markers';
 
+	const STICKY_ENABLE_EDITOR       = 'aae_sticky_enable_editor';
+
 	public function register(): void {
 
 		add_filter(
@@ -200,10 +202,19 @@ final class Schema {
 		*/
 
 		$schema[ self::STICKY_PIN_MARKERS ] =
-			Responsive_JSON_Prop_Type::make()
-				->default([
-					'desktop' => false,
-				])
+			Boolean_Prop_Type::make()
+				->default( false )
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Enable Editor
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_ENABLE_EDITOR ] =
+			Boolean_Prop_Type::make()
+				->default( false )
 				->set_dependencies( $sticky_enabled_dependency );
 
 		return $schema;

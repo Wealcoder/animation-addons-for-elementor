@@ -174,3 +174,14 @@ export function showCustomPinEnd(settings) {
 		pinEnd(settings) === 'custom'
 	);
 }
+
+export function showEnableEditor(settings) {
+	return isStickyEnabled(settings);
+}
+
+export function showPlayButton(settings) {
+	return (
+		isStickyEnabled(settings) &&
+		!!getValue(settings, 'aae_sticky_enable_editor')
+	);
+}

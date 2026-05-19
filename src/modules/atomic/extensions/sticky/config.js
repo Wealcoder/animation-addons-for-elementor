@@ -7,6 +7,8 @@ import {
 	showCustomPin,
 	showCustomPinStart,
 	showCustomPinEnd,
+	showEnableEditor,
+	showPlayButton
 } from './predicates';
 
 const TRIGGER_OPTIONS = [
@@ -209,6 +211,25 @@ const config = {
 			responsive: false,
 			defaultValue: false,
 			when: showPinFields,
+		},
+
+		/*
+		|--------------------------------------------------------------------------
+		| Editor
+		|--------------------------------------------------------------------------
+		*/
+
+		{
+			bind: 'enable_editor',
+			label: 'Enable On Editor',
+			control: 'switch',
+			responsive: false,
+			defaultValue: false,
+			when: showEnableEditor,
+		},
+		{
+			control: 'play-button',
+			when: showPlayButton,
 		},
 	],
 };

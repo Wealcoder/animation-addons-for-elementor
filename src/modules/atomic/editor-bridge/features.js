@@ -195,15 +195,14 @@ const STICKY_RESPONSIVE = {
 function buildStickyConfig(settings) {
 	const enabled = readAt(settings, 'aae_sticky_enable', 'desktop', false);
 	if (!enabled) return null;
-
+	
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
-	if (plain(settings, 'aae_sticky_markers')) cfg.markers = true;
+	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
 
 	const disabledBps = new Set();
 	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
-	console.log('resolvedSwitcher', resolvedSwitcher);
-	console.log('settings', settings);
+
 	for (const bp of BPS) {
 		if (!resolvedSwitcher[bp] || resolvedSwitcher[bp] === 'none') disabledBps.add(bp);
 	}
@@ -211,6 +210,7 @@ function buildStickyConfig(settings) {
 	if (!('enable' in cfg)) {
 		cfg.enable = enabled;
 	}
+	console.log('Sticky config:', cfg);
 	// Return the configuration object
 	return cfg;
 }

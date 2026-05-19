@@ -151,6 +151,11 @@ function resetSticky(el) {
 	cleanupSticky(el);
 }
 
+export function playSticky(el, config) {
+	cleanupSticky(el);
+	bindSticky(el, config);
+}
+
 /* ==========================================================================
    Register
    ========================================================================== */
@@ -164,6 +169,8 @@ window.AAEADDON.register({
 	boundFlag: 'aae-sticky-bound',
 
 	read:      readSticky,
+
+	play:      playSticky,
 
 	bind:      bindSticky,
 
