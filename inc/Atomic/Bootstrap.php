@@ -62,6 +62,12 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
 
+
+		// Mouse move effect — element moves based on mouse position.
+		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
+
 	
 
 		( new Assets() )->register();

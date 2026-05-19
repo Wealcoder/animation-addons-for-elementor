@@ -11,6 +11,7 @@ import imageHoverSection from './extensions/image-hover/config';
 import stickySection from './extensions/sticky/config';
 import horizontalScrollAnimSection from './extensions/horizontal-scroll-anim/config';
 import cursorHoverEffectSection from './extensions/cursor-hover-effect/config';
+import mouseMoveEffectSection from './extensions/mouse-move-effect/config';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
@@ -37,6 +38,7 @@ registerResponsiveSection( imageHoverSection );
 registerResponsiveSection( stickySection );
 registerResponsiveSection( horizontalScrollAnimSection );
 registerResponsiveSection( cursorHoverEffectSection );
+registerResponsiveSection( mouseMoveEffectSection );
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *
