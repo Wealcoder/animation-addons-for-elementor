@@ -23,7 +23,7 @@ export function PlayButtonInput({ play_group = "" }) {
   
     let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.
 
-    if (!replayInPreview(dom_settings.target)) {
+    if (!replayInPreview(dom_settings.target, play_group)) {
       // eslint-disable-next-line no-console
       console.warn(
         "[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?",

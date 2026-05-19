@@ -49,10 +49,7 @@ final class Schema
 	*/
 
 	const WIDTH =
-	'aae_cursor_hover_width';
-
-	const WIDTH_CUSTOM =
-	'aae_cursor_hover_width_custom';
+	'aae_cursor_hover_width';	
 
 	/*
 	|--------------------------------------------------------------------------
@@ -62,9 +59,7 @@ final class Schema
 
 	const HEIGHT =
 	'aae_cursor_hover_height';
-
-	const HEIGHT_CUSTOM =
-	'aae_cursor_hover_height_custom';
+	
 
 	/*
 	|--------------------------------------------------------------------------
@@ -157,13 +152,7 @@ final class Schema
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => '100px',
-			]);
-
-		$schema[self::WIDTH_CUSTOM] =
-			Responsive_JSON_Prop_Type::make()
-			->default([
-				'desktop' => '',
-			]);
+			]);		
 
 		/*
 		|--------------------------------------------------------------------------
@@ -175,13 +164,7 @@ final class Schema
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => '100px',
-			]);
-
-		$schema[self::HEIGHT_CUSTOM] =
-			Responsive_JSON_Prop_Type::make()
-			->default([
-				'desktop' => '',
-			]);
+			]);		
 
 		/*
 		|--------------------------------------------------------------------------
