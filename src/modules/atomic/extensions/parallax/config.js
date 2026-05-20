@@ -11,17 +11,23 @@ import { isParallaxEnabled } from './predicates';
  * Speed / Lag is gated on the Enable toggle at the active breakpoint.
  */
 const config = {
-	anchorKey:  'aae-section-aae-parallax',
+	anchorKey: 'aae-section-aae-parallax',
 	bindPrefix: 'aae_plx_',
 	fields: [
-		{ bind: 'enable', label: 'Enable Scroll Smoother', control: 'switch',
-		  defaultValue: false },
+		{
+			bind: 'enable', label: 'Enable Scroll Smoother', control: 'switch',
+			defaultValue: false
+		},
 
-		{ bind: 'speed',  label: 'Speed', control: 'number',
-		  defaultValue: 0.9, when: isParallaxEnabled },
+		{
+			bind: 'speed', label: 'Speed', control: 'number',
+			defaultValue: 0.9, when: isParallaxEnabled, datalist: ['0.6', '0.7', '0.8', '0.9'],
+		},
 
-		{ bind: 'lag',    label: 'Lag',   control: 'number',
-		  defaultValue: 0, when: isParallaxEnabled },
+		{
+			bind: 'lag', label: 'Lag', control: 'number',
+			defaultValue: 0, when: isParallaxEnabled
+		},
 	],
 };
 

@@ -102,8 +102,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 
 	if (mode === 'click') {
 		// Warn once per element — in the editor, rebind() fires on every
-		// settings change, so a per-call warn() would spam the console.	
-		console.log(triggerEl);
+		// settings change, so a per-call warn() would spam the console.			
 		const target = triggerEl || el;
 		target.addEventListener('click', play);
 		el[DISPOSE_KEY] = () => target.removeEventListener('click', play);
