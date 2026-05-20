@@ -59,13 +59,16 @@ export function readText(el) {
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
-	console.log('readText 22', cfg);
+
 	return {
 		effect,
 		trigger: r(cfg, 'trigger', 'on_scroll'),
 		triggerSelector: r(cfg, 'triggerSelector', ''),
 		wrapper: r(cfg, 'wrapper', 'default'),
-		endWrapper: r(cfg, 'endWrapper', ''),
+		startTrigger: r(cfg, 'startTrigger', ''),
+		endTrigger: r(cfg, 'endTrigger', ''),
+		start: r(cfg, 'startPosition', 'top top'),
+		end: r(cfg, 'endPosition', 'bottom top'),
 		markers: !!cfg.markers,
 		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
 		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
@@ -291,7 +294,7 @@ function buildScrubbedText(el, config) {
 // kind.bind() calls this to wire the animation to the element based on current
 export function bindText(el, config) {
 	const mode = modeFor(config.trigger);
-
+	
 	let triggerSelector = '';
 	if (config.wrapper === 'default' && config.triggerSelector == '') {
 		triggerSelector = el;
@@ -304,6 +307,6 @@ export function bindText(el, config) {
 		markers: config.markers,
 		play: () => playText(el, config),
 		buildScrubbed: () => buildScrubbedText(el, config),
-		config: config
+		config
 	});
 }

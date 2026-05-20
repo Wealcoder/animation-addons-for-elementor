@@ -48,9 +48,7 @@ final class Schema {
 	const TEXT_START_TRIGGER  = 'aae_text_start_trigger';
 	const TEXT_END_TRIGGER    = 'aae_text_end_trigger';
 	const TEXT_START_POSITION = 'aae_text_start_position';
-	const TEXT_START_CUSTOM   = 'aae_text_start_custom';
-	const TEXT_END_POSITION   = 'aae_text_end_position';
-	const TEXT_END_CUSTOM     = 'aae_text_end_custom';
+	const TEXT_END_POSITION   = 'aae_text_end_position';	
 	const TEXT_MARKERS        = 'aae_text_markers';
 
 	/* ---- text-invert specific ---- */
@@ -112,9 +110,8 @@ final class Schema {
 		$schema[ self::TEXT_START_TRIGGER ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 		$schema[ self::TEXT_END_TRIGGER ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 		$schema[ self::TEXT_START_POSITION ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
-		$schema[ self::TEXT_END_POSITION ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
-		$schema[ self::TEXT_START_CUSTOM ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
-		$schema[ self::TEXT_END_CUSTOM ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
+		$schema[ self::TEXT_END_POSITION ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );	
+		
 
 		$schema[ self::TEXT_DELAY ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_DELAY ] ] );
 		$schema[ self::TEXT_DURATION ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_DURATION ] ] );

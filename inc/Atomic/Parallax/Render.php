@@ -61,7 +61,10 @@ final class Render {
 			return;
 		}
 
-		$config = [];
+		$config = [
+			'lag' => 0,
+			'speed' => 0.9,
+		];
 
 		$this->emit_responsive(
 			$config, $settings, Schema::PARALLAX_ENABLE, 'enabled', false, $extra_bps,

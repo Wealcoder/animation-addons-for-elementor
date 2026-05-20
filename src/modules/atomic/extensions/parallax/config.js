@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { isParallaxEnabled } from './predicates';
+import { isParallaxEnabled, showPlayButton } from './predicates';
 
 /**
  * Declarative table for the Parallax section. Same structure as the other
@@ -28,6 +28,12 @@ const config = {
 			bind: 'lag', label: 'Lag', control: 'number',
 			defaultValue: 0, when: isParallaxEnabled
 		},
+
+		{
+			bind: 'enable_editor', label: 'Enable in Editor', control: 'switch',
+			defaultValue: false, when: isParallaxEnabled, responsive: false
+		},
+		{ control: 'play-button', when: showPlayButton },
 	],
 };
 

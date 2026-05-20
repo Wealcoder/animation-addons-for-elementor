@@ -115,6 +115,7 @@ export function DimensionInput({
 			{datalist ? (
 				<Autocomplete
 					freeSolo
+					forcePopupIcon={true}
 					size="tiny"
 					disabled={disabled}
 					options={datalist.map((item) => typeof item === 'object' ? String(item.value) : String(item))}
@@ -286,6 +287,7 @@ export function DimensionsInput({
 						{datalist ? (
 							<Autocomplete
 								freeSolo
+								forcePopupIcon={true}
 								size="tiny"
 								disabled={disabled}
 								options={datalist.map((item) => typeof item === 'object' ? String(item.value) : String(item))}

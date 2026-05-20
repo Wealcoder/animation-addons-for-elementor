@@ -3,6 +3,7 @@ namespace WCF_ADDONS\Atomic\Parallax;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,6 +27,7 @@ final class Schema {
 	const PARALLAX_ENABLE = 'aae_plx_enable';  // v3 wcf_enable_scroll_smoother
 	const PARALLAX_SPEED  = 'aae_plx_speed';   // v3 data-speed
 	const PARALLAX_LAG    = 'aae_plx_lag';     // v3 data-lag
+	const PARALLAX_ENABLE_EDITOR = 'aae_plx_enable_editor'; // v3 enable editor
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_parallax_props' ] );
@@ -43,7 +45,7 @@ final class Schema {
 		$schema[ self::PARALLAX_ENABLE ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => false ] );
 		$schema[ self::PARALLAX_SPEED ]  = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0.9 ] );
 		$schema[ self::PARALLAX_LAG ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0 ] );
-
+		$schema[ self::PARALLAX_ENABLE_EDITOR ] = Boolean_Prop_Type::make()->default( false );
 		return $schema;
 	}
 }

@@ -50,6 +50,7 @@ export function modeFor(trigger) {
 }
 
 export function resolveTriggerEl(mode, selector, config) {
+
 	if (mode === 'hover' || mode === 'click') {
 		if (config.triggerSelector && config.triggerSelector !== '') {
 			selector = config.triggerSelector;
@@ -83,6 +84,9 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	// changes fire rebind() which can re-call us on the same element many
 	// times. Without this, listeners and ScrollTriggers stack up.
 	cleanupTriggerOn(el);
+	if (config == undefined) {
+		return;
+	}
 
 	if (mode === 'page-load') {
 		play();
@@ -110,7 +114,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	}
 
 	const ScrollTrigger = getScrollTrigger();
-	console.log("Scrolling Triger", config);
+
 	let start = config.start || 'top 85%';
 	let end = config.end || 'top 30%';
 	let toggleActions = 'play none none none';

@@ -188,9 +188,7 @@ const TEXT_RESPONSIVE = {
 	aae_text_start_trigger: { configKey: 'startTrigger', default: '' },
 	aae_text_end_trigger: { configKey: 'endTrigger', default: '' },
 	aae_text_start_position: { configKey: 'startPosition', default: 'top top' },
-	aae_text_start_custom: { configKey: 'startCustom', default: 'top top' },
 	aae_text_end_position: { configKey: 'endPosition', default: 'bottom top' },
-	aae_text_end_custom: { configKey: 'endCustom', default: 'bottom top' },
 	aae_text_invert_start: { configKey: 'invertStart', default: 'top 85%' },
 	aae_text_invert_end: { configKey: 'invertEnd', default: 'bottom center' },
 	aae_text_spin_start: { configKey: 'spinStart', default: 'top 50%' },
@@ -256,7 +254,7 @@ function buildStickyConfig(settings) {
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
 	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
-	
+
 	if (plain(settings, 'aae_sticky_custom_css')) cfg.customCSS = plain(settings, 'aae_sticky_custom_css');
 
 	const disabledBps = new Set();
@@ -532,6 +530,46 @@ function buildImageHoverConfig(settings) {
 }
 
 /* =====================================================================
+ * Parallax feature
+ * =================================================================== */
+
+const PLX_RESPONSIVE = {
+	aae_plx_enable: { configKey: 'enable', default: false },
+	aae_plx_speed: { configKey: 'speed', default: 0.9 },
+	aae_plx_lag: { configKey: 'lag', default: 0 },
+};
+
+function buildParallaxConfig(settings) {	
+	const enabled = readAt(settings, 'aae_plx_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_plx_enable', false);
+
+	// Active when desktop is on OR any breakpoint is on.
+	const anyActive = enabled
+		|| BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {
+		'lag': readAt(settings, 'aae_plx_lag', 'desktop', 0),
+		'speed': readAt(settings, 'aae_plx_speed', 'desktop', 0.9),
+	};
+
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+
+	emitResponsive(cfg, settings, PLX_RESPONSIVE, disabledBps);
+
+	// Guarantee the enable key is always present (runtime uses it as the
+	// "parallax is active" signal, same pattern as other features).
+	if (!('enable' in cfg)) cfg.enable = enabled;
+
+	if (plain(settings, 'aae_plx_enable_editor')) cfg.enableEditor = true;
+
+	return cfg;
+}
+
+/* =====================================================================
  * Registry
  * =================================================================== */
 
@@ -663,6 +701,15 @@ export const FEATURES = [
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_STICKY',
 		buildConfig: buildStickyConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'parallax',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_plx_enable',
+		autoReplaySetting: 'aae_plx_enable_editor',
+		mapName: 'AAE_INTERACTIONS_PLX',
+		buildConfig: buildParallaxConfig,
 		findTarget: findByInteractionId,
 	},
 ];

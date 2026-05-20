@@ -14,7 +14,7 @@ import {
 	showSpinScrollFields,
 	showStartCustom,
 	showTriggerSelector,
-	showWrapper	
+	showWrapper
 } from './predicates';
 
 /**
@@ -58,8 +58,7 @@ const ROTATION_DIR_OPTIONS = [
 const SCROLL_POSITION_OPTIONS = [
 	'top top', 'top center', 'top bottom',
 	'center top', 'center center', 'center bottom',
-	'bottom top', 'bottom center', 'bottom bottom',
-	'custom',
+	'bottom top', 'bottom center', 'bottom bottom'
 ].map((v) => ({
 	value: v,
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -108,21 +107,14 @@ const config = {
 			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock
 		},
 		{
-			bind: 'start_position', label: 'Start', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock
+			bind: 'start_position', label: 'Start', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock
 		},
+		
 		{
-			bind: 'start_custom', label: 'Custom Start', control: 'text',
-			defaultValue: 'top top', placeholder: 'top top+=100', when: showStartCustom
-		},
-		{
-			bind: 'end_position', label: 'End', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock
-		},
-		{
-			bind: 'end_custom', label: 'Custom End', control: 'text',
-			defaultValue: 'bottom top', placeholder: 'bottom top+=100', when: showEndCustom
-		},
+			bind: 'end_position', label: 'End', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock
+		},		
 
 		// Invert-specific
 		{
