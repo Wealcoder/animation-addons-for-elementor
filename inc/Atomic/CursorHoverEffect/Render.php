@@ -103,7 +103,7 @@ final class Render {
 		];
 
 		// Strings/presets (responsive)
-		$this->emit_responsive( $config, $settings, Schema::TEXT, 'text', '', $extra_bps, static fn( $v ) => (string) $v );
+		$this->emit_responsive( $config, $settings, Schema::TEXT, 'text', '', $extra_bps, static fn( $v ) => (string) $v );	
 		$this->emit_responsive( $config, $settings, Schema::COLOR, 'color', '#ffffff', $extra_bps, static fn( $v ) => (string) $v );
 		$this->emit_responsive( $config, $settings, Schema::BACKGROUND, 'background', '#000000', $extra_bps, static fn( $v ) => (string) $v );
 
