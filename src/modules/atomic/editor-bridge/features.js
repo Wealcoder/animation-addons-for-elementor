@@ -551,16 +551,49 @@ const CURSOR_RESPONSIVE = {
 	aae_cursor_hover_text: { configKey: 'text', default: '' },
 	aae_cursor_hover_color: { configKey: 'color', default: '#ffffff' },
 	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
-	aae_cursor_hover_width: { configKey: 'width', default: '100px' },
-	aae_cursor_hover_height: { configKey: 'height', default: '100px' },
+	aae_cursor_hover_width: { configKey: 'width', default: '' },
+	aae_cursor_hover_height: { configKey: 'height', default: '' },
 	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
 };
 
 const CURSOR_OBJECTS = {
-	aae_cursor_hover_width_custom: { configKey: 'widthCustom', default: '' },
-	aae_cursor_hover_height_custom: { configKey: 'heightCustom', default: '' },
 	aae_cursor_hover_border_radius: { configKey: 'borderRadius', default: '100%' },
 };
+
+function dimensionToString(val) {
+	if (val && typeof val === 'object') {
+		const size = val.size !== undefined ? val.size : (val.value !== undefined ? val.value : '');
+		const unit = val.unit || 'px';
+		if (size === '' || size === null || size === undefined) return '';
+		return size + unit;
+	}
+	return val ? String(val) : '';
+}
+
+function translateDimensionSettings(settings, keys) {
+	const translated = { ...settings };
+	for (const key of keys) {
+		const original = settings[key];
+		if (original && typeof original === 'object' && original.$$type === 'aae-rj' && original.value) {
+			const newValue = {};
+			for (const [bp, val] of Object.entries(original.value)) {
+				newValue[bp] = dimensionToString(val);
+			}
+			translated[key] = {
+				...original,
+				value: newValue
+			};
+		} else if (original && typeof original === 'object' && '$$type' in original) {
+			translated[key] = {
+				...original,
+				value: dimensionToString(original.value)
+			};
+		} else if (original !== undefined && original !== null) {
+			translated[key] = dimensionToString(original);
+		}
+	}
+	return translated;
+}
 
 function buildCursorHoverEffectConfig(settings) {
 
@@ -568,8 +601,13 @@ function buildCursorHoverEffectConfig(settings) {
 	if (!enabled) return null;
 	const cfg = { enabled: true };
 
-	emitResponsive(cfg, settings, CURSOR_RESPONSIVE);
-	emitResponsiveObjects(cfg, settings, CURSOR_OBJECTS);
+	const translated = translateDimensionSettings(settings, [
+		'aae_cursor_hover_width',
+		'aae_cursor_hover_height'
+	]);
+
+	emitResponsive(cfg, translated, CURSOR_RESPONSIVE);
+	emitResponsiveObjects(cfg, translated, CURSOR_OBJECTS);
 	return cfg;
 }
 export const FEATURES = [

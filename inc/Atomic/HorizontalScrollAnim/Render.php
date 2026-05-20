@@ -91,9 +91,7 @@ final class Render
 	private function build_config(
 		array $settings
 	): array {
-		echo '<pre>';
-	print_r($settings);
-	echo '</pre>';
+		
 
 		return [
 

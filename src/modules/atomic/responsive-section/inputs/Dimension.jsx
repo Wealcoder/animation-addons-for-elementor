@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Stack, TextField, ToggleButtonGroup, ToggleButton, Box, Typography, IconButton, Autocomplete } from '@elementor/ui';
+import { Stack, TextField, ToggleButtonGroup, ToggleButton, Box, Typography, IconButton, Autocomplete, styled } from '@elementor/ui';
 
 /* ---------- link icon ---------- */
 const LinkIcon = ({ linked }) => (
@@ -21,6 +21,41 @@ const LinkIcon = ({ linked }) => (
 		)}
 	</svg>
 );
+
+/* ---------- styled unit dropdowns ---------- */
+const StyledSelect = styled('select')(({ theme }) => ({
+	height: 26,
+	border: `1px solid ${theme.palette.divider}`,
+	borderRadius: 4,
+	backgroundColor: 'transparent',
+	padding: '0 4px',
+	fontSize: '11px',
+	cursor: 'pointer',
+	outline: 'none',
+	width: 50,
+	color: 'inherit',
+	'& option': {
+		backgroundColor: theme.palette.background.paper || '#ffffff',
+		color: theme.palette.text.primary || '#000000',
+	}
+}));
+
+const StyledSelectDimensions = styled('select')(({ theme }) => ({
+	height: 24,
+	border: `1px solid ${theme.palette.divider}`,
+	borderRadius: 4,
+	backgroundColor: 'transparent',
+	padding: '0 4px',
+	fontSize: '10px',
+	cursor: 'pointer',
+	outline: 'none',
+	width: 48,
+	color: 'inherit',
+	'& option': {
+		backgroundColor: theme.palette.background.paper || '#ffffff',
+		color: theme.palette.text.primary || '#000000',
+	}
+}));
 
 /* ==========================================================================
    DimensionInput (Single Value + Unit)
@@ -120,31 +155,17 @@ export function DimensionInput({
 			)}
 
 			{units.length > 0 && (
-				<ToggleButtonGroup
+				<StyledSelect
 					value={unit}
-					exclusive
-					onChange={handleUnitChange}
 					disabled={disabled}
-					size="small"
-					sx={{ height: 26, flexShrink: 0 }}
+					onChange={(e) => handleUnitChange(null, e.target.value)}
 				>
 					{units.map((u) => (
-						<ToggleButton
-							key={u}
-							value={u}
-							sx={{
-								px: 0.8,
-								py: 0,
-								fontSize: '10px',
-								textTransform: 'none',
-								height: '100%',
-								minWidth: 26
-							}}
-						>
+						<option key={u} value={u}>
 							{u}
-						</ToggleButton>
+						</option>
 					))}
-				</ToggleButtonGroup>
+				</StyledSelect>
 			)}
 		</Stack>
 	);
@@ -222,31 +243,17 @@ export function DimensionsInput({
 			{/* Top bar with units and Link button */}
 			<Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
 				{units.length > 0 && (
-					<ToggleButtonGroup
+					<StyledSelectDimensions
 						value={unit}
-						exclusive
-						onChange={handleUnitChange}
 						disabled={disabled}
-						size="small"
-						sx={{ height: 24 }}
+						onChange={(e) => handleUnitChange(null, e.target.value)}
 					>
 						{units.map((u) => (
-							<ToggleButton
-								key={u}
-								value={u}
-								sx={{
-									px: 0.6,
-									py: 0,
-									fontSize: '9px',
-									textTransform: 'none',
-									height: '100%',
-									minWidth: 24
-								}}
-							>
+							<option key={u} value={u}>
 								{u}
-							</ToggleButton>
+							</option>
 						))}
-					</ToggleButtonGroup>
+					</StyledSelectDimensions>
 				)}
 
 				<IconButton

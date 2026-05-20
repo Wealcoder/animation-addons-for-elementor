@@ -106,13 +106,25 @@ final class Render {
 		$this->emit_responsive( $config, $settings, Schema::TEXT, 'text', '', $extra_bps, static fn( $v ) => (string) $v );
 		$this->emit_responsive( $config, $settings, Schema::COLOR, 'color', '#ffffff', $extra_bps, static fn( $v ) => (string) $v );
 		$this->emit_responsive( $config, $settings, Schema::BACKGROUND, 'background', '#000000', $extra_bps, static fn( $v ) => (string) $v );
-		$this->emit_responsive( $config, $settings, Schema::WIDTH, 'width', '100px', $extra_bps, static fn( $v ) => (string) $v );
-		$this->emit_responsive( $config, $settings, Schema::HEIGHT, 'height', '100px', $extra_bps, static fn( $v ) => (string) $v );
+
+		$dimension_cast = static function( $v ) {
+			if ( is_array( $v ) ) {
+				$size = $v['size'] ?? ( $v['value'] ?? '' );
+				$unit = $v['unit'] ?? 'px';
+				if ( '' === $size || null === $size ) {
+					return '';
+				}
+				return $size . $unit;
+			}
+			return (string) $v;
+		};
+
+		$this->emit_responsive( $config, $settings, Schema::WIDTH, 'width', '', $extra_bps, $dimension_cast );
+		$this->emit_responsive( $config, $settings, Schema::HEIGHT, 'height', '', $extra_bps, $dimension_cast );
 		$this->emit_responsive( $config, $settings, Schema::BORDER, 'border', '1px solid #ffffff', $extra_bps, static fn( $v ) => (string) $v );
 
-		// Custom objects (responsive)
-		$this->emit_responsive_object( $config, $settings, Schema::WIDTH_CUSTOM, 'widthCustom', $extra_bps );
-		$this->emit_responsive_object( $config, $settings, Schema::HEIGHT_CUSTOM, 'heightCustom', $extra_bps );
+		// objects (responsive)
+	
 		$this->emit_responsive_object( $config, $settings, Schema::BORDER_RADIUS, 'borderRadius', $extra_bps );
 
 		return $config;

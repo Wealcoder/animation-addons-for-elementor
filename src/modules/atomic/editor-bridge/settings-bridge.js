@@ -90,7 +90,7 @@ export function applySettingsToDom(container) {
  * Trigger the preview-iframe runtime to replay an animation on `target`.
  * Returns true if the runtime API was found and called.
  */
-export function replayInPreview(target) {
+export function replayInPreview(target, playGroup = "") {
 	const win = getPreviewWindow();
 
 	const api = win && win.aaeAtomicAnimations;
@@ -101,7 +101,7 @@ export function replayInPreview(target) {
 	}
 
 	if (typeof api.replay === 'function') {
-		api.replay(target);
+		api.replay(target, false, playGroup);
 	} else if (typeof api.rebind === 'function') {
 		api.rebind(target);
 	}

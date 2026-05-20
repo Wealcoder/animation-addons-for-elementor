@@ -350,7 +350,7 @@ function resetEl(el) {
  *  (chained nested-animation behaviour — parent fades in first, THEN
  *  child text reveals). Skip the chain check when this replay was itself
  *  triggered by an ancestor's drain (`fromChain=true`). */
-function replay(el, fromChain = false) {
+function replay(el, fromChain = false, playGroup = "") {
 	if (!el) return;
 
 	const owningKinds = kindsFor(el);
@@ -371,7 +371,7 @@ function replay(el, fromChain = false) {
 					return t && t.progress?.() !== 1;
 				});
 				if (stillRunning) {
-					queueOnAncestor(found.ancestor, () => replay(el, true));
+					queueOnAncestor(found.ancestor, () => replay(el, true, playGroup));
 					return;
 				}
 			}
@@ -381,6 +381,16 @@ function replay(el, fromChain = false) {
 		// inner spans, regular → the element itself) so they coexist.
 		let didPlay = false;
 		for (const kind of owningKinds) {
+			if (playGroup) {
+				const group = playGroup.toLowerCase();
+				if (group === 'aae_text_' && kind.name !== 'text') continue;
+				if (group === 'aae_anim_' && kind.name !== 'regular') continue;
+				if (group === 'aae_img_' && kind.name !== 'image-animation') continue;
+				if (group === 'aae_ih_' && kind.name !== 'image-hover') continue;
+				if (group === 'aae_cursor_hover_' && kind.name !== 'cursor-hover-effect') continue;
+				if (group === 'aae_sticky_' && kind.name !== 'sticky') continue;
+			}
+
 			const config = kind.read(el);
 
 			if (!config) continue;
@@ -388,9 +398,11 @@ function replay(el, fromChain = false) {
 				el[kind.playedKey].kill?.();
 				delete el[kind.playedKey];
 			}
-			kind.play(el, config);
-			chainCompletionDrain(el, kind);
-			didPlay = true;
+			if (typeof kind.play === 'function') {
+				kind.play(el, config);
+				chainCompletionDrain(el, kind);
+				didPlay = true;
+			}
 		}
 		if (didPlay) return;
 	}
@@ -399,7 +411,7 @@ function replay(el, fromChain = false) {
 	// data-interaction-id, so one selector covers all of them.
 	if (!KINDS.length) return;
 	// Wrap so forEach's `(el, idx, arr)` doesn't accidentally set fromChain.
-	el.querySelectorAll('[data-interaction-id]').forEach((node) => replay(node));
+	el.querySelectorAll('[data-interaction-id]').forEach((node) => replay(node, false, playGroup));
 }
 
 /* =====================================================================

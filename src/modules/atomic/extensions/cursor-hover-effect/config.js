@@ -1,7 +1,5 @@
 import {
-	isEnabledOnEditor,
-	showCustomWidth,
-	showCustomHeight,
+	showPlayButton,
 } from './predicates';
 const config = {
 
@@ -18,19 +16,7 @@ const config = {
 		| Enable
 		|--------------------------------------------------------------------------
 		*/
-
-		{
-			bind: 'enable_editor',
-
-			label: 'Enable on Editor',
-
-			control: 'switch',
-
-			responsive: false,
-
-			defaultValue: false,
-		},
-
+	
 		/*
 		|--------------------------------------------------------------------------
 		| Text
@@ -93,57 +79,11 @@ const config = {
 
 			label: 'Width',
 
-			control: 'select',
-
-			defaultValue: '100px',
-
-			options: [
-
-				{
-					label: '80px',
-					value: '80px',
-				},
-
-				{
-					label: '100px',
-					value: '100px',
-				},
-
-				{
-					label: '150px',
-					value: '150px',
-				},
-
-				{
-					label: '200px',
-					value: '200px',
-				},
-
-				{
-					label: 'Custom',
-					value: 'custom',
-				},
-			],
-
-		},
-
-		/*
-		|--------------------------------------------------------------------------
-		| Width Custom
-		|--------------------------------------------------------------------------
-		*/
-
-		{
-			bind: 'width_custom',
-
-			label: 'Custom Widths',
-
 			control: 'dimension',
 
 			defaultValue: '120px',
 
 			datalist: ['80', '100', '120', '150', '200'],
-			units :['px', '%', 'vw'],
 
 			when: showCustomWidth,
 		},
@@ -159,59 +99,13 @@ const config = {
 
 			label: 'Height',
 
-			control: 'select',
-
-			defaultValue: '100px',
-
-			options: [
-
-				{
-					label: '80px',
-					value: '80px',
-				},
-
-				{
-					label: '100px',
-					value: '100px',
-				},
-
-				{
-					label: '150px',
-					value: '150px',
-				},
-
-				{
-					label: '200px',
-					value: '200px',
-				},
-
-				{
-					label: 'Custom',
-					value: 'custom',
-				},
-			],
-
-		},
-
-		/*
-		|--------------------------------------------------------------------------
-		| Height Custom
-		|--------------------------------------------------------------------------
-		*/
-
-		{
-			bind: 'height_custom',
-
-			label: 'Custom Height',
-
 			control: 'dimension',
 
 			defaultValue: '120px',
 
-			datalist: ['80', '100', '120', '150', '200'],
+			datalist: ['80', '100', '120', '150', '200'],			
 
-			when: showCustomHeight,
-		},
+		},		
 
 		/*
 		|--------------------------------------------------------------------------
@@ -246,6 +140,24 @@ const config = {
 
 			defaultValue: '100%',
 
+		},
+
+		{
+			bind: 'enable_editor',
+
+			label: 'Enable on Editor',
+
+			control: 'switch',
+
+			responsive: false,
+
+			defaultValue: false,
+		},
+
+		{
+			control: 'play-button',
+			when: showPlayButton,
+			play_group: 'aae_cursor_hover_',
 		},
 	],
 };
