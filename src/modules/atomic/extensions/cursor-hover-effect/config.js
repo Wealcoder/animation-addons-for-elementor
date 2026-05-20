@@ -143,6 +143,7 @@ const config = {
 			defaultValue: '120px',
 
 			datalist: ['80', '100', '120', '150', '200'],
+			units :['px', '%', 'vw'],
 
 			when: showCustomWidth,
 		},
