@@ -14,6 +14,7 @@ import { BorderInput } from "./inputs/BorderInput";
 import { TextareaInput } from "./inputs/TextareaInput";
 import { SliderInput } from "./inputs/SliderInput";
 import { DimensionInput, DimensionsInput } from "./inputs/Dimension";
+import { ChooseInput } from "./inputs/ChooseInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
@@ -40,6 +41,7 @@ const CONTROL_REGISTRY = {
   switch: { Component: SwitchInput, innerType: "boolean" },
   color: { Component: ColorInput, innerType: "string" },
   border: { Component: BorderInput, innerType: "object" },
+  choose: { Component: ChooseInput, innerType: "string" },
 };
 
 /* ---------- dot indicator ---------- */

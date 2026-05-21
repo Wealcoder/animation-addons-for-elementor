@@ -23,7 +23,7 @@ function r(cfg, key, fallback) {
 function readSticky(el) {
 
 	const cfg = configFor(el, STICKY_MAP);
-
+	console.log('Sticky cfg', cfg);
 	if (!cfg) {
 		return null;
 	}
@@ -101,12 +101,13 @@ function readSticky(el) {
 
 		/*
 		|--------------------------------------------------------------------------
-		| Style (Border & Custom CSS)
+		| Style (Border, Toggle Class & BG Color)
 		|--------------------------------------------------------------------------
 		*/
 
 		border:           r(cfg, 'border', null),
-		customCSS:        r(cfg, 'customCSS', ''),
+		toggleClass:      r(cfg, 'toggleClass', ''),
+		bgColor:          r(cfg, 'bgColor', ''),
 	};
 }
 
@@ -170,20 +171,12 @@ export function playSticky(el, config) {
    ========================================================================== */
 
 window.AAEADDON.register({
-
 	name:      'sticky',
-
 	mapName:   STICKY_MAP,
-
 	boundFlag: 'aae-sticky-bound',
-
 	read:      readSticky,
-
 	play:      playSticky,
-
 	bind:      bindSticky,
-
 	unbind:    cleanupSticky,
-
 	reset:     resetSticky,
 });

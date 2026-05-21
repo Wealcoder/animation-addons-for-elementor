@@ -42,9 +42,9 @@ final class Render {
 			? $element->get_settings()
 			: [];
 
-		$config = $this->build_config( $settings );
-
-		if ( empty( $config['enable'] ) ) {
+		$extra_bps   = $this->get_extra_breakpoints();
+		$enabled_map = $this->envelope_to_map( $settings[ Schema::STICKY_ENABLE ] ?? null );
+		if ( ! $this->any_breakpoint_enabled( $enabled_map, $extra_bps ) ) {
 			return;
 		}
 
@@ -53,6 +53,12 @@ final class Render {
 			: '';
 
 		if ( empty( $id ) ) {
+			return;
+		}
+
+		$config = $this->build_config( $settings, $extra_bps, $enabled_map );
+
+		if ( empty( $config ) ) {
 			return;
 		}
 
@@ -67,66 +73,99 @@ final class Render {
 		}
 	}
 
-	private function build_config( array $settings ): array {
+	private function build_config( array $settings, array $extra_bps, array $enabled_map ): array {
 		$config = [];
-		$extra_bps  = $this->get_extra_breakpoints();
 
-		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_ENABLE, 'enable', false, $extra_bps,
-			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
-		);
+		$cast = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
 
-		if ( empty( $config['enable'] ) ) {
-			return [];
+		// Pre-compute which breakpoints have sticky disabled.
+		$disabled_bps = [];
+		$enabled_resolved = [ 'desktop' => $cast( $enabled_map['desktop'] ?? false ) ];
+		foreach ( $extra_bps as $bp ) {
+			$own = $enabled_map[ $bp ] ?? null;
+			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
+			$effective = ( null === $own || '' === $own ) ? $parent_enabled : $cast( $own );
+			$enabled_resolved[ $bp ] = $effective;
+			if ( ! $effective ) {
+				$disabled_bps[ $bp ] = true;
+			}
 		}
 
 		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_ENABLE, 'enable', false, $extra_bps,
+			$cast,
+			$disabled_bps
+		);
+
+		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_TRIGGER, 'pinTrigger', 'default', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : 'default'
+			static fn( $v ) => is_string( $v ) ? $v : 'default',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_CUSTOM_PIN_AREA, 'customPinArea', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : ''
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_END_TRIGGER, 'pinEndTrigger', 'default', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : 'default'
+			static fn( $v ) => is_string( $v ) ? $v : 'default',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_CUSTOM_PIN_END_AREA, 'customPinEndArea', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : ''
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN, 'pin', true, $extra_bps,
-			static fn( $v ) => $v === 'custom' ? 'custom' : ( is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ) )
+			static fn( $v ) => $v === 'custom' ? 'custom' : ( is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ) ),
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_CUSTOM_PIN, 'customPin', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : ''
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_START, 'pinStart', 'top top', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : 'top top'
+			static fn( $v ) => is_string( $v ) ? $v : 'top top',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_CUSTOM_PIN_START, 'customPinStart', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : ''
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_END, 'pinEnd', 'bottom bottom', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : 'bottom bottom'
+			static fn( $v ) => is_string( $v ) ? $v : 'bottom bottom',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_CUSTOM_PIN_END, 'customPinEnd', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : ''
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', true, $extra_bps,
-			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
+			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_MARKERS, 'pinMarkers', false, $extra_bps,
-			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' )
+			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
+			$disabled_bps
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_TOGGLE_CLASS, 'toggleClass', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
+		);
+		$this->emit_responsive(
+			$config, $settings, Schema::STICKY_BG_COLOR, 'bgColor', '', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : '',
+			$disabled_bps
 		);
 
 		// Emit border object
@@ -139,16 +178,13 @@ final class Render {
 		}
 
 		foreach ( $extra_bps as $bp ) {
+			if ( isset( $disabled_bps[ $bp ] ) ) {
+				continue;
+			}
 			$bp_border = $border_map[ $bp ] ?? null;
 			if ( $bp_border && is_array( $bp_border ) && ! empty( $bp_border['style'] ) && $bp_border['style'] !== 'none' ) {
 				$config[ 'border_' . $bp ] = $bp_border;
 			}
-		}
-
-		// Emit custom CSS (plain string)
-		$custom_css = $this->read_primitive( $settings, Schema::STICKY_CUSTOM_CSS, '' );
-		if ( ! empty( $custom_css ) ) {
-			$config['customCSS'] = $custom_css;
 		}
 
 		return $config;
@@ -161,7 +197,8 @@ final class Render {
 		string $cfg_key,
 		$default,
 		array $extra_bps,
-		callable $cast
+		callable $cast,
+		array $disabled_bps = []
 	): void {
 		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 
@@ -189,8 +226,28 @@ final class Render {
 			if ( $own_value === $parent ) {
 				continue;
 			}
+
+			// Skip per-bp emission when the user disabled sticky on this breakpoint.
+			// The enable key itself must still be emitted so the runtime knows it's disabled.
+			if ( isset( $disabled_bps[ $bp ] ) && 'enable' !== $cfg_key ) {
+				continue;
+			}
+
 			$config[ $cfg_key . '_' . $bp ] = $own_value;
 		}
+	}
+
+	private function any_breakpoint_enabled( array $enabled_map, array $extra_bps ): bool {
+		$cast = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		if ( $cast( $enabled_map['desktop'] ?? false ) ) {
+			return true;
+		}
+		foreach ( $extra_bps as $bp ) {
+			if ( $cast( $enabled_map[ $bp ] ?? null ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private function envelope_to_map( $envelope ): array {

@@ -228,6 +228,25 @@ const config = {
 
 		/*
 		|--------------------------------------------------------------------------
+		| Toggle Class
+		|--------------------------------------------------------------------------
+		*/
+
+		{
+			bind: 'toggle_class',
+			label: 'Toggle Class',
+			control: 'text',
+			responsive: true,
+			defaultValue: '',
+			placeholder: 'class-selector',
+			when: showPinFields,
+			tab: 'Style',
+		},
+
+
+
+		/*
+		|--------------------------------------------------------------------------
 		| Border
 		|--------------------------------------------------------------------------
 		*/
@@ -245,17 +264,24 @@ const config = {
 			},
 			when: showPinFields,
 			tab: 'Style',
-		},
+		},	
+
+		/*
+		|--------------------------------------------------------------------------
+		| Background Color
+		|--------------------------------------------------------------------------
+		*/
 
 		{
-			bind: 'custom_css',
-			label: 'Custom CSS',
-			control: 'textarea',
-			responsive: false,
+			bind: 'bg_color',
+			label: 'Background Color',
+			control: 'color',
+			responsive: true,
 			defaultValue: '',
 			when: showPinFields,
 			tab: 'Style',
-		},				
+		},
+
 
 		/*
 		|--------------------------------------------------------------------------

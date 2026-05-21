@@ -6,7 +6,7 @@ const ColorIndicator = styled(Box)(({ theme }) => ({
   width: '32px',
   height: '32px',
   borderRadius: '4px',
-  border: `0px solid ${theme.palette.divider}`,
+  border: `1px solid ${theme.palette.divider || 'rgba(0, 0, 0, 0.15)'}`,
   cursor: 'pointer',
   backgroundColor: 'currentColor',
   '&:hover': {
@@ -29,8 +29,7 @@ export function ColorInput({ value, onChange, disabled, placeholder }) {
     onChange(newColor);
   };
 
-  const handlePickerChange = (newColor) => {
-    console.log('Picker changed:', newColor);
+  const handlePickerChange = (newColor) => {  
     setColor(newColor);
     onChange(newColor);
   };
@@ -83,7 +82,7 @@ export function ColorInput({ value, onChange, disabled, placeholder }) {
             color={color} 
             onChange={handlePickerChange} 
           />
-          <Box sx={{ mt: 1, p: 1, backgroundColor: color, borderRadius: 1, height: '30px' }} />
+          <Box sx={{ mt: 1, p: 1, backgroundColor: color, borderRadius: 1, height: '30px', border: '1px solid rgba(0, 0, 0, 0.15)' }} />
         </Box>
       </Popover>
     </>

@@ -237,6 +237,8 @@ const STICKY_RESPONSIVE = {
 	aae_sticky_pin_end: { configKey: 'pinEnd', default: '' },
 	aae_sticky_custom_pin_end: { configKey: 'customPinEnd', default: '' },
 	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' },
+	aae_sticky_toggle_class: { configKey: 'toggleClass', default: '' },
+	aae_sticky_bg_color: { configKey: 'bgColor', default: '' },
 };
 
 const STICKY_OBJECTS = {
@@ -248,19 +250,20 @@ const STICKY_OBJECTS = {
 
 function buildStickyConfig(settings) {
 	const enabled = readAt(settings, 'aae_sticky_enable', 'desktop', false);
-	if (!enabled) return null;
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
+
+	// Active when desktop is on OR any breakpoint is on.
+	const anyActive = enabled
+		|| BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
 
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
 	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
 
-	if (plain(settings, 'aae_sticky_custom_css')) cfg.customCSS = plain(settings, 'aae_sticky_custom_css');
-
 	const disabledBps = new Set();
-	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
-
 	for (const bp of BPS) {
-		if (!resolvedSwitcher[bp] || resolvedSwitcher[bp] === 'none') disabledBps.add(bp);
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
 	}
 	emitResponsive(cfg, settings, STICKY_RESPONSIVE, disabledBps);
 	if (!('enable' in cfg)) {
@@ -269,7 +272,6 @@ function buildStickyConfig(settings) {
 
 	// --- Object-typed responsive values (border, shadow, etc.) ---
 	emitResponsiveObjects(cfg, settings, STICKY_OBJECTS, disabledBps);
-	
 
 	return cfg;
 }
