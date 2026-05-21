@@ -1,79 +1,19 @@
 /* eslint-env browser */
 
-function getValue(settings, bind) {
 
-	const item = settings?.[bind];
 
-	if (!item) {
-		return item;
-	}
+/* eslint-env browser */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Responsive Atomic Value
-	|--------------------------------------------------------------------------
-	|
-	| {
-	|   $$type: 'aae-rj',
-	|   value: {
-	|     desktop: true
-	|   }
-	| }
-	|
-	*/
+import { valueAt } from '../../responsive-section/helpers';
 
-	if (
-		item.value &&
-		typeof item.value === 'object'
-	) {
-		return item.value.desktop;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Plain Atomic Value
-	|--------------------------------------------------------------------------
-	|
-	| {
-	|   $$type: 'boolean',
-	|   value: true
-	| }
-	|
-	*/
-
-	if ('value' in item) {
-		return item.value;
-	}
-
-	return item;
+/** True when parallax is enabled at the active breakpoint (with cascade). */
+export function isEnabled(s, bp) {
+	return valueAt(s, 'aae_horizontal_enable', bp) === true;
 }
 
-export function isEnabled(settings) {
-
-	return !!getValue(
-		settings,
-		'aae_horizontal_scroll_anim_enable'
-	);
+function plainBool(s, bind) {
+	const v = s?.[bind];
+	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
+	return !!v;
 }
 
-export function showCustomWidth(settings) {
-
-	return (
-		isEnabled(settings) &&
-		getValue(
-			settings,
-			'aae_horizontal_scroll_anim_width'
-		) === 'custom'
-	);
-}
-
-export function showCustomEnd(settings) {
-
-	return (
-		isEnabled(settings) &&
-		getValue(
-			settings,
-			'aae_horizontal_scroll_anim_end'
-		) === 'custom'
-	);
-}

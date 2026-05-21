@@ -6,6 +6,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Utils\Image\Placeholder_Image;
 use WCF_ADDONS\Atomic\Bootstrap;
 use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -24,7 +25,7 @@ final class Schema {
 
 	/* ---- section anchor ---- */
 	const IH_SECTION_ANCHOR = 'aae_ih_section_anchor';
-
+	
 	/* ---- non-responsive primitives ---- */
 	const IH_IMAGE  = 'aae_ih_image';
 	const IH_ZINDEX = 'aae_ih_zindex';
@@ -34,7 +35,7 @@ final class Schema {
 	const IH_HEIGHT   = 'aae_ih_height';
 	const IH_TOP      = 'aae_ih_top';
 	const IH_LEFT     = 'aae_ih_left';
-
+	const IH_ENABLE_EDITOR = 'aae_ih_enable_editor'; // v3 enable editor
 	/** Atomic widget types this section appears on. */
 	public static function image_hover_widgets(): array {
 		return Bootstrap::target_element_types();
@@ -59,6 +60,7 @@ final class Schema {
 		//
 		// `default_url` is mandatory: Image_Src_Prop_Type's validator
 		// requires EXACTLY ONE truthy key in the {id, url} shape.
+		
 		$schema[ self::IH_IMAGE  ] = Image_Prop_Type::make()
 			->default_url( Placeholder_Image::get_placeholder_image() )
 			->default_size( 'full' );
@@ -69,6 +71,7 @@ final class Schema {
 		$schema[ self::IH_HEIGHT ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 300 ] );
 		$schema[ self::IH_TOP    ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0 ] );
 		$schema[ self::IH_LEFT   ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0 ] );
+		$schema[ self::IH_ENABLE_EDITOR ] = Boolean_Prop_Type::make()->default( false );
 
 		return $schema;
 	}
