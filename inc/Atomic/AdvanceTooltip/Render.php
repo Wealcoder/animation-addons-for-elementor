@@ -6,216 +6,382 @@ use WCF_ADDONS\Atomic\Bootstrap;
 use WCF_ADDONS\Atomic\InteractionsMap;
 
 if (! defined('ABSPATH')) {
-	exit;
+    exit;
 }
 
 final class Render
 {
+    public function register(): void
+    {
+        add_action(
+            'elementor/frontend/before_render',
+            [$this, 'maybe_register']
+        );
+    }
 
-	public function register(): void
-	{
+    public function maybe_register(
+        $element
+    ): void {
 
-		add_action(
-			'elementor/frontend/before_render',
-			[$this, 'maybe_register']
-		);
-	}
+        if (
+            ! is_object($element) ||
+            ! method_exists(
+                $element,
+                'get_element_type'
+            )
+        ) {
+            return;
+        }
 
-	public function maybe_register(
-		$element
-	): void {
+        if (
+            ! in_array(
+                $element->get_element_type(),
+                Bootstrap::target_element_types(),
+                true
+            )
+        ) {
+            return;
+        }
 
-		if (
-			! in_array(
-				$element->get_element_type(),
-				Bootstrap::target_element_types(),
-				true
-			)
-		) {
-			return;
-		}
+        $settings = method_exists(
+            $element,
+            'get_settings'
+        )
+            ? $element->get_settings()
+            : [];
 
-		$settings =
-			$element->get_settings();
+        $config =
+            $this->build_config(
+                $settings
+            );
 
-		$config =
-			$this->build_config(
-				$settings
-			);
+        if (
+            empty($config['enabled']['desktop'])
+        ) {
+            return;
+        }
 
-		if (empty($config['enabled'])) {
-			return;
-		}
+        $id = method_exists(
+            $element,
+            'get_id'
+        )
+            ? $element->get_id()
+            : '';
 
-		InteractionsMap::register(
+        if (empty($id)) {
+            return;
+        }
 
-			'advance-tooltip',
+        InteractionsMap::register(
 
-			$element->get_id(),
+            'advance-tooltip',
 
-			$config
-		);
-	}
+            $id,
 
-	private function build_config(
-		array $settings
-	): array {
+            $config
+        );
+    }
 
-		$enabled =
-			$settings[
-				Schema::TOOLTIP_ENABLE
-			] ?? false;
+    private function build_config(
+        array $settings
+    ): array {
+    echo "<pre>";
+    var_dump($settings);
+    echo "</pre>";
+        return [
+            'enabled' =>
+            $this->emit_responsive(
+                $settings[Schema::TOOLTIP_ENABLE] ?? [],
+                false
+            ),
 
-		if (
-			is_array($enabled) &&
-			isset($enabled['value'])
-		) {
-			$enabled =
-				(bool) (
-					$enabled['value']['desktop']
-					?? false
-				);
-		}
+            'text' =>
+            $this->emit_responsive(
+                $settings[Schema::TEXT] ?? [],
+                ''
+            ),
 
-		if (! $enabled) {
-			return [];
-		}
+            'position' =>
+            $this->emit_responsive(
+                $settings[Schema::POSITION] ?? [],
+                'top'
+            ),
 
-		$extra_bps =
-			$this->get_extra_breakpoints();
+            'trigger' =>
+            $this->emit_responsive(
+                $settings[Schema::TRIGGER] ?? [],
+                'hover'
+            ),
 
-		$config = [
-			'enabled' => true,
-		];
+            'bg' =>
+            $this->emit_responsive(
+                $settings[Schema::BG] ?? [],
+                '#000000'
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::TEXT,
-			'text',
-			'',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'color' =>
+            $this->emit_responsive(
+                $settings[Schema::COLOR] ?? [],
+                '#ffffff'
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::POSITION,
-			'position',
-			'top',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'width' =>
+            $this->emit_responsive(
+                $settings[Schema::WIDTH] ?? [],
+                '200px'
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::TRIGGER,
-			'trigger',
-			'hover',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'offset' =>
+            $this->emit_responsive(
+                $settings[Schema::OFFSET] ?? [],
+                10
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::BG,
-			'bg',
-			'#000000',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'arrowEnable' =>
+            $this->emit_responsive(
+                $settings[Schema::ARROW_ENABLE] ?? [],
+                true
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::COLOR,
-			'color',
-			'#ffffff',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'animation' =>
+            $this->emit_responsive(
+                $settings[Schema::ANIMATION] ?? [],
+                'fade'
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::WIDTH,
-			'width',
-			'200px',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'duration' =>
+            $this->emit_responsive(
+                $settings[Schema::DURATION] ?? [],
+                0.3
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::OFFSET,
-			'offset',
-			10,
-			$extra_bps,
-			static fn($v) => $v
-		);
+            'arrowSize' =>
+            $this->emit_responsive(
+                $settings[Schema::ARROW_SIZE] ?? [],
+                10
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::ANIMATION,
-			'animation',
-			'fade',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+            'alignment' =>
+            $this->emit_responsive(
+                $settings[Schema::ALIGNMENT] ?? [],
+                'center'
+            ),
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::DURATION,
-			'duration',
-			0.3,
-			$extra_bps,
-			static fn($v) => $v
-		);
+            'borderRadius' =>
+            $this->emit_responsive_object(
+                $settings[Schema::BORDER_RADIUS] ?? [],
+                [
+                    'top' => 0,
+                    'right' => 0,
+                    'bottom' => 0,
+                    'left' => 0,
+                    'unit' => 'px',
+                    'isLinked' => true,
+                ]
+            ),
+        ];
+    }
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::ARROW_SIZE,
-			'arrowSize',
-			10,
-			$extra_bps,
-			static fn($v) => $v
-		);
+    private function emit_responsive(
+        $value,
+        $fallback = null
+    ): array {
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::ALIGNMENT,
-			'alignment',
-			'center',
-			$extra_bps,
-			static fn($v) => (string) $v
-		);
+        $map =
+            $this->envelope_to_map(
+                $value
+            );
 
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::ARROW_ENABLE,
-			'arrow_enable',
-			false,
-			$extra_bps,
-			static fn($v) => (bool) $v
-		);
+        $bps = array_merge(
+            ['desktop'],
+            $this->get_extra_breakpoints()
+        );
 
-		$this->emit_responsive_object(
-			$config,
-			$settings,
-			Schema::BORDER_RADIUS,
-			'borderRadius',
-			$extra_bps
-		);
+        $out = [];
 
-		return $config;
-	}
+        foreach ($bps as $bp) {
+
+            $current =
+                $map[$bp] ?? null;
+
+            if (
+                null === $current ||
+                '' === $current
+            ) {
+                $current =
+                    $this->cascade_parent(
+                        $map,
+                        $bp
+                    );
+            }
+
+            if (
+                null === $current ||
+                '' === $current
+            ) {
+                $current = $fallback;
+            }
+
+            $out[$bp] = $current;
+        }
+
+        return $out;
+    }
+
+    private function emit_responsive_object(
+        $value,
+        array $fallback = []
+    ): array {
+
+        $map =
+            $this->envelope_to_map(
+                $value
+            );
+
+        $bps = array_merge(
+            ['desktop'],
+            $this->get_extra_breakpoints()
+        );
+
+        $out = [];
+
+        foreach ($bps as $bp) {
+
+            $current =
+                $map[$bp] ?? null;
+
+            if (
+                empty($current)
+            ) {
+                $current =
+                    $this->cascade_parent(
+                        $map,
+                        $bp
+                    );
+            }
+
+            if (
+                empty($current)
+            ) {
+                $current = $fallback;
+            }
+
+            $out[$bp] = $current;
+        }
+
+        return $out;
+    }
+
+    private function envelope_to_map(
+        $value
+    ): array {
+
+        if (
+            is_array($value) &&
+            isset($value['value']) &&
+            is_array($value['value'])
+        ) {
+            return $value['value'];
+        }
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        return [];
+    }
+
+    private function cascade_parent(
+        array $map,
+        string $bp
+    ) {
+
+        $order = array_merge(
+            ['desktop'],
+            $this->get_extra_breakpoints()
+        );
+
+        $index =
+            array_search(
+                $bp,
+                $order,
+                true
+            );
+
+        if (false === $index) {
+            return null;
+        }
+
+        while ($index > 0) {
+
+            $index--;
+
+            $parent =
+                $order[$index];
+
+            if (
+                isset($map[$parent]) &&
+                '' !== $map[$parent] &&
+                null !== $map[$parent]
+            ) {
+                return $map[$parent];
+            }
+        }
+
+        return null;
+    }
+
+    private function get_extra_breakpoints(): array
+    {
+
+        $bps = [];
+
+        if (
+            ! class_exists(
+                '\Elementor\Plugin'
+            )
+        ) {
+            return [
+                'tablet',
+                'mobile',
+            ];
+        }
+
+        $manager =
+            \Elementor\Plugin::$instance
+            ->breakpoints;
+
+        if (
+            ! $manager ||
+            ! method_exists(
+                $manager,
+                'get_active_breakpoints'
+            )
+        ) {
+            return [
+                'tablet',
+                'mobile',
+            ];
+        }
+
+        $active =
+            $manager->get_active_breakpoints();
+
+        foreach ($active as $bp) {
+
+            $key =
+                method_exists($bp, 'get_name')
+                ? $bp->get_name()
+                : null;
+
+            if (
+                $key &&
+                'desktop' !== $key
+            ) {
+                $bps[] = $key;
+            }
+        }
+
+        return $bps;
+    }
 }

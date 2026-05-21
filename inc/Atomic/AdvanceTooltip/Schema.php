@@ -2,130 +2,148 @@
 
 namespace WCF_ADDONS\Atomic\AdvanceTooltip;
 
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if (! defined('ABSPATH')) {
-    exit;
+	exit;
 }
 
 final class Schema
 {
+	const SECTION_ANCHOR =
+	'aae_advance_tooltip_section_anchor';
 
-    const SECTION_ANCHOR =
-    'aae_advance_tooltip_section_anchor';
+	const TOOLTIP_ENABLE =
+	'aae_advance_tooltip_enable';
 
-    const TOOLTIP_ENABLE =
-    'aae_advance_tooltip_enable';
+	const TEXT =
+	'aae_advance_tooltip_text';
 
-    const TEXT =
-    'aae_advance_tooltip_text';
+	const POSITION =
+	'aae_advance_tooltip_position';
 
-    const POSITION =
-    'aae_advance_tooltip_position';
+	const TRIGGER =
+	'aae_advance_tooltip_trigger';
 
-    const TRIGGER =
-    'aae_advance_tooltip_trigger';
+	const BG =
+	'aae_advance_tooltip_bg';
 
-    const BG =
-    'aae_advance_tooltip_bg';
+	const COLOR =
+	'aae_advance_tooltip_color';
 
-    const COLOR =
-    'aae_advance_tooltip_color';
+	const WIDTH =
+	'aae_advance_tooltip_width';
 
-    const WIDTH =
-    'aae_advance_tooltip_width';
+	const OFFSET =
+	'aae_advance_tooltip_offset';
 
-    const OFFSET =
-    'aae_advance_tooltip_offset';
+	const ARROW_ENABLE =
+	'aae_advance_tooltip_arrow_enable';
 
-    const ARROW_ENABLE =
-    'aae_advance_tooltip_arrow_enable';
+	const ANIMATION =
+	'aae_advance_tooltip_animation';
 
-    const ANIMATION =
-    'aae_advance_tooltip_animation';
+	const DURATION =
+	'aae_advance_tooltip_duration';
 
-    const DURATION =
-    'aae_advance_tooltip_duration';
+	const ARROW_SIZE =
+	'aae_advance_tooltip_arrow_size';
 
-    const ARROW_SIZE =
-    'aae_advance_tooltip_arrow_size';
+	const BORDER_RADIUS =
+	'aae_advance_tooltip_borderRadius';
 
-    const BORDER_RADIUS =
-    'aae_advance_tooltip_borderRadius';
+	const ALIGNMENT =
+	'aae_advance_tooltip_alignment';
 
-    const ALIGNMENT = 'aae_advance_tooltip_alignment';
+	public function register(): void
+	{
+		add_filter(
+			'elementor/atomic-widgets/props-schema',
+			[$this, 'add_props']
+		);
+	}
 
-    public function register(): void
-    {
+	public function add_props(
+		array $schema
+	): array {
 
-        add_filter(
-            'elementor/atomic-widgets/props-schema',
-            [$this, 'add_props']
-        );
-    }
+		$schema[self::SECTION_ANCHOR] =
+			Section_Anchor_Prop_Type::make()
+			->default('');
 
-    public function add_props(
-        array $schema
-    ): array {
-
-        $schema[self::SECTION_ANCHOR] =
-            Section_Anchor_Prop_Type::make()
-            ->default('');
-
-        /*
-		|--------------------------------------------------------------------------
+		/*
+		|------------------------------------------------------------------
 		| Enable
-		|--------------------------------------------------------------------------
+		|------------------------------------------------------------------
 		*/
 
-        $schema[self::TOOLTIP_ENABLE] =
-            Responsive_JSON_Prop_Type::make()
-            ->default([
-                'desktop' => false,
-            ]);
+		$schema[self::TOOLTIP_ENABLE] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => false,
+			]);
 
-        $fields = [
+		/*
+		|------------------------------------------------------------------
+		| Primitive Responsive Fields
+		|------------------------------------------------------------------
+		*/
 
-            self::TEXT,
-            self::POSITION,
-            self::TRIGGER,
-            self::BG,
-            self::COLOR,
-            self::WIDTH,
-            self::OFFSET,
-            self::ANIMATION,
-            self::DURATION,
-            self::ARROW_SIZE,
-        ];
+		$fields = [
 
-        foreach ($fields as $field) {
+			self::TEXT,
+			self::POSITION,
+			self::TRIGGER,
+			self::BG,
+			self::COLOR,
+			self::WIDTH,
+			self::OFFSET,
+			self::ANIMATION,
+			self::DURATION,
+			self::ARROW_SIZE,
+			self::ALIGNMENT,
+		];
 
-            $schema[$field] =
-                Responsive_JSON_Prop_Type::make()
-                ->default([
-                    'desktop' => '',
-                ]);
-        }
+		foreach ($fields as $field) {
 
-        $schema[self::ARROW_ENABLE] =
-            Responsive_JSON_Prop_Type::make()
-            ->default([
-                'desktop' => true,
-            ]);
+			$schema[$field] =
+				Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				]);
+		}
 
-        $schema[self::BORDER_RADIUS] =
-            Responsive_JSON_Prop_Type::make()
-            ->default([
-                'desktop' => '100%',
-            ]);
+		/*
+		|------------------------------------------------------------------
+		| Arrow Enable
+		|------------------------------------------------------------------
+		*/
 
-        $schema[self::ALIGNMENT] =
-            Responsive_JSON_Prop_Type::make()
-            ->default([
-                'desktop' => 'center', // Default fallback value
-            ]);
+		$schema[self::ARROW_ENABLE] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => true,
+			]);
 
-        return $schema;
-    }
+		/*
+		|------------------------------------------------------------------
+		| Border Radius
+		|------------------------------------------------------------------
+		*/
+
+		$schema[self::BORDER_RADIUS] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [
+					'top' => 0,
+					'right' => 0,
+					'bottom' => 0,
+					'left' => 0,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+			]);
+
+		return $schema;
+	}
 }
