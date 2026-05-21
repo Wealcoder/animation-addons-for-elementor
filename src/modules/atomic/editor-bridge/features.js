@@ -25,10 +25,10 @@
 const BPS = ['widescreen', 'laptop', 'tablet_extra', 'tablet', 'mobile_extra', 'mobile'];
 
 const BP_CASCADE = {
-	mobile_extra: ['mobile', 'tablet'],
-	mobile: ['tablet'],
-	tablet_extra: ['tablet'],
-	tablet: [],
+	mobile: ['mobile_extra', 'tablet', 'tablet_extra', 'laptop'],
+	mobile_extra: ['tablet', 'tablet_extra', 'laptop'],
+	tablet: ['tablet_extra', 'laptop'],
+	tablet_extra: ['laptop'],
 	laptop: [],
 	widescreen: [],
 };
@@ -460,10 +460,12 @@ function buildImgConfig(settings) {
  * =================================================================== */
 
 const IH_RESPONSIVE = {
+	aae_ih_enable: { configKey: 'enabled', default: false },
 	aae_ih_width: { configKey: 'width', default: 300 },
 	aae_ih_height: { configKey: 'height', default: 300 },
 	aae_ih_top: { configKey: 'top', default: 0 },
 	aae_ih_left: { configKey: 'left', default: 0 },
+	aae_ih_zindex: { configKey: 'zindex', default: 1 },
 };
 
 /**
@@ -475,6 +477,27 @@ const IH_RESPONSIVE = {
  */
 function imageUrlFrom(envelope) {
 	if (!envelope || typeof envelope !== 'object') return '';
+
+	// Support custom MediaInput control stored in a Responsive_Json_Prop_Type envelope ($$type === 'aae-rj').
+	// The value for desktop is a media object { id, url, size, sizes } | null.
+	if (envelope.$$type === 'aae-rj') {
+		const cell = envelope.value?.desktop;
+		if (cell && typeof cell === 'object') {
+			if (cell.url && typeof cell.url === 'string') {
+				return cell.url;
+			}
+			if (cell.id && typeof window.wp?.media?.attachment === 'function') {
+				const attachment = window.wp.media.attachment(cell.id);
+				const attrs = attachment?.attributes || {};
+				const size = cell.size || 'full';
+				const sized = attrs.sizes?.[size]?.url;
+				if (sized) return sized;
+				if (attrs.url) return attrs.url;
+			}
+		}
+		return '';
+	}
+
 	const src = envelope.value?.src;
 	if (!src || typeof src !== 'object') return '';
 
@@ -512,22 +535,27 @@ function isPlaceholderUrl(url) {
 
 function buildImageHoverConfig(settings) {
 
+	// Gate on the responsive enable switch — active if any BP is enabled.
+	const enabled = readAt(settings, 'aae_ih_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_ih_enable', false);
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
 	const imageUrl = imageUrlFrom(settings.aae_ih_image);
-	// The effect activates the moment the user picks a real image.
-	// No image, or still on the placeholder default → off.
+	// An image must be picked too.
 	if (!imageUrl || isPlaceholderUrl(imageUrl)) return null;
 
-	const cfg = {
-		enabled: true,
-		imageUrl,
-	};
+	const cfg = { imageUrl };
 
-	const zindex = settings.aae_ih_zindex;
-	if (zindex && typeof zindex === 'object' && typeof zindex.value === 'number') {
-		cfg.zindex = zindex.value;
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
 	}
 
-	emitResponsive(cfg, settings, IH_RESPONSIVE);
+	emitResponsive(cfg, settings, IH_RESPONSIVE, disabledBps);
+
+	// Always ensure the desktop enabled flag is present.
+	if (!('enabled' in cfg)) cfg.enabled = enabled;
 
 	return cfg;
 }
@@ -955,8 +983,8 @@ export const FEATURES = [
 	{
 		name: 'image-hover',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
-		enableSetting: 'aae_ih_image',
-		autoReplaySetting: null,
+		enableSetting: 'aae_ih_enable',
+		autoReplaySetting: 'aae_ih_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMGHOVER',
 		buildConfig: buildImageHoverConfig,
 		findTarget: findByInteractionId,

@@ -72,6 +72,26 @@ final class Assets
 			true
 		);
 
+		if ( class_exists( '\Elementor\Plugin' )
+			&& isset( \Elementor\Plugin::$instance->breakpoints )
+			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
+
+			$breakpoints = \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints();
+			$config = [];
+			foreach ( $breakpoints as $key => $breakpoint ) {
+				if ( is_object( $breakpoint ) && method_exists( $breakpoint, 'get_value' ) ) {
+					$config[ $key ] = $breakpoint->get_value();
+				}
+			}
+			wp_localize_script(
+				self::HANDLE,
+				'AAE_CONFIG',
+				[
+					'breakpoints' => $config,
+				]
+			);
+		}
+
 		// Register every effect bundle with the core runtime as a dep, so
 		// enqueueing an effect automatically pulls in the runtime.
 		foreach (self::EFFECT_BUNDLES as $handle => $relative) {

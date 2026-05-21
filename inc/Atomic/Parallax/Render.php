@@ -187,10 +187,10 @@ final class Render {
 	/** Mirror of common.js BP_CASCADE for dedup decisions. */
 	private function cascade_parent( string $bp, array $resolved, $desktop_value ) {
 		static $cascade = [
-			'mobile_extra' => [ 'mobile', 'tablet' ],
-			'mobile'       => [ 'tablet' ],
-			'tablet_extra' => [ 'tablet' ],
-			'tablet'       => [],
+			'mobile'       => [ 'mobile_extra', 'tablet', 'tablet_extra', 'laptop' ],
+			'mobile_extra' => [ 'tablet', 'tablet_extra', 'laptop' ],
+			'tablet'       => [ 'tablet_extra', 'laptop' ],
+			'tablet_extra' => [ 'laptop' ],
 			'laptop'       => [],
 			'widescreen'   => [],
 		];

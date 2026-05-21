@@ -1,7 +1,6 @@
 <?php
 namespace WCF_ADDONS\Atomic\ImageHover;
 
-use Elementor\Modules\AtomicWidgets\Utils\Image\Placeholder_Image;
 use WCF_ADDONS\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -47,17 +46,26 @@ final class Render {
 			? $element->get_settings()
 			: [];
 
-		// Pull the image URL out of the Image_Prop_Type envelope. Either
-		// `url` is set (external image) OR `id` is set (media library —
-		// resolved via wp_get_attachment_image_url). Both populated is
-		// rejected by the Image_Src_Prop_Type validator upstream.
-		//
-		// The effect activates as soon as the user picks a real image —
-		// there's no separate Enable toggle. The schema defaults the URL
-		// to Elementor's placeholder.svg (mandatory for validator); we
-		// treat that exact URL as "not picked" and bail.
-		$image_url = $this->extract_image_url( $settings[ Schema::IH_IMAGE ] ?? null );
-		if ( '' === $image_url || $image_url === Placeholder_Image::get_placeholder_image() ) {
+		$extra_bps   = $this->get_extra_breakpoints();
+		$enabled_map = $this->envelope_to_map( $settings[ Schema::IH_ENABLE ] ?? null );
+
+		// Only register when at least one breakpoint has the effect enabled.
+		if ( ! $this->any_breakpoint_enabled( $enabled_map, $extra_bps ) ) {
+			return;
+		}
+
+		// Pull the image URL from the JS-managed media field (aae_ih_image).
+		// Shape stored by MediaInput: { id, url, size, sizes } as the desktop
+		// cell of a Responsive_Json_Prop_Type envelope.
+		$media_map = $this->envelope_to_map( $settings[ Schema::IH_IMAGE ] ?? null );
+		$media     = $media_map['desktop'] ?? null;
+		$image_url = ( is_array( $media ) && isset( $media['url'] ) && '' !== $media['url'] )
+			? (string) $media['url']
+			: ( ( is_array( $media ) && isset( $media['id'] ) && is_numeric( $media['id'] ) )
+				? (string) wp_get_attachment_image_url( (int) $media['id'], $media['size'] ?? 'full' )
+				: '' );
+
+		if ( '' === $image_url ) {
 			return;
 		}
 
@@ -66,34 +74,61 @@ final class Render {
 			return;
 		}
 
-		$extra_bps = $this->get_extra_breakpoints();
-		$config    = [
-			'enabled'  => true,
+		$cast_bool        = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		// Pre-compute which breakpoints have the effect disabled.
+		$disabled_bps     = [];
+		$enabled_resolved = [ 'desktop' => $cast_bool( $enabled_map['desktop'] ?? false ) ];
+		foreach ( $extra_bps as $bp ) {
+			$own            = $enabled_map[ $bp ] ?? null;
+			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
+			$effective      = ( null === $own || '' === $own ) ? $parent_enabled : $cast_bool( $own );
+			$enabled_resolved[ $bp ] = $effective;
+			if ( ! $effective ) {
+				$disabled_bps[ $bp ] = true;
+			}
+		}
+
+		$config = [
 			'imageUrl' => $image_url,
 		];
 
-		// Non-responsive number — z-index.
-		$zindex = $settings[ Schema::IH_ZINDEX ] ?? null;
-		if ( is_array( $zindex ) && isset( $zindex['value'] ) && is_numeric( $zindex['value'] ) ) {
-			$config['zindex'] = (int) $zindex['value'];
+		// Emit responsive enabled flag (desktop baseline + per-bp variants).
+		$this->emit_responsive(
+			$config, $settings, Schema::IH_ENABLE, 'enabled', false, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
+		if ( ! isset( $config['enabled'] ) ) {
+			$config['enabled'] = $enabled_resolved['desktop'];
 		}
+
+		// Responsive numerics.
+		$this->emit_responsive(
+			$config, $settings, Schema::IH_ZINDEX, 'zindex', 1, $extra_bps,
+			static fn( $v ) => is_numeric( $v ) ? (int) $v : null,
+			$disabled_bps
+		);
 
 		// Responsive numerics — px implicit.
 		$this->emit_responsive(
 			$config, $settings, Schema::IH_WIDTH, 'width', 300, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::IH_HEIGHT, 'height', 300, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::IH_TOP, 'top', 0, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::IH_LEFT, 'left', 0, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 
 		InteractionsMap::register( 'imghover', $id, $config );
@@ -103,45 +138,7 @@ final class Render {
 		}
 	}
 
-	/**
-	 * Unwrap the Image_Prop_Type envelope to a plain URL string. Elementor's
-	 * Image_Src_Prop_Type validator forces EXACTLY ONE truthy key in {id, url}:
-	 *   - internal media library image → id set, url empty (resolve via wp_get_attachment_image_url)
-	 *   - external URL                  → url set, id empty (use as-is)
-	 * Returns '' when neither is present.
-	 */
-	private function extract_image_url( $envelope ): string {
-		if ( ! is_array( $envelope ) || ! isset( $envelope['value'] ) ) {
-			return '';
-		}
-		$src = $envelope['value']['src'] ?? null;
-		if ( ! is_array( $src ) || ! isset( $src['value'] ) ) {
-			return '';
-		}
 
-		// Prefer explicit URL (external image).
-		$url = $src['value']['url'] ?? null;
-		if ( is_array( $url ) && isset( $url['value'] ) && is_string( $url['value'] ) && '' !== $url['value'] ) {
-			return $url['value'];
-		}
-
-		// Fallback: internal media library image — id present, resolve to URL.
-		$id_env = $src['value']['id'] ?? null;
-		if ( is_array( $id_env ) && isset( $id_env['value'] ) && is_numeric( $id_env['value'] ) ) {
-			$size = $envelope['value']['size']['value'] ?? 'full';
-			$resolved = wp_get_attachment_image_url( (int) $id_env['value'], is_string( $size ) ? $size : 'full' );
-			if ( is_string( $resolved ) && '' !== $resolved ) {
-				return $resolved;
-			}
-		}
-
-		return '';
-	}
-
-	/**
-	 * Emit a desktop value + per-bp variants for one responsive field.
-	 * Mirrors Parallax/Render.php (feature-agnostic helper).
-	 */
 	private function emit_responsive(
 		array &$config,
 		array $settings,
@@ -149,7 +146,8 @@ final class Render {
 		string $cfg_key,
 		$default,
 		array $extra_bps,
-		callable $cast
+		callable $cast,
+		array $disabled_bps = []
 	): void {
 		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 
@@ -177,6 +175,11 @@ final class Render {
 			if ( $own_value === $parent ) {
 				continue;
 			}
+
+			if ( isset( $disabled_bps[ $bp ] ) && 'enabled' !== $cfg_key ) {
+				continue;
+			}
+
 			$config[ $cfg_key . '_' . $bp ] = $own_value;
 		}
 	}
@@ -188,12 +191,26 @@ final class Render {
 		return $envelope['value'];
 	}
 
+	/** True when desktop is enabled OR any extra-bp has its own enabled=true override. */
+	private function any_breakpoint_enabled( array $enabled_map, array $extra_bps ): bool {
+		$cast = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		if ( $cast( $enabled_map['desktop'] ?? false ) ) {
+			return true;
+		}
+		foreach ( $extra_bps as $bp ) {
+			if ( $cast( $enabled_map[ $bp ] ?? null ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private function cascade_parent( string $bp, array $resolved, $desktop_value ) {
 		static $cascade = [
-			'mobile_extra' => [ 'mobile', 'tablet' ],
-			'mobile'       => [ 'tablet' ],
-			'tablet_extra' => [ 'tablet' ],
-			'tablet'       => [],
+			'mobile'       => [ 'mobile_extra', 'tablet', 'tablet_extra', 'laptop' ],
+			'mobile_extra' => [ 'tablet', 'tablet_extra', 'laptop' ],
+			'tablet'       => [ 'tablet_extra', 'laptop' ],
+			'tablet_extra' => [ 'laptop' ],
 			'laptop'       => [],
 			'widescreen'   => [],
 		];

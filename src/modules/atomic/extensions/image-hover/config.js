@@ -1,44 +1,58 @@
-import { showPlayButton } from './predicates';
+import { isImageHoverEnabled, showPlayButton } from './predicates';
+
 /**
  * Image Hover (Reveal-on-Hover) responsive fields.
  *
- * The native PHP Section already renders three primitives ABOVE this
- * placeholder (Hover Image, Enable On Editor, Z-Index). This config table
- * only owns the responsive numerics — Width / Height / Top / Left —
- * shown unconditionally; the effect itself activates frontend-side as
- * soon as the user picks a real image (vs the placeholder default).
+ * The native PHP Section renders the Image picker above this anchor.
+ * All other controls live here — Enable switch first (responsive),
+ * then the dimensional numerics (gated on the enable switch), then
+ * the editor-only controls + Play button.
  *
- * All px implicit (no unit picker).
+ * All px-values are px implicit (no unit picker).
  */
 const config = {
 	anchorKey: 'aae-section-aae-image-hover',
 	bindPrefix: 'aae_ih_',
 	fields: [
+		// Responsive enable switch — controls per-breakpoint activation.
+		{
+			bind: 'enable', label: 'Enable', control: 'switch',
+			defaultValue: false,
+		},
 
+		// Hover Image picker
+		{
+			bind: 'image', label: 'Hover Image', control: 'media',
+			defaultValue: null, when: isImageHoverEnabled,
+		},
+
+		// Dimensional numerics — shown only when enabled at this bp.
 		{
 			bind: 'width', label: 'Width (px)', control: 'number',
-			defaultValue: 300
+			defaultValue: 300, when: isImageHoverEnabled,
 		},
 		{
 			bind: 'height', label: 'Height (px)', control: 'number',
-			defaultValue: 300
+			defaultValue: 300, when: isImageHoverEnabled,
 		},
 		{
 			bind: 'top', label: 'Top (px)', control: 'number',
-			defaultValue: -15
+			defaultValue: -15, when: isImageHoverEnabled,
 		},
 		{
 			bind: 'left', label: 'Left (px)', control: 'number',
-			defaultValue: 30
+			defaultValue: 30, when: isImageHoverEnabled,
 		},
 		{
-			bind: 'enable_editor', label: 'Enable in Editor', control: 'switch',
-			defaultValue: false, responsive: false
+			bind: 'zindex', label: 'Z-Index', control: 'number',
+			defaultValue: 1, when: isImageHoverEnabled,
 		},
-		// Manual sync — Elementor's native controls (Hover Image, Z-Index,
-		// Enable On Editor) don't always fire the live-bridge change event,
-		// so the preview iframe's IMGHOVER cfg can lag behind the panel.
-		// Click Play to push the latest cfg into the iframe and rebind.
+
+		// Editor-only controls (non-responsive).
+		{
+			bind: 'enable_editor', label: 'Enable in Editor', control: 'switch',
+			defaultValue: false, responsive: false, when: isImageHoverEnabled,
+		},
 		{ control: 'play-button', when: showPlayButton, play_group: 'aae_ih_' },
 	],
 };

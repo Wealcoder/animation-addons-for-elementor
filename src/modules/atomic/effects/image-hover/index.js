@@ -14,8 +14,8 @@
  * on first bind. Its position/size are set inline (px) from cfg so we
  * don't depend on a styleshift from PHP.
  */
-const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
-
+const { getGsap, configFor, pickConfigResponsive, currentBreakpoint } = window.AAEADDON;
+// Image reveal
 export const IH_MAP    = 'AAE_INTERACTIONS_IMGHOVER';
 export const IH_PLAYED = '__aaeIhPlayed';
 const IH_DISPOSE_KEY   = '__aaeIhDispose';
@@ -28,10 +28,14 @@ function r(cfg, key, fallback) {
 
 export function readImageHover(el) {
 	const cfg = configFor(el, IH_MAP);
+	
 	if (!cfg) return null;
-	if (!cfg.enabled) return null;
 	if (!cfg.imageUrl) return null;
+	const enabled = pickConfigResponsive(cfg, 'enabled');
+	
+	if (!enabled || enabled === 'false' || enabled === 'no') return null;
 	return {
+		enabled:  true,
 		imageUrl: String(cfg.imageUrl),
 		width:    Number(r(cfg, 'width',  300)),
 		height:   Number(r(cfg, 'height', 300)),
@@ -115,16 +119,31 @@ function ensureOverlay(el, config) {
 
 export function bindImageHover(el, config) {
 	const gsap = getGsap();
+	
 	if (!gsap) return;
 
 	const overlay = ensureOverlay(el, config);
 	const host    = hostFor(el);
 
+	let activeConfig = null;
+
 	const onEnter = () => {
+		activeConfig = readImageHover(el);
+		if (!activeConfig) {
+			gsap.to(overlay, { duration: 0, autoAlpha: 0 });
+			return;
+		}
+		Object.assign(overlay.style, {
+			width:              `${activeConfig.width}px`,
+			height:             `${activeConfig.height}px`,
+			zIndex:             String(activeConfig.zindex),
+			backgroundImage:    `url("${activeConfig.imageUrl}")`,
+		});
 		gsap.to(overlay, { duration: 0, autoAlpha: 1 });
 	};
 	const onLeave = () => {
 		gsap.to(overlay, { duration: 0, autoAlpha: 0 });
+		activeConfig = null;
 	};
 	// Mouse coords arrive in viewport space. The overlay's absolute frame
 	// is the host (parent), so we subtract host.rect.left/top — that puts
@@ -133,10 +152,11 @@ export function bindImageHover(el, config) {
 	// cursor; Top=20 → 20px down). Listeners live on `el` so the hot area
 	// equals the widget, not the larger host.
 	const onMove = (e) => {
+		if (!activeConfig || activeConfig.enabled === false) return;
 		const box = host.getBoundingClientRect();
 		const dx  = e.clientX - box.left;
 		const dy  = e.clientY - box.top;
-		gsap.set(overlay, { x: dx + config.left, y: dy + config.top });
+		gsap.set(overlay, { x: dx + activeConfig.left, y: dy + activeConfig.top });
 	};
 
 	el.addEventListener('mouseenter', onEnter);
@@ -180,7 +200,7 @@ function cleanupImageHover(el) {
 export function resetImageHover(el) {
 	cleanupImageHover(el);
 }
-
+// Image reveal hover
 window.AAEADDON.register({
 	name:       'image-hover',
 	mapName:    IH_MAP,

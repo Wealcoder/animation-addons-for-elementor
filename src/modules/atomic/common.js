@@ -67,28 +67,29 @@ function getSplitText() {
  * resolver. Falls back to a minimal width check.
  */
 function currentBreakpoint() {
-	const ef = window.elementorFrontend;
-	if (typeof ef?.getCurrentDeviceMode === 'function') {
-		try {
-			const mode = ef.getCurrentDeviceMode();
-			if (mode) return mode;
-		} catch (_) { /* fall through */ }
+	const breakpoints = window?.AAE_CONFIG?.breakpoints || {};
+	const width = window.innerWidth;
+
+	const widescreen = Number(breakpoints.widescreen);
+	if (breakpoints.widescreen && !Number.isNaN(widescreen) && width >= widescreen) {
+		return 'widescreen';
 	}
-	const bp = ef?.config?.responsive?.breakpoints || ef?.config?.breakpoints || {};
-	const tabletMax = bp.lg?.value || bp.tablet?.value || bp.lg || bp.tablet || 1024;
-	const mobileMax = bp.md?.value || bp.mobile?.value || bp.md || bp.mobile || 768;
-	const w = window.innerWidth;
-	if (w <= mobileMax) return 'mobile';
-	if (w <= tabletMax) return 'tablet';
-	return 'desktop';
+
+	const active = Object.entries(breakpoints)
+		.filter(([key]) => key !== 'widescreen')
+		.map(([key, val]) => ({ key, val: Number(val) }))
+		.filter(({ val }) => !Number.isNaN(val))
+		.sort((a, b) => a.val - b.val);
+
+	const matched = active.find(({ val }) => width <= val);
+	return matched ? matched.key : 'desktop';
 }
 
-/** Cascade: for each mode, parent chain to walk for a non-empty value. */
 const BP_CASCADE = {
-	mobile: ['mobile', 'tablet'],
-	mobile_extra: ['mobile_extra', 'mobile', 'tablet'],
-	tablet: ['tablet'],
-	tablet_extra: ['tablet_extra', 'tablet'],
+	mobile: ['mobile', 'mobile_extra', 'tablet', 'tablet_extra', 'laptop'],
+	mobile_extra: ['mobile_extra', 'tablet', 'tablet_extra', 'laptop'],
+	tablet: ['tablet', 'tablet_extra', 'laptop'],
+	tablet_extra: ['tablet_extra', 'laptop'],
 	laptop: ['laptop'],
 	desktop: [],
 	widescreen: ['widescreen'],
@@ -140,6 +141,7 @@ function configFor(el, mapName) {
 function pickConfigResponsive(cfg, key) {
 	if (!cfg) return undefined;
 	const bp = currentBreakpoint();
+	console.log(bp);
 	const chain = BP_CASCADE[bp] || [];
 	for (const step of chain) {
 		const v = cfg[key + '_' + step];
