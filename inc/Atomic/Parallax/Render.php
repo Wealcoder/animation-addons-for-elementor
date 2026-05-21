@@ -66,17 +66,33 @@ final class Render {
 			'speed' => 0.9,
 		];
 
+		// Pre-compute which breakpoints have parallax disabled.
+		$disabled_bps = [];
+		$enabled_resolved = [ 'desktop' => $enabled_map['desktop'] ?? false ];
+		foreach ( $extra_bps as $bp ) {
+			$own = $enabled_map[ $bp ] ?? null;
+			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_map['desktop'] ?? false );
+			$effective = ( null === $own || '' === $own ) ? $parent_enabled : (bool) $own;
+			$enabled_resolved[ $bp ] = $effective;
+			if ( ! $effective ) {
+				$disabled_bps[ $bp ] = true;
+			}
+		}
+
 		$this->emit_responsive(
 			$config, $settings, Schema::PARALLAX_ENABLE, 'enabled', false, $extra_bps,
-			static fn( $v ) => (bool) $v
+			static fn( $v ) => (bool) $v,
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::PARALLAX_SPEED, 'speed', 0.9, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 		$this->emit_responsive(
 			$config, $settings, Schema::PARALLAX_LAG, 'lag', 0, $extra_bps,
-			static fn( $v ) => is_numeric( $v ) ? (float) $v : null
+			static fn( $v ) => is_numeric( $v ) ? (float) $v : null,
+			$disabled_bps
 		);
 
 		if ( empty( $config ) ) {
@@ -103,7 +119,8 @@ final class Render {
 		string $cfg_key,
 		$default,
 		array $extra_bps,
-		callable $cast
+		callable $cast,
+		array $disabled_bps = []
 	): void {
 		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 
@@ -131,6 +148,13 @@ final class Render {
 			if ( $own_value === $parent ) {
 				continue;
 			}
+
+			// Skip per-bp emission when the user disabled parallax on this breakpoint.
+			// The enabled key itself must still be emitted so the runtime knows it's disabled.
+			if ( isset( $disabled_bps[ $bp ] ) && 'enabled' !== $cfg_key ) {
+				continue;
+			}
+
 			$config[ $cfg_key . '_' . $bp ] = $own_value;
 		}
 	}

@@ -1,11 +1,13 @@
 <?php
+
 namespace WCF_ADDONS\Atomic;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
-final class Assets {
+final class Assets
+{
 
 	/**
 	 * Handle for the always-loaded core runtime (common.js). Every effect
@@ -26,17 +28,19 @@ final class Assets {
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		// 'aae-effect-tilt'      => 'effects/tilt.js',
 		'aae-effect-sticky'          => 'effects/sticky.js',
+		'aae-effect-horizontal'          => 'effects/horizontal.js',
 		// add more as effects are ported
 	];
 
-	public function register(): void {
+	public function register(): void
+	{
 		// Public frontend: register only. Render.php triggers wp_enqueue_script()
 		// per-widget when an animation actually applies. Editor preview keeps the
 		// blanket enqueue because the user may toggle effects on/off live and the
 		// runtime must already be loaded.
-		add_action( 'wp_enqueue_scripts',                     [ $this, 'register_common' ], 100 );
-		add_action( 'elementor/preview/enqueue_scripts',      [ $this, 'enqueue_all_in_editor' ], 100 );
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_bridge' ], 100 );
+		add_action('wp_enqueue_scripts',                     [$this, 'register_common'], 100);
+		add_action('elementor/preview/enqueue_scripts',      [$this, 'enqueue_all_in_editor'], 100);
+		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_editor_bridge'], 100);
 	}
 
 	/**
@@ -44,7 +48,8 @@ final class Assets {
 	 * specifically wants only the core runtime (rare — usually you enqueue an
 	 * effect bundle and the core comes along as a dependency).
 	 */
-	public static function common_handle(): string {
+	public static function common_handle(): string
+	{
 		return self::HANDLE;
 	}
 
@@ -53,9 +58,10 @@ final class Assets {
 	 * Enqueue is deferred to render time — Render.php picks the bundles a
 	 * widget needs and calls wp_enqueue_script() with their handles.
 	 */
-	public function register_common(): void {
-		$core = $this->load_asset( 'common' );
-		$deps = $this->frontend_deps( $core['dependencies'] );
+	public function register_common(): void
+	{
+		$core = $this->load_asset('common');
+		$deps = $this->frontend_deps($core['dependencies']);
 
 		wp_register_script(
 			self::HANDLE,
@@ -67,16 +73,16 @@ final class Assets {
 
 		// Register every effect bundle with the core runtime as a dep, so
 		// enqueueing an effect automatically pulls in the runtime.
-		foreach ( self::EFFECT_BUNDLES as $handle => $relative ) {
+		foreach (self::EFFECT_BUNDLES as $handle => $relative) {
 			// Path uses the same .asset.php sidecar as the core runtime; the
 			// webpack entry name (without .js) matches the relative path.
-			$entry_key = preg_replace( '/\\.js$/', '', $relative );
-			$asset     = $this->load_asset( $entry_key );
-
+			$entry_key = preg_replace('/\\.js$/', '', $relative);
+			$asset     = $this->load_asset($entry_key);
+		
 			wp_register_script(
 				$handle,
 				WCF_ADDONS_URL . self::BUILD_DIR . $relative,
-				array_merge( [ self::HANDLE ], $asset['dependencies'] ),
+				array_merge([self::HANDLE], $asset['dependencies']),
 				$asset['version'],
 				true
 			);
@@ -87,14 +93,15 @@ final class Assets {
 	 * Editor preview path: load the runtime AND every effect bundle blanket,
 	 * since the user can toggle any effect on/off without a server round-trip.
 	 */
-	public function enqueue_all_in_editor(): void {
+	public function enqueue_all_in_editor(): void
+	{
 		// Re-use the public registration path so handles + deps are set up
 		// identically, then upgrade each to enqueued.
 		$this->register_common();
 
-		wp_enqueue_script( self::HANDLE );
-		foreach ( array_keys( self::EFFECT_BUNDLES ) as $handle ) {
-			wp_enqueue_script( $handle );
+		wp_enqueue_script(self::HANDLE);
+		foreach (array_keys(self::EFFECT_BUNDLES) as $handle) {
+			wp_enqueue_script($handle);
 		}
 	}
 
@@ -104,15 +111,16 @@ final class Assets {
 	 * gates its own registration behind a dashboard setting, so on a plain
 	 * install our atomic widgets would otherwise tween-less.
 	 */
-	private function frontend_deps( array $deps ): array {
+	private function frontend_deps(array $deps): array
+	{
 		$this->ensure_gsap_registered();
-		if ( wp_script_is( 'gsap', 'registered' ) ) {
+		if (wp_script_is('gsap', 'registered')) {
 			$deps[] = 'gsap';
 		}
-		if ( wp_script_is( 'ScrollTrigger', 'registered' ) ) {
+		if (wp_script_is('ScrollTrigger', 'registered')) {
 			$deps[] = 'ScrollTrigger';
 		}
-		if ( wp_script_is( 'SplitText', 'registered' ) ) {
+		if (wp_script_is('SplitText', 'registered')) {
 			$deps[] = 'SplitText';
 		}
 		return $deps;
@@ -123,34 +131,35 @@ final class Assets {
 	 * one else has registered them yet. No-op when already registered, or
 	 * when Pro isn't installed (no fallback source).
 	 */
-	private function ensure_gsap_registered(): void {
-		if ( ! defined( 'WCF_ADDONS_PRO_URL' ) ) {
+	private function ensure_gsap_registered(): void
+	{
+		if (! defined('WCF_ADDONS_PRO_URL')) {
 			return;
 		}
-		if ( ! wp_script_is( 'gsap', 'registered' ) ) {
+		if (! wp_script_is('gsap', 'registered')) {
 			wp_register_script(
 				'gsap',
 				WCF_ADDONS_PRO_URL . 'assets/lib/gsap.min.js',
 				[],
-				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
 				true
 			);
 		}
-		if ( ! wp_script_is( 'ScrollTrigger', 'registered' ) ) {
+		if (! wp_script_is('ScrollTrigger', 'registered')) {
 			wp_register_script(
 				'ScrollTrigger',
 				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollTrigger.min.js',
-				[ 'gsap' ],
-				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
 				true
 			);
 		}
-		if ( ! wp_script_is( 'SplitText', 'registered' ) ) {
+		if (! wp_script_is('SplitText', 'registered')) {
 			wp_register_script(
 				'SplitText',
 				WCF_ADDONS_PRO_URL . 'assets/lib/SplitText.min.js',
-				[ 'gsap' ],
-				defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
 				true
 			);
 		}
@@ -174,16 +183,17 @@ final class Assets {
 	];
 
 	/** Editor-only: enqueues the live-edit bridge that mirrors settings to the preview iframe. */
-	public function enqueue_editor_bridge(): void {
-		$asset = $this->load_asset( 'editor-bridge' );
+	public function enqueue_editor_bridge(): void
+	{
+		$asset = $this->load_asset('editor-bridge');
 
 		// Merge the auto-detected deps (@wordpress/*) with the manually-listed
 		// Elementor packages. dedup just in case future @wordpress/scripts
 		// versions start auto-detecting @elementor/* too.
-		$deps = array_values( array_unique( array_merge(
+		$deps = array_values(array_unique(array_merge(
 			$asset['dependencies'],
 			self::EDITOR_BRIDGE_ELEMENTOR_DEPS
-		) ) );
+		)));
 
 		wp_enqueue_script(
 			self::HANDLE . '-editor-bridge',
@@ -194,10 +204,11 @@ final class Assets {
 		);
 	}
 
-	private function load_asset( string $entry ): array {
+	private function load_asset(string $entry): array
+	{
 		$file = WCF_ADDONS_PATH . self::BUILD_DIR . $entry . '.asset.php';
 
-		if ( ! file_exists( $file ) ) {
+		if (! file_exists($file)) {
 			return [
 				'dependencies' => [],
 				'version'      => WCF_ADDONS_VERSION,

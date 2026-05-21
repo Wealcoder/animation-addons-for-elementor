@@ -1,39 +1,37 @@
 /* eslint-env browser */
 
 import {
-	isEnabled,
-	showCustomWidth,
-	showCustomEnd,
+	isEnabled,	
 } from './predicates';
 
 const WIDTH_OPTIONS = [
+	'200%', '300%', '400%', '500%', '600%', '700%', '800%', '900%', '1000%'
+].map((v) => ({
+	value: v,
+	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+}));
 
-	{ value: '25%', label: '25%' },
-	{ value: '50%', label: '50%' },
-	{ value: '75%', label: '75%' },
-	{ value: '100%', label: '100%' },
+const END_OPTIONS = [
+	'2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '10000'
+].map((v) => ({
+	value: v,
+	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+}));
 
-	{ value: 'custom', label: 'Custom' },
-];
 const config = {
 
 	anchorKey:
-		'aae-section-aae-horizontal-scroll-anim',
+		'aae-section-aae-horizontal',
 
 	bindPrefix:
-		'aae_horizontal_scroll_anim_',
+		'aae_horizontal_',
 
 	fields: [
 
 		{
 			bind: 'enable',
-
 			label: 'Enable',
-
 			control: 'switch',
-
-			responsive: false,
-
 			defaultValue: false,
 		},
 
@@ -42,53 +40,30 @@ const config = {
 
 			label: 'Width',
 
-			control: 'select',
+			control: 'text',
 
-			options: WIDTH_OPTIONS,
+			datalist: WIDTH_OPTIONS,
 
-			defaultValue: '100%',
+			defaultValue: '300%',
 
 			when: isEnabled,
 		},
 
-		{
-			bind: 'width_custom',
-			label: 'Custom Width',
-			control: 'slider',
-			min: 0,
-			max: 10,
-			step: 0.1,
-			defaultValue: 1,
-			units :['px', '%', 'vw'],
-			defaultUnit: 'px',
-			when: showCustomWidth,
-		},
 
 		{
 			bind: 'end',
 
 			label: 'End',
 
-			control: 'select',
+			control: 'text',
 
-			options: WIDTH_OPTIONS,
+			datalist: END_OPTIONS,
 
-			defaultValue: '100%',
+			defaultValue: '3000',
 
 			when: isEnabled,
 		},
-
-		{
-			bind: 'end_custom',
-
-			label: 'Custom End',
-
-			control: 'text',
-
-			defaultValue: '50%',
-
-			when: showCustomEnd,
-		},
+		{ control: 'play-button', when: isEnabled },
 
 	],
 };

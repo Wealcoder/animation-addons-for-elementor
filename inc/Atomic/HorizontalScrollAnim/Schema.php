@@ -11,30 +11,14 @@ if (! defined('ABSPATH')) {
 
 final class Schema
 {
+	
+	const SECTION_ANCHOR = 'aae_horizontal_section_anchor';
 
-	/*
-	|--------------------------------------------------------------------------
-	| CHANGE THESE
-	|--------------------------------------------------------------------------
-	*/
+	const ENABLE = 'aae_horizontal_enable';
 
-	const SECTION_ANCHOR =
-	'aae_horizontal_scroll_anim_section_anchor';
+	const WIDTH = 'aae_horizontal_width';	
 
-	const ENABLE =
-	'aae_horizontal_scroll_anim_enable';
-
-	const WIDTH =
-	'aae_horizontal_scroll_anim_width';
-
-	const WIDTH_CUSTOM =
-	'aae_horizontal_scroll_anim_width_custom';
-
-	const END =
-	'aae_horizontal_scroll_anim_end';
-
-	const END_CUSTOM =
-	'aae_horizontal_scroll_anim_end_custom';
+	const END = 'aae_horizontal_end';
 
 	public function register(): void
 	{
@@ -66,7 +50,7 @@ final class Schema
 		*/
 
 		$schema[self::ENABLE] =
-			Boolean_Prop_Type::make()
+			Responsive_JSON_Prop_Type::make()
 			->default(false);
 
 
@@ -79,27 +63,21 @@ final class Schema
 		$schema[self::WIDTH] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
-				'desktop' => '',
+				'desktop' => '300%',
 			]);
-
-		$schema[self::WIDTH_CUSTOM] =
-			Responsive_JSON_Prop_Type::make()
-			->default([
-				'desktop' => '',
-			]);
+		
 
 		$schema[self::END] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
-				'desktop' => '',
+				'desktop' => '3000',
 			]);
 
-		$schema[self::END_CUSTOM] =
-			Responsive_JSON_Prop_Type::make()
-			->default([
-				'desktop' => '',
-			]);
+		
 
 		return $schema;
+	}
+	public static function targeted_elements(): array {
+		return [ 'e-flexbox', 'e-grid' ];
 	}
 }

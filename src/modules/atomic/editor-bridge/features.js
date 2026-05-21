@@ -1,5 +1,4 @@
 /* eslint-env browser */
-
 /**
  * Feature registry — declare each editor-side feature once here.
  *
@@ -117,7 +116,7 @@ function emitResponsive(cfg, settings, keys, disabledBps) {
 			}
 			resolved[bp] = own;
 			if (String(own) === String(parent)) continue;
-			if (disabledBps && disabledBps.has(bp) && info.configKey !== 'effect') continue;
+			if (disabledBps && disabledBps.has(bp) && !['effect', 'enable', 'enabled'].includes(info.configKey)) continue;
 			cfg[info.configKey + '_' + bp] = own;
 		}
 	}
@@ -238,6 +237,8 @@ const STICKY_RESPONSIVE = {
 	aae_sticky_pin_end: { configKey: 'pinEnd', default: '' },
 	aae_sticky_custom_pin_end: { configKey: 'customPinEnd', default: '' },
 	aae_sticky_pin_spacing: { configKey: 'pinSpacing', default: '' },
+	aae_sticky_toggle_class: { configKey: 'toggleClass', default: '' },
+	aae_sticky_bg_color: { configKey: 'bgColor', default: '' },
 };
 
 const STICKY_OBJECTS = {
@@ -249,19 +250,20 @@ const STICKY_OBJECTS = {
 
 function buildStickyConfig(settings) {
 	const enabled = readAt(settings, 'aae_sticky_enable', 'desktop', false);
-	if (!enabled) return null;
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
+
+	// Active when desktop is on OR any breakpoint is on.
+	const anyActive = enabled
+		|| BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
 
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
 	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
 
-	if (plain(settings, 'aae_sticky_custom_css')) cfg.customCSS = plain(settings, 'aae_sticky_custom_css');
-
 	const disabledBps = new Set();
-	const resolvedSwitcher = resolveAllBreakpoints(settings, 'aae_sticky_enable', false);
-
 	for (const bp of BPS) {
-		if (!resolvedSwitcher[bp] || resolvedSwitcher[bp] === 'none') disabledBps.add(bp);
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
 	}
 	emitResponsive(cfg, settings, STICKY_RESPONSIVE, disabledBps);
 	if (!('enable' in cfg)) {
@@ -270,7 +272,7 @@ function buildStickyConfig(settings) {
 
 	// --- Object-typed responsive values (border, shadow, etc.) ---
 	emitResponsiveObjects(cfg, settings, STICKY_OBJECTS, disabledBps);
-	console.log(cfg);
+
 	return cfg;
 }
 
@@ -509,6 +511,7 @@ function isPlaceholderUrl(url) {
 }
 
 function buildImageHoverConfig(settings) {
+
 	const imageUrl = imageUrlFrom(settings.aae_ih_image);
 	// The effect activates the moment the user picks a real image.
 	// No image, or still on the placeholder default → off.
@@ -534,12 +537,12 @@ function buildImageHoverConfig(settings) {
  * =================================================================== */
 
 const PLX_RESPONSIVE = {
-	aae_plx_enable: { configKey: 'enable', default: false },
+	aae_plx_enable: { configKey: 'enabled', default: false },
 	aae_plx_speed: { configKey: 'speed', default: 0.9 },
 	aae_plx_lag: { configKey: 'lag', default: 0 },
 };
 
-function buildParallaxConfig(settings) {	
+function buildParallaxConfig(settings) {
 	const enabled = readAt(settings, 'aae_plx_enable', 'desktop', false);
 	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_plx_enable', false);
 
@@ -560,12 +563,53 @@ function buildParallaxConfig(settings) {
 
 	emitResponsive(cfg, settings, PLX_RESPONSIVE, disabledBps);
 
-	// Guarantee the enable key is always present (runtime uses it as the
-	// "parallax is active" signal, same pattern as other features).
-	if (!('enable' in cfg)) cfg.enable = enabled;
+	// Ensure the enabled flag is always present for runtime.
+	if (!('enabled' in cfg)) cfg.enabled = enabled;
 
 	if (plain(settings, 'aae_plx_enable_editor')) cfg.enableEditor = true;
+	
+	return cfg;
+}
 
+
+/* =====================================================================
+ * Horizontal Scroll feature
+ * =================================================================== */
+
+const HORIZONTAL_RESPONSIVE = {
+	aae_horizontal_enable: { configKey: 'enabled', default: false },
+	aae_horizontal_width: { configKey: 'width', default: '300%' },
+	aae_horizontal_end: { configKey: 'end', default: '3000' },
+};
+
+function buildHorizontalConfig(settings) {
+	const enabled = readAt(settings, 'aae_horizontal_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_horizontal_enable', false);
+
+	// Active when desktop is on OR any breakpoint is on.
+	const anyActive = enabled
+		|| BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {
+		enabled: false,
+		width: readAt(settings, 'aae_horizontal_width', 'desktop', '300%'),
+		end: readAt(settings, 'aae_horizontal_end', 'desktop', '3000')
+	};
+
+	// In case you later add responsive breakpoints, emit them here.
+	const disabledBps = new Set(); // no breakpoints disabled for now
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+	emitResponsive(cfg, settings, HORIZONTAL_RESPONSIVE, disabledBps);
+
+	// Guarantee the enable flag is always present for the runtime.
+	//if (!('enabled' in cfg)) cfg.enabled = true;
+
+	// Editor‑only replay flag.
+	if (plain(settings, 'aae_horizontal_enable_editor')) cfg.enableEditor = true;
+	
 	return cfg;
 }
 
@@ -710,6 +754,16 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_plx_enable_editor',
 		mapName: 'AAE_INTERACTIONS_PLX',
 		buildConfig: buildParallaxConfig,
+		findTarget: findByInteractionId,
+	},
+
+	{
+		name: 'horizontal',
+		widgetTypes: ['e-flexbox', 'e-grid'],
+		enableSetting: 'aae_horizontal_enable',
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_HORIZONTAL',
+		buildConfig: buildHorizontalConfig,
 		findTarget: findByInteractionId,
 	},
 ];

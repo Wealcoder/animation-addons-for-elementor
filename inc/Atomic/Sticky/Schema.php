@@ -38,9 +38,10 @@ final class Schema {
 
 	const STICKY_BORDER              = 'aae_sticky_border';
 
-	const STICKY_ENABLE_EDITOR       = 'aae_sticky_enable_editor';
+	const STICKY_TOGGLE_CLASS        = 'aae_sticky_toggle_class';
+	const STICKY_BG_COLOR            = 'aae_sticky_bg_color';
 
-	const STICKY_CUSTOM_CSS          = 'aae_sticky_custom_css';
+	const STICKY_ENABLE_EDITOR       = 'aae_sticky_enable_editor';
 
 	public function register(): void {
 
@@ -213,6 +214,32 @@ final class Schema {
 
 		/*
 		|--------------------------------------------------------------------------
+		| Toggle Class
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_TOGGLE_CLASS ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Background Color
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[ self::STICKY_BG_COLOR ] =
+			Responsive_JSON_Prop_Type::make()
+				->default([
+					'desktop' => '',
+				])
+				->set_dependencies( $sticky_enabled_dependency );
+
+		/*
+		|--------------------------------------------------------------------------
 		| Border
 		|--------------------------------------------------------------------------
 		*/
@@ -232,11 +259,6 @@ final class Schema {
 						'radius' => '',
 					],
 				])
-				->set_dependencies( $sticky_enabled_dependency );
-
-		$schema[ self::STICKY_CUSTOM_CSS ] =
-			String_Prop_Type::make()
-				->default( '' )
 				->set_dependencies( $sticky_enabled_dependency );
 
 		/*

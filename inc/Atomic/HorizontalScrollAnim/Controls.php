@@ -4,7 +4,7 @@ namespace WCF_ADDONS\Atomic\HorizontalScrollAnim;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use WCF_ADDONS\Atomic\Bootstrap;
+use WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -46,7 +46,7 @@ final class Controls {
 		if (
 			in_array(
 				$type,
-				Bootstrap::target_element_types(),
+				Schema::targeted_elements(),
 				true
 			)
 		) {
@@ -62,7 +62,7 @@ final class Controls {
 		return Section::make()
 
 			->set_label(
-				__( 'Horizontal Scroll Animation', self::TD )
+				__( 'Horizontal Scroll', self::TD )
 			)
 
 			->set_items([

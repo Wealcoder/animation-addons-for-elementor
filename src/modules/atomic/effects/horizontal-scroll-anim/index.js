@@ -13,8 +13,7 @@ const {
 |
 */
 
-const MAP =
-	'AAE_INTERACTIONS_HORIZONTAL_SCROLL_ANIM';
+const MAP = 'AAE_INTERACTIONS_HORIZONTAL';
 
 function read(el) {
 
@@ -25,11 +24,11 @@ function read(el) {
 		return null;
 	}
 
+	console.log(cfg);
 	return cfg;
 }
 
-function bind(el, config) {
-
+function bind(el, config) {	
 	/*
 	|--------------------------------------------------------------------------
 	| REAL GSAP LOGIC HERE
@@ -46,25 +45,11 @@ function unbind(el) {
 }
 
 window.AAEADDON.register({
-
-	/*
-	|--------------------------------------------------------------------------
-	| CHANGE THIS
-	|--------------------------------------------------------------------------
-	*/
-
-	name: 'horizontal-scroll-anim',
-
+	name: 'horizontal',
 	mapName: MAP,
-
-	boundFlag:
-		'aae-horizontal-scroll-anim-bound',
-
+	boundFlag: 'aae-horizontal-bound',
 	read,
-
 	bind,
-
 	unbind,
-
 	reset: unbind,
 });
