@@ -567,10 +567,9 @@ function buildParallaxConfig(settings) {
 	if (!('enabled' in cfg)) cfg.enabled = enabled;
 
 	if (plain(settings, 'aae_plx_enable_editor')) cfg.enableEditor = true;
-	
+
 	return cfg;
 }
-
 
 /* =====================================================================
  * Horizontal Scroll feature
@@ -609,9 +608,149 @@ function buildHorizontalConfig(settings) {
 
 	// Editor‑only replay flag.
 	if (plain(settings, 'aae_horizontal_enable_editor')) cfg.enableEditor = true;
-	
+
 	return cfg;
 }
+
+/* =====================================================================
+ * Advance tooltip feature
+ * =================================================================== */
+
+const ADVANCED_TOOLTIP_RESPONSIVE = {
+	aae_advance_tooltip_enable: {
+		configKey: 'enabled',
+		default: false,
+	},
+
+	aae_advance_tooltip_text: {
+		configKey: 'text',
+		default: '',
+	},
+
+	aae_advance_tooltip_position: {
+		configKey: 'position',
+		default: 'top',
+	},
+
+	aae_advance_tooltip_animation: {
+		configKey: 'animation',
+		default: 'fade',
+	},
+
+	aae_advance_tooltip_trigger: {
+		configKey: 'trigger',
+		default: 'hover',
+	},
+
+	aae_advance_tooltip_offset: {
+		configKey: 'offset',
+		default: 10,
+	},
+
+	aae_advance_tooltip_duration: {
+		configKey: 'duration',
+		default: 0.3,
+	},
+
+	aae_advance_tooltip_alignment: {
+		configKey: 'alignment',
+		default: 'center',
+	},
+
+	aae_advance_tooltip_width: {
+		configKey: 'width',
+		default: '200px',
+	},
+
+	aae_advance_tooltip_arrow_enable: {
+		configKey: 'arrowEnable',
+		default: false,
+	},
+
+	aae_advance_tooltip_arrow_size: {
+		configKey: 'arrowSize',
+		default: 10,
+	},
+
+	aae_advance_tooltip_bg: {
+		configKey: 'bg',
+		default: '#000000',
+	},
+
+	aae_advance_tooltip_color: {
+		configKey: 'color',
+		default: '#ffffff',
+	},
+};
+
+const ADVANCED_TOOLTIP_OBJECTS = {
+	aae_advance_tooltip_borderRadius: {
+		configKey: 'borderRadius',
+
+		isValid: (v) =>
+			v &&
+			typeof v === 'object',
+	},
+};
+
+function buildAdvancedTooltipConfig(settings) {
+
+	const enabled = readAt(
+		settings,
+		'aae_advance_tooltip_enable',
+		'desktop',
+		false
+	);
+
+	const resolvedEnable = resolveAllBreakpoints(
+		settings,
+		'aae_advance_tooltip_enable',
+		false
+	);
+
+	const anyActive =
+		enabled ||
+		BPS.some(
+			(bp) => resolvedEnable[bp]
+		);
+
+	if (!anyActive) {
+		return null;
+	}
+
+	const cfg = {};
+
+	const disabledBps = new Set();
+
+	for (const bp of BPS) {
+
+		if (!resolvedEnable[bp]) {
+			disabledBps.add(bp);
+		}
+	}
+
+	emitResponsive(
+		cfg,
+		settings,
+		ADVANCED_TOOLTIP_RESPONSIVE,
+		disabledBps
+	);
+
+	emitResponsiveObjects(
+		cfg,
+		settings,
+		ADVANCED_TOOLTIP_OBJECTS,
+		disabledBps
+	);
+
+	if (!('enabled' in cfg)) {
+
+		cfg.enabled = enabled;
+	}
+
+	return cfg;
+}
+
 
 /* =====================================================================
  * Registry
@@ -857,6 +996,15 @@ export const FEATURES = [
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_HORIZONTAL',
 		buildConfig: buildHorizontalConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'advanced-tooltip',
+		widgetTypes: ['e-flexbox', 'e-grid'],
+		enableSetting: 'aae_advance_tooltip_enable_editor',
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_ADVANCED_TOOLTIP',
+		buildConfig: buildAdvancedTooltipConfig,
 		findTarget: findByInteractionId,
 	},
 ];
