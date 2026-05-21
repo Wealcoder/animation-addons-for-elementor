@@ -68,6 +68,12 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
 
+
+		// Advance Tooltip
+		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
+
 	
 
 		( new Assets() )->register();
