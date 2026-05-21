@@ -71,19 +71,14 @@ final class Render {
 		}
 
 		InteractionsMap::register(
-
-			/*
-			|--------------------------------------------------------------------------
-			| CHANGE THIS
-			|--------------------------------------------------------------------------
-			*/
-
-			'cursor-hover-effect',
-
+			'cursor_hover_effect',
 			$id,
-
 			$config
 		);
+
+		if ( ! is_admin() ) {
+			wp_enqueue_script( 'aae-effect-cursor-hover' );
+		}
 	}
 
 	private function build_config(

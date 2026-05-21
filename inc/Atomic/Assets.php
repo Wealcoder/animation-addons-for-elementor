@@ -28,8 +28,9 @@ final class Assets
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		// 'aae-effect-tilt'      => 'effects/tilt.js',
 		'aae-effect-sticky'          => 'effects/sticky.js',
-		'aae-effect-horizontal'          => 'effects/horizontal.js',
-		// add more as effects are ported
+		'aae-effect-horizontal'      => 'effects/horizontal.js',
+		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
+		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
 	];
 
 	public function register(): void

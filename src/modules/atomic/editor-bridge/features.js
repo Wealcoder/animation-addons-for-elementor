@@ -831,7 +831,84 @@ function buildCursorHoverEffectConfig(settings) {
 	emitResponsiveObjects(cfg, translated, CURSOR_OBJECTS);
 	return cfg;
 }
+
+const MOUSE_MOVE_EFFECT_RESPONSIVE = {
+	aae_mouse_move_effect_enable: { configKey: 'enable', default: false },
+	aae_mouse_move_effect_movement_wrapper: { configKey: 'movement_wrapper', default: 'default' },
+	aae_mouse_move_effect_move_x: { configKey: 'move_x', default: '100' },
+	aae_mouse_move_effect_move_y: { configKey: 'move_y', default: '100' },
+	aae_mouse_move_effect_duration: { configKey: 'duration', default: '1' },
+	aae_mouse_move_effect_customs: { configKey: 'customs', default: '' },
+};
+
+function buildMouseMoveConfig(settings) {
+	const enabled = readAt(settings, 'aae_mouse_move_effect_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_mouse_move_effect_enable', false);
+
+	// Active when desktop is on OR any breakpoint is on.
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {
+		enable_editor: plain(settings, 'aae_mouse_move_effect_enable_editor') || false,
+		move_y : 100,
+		move_x : 100,
+		duration : 1,
+		customs : '',
+		movement_wrapper : 'default',
+	};
+
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+
+	emitResponsive(cfg, settings, MOUSE_MOVE_EFFECT_RESPONSIVE, disabledBps);
+
+	// Custom Properties repeater
+	const map = envelopeToMap(settings.aae_mouse_move_effect_custom_props);
+	const rows = Array.isArray(map.desktop) ? map.desktop : [];
+	const pairs = [];
+	for (const row of rows) {
+		const k = typeof row?.property === 'string' ? row.property.trim() : '';
+		if (!k || k === 'none') continue;
+		const v = typeof row?.value === 'string' ? row.value.trim() : '';
+		pairs.push({ k, v });
+	}
+	if (pairs.length) cfg.customProps = pairs;
+
+	for (const bp of BPS) {
+		if (disabledBps.has(bp)) continue;
+		const bpRows = Array.isArray(map[bp]) ? map[bp] : null;
+		if (!bpRows) continue;
+		const bpPairs = [];
+		for (const row of bpRows) {
+			const k = typeof row?.property === 'string' ? row.property.trim() : '';
+			if (!k || k === 'none') continue;
+			const v = typeof row?.value === 'string' ? row.value.trim() : '';
+			bpPairs.push({ k, v });
+		}
+		if (bpPairs.length) cfg['customProps_' + bp] = bpPairs;
+	}
+
+	// Ensure the enabled flag is always present for runtime.
+	if (!('enable' in cfg)) {
+		cfg.enable = enabled;
+	}
+
+	return cfg;
+}
+
 export const FEATURES = [
+	{
+		name: 'mouse-move-effect',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_mouse_move_effect_enable',
+		autoReplaySetting: 'aae_mouse_move_effect_enable_editor',
+		mapName: 'AAE_INTERACTIONS_MOUSE_MOVE_EFFECT',
+		buildConfig: buildMouseMoveConfig,
+		findTarget: findByInteractionId,
+	},
 	{
 		name: 'text-animation',
 		widgetTypes: ['e-heading', 'e-paragraph'],

@@ -1,7 +1,10 @@
 import {
 	isEnabled,
 	isCustomMovementWrapper,
+	showPlayButton,
 } from './predicates';
+import { CUSTOM_PROPERTY_OPTIONS } from '../regular-animation/config';
+import { placeholder } from '@codemirror/view';
 const config = {
 
     /*
@@ -11,7 +14,7 @@ const config = {
     |
     | Section_Anchor_Prop_Type::get_key()
     |
-    */
+    | */
 
     anchorKey:
         'aae-section-aae-mouse-move-effect-anchor',
@@ -40,9 +43,154 @@ const config = {
 
             control: 'switch',
 
-            responsive: false,
+            responsive: true,
 
             defaultValue: false,
+        },     
+
+        /*
+        |--------------------------------------------------------------------------
+        | Movement Wrapper
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'movement_wrapper',
+
+            label: 'Movement Wrapper',
+
+            control: 'select',
+
+            responsive: true,
+
+            defaultValue: 'default',
+
+            options: [
+
+                {
+                    label: 'Default',
+                    value: 'default',
+                },
+
+                {
+                    label: 'Custom Area',
+                    value: 'custom',
+                },
+            ],
+
+            when: isEnabled,
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | Move X
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'move_x',
+
+            label: 'Move X',
+
+            control: 'text',
+
+            responsive: true,
+
+            defaultValue: '100',
+
+            when: isEnabled,
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | Move Y
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'move_y',
+
+            label: 'Move Y',
+
+            control: 'text',
+
+            responsive: true,
+
+            defaultValue: '100',
+
+            when: isEnabled,
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | Duration
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'duration',
+
+            label: 'Duration',
+
+            control: 'text',
+
+            responsive: true,
+
+            defaultValue: '1',
+
+            when: isEnabled,
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom Movement
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'customs',
+            label: 'Custom Area',
+            control: 'text',
+            placeholder: '.custom-area',
+            responsive: true,
+            defaultValue: '',
+            when: isCustomMovementWrapper,
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom Properties
+        |--------------------------------------------------------------------------
+        */
+
+        {
+            bind: 'custom_props',
+
+            label: 'Custom Properties',
+
+            control: 'repeater',
+
+            defaultValue: [],
+
+            when: isEnabled,
+
+            addLabel: 'Add Property',
+
+            rowDefaults: { property: 'opacity', value: '' },
+
+            cells: [
+                {
+                    bind: 'property',
+                    type: 'select',
+                    placeholder: 'Property',
+                    options: CUSTOM_PROPERTY_OPTIONS,
+                },
+                {
+                    bind: 'value',
+                    type: 'text',
+                    placeholder: 'value',
+                },
+            ],
         },
 
         /*
@@ -67,105 +215,14 @@ const config = {
 
         /*
         |--------------------------------------------------------------------------
-        | Movement Wrapper
+        | Play Now
         |--------------------------------------------------------------------------
         */
 
         {
-            bind: 'movement_wrapper',
-
-            label: 'Movement Wrapper',
-
-            control: 'select',
-
-            defaultValue: 'default',
-
-            options: [
-
-                {
-                    label: 'Default',
-                    value: 'default',
-                },
-
-                {
-                    label: 'Custom',
-                    value: 'custom',
-                },
-            ],
-
-            when: isEnabled,
-        },
-
-        /*
-        |--------------------------------------------------------------------------
-        | Move X
-        |--------------------------------------------------------------------------
-        */
-
-        {
-            bind: 'move_x',
-
-            label: 'Move X',
-
-            control: 'text',
-
-            defaultValue: '100',
-
-            when: isEnabled,
-        },
-
-        /*
-        |--------------------------------------------------------------------------
-        | Move Y
-        |--------------------------------------------------------------------------
-        */
-
-        {
-            bind: 'move_y',
-
-            label: 'Move Y',
-
-            control: 'text',
-
-            defaultValue: '100',
-
-            when: isEnabled,
-        },
-
-        /*
-        |--------------------------------------------------------------------------
-        | Duration
-        |--------------------------------------------------------------------------
-        */
-
-        {
-            bind: 'duration',
-
-            label: 'Duration',
-
-            control: 'text',
-
-            defaultValue: '1',
-
-            when: isEnabled,
-        },
-
-        /*
-        |--------------------------------------------------------------------------
-        | Custom Movement
-        |--------------------------------------------------------------------------
-        */
-
-        {
-            bind: 'customs',
-
-            label: 'Customs',
-
-            control: 'text',
-
-            defaultValue: '',
-
-            when: isCustomMovementWrapper,
+            control: 'play-button',
+            when: showPlayButton,
+            play_group: 'aae_mouse_move_effect_',
         },
     ],
 };
