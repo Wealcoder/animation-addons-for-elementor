@@ -106,6 +106,7 @@ const config = {
             control: 'choose',
             responsive: true,
             defaultValue: 'center',
+            when: isEnabled,
             options: [
                 {
                     value: 'left',
@@ -123,7 +124,6 @@ const config = {
                     icon: 'eicon-text-align-right'
                 },
             ],
-            when: isEnabled,
             tab: 'Content',
         },
         {
