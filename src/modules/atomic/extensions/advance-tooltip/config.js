@@ -123,6 +123,7 @@ const config = {
                     icon: 'eicon-text-align-right'
                 },
             ],
+            when: isEnabled,
             tab: 'Content',
         },
         {
