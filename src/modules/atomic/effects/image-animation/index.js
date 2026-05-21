@@ -62,7 +62,12 @@ function findMedia(el) {
 function bindReveal(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
-
+	console.log(
+		'Image reveal effect',
+		el,
+		config
+	);
+	return;
 	const image = findMedia(el);
 	const wrap  = image.parentElement || el;
 	const outer = wrap.parentElement || wrap;

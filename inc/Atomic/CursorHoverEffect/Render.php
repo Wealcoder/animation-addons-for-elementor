@@ -43,30 +43,23 @@ final class Render {
 			return;
 		}
 
-		$settings = method_exists(
-			$element,
-			'get_settings'
-		)
-			? $element->get_settings()
-			: [];
+		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
 
-		$config =
-			$this->build_config(
-				$settings
-			);
-
-		if ( empty( $config['enabled'] ) ) {
+		$extra_bps   = $this->get_extra_breakpoints();
+		$enabled_map = $this->envelope_to_map( $settings[ Schema::ENABLE ] ?? null );
+		if ( ! $this->any_breakpoint_enabled( $enabled_map, $extra_bps ) ) {
 			return;
 		}
 
-		$id = method_exists(
-			$element,
-			'get_id'
-		)
-			? $element->get_id()
-			: '';
+		$id = method_exists( $element, 'get_id' ) ? $element->get_id() : '';
 
 		if ( empty( $id ) ) {
+			return;
+		}
+
+		$config = $this->build_config( $settings, $extra_bps, $enabled_map );
+
+		if ( empty( $config ) ) {
 			return;
 		}
 
@@ -82,25 +75,40 @@ final class Render {
 	}
 
 	private function build_config(
-		array $settings
+		array $settings,
+		array $extra_bps,
+		array $enabled_map
 	): array {
-		$enabled = $settings[Schema::ENABLE_EDITOR] ?? false;
-		if ( is_array( $enabled ) && isset( $enabled['value'] ) ) {
-			$enabled = (bool) $enabled['value'];
-		}
-		if ( ! $enabled ) {
-			return [];
+		$config = [];
+
+		$cast_bool = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		$cast_string = static fn( $v ) => is_string( $v ) ? $v : (null === $v ? '' : (string) $v);
+
+		// Pre-compute which breakpoints have cursor-hover disabled.
+		$disabled_bps = [];
+		$enabled_resolved = [ 'desktop' => $cast_bool( $enabled_map['desktop'] ?? false ) ];
+		foreach ( $extra_bps as $bp ) {
+			$own = $enabled_map[ $bp ] ?? null;
+			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
+			$effective = ( null === $own || '' === $own ) ? $parent_enabled : $cast_bool( $own );
+			$enabled_resolved[ $bp ] = $effective;
+			if ( ! $effective ) {
+				$disabled_bps[ $bp ] = true;
+			}
 		}
 
-		$extra_bps = $this->get_extra_breakpoints();
-		$config    = [
-			'enabled' => true,
-		];
+		$config['enable_editor'] = (bool) $this->unwrap_primitive( $settings[ Schema::ENABLE_EDITOR ] ?? null, false );
+
+		$this->emit_responsive(
+			$config, $settings, Schema::ENABLE, 'enabled', false, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
 
 		// Strings/presets (responsive)
-		$this->emit_responsive( $config, $settings, Schema::TEXT, 'text', '', $extra_bps, static fn( $v ) => (string) $v );	
-		$this->emit_responsive( $config, $settings, Schema::COLOR, 'color', '#ffffff', $extra_bps, static fn( $v ) => (string) $v );
-		$this->emit_responsive( $config, $settings, Schema::BACKGROUND, 'background', '#000000', $extra_bps, static fn( $v ) => (string) $v );
+		$this->emit_responsive( $config, $settings, Schema::TEXT, 'text', '', $extra_bps, $cast_string, $disabled_bps );	
+		$this->emit_responsive( $config, $settings, Schema::COLOR, 'color', '#ffffff', $extra_bps, $cast_string, $disabled_bps );
+		$this->emit_responsive( $config, $settings, Schema::BACKGROUND, 'background', '#000000', $extra_bps, $cast_string, $disabled_bps );
 
 		$dimension_cast = static function( $v ) {
 			if ( is_array( $v ) ) {
@@ -114,13 +122,17 @@ final class Render {
 			return (string) $v;
 		};
 
-		$this->emit_responsive( $config, $settings, Schema::WIDTH, 'width', '', $extra_bps, $dimension_cast );
-		$this->emit_responsive( $config, $settings, Schema::HEIGHT, 'height', '', $extra_bps, $dimension_cast );
-		$this->emit_responsive( $config, $settings, Schema::BORDER, 'border', '1px solid #ffffff', $extra_bps, static fn( $v ) => (string) $v );
+		$this->emit_responsive( $config, $settings, Schema::WIDTH, 'width', '', $extra_bps, $dimension_cast, $disabled_bps );
+		$this->emit_responsive( $config, $settings, Schema::HEIGHT, 'height', '', $extra_bps, $dimension_cast, $disabled_bps );
+		$this->emit_responsive( $config, $settings, Schema::BORDER, 'border', '1px solid #ffffff', $extra_bps, $cast_string, $disabled_bps );
 
 		// objects (responsive)
-	
-		$this->emit_responsive_object( $config, $settings, Schema::BORDER_RADIUS, 'borderRadius', $extra_bps );
+		$this->emit_responsive_object( $config, $settings, Schema::BORDER_RADIUS, 'borderRadius', $extra_bps, $disabled_bps );
+
+		// Ensure the enabled flag is always present for runtime if it wasn't written
+		if ( ! isset( $config['enabled'] ) ) {
+			$config['enabled'] = $enabled_resolved['desktop'];
+		}
 
 		return $config;
 	}
@@ -132,7 +144,8 @@ final class Render {
 		string $cfg_key,
 		$default,
 		array $extra_bps,
-		callable $cast
+		callable $cast,
+		array $disabled_bps = []
 	): void {
 		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 
@@ -160,6 +173,13 @@ final class Render {
 			if ( $own_value === $parent ) {
 				continue;
 			}
+
+			// Skip per-bp emission when the user disabled cursor hover on this breakpoint.
+			// The enable key itself must still be emitted so the runtime knows it's disabled.
+			if ( isset( $disabled_bps[ $bp ] ) && 'enabled' !== $cfg_key ) {
+				continue;
+			}
+
 			$config[ $cfg_key . '_' . $bp ] = $own_value;
 		}
 	}
@@ -169,7 +189,8 @@ final class Render {
 		array $settings,
 		string $base_key,
 		string $cfg_key,
-		array $extra_bps
+		array $extra_bps,
+		array $disabled_bps = []
 	): void {
 		$map = $this->envelope_to_map( $settings[ $base_key ] ?? null );
 		$desktop_raw = $map['desktop'] ?? null;
@@ -194,8 +215,40 @@ final class Render {
 			if ( $own_raw === $parent ) {
 				continue;
 			}
+
+			if ( isset( $disabled_bps[ $bp ] ) ) {
+				continue;
+			}
+
 			$config[ $cfg_key . '_' . $bp ] = $own_raw;
 		}
+	}
+
+	private function any_breakpoint_enabled( array $enabled_map, array $extra_bps ): bool {
+		$cast = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		if ( $cast( $enabled_map['desktop'] ?? false ) ) {
+			return true;
+		}
+		foreach ( $extra_bps as $bp ) {
+			if ( $cast( $enabled_map[ $bp ] ?? null ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function unwrap_primitive( $value, $fallback ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+		if ( ! array_key_exists( 'value', $value ) ) {
+			return $fallback;
+		}
+		$inner = $value['value'];
+		if ( is_array( $inner ) && array_key_exists( 'desktop', $inner ) ) {
+			return $inner['desktop'];
+		}
+		return $inner;
 	}
 
 	private function envelope_to_map( $envelope ): array {

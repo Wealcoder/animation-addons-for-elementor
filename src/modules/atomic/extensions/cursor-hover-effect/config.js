@@ -1,6 +1,8 @@
 import {
+	isEnabled,
 	showPlayButton,
 } from './predicates';
+
 const config = {
 
 	anchorKey:
@@ -16,7 +18,17 @@ const config = {
 		| Enable
 		|--------------------------------------------------------------------------
 		*/
-	
+		{
+			bind: 'enable',
+
+			label: 'Enable',
+
+			control: 'switch',
+
+			responsive: true,
+
+			defaultValue: false,
+		},
 
 		/*
 		|--------------------------------------------------------------------------
@@ -33,6 +45,7 @@ const config = {
 
 			defaultValue: '',
 
+			when: isEnabled,
 		},
 
 		/*
@@ -50,6 +63,7 @@ const config = {
 
 			defaultValue: '#ffffff',
 
+			when: isEnabled,
 		},
 
 		/*
@@ -67,6 +81,7 @@ const config = {
 
 			defaultValue: '#000000',
 
+			when: isEnabled,
 		},
 
 		/*
@@ -85,12 +100,9 @@ const config = {
 			defaultValue: '120px',
 
 			datalist: ['80', '100', '120', '150', '200'],
-			
 
+			when: isEnabled,
 		},
-
-		
-		
 
 		/*
 		|--------------------------------------------------------------------------
@@ -107,9 +119,10 @@ const config = {
 
 			defaultValue: '120px',
 
-			datalist: ['80', '100', '120', '150', '200'],			
+			datalist: ['80', '100', '120', '150', '200'],
 
-		},		
+			when: isEnabled,
+		},
 
 		/*
 		|--------------------------------------------------------------------------
@@ -127,6 +140,7 @@ const config = {
 			defaultValue:
 				'1px solid #ffffff',
 
+			when: isEnabled,
 		},
 
 		/*
@@ -144,6 +158,7 @@ const config = {
 
 			defaultValue: '100%',
 
+			when: isEnabled,
 		},
 
 		{
@@ -156,6 +171,8 @@ const config = {
 			responsive: false,
 
 			defaultValue: false,
+
+			when: isEnabled,
 		},
 
 		{

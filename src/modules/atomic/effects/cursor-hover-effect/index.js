@@ -1,5 +1,6 @@
 const {
 	configFor,
+	pickConfigResponsive,
 } = window.AAEADDON;
 
 /*
@@ -15,16 +16,34 @@ const {
 const MAP =
 	'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT';
 
+function r(cfg, key, fallback) {
+	const v = pickConfigResponsive(cfg, key);
+	return (v === undefined || v === '') ? fallback : v;
+}
+
 function read(el) {
 
-	const cfg =
-		configFor(el, MAP);
+	const cfg =	configFor(el, MAP);
 
-	if (!cfg || !cfg.enabled) {
+	if (!cfg) {
+		return null;
+	}
+	
+	const isEnabled = r(cfg, 'enabled', false);
+	if (!isEnabled) {
 		return null;
 	}
 
-	return cfg;
+	return {
+		enabled: true,
+		text: r(cfg, 'text', ''),
+		color: r(cfg, 'color', '#ffffff'),
+		background: r(cfg, 'background', '#000000'),
+		width: r(cfg, 'width', ''),
+		height: r(cfg, 'height', ''),
+		border: r(cfg, 'border', '1px solid #ffffff'),
+		borderRadius: r(cfg, 'borderRadius', null),
+	};
 }
 
 function bind(el, config) {
@@ -35,9 +54,7 @@ function bind(el, config) {
 	|--------------------------------------------------------------------------
 	*/
 
-	console.log(
-		'Cursor Hover Effect',
-		el,
+	console.log(		
 		config
 	);
 }

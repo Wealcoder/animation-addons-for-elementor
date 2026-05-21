@@ -32,6 +32,21 @@ function buildConfigFromSettings(feature, container) {
 	return null;
 }
 
+function isFeatureInPlayGroup(featureName, playGroup) {
+	if (!playGroup) return true;
+	const group = playGroup.toLowerCase();
+	if (group === 'aae_text_' && featureName === 'text-animation') return true;
+	if (group === 'aae_anim_' && featureName === 'regular-animation') return true;
+	if (group === 'aae_img_' && featureName === 'image-animation') return true;
+	if (group === 'aae_ih_' && featureName === 'image-hover') return true;
+	if (group === 'aae_cursor_hover_' && featureName === 'cursor-hover-effect') return true;
+	if (group === 'aae_sticky_' && featureName === 'sticky') return true;
+	if (group === 'aae_mouse_move_effect_' && featureName === 'mouse-move-effect') return true;
+	if (group === 'aae_plx_' && featureName === 'parallax') return true;
+	if (group === 'aae_horizontal_' && featureName === 'horizontal') return true;
+	return false;
+}
+
 /**
  * Apply ALL features that target this widget type — a heading carries both
  * text-animation and regular-animation, and the user may enable either /
@@ -42,7 +57,7 @@ function buildConfigFromSettings(feature, container) {
  * (effect=none / toggled off). Returns null when no preview / no target /
  * no features for this widget type.
  */
-export function applySettingsToDom(container) {
+export function applySettingsToDom(container, playGroup = "") {
 
 	const features = featuresFor(container);
 	
@@ -64,6 +79,10 @@ export function applySettingsToDom(container) {
 	for (const feature of features) {
 		if (!feature.mapName) continue;
 
+		if (playGroup && !isFeatureInPlayGroup(feature.name, playGroup)) {
+			continue;
+		}
+
 		const cfg = buildConfigFromSettings(feature, container);
 		const map = win[feature.mapName] = win[feature.mapName] || {};
 
@@ -81,7 +100,7 @@ export function applySettingsToDom(container) {
 
 	// Single rebind() per element regardless of how many features applied —
 	// common.js's rebind walks ALL kinds and re-reads each map.
-	if (api?.rebind) api.rebind(target);
+	if (api?.rebind) api.rebind(target, playGroup);
 
 	return { target, results };
 }
@@ -97,13 +116,13 @@ export function replayInPreview(target, playGroup = "") {
 	if (!api || !target) return false;
 
 	if (typeof api.reset === 'function') {
-		api.reset(target);
+		api.reset(target, playGroup);
 	}
 
 	if (typeof api.replay === 'function') {
 		api.replay(target, false, playGroup);
 	} else if (typeof api.rebind === 'function') {
-		api.rebind(target);
+		api.rebind(target, playGroup);
 	}
 	return true;
 }

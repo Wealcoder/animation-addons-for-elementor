@@ -73,6 +73,9 @@ final class Schema
 	const BORDER_RADIUS =
 	'aae_cursor_hover_border_radius';
 
+	const ENABLE =
+	'aae_cursor_hover_enable';
+
 	const ENABLE_EDITOR =
 	'aae_cursor_hover_enable_editor';
 
@@ -99,6 +102,13 @@ final class Schema
 			Section_Anchor_Prop_Type::make()
 			->default('');
 
+		// ENABLE
+
+		$schema[self::ENABLE] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => false,
+			]);
 
 		// ENABLE ON EDITOR 
 

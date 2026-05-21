@@ -33,7 +33,7 @@ const config = {
 			bind: 'enable_editor', label: 'Enable in Editor', control: 'switch',
 			defaultValue: false, when: isParallaxEnabled, responsive: false
 		},
-		{ control: 'play-button', when: showPlayButton },
+		{ control: 'play-button', when: showPlayButton, play_group: 'aae_plx_' },
 	],
 };
 

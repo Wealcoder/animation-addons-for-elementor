@@ -63,7 +63,7 @@ const config = {
 
 			when: isEnabled,
 		},
-		{ control: 'play-button', when: isEnabled },
+		{ control: 'play-button', when: isEnabled, play_group: 'aae_horizontal_' },
 
 	],
 };

@@ -269,8 +269,23 @@ function scan(root) {
 	}
 }
 
+function isKindInPlayGroup(kindName, playGroup) {
+	if (!playGroup) return true;
+	const group = playGroup.toLowerCase();
+	if (group === 'aae_text_' && kindName === 'text') return true;
+	if (group === 'aae_anim_' && kindName === 'regular') return true;
+	if (group === 'aae_img_' && kindName === 'image-animation') return true;
+	if (group === 'aae_ih_' && kindName === 'image-hover') return true;
+	if (group === 'aae_cursor_hover_' && kindName === 'cursor-hover-effect') return true;
+	if (group === 'aae_sticky_' && kindName === 'sticky') return true;
+	if (group === 'aae_mouse_move_effect_' && kindName === 'mouse-move-effect') return true;
+	if (group === 'aae_horizontal_' && kindName === 'horizontal') return true;
+	if (group === 'aae_plx_' && kindName === 'parallax') return true;
+	return false;
+}
+
 /** Clear bound state and re-bind one element across every owning kind. */
-function rebind(el) {
+function rebind(el, playGroup = "") {
 	if (!el) return;
 
 	// Full destroy of the previous animation before re-binding:
@@ -285,6 +300,9 @@ function rebind(el) {
 	// since the last bind (effect=none, deleted setting) still gets fully
 	// destroyed.
 	for (const kind of KINDS) {
+		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) {
+			continue;
+		}
 		if (typeof kind.reset === 'function') {
 			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
 		}
@@ -299,6 +317,9 @@ function rebind(el) {
 	}
 
 	for (const kind of kindsFor(el)) {
+		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) {
+			continue;
+		}
 		const config = kind.read(el);
 		if (!config) continue;
 		el.classList.add(kind.boundFlag);
@@ -312,21 +333,27 @@ function rebind(el) {
  * the tween, reverts GSAP-applied styles, un-splits text pieces, then
  * tears down the trigger so no further events fire.
  */
-function resetEl(el) {
+function resetEl(el, playGroup = "") {
 
 
 	if (!el) return;
 
-	// Kill all tweens
-	gsap.killTweensOf(el);
+	if (!playGroup) {
+		// Kill all tweens
+		gsap.killTweensOf(el);
 
-	// Remove inline styles added by GSAP
-	gsap.set(el, {
-		clearProps: "all"
-	});
+		// Remove inline styles added by GSAP
+		gsap.set(el, {
+			clearProps: "all"
+		});
+	}
 
 	for (const kind of KINDS) {
 		if (!configFor(el, kind.mapName)) continue;
+
+		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) {
+			continue;
+		}
 
 		if (typeof kind.reset === 'function') {
 			try {
@@ -341,6 +368,10 @@ function resetEl(el) {
 		}
 
 		el.classList.remove(kind.boundFlag);
+		if (el[kind.playedKey]) {
+			el[kind.playedKey].kill?.();
+			delete el[kind.playedKey];
+		}
 	}
 }
 
@@ -381,15 +412,8 @@ function replay(el, fromChain = false, playGroup = "") {
 		// inner spans, regular → the element itself) so they coexist.
 		let didPlay = false;
 		for (const kind of owningKinds) {
-			if (playGroup) {
-				const group = playGroup.toLowerCase();
-				if (group === 'aae_text_' && kind.name !== 'text') continue;
-				if (group === 'aae_anim_' && kind.name !== 'regular') continue;
-				if (group === 'aae_img_' && kind.name !== 'image-animation') continue;
-				if (group === 'aae_ih_' && kind.name !== 'image-hover') continue;
-				if (group === 'aae_cursor_hover_' && kind.name !== 'cursor-hover-effect') continue;
-				if (group === 'aae_sticky_' && kind.name !== 'sticky') continue;
-				if (group === 'aae_mouse_move_effect_' && kind.name !== 'mouse-move-effect') continue;
+			if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) {
+				continue;
 			}
 
 			const config = kind.read(el);

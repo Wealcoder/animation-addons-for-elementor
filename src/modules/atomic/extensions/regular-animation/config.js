@@ -237,7 +237,7 @@ const config = {
 			bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
 			responsive: false, defaultValue: false, when: showEnableEditor
 		},
-		{ control: 'play-button', when: showPlayButton },
+		{ control: 'play-button', when: showPlayButton, play_group: 'aae_anim_' },
 	],
 };
 

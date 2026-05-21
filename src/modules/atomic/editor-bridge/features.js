@@ -630,6 +630,7 @@ function findByInteractionId(doc, id) {
 // cursor hover effect config will be built in a similar way when needed, following the pattern above.
 
 const CURSOR_RESPONSIVE = {
+	aae_cursor_hover_enable: { configKey: 'enabled', default: false },
 	aae_cursor_hover_text: { configKey: 'text', default: '' },
 	aae_cursor_hover_color: { configKey: 'color', default: '#ffffff' },
 	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
@@ -678,18 +679,33 @@ function translateDimensionSettings(settings, keys) {
 }
 
 function buildCursorHoverEffectConfig(settings) {
+	const enabled = readAt(settings, 'aae_cursor_hover_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_cursor_hover_enable', false);
 
-	const enabled = plain(settings, 'aae_cursor_hover_enable_editor');
-	if (!enabled) return null;
-	const cfg = { enabled: true };
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {
+		enable_editor: plain(settings, 'aae_cursor_hover_enable_editor') || false,
+	};
+
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
 
 	const translated = translateDimensionSettings(settings, [
 		'aae_cursor_hover_width',
 		'aae_cursor_hover_height'
 	]);
 
-	emitResponsive(cfg, translated, CURSOR_RESPONSIVE);
-	emitResponsiveObjects(cfg, translated, CURSOR_OBJECTS);
+	emitResponsive(cfg, translated, CURSOR_RESPONSIVE, disabledBps);
+	emitResponsiveObjects(cfg, translated, CURSOR_OBJECTS, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
 	return cfg;
 }
 
@@ -809,8 +825,8 @@ export const FEATURES = [
 	{
 		name: 'cursor-hover-effect',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
-		enableSetting: 'aae_cursor_hover_enable_editor',
-		autoReplaySetting: null,
+		enableSetting: 'aae_cursor_hover_enable',
+		autoReplaySetting: 'aae_cursor_hover_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
 		buildConfig: buildCursorHoverEffectConfig,
 		findTarget: findByInteractionId,

@@ -21,7 +21,7 @@ export function PlayButtonInput({ play_group = "" }) {
 
     const container = getSelectedContainer();
   
-    let dom_settings = applySettingsToDom(container); // Ensure the latest settings are applied to the preview before replaying.
+    let dom_settings = applySettingsToDom(container, play_group); // Ensure the latest settings are applied to the preview before replaying.
 
     if (!replayInPreview(dom_settings.target, play_group)) {
       // eslint-disable-next-line no-console

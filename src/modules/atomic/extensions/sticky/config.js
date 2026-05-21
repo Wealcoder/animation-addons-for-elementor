@@ -300,6 +300,7 @@ const config = {
 		{
 			control: 'play-button',
 			when: showPlayButton,
+			play_group: 'aae_sticky_',
 		},
 	],
 };

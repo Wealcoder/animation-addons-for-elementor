@@ -39,7 +39,7 @@ const config = {
 		// Enable On Editor) don't always fire the live-bridge change event,
 		// so the preview iframe's IMGHOVER cfg can lag behind the panel.
 		// Click Play to push the latest cfg into the iframe and rebind.
-		{ control: 'play-button', when: showPlayButton },
+		{ control: 'play-button', when: showPlayButton, play_group: 'aae_ih_' },
 	],
 };
 
