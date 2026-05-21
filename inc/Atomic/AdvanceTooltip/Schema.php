@@ -39,8 +39,8 @@ final class Schema
     const OFFSET =
     'aae_advance_tooltip_offset';
 
-    const ARROW =
-    'aae_advance_tooltip_arrow';
+    const ARROW_ENABLE =
+    'aae_advance_tooltip_arrow_enable';
 
     const ANIMATION =
     'aae_advance_tooltip_animation';
@@ -52,7 +52,9 @@ final class Schema
     'aae_advance_tooltip_arrow_size';
 
     const BORDER_RADIUS =
-    'aae_cursor_hover_border_radius';
+    'aae_advance_tooltip_borderRadius';
+
+    const ALIGNMENT = 'aae_advance_tooltip_alignment';
 
     public function register(): void
     {
@@ -106,14 +108,22 @@ final class Schema
                 ]);
         }
 
-        $schema[self::ARROW] =
-            Boolean_Prop_Type::make()
-            ->default(true);
+        $schema[self::ARROW_ENABLE] =
+            Responsive_JSON_Prop_Type::make()
+            ->default([
+                'desktop' => true,
+            ]);
 
         $schema[self::BORDER_RADIUS] =
             Responsive_JSON_Prop_Type::make()
             ->default([
                 'desktop' => '100%',
+            ]);
+
+        $schema[self::ALIGNMENT] =
+            Responsive_JSON_Prop_Type::make()
+            ->default([
+                'desktop' => 'center', // Default fallback value
             ]);
 
         return $schema;

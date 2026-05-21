@@ -101,11 +101,45 @@ const config = {
             tab: 'Content', // Goes to Content tab
         },
         {
+            bind: 'alignment',
+            label: 'Alignment',
+            control: 'choose',
+            responsive: true,
+            defaultValue: 'center',
+            options: [
+                {
+                    value: 'left',
+                    label: 'Left',
+                    icon: 'eicon-text-align-left' // CSS class from Elementor's core icon library
+                },
+                {
+                    value: 'center',
+                    label: 'Center',
+                    icon: 'eicon-text-align-center'
+                },
+                {
+                    value: 'right',
+                    label: 'Right',
+                    icon: 'eicon-text-align-right'
+                },
+            ],
+            tab: 'Content',
+        },
+        {
             bind: 'width',
             label: 'Width',
             control: 'text',
             defaultValue: '200px',
             when: isEnabled,
+            tab: 'style', // Goes to Content tab
+        },
+
+        {
+            bind: 'arrow_enable',
+            label: 'Enable Arrow',
+            control: 'switch',
+            responsive: true,
+            defaultValue: false,
             tab: 'style', // Goes to Content tab
         },
 
@@ -136,7 +170,7 @@ const config = {
         },
 
         {
-            bind: 'border_radius',
+            bind: 'borderRadius',
 
             label: 'Border Radius',
 
