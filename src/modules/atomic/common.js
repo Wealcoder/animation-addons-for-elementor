@@ -389,6 +389,7 @@ function replay(el, fromChain = false, playGroup = "") {
 				if (group === 'aae_ih_' && kind.name !== 'image-hover') continue;
 				if (group === 'aae_cursor_hover_' && kind.name !== 'cursor-hover-effect') continue;
 				if (group === 'aae_sticky_' && kind.name !== 'sticky') continue;
+				if (group === 'aae_mouse_move_effect_' && kind.name !== 'mouse-move-effect') continue;
 			}
 
 			const config = kind.read(el);

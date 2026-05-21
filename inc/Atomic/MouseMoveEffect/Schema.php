@@ -42,6 +42,9 @@ final class Schema
 	const CUSTOMS =
 	'aae_mouse_move_effect_customs';
 
+	const CUSTOM_PROPS =
+	'aae_mouse_move_effect_custom_props';
+
 	public function register(): void
 	{
 
@@ -72,8 +75,10 @@ final class Schema
 		*/
 
 		$schema[self::ENABLE] =
-			Boolean_Prop_Type::make()
-			->default(false);
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => false,
+			]);
 
 		$schema[self::ENABLE_EDITOR] =
 			Boolean_Prop_Type::make()
@@ -137,6 +142,12 @@ final class Schema
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => '',
+			]);
+
+		$schema[self::CUSTOM_PROPS] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [],
 			]);
 
 		return $schema;

@@ -98,7 +98,7 @@ const SCROLL_POSITION_OPTIONS = [
  * the v3 dropdown order. Values match GSAP's keyword names (kept unchanged
  * for runtime compatibility); labels are display-only.
  */
-const CUSTOM_PROPERTY_OPTIONS = [
+export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'none', label: 'None' },
 	{ value: 'opacity', label: 'Opacity' },
 	{ value: 'x', label: 'X' },
