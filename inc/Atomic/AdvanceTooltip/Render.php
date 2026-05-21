@@ -85,9 +85,6 @@ final class Render
     private function build_config(
         array $settings
     ): array {
-    echo "<pre>";
-    var_dump($settings);
-    echo "</pre>";
         return [
             'enabled' =>
             $this->emit_responsive(

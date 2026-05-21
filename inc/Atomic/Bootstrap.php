@@ -74,6 +74,11 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
 
+
+		// Tilt
+		( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
 	
 
 		( new Assets() )->register();
