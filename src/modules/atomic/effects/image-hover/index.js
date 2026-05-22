@@ -16,10 +16,10 @@
  */
 const { getGsap, configFor, pickConfigResponsive, currentBreakpoint } = window.AAEADDON;
 // Image reveal
-export const IH_MAP    = 'AAE_INTERACTIONS_IMGHOVER';
+export const IH_MAP = 'AAE_INTERACTIONS_IMGHOVER';
 export const IH_PLAYED = '__aaeIhPlayed';
-const IH_DISPOSE_KEY   = '__aaeIhDispose';
-const IH_OVERLAY_KEY   = '__aaeIhOverlay';
+const IH_DISPOSE_KEY = '__aaeIhDispose';
+const IH_OVERLAY_KEY = '__aaeIhOverlay';
 
 function r(cfg, key, fallback) {
 	const v = pickConfigResponsive(cfg, key);
@@ -28,20 +28,20 @@ function r(cfg, key, fallback) {
 
 export function readImageHover(el) {
 	const cfg = configFor(el, IH_MAP);
-	
+
 	if (!cfg) return null;
 	if (!cfg.imageUrl) return null;
 	const enabled = pickConfigResponsive(cfg, 'enabled');
 	
 	if (!enabled || enabled === 'false' || enabled === 'no') return null;
 	return {
-		enabled:  true,
+		enabled: true,
 		imageUrl: String(cfg.imageUrl),
-		width:    Number(r(cfg, 'width',  300)),
-		height:   Number(r(cfg, 'height', 300)),
-		top:      Number(r(cfg, 'top',    0)),
-		left:     Number(r(cfg, 'left',   0)),
-		zindex:   Number(r(cfg, 'zindex', 1)),
+		width: Number(r(cfg, 'width', 300)),
+		height: Number(r(cfg, 'height', 300)),
+		top: Number(r(cfg, 'top', 0)),
+		left: Number(r(cfg, 'left', 0)),
+		zindex: Number(r(cfg, 'zindex', 1)),
 	};
 }
 
@@ -91,27 +91,27 @@ function ensureOverlay(el, config) {
 	}
 
 	Object.assign(overlay.style, {
-		position:           'absolute',
-		pointerEvents:      'none',
-		opacity:            '0',
-		visibility:         'hidden',
+		position: 'absolute',
+		pointerEvents: 'none',
+		opacity: '0',
+		visibility: 'hidden',
 		// Anchor at host's origin — the per-mousemove transform handles
 		// both the cursor follow and the user-configured offset.
-		top:                '0',
-		left:               '0',
-		width:              `${config.width}px`,
-		height:             `${config.height}px`,
-		zIndex:             String(config.zindex),
-		backgroundImage:    `url("${config.imageUrl}")`,
-		backgroundSize:     'cover',
+		top: '0',
+		left: '0',
+		width: `${config.width}px`,
+		height: `${config.height}px`,
+		zIndex: String(config.zindex),
+		backgroundImage: `url("${config.imageUrl}")`,
+		backgroundSize: 'cover',
 		backgroundPosition: 'center',
-		backgroundRepeat:   'no-repeat',
+		backgroundRepeat: 'no-repeat',
 		// Center the image on the cursor by default. translate(-50%,-50%)
 		// pulls the image back by half its size so the cursor sits at its
 		// center; the per-mousemove gsap.set adds the cursor coords + the
 		// user's Top/Left offset on top.
-		transform:          'translate(-50%, -50%)',
-		willChange:         'transform, opacity',
+		transform: 'translate(-50%, -50%)',
+		willChange: 'transform, opacity',
 	});
 
 	return overlay;
@@ -119,11 +119,11 @@ function ensureOverlay(el, config) {
 
 export function bindImageHover(el, config) {
 	const gsap = getGsap();
-	
+	console.log(config);
 	if (!gsap) return;
 
 	const overlay = ensureOverlay(el, config);
-	const host    = hostFor(el);
+	const host = hostFor(el);
 
 	let activeConfig = null;
 
@@ -134,10 +134,10 @@ export function bindImageHover(el, config) {
 			return;
 		}
 		Object.assign(overlay.style, {
-			width:              `${activeConfig.width}px`,
-			height:             `${activeConfig.height}px`,
-			zIndex:             String(activeConfig.zindex),
-			backgroundImage:    `url("${activeConfig.imageUrl}")`,
+			width: `${activeConfig.width}px`,
+			height: `${activeConfig.height}px`,
+			zIndex: String(activeConfig.zindex),
+			backgroundImage: `url("${activeConfig.imageUrl}")`,
 		});
 		gsap.to(overlay, { duration: 0, autoAlpha: 1 });
 	};
@@ -154,20 +154,20 @@ export function bindImageHover(el, config) {
 	const onMove = (e) => {
 		if (!activeConfig || activeConfig.enabled === false) return;
 		const box = host.getBoundingClientRect();
-		const dx  = e.clientX - box.left;
-		const dy  = e.clientY - box.top;
+		const dx = e.clientX - box.left;
+		const dy = e.clientY - box.top;
 		gsap.set(overlay, { x: dx + activeConfig.left, y: dy + activeConfig.top });
 	};
 
 	el.addEventListener('mouseenter', onEnter);
 	el.addEventListener('mouseleave', onLeave);
-	el.addEventListener('mousemove',  onMove);
+	el.addEventListener('mousemove', onMove);
 
-	el[IH_PLAYED]      = overlay;
+	el[IH_PLAYED] = overlay;
 	el[IH_DISPOSE_KEY] = () => {
 		el.removeEventListener('mouseenter', onEnter);
 		el.removeEventListener('mouseleave', onLeave);
-		el.removeEventListener('mousemove',  onMove);
+		el.removeEventListener('mousemove', onMove);
 	};
 }
 
@@ -180,6 +180,7 @@ export function bindImageHover(el, config) {
 export function playImageHover(el, config) {
 	cleanupImageHover(el);
 	bindImageHover(el, config);
+	console.log('playImageHover', { el, config });
 }
 
 function cleanupImageHover(el) {
@@ -202,13 +203,13 @@ export function resetImageHover(el) {
 }
 // Image reveal hover
 window.AAEADDON.register({
-	name:       'image-hover',
-	mapName:    IH_MAP,
-	boundFlag:  'aae-ih-bound',
-	playedKey:  IH_PLAYED,
-	read:       readImageHover,
-	play:       playImageHover,
-	bind:       bindImageHover,
-	unbind:     cleanupImageHover,
-	reset:      resetImageHover,
+	name: 'image-hover',
+	mapName: IH_MAP,
+	boundFlag: 'aae-ih-bound',
+	playedKey: IH_PLAYED,
+	read: readImageHover,
+	play: playImageHover,
+	bind: bindImageHover,
+	unbind: cleanupImageHover,
+	reset: resetImageHover,
 });
