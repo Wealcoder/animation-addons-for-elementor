@@ -79,6 +79,11 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
+
+		// scrollto 
+		( new \WCF_ADDONS\Atomic\ScrollTo\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\ScrollTo\Render() )->register();
 	
 
 		( new Assets() )->register();

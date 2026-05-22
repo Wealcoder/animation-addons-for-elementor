@@ -14,6 +14,7 @@ import cursorHoverEffectSection from './extensions/cursor-hover-effect/config';
 import mouseMoveEffectSection from './extensions/mouse-move-effect/config';
 import advancetooltipSection from './extensions/advance-tooltip/config';
 import tilt from './extensions/tilt/config';
+import scrollTo from './extensions/scroll-to/config';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
@@ -43,6 +44,7 @@ registerResponsiveSection( cursorHoverEffectSection );
 registerResponsiveSection( mouseMoveEffectSection );
 registerResponsiveSection( advancetooltipSection );
 registerResponsiveSection( tilt );
+registerResponsiveSection( scrollTo );
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *
