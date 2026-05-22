@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\Atomic\Tilt;
 
 use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -42,6 +43,9 @@ final class Schema
 
 	const GYROSCOPE =
 	'aae_tilt_gyroscope';
+
+	const ENABLE_EDITOR =
+	'aae_tilt_enable_editor';
 
 	public function register(): void
 	{
@@ -118,6 +122,10 @@ final class Schema
 					'desktop' => false,
 				]);
 		}
+
+		$schema[self::ENABLE_EDITOR] =
+			Boolean_Prop_Type::make()
+			->default(false);
 
 		return $schema;
 	}

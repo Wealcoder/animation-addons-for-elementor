@@ -1,31 +1,17 @@
 /* eslint-env browser */
 
-function getValue(settings, bind) {
+import { valueAt } from '../../responsive-section/helpers';
 
-    const item = settings?.[bind];
-
-    if (!item) {
-        return item;
-    }
-
-    if (
-        item.value &&
-        typeof item.value === 'object'
-    ) {
-        return item.value.desktop;
-    }
-
-    if ('value' in item) {
-        return item.value;
-    }
-
-    return item;
+export function isEnabled(s, bp) {
+	return valueAt(s, 'aae_advance_tooltip_enable', bp) === true;
 }
 
-export function isEnabled(settings) {
+function plainBool(s, bind) {
+	const v = s?.[bind];
+	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
+	return !!v;
+}
 
-    return !!getValue(
-        settings,
-        'aae_advance_tooltip_enable'
-    );
+export function showPlayButton(s, bp) {
+	return isEnabled(s, bp) && plainBool(s, 'aae_advance_tooltip_enable_editor');
 }

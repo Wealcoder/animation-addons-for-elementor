@@ -26,11 +26,12 @@ final class Assets
 		'aae-effect-animation'       => 'effects/animation.js',
 		'aae-effect-image-animation' => 'effects/image-animation.js',
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
-		// 'aae-effect-tilt'      => 'effects/tilt.js',
+		'aae-effect-tilt'            => 'effects/tilt.js',
 		'aae-effect-sticky'          => 'effects/sticky.js',
 		'aae-effect-horizontal'      => 'effects/horizontal.js',
 		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
 		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
+		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
 	];
 
 	public function register(): void
@@ -88,6 +89,7 @@ final class Assets
 				'AAE_CONFIG',
 				[
 					'breakpoints' => $config,
+					'tooltip_css_url' => WCF_ADDONS_URL . 'assets/build/modules/atomic/effects/advance-tooltip.css',
 				]
 			);
 		}

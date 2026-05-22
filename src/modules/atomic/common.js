@@ -157,13 +157,27 @@ function pickConfigResponsive(cfg, key) {
 	const bp = currentBreakpoint();
 
 	const chain = BP_CASCADE[bp] || [];
-	
+	const isEnableKey = (key === 'enabled' || key === 'enable');
+
 	for (const step of chain) {
 		const v = cfg[key + '_' + step];
-		if (v !== undefined && v !== '') return v;
+		if (v !== undefined && v !== '') {
+			if (isEnableKey && step !== bp) {
+				const vBool = (v === true || v === 'true' || v === 1 || v === '1' || v === 'yes');
+				if (vBool) {
+					return true;
+				}
+			} else {
+				return v;
+			}
+		}
 	}
 
-	return cfg[key];
+	const d = cfg[key];
+	if (isEnableKey && d !== undefined) {
+		return (d === true || d === 'true' || d === 1 || d === '1' || d === 'yes');
+	}
+	return d;
 }
 
 /* =====================================================================
@@ -299,6 +313,8 @@ function isKindInPlayGroup(kindName, playGroup) {
 	if (group === 'aae_mouse_move_effect_' && kindName === 'mouse-move-effect') return true;
 	if (group === 'aae_horizontal_' && kindName === 'horizontal') return true;
 	if (group === 'aae_plx_' && kindName === 'parallax') return true;
+	if (group === 'aae_advance_tooltip_' && kindName === 'advance-tooltip') return true;
+	if (group === 'aae_tilt_' && kindName === 'tilt') return true;
 	return false;
 }
 
@@ -345,11 +361,28 @@ function rebind(el, playGroup = "") {
 	}
 }
 
+function updateBodyDeviceMode(bp) {
+	if (typeof document !== 'undefined' && document.body) {
+		document.body.setAttribute('data-elementor-device-mode', bp);
+	}
+}
+
 let lastBp = currentBreakpoint();
+if (typeof document !== 'undefined') {
+	if (document.body) {
+		updateBodyDeviceMode(lastBp);
+	} else {
+		document.addEventListener('DOMContentLoaded', () => {
+			updateBodyDeviceMode(currentBreakpoint());
+		});
+	}
+}
+
 window.addEventListener('resize', () => {
 	const newBp = currentBreakpoint();
 	if (newBp !== lastBp) {
 		lastBp = newBp;
+		updateBodyDeviceMode(newBp);
 		document.querySelectorAll('[data-interaction-id]').forEach((el) => {
 			try { rebind(el); } catch (_) { }
 		});

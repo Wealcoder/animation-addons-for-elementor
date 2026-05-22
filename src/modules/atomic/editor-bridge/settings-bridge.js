@@ -44,6 +44,8 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_mouse_move_effect_' && featureName === 'mouse-move-effect') return true;
 	if (group === 'aae_plx_' && featureName === 'parallax') return true;
 	if (group === 'aae_horizontal_' && featureName === 'horizontal') return true;
+	if (group === 'aae_advance_tooltip_' && featureName === 'advance-tooltip') return true;
+	if (group === 'aae_tilt_' && featureName === 'tilt') return true;
 	return false;
 }
 

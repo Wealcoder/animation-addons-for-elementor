@@ -1,31 +1,17 @@
 /* eslint-env browser */
 
-function getValue(settings, bind) {
+import { valueAt } from '../../responsive-section/helpers';
 
-    const item = settings?.[bind];
-
-    if (!item) {
-        return item;
-    }
-
-    if (
-        item.value &&
-        typeof item.value === 'object'
-    ) {
-        return item.value.desktop;
-    }
-
-    if ('value' in item) {
-        return item.value;
-    }
-
-    return item;
+export function isEnabled(s, bp) {
+	return valueAt(s, 'aae_tilt_enable', bp) === true;
 }
 
-export function isEnabled(settings) {
-
-    return !!getValue(
-        settings,
-        'aae_tilt_enable'
-    );
+function plainBool(s, bind) {
+	const v = s?.[bind];
+	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
+	return !!v;
 }
+
+export function showPlayButton(s, bp) {
+	return isEnabled(s, bp) && plainBool(s, 'aae_tilt_enable_editor');
+}

@@ -41,6 +41,19 @@ function cascadeParent(bp, resolved, desktopValue) {
 	return desktopValue;
 }
 
+function cascadeParentEnabled(bp, resolved, desktopValue) {
+	const chain = BP_CASCADE[bp] || [];
+	for (const step of chain) {
+		if (step in resolved) {
+			const v = resolved[step];
+			const vBool = (v === 'yes' || v === 'true' || v === 1 || v === '1' || v === true);
+			if (vBool) return true;
+		}
+	}
+	const dBool = (desktopValue === 'yes' || desktopValue === 'true' || desktopValue === 1 || desktopValue === '1' || desktopValue === true);
+	return dBool;
+}
+
 /** Pull the breakpoint→primitive map out of an 'aae-rj' envelope. */
 function envelopeToMap(envelope) {
 	if (envelope && typeof envelope === 'object' && envelope.$$type === 'aae-rj'
@@ -56,6 +69,11 @@ function readAt(settings, base, bp, defaultVal) {
 	if (bp === 'desktop') {
 		const v = map.desktop;
 		return (v === undefined || v === null || v === '') ? defaultVal : v;
+	}
+	const isEnableKey = base.endsWith('_enable') || base.endsWith('_enabled') || base === 'enable' || base === 'enabled';
+	if (isEnableKey) {
+		const resolved = resolveAllBreakpoints(settings, base, defaultVal);
+		return resolved[bp];
 	}
 	const chain = [bp, ...(BP_CASCADE[bp] || []), 'desktop'];
 	for (const step of chain) {
@@ -73,9 +91,12 @@ function resolveAllBreakpoints(settings, base, defaultVal) {
 		? defaultVal
 		: desktopRaw;
 	const resolved = { desktop: desktopVal };
+	const isEnableKey = base.endsWith('_enable') || base.endsWith('_enabled') || base === 'enable' || base === 'enabled';
 	for (const bp of BPS) {
 		const own = map[bp];
-		const parent = cascadeParent(bp, resolved, desktopVal);
+		const parent = isEnableKey
+			? cascadeParentEnabled(bp, resolved, desktopVal)
+			: cascadeParent(bp, resolved, desktopVal);
 		resolved[bp] = (own === undefined || own === null || own === '') ? parent : own;
 	}
 	return resolved;
@@ -106,9 +127,12 @@ function emitResponsive(cfg, settings, keys, disabledBps) {
 		}
 
 		const resolved = { desktop: desktopVal };
+		const isEnableKey = ['enable', 'enabled'].includes(info.configKey);
 		for (const bp of BPS) {
 			const own = map[bp];
-			const parent = cascadeParent(bp, resolved, desktopVal);
+			const parent = isEnableKey
+				? cascadeParentEnabled(bp, resolved, desktopVal)
+				: cascadeParent(bp, resolved, desktopVal);
 
 			if (own === undefined || own === null || own === '') {
 				resolved[bp] = parent;
@@ -760,7 +784,7 @@ const ADVANCED_TOOLTIP_OBJECTS = {
 };
 
 function buildAdvancedTooltipConfig(settings) {
-
+	
 	const enabled = readAt(
 		settings,
 		'aae_advance_tooltip_enable',
@@ -768,23 +792,18 @@ function buildAdvancedTooltipConfig(settings) {
 		false
 	);
 
-	const resolvedEnable = resolveAllBreakpoints(
-		settings,
-		'aae_advance_tooltip_enable',
-		false
-	);
+	const resolvedEnable = resolveAllBreakpoints(settings,	'aae_advance_tooltip_enable',	false);
 
-	const anyActive =
-		enabled ||
-		BPS.some(
-			(bp) => resolvedEnable[bp]
-		);
+	const anyActive =	enabled || BPS.some((bp) => resolvedEnable[bp]);
 
 	if (!anyActive) {
 		return null;
 	}
 
 	const cfg = {};
+	if (plain(settings, 'aae_advance_tooltip_enable_editor')) {
+		cfg.enableEditor = true;
+	}
 
 	const disabledBps = new Set();
 
@@ -795,23 +814,54 @@ function buildAdvancedTooltipConfig(settings) {
 		}
 	}
 
-	emitResponsive(
-		cfg,
-		settings,
-		ADVANCED_TOOLTIP_RESPONSIVE,
-		disabledBps
-	);
+	emitResponsive(	cfg, settings,	ADVANCED_TOOLTIP_RESPONSIVE, disabledBps);
 
-	emitResponsiveObjects(
-		cfg,
-		settings,
-		ADVANCED_TOOLTIP_OBJECTS,
-		disabledBps
-	);
+	emitResponsiveObjects(cfg,settings,	ADVANCED_TOOLTIP_OBJECTS,disabledBps);
 
 	if (!('enabled' in cfg)) {
 
 		cfg.enabled = enabled;
+	}
+
+	return cfg;
+}
+
+const TILT_RESPONSIVE = {
+	aae_tilt_enable: { configKey: 'enabled', default: false },
+	aae_tilt_max: { configKey: 'max', default: 15 },
+	aae_tilt_speed: { configKey: 'speed', default: 300 },
+	aae_tilt_scale: { configKey: 'scale', default: 1 },
+	aae_tilt_perspective: { configKey: 'perspective', default: 1000 },
+	aae_tilt_glare: { configKey: 'glare', default: false },
+	aae_tilt_max_glare: { configKey: 'maxGlare', default: 0.5 },
+	aae_tilt_reset: { configKey: 'reset', default: true },
+	aae_tilt_transition: { configKey: 'transition', default: true },
+	aae_tilt_gyroscope: { configKey: 'gyroscope', default: true },
+};
+
+function buildTiltConfig(settings) {
+	const enabled = readAt(settings, 'aae_tilt_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_tilt_enable', false);
+
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {};
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) {
+			disabledBps.add(bp);
+		}
+	}
+
+	emitResponsive(cfg, settings, TILT_RESPONSIVE, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
+	if (plain(settings, 'aae_tilt_enable_editor')) {
+		cfg.enableEditor = true;
 	}
 
 	return cfg;
@@ -1065,12 +1115,21 @@ export const FEATURES = [
 		findTarget: findByInteractionId,
 	},
 	{
-		name: 'advanced-tooltip',
-		widgetTypes: ['e-flexbox', 'e-grid'],
-		enableSetting: 'aae_advance_tooltip_enable_editor',
-		autoReplaySetting: null,
-		mapName: 'AAE_INTERACTIONS_ADVANCED_TOOLTIP',
+		name: 'advance-tooltip',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_advance_tooltip_enable',
+		autoReplaySetting: 'aae_advance_tooltip_enable_editor',
+		mapName: 'AAE_INTERACTIONS_ADVANCE_TOOLTIP',
 		buildConfig: buildAdvancedTooltipConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'tilt',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_tilt_enable',
+		autoReplaySetting: 'aae_tilt_enable_editor',
+		mapName: 'AAE_INTERACTIONS_TILT',
+		buildConfig: buildTiltConfig,
 		findTarget: findByInteractionId,
 	},
 ];

@@ -52,7 +52,7 @@ final class Controls
         return Section::make()
 
             ->set_label(
-                'Advance Tooltip'
+                'Tooltip'
             )
 
             ->set_items([

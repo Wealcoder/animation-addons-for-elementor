@@ -60,7 +60,7 @@ final class Render {
 		$enabled_resolved = [ 'desktop' => $cast_bool( $enabled_map['desktop'] ?? false ) ];
 		foreach ( $extra_bps as $bp ) {
 			$own            = $enabled_map[ $bp ] ?? null;
-			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
+			$parent_enabled = $this->cascade_parent_enabled( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
 			$effective      = ( null === $own || '' === $own ) ? $parent_enabled : $cast_bool( $own );
 			$enabled_resolved[ $bp ] = $effective;
 			if ( ! $effective ) {
@@ -190,9 +190,13 @@ final class Render {
 
 		$resolved = [ 'desktop' => $desktop_value ];
 
+		$is_enable_key = ('enabled' === $cfg_key || 'enable' === $cfg_key);
+
 		foreach ( $extra_bps as $bp ) {
 			$own_raw = $map[ $bp ] ?? null;
-			$parent  = $this->cascade_parent( $bp, $resolved, $desktop_value );
+			$parent  = $is_enable_key
+				? $this->cascade_parent_enabled( $bp, $resolved, $desktop_value )
+				: $this->cascade_parent( $bp, $resolved, $desktop_value );
 
 			if ( null === $own_raw || '' === $own_raw ) {
 				$resolved[ $bp ] = $parent;
@@ -272,6 +276,28 @@ final class Render {
 			}
 		}
 		return $desktop_value;
+	}
+
+	private function cascade_parent_enabled( string $bp, array $resolved, $desktop_value ): bool {
+		static $cascade = [
+			'mobile'       => [ 'mobile_extra', 'tablet', 'tablet_extra', 'laptop' ],
+			'mobile_extra' => [ 'tablet', 'tablet_extra', 'laptop' ],
+			'tablet'       => [ 'tablet_extra', 'laptop' ],
+			'tablet_extra' => [ 'laptop' ],
+			'laptop'       => [],
+			'widescreen'   => [],
+		];
+		foreach ( $cascade[ $bp ] ?? [] as $step ) {
+			if ( array_key_exists( $step, $resolved ) ) {
+				$v = $resolved[ $step ];
+				$v_bool = is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+				if ( $v_bool ) {
+					return true;
+				}
+			}
+		}
+		$d_bool = is_bool( $desktop_value ) ? $desktop_value : ( $desktop_value === 'yes' || $desktop_value === 'true' || $desktop_value === 1 || $desktop_value === '1' );
+		return $d_bool;
 	}
 
 	private function get_extra_breakpoints(): array {

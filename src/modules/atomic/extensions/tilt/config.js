@@ -2,6 +2,7 @@
 
 import {
     isEnabled,
+    showPlayButton,
 } from './predicates';
 
 const config = {
@@ -111,6 +112,22 @@ const config = {
             defaultValue: true,
             when: isEnabled,
             tab: 'Advanced',
+        },
+
+        // Editor-only controls (non-responsive).
+        {
+            bind: 'enable_editor',
+            label: 'Enable in Editor',
+            control: 'switch',
+            defaultValue: false,
+            responsive: false,
+            when: isEnabled,
+            tab: 'Content',
+        },
+        {
+            control: 'play-button',
+            when: showPlayButton,
+            play_group: 'aae_tilt_',
         },
     ],
 };

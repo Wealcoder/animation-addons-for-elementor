@@ -2,6 +2,7 @@
 
 import {
     isEnabled,
+    showPlayButton,
 } from './predicates';
 
 const POSITION_OPTIONS = [
@@ -180,6 +181,22 @@ const config = {
             defaultValue: '100%',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+        },
+
+        // Editor-only controls (non-responsive).
+        {
+            bind: 'enable_editor',
+            label: 'Enable in Editor',
+            control: 'switch',
+            defaultValue: false,
+            responsive: false,
+            when: isEnabled,
+            tab: 'Content',
+        },
+        {
+            control: 'play-button',
+            when: showPlayButton,
+            play_group: 'aae_advance_tooltip_',
         },
     ],
 };

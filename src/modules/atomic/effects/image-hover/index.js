@@ -35,7 +35,7 @@ export function readImageHover(el) {
 	if (!imageUrl) return null;
 	const enabled = pickConfigResponsive(cfg, 'enabled');
 
-	console.log('enabled', enabled);
+	
 	if (!enabled || enabled === 'false' || enabled === 'no') return null;
 	return {
 		enabled: enabled,

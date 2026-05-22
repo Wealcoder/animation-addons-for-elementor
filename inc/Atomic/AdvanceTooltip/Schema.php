@@ -3,6 +3,7 @@
 namespace WCF_ADDONS\Atomic\AdvanceTooltip;
 
 use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -54,6 +55,9 @@ final class Schema
 
 	const ALIGNMENT =
 	'aae_advance_tooltip_alignment';
+
+	const TOOLTIP_ENABLE_EDITOR =
+	'aae_advance_tooltip_enable_editor';
 
 	public function register(): void
 	{
@@ -143,6 +147,10 @@ final class Schema
 					'isLinked' => true,
 				],
 			]);
+
+		$schema[self::TOOLTIP_ENABLE_EDITOR] =
+			Boolean_Prop_Type::make()
+			->default(false);
 
 		return $schema;
 	}

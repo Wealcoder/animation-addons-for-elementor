@@ -43,6 +43,8 @@ module.exports = {
     "modules/atomic/effects/sticky": "./src/modules/atomic/effects/sticky/index.js",
     "modules/atomic/effects/mouse-move-effect": "./src/modules/atomic/effects/mouse-move-effect/index.js",
     "modules/atomic/effects/cursor-hover-effect": "./src/modules/atomic/effects/cursor-hover-effect/index.js",
+    "modules/atomic/effects/advance-tooltip": "./src/modules/atomic/effects/advance-tooltip/index.js",
+    "modules/atomic/effects/tilt": "./src/modules/atomic/effects/tilt/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

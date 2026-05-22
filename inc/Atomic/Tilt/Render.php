@@ -55,6 +55,10 @@ final class Render
 				$settings
 			);
 
+		if ( ! empty($settings[Schema::ENABLE_EDITOR]) ) {
+			$config['enableEditor'] = true;
+		}
+
 		if (
 			empty($config['enabled']['desktop'])
 		) {
@@ -80,6 +84,10 @@ final class Render
 
 			$config
 		);
+
+		if ( ! is_admin() ) {
+			wp_enqueue_script( 'aae-effect-tilt' );
+		}
 	}
 
 	private function build_config(
