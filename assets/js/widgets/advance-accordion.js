@@ -8,15 +8,26 @@
         let item = $('.tab-title', $scope);
       
         if ($scope.hasClass('accordion-first-item-yes')) {
-            item.first().parent().toggleClass('element-active');
+            item.first().parent().addClass('element-active');
+            item.first().attr('aria-expanded', 'true');
             item.first().parent().find('.tab-content').show();
         }
 
         item.on('click', function () {
-            $(this).parent().toggleClass('element-active');
-            $(this).parent().find('.tab-content').slideToggle("medium");
+            const $current = $(this);
+            const $parent = $current.parent();
+            const willOpen = !$parent.hasClass('element-active');
 
-            item.not($(this)).parent().find('.tab-content').slideUp('medium');
+            item.not($current).each(function () {
+                const $other = $(this);
+                $other.parent().removeClass('element-active');
+                $other.attr('aria-expanded', 'false');
+                $other.parent().find('.tab-content').slideUp('medium');
+            });
+
+            $parent.toggleClass('element-active', willOpen);
+            $current.attr('aria-expanded', willOpen ? 'true' : 'false');
+            $parent.find('.tab-content').slideToggle('medium');
         });
     };
 
