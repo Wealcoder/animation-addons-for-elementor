@@ -27,11 +27,10 @@ final class Schema
     public function add_props(
         array $schema
     ): array {
-        
+        $schema[self::SECTION_ANCHOR] = Section_Anchor_Prop_Type::make()->default('');
         $schema[self::ENABLE] = Boolean_Prop_Type::make()->default(false);
         $schema[self::LINK] = String_Prop_Type::make()->default('');       
-        $schema[self::IS_EXTERNAL] = Boolean_Prop_Type::make()->default(false);
-        $schema[self::SECTION_ANCHOR] = Section_Anchor_Prop_Type::make()->default('');
+        $schema[self::IS_EXTERNAL] = Boolean_Prop_Type::make()->default(false);     
         
         return $schema;
     }

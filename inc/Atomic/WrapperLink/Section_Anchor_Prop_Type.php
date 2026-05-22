@@ -10,6 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Section_Anchor_Prop_Type extends Base_Section_Anchor {
 
 	public static function get_key(): string {
-		return 'aae-section-aae-wrapper-link-play';
+		return 'aae-section-aae-wrapper-link';
 	}
 }

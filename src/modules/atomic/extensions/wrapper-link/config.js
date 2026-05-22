@@ -1,11 +1,9 @@
 import {
-	isEnabled,
-	showPlayButton,
+	isEnabled
 } from './predicates';
 
 const config = {
-	anchorKey:
-		'aae-section-aae-wrapper-link-play',
+	anchorKey:'aae-section-aae-wrapper-link',
 
 	bindPrefix: '',
 
