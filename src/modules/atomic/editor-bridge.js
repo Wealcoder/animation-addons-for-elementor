@@ -15,6 +15,7 @@ import mouseMoveEffectSection from './extensions/mouse-move-effect/config';
 import advancetooltipSection from './extensions/advance-tooltip/config';
 import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
+import './effects/wrapper-link/index';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
