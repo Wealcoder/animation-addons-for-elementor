@@ -5,7 +5,7 @@ import {
 
 const config = {
 	anchorKey:
-		'aae-section-aae-wrapper-link-anchor',
+		'aae-section-aae-wrapper-link-play',
 
 	bindPrefix: '',
 
