@@ -126,13 +126,14 @@ export function bindImageHover(el, config) {
 	if (!gsap) return;
 
 	const overlay = ensureOverlay(el, config);
+	
 	const host = hostFor(el);
 
 	let activeConfig = null;
 
 	const onEnter = () => {
 		activeConfig = readImageHover(el);
-			
+
 		if (!activeConfig) {
 			gsap.to(overlay, { duration: 0, autoAlpha: 0 });
 			return;
