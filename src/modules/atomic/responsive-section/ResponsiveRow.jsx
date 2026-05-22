@@ -16,6 +16,7 @@ import { SliderInput } from "./inputs/SliderInput";
 import { DimensionInput, DimensionsInput } from "./inputs/Dimension";
 import { ChooseInput } from "./inputs/ChooseInput";
 import { MediaInput } from "./inputs/MediaInput";
+import { LinkInput } from "./inputs/LinkInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
@@ -45,6 +46,7 @@ const CONTROL_REGISTRY = {
   choose:     { Component: ChooseInput,     innerType: "string" },
   // Media picker — value: { id, url, size, sizes } | null
   media:      { Component: MediaInput,      innerType: "object" },
+  link:       { Component: LinkInput,       innerType: "string" },
 };
 
 /* ---------- dot indicator ---------- */

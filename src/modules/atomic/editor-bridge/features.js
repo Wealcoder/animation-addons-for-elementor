@@ -867,6 +867,39 @@ function buildTiltConfig(settings) {
 	return cfg;
 }
 
+function buildWrapperLinkConfig(settings) {
+	if (!plain(settings, 'aae_wrapper_link_enable')) {
+		return null;
+	}
+
+	const raw = settings.aae_wrapper_link;
+	if (!raw) return null;
+
+	const val = (raw && typeof raw === 'object' && '$$type' in raw) ? raw.value : raw;
+	if (!val) return null;
+
+	let url = typeof val === 'string' ? val : '';
+	if (!url) return null;
+
+	const isExternalRaw = settings.aae_wrapper_link_is_external;
+	let isExternal = false;
+	if (isExternalRaw !== undefined) {
+		if (typeof isExternalRaw === 'object' && '$$type' in isExternalRaw) {
+			isExternal = !!isExternalRaw.value;
+		} else {
+			isExternal = !!isExternalRaw;
+		}
+	}
+
+	const cfg = {
+		url,
+		isExternal,
+		nofollow: false,
+	};
+
+	return cfg;
+}
+
 
 /* =====================================================================
  * Registry
@@ -1130,6 +1163,15 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_tilt_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TILT',
 		buildConfig: buildTiltConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'wrapper-link',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_wrapper_link_enable',
+		autoReplaySetting: 'aae_wrapper_link_enable_editor',
+		mapName: 'AAE_INTERACTIONS_WRAPPER_LINK',
+		buildConfig: buildWrapperLinkConfig,
 		findTarget: findByInteractionId,
 	},
 ];

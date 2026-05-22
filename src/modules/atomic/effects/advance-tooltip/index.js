@@ -16,7 +16,7 @@ let cssLoaded = false;
 function ensureStylesheet() {
 	if (cssLoaded) return;
 	const url = window.AAE_CONFIG?.tooltip_css_url || (window.WCF_ADDONS_URL ? window.WCF_ADDONS_URL + 'assets/build/modules/atomic/effects/advance-tooltip.css' : '');
-	console.log('ensureStylesheet', { url });
+
 	if (!url) return;
 	if (document.querySelector(`link[href="${url}"]`)) {
 		cssLoaded = true;

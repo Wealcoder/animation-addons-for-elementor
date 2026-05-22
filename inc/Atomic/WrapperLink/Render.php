@@ -1,106 +1,81 @@
 <?php
-
 namespace WCF_ADDONS\Atomic\WrapperLink;
 
 use WCF_ADDONS\Atomic\Bootstrap;
 use WCF_ADDONS\Atomic\InteractionsMap;
+use Elementor\Modules\AtomicWidgets\PropsResolver\Render_Props_Resolver;
 
-if (! defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-final class Render
-{
-    public function register(): void
-    {
-        add_action(
-            'elementor/frontend/before_render',
-            [$this, 'maybe_register']
-        );
-    }
+final class Render {
 
-    public function maybe_register(
-        $element
-    ): void {
+	public function register(): void {
+		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );
+	}
 
-        if (
-            ! is_object($element) ||
-            ! method_exists(
-                $element,
-                'get_element_type'
-            )
-        ) {
-            return;
-        }
+	public function maybe_register( $element ): void {
+		if ( ! is_object( $element ) || ! method_exists( $element, 'get_element_type' ) ) {
+			return;
+		}
 
-        if (
-            ! in_array(
-                $element->get_element_type(),
-                Bootstrap::target_element_types(),
-                true
-            )
-        ) {
-            return;
-        }
+		$type = $element->get_element_type();
+		if ( ! in_array( $type, Bootstrap::target_element_types(), true ) ) {
+			return;
+		}
 
-        $settings = method_exists(
-            $element,
-            'get_settings'
-        )
-            ? $element->get_settings()
-            : [];
+		if ( ! class_exists( Render_Props_Resolver::class ) ) {
+			return;
+		}
 
-        $config =
-            $this->build_config(
-                $settings
-            );
+		$settings = method_exists( $element, 'get_settings' )
+			? $element->get_settings()
+			: [];
 
-        if (
-            empty($config['url'])
-        ) {
-            return;
-        }
+		$enabled = $settings[ Schema::ENABLE ] ?? false;
+		if ( is_array( $enabled ) && isset( $enabled['value'] ) ) {
+			$enabled = (bool) $enabled['value'];
+		} else {
+			$enabled = (bool) $enabled;
+		}
 
-        $id = method_exists(
-            $element,
-            'get_id'
-        )
-            ? $element->get_id()
-            : '';
+		if ( ! $enabled ) {
+			return;
+		}
 
-        if (empty($id)) {
-            return;
-        }
+		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
+		if ( '' === $id ) {
+			return;
+		}
 
-        InteractionsMap::register(
+		$url = $settings[ Schema::LINK ] ?? '';
+		if ( is_array( $url ) && isset( $url['value'] ) ) {
+			$url = (string) $url['value'];
+		} else {
+			$url = (string) $url;
+		}
 
-            'wrapper-link',
+		$is_external_raw = $settings[ Schema::IS_EXTERNAL ] ?? false;
+		if ( is_array( $is_external_raw ) && isset( $is_external_raw['value'] ) ) {
+			$is_external = (bool) $is_external_raw['value'];
+		} else {
+			$is_external = (bool) $is_external_raw;
+		}
 
-            $id,
+		if ( empty( $url ) ) {
+			return;
+		}
 
-            $config
-        );
-    }
+		$config = [
+			'url' => $url,
+			'isExternal' => $is_external,
+		];
 
-    private function build_config(
-        array $settings
-    ): array {
+		InteractionsMap::register( 'wrapper_link', $id, $config );
 
-        $link =
-            $settings[Schema::LINK]['value'] ?? [];
-
-        $url =
-            $link['destination']['value']
-            ?? '';
-
-        return [
-
-            'url' => $url,
-
-            'isExternal' =>
-            ! empty($link['isTargetBlank']),
-
-            'nofollow' => false,
-        ];
-    }
+		if ( ! is_admin() ) {
+			wp_enqueue_script( 'aae-effect-wrapper-link' );
+		}
+	}
 }

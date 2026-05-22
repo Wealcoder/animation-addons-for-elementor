@@ -1,80 +1,79 @@
 const {
     configFor,
-} = window.AAEADDON;
+} = window.AAEADDON || {};
 
-const MAP =
-    'AAE_INTERACTIONS_WRAPPER_LINK';
+const MAP = 'AAE_INTERACTIONS_WRAPPER_LINK';
 
 function read(el) {
+    if (!configFor) {
+        return null;
+    }
 
-    const cfg =
-        configFor(el, MAP);
+    const cfg = configFor(el, MAP);
 
     if (!cfg || !cfg.url) {
         return null;
     }
 
-    return cfg;
+    return {
+        url: cfg.url,
+        isExternal: !!cfg.isExternal,
+        enableEditor: !!cfg.enableEditor,
+    };
 }
 
 function bind(el, config) {
+    unbind(el);
+    if (!config || !config.url) return;
 
-    console.log(
-        'Wrapper Link',
-        config
-    );
+    const isEditMode = window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode();
+    if (isEditMode && !config.enableEditor) {
+        return; // Do not bind in editor if enableEditor is false
+    }
 
     el.style.cursor = 'pointer';
 
-    el.addEventListener(
-        'click',
-        (e) => {
-
-            if (
-                e.target.closest('a')
-            ) {
-                return;
-            }
-
-            e.preventDefault();
-
-            if (
-                config.isExternal
-            ) {
-
-                window.open(
-                    config.url,
-                    '_blank',
-                    'noopener,noreferrer'
-                );
-
-                return;
-            }
-
-            window.location.href =
-                config.url;
+    const clickHandler = (e) => {
+        if (e.target.closest('a')) {
+            return;
         }
-    );
+
+        e.preventDefault();
+
+        if (config.isExternal) {
+            window.open(
+                config.url,
+                '_blank',
+                'noopener,noreferrer'
+            );
+        } else {
+            window.location.href = config.url;
+        }
+    };
+
+    el.addEventListener('click', clickHandler);
+    el.__aaeWrapperLinkHandler = clickHandler;
 }
+
 function unbind(el) {
-    void el;
+    el.style.cursor = '';
+    const handler = el.__aaeWrapperLinkHandler;
+    if (handler) {
+        el.removeEventListener('click', handler);
+        delete el.__aaeWrapperLinkHandler;
+    }
 }
 
-window.AAEADDON.register({
-
-    name: 'wrapper-link',
-
-    mapName:
-        'AAE_INTERACTIONS_WRAPPER_LINK',
-
-    boundFlag:
-        'aae-wrapper-link-bound',
-
-    read,
-
-    bind,
-
-    unbind,
-
-    reset: unbind,
-});
+if (window.AAEADDON) {
+    window.AAEADDON.register({
+        name: 'wrapper-link',
+        mapName: 'AAE_INTERACTIONS_WRAPPER_LINK',
+        boundFlag: 'aae-wrapper-link-bound',
+        playedKey: '__aaeWrapperLinkPlayed',
+        read,
+        undefined, // No play function needed since the effect is instantaneous
+        bind,
+        unbind,
+        reset: unbind,
+    });
+}

@@ -32,6 +32,7 @@ final class Assets
 		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
 		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
 		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
+		'aae-effect-wrapper-link'    => 'effects/wrapper-link.js',
 	];
 
 	public function register(): void

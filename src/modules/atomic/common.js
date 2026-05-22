@@ -315,6 +315,7 @@ function isKindInPlayGroup(kindName, playGroup) {
 	if (group === 'aae_plx_' && kindName === 'parallax') return true;
 	if (group === 'aae_advance_tooltip_' && kindName === 'advance-tooltip') return true;
 	if (group === 'aae_tilt_' && kindName === 'tilt') return true;
+	if (group === 'aae_wrapper_link_' && kindName === 'wrapper-link') return true;
 	return false;
 }
 

@@ -45,6 +45,7 @@ module.exports = {
     "modules/atomic/effects/cursor-hover-effect": "./src/modules/atomic/effects/cursor-hover-effect/index.js",
     "modules/atomic/effects/advance-tooltip": "./src/modules/atomic/effects/advance-tooltip/index.js",
     "modules/atomic/effects/tilt": "./src/modules/atomic/effects/tilt/index.js",
+    "modules/atomic/effects/wrapper-link": "./src/modules/atomic/effects/wrapper-link/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
