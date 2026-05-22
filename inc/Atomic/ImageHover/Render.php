@@ -54,26 +54,6 @@ final class Render {
 			return;
 		}
 
-		// Pull the image URL from the JS-managed media field (aae_ih_image).
-		// Shape stored by MediaInput: { id, url, size, sizes } as the desktop
-		// cell of a Responsive_Json_Prop_Type envelope.
-		$media_map = $this->envelope_to_map( $settings[ Schema::IH_IMAGE ] ?? null );
-		$media     = $media_map['desktop'] ?? null;
-		$image_url = ( is_array( $media ) && isset( $media['url'] ) && '' !== $media['url'] )
-			? (string) $media['url']
-			: ( ( is_array( $media ) && isset( $media['id'] ) && is_numeric( $media['id'] ) )
-				? (string) wp_get_attachment_image_url( (int) $media['id'], $media['size'] ?? 'full' )
-				: '' );
-
-		if ( '' === $image_url ) {
-			return;
-		}
-
-		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
-		if ( '' === $id ) {
-			return;
-		}
-
 		$cast_bool        = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
 		// Pre-compute which breakpoints have the effect disabled.
 		$disabled_bps     = [];
@@ -88,9 +68,59 @@ final class Render {
 			}
 		}
 
-		$config = [
-			'imageUrl' => $image_url,
-		];
+		// Pull the image URL from the JS-managed media field (aae_ih_image).
+		// Shape stored by MediaInput: { id, url, size, sizes } as a cell of a Responsive_Json_Prop_Type envelope.
+		$media_map = $this->envelope_to_map( $settings[ Schema::IH_IMAGE ] ?? null );
+		$desktop_media = $media_map['desktop'] ?? null;
+		$desktop_url   = $this->get_image_url_from_media( $desktop_media );
+
+		$image_resolved = [ 'desktop' => $desktop_url ];
+		$image_config   = [];
+		if ( '' !== $desktop_url ) {
+			$image_config['imageUrl'] = $desktop_url;
+		}
+
+		foreach ( $extra_bps as $bp ) {
+			$own_media = $media_map[ $bp ] ?? null;
+			$own_url   = $this->get_image_url_from_media( $own_media );
+			$parent    = $this->cascade_parent( $bp, $image_resolved, $desktop_url );
+
+			if ( '' === $own_url ) {
+				$image_resolved[ $bp ] = $parent;
+				continue;
+			}
+
+			$image_resolved[ $bp ] = $own_url;
+			if ( $own_url === $parent ) {
+				continue;
+			}
+
+			if ( isset( $disabled_bps[ $bp ] ) ) {
+				continue;
+			}
+
+			$image_config['imageUrl_' . $bp] = $own_url;
+		}
+
+		// Make sure we have at least one resolved image URL.
+		$has_any_image = false;
+		foreach ( $image_resolved as $url ) {
+			if ( '' !== $url && ! $this->is_placeholder_url( $url ) ) {
+				$has_any_image = true;
+				break;
+			}
+		}
+
+		if ( ! $has_any_image ) {
+			return;
+		}
+
+		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
+		if ( '' === $id ) {
+			return;
+		}
+
+		$config = $image_config;
 
 		// Emit responsive enabled flag (desktop baseline + per-bp variants).
 		$this->emit_responsive(
@@ -189,6 +219,28 @@ final class Render {
 			return [];
 		}
 		return $envelope['value'];
+	}
+
+	private function get_image_url_from_media( $media ): string {
+		if ( ! is_array( $media ) ) {
+			return '';
+		}
+		if ( isset( $media['url'] ) && '' !== $media['url'] ) {
+			return (string) $media['url'];
+		}
+		if ( isset( $media['id'] ) && is_numeric( $media['id'] ) ) {
+			$url = wp_get_attachment_image_url( (int) $media['id'], $media['size'] ?? 'full' );
+			return $url ? (string) $url : '';
+		}
+		return '';
+	}
+
+	private function is_placeholder_url( string $url ): bool {
+		if ( '' === $url ) {
+			return false;
+		}
+		$suffix = 'placeholder-v4.svg';
+		return substr( $url, -strlen( $suffix ) ) === $suffix;
 	}
 
 	/** True when desktop is enabled OR any extra-bp has its own enabled=true override. */

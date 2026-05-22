@@ -67,7 +67,21 @@ function getSplitText() {
  * resolver. Falls back to a minimal width check.
  */
 function currentBreakpoint() {
-	const breakpoints = window?.AAE_CONFIG?.breakpoints || {};
+	if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
+		const mode = window.elementorFrontend.getCurrentDeviceMode();
+		if (mode) return mode;
+	}
+
+	if (window.elementorFrontend && window.elementorFrontend.isEditMode && window.elementorFrontend.isEditMode()) {
+		const editor = window.elementor || window.parent?.elementor;
+		const editorMode = editor?.channels?.deviceMode?.request?.('currentMode');
+		if (editorMode) return editorMode;
+	}
+
+	const configBreakpoints = window?.AAE_CONFIG?.breakpoints;
+	const breakpoints = (configBreakpoints && Object.keys(configBreakpoints).length > 0)
+		? configBreakpoints
+		: { mobile: 767, tablet: 1024 };
 	const width = window.innerWidth;
 
 	const widescreen = Number(breakpoints.widescreen);
@@ -141,12 +155,14 @@ function configFor(el, mapName) {
 function pickConfigResponsive(cfg, key) {
 	if (!cfg) return undefined;
 	const bp = currentBreakpoint();
-	console.log(bp);
+
 	const chain = BP_CASCADE[bp] || [];
+	
 	for (const step of chain) {
 		const v = cfg[key + '_' + step];
 		if (v !== undefined && v !== '') return v;
 	}
+
 	return cfg[key];
 }
 
@@ -262,7 +278,7 @@ function scan(root) {
 
 		for (const kind of kindsFor(el)) {
 			if (el.classList.contains(kind.boundFlag)) continue;
-			const config = kind.read(el);			
+			const config = kind.read(el);
 			if (!config) continue;
 			el.classList.add(kind.boundFlag);
 
@@ -328,6 +344,17 @@ function rebind(el, playGroup = "") {
 		kind.bind(el, config);
 	}
 }
+
+let lastBp = currentBreakpoint();
+window.addEventListener('resize', () => {
+	const newBp = currentBreakpoint();
+	if (newBp !== lastBp) {
+		lastBp = newBp;
+		document.querySelectorAll('[data-interaction-id]').forEach((el) => {
+			try { rebind(el); } catch (_) { }
+		});
+	}
+});
 
 /**
  * Reset every kind owning this element back to its pre-animation state.
