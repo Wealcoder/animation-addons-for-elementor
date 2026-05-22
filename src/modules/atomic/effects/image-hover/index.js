@@ -30,17 +30,20 @@ export function readImageHover(el) {
 	const cfg = configFor(el, IH_MAP);
 
 	if (!cfg) return null;
-	if (!cfg.imageUrl) return null;
+	const imageUrl = pickConfigResponsive(cfg, 'imageUrl');
+
+	if (!imageUrl) return null;
 	const enabled = pickConfigResponsive(cfg, 'enabled');
-	
+
+	console.log('enabled', enabled);
 	if (!enabled || enabled === 'false' || enabled === 'no') return null;
 	return {
-		enabled: true,
-		imageUrl: String(cfg.imageUrl),
+		enabled: enabled,
+		imageUrl: String(imageUrl),
 		width: Number(r(cfg, 'width', 300)),
 		height: Number(r(cfg, 'height', 300)),
-		top: Number(r(cfg, 'top', 0)),
-		left: Number(r(cfg, 'left', 0)),
+		top: Number(r(cfg, 'top', -15)),
+		left: Number(r(cfg, 'left', 30)),
 		zindex: Number(r(cfg, 'zindex', 1)),
 	};
 }
@@ -119,7 +122,7 @@ function ensureOverlay(el, config) {
 
 export function bindImageHover(el, config) {
 	const gsap = getGsap();
-	console.log(config);
+
 	if (!gsap) return;
 
 	const overlay = ensureOverlay(el, config);
@@ -129,6 +132,7 @@ export function bindImageHover(el, config) {
 
 	const onEnter = () => {
 		activeConfig = readImageHover(el);
+			
 		if (!activeConfig) {
 			gsap.to(overlay, { duration: 0, autoAlpha: 0 });
 			return;
@@ -180,7 +184,7 @@ export function bindImageHover(el, config) {
 export function playImageHover(el, config) {
 	cleanupImageHover(el);
 	bindImageHover(el, config);
-	console.log('playImageHover', { el, config });
+
 }
 
 function cleanupImageHover(el) {

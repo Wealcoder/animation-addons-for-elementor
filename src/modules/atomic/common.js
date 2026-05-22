@@ -67,15 +67,15 @@ function getSplitText() {
  * resolver. Falls back to a minimal width check.
  */
 function currentBreakpoint() {
+	if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
+		const mode = window.elementorFrontend.getCurrentDeviceMode();
+		if (mode) return mode;
+	}
+
 	if (window.elementorFrontend && window.elementorFrontend.isEditMode && window.elementorFrontend.isEditMode()) {
 		const editor = window.elementor || window.parent?.elementor;
 		const editorMode = editor?.channels?.deviceMode?.request?.('currentMode');
 		if (editorMode) return editorMode;
-	}
-
-	if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
-		const mode = window.elementorFrontend.getCurrentDeviceMode();
-		if (mode) return mode;
 	}
 
 	const configBreakpoints = window?.AAE_CONFIG?.breakpoints;
@@ -155,8 +155,9 @@ function configFor(el, mapName) {
 function pickConfigResponsive(cfg, key) {
 	if (!cfg) return undefined;
 	const bp = currentBreakpoint();
-	
+
 	const chain = BP_CASCADE[bp] || [];
+	
 	for (const step of chain) {
 		const v = cfg[key + '_' + step];
 		if (v !== undefined && v !== '') return v;
@@ -413,7 +414,7 @@ function replay(el, fromChain = false, playGroup = "") {
 	if (!el) return;
 
 	const owningKinds = kindsFor(el);
-	
+
 	if (owningKinds.length) {
 		// Chained nesting: if a parent has an active animation, queue this
 		// child to play when the parent's tween completes instead of firing
@@ -445,7 +446,7 @@ function replay(el, fromChain = false, playGroup = "") {
 			}
 
 			const config = kind.read(el);
-			
+
 			if (!config) continue;
 			if (el[kind.playedKey]) {
 				el[kind.playedKey].kill?.();

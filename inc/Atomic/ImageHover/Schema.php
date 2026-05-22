@@ -22,7 +22,7 @@ final class Schema {
 	/* ---- section anchor ---- */
 	const IH_SECTION_ANCHOR = 'aae_ih_section_anchor';
 
-	/* ---- JS-managed media (non-responsive cell, object) ---- */
+	/* ---- JS-managed media (responsive cell, object) ---- */
 	const IH_IMAGE = 'aae_ih_image';
 
 	/* ---- responsive switch ---- */

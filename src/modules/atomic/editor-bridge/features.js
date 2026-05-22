@@ -475,13 +475,12 @@ const IH_RESPONSIVE = {
  *   - media library  → id is set, resolve via wp.media's attachment cache
  * Returns '' when neither resolves.
  */
-function imageUrlFrom(envelope) {
+function imageUrlFrom(envelope, bp = 'desktop') {
 	if (!envelope || typeof envelope !== 'object') return '';
 
 	// Support custom MediaInput control stored in a Responsive_Json_Prop_Type envelope ($$type === 'aae-rj').
-	// The value for desktop is a media object { id, url, size, sizes } | null.
 	if (envelope.$$type === 'aae-rj') {
-		const cell = envelope.value?.desktop;
+		const cell = envelope.value?.[bp];
 		if (cell && typeof cell === 'object') {
 			if (cell.url && typeof cell.url === 'string') {
 				return cell.url;
@@ -525,6 +524,19 @@ function imageUrlFrom(envelope) {
 	return '';
 }
 
+function resolveImageAllBreakpoints(settings) {
+	const envelope = settings.aae_ih_image;
+	const desktopUrl = imageUrlFrom(envelope, 'desktop');
+	const resolved = { desktop: desktopUrl };
+
+	for (const bp of BPS) {
+		const ownUrl = imageUrlFrom(envelope, bp);
+		const parent = cascadeParent(bp, resolved, desktopUrl);
+		resolved[bp] = (ownUrl === '') ? parent : ownUrl;
+	}
+	return resolved;
+}
+
 /** Elementor's default placeholder image — schema sets this as the
  *  initial value, so we treat its URL as "image not picked yet". */
 const IH_PLACEHOLDER_BASENAME = 'placeholder-v4.svg';
@@ -541,15 +553,41 @@ function buildImageHoverConfig(settings) {
 	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
 	if (!anyActive) return null;
 
-	const imageUrl = imageUrlFrom(settings.aae_ih_image);
-	// An image must be picked too.
-	if (!imageUrl || isPlaceholderUrl(imageUrl)) return null;
+	const resolvedImages = resolveImageAllBreakpoints(settings);
+	const desktopUrl = resolvedImages.desktop;
 
-	const cfg = { imageUrl };
+	// An image must be picked on at least one active/enabled breakpoint.
+	let hasAnyImage = false;
+	if (desktopUrl && !isPlaceholderUrl(desktopUrl)) {
+		hasAnyImage = true;
+	} else {
+		for (const bp of BPS) {
+			if (resolvedEnable[bp] && resolvedImages[bp] && !isPlaceholderUrl(resolvedImages[bp])) {
+				hasAnyImage = true;
+				break;
+			}
+		}
+	}
+	if (!hasAnyImage) return null;
+
+	const cfg = {};
+	if (desktopUrl) {
+		cfg.imageUrl = desktopUrl;
+	}
 
 	const disabledBps = new Set();
 	for (const bp of BPS) {
 		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+
+	// Emit responsive image URLs.
+	for (const bp of BPS) {
+		if (disabledBps.has(bp)) continue;
+		const ownUrl = resolvedImages[bp];
+		const parent = cascadeParent(bp, resolvedImages, desktopUrl);
+		if (ownUrl !== parent) {
+			cfg['imageUrl_' + bp] = ownUrl;
+		}
 	}
 
 	emitResponsive(cfg, settings, IH_RESPONSIVE, disabledBps);
