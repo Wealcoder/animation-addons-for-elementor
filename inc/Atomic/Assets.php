@@ -33,6 +33,7 @@ final class Assets
 		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
 		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
 		'aae-effect-wrapper-link'    => 'effects/wrapper-link.js',
+		'aae-effect-scroll-to'       => 'effects/scroll-to.js',
 	];
 
 	public function register(): void
@@ -147,6 +148,9 @@ final class Assets
 		if (wp_script_is('SplitText', 'registered')) {
 			$deps[] = 'SplitText';
 		}
+		if (wp_script_is('ScrollToPlugin', 'registered')) {
+			$deps[] = 'ScrollToPlugin';
+		}
 		return $deps;
 	}
 
@@ -182,6 +186,15 @@ final class Assets
 			wp_register_script(
 				'SplitText',
 				WCF_ADDONS_PRO_URL . 'assets/lib/SplitText.min.js',
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+		if (! wp_script_is('ScrollToPlugin', 'registered')) {
+			wp_register_script(
+				'ScrollToPlugin',
+				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollToPlugin.min.js',
 				['gsap'],
 				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
 				true

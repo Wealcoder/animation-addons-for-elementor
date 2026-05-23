@@ -53,7 +53,7 @@ const config = {
 
         {
             bind: 'target',
-            label: 'Target Selector',
+            label: 'Target Selector | Number',
             control: 'text',
             responsive: true,
             defaultValue: '#section-id',
