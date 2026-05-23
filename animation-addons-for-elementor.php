@@ -29,7 +29,7 @@ if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
 	/**
 	 * Plugin Version.
 	 */
-	define( 'WCF_ADDONS_VERSION', '2.6.5' );
+	define( 'WCF_ADDONS_VERSION', '2.6.6' );
 }
 if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
 	/**
@@ -93,7 +93,7 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 * @var string The plugin version.
 	 */
-	const VERSION = '2.6.5';
+	const VERSION = '2.6.6';
 
 	/**
 	 * Minimum Elementor Version
