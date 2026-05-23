@@ -97,15 +97,41 @@ window.addEventListener("elementor/frontend/init", () => {
           item.parentElement.closest(".menu-item")?.classList.add("active");
         });
       });
-
+ 
       // Fixed submenu toggle logic (multi-level support)
-      this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
-        indicator.addEventListener("click", (e) => {
-          e.preventDefault();
-          const menuItem = indicator.closest(".menu-item");
+      // this.findElements(".wcf-submenu-indicator").forEach((indicator) => {
+       
+      //   indicator.addEventListener("click", (e) => {
+      
+      //     console.log("Adding SRC:", indicator);
+      //     e.preventDefault();
+      //     const menuItem = indicator.closest(".menu-item");
+      //     if (!menuItem) return;
+
+      //     // Only close siblings, not all
+      //     const siblingItems = menuItem.parentElement.querySelectorAll(":scope > .menu-item.active");
+      //     siblingItems.forEach((el) => {
+      //       if (el !== menuItem) el.classList.remove("active");
+      //     });
+
+      //     menuItem.classList.toggle("active");
+      //   });
+      // });
+
+
+      this.findElements(".wcf-nav-item").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          const menuItem = link.closest(".menu-item");
           if (!menuItem) return;
 
-          // Only close siblings, not all
+          const hasSubmenu = menuItem.querySelector(":scope > .sub-menu");
+
+          // ✅ If no submenu → allow normal navigation
+          if (!hasSubmenu) return;
+
+          // ❌ If submenu exists → prevent navigation & toggle
+          e.preventDefault();
+
           const siblingItems = menuItem.parentElement.querySelectorAll(":scope > .menu-item.active");
           siblingItems.forEach((el) => {
             if (el !== menuItem) el.classList.remove("active");
