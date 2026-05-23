@@ -23,7 +23,7 @@ final class Assets
 	 * wp_enqueue_script( $handle ) for the effects a widget actually uses.
 	 */
 	const EFFECT_BUNDLES = [
-		'aae-effect-animation'       => 'effects/animation.js',
+		'aae-effect-animation'       => ['file' => 'effects/animation.js', 'deps' => ['SplitText']],
 		'aae-effect-image-animation' => 'effects/image-animation.js',
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		'aae-effect-tilt'            => 'effects/tilt.js',
@@ -33,7 +33,8 @@ final class Assets
 		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
 		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
 		'aae-effect-wrapper-link'    => 'effects/wrapper-link.js',
-		'aae-effect-scroll-to'       => 'effects/scroll-to.js',
+		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
+		'aae-effect-parallax'        => 'effects/parallax.js',
 	];
 
 	public function register(): void
@@ -65,6 +66,7 @@ final class Assets
 	public function register_common(): void
 	{
 		$core = $this->load_asset('common');
+
 		$deps = $this->frontend_deps($core['dependencies']);
 
 		wp_register_script(
@@ -75,15 +77,17 @@ final class Assets
 			true
 		);
 
-		if ( class_exists( '\Elementor\Plugin' )
-			&& isset( \Elementor\Plugin::$instance->breakpoints )
-			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
+		if (
+			class_exists('\Elementor\Plugin')
+			&& isset(\Elementor\Plugin::$instance->breakpoints)
+			&& method_exists(\Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints')
+		) {
 
 			$breakpoints = \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints();
 			$config = [];
-			foreach ( $breakpoints as $key => $breakpoint ) {
-				if ( is_object( $breakpoint ) && method_exists( $breakpoint, 'get_value' ) ) {
-					$config[ $key ] = $breakpoint->get_value();
+			foreach ($breakpoints as $key => $breakpoint) {
+				if (is_object($breakpoint) && method_exists($breakpoint, 'get_value')) {
+					$config[$key] = $breakpoint->get_value();
 				}
 			}
 			wp_localize_script(
@@ -98,12 +102,14 @@ final class Assets
 
 		// Register every effect bundle with the core runtime as a dep, so
 		// enqueueing an effect automatically pulls in the runtime.
-		foreach (self::EFFECT_BUNDLES as $handle => $relative) {
+		foreach (self::EFFECT_BUNDLES as $handle => $config) {
+			$relative = is_array($config) ? $config['file'] : $config;
+			$manual_deps = is_array($config) && isset($config['deps']) ? $config['deps'] : [];
+
 			// Path uses the same .asset.php sidecar as the core runtime; the
 			// webpack entry name (without .js) matches the relative path.
 			$entry_key = preg_replace('/\\.js$/', '', $relative);
-			$asset     = $this->load_asset($entry_key);
-		
+			$asset     = $this->load_asset($entry_key, $manual_deps);		
 			wp_register_script(
 				$handle,
 				WCF_ADDONS_URL . self::BUILD_DIR . $relative,
@@ -241,21 +247,22 @@ final class Assets
 		);
 	}
 
-	private function load_asset(string $entry): array
+	private function load_asset(string $entry, array $manual_deps = []): array
 	{
 		$file = WCF_ADDONS_PATH . self::BUILD_DIR . $entry . '.asset.php';
 
 		if (! file_exists($file)) {
 			return [
-				'dependencies' => [],
+				'dependencies' => $manual_deps,
 				'version'      => WCF_ADDONS_VERSION,
 			];
 		}
 
 		$asset = require $file;
+		$merged_deps = array_unique(array_merge($asset['dependencies'] ?? [], $manual_deps));
 
 		return [
-			'dependencies' => $asset['dependencies'] ?? [],
+			'dependencies' => array_values($merged_deps),
 			'version'      => $asset['version']      ?? WCF_ADDONS_VERSION,
 		];
 	}

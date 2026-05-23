@@ -102,7 +102,7 @@ final class Render {
 		InteractionsMap::register( 'plx', $id, $config );
 
 		if ( ! is_admin() ) {
-			wp_enqueue_script( 'aae-effect-animation' );
+			wp_enqueue_script( 'aae-effect-parallax' );
 		}
 	}
 

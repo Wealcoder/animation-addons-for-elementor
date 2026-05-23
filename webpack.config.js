@@ -47,6 +47,7 @@ module.exports = {
     "modules/atomic/effects/tilt": "./src/modules/atomic/effects/tilt/index.js",
     "modules/atomic/effects/wrapper-link": "./src/modules/atomic/effects/wrapper-link/index.js",
     "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
+    "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
