@@ -2,7 +2,7 @@
 Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: animation, elementor, elementor addons, elementor templates, elementor widgets
-Requires at least: 6
+Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 2.6.5
@@ -27,6 +27,9 @@ Upgrade only if you need advanced GSAP power animated website.
   [**👉 300+ Elementor Templates**](https://animation-addons.com/starter-templates/) 
 
 https://youtu.be/z4Y3xbsLo0M 
+
+###We’re Preparing for Elementor 4.0
+A major update is on the way! We are actively working on full compatibility with Elementor Version 4.0.
 
 ### Why Most Elementor Websites Feel Static
 Many Elementor websites rely on basic motion effects that look repetitive and limited.
