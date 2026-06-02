@@ -17,8 +17,7 @@ const TRIGGER_OPTIONS = [
 ];
 
 const PIN_OPTIONS = [
-	{ value: true, label: 'True' },
-	{ value: false, label: 'False' },
+	{ value: true, label: 'Default' },	
 	{ value: 'custom', label: 'Custom' },
 ];
 
@@ -31,15 +30,22 @@ const POSITION_OPTIONS = [
 	'top top',
 	'top center',
 	'top bottom',
+	'top 80px',
+	'top 80%',
 
 	'center top',
 	'center center',
 	'center bottom',
+	'center 80px',
+	'center 80%',
 
 	'bottom top',
 	'bottom center',
 	'bottom bottom',
 
+	'bottom 80px',
+	'bottom 80%',
+	
 	'custom',
 ].map((v) => ({
 	value: v,
@@ -205,7 +211,7 @@ const config = {
 			label: 'Pin Spacing',
 			control: 'select',
 			options: BOOLEAN_OPTIONS,
-			defaultValue: true,
+			defaultValue: false,
 			when: showPinFields,
 			tab: 'Content', // Goes to Content tab
 		},

@@ -152,11 +152,11 @@ final class Render {
 			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
 			$disabled_bps
 		);
-		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_PIN_MARKERS, 'pinMarkers', false, $extra_bps,
-			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
-			$disabled_bps
-		);
+		$pin_markers_val = $this->read_primitive( $settings, Schema::STICKY_PIN_MARKERS, false );
+		$pin_markers_bool = is_bool( $pin_markers_val ) ? $pin_markers_val : ( $pin_markers_val === 'yes' || $pin_markers_val === 'true' || $pin_markers_val === 1 || $pin_markers_val === '1' );
+		if ( $pin_markers_bool ) {
+			$config['pinMarkers'] = true;
+		}
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_TOGGLE_CLASS, 'toggleClass', '', $extra_bps,
 			static fn( $v ) => is_string( $v ) ? $v : '',
