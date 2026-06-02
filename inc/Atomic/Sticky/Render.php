@@ -133,30 +133,20 @@ final class Render {
 			$disabled_bps
 		);
 		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_CUSTOM_PIN_START, 'customPinStart', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : '',
-			$disabled_bps
-		);
-		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_END, 'pinEnd', 'bottom bottom', $extra_bps,
 			static fn( $v ) => is_string( $v ) ? $v : 'bottom bottom',
 			$disabled_bps
 		);
 		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_CUSTOM_PIN_END, 'customPinEnd', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : '',
-			$disabled_bps
-		);
-		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', true, $extra_bps,
+			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', false, $extra_bps,
 			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
 			$disabled_bps
 		);
-		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_PIN_MARKERS, 'pinMarkers', false, $extra_bps,
-			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
-			$disabled_bps
-		);
+		$pin_markers_val = $this->read_primitive( $settings, Schema::STICKY_PIN_MARKERS, false );
+		$pin_markers_bool = is_bool( $pin_markers_val ) ? $pin_markers_val : ( $pin_markers_val === 'yes' || $pin_markers_val === 'true' || $pin_markers_val === 1 || $pin_markers_val === '1' );
+		if ( $pin_markers_bool ) {
+			$config['pinMarkers'] = true;
+		}
 		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_TOGGLE_CLASS, 'toggleClass', '', $extra_bps,
 			static fn( $v ) => is_string( $v ) ? $v : '',

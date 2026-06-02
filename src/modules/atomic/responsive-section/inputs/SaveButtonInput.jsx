@@ -7,13 +7,9 @@ import { getSelectedContainer } from "../../editor-bridge/helpers";
 import { replayInPreview } from "../../editor-bridge/settings-bridge";
 import { applySettingsToDom } from "../../editor-bridge/settings-bridge";
 /**
- * "Play Now" button inside a <ResponsiveSection>.
- *
- * The live bridge already keeps `window.AAE_INTERACTIONS_*[id]` in sync
- * on every settings mutation, so this button doesn't need to re-mirror
- * settings — it just resolves the iframe target and replays.
+ * "Save Change" button inside a <ResponsiveSection>.
  */
-export function PlayButtonInput({ play_group = "" }) {
+export function SaveButtonInput({ play_group = "" }) {
   const [played, setPlayed] = useState(false);
   const onClick = (e) => {
     e.preventDefault();
@@ -32,6 +28,12 @@ export function PlayButtonInput({ play_group = "" }) {
     }
 
     setPlayed(true);
+    
+    // Trigger Elementor save
+    if (window.$e && window.$e.run) {
+      window.$e.run('document/save/default');
+    }
+
     setTimeout(() => setPlayed(false), 600);
   };
 
@@ -49,7 +51,7 @@ export function PlayButtonInput({ play_group = "" }) {
         textTransform: "none",
       }}
     >
-      {played ? "Played" : "Play Now"}
+      {played ? "Saved" : "Save Change"}
     </Button>
   );
 }

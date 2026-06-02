@@ -55,6 +55,7 @@ final class Render
 		$config = [
 			'width' => '300%',
 			'end'   => 3000,
+			'start' => 'top top',
 		];
 
 		// Pre-compute which breakpoints have horizontal scroll disabled.
@@ -96,6 +97,16 @@ final class Render
 			Schema::END,
 			'end',
 			'3000',
+			$extra_bps,
+			[ $this, 'cast_value' ],
+			$disabled_bps
+		);
+		$this->emit_responsive(
+			$config,
+			$settings,
+			Schema::START,
+			'start',
+			'top top',
 			$extra_bps,
 			[ $this, 'cast_value' ],
 			$disabled_bps

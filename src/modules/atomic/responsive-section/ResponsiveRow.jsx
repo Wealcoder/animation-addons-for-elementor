@@ -9,6 +9,7 @@ import { SwitchInput } from "./inputs/SwitchInput";
 import { TextInput } from "./inputs/TextInput";
 import { ColorInput } from "./inputs/Color";
 import { PlayButtonInput } from "./inputs/PlayButtonInput";
+import { SaveButtonInput } from "./inputs/SaveButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
 import { BorderInput } from "./inputs/BorderInput";
 import { TextareaInput } from "./inputs/TextareaInput";
@@ -20,6 +21,38 @@ import { LinkInput } from "./inputs/LinkInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
+
+const HelpIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6, cursor: "help" }}>
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+);
+
+const HelpTooltip = ({ title, children }) => (
+  <Tooltip
+    title={title}
+    componentsProps={{
+      tooltip: {
+        sx: {
+          bgcolor: '#2b2d30',
+          color: '#e5e5e5',
+          px: 1.5,
+          py: 1,
+          lineHeight: 1.5,
+          fontSize: '11.5px',
+          fontWeight: 400,
+          borderRadius: 1,
+          maxWidth: 240,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        }
+      }
+    }}
+  >
+    {children}
+  </Tooltip>
+);
 
 /**
  * Map config `control` strings → input components. Single source of truth
@@ -104,7 +137,8 @@ export function ResponsiveRow({
   propValue,
   activeBp,
   elementId,
-  play_group
+  play_group,
+  help
 }) {
   if (control === "play-button") {
     return (
@@ -114,11 +148,20 @@ export function ResponsiveRow({
     );
   }
 
+  if (control === "save-button") {
+    return (
+      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
+        <SaveButtonInput play_group={play_group} />
+      </Stack>
+    );
+  }
+
   if (control === "repeater") {
     return (
       <RepeaterRow
         bind={bind}
         label={label}
+        help={help}
         cells={cells}
         addLabel={addLabel}
         rowDefaults={rowDefaults}
@@ -146,6 +189,7 @@ export function ResponsiveRow({
       Component={Component}
       bind={bind}
       label={label}
+      help={help}
       options={options}
       placeholder={placeholder}
       min={min}
@@ -166,6 +210,7 @@ export function ResponsiveRow({
         innerType={innerType}
         bind={bind}
         label={label}
+        help={help}
         options={options}
         placeholder={placeholder}
         min={min}
@@ -188,6 +233,7 @@ function ResponsiveCellRow({
   Component,
   bind,
   label,
+  help,
   options,
   placeholder,
   min,
@@ -220,9 +266,14 @@ function ResponsiveCellRow({
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ flex: 1, minWidth: 0 }}
+          sx={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 0.5 }}
         >
           {label}
+          {help && (
+            <HelpTooltip title={help}>
+              <span style={{ display: "inline-flex" }}><HelpIcon /></span>
+            </HelpTooltip>
+          )}
         </Typography>
         {hasOverride ? (
           <Tooltip title={tooltipText}>
@@ -261,6 +312,7 @@ function ResponsiveCellRow({
 function RepeaterRow({
   bind,
   label,
+  help,
   cells,
   addLabel,
   rowDefaults,
@@ -288,9 +340,14 @@ function RepeaterRow({
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ flex: 1, minWidth: 0 }}
+          sx={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 0.5 }}
         >
           {label}
+          {help && (
+            <HelpTooltip title={help}>
+              <span style={{ display: "inline-flex" }}><HelpIcon /></span>
+            </HelpTooltip>
+          )}
         </Typography>
         {hasOverride ? (
           <Tooltip title={tooltipText}>
@@ -326,6 +383,7 @@ function PlainRow({
   innerType,
   bind,
   label,
+  help,
   options,
   placeholder,
   min,
@@ -352,9 +410,14 @@ function PlainRow({
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ flex: 1, minWidth: 0 }}
+          sx={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 0.5 }}
         >
           {label}
+          {help && (
+            <HelpTooltip title={help}>
+              <span style={{ display: "inline-flex" }}><HelpIcon /></span>
+            </HelpTooltip>
+          )}
         </Typography>
       </Stack>
       <Component

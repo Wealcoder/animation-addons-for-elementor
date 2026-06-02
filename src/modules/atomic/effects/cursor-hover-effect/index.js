@@ -357,18 +357,13 @@ function unbind(el) {
 }
 
 window.AAEADDON.register({
-
 	name: 'cursor-hover-effect',
-
 	mapName: MAP,
 
 	boundFlag: 'aae-cursor-hover-effect-bound',
 
 	read,
-
 	bind,
-
 	unbind,
-
 	reset: unbind,
 });

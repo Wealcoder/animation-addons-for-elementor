@@ -5,8 +5,6 @@ import {
 	showCustomPinEndArea,
 	showPinFields,
 	showCustomPin,
-	showCustomPinStart,
-	showCustomPinEnd,
 	showEnableEditor,
 	showPlayButton
 } from './predicates';
@@ -17,8 +15,7 @@ const TRIGGER_OPTIONS = [
 ];
 
 const PIN_OPTIONS = [
-	{ value: true, label: 'True' },
-	{ value: false, label: 'False' },
+	{ value: true, label: 'Default' },	
 	{ value: 'custom', label: 'Custom' },
 ];
 
@@ -31,16 +28,21 @@ const POSITION_OPTIONS = [
 	'top top',
 	'top center',
 	'top bottom',
+	'top 80px',
+	'top 80%',
 
 	'center top',
 	'center center',
 	'center bottom',
+	'center 80px',
+	'center 80%',
 
 	'bottom top',
 	'bottom center',
 	'bottom bottom',
 
-	'custom',
+	'bottom 80px',
+	'bottom 80%',
 ].map((v) => ({
 	value: v,
 	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -153,19 +155,10 @@ const config = {
 		{
 			bind: 'pin_start',
 			label: 'Pin Start',
-			control: 'select',
-			options: POSITION_OPTIONS,
+			control: 'text',
+			datalist: POSITION_OPTIONS,
 			defaultValue: 'top top',
 			when: showPinFields,
-			tab: 'Content', // Goes to Content tab
-		},
-
-		{
-			bind: 'custom_pin_start',
-			label: 'Custom Pin Start',
-			control: 'text',
-			defaultValue: '',
-			when: showCustomPinStart,
 			tab: 'Content', // Goes to Content tab
 		},
 
@@ -178,19 +171,10 @@ const config = {
 		{
 			bind: 'pin_end',
 			label: 'Pin End',
-			control: 'select',
-			options: POSITION_OPTIONS,
+			control: 'text',
+			datalist: POSITION_OPTIONS,
 			defaultValue: 'bottom bottom',
 			when: showPinFields,
-			tab: 'Content', // Goes to Content tab
-		},
-
-		{
-			bind: 'custom_pin_end',
-			label: 'Custom Pin End',
-			control: 'text',
-			defaultValue: '',
-			when: showCustomPinEnd,
 			tab: 'Content', // Goes to Content tab
 		},
 
@@ -205,7 +189,7 @@ const config = {
 			label: 'Pin Spacing',
 			control: 'select',
 			options: BOOLEAN_OPTIONS,
-			defaultValue: true,
+			defaultValue: false,
 			when: showPinFields,
 			tab: 'Content', // Goes to Content tab
 		},
