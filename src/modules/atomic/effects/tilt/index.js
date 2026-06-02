@@ -1,70 +1,44 @@
 const {
     getGsap,
     configFor,
-    pickConfigResponsive,
-    currentBreakpoint,
-    BP_CASCADE,
+    pickConfigResponsive
 } = window.AAEADDON;
 
 const MAP = 'AAE_INTERACTIONS_TILT';
 const PLAYED_KEY = '__aaeTiltPlayed';
 const DISPOSE_KEY = '__aaeTiltDispose';
 
-/**
- * Robust responsive config helper. Supports both nested objects from PHP Render
- * and flat suffix keys from the Editor Bridge.
- */
-function r(cfg, key, fallback) {
-    const bp = currentBreakpoint();
-
-    // 1. Check if the config holds a nested breakpoint map (from PHP Render.php)
-    if (cfg[key] && typeof cfg[key] === 'object' && !Array.isArray(cfg[key])) {
-        const chain = [bp, ...(BP_CASCADE[bp] || []), 'desktop'];
-        for (const step of chain) {
-            if (cfg[key][step] !== undefined && cfg[key][step] !== '') {
-                return cfg[key][step];
-            }
-        }
-        return fallback;
-    }
-
-    // 2. Check if the config holds a flat key with _bp suffix (from editor-bridge.js FEATURES buildConfig)
-    const chain = [bp, ...(BP_CASCADE[bp] || [])];
-    for (const step of chain) {
-        const flatKey = key + '_' + step;
-        if (cfg[flatKey] !== undefined && cfg[flatKey] !== '') {
-            return cfg[flatKey];
-        }
-    }
-
-    if (cfg[key] !== undefined && cfg[key] !== '') {
-        return cfg[key];
-    }
-
-    return fallback;
-}
-
 function read(el) {
     const cfg = configFor(el, MAP);
 
     if (!cfg) return null;
 
-    const enabled = r(cfg, 'enabled', false);
+    const enabled = pickConfigResponsive(cfg, 'enabled');
     if (!enabled || enabled === 'false' || enabled === 'no') {
         return null;
     }
 
+    const val = (k, fallback) => {
+        const v = pickConfigResponsive(cfg, k);
+        return (v !== undefined && v !== '') ? v : fallback;
+    };
+
+    const isTrue = (k, fallback) => {
+        const v = val(k, fallback);
+        return v === true || v === 'true' || v === 'yes';
+    };
+
     return {
         enabled: true,
-        max: Number(r(cfg, 'max', 15)),
-        speed: Number(r(cfg, 'speed', 300)),
-        scale: Number(r(cfg, 'scale', 1)),
-        perspective: Number(r(cfg, 'perspective', 1000)),
-        glare: r(cfg, 'glare', false) === true || r(cfg, 'glare', false) === 'true' || r(cfg, 'glare', false) === 'yes',
-        maxGlare: Number(r(cfg, 'maxGlare', 0.5)),
-        reset: r(cfg, 'reset', true) === true || r(cfg, 'reset', true) === 'true' || r(cfg, 'reset', true) === 'yes',
-        transition: r(cfg, 'transition', true) === true || r(cfg, 'transition', true) === 'true' || r(cfg, 'transition', true) === 'yes',
-        gyroscope: r(cfg, 'gyroscope', true) === true || r(cfg, 'gyroscope', true) === 'true' || r(cfg, 'gyroscope', true) === 'yes',
+        max: Number(val('max', 15)),
+        speed: Number(val('speed', 300)),
+        scale: Number(val('scale', 1)),
+        perspective: Number(val('perspective', 1000)),
+        glare: isTrue('glare', false),
+        maxGlare: Number(val('maxGlare', 0.5)),
+        reset: isTrue('reset', true),
+        transition: isTrue('transition', true),
+        gyroscope: isTrue('gyroscope', true),
     };
 }
 
@@ -73,8 +47,14 @@ function bind(el, config) {
     
     if (!config) return;
 
+    const gsap = getGsap();
+    if (!gsap) {
+        console.warn('GSAP is required for tilt effect');
+        return;
+    }
+
     const max = config.max;
-    const speed = config.speed;
+    const speed = config.speed / 1000;
     const scale = config.scale;
     const perspective = config.perspective;
     const glare = config.glare;
@@ -84,7 +64,6 @@ function bind(el, config) {
     const gyroscope = config.gyroscope;
 
     let isMouseOver = false;
-    let transitionTimeout = null;
 
     // Handle Glare Element Injection
     let glareContainer = null;
@@ -97,31 +76,19 @@ function bind(el, config) {
         
         glareInner = document.createElement('div');
         glareInner.className = 'aae-tilt-glare-inner';
-        glareInner.style.cssText = 'position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity 300ms ease;';
+        glareInner.style.cssText = 'position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;';
         
         glareContainer.appendChild(glareInner);
         el.appendChild(glareContainer);
     }
 
-    // Set perspective
-    el.style.transformPerspective = `${perspective}px`;
+    // Set perspective using GSAP
+    gsap.set(el, { transformPerspective: perspective, transformStyle: "preserve-3d" });
 
     function onMouseEnter() {
         isMouseOver = true;
-        
-        if (transition) {
-            el.style.transition = `transform ${speed}ms cubic-bezier(0.03,0.98,0.52,0.99)`;
-        }
-
-        if (transitionTimeout) clearTimeout(transitionTimeout);
-        transitionTimeout = setTimeout(() => {
-            if (isMouseOver) {
-                el.style.transition = 'none';
-            }
-        }, speed);
-
         if (glareInner) {
-            glareInner.style.opacity = maxGlare;
+            gsap.to(glareInner, { opacity: maxGlare, duration: transition ? speed : 0.1 });
         }
     }
 
@@ -137,34 +104,44 @@ function bind(el, config) {
         const tiltY = (y / height) - 0.5;
 
         // Map tilt to rotation angles
-        const rotateX = -(tiltY * max).toFixed(2);
-        const rotateY = (tiltX * max).toFixed(2);
+        const rotateX = -(tiltY * max);
+        const rotateY = (tiltX * max);
 
-        el.style.transform = `perspective(${perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+        gsap.to(el, {
+            rotateX: rotateX,
+            rotateY: rotateY,
+            scale: scale,
+            duration: transition ? speed : 0.1,
+            ease: "power2.out",
+            overwrite: "auto"
+        });
 
         if (glareInner) {
             const glareX = (x / width) * 100;
             const glareY = (y / height) * 100;
-            glareInner.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%)`;
+            gsap.set(glareInner, {
+                background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%)`
+            });
         }
     }
 
     function onMouseLeave() {
         isMouseOver = false;
 
-        if (transition) {
-            el.style.transition = `transform ${speed}ms cubic-bezier(0.03,0.98,0.52,0.99)`;
-        }
-
         if (reset) {
-            el.style.transform = `perspective(${perspective}px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            gsap.to(el, {
+                rotateX: 0,
+                rotateY: 0,
+                scale: 1,
+                duration: transition ? speed : 0.1,
+                ease: "power2.out",
+                overwrite: "auto"
+            });
         }
 
         if (glareInner) {
-            glareInner.style.opacity = '0';
+            gsap.to(glareInner, { opacity: 0, duration: transition ? speed : 0.1 });
         }
-
-        if (transitionTimeout) clearTimeout(transitionTimeout);
     }
 
     function onDeviceOrientation(event) {
@@ -183,19 +160,25 @@ function bind(el, config) {
         const tiltX = yAngle / 30; // Rotate around Y axis
         const tiltY = xAngle / 30; // Rotate around X axis
 
-        const rotateX = -(tiltY * max).toFixed(2);
-        const rotateY = (tiltX * max).toFixed(2);
+        const rotateX = -(tiltY * max);
+        const rotateY = (tiltX * max);
 
-        if (transition) {
-            el.style.transition = `transform ${speed}ms cubic-bezier(0.03,0.98,0.52,0.99)`;
-        }
-        el.style.transform = `perspective(${perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+        gsap.to(el, {
+            rotateX: rotateX,
+            rotateY: rotateY,
+            scale: scale,
+            duration: transition ? speed : 0.1,
+            ease: "power2.out",
+            overwrite: "auto"
+        });
 
         if (glareInner) {
-            glareInner.style.opacity = maxGlare;
+            gsap.to(glareInner, { opacity: maxGlare, duration: 0.1 });
             const glareX = (tiltX + 0.5) * 100;
             const glareY = (tiltY + 0.5) * 100;
-            glareInner.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%)`;
+            gsap.set(glareInner, {
+                background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%)`
+            });
         }
     }
 
@@ -218,15 +201,16 @@ function bind(el, config) {
             window.removeEventListener('deviceorientation', onDeviceOrientation);
         }
 
-        if (transitionTimeout) clearTimeout(transitionTimeout);
-
         if (glareContainer && el.contains(glareContainer)) {
             el.removeChild(glareContainer);
         }
 
-        el.style.transform = '';
-        el.style.transition = '';
-        el.style.transformPerspective = '';
+        const gsap = getGsap();
+        if (gsap) {
+            gsap.killTweensOf(el);
+            if (glareInner) gsap.killTweensOf(glareInner);
+            gsap.set(el, { clearProps: "transform,transformPerspective,transformStyle" });
+        }
     };
 }
 

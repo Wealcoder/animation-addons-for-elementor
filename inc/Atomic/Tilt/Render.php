@@ -4,6 +4,7 @@ namespace WCF_ADDONS\Atomic\Tilt;
 
 use WCF_ADDONS\Atomic\Bootstrap;
 use WCF_ADDONS\Atomic\InteractionsMap;
+use WCF_ADDONS\Atomic\Traits\Responsive_Config;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -11,6 +12,7 @@ if (! defined('ABSPATH')) {
 
 final class Render
 {
+	use Responsive_Config;
 	public function register(): void
 	{
 		add_action(
@@ -50,19 +52,23 @@ final class Render
 			? $element->get_settings()
 			: [];
 
+		$extra_bps   = $this->get_extra_breakpoints();
+		$enabled_map = $this->envelope_to_map( $settings[ Schema::ENABLE ] ?? null );
+		
+		// If it's not enabled on any breakpoint, don't register it
+		if ( ! $this->any_breakpoint_enabled( $enabled_map, $extra_bps ) ) {
+			return;
+		}
+
 		$config =
 			$this->build_config(
-				$settings
+				$settings,
+				$extra_bps,
+				$enabled_map
 			);
 
 		if ( ! empty($settings[Schema::ENABLE_EDITOR]) ) {
 			$config['enableEditor'] = true;
-		}
-
-		if (
-			empty($config['enabled']['desktop'])
-		) {
-			return;
 		}
 
 		$id = method_exists(
@@ -72,7 +78,7 @@ final class Render
 			? $element->get_id()
 			: '';
 
-		if (empty($id)) {
+		if (empty($id) || empty($config)) {
 			return;
 		}
 
@@ -91,228 +97,87 @@ final class Render
 	}
 
 	private function build_config(
-		array $settings
+		array $settings, array $extra_bps, array $enabled_map
 	): array {
-		return [
+		$config = [];
 
-			'enabled' =>
-			$this->emit_responsive(
-				$settings[Schema::ENABLE] ?? [],
-				false
-			),
+		$cast_bool = static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' );
+		$cast_num  = static fn( $v ) => is_numeric( $v ) ? (float) $v : $v;
 
-			'max' =>
-			$this->emit_responsive(
-				$settings[Schema::MAX] ?? [],
-				15
-			),
+		// Pre-compute which breakpoints have tilt disabled.
+		$disabled_bps = [];
+		$enabled_resolved = [ 'desktop' => $cast_bool( $enabled_map['desktop'] ?? false ) ];
+		foreach ( $extra_bps as $bp ) {
+			$own = $enabled_map[ $bp ] ?? null;
+			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_resolved['desktop'] );
+			$effective = ( null === $own || '' === $own ) ? $parent_enabled : $cast_bool( $own );
+			$enabled_resolved[ $bp ] = $effective;
+			if ( ! $effective ) {
+				$disabled_bps[ $bp ] = true;
+			}
+		}
 
-			'speed' =>
-			$this->emit_responsive(
-				$settings[Schema::SPEED] ?? [],
-				300
-			),
-
-			'scale' =>
-			$this->emit_responsive(
-				$settings[Schema::SCALE] ?? [],
-				1
-			),
-
-			'perspective' =>
-			$this->emit_responsive(
-				$settings[Schema::PERSPECTIVE] ?? [],
-				1000
-			),
-
-			'glare' =>
-			$this->emit_responsive(
-				$settings[Schema::GLARE] ?? [],
-				false
-			),
-
-			'maxGlare' =>
-			$this->emit_responsive(
-				$settings[Schema::MAX_GLARE] ?? [],
-				0.5
-			),
-
-			'reset' =>
-			$this->emit_responsive(
-				$settings[Schema::RESET] ?? [],
-				true
-			),
-
-			'transition' =>
-			$this->emit_responsive(
-				$settings[Schema::TRANSITION] ?? [],
-				true
-			),
-
-			'gyroscope' =>
-			$this->emit_responsive(
-				$settings[Schema::GYROSCOPE] ?? [],
-				true
-			),
-		];
-	}
-
-	private function emit_responsive(
-		$value,
-		$fallback = null
-	): array {
-
-		$map =
-			$this->envelope_to_map(
-				$value
-			);
-
-		$bps = array_merge(
-			['desktop'],
-			$this->get_extra_breakpoints()
+		$this->emit_responsive(
+			$config, $settings, Schema::ENABLE, 'enabled', false, $extra_bps,
+			$cast_bool,
+			$disabled_bps
 		);
 
-		$out = [];
-
-		foreach ($bps as $bp) {
-
-			$current =
-				$map[$bp] ?? null;
-
-			if (
-				null === $current ||
-				'' === $current
-			) {
-				$current =
-					$this->cascade_parent(
-						$map,
-						$bp
-					);
-			}
-
-			if (
-				null === $current ||
-				'' === $current
-			) {
-				$current = $fallback;
-			}
-
-			$out[$bp] = $current;
-		}
-
-		return $out;
-	}
-
-	private function envelope_to_map(
-		$value
-	): array {
-
-		if (
-			is_array($value) &&
-			isset($value['value']) &&
-			is_array($value['value'])
-		) {
-			return $value['value'];
-		}
-
-		if (is_array($value)) {
-			return $value;
-		}
-
-		return [];
-	}
-
-	private function cascade_parent(
-		array $map,
-		string $bp
-	) {
-
-		$order = array_merge(
-			['desktop'],
-			$this->get_extra_breakpoints()
+		$this->emit_responsive(
+			$config, $settings, Schema::MAX, 'max', 15, $extra_bps,
+			$cast_num,
+			$disabled_bps
 		);
 
-		$index =
-			array_search(
-				$bp,
-				$order,
-				true
-			);
+		$this->emit_responsive(
+			$config, $settings, Schema::SPEED, 'speed', 300, $extra_bps,
+			$cast_num,
+			$disabled_bps
+		);
 
-		if (false === $index) {
-			return null;
-		}
+		$this->emit_responsive(
+			$config, $settings, Schema::SCALE, 'scale', 1, $extra_bps,
+			$cast_num,
+			$disabled_bps
+		);
 
-		while ($index > 0) {
+		$this->emit_responsive(
+			$config, $settings, Schema::PERSPECTIVE, 'perspective', 1000, $extra_bps,
+			$cast_num,
+			$disabled_bps
+		);
 
-			$index--;
+		$this->emit_responsive(
+			$config, $settings, Schema::GLARE, 'glare', false, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
 
-			$parent =
-				$order[$index];
+		$this->emit_responsive(
+			$config, $settings, Schema::MAX_GLARE, 'maxGlare', 0.5, $extra_bps,
+			$cast_num,
+			$disabled_bps
+		);
 
-			if (
-				isset($map[$parent]) &&
-				'' !== $map[$parent] &&
-				null !== $map[$parent]
-			) {
-				return $map[$parent];
-			}
-		}
+		$this->emit_responsive(
+			$config, $settings, Schema::RESET, 'reset', true, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
 
-		return null;
+		$this->emit_responsive(
+			$config, $settings, Schema::TRANSITION, 'transition', true, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
+
+		$this->emit_responsive(
+			$config, $settings, Schema::GYROSCOPE, 'gyroscope', true, $extra_bps,
+			$cast_bool,
+			$disabled_bps
+		);
+
+		return $config;
 	}
 
-	private function get_extra_breakpoints(): array
-	{
-
-		$bps = [];
-
-		if (
-			! class_exists(
-				'\Elementor\Plugin'
-			)
-		) {
-			return [
-				'tablet',
-				'mobile',
-			];
-		}
-
-		$manager =
-			\Elementor\Plugin::$instance
-			->breakpoints;
-
-		if (
-			! $manager ||
-			! method_exists(
-				$manager,
-				'get_active_breakpoints'
-			)
-		) {
-			return [
-				'tablet',
-				'mobile',
-			];
-		}
-
-		$active =
-			$manager->get_active_breakpoints();
-
-		foreach ($active as $bp) {
-
-			$key =
-				method_exists($bp, 'get_name')
-				? $bp->get_name()
-				: null;
-
-			if (
-				$key &&
-				'desktop' !== $key
-			) {
-				$bps[] = $key;
-			}
-		}
-
-		return $bps;
-	}
 }
