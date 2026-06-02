@@ -27,10 +27,8 @@ final class Schema {
 	const STICKY_CUSTOM_PIN          = 'aae_sticky_custom_pin';
 
 	const STICKY_PIN_START           = 'aae_sticky_pin_start';
-	const STICKY_CUSTOM_PIN_START    = 'aae_sticky_custom_pin_start';
 
 	const STICKY_PIN_END             = 'aae_sticky_pin_end';
-	const STICKY_CUSTOM_PIN_END      = 'aae_sticky_custom_pin_end';
 
 	const STICKY_PIN_SPACING         = 'aae_sticky_pin_spacing';
 
@@ -163,12 +161,6 @@ final class Schema {
 				])
 				->set_dependencies( $sticky_enabled_dependency );
 
-		$schema[ self::STICKY_CUSTOM_PIN_START ] =
-			Responsive_JSON_Prop_Type::make()
-				->default([
-					'desktop' => '',
-				]);
-
 		/*
 		|--------------------------------------------------------------------------
 		| Pin End
@@ -181,12 +173,6 @@ final class Schema {
 					'desktop' => 'bottom bottom',
 				])
 				->set_dependencies( $sticky_enabled_dependency );
-
-		$schema[ self::STICKY_CUSTOM_PIN_END ] =
-			Responsive_JSON_Prop_Type::make()
-				->default([
-					'desktop' => '',
-				]);
 
 		/*
 		|--------------------------------------------------------------------------

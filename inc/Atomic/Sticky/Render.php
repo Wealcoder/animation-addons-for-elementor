@@ -133,18 +133,8 @@ final class Render {
 			$disabled_bps
 		);
 		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_CUSTOM_PIN_START, 'customPinStart', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : '',
-			$disabled_bps
-		);
-		$this->emit_responsive(
 			$config, $settings, Schema::STICKY_PIN_END, 'pinEnd', 'bottom bottom', $extra_bps,
 			static fn( $v ) => is_string( $v ) ? $v : 'bottom bottom',
-			$disabled_bps
-		);
-		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_CUSTOM_PIN_END, 'customPinEnd', '', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : '',
 			$disabled_bps
 		);
 		$this->emit_responsive(

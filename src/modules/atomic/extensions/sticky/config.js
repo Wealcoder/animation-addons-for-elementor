@@ -5,8 +5,6 @@ import {
 	showCustomPinEndArea,
 	showPinFields,
 	showCustomPin,
-	showCustomPinStart,
-	showCustomPinEnd,
 	showEnableEditor,
 	showPlayButton
 } from './predicates';
@@ -45,8 +43,6 @@ const POSITION_OPTIONS = [
 
 	'bottom 80px',
 	'bottom 80%',
-	
-	'custom',
 ].map((v) => ({
 	value: v,
 	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -159,19 +155,10 @@ const config = {
 		{
 			bind: 'pin_start',
 			label: 'Pin Start',
-			control: 'select',
-			options: POSITION_OPTIONS,
+			control: 'text',
+			datalist: POSITION_OPTIONS,
 			defaultValue: 'top top',
 			when: showPinFields,
-			tab: 'Content', // Goes to Content tab
-		},
-
-		{
-			bind: 'custom_pin_start',
-			label: 'Custom Pin Start',
-			control: 'text',
-			defaultValue: '',
-			when: showCustomPinStart,
 			tab: 'Content', // Goes to Content tab
 		},
 
@@ -184,19 +171,10 @@ const config = {
 		{
 			bind: 'pin_end',
 			label: 'Pin End',
-			control: 'select',
-			options: POSITION_OPTIONS,
+			control: 'text',
+			datalist: POSITION_OPTIONS,
 			defaultValue: 'bottom bottom',
 			when: showPinFields,
-			tab: 'Content', // Goes to Content tab
-		},
-
-		{
-			bind: 'custom_pin_end',
-			label: 'Custom Pin End',
-			control: 'text',
-			defaultValue: '',
-			when: showCustomPinEnd,
 			tab: 'Content', // Goes to Content tab
 		},
 

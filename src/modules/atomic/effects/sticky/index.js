@@ -50,10 +50,7 @@ function readSticky(el) {
 		customPin:        r(cfg, 'customPin', ''),	
 
 		pinStart:         r(cfg, 'pinStart', 'top top'),
-		customPinStart:   r(cfg, 'customPinStart', ''),		
-
 		pinEnd:           r(cfg, 'pinEnd', 'bottom bottom'),
-		customPinEnd:     r(cfg, 'customPinEnd', ''),	
 
 		pinSpacing:       r(cfg, 'pinSpacing', false),		
 
@@ -107,8 +104,8 @@ function bindSticky(el, config) {
 		if (customPinEl) pin = customPinEl;
 	}
 
-	let start = config.pinStart === 'custom' ? config.customPinStart : config.pinStart;
-	let end = config.pinEnd === 'custom' ? config.customPinEnd : config.pinEnd;
+	let start = config.pinStart;
+	let end = config.pinEnd;
 	
 	let pinSpacing = config.pinSpacing === 'custom' ? false : config.pinSpacing;
 
