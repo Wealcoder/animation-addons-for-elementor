@@ -3,8 +3,9 @@
 
 = 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
 
-    - Improved: Text Domain Missmas at Image Accordion, Advanced Pricing Table and Weather widgets.
-    - Improved: Security Improved.
+    - Improved: Text Domain Mismatch at Image Accordion, Advanced Pricing Table and Weather widgets.
+    - Improved: WPML Compatibility at Post social share and Image Accordion widget.
+    - Fixed: security fixed in Image and Loop Grid Widget.
 
 = 🌀 Animation Addons for Elementor v2.6.6 – 23th May 2026
 
