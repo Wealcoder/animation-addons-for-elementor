@@ -283,7 +283,7 @@ function buildStickyConfig(settings) {
 
 	const cfg = {};
 	if (plain(settings, 'aae_sticky_enable_editor')) cfg.enableEditor = true;
-	if (plain(settings, 'aae_sticky_pin_markers')) cfg.markers = true;
+	if (plain(settings, 'aae_sticky_pin_markers')) cfg.pinMarkers = true;
 
 	const disabledBps = new Set();
 	for (const bp of BPS) {

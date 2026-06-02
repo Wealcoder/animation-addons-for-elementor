@@ -25,7 +25,7 @@ function r(cfg, key, fallback) {
 function readSticky(el) {
 
 	const cfg = configFor(el, STICKY_MAP);
-	console.log(cfg);
+	
 	if (!cfg) {
 		return null;
 	}
@@ -57,11 +57,13 @@ function readSticky(el) {
 
 		pinSpacing:       r(cfg, 'pinSpacing', false),		
 
-		pinMarkers:       r(cfg, 'pinMarkers', false),
+		pinMarkers:       cfg.pinMarkers === true,
 
 		border:           r(cfg, 'border', null),
 		toggleClass:      r(cfg, 'toggleClass', ''),
 		bgColor:          r(cfg, 'bgColor', ''),
+		
+		enableEditor:     cfg.enableEditor === 'yes' || cfg.enableEditor === true,
 	};
 }
 
@@ -72,13 +74,13 @@ function readSticky(el) {
 function bindSticky(el, config) {
 
 	cleanupSticky(el); // Prevent redundant bindings
-
+	
 	if (!config?.enabled) {
 		return;
 	}
 	
 	// if editor mode then return
-	if (window.elementorFrontend && window.elementorFrontend.isEditMode()) {
+	if (window.elementorFrontend && window.elementorFrontend.isEditMode() && config.enableEditor !== true) {			
 		return;
 	}
 
@@ -225,7 +227,7 @@ function bindSticky(el, config) {
 	if (!endTrigger) {
 		delete tempConfig.endTrigger;
 	}
-
+   
 	el.__aaeStickyInstance = ScrollTrigger.create(tempConfig);
 }
 

@@ -148,7 +148,7 @@ final class Render {
 			$disabled_bps
 		);
 		$this->emit_responsive(
-			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', true, $extra_bps,
+			$config, $settings, Schema::STICKY_PIN_SPACING, 'pinSpacing', false, $extra_bps,
 			static fn( $v ) => is_bool( $v ) ? $v : ( $v === 'yes' || $v === 'true' || $v === 1 || $v === '1' ),
 			$disabled_bps
 		);
