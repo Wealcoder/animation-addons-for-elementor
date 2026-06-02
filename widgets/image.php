@@ -493,7 +493,10 @@ class Image extends Widget_Base {
 			<?php if ( $link['url'] ) { ?>
 				<a <?php $this->print_render_attribute_string( 'link' ); ?>>
 				<?php } ?>
-				<?php echo Group_Control_Image_Size::get_attachment_image_html( $settings, 'image_size', 'image' ); ?>
+				<?php 
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo Group_Control_Image_Size::get_attachment_image_html( $settings, 'image_size', 'image' ); 
+				?>
 				<?php if ( $link['url'] ) { ?>
 				</a>
 			<?php } ?>
