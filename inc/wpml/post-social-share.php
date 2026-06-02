@@ -30,7 +30,7 @@ class Post_Social_Share extends \WPML_Elementor_Module_With_Items {
 	protected function get_title( $field ) {
 		switch ( $field ) {
 			case 'list_title':
-				return __( 'Post Social Share: Icon Title', 'animation-addons-for-elementor-pro' );
+				return __( 'Post Social Share: Icon Title', 'animation-addons-for-elementor' );
 
 			default:
 				return '';

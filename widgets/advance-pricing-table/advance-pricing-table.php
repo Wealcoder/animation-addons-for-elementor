@@ -50,7 +50,7 @@ class Advance_Pricing_Table extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return esc_html__( 'Advanced Pricing Table', 'animation-addons-for-elementor-pro' );
+		return esc_html__( 'Advanced Pricing Table', 'animation-addons-for-elementor' );
 	}
 
 	/**
@@ -81,7 +81,7 @@ class Advance_Pricing_Table extends Widget_Base {
 	 * @return array Widget categories.
 	 */
 	public function get_categories() {
-		return [ 'animation-addons-for-elementor-pro' ];
+		return [ 'animation-addons-for-elementor' ];
 	}
 
 	/**
@@ -109,7 +109,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_layout',
 			[
-				'label' => __( 'Pricing Table', 'animation-addons-for-elementor-pro' ),
+				'label' => __( 'Pricing Table', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -119,7 +119,7 @@ class Advance_Pricing_Table extends Widget_Base {
 			'section_layout_style',
 
 			[
-				'label' => __( 'Pricing Table', 'animation-addons-for-elementor-pro' ),
+				'label' => __( 'Pricing Table', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -127,7 +127,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'layout_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -150,7 +150,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_button',
 			[
-				'label' => esc_html__( 'Button', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -162,7 +162,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_btn_style',
 			[
-				'label'     => esc_html__( 'Button', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -172,23 +172,23 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'button_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 					'stretch' => [
-						'title' => esc_html__( 'Stretch', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Stretch', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-align-stretch-h',
 					],
 				],
@@ -203,7 +203,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'button_margin',
 			[
-				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -223,16 +223,16 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_header',
 			[
-				'label' => esc_html__( 'Header', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Header', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'title',
 			[
-				'label'   => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Enter your title', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'Enter your title', 'animation-addons-for-elementor' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -242,7 +242,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'title_tag',
 			[
-				'label'   => esc_html__( 'Title HTML Tag', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Title HTML Tag', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'h2' => 'H2',
@@ -258,9 +258,9 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'sub_title',
 			[
-				'label'   => esc_html__( 'Sub Title', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Sub Title', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Enter your subtitle', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'Enter your subtitle', 'animation-addons-for-elementor' ),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -273,7 +273,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_header_style',
 			[
-				'label'      => esc_html__( 'Header', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Header', 'animation-addons-for-elementor' ),
 				'tab'        => Controls_Manager::TAB_STYLE,
 				'show_label' => false,
 			]
@@ -282,7 +282,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_heading_style',
 			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'  => Controls_Manager::HEADING,
 			]
 		);
@@ -290,7 +290,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .title' => 'color: {{VALUE}}',
@@ -326,7 +326,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'title_b_radius',
 			[
-				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -338,7 +338,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'title_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -350,19 +350,19 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'title_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -377,7 +377,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_subtitle_style',
 			[
-				'label'     => esc_html__( 'Sub Title', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Sub Title', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -386,7 +386,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'subtitle_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .sub-title' => 'color: {{VALUE}}',
@@ -405,7 +405,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'subtitle_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -417,19 +417,19 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'subtitle_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -448,35 +448,35 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_pricing',
 			[
-				'label' => esc_html__( 'Pricing', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Pricing', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'currency_symbol',
 			[
-				'label'   => esc_html__( 'Currency Symbol', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Currency Symbol', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					''             => esc_html__( 'None', 'animation-addons-for-elementor-pro' ),
-					'dollar'       => '&#36; ' . _x( 'Dollar', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'euro'         => '&#128; ' . _x( 'Euro', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'baht'         => '&#3647; ' . _x( 'Baht', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'franc'        => '&#8355; ' . _x( 'Franc', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'guilder'      => '&fnof; ' . _x( 'Guilder', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'krona'        => 'kr ' . _x( 'Krona', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'lira'         => '&#8356; ' . _x( 'Lira', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'peseta'       => '&#8359 ' . _x( 'Peseta', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'peso'         => '&#8369; ' . _x( 'Peso', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'pound'        => '&#163; ' . _x( 'Pound Sterling', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'real'         => 'R$ ' . _x( 'Real', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'ruble'        => '&#8381; ' . _x( 'Ruble', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'rupee'        => '&#8360; ' . _x( 'Rupee', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'indian_rupee' => '&#8377; ' . _x( 'Rupee (Indian)', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'shekel'       => '&#8362; ' . _x( 'Shekel', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'yen'          => '&#165; ' . _x( 'Yen/Yuan', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'won'          => '&#8361; ' . _x( 'Won', 'Currency', 'animation-addons-for-elementor-pro' ),
-					'custom'       => esc_html__( 'Custom', 'animation-addons-for-elementor-pro' ),
+					''             => esc_html__( 'None', 'animation-addons-for-elementor' ),
+					'dollar'       => '&#36; ' . _x( 'Dollar', 'Currency', 'animation-addons-for-elementor' ),
+					'euro'         => '&#128; ' . _x( 'Euro', 'Currency', 'animation-addons-for-elementor' ),
+					'baht'         => '&#3647; ' . _x( 'Baht', 'Currency', 'animation-addons-for-elementor' ),
+					'franc'        => '&#8355; ' . _x( 'Franc', 'Currency', 'animation-addons-for-elementor' ),
+					'guilder'      => '&fnof; ' . _x( 'Guilder', 'Currency', 'animation-addons-for-elementor' ),
+					'krona'        => 'kr ' . _x( 'Krona', 'Currency', 'animation-addons-for-elementor' ),
+					'lira'         => '&#8356; ' . _x( 'Lira', 'Currency', 'animation-addons-for-elementor' ),
+					'peseta'       => '&#8359 ' . _x( 'Peseta', 'Currency', 'animation-addons-for-elementor' ),
+					'peso'         => '&#8369; ' . _x( 'Peso', 'Currency', 'animation-addons-for-elementor' ),
+					'pound'        => '&#163; ' . _x( 'Pound Sterling', 'Currency', 'animation-addons-for-elementor' ),
+					'real'         => 'R$ ' . _x( 'Real', 'Currency', 'animation-addons-for-elementor' ),
+					'ruble'        => '&#8381; ' . _x( 'Ruble', 'Currency', 'animation-addons-for-elementor' ),
+					'rupee'        => '&#8360; ' . _x( 'Rupee', 'Currency', 'animation-addons-for-elementor' ),
+					'indian_rupee' => '&#8377; ' . _x( 'Rupee (Indian)', 'Currency', 'animation-addons-for-elementor' ),
+					'shekel'       => '&#8362; ' . _x( 'Shekel', 'Currency', 'animation-addons-for-elementor' ),
+					'yen'          => '&#165; ' . _x( 'Yen/Yuan', 'Currency', 'animation-addons-for-elementor' ),
+					'won'          => '&#8361; ' . _x( 'Won', 'Currency', 'animation-addons-for-elementor' ),
+					'custom'       => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 				],
 				'default' => 'dollar',
 			]
@@ -485,7 +485,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'currency_symbol_custom',
 			[
-				'label'     => esc_html__( 'Custom Symbol', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Custom Symbol', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
 				'condition' => [
 					'currency_symbol' => 'custom',
@@ -496,7 +496,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'price',
 			[
-				'label'   => esc_html__( 'Price', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Price', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::TEXT,
 				'default' => '9.99',
 				'dynamic' => [
@@ -508,10 +508,10 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'sale',
 			[
-				'label'     => esc_html__( 'Sale', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Sale', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SWITCHER,
-				'label_on'  => esc_html__( 'On', 'animation-addons-for-elementor-pro' ),
-				'label_off' => esc_html__( 'Off', 'animation-addons-for-elementor-pro' ),
+				'label_on'  => esc_html__( 'On', 'animation-addons-for-elementor' ),
+				'label_off' => esc_html__( 'Off', 'animation-addons-for-elementor' ),
 				'default'   => '',
 			]
 		);
@@ -519,7 +519,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'original_price',
 			[
-				'label'     => esc_html__( 'Original Price', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Original Price', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
 				'default'   => '19.99',
 				'condition' => [
@@ -534,12 +534,12 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'period',
 			[
-				'label'   => esc_html__( 'Period', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Period', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::TEXT,
 				'dynamic' => [
 					'active' => true,
 				],
-				'default' => esc_html__( 'Monthly', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'Monthly', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -549,7 +549,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_pricing_element_style',
 			[
-				'label'      => esc_html__( 'Pricing', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Pricing', 'animation-addons-for-elementor' ),
 				'tab'        => Controls_Manager::TAB_STYLE,
 				'show_label' => false,
 			]
@@ -558,7 +558,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'price_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .pt-sale-price, {{WRAPPER}} .pt-currency' => 'color: {{VALUE}}',
@@ -580,7 +580,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_currency_style',
 			[
-				'label'     => esc_html__( 'Currency Symbol', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Currency Symbol', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -604,19 +604,19 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'currency_align',
 			[
-				'label' => esc_html__( 'Vertical Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Vertical Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'flex-start' => [
-						'title' => esc_html__( 'Top', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Top', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-v-align-top',
 					],
 					'center' => [
-						'title' => esc_html__( 'Middle', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Middle', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-v-align-middle',
 					],
 					'flex-end' => [
-						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Bottom', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-v-align-bottom',
 					],
 				],
@@ -630,7 +630,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_original_price_style',
 			[
-				'label'     => esc_html__( 'Original Price', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Original Price', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -643,7 +643,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'original_price_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .pt-org-price' => 'color: {{VALUE}}',
@@ -670,7 +670,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'heading_period_style',
 			[
-				'label'     => esc_html__( 'Period', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Period', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 				'condition' => [
@@ -682,7 +682,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'period_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .pt-period' => 'color: {{VALUE}}',
@@ -707,7 +707,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'price_bg_color',
 			[
-				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'separator' => 'before',
 				'selectors' => [
@@ -720,7 +720,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'header_btm_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -732,19 +732,19 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'price_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'start' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'end' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -764,17 +764,17 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_features',
 			[
-				'label' => esc_html__( 'Features', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Features', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'feature_title',
 			[
-				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label'       => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'Advantages', 'animation-addons-for-elementor-pro' ),
-				'placeholder' => esc_html__( 'Advantages', 'animation-addons-for-elementor-pro' ),
+				'default'     => esc_html__( 'Advantages', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Advantages', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -783,13 +783,13 @@ class Advance_Pricing_Table extends Widget_Base {
 		$repeater->add_control(
 			'item_text',
 			[
-				'label'   => esc_html__( 'Text', 'animation-addons-for-elementor-pro' ),
+				'label'   => esc_html__( 'Text', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::TEXT,
 				'label_block' => true,
 				'dynamic' => [
 					'active' => true,
 				],
-				'default' => esc_html__( 'List Item', 'animation-addons-for-elementor-pro' ),
+				'default' => esc_html__( 'List Item', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -801,7 +801,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$repeater->add_control(
 			'selected_item_icon',
 			[
-				'label'            => esc_html__( 'Icon', 'animation-addons-for-elementor-pro' ),
+				'label'            => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
 				'type'             => Controls_Manager::ICONS,
 				'skin'             => 'inline',
 				'label_block'      => false,
@@ -812,7 +812,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$repeater->add_control(
 			'item_text_color',
 			[
-				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} {{CURRENT_ITEM}}'   => 'color: {{VALUE}} !important',
@@ -823,7 +823,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$repeater->add_control(
 			'item_icon_color',
 			[
-				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Icon Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} {{CURRENT_ITEM}} i'   => 'color: {{VALUE}}',
@@ -840,19 +840,19 @@ class Advance_Pricing_Table extends Widget_Base {
 				'prevent_empty' => false,
 				'default'     => [
 					[
-						'item_text'          => esc_html__( 'Starter Pack Included', 'animation-addons-for-elementor-pro' ),
+						'item_text'          => esc_html__( 'Starter Pack Included', 'animation-addons-for-elementor' ),
 						'selected_item_icon' => $default_icon,
 					],
 					[
-						'item_text'          => esc_html__( ' Budget Minimization', 'animation-addons-for-elementor-pro' ),
+						'item_text'          => esc_html__( ' Budget Minimization', 'animation-addons-for-elementor' ),
 						'selected_item_icon' => $default_icon,
 					],
 					[
-						'item_text'          => esc_html__( 'Venue Booking', 'animation-addons-for-elementor-pro' ),
+						'item_text'          => esc_html__( 'Venue Booking', 'animation-addons-for-elementor' ),
 						'selected_item_icon' => $default_icon,
 					],
 					[
-						'item_text'          => esc_html__( 'Personal Trainer', 'animation-addons-for-elementor-pro' ),
+						'item_text'          => esc_html__( 'Personal Trainer', 'animation-addons-for-elementor' ),
 						'selected_item_icon' => $default_icon,
 					],
 				],
@@ -866,7 +866,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_features_list_style',
 			[
-				'label'      => esc_html__( 'Features', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Features', 'animation-addons-for-elementor' ),
 				'tab'        => Controls_Manager::TAB_STYLE,
 				'show_label' => false,
 			]
@@ -875,7 +875,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'feature_title_heading',
 			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -884,7 +884,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'feature_title_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .feature-title' => 'color: {{VALUE}}',
@@ -903,7 +903,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'feature_title_margin',
 			[
-				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'default' => [
@@ -923,7 +923,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'feature_text_heading',
 			[
-				'label' => esc_html__( 'List Text', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'List Text', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -932,7 +932,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'features_list_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .pt-feature li' => 'color: {{VALUE}}',
@@ -951,7 +951,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'features_icon_size',
 			[
-				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Icon Size', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -969,7 +969,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'features_icon_spacing',
 			[
-				'label'      => esc_html__( 'Icon Spacing', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Icon Spacing', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -987,7 +987,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'features_list_gap',
 			[
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em', 'rem', 'custom' ],
 				'range'      => [
@@ -1006,7 +1006,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'feature_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -1027,19 +1027,19 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'feature_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -1058,14 +1058,14 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_ribbon',
 			[
-				'label' => esc_html__( 'Ribbon', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Ribbon', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'show_ribbon',
 			[
-				'label'     => esc_html__( 'Show', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Show', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SWITCHER,
 				'default'   => 'yes',
 				'separator' => 'before',
@@ -1075,9 +1075,9 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'ribbon_title',
 			[
-				'label'     => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Popular', 'animation-addons-for-elementor-pro' ),
+				'default'   => esc_html__( 'Popular', 'animation-addons-for-elementor' ),
 				'condition' => [
 					'show_ribbon' => 'yes',
 				],
@@ -1093,7 +1093,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->start_controls_section(
 			'section_ribbon_style',
 			[
-				'label'      => esc_html__( 'Ribbon', 'animation-addons-for-elementor-pro' ),
+				'label'      => esc_html__( 'Ribbon', 'animation-addons-for-elementor' ),
 				'tab'        => Controls_Manager::TAB_STYLE,
 				'show_label' => false,
 				'condition'  => [
@@ -1105,7 +1105,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'ribbon_text_color',
 			[
-				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Text Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .ribbon' => 'color: {{VALUE}}',
@@ -1124,7 +1124,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'ribbon_bg_color',
 			[
-				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .ribbon'   => 'background-color: {{VALUE}}',
@@ -1135,10 +1135,10 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'ribbon_position',
 			[
-				'label' => esc_html__( 'Transform', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Transform', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::POPOVER_TOGGLE,
-				'label_off' => esc_html__( 'Default', 'animation-addons-for-elementor-pro' ),
-				'label_on' => esc_html__( 'Custom', 'animation-addons-for-elementor-pro' ),
+				'label_off' => esc_html__( 'Default', 'animation-addons-for-elementor' ),
+				'label_on' => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 			]
 		);
 
@@ -1147,13 +1147,13 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_control(
 			'ribbon_position_point',
 			[
-				'label' => esc_html__( 'Ribbon Start', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Ribbon Start', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::SELECT,
 				'default' => 'left',
 				'prefix_class' => 'ribbon-position-',
 				'options' => [
-					'left' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
-					'right' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+					'left' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
+					'right' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 				],
 			]
 		);
@@ -1161,7 +1161,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'ribbon_position_x',
 			[
-				'label' => esc_html__( 'TranslateX', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'TranslateX', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%' ],
 				'range' => [
@@ -1184,7 +1184,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'ribbon_position_y',
 			[
-				'label' => esc_html__( 'TranslateY', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'TranslateY', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%' ],
 				'range' => [
@@ -1206,7 +1206,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'ribbon_rotate',
 			[
-				'label' => esc_html__( 'Rotate', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Rotate', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [
@@ -1225,7 +1225,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'ribbon_b_radius',
 			[
-				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -1237,7 +1237,7 @@ class Advance_Pricing_Table extends Widget_Base {
 		$this->add_responsive_control(
 			'ribbon_padding',
 			[
-				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
