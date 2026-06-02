@@ -91,6 +91,7 @@ export function ResponsiveSection({ config }) {
 							activeBp={activeBp}
 							elementId={element.id}
 							play_group={field?.play_group}
+							help={field.help}
 						/>					
 				);
 			})}

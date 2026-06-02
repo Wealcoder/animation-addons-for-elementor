@@ -20,6 +20,8 @@ final class Schema
 
 	const END = 'aae_horizontal_end';
 
+	const START = 'aae_horizontal_start';
+
 	public function register(): void
 	{
 
@@ -73,7 +75,11 @@ final class Schema
 				'desktop' => '3000',
 			]);
 
-		
+		$schema[self::START] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 'top top',
+			]);
 
 		return $schema;
 	}

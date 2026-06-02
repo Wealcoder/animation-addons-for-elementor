@@ -3,18 +3,7 @@ const {
 	pickConfigResponsive,
 } = window.AAEADDON;
 
-/*
-|--------------------------------------------------------------------------
-| MUST MATCH
-|--------------------------------------------------------------------------
-|
-| PHP:
-| InteractionsMap::register()
-|
-*/
-
-const MAP =
-	'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT';
+const MAP =	'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT';
 
 function r(cfg, key, fallback) {
 	const v = pickConfigResponsive(cfg, key);
@@ -46,13 +35,7 @@ function read(el) {
 	};
 }
 
-function bind(el, config) {
-
-	/*
-	|--------------------------------------------------------------------------
-	| REAL GSAP LOGIC HERE
-	|--------------------------------------------------------------------------
-	*/
+function bind(el, config) {	
 
 	console.log(		
 		config
@@ -64,25 +47,11 @@ function unbind(el) {
 }
 
 window.AAEADDON.register({
-
-	/*
-	|--------------------------------------------------------------------------
-	| CHANGE THIS
-	|--------------------------------------------------------------------------
-	*/
-
 	name: 'cursor-hover-effect',
-
 	mapName: MAP,
-
-	boundFlag:
-		'aae-cursor-hover-effect-bound',
-
+	boundFlag:	'aae-cursor-hover-effect-bound',
 	read,
-
 	bind,
-
 	unbind,
-
 	reset: unbind,
 });
