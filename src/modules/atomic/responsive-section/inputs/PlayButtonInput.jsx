@@ -25,9 +25,7 @@ export function PlayButtonInput({ play_group = "" }) {
     
     if (!replayInPreview(dom_settings.target, play_group)) {
       // eslint-disable-next-line no-console
-      console.warn(
-        "[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?",
-      );
+      console.warn(  "[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?" );
       return;
     }
 

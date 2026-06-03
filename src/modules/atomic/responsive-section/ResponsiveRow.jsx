@@ -202,6 +202,7 @@ export function ResponsiveRow({
       propValue={propValue}
       activeBp={activeBp}
       elementId={elementId}
+      play_group={play_group}
     />
   ) : (
        
@@ -222,6 +223,7 @@ export function ResponsiveRow({
         defaultValue={defaultValue}
         propValue={propValue}
         elementId={elementId}
+        play_group={play_group}
       />
     
   );
@@ -246,6 +248,7 @@ function ResponsiveCellRow({
   propValue,
   activeBp,
   elementId,
+  play_group,
 }) {
   const { value, ownValue, setValue, resetValue } = useCellValue({
     propValue,
@@ -302,6 +305,7 @@ function ResponsiveCellRow({
         units={units}
         defaultUnit={defaultUnit}
         datalist={datalist}
+        play_group={play_group}
       />
     </Stack>
   );
@@ -395,6 +399,7 @@ function PlainRow({
   defaultValue,
   propValue,
   elementId,
+  play_group,
 }) {
   const { value, setValue } = usePlainValue({
     propValue,
@@ -431,6 +436,7 @@ function PlainRow({
         units={units}
         defaultUnit={defaultUnit}
         datalist={datalist}
+        play_group={play_group}
       />
     </Stack>
   );
