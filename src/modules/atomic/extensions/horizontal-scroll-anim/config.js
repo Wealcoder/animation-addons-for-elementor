@@ -44,21 +44,6 @@ const config = {
 			defaultValue: false,
 			help: 'Enable horizontal scroll for the section , Set Child elements width'
 		},
-
-		{
-			bind: 'width',
-
-			label: 'Width',
-
-			control: 'text',
-
-			datalist: WIDTH_OPTIONS,
-
-			defaultValue: '300%',
-			help: 'Set the total width of the section for horizontal scroll. Default is 300%',
-
-			when: isEnabled,
-		},
 		{
 			bind: 'start',
 
@@ -69,20 +54,6 @@ const config = {
 			datalist: START_OPTIONS,
 
 			defaultValue: 'top top',
-
-			when: isEnabled,
-		},
-
-		{
-			bind: 'end',
-
-			label: 'End',
-
-			control: 'text',
-
-			datalist: END_OPTIONS,
-
-			defaultValue: '3000',
 
 			when: isEnabled,
 		},

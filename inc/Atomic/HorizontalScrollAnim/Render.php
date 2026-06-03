@@ -85,26 +85,6 @@ final class Render
 		$this->emit_responsive(
 			$config,
 			$settings,
-			Schema::WIDTH,
-			'width',
-			'300%',
-			$extra_bps,
-			[ $this, 'cast_value' ],
-			$disabled_bps
-		);
-		$this->emit_responsive(
-			$config,
-			$settings,
-			Schema::END,
-			'end',
-			'3000',
-			$extra_bps,
-			[ $this, 'cast_value' ],
-			$disabled_bps
-		);
-		$this->emit_responsive(
-			$config,
-			$settings,
 			Schema::START,
 			'start',
 			'top top',
