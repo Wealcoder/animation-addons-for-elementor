@@ -116,6 +116,8 @@ function play(el, config) {
 }
 
 function bind(el, config) {
+	unbind(el);
+	if (!config) return;
 
 	console.log('Cursor Hover Effect',config);
 
