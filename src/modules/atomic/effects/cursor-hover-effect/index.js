@@ -110,6 +110,11 @@ function read(el) {
 	};
 }
 
+function play(el, config) {
+	unbind(el);
+	bind(el, config);
+}
+
 function bind(el, config) {
 
 	console.log('Cursor Hover Effect',config);
@@ -359,10 +364,9 @@ function unbind(el) {
 window.AAEADDON.register({
 	name: 'cursor-hover-effect',
 	mapName: MAP,
-
 	boundFlag: 'aae-cursor-hover-effect-bound',
-
 	read,
+	play,
 	bind,
 	unbind,
 	reset: unbind,

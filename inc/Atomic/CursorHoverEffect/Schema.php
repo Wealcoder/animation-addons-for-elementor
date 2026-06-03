@@ -48,8 +48,7 @@ final class Schema
 	|--------------------------------------------------------------------------
 	*/
 
-	const WIDTH =
-	'aae_cursor_hover_width';	
+	const WIDTH = 'aae_cursor_hover_width';	
 
 	/*
 	|--------------------------------------------------------------------------
@@ -57,8 +56,7 @@ final class Schema
 	|--------------------------------------------------------------------------
 	*/
 
-	const HEIGHT =
-	'aae_cursor_hover_height';
+	const HEIGHT = 'aae_cursor_hover_height';
 	
 
 	/*
@@ -67,14 +65,11 @@ final class Schema
 	|--------------------------------------------------------------------------
 	*/
 
-	const BORDER =
-	'aae_cursor_hover_border';
+	const BORDER = 'aae_cursor_hover_border';
 
-	const BORDER_RADIUS =
-	'aae_cursor_hover_border_radius';
+	const BORDER_RADIUS = 'aae_cursor_hover_border_radius';
 
-	const ENABLE =
-	'aae_cursor_hover_enable';
+	const ENABLE = 'aae_cursor_hover_enable';
 
 	const ENABLE_EDITOR =
 	'aae_cursor_hover_enable_editor';
