@@ -140,71 +140,71 @@ const config = {
 	anchorKey: 'aae-section-aae-animation',
 	bindPrefix: 'aae_anim_',
 	fields: [
-		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none' },
+		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', responsive: true },
 
-		{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: isAnimated },
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_page_load', when: isAnimated },
+		{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: isAnimated, responsive: true },
+		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_page_load', when: isAnimated, responsive: true },
 
 		{
 			bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
-			defaultValue: '', placeholder: '.my-class', when: showTriggerSelector
+			defaultValue: '', placeholder: '.my-class', when: showTriggerSelector, responsive: true
 		},
 
-		{ bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper },
+		{ bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper, responsive: true },
 
 		{
 			bind: 'start_trigger', label: 'Start Trigger', control: 'text',
-			defaultValue: '', placeholder: '.start_area', when: showScrollCustomBlock
+			defaultValue: '', placeholder: '.start_area', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'end_trigger', label: 'End Trigger', control: 'text',
-			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock
+			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'start_position', label: 'Start', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock
+			options: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'start_custom', label: 'Custom Start', control: 'text',
-			defaultValue: 'top top', placeholder: 'top top+=100', when: showStartCustom
+			defaultValue: 'top top', placeholder: 'top top+=100', when: showStartCustom, responsive: true
 		},
 		{
 			bind: 'end_position', label: 'End', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock
+			options: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'end_custom', label: 'Custom End', control: 'text',
-			defaultValue: 'bottom top', placeholder: 'bottom top+=100', when: showEndCustom
+			defaultValue: 'bottom top', placeholder: 'bottom top+=100', when: showEndCustom, responsive: true
 		},
 
-		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isDurationEffect },
-		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5, when: isDurationEffect },
-		{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect },
+		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isDurationEffect, responsive: true },
+		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5, when: isDurationEffect, responsive: true },
+		{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect, responsive: true },
 
 		{
 			bind: 'fade_from', label: 'Fade From', control: 'select',
-			options: FADE_DIRECTION_OPTIONS, defaultValue: 'bottom', when: isFade
+			options: FADE_DIRECTION_OPTIONS, defaultValue: 'bottom', when: isFade, responsive: true
 		},
 		{
 			bind: 'fade_offset', label: 'Fade Offset', control: 'number',
-			defaultValue: 50, when: showFadeOffset
+			defaultValue: 50, when: showFadeOffset, responsive: true
 		},
 		{
 			bind: 'scale', label: 'Start Scale', control: 'number',
-			defaultValue: 0.7, when: showScale
+			defaultValue: 0.7, when: showScale, responsive: true
 		},
 
 		{
 			bind: 'rotation_dir', label: 'Rotation Direction', control: 'select',
-			options: ROTATION_DIR_OPTIONS, defaultValue: 'x', when: isMove
+			options: ROTATION_DIR_OPTIONS, defaultValue: 'x', when: isMove, responsive: true
 		},
 		{
 			bind: 'rotation', label: 'Rotation Value', control: 'number',
-			defaultValue: -80, when: isMove
+			defaultValue: -80, when: isMove, responsive: true
 		},
 		{
 			bind: 'transform_origin', label: 'Transform Origin', control: 'text',
-			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove
+			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove, responsive: true
 		},
 
 		// Custom Properties repeater (effect = custom). Stored as a
@@ -213,7 +213,7 @@ const config = {
 		// the shape; PHP just round-trips the payload.
 		{
 			bind: 'custom_props', label: 'Custom Properties', control: 'repeater',
-			defaultValue: [], when: isCustom,
+			defaultValue: [], when: isCustom, responsive: true,
 			addLabel: 'Add Property',
 			rowDefaults: { property: 'opacity', value: '' },
 			cells: [

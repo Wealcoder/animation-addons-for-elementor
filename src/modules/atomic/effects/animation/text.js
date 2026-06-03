@@ -82,6 +82,9 @@ export function readText(el) {
 		spinStart: r(cfg, 'spinStart', 'top 50%'),
 		spinEnd: r(cfg, 'spinEnd', 'bottom 30%'),
 		spinToggle: r(cfg, 'spinToggle', 'play none none reverse'),
+		scaleNum: parseNum(r(cfg, 'scaleNum', 1.5), 1.5),
+		scaleBreak: r(cfg, 'scaleBreak', 'lines'),
+		scaleEase: r(cfg, 'scaleEase', 'back'),
 	};
 }
 
@@ -98,7 +101,7 @@ const SPLIT_RECIPE = {
 	word: { type: 'chars,words', target: 'words' },
 	text_move: { type: 'lines', target: 'lines', perspective: 400 },
 	text_reveal: { type: 'lines,words,chars', target: 'chars', linesClass: 'anim-reveal-line' },
-	text_scale: { type: null, target: null },
+	text_scale: { type: 'lines,words,chars', target: 'dynamic', linesClass: 'text-scale-anim' },
 	text_invert: { type: 'lines', target: 'lines', linesClass: 'invert-line', parentClass: 'wcf-t-animation-text_invert' },
 	text_spin: { type: null, target: null },
 };
@@ -160,7 +163,13 @@ function textTween(effect, config, pieces) {
 		case 'text_scale':
 			return {
 				method: 'from',
-				props: { ...shared, scale: 0, autoAlpha: 0, transformOrigin: 'center center' },
+				props: { 
+					...shared, 
+					scale: config.scaleNum, 
+					autoAlpha: 0, 
+					transformOrigin: '50% 0%', 
+					ease: config.scaleEase 
+				},
 			};
 
 		case 'text_invert':
@@ -176,8 +185,46 @@ function textTween(effect, config, pieces) {
 
 		case 'text_spin':
 			return {
-				method: 'from',
-				props: { ...shared, rotationY: 180, autoAlpha: 0, transformOrigin: 'center center' },
+				method: 'timeline',
+				build: (tl, originalPieces, config, el) => {
+					const clonePieces = el.__aaeTextSplitClone?.chars;
+					if (!clonePieces || !originalPieces) return;
+					
+					const duration = 0.4;
+					const delay = config.delay || 0;
+					const stagger = { each: 0.03, ease: 'power1', from: 'start' };
+					const height = el.offsetHeight || 30;
+					const origin = `50% 50% -${height / 2}`;
+					
+					tl.set(clonePieces, {
+						rotationX: -90,
+						transformOrigin: origin,
+					});
+					
+					tl.to(originalPieces, {
+						delay,
+						duration,
+						rotationX: 90,
+						transformOrigin: origin,
+						opacity: 0,
+						stagger,
+						ease: 'power2.in',
+					}, 0);
+					
+					tl.to(clonePieces, {
+						duration: 0.001,
+						delay,
+						opacity: 1,
+						stagger,
+					}, 0.001);
+					
+					tl.to(clonePieces, {
+						duration,
+						delay,
+						rotationX: 0,
+						stagger,
+					}, 0);
+				}
 			};
 
 		default:
@@ -187,7 +234,7 @@ function textTween(effect, config, pieces) {
 
 /** Build the SplitText instance for `effect` and return the tween targets.
  *  Returns null when the effect needs no split (target the element itself). */
-function splitFor(el, effect) {
+function splitFor(el, effect, config) {
 	const recipe = SPLIT_RECIPE[effect];
 
 	if (!recipe || !recipe.type) return null;
@@ -209,13 +256,54 @@ function splitFor(el, effect) {
 
 	el[TEXT_SPLIT_KEY] = split;
 
+	if (recipe.target === 'dynamic') {
+		return split[config.scaleBreak || 'lines'] || null;
+	}
+
 	return split[recipe.target] || null;
 }
 
 /** Pick the actual tween targets for `effect` — the split collection when
  *  the recipe needs splitting, the element itself otherwise. */
-function targetsFor(el, effect) {
-	const pieces = splitFor(el, effect);
+function targetsFor(el, config) {
+	const effect = config.effect;
+
+	// Handle text_spin DOM cloning
+	if (effect === 'text_spin') {
+		const SplitText = getSplitText();
+		const gsap = getGsap();
+		if (SplitText && gsap) {
+			const clone = el.cloneNode(true);
+			clone.classList.add('duplicate-text');
+			el.style.perspective = '600px';
+			el.style.whiteSpace = 'nowrap';
+			clone.style.perspective = '600px';
+			clone.style.whiteSpace = 'nowrap';
+			
+			clone.style.position = 'absolute';
+			clone.style.top = el.offsetTop + 'px';
+			clone.style.left = el.offsetLeft + 'px';
+			clone.style.margin = '0';
+			
+			if (config.spinColor) {
+				clone.style.setProperty('color', config.spinColor, 'important');
+			}
+			
+			el.parentNode.insertBefore(clone, el.nextSibling);
+			
+			const originalSplit = new SplitText(el, { type: 'chars' });
+			const cloneSplit = new SplitText(clone, { type: 'chars' });
+			gsap.set(cloneSplit.chars, { opacity: 0 });
+			
+			el[TEXT_SPLIT_KEY] = originalSplit;
+			el.__aaeTextSplitClone = cloneSplit;
+			el.__aaeTextClone = clone;
+			
+			return originalSplit.chars;
+		}
+	}
+
+	const pieces = splitFor(el, effect, config);
 
 	if (pieces && pieces.length) return pieces;
 
@@ -238,6 +326,16 @@ export function resetText(el) {
 		try { split.revert(); } catch (_) { /* ignore */ }
 		delete el[TEXT_SPLIT_KEY];
 	}
+	const cloneSplit = el.__aaeTextSplitClone;
+	if (cloneSplit && typeof cloneSplit.revert === 'function') {
+		try { cloneSplit.revert(); } catch (_) { /* ignore */ }
+		delete el.__aaeTextSplitClone;
+	}
+	const clone = el.__aaeTextClone;
+	if (clone && clone.parentNode) {
+		clone.parentNode.removeChild(clone);
+		delete el.__aaeTextClone;
+	}
 	// Drop any per-effect parent classes we attached in splitFor().
 	for (const recipe of Object.values(SPLIT_RECIPE)) {
 		if (recipe.parentClass) el.classList.remove(recipe.parentClass);
@@ -252,7 +350,7 @@ export function playText(el, config) {
 	// DOM back so a new SplitText doesn't compound on the previous output.
 	resetText(el);
 
-	const pieces = targetsFor(el, config.effect);
+	const pieces = targetsFor(el, config);
 	if (!pieces) return;
 
 	const tween = textTween(config.effect, config, pieces);
@@ -260,6 +358,10 @@ export function playText(el, config) {
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, tween.to);
+	} else if (tween.method === 'timeline') {
+		const tl = gsap.timeline();
+		tween.build(tl, pieces, config, el);
+		el[TEXT_PLAYED] = tl;
 	} else {
 		// 'from' — V3 default for every text effect
 		el[TEXT_PLAYED] = gsap.from(pieces, tween.props);
@@ -275,7 +377,7 @@ function buildScrubbedText(el, config) {
 
 	resetText(el);
 
-	const pieces = targetsFor(el, config.effect);
+	const pieces = targetsFor(el, config);
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces);
@@ -286,6 +388,10 @@ function buildScrubbedText(el, config) {
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, { ...tween.to, ...overrides });
+	} else if (tween.method === 'timeline') {
+		const tl = gsap.timeline({ paused: true });
+		tween.build(tl, pieces, config, el);
+		el[TEXT_PLAYED] = tl;
 	} else {
 		el[TEXT_PLAYED] = gsap.from(pieces, { ...tween.props, ...overrides });
 	}
