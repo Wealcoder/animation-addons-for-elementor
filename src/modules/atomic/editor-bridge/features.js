@@ -665,8 +665,6 @@ function buildParallaxConfig(settings) {
 
 const HORIZONTAL_RESPONSIVE = {
 	aae_horizontal_enable: { configKey: 'enabled', default: false },
-	aae_horizontal_width: { configKey: 'width', default: '300%' },
-	aae_horizontal_end: { configKey: 'end', default: '3000' },
 	aae_horizontal_start: { configKey: 'start', default: 'top top' },
 };
 
@@ -681,9 +679,8 @@ function buildHorizontalConfig(settings) {
 
 	const cfg = {
 		enabled: false,
-		width: readAt(settings, 'aae_horizontal_width', 'desktop', '300%'),
-		end: readAt(settings, 'aae_horizontal_end', 'desktop', '3000'),
-		start: readAt(settings, 'aae_horizontal_start', 'desktop', 'top top')
+		start: readAt(settings, 'aae_horizontal_start', 'desktop', 'top top'),
+		markers: !!plain(settings, 'aae_horizontal_markers'),
 	};
 
 	// In case you later add responsive breakpoints, emit them here.

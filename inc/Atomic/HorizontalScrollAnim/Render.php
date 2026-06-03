@@ -22,10 +22,11 @@ final class Render
 		);
 	}
 
-	public function maybe_register( $element ): void {
+	public function maybe_register($element): void
+	{
 		if (
-			! is_object( $element ) ||
-			! method_exists( $element, 'get_element_type' )
+			! is_object($element) ||
+			! method_exists($element, 'get_element_type')
 		) {
 			return;
 		}
@@ -40,35 +41,34 @@ final class Render
 			return;
 		}
 
-		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
+		$settings = method_exists($element, 'get_settings') ? $element->get_settings() : [];
 
 		$extra_bps   = $this->get_extra_breakpoints();
-		$enabled_map = $this->envelope_to_map( $settings[ Schema::ENABLE ] ?? null );
-		if ( ! $this->any_breakpoint_enabled( $enabled_map, $extra_bps ) ) {
+		$enabled_map = $this->envelope_to_map($settings[Schema::ENABLE] ?? null);
+		if (! $this->any_breakpoint_enabled($enabled_map, $extra_bps)) {
 			return;
 		}
 
-		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
-		if ( '' === $id ) {
+		$id = method_exists($element, 'get_id') ? (string) $element->get_id() : '';
+		if ('' === $id) {
 			return;
 		}
 
 		$config = [
-			'width' => '300%',
-			'end'   => 3000,
 			'start' => 'top top',
+			'markers' => false,
 		];
 
 		// Pre-compute which breakpoints have horizontal scroll disabled.
 		$disabled_bps = [];
-		$enabled_resolved = [ 'desktop' => $enabled_map['desktop'] ?? false ];
-		foreach ( $extra_bps as $bp ) {
-			$own = $enabled_map[ $bp ] ?? null;
-			$parent_enabled = $this->cascade_parent( $bp, $enabled_resolved, $enabled_map['desktop'] ?? false );
-			$effective = ( null === $own || '' === $own ) ? $parent_enabled : (bool) $own;
-			$enabled_resolved[ $bp ] = $effective;
-			if ( ! $effective ) {
-				$disabled_bps[ $bp ] = true;
+		$enabled_resolved = ['desktop' => $enabled_map['desktop'] ?? false];
+		foreach ($extra_bps as $bp) {
+			$own = $enabled_map[$bp] ?? null;
+			$parent_enabled = $this->cascade_parent($bp, $enabled_resolved, $enabled_map['desktop'] ?? false);
+			$effective = (null === $own || '' === $own) ? $parent_enabled : (bool) $own;
+			$enabled_resolved[$bp] = $effective;
+			if (! $effective) {
+				$disabled_bps[$bp] = true;
 			}
 		}
 
@@ -79,7 +79,7 @@ final class Render
 			'enabled',
 			false,
 			$extra_bps,
-			static fn( $v ) => (bool) $v,
+			static fn($v) => (bool) $v,
 			$disabled_bps
 		);
 		$this->emit_responsive(
@@ -89,26 +89,32 @@ final class Render
 			'start',
 			'top top',
 			$extra_bps,
-			[ $this, 'cast_value' ],
+			[$this, 'cast_value'],
 			$disabled_bps
 		);
+	
+		if (isset($settings[Schema::MARKERS])) {
+			$m_val = $settings[Schema::MARKERS];
+			$config['markers'] = is_array($m_val) && isset($m_val['value']) ? (bool) $m_val['value'] : (bool) $m_val;
+		}
 
-		if ( empty( $config ) ) {
+		if (empty($config)) {
 			return;
 		}
 
-		InteractionsMap::register( 'horizontal', $id, $config );
+		InteractionsMap::register('horizontal', $id, $config);
 
-		if ( ! is_admin() ) {
-			wp_enqueue_script( 'aae-effect-horizontal' );
+		if (! is_admin()) {
+			wp_enqueue_script('aae-effect-horizontal');
 		}
 	}
 
 	/** Numeric strings round-trip as numbers; others stay strings. */
-	private function cast_value( $v ) {
-		if ( is_bool( $v ) || is_int( $v ) || is_float( $v ) ) return $v;
-		if ( is_string( $v ) && is_numeric( $v ) ) {
-			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
+	private function cast_value($v)
+	{
+		if (is_bool($v) || is_int($v) || is_float($v)) return $v;
+		if (is_string($v) && is_numeric($v)) {
+			return (false !== strpos($v, '.')) ? (float) $v : (int) $v;
 		}
 		return $v;
 	}

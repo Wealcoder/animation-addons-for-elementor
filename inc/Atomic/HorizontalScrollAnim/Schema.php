@@ -17,6 +17,7 @@ final class Schema
 	const ENABLE = 'aae_horizontal_enable';
 
 	const START = 'aae_horizontal_start';
+	const MARKERS = 'aae_horizontal_markers';
 
 	public function register(): void
 	{
@@ -63,6 +64,10 @@ final class Schema
 			->default([
 				'desktop' => 'top top',
 			]);
+
+		$schema[self::MARKERS] =
+			Boolean_Prop_Type::make()
+			->default(false);
 
 		return $schema;
 	}

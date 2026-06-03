@@ -42,6 +42,7 @@ const config = {
 			label: 'Enable',
 			control: 'switch',
 			defaultValue: false,
+			play_group: 'aae_horizontal_',
 			help: 'Enable horizontal scroll for the section , Set Child elements width'
 		},
 		{
@@ -57,7 +58,14 @@ const config = {
 
 			when: isEnabled,
 		},
-		
+		{
+			bind: 'markers',
+			label: 'Markers',
+			control: 'switch',
+			responsive: false,
+			defaultValue: false,
+			when: isEnabled,
+		},
 		{ control: 'save-button', when: isEnabled, play_group: 'aae_horizontal_' },
 
 	],

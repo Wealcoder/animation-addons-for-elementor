@@ -31,8 +31,8 @@ function read(el) {
 
 	return {
 		enabled,
-		end: r(cfg, 'end', '3000'),
 		start: r(cfg, 'start', 'top top'),
+		markers: r(cfg, 'markers', false),
 	};
 }
 
@@ -41,12 +41,12 @@ function bind(el, config) {
 	unbind(el); // Prevent redundant bindings
 
 	// if editor mode then return
-	if (
-		window.elementorFrontend &&
-		window.elementorFrontend.isEditMode()
-	) {
-		return;
-	}
+	// if (
+	// 	window.elementorFrontend &&
+	// 	window.elementorFrontend.isEditMode()
+	// ) {
+	// 	return;
+	// }
 
 	const gsap = getGsap();
 	const ScrollTrigger = getScrollTrigger();
@@ -163,6 +163,7 @@ function bind(el, config) {
 				pin: wrapper,
 				scrub: 1,
 				start: config.start,
+				markers: config.markers,
 
 				end: () =>
 					`+=${getScrollAmount()}`,
@@ -186,6 +187,7 @@ function bind(el, config) {
 				pin: wrapper,
 				scrub: 1,
 				start: config.start,
+				markers: config.markers,
 
 				end: () =>
 					`+=${getScrollAmount()}`,
@@ -249,6 +251,11 @@ function unbind(el) {
 	}
 }
 
+function play(el, config) {
+	
+	bind(el, config);
+}
+
 window.AAEADDON.register({
 	name: 'horizontal',
 	mapName: MAP,
@@ -256,5 +263,6 @@ window.AAEADDON.register({
 	read,
 	bind,
 	unbind,
+	play,
 	reset: unbind,
 });
