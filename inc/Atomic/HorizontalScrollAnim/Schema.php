@@ -18,6 +18,7 @@ final class Schema
 
 	const START = 'aae_horizontal_start';
 	const MARKERS = 'aae_horizontal_markers';
+	const SPEED = 'aae_horizontal_speed';
 
 	public function register(): void
 	{
@@ -68,6 +69,12 @@ final class Schema
 		$schema[self::MARKERS] =
 			Boolean_Prop_Type::make()
 			->default(false);
+
+		$schema[self::SPEED] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 1,
+			]);
 
 		return $schema;
 	}

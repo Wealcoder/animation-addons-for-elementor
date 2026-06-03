@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import {
-	isEnabled,	
+	isEnabled,
 } from './predicates';
 
 const WIDTH_OPTIONS = [
@@ -66,6 +66,17 @@ const config = {
 			defaultValue: false,
 			when: isEnabled,
 		},
+		{
+			bind: 'speed',
+			label: 'Speed',
+			control: 'slider',
+			defaultValue: '1',
+			min: 0.1,
+			max: 5,
+			step: 0.1,
+			when: isEnabled,
+		},
+
 		{ control: 'save-button', when: isEnabled, play_group: 'aae_horizontal_' },
 
 	],
