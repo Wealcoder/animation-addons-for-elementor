@@ -62,15 +62,31 @@ function findMedia(el) {
 function bindReveal(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
-	console.log(
-		'Image reveal effect',
-		el,
-		config
-	);
-	return;
 	const image = findMedia(el);
-	const wrap  = image.parentElement || el;
-	const outer = wrap.parentElement || wrap;
+	let wrap, outer;
+	let createdWrap = false;
+
+	// If `el` is the image itself (no Elementor container), we MUST wrap it
+	// to have a clipping mask for the reveal parallax effect.
+	if (image === el) {
+		if (image.parentElement && image.parentElement.classList.contains('aae-img-reveal-wrap')) {
+			wrap = image.parentElement;
+		} else {
+			wrap = document.createElement('div');
+			wrap.className = 'aae-img-reveal-wrap';
+			image.parentNode.insertBefore(wrap, image);
+			wrap.appendChild(image);
+			createdWrap = true;
+		}
+		outer = wrap; // We don't want to hide overflow on the column
+	} else {
+		// Normal Elementor widget (has .elementor-widget-container)
+		wrap = image.parentElement;
+		if (wrap && !el.contains(wrap)) wrap = el;
+		
+		outer = wrap === el ? el : wrap.parentElement;
+		if (outer && !el.contains(outer)) outer = el;
+	}	
 
 	// v3 forces overflow hidden on the outer + wrap, and hides wrap until
 	// the timeline runs (autoAlpha:1 in the first .set step).
@@ -82,7 +98,7 @@ function bindReveal(el, config) {
 
 	const tl = gsap.timeline({
 		scrollTrigger: {
-			trigger: el,
+			trigger: wrap,
 			start:   resolveStart(config),
 			toggleActions: 'play none none none',
 		},
@@ -107,6 +123,15 @@ function bindReveal(el, config) {
 	el[IMG_DISPOSE_KEY] = () => {
 		tl.scrollTrigger?.kill();
 		tl.kill();
+		
+		gsap.set(wrap, { clearProps: 'all' });
+		gsap.set(image, { clearProps: 'all' });
+
+		// Unwrap if we dynamically created it
+		if (createdWrap && wrap.parentNode) {
+			wrap.parentNode.insertBefore(image, wrap);
+			wrap.parentNode.removeChild(wrap);
+		}
 	};
 }
 
@@ -137,11 +162,15 @@ function bindScale(el, config) {
 		invalidateOnRefresh: true,
 	});
 
-	const parent = image.parentElement;
-	if (parent) parent.style.overflow = 'hidden';
+	if (image.parentElement) {
+		image.parentElement.style.overflow = 'hidden';
+	}
 
 	el[IMG_PLAYED] = tween;
-	el[IMG_DISPOSE_KEY] = () => { st.kill(true); tween.kill(); };
+	el[IMG_DISPOSE_KEY] = () => { 
+		st.kill(true); 
+		tween.kill(); 
+	};
 }
 
 /* =====================================================================
@@ -150,41 +179,69 @@ function bindScale(el, config) {
 
 function bindStretch(el, config) {
 	const gsap = getGsap();
-	const ScrollTrigger = getScrollTrigger();
-	if (!gsap || !ScrollTrigger) return;
+	if (!gsap) return;
 
 	const image = findMedia(el);
-	const wrap  = image.parentElement || el;
+	let wrap;
+	let createdWrap = false;
 
-	// v3 sets a fixed 395px padding-bottom on the wrap for the pin spacing.
-	// Reproduced here so the published page matches; users who don't want
-	// it can override via custom CSS on the widget.
-	wrap.style.paddingBottom = '395px';
-	wrap.style.transition    = 'none';
+	if (image === el) {
+		if (image.parentElement && image.parentElement.classList.contains('aae-img-stretch-wrap')) {
+			wrap = image.parentElement;
+		} else {
+			wrap = document.createElement('div');
+			wrap.className = 'aae-img-stretch-wrap';
+			wrap.style.width = '100%';
+			wrap.style.display = 'flex';
+			wrap.style.justifyContent = 'center';
+			wrap.style.alignItems = 'flex-start';
+			image.parentNode.insertBefore(wrap, image);
+			wrap.appendChild(image);
+			createdWrap = true;
+		}
+	} else {
+		wrap = image.parentElement;
+		if (wrap && !el.contains(wrap)) wrap = el;
+	}
 
-	const tween = gsap.to(image, {
+	if (wrap) {
+		wrap.style.paddingBottom = '395px';
+		wrap.style.transition    = 'none';
+	}
+
+	const tl = gsap.timeline({
+		scrollTrigger: {
+			trigger: wrap,
+			start: 'top top',
+			pin: true,
+			scrub: 1,
+			pinSpacing: false,
+			end: 'bottom bottom+=100',
+			invalidateOnRefresh: true,
+		},
+	});
+
+	tl.to(image, {
 		width: '100%',
 		borderRadius: '0px',
 		ease: 'none',
-		paused: true,
 	});
 
-	const st = ScrollTrigger.create({
-		trigger:   wrap,
-		start:     'top top',
-		end:       'bottom bottom+=100',
-		pin:       true,
-		pinSpacing: false,
-		scrub:     1,
-		animation: tween,
-		invalidateOnRefresh: true,
-	});
+	el[IMG_PLAYED] = tl;
+	el[IMG_DISPOSE_KEY] = () => { 
+		tl.scrollTrigger?.kill(true); 
+		tl.kill(); 
+		
+		gsap.set(image, { clearProps: 'all' });
+		if (wrap) gsap.set(wrap, { clearProps: 'all' });
 
-	el[IMG_PLAYED] = tween;
-	el[IMG_DISPOSE_KEY] = () => { st.kill(true); tween.kill(); };
+		if (createdWrap && wrap.parentNode) {
+			wrap.parentNode.insertBefore(image, wrap);
+			wrap.parentNode.removeChild(wrap);
+		}
+	};
 
-	// Suppress unused-var lint — config kept for symmetry with the other
-	// effects in case future fields apply here.
+	// Suppress unused-var lint
 	void config;
 }
 

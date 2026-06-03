@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
-import {
-	isAnimated,
+import {	
 	isReveal,
 	isRevealOrScale,
 	isScale,
@@ -58,7 +57,7 @@ const config = {
 	bindPrefix: 'aae_img_',
 	fields: [
 		{ bind: 'effect', label: 'Animation', control: 'select',
-		  options: EFFECT_OPTIONS, defaultValue: 'none' },
+		  options: EFFECT_OPTIONS, defaultValue: 'none', play_group: 'aae_img_' },
 
 		// Reveal-only
 		{ bind: 'start_from', label: 'Animation To', control: 'select',
