@@ -1,4 +1,3 @@
-
 const {
 	configFor,
 	pickConfigResponsive,
@@ -14,98 +13,238 @@ function r(cfg, key, fallback) {
 }
 
 function read(el) {
-	const cfg =	configFor(el, MAP);
-	if (!cfg) return null;
 
-	const enabled = pickConfigResponsive(cfg, 'enabled');
+	const cfg = configFor(el, MAP);
+
+	if (!cfg) {
+		return null;
+	}
+
+	const enabled = pickConfigResponsive(
+		cfg,
+		'enabled'
+	);
+
 	if (!enabled) {
 		return null;
 	}
 
-	const resolved = {
+	return {
 		enabled,
-		width: r(cfg, 'width', '300%'),
 		end: r(cfg, 'end', '3000'),
 		start: r(cfg, 'start', 'top top'),
 	};
-	
-	return resolved;
 }
 
-function bind(el, config) {	
+function bind(el, config) {
+
 	unbind(el); // Prevent redundant bindings
+
 	// if editor mode then return
-	if (window.elementorFrontend && window.elementorFrontend.isEditMode()) {
+	if (
+		window.elementorFrontend &&
+		window.elementorFrontend.isEditMode()
+	) {
 		return;
 	}
+
 	const gsap = getGsap();
 	const ScrollTrigger = getScrollTrigger();
 
-	if (!gsap || !ScrollTrigger) return;
+	if (!gsap || !ScrollTrigger) {
+		return;
+	}
 
-	gsap.set(el, { 
-		width: config.width,
+	// Base layout styles
+	gsap.set(el, {
+		display: 'flex',
 		flexWrap: 'nowrap',
-		overflowX: 'hidden',
-		maxWidth: `min(100%, ${config.width})`,
-		height: 'auto'
+		height: 'auto',
+		transition: 'none',
+		clearProps: 'transform',
 	});
-	// Get an array of only the direct child panels, .elementor-element-overlay is the overlay that is added by elementor
-	const panels = gsap.utils.toArray(el.children).filter(panel => !panel.classList.contains('elementor-element-overlay'));
+
+	// Get an array of only the direct child panels
+	// .elementor-element-overlay is the overlay that is added by elementor
+	const panels = gsap
+		.utils
+		.toArray(el.children)
+		.filter(
+			panel =>
+				!panel.classList.contains(
+					'elementor-element-overlay'
+				)
+		);
+
 	const totalPanels = panels.length;
 
-	gsap.set(el,{transition: "none"	});
+	if (totalPanels <= 0) {
+		return;
+	}
 
-	if (totalPanels > 0) {
-		// Strip any native Elementor layout transitions that might fight GSAP
-		// set child width 100% if not set any css value
-		panels.forEach(panel => {
-			const propsToSet = { transition: "none", flexShrink: 0 };
-			gsap.set(panel, propsToSet);
-		});	
+	// Strip any native Elementor layout transitions that might fight GSAP
+	panels.forEach(panel => {
 
-		let tween;
+		gsap.set(panel, {
+			transition: 'none',
+			flexShrink: 0,
+		});
 
-		if (totalPanels === 1) {
-			const singleChild = panels[0];
-			tween = gsap.to(singleChild, {
-				x: () => -(singleChild.scrollWidth - window.innerWidth),
-				ease: "none",
-				scrollTrigger: {
-					trigger: el,
-					pin: el,
-					scrub: 1,
-					start: config.start,
-					end: () => "+=" + Math.max(0, singleChild.scrollWidth - window.innerWidth),
-					invalidateOnRefresh: true
-				}
-			});
-		} else {
-			tween = gsap.to(panels, {
-				xPercent: -100 * (totalPanels - 1),
-				ease: "none",
-				scrollTrigger: {
-					trigger: el,
-					pin: el,				
-					scrub: 1,
-					start: config.start,
-					end: "+=" + config.end,
-				}
-			});
+	});
+
+	let tween;
+
+	// Create wrapper for proper pinning
+	let wrapper;
+
+	if (
+		el.parentNode &&
+		el.parentNode.classList.contains(
+			'aae-horizontal-wrapper'
+		)
+	) {
+
+		wrapper = el.parentNode;
+
+	} else {
+
+		wrapper = document.createElement('div');
+
+		wrapper.className =
+			'aae-horizontal-wrapper';
+
+		wrapper.style.width = '100%';
+		wrapper.style.overflow = 'hidden';
+		wrapper.style.position = 'relative';
+
+		el.parentNode.insertBefore(
+			wrapper,
+			el
+		);
+
+		wrapper.appendChild(el);
+	}
+
+	// Calculate real scroll amount
+	const getScrollAmount = () => {
+
+		const totalWidth = panels.reduce(
+			(total, panel) => {
+
+				return (
+					total +
+					panel.getBoundingClientRect().width
+				);
+
+			},
+			0
+		);
+
+		return Math.max(
+			0,
+			totalWidth - window.innerWidth
+		);
+	};
+
+	if (totalPanels === 1) {
+
+		const singleChild = panels[0];
+
+		tween = gsap.to(singleChild, {
+
+			x: () => -getScrollAmount(),
+
+			ease: 'none',
+
+			force3D: false,
+
+			scrollTrigger: {
+				trigger: wrapper,
+				pin: wrapper,
+				scrub: 1,
+				start: config.start,
+
+				end: () =>
+					`+=${getScrollAmount()}`,
+
+				invalidateOnRefresh: true,
+			},
+		});
+
+	} else {
+
+		tween = gsap.to(el, {
+
+			x: () => -getScrollAmount(),
+
+			ease: 'none',
+
+			force3D: false,
+
+			scrollTrigger: {
+				trigger: wrapper,
+				pin: wrapper,
+				scrub: 1,
+				start: config.start,
+
+				end: () =>
+					`+=${getScrollAmount()}`,
+
+				invalidateOnRefresh: true,
+			},
+		});
+	}
+
+	el.__aaeHorizontalDispose = () => {
+
+		if (tween?.scrollTrigger) {
+			tween.scrollTrigger.kill();
 		}
 
-		el.__aaeHorizontalDispose = () => {
-			if (tween && tween.scrollTrigger) tween.scrollTrigger.kill();
-			if (tween) tween.kill();
-			gsap.set(el, { clearProps: "width,flexWrap,overflowX,transition" });
-			panels.forEach(panel => gsap.set(panel, { clearProps: "transition,xPercent,x" }));
-		};
-	}
+		if (tween) {
+			tween.kill();
+		}
+
+		// Move element back before removing wrapper
+		if (
+			el.parentNode &&
+			el.parentNode.classList.contains(
+				'aae-horizontal-wrapper'
+			)
+		) {
+
+			const parent = el.parentNode;
+
+			parent.parentNode.insertBefore(
+				el,
+				parent
+			);
+
+			parent.remove();
+		}
+
+		gsap.set(el, {
+			clearProps:
+				"display,flexWrap,height,transition,x,transform"
+		});
+
+		panels.forEach(panel => {
+
+			gsap.set(panel, {
+				clearProps:
+					"transition,flexShrink,x,transform"
+			});
+
+		});
+	};
 }
 
 function unbind(el) {
+
 	if (el.__aaeHorizontalDispose) {
+
 		el.__aaeHorizontalDispose();
+
 		delete el.__aaeHorizontalDispose;
 	}
 }
@@ -114,7 +253,7 @@ window.AAEADDON.register({
 	name: 'horizontal',
 	mapName: MAP,
 	boundFlag: 'aae-horizontal-bound',
-	read,	
+	read,
 	bind,
 	unbind,
 	reset: unbind,
