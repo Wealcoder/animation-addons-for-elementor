@@ -57,6 +57,7 @@ final class Render
 		$config = [
 			'start' => 'top top',
 			'markers' => false,
+			'speed' => 1,
 		];
 
 		// Pre-compute which breakpoints have horizontal scroll disabled.
@@ -92,7 +93,16 @@ final class Render
 			[$this, 'cast_value'],
 			$disabled_bps
 		);
-	
+		$this->emit_responsive(
+			$config,
+			$settings,
+			Schema::SPEED,
+			'speed',
+			1,
+			$extra_bps,
+			static fn($v) => is_numeric($v) ? max(0.1, min(5, (float) $v)) : 1,
+			$disabled_bps
+		);
 		if (isset($settings[Schema::MARKERS])) {
 			$m_val = $settings[Schema::MARKERS];
 			$config['markers'] = is_array($m_val) && isset($m_val['value']) ? (bool) $m_val['value'] : (bool) $m_val;

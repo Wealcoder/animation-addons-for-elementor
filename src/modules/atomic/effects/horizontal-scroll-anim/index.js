@@ -33,11 +33,12 @@ function read(el) {
 		enabled,
 		start: r(cfg, 'start', 'top top'),
 		markers: r(cfg, 'markers', false),
+		speed: r(cfg, 'speed', 1),
 	};
 }
 
 function bind(el, config) {
-
+	console.log('Binding horizontal scroll', { el, config });
 	unbind(el); // Prevent redundant bindings
 
 	// if editor mode then return
@@ -54,6 +55,8 @@ function bind(el, config) {
 	if (!gsap || !ScrollTrigger) {
 		return;
 	}
+
+	const speed = Number(config.speed || 1);
 
 	// Base layout styles
 	gsap.set(el, {
@@ -166,7 +169,7 @@ function bind(el, config) {
 				markers: config.markers,
 
 				end: () =>
-					`+=${getScrollAmount()}`,
+					`+=${getScrollAmount() * speed}`,
 
 				invalidateOnRefresh: true,
 			},
@@ -190,7 +193,7 @@ function bind(el, config) {
 				markers: config.markers,
 
 				end: () =>
-					`+=${getScrollAmount()}`,
+					`+=${getScrollAmount() * speed}`,
 
 				invalidateOnRefresh: true,
 			},
@@ -252,7 +255,7 @@ function unbind(el) {
 }
 
 function play(el, config) {
-	
+
 	bind(el, config);
 }
 
