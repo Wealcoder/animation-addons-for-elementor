@@ -1,150 +1,212 @@
 <?php
-namespace WCF_ADDONS\Atomic\TextAnimation;
+
+namespace WCF_ADDONS\Atomic\Animation;
+
+use WCF_ADDONS\Atomic\InteractionsMap;
+use WCF_ADDONS\Atomic\Animation\Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Atomic widgets don't honour `_wrapper` render attributes (their Twig
- * templates render their own root tag) and `Attributes_Transformer` returns
- * null at resolve time, so adding to `settings.attributes` is also a dead end.
- *
- * The reliable path is `elementor/widget/render_content`, which receives the
- * already-rendered HTML and the widget instance — we splice our data-attrs
- * into the first opening tag.
- */
 final class Render {
+	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
 
 	public function register(): void {
-		add_filter( 'elementor/widget/render_content', [ $this, 'inject_into_html' ], 10, 2 );
+		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );
 	}
 
-	public function inject_into_html( $html, $widget ): string {
-		if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_element_type' ) ) {
-			return $html;
+	public function maybe_register( $element ): void {
+		if ( ! is_object( $element ) || ! method_exists( $element, 'get_settings' ) ) {
+			return;
 		}
 
-		$type = $widget->get_element_type();
+		$settings = $element->get_settings();
+		$id       = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
 
-		$is_text = in_array( $type, Schema::text_animation_widgets(), true );
-		$is_anim = in_array( $type, Bootstrap::target_element_types(), true );
-
-		if ( ! $is_text && ! $is_anim ) {
-			return $html;
+		if ( '' === $id ) {
+			return;
 		}
 
-		$settings = method_exists( $widget, 'get_atomic_settings' )
-			? $widget->get_atomic_settings()
-			: [];
+		$extra_bps = $this->get_extra_breakpoints();
 
-		// Text-animation widgets may also carry regular animation settings —
-		// merge both attribute sets. Text attrs win on `data-aae-anim` since
-		// the text builder treats that as the legacy alias for its effect.
-		$attrs = [];
-		if ( $is_anim ) {
-			$attrs = array_merge( $attrs, $this->build_anim_attrs( $settings ) );
-		}
-		if ( $is_text ) {
-			$attrs = array_merge( $attrs, $this->build_text_attrs( $settings ) );
-		}
-
-		if ( empty( $attrs ) ) {
-			return $html;
-		}
-
-		return $this->splice_attrs_into_first_tag( $html, $attrs );
+		$this->register_regular_animation( $id, $settings, $extra_bps );
+		$this->register_text_animation( $id, $settings, $extra_bps, $element );
 	}
 
-	private function build_anim_attrs( array $settings ): array {
-		$effect = $settings[ Schema::ANIM_EFFECT ] ?? 'none';
-
-		if ( ! $effect || 'none' === $effect ) {
-			return [];
+	private function register_regular_animation( string $id, array $settings, array $extra_bps ): void {
+		$effect_map = $this->envelope_to_map( $settings[ Schema::ANIM_EFFECT ] ?? null );
+		if ( ! $this->any_breakpoint_active( $effect_map, $extra_bps, 'none' ) ) {
+			return;
 		}
 
-		return [
-			'data-aae-anim'     => $effect,
-			'data-aae-trigger'  => $settings[ Schema::ANIM_TRIGGER ]  ?? 'in-view',
-			'data-aae-duration' => (string) ( $settings[ Schema::ANIM_DURATION ] ?? 600 ),
-			'data-aae-delay'    => (string) ( $settings[ Schema::ANIM_DELAY ]    ?? 0 ),
-			'data-aae-easing'   => $settings[ Schema::ANIM_EASING ]   ?? 'power2.out',
-			'data-aae-repeat'   => (string) ( $settings[ Schema::ANIM_REPEAT ]   ?? 0 ),
+		$config = [];
+		$disabled_bps = $this->compute_disabled_bps( $effect_map, $extra_bps, 'none' );
+
+		$map = [
+			Schema::ANIM_EFFECT             => [ 'effect', 'none' ],
+			Schema::ANIM_TRIGGER            => [ 'trigger', 'on_page_load' ],
+			Schema::ANIM_DURATION           => [ 'duration', 1.5 ],
+			Schema::ANIM_DELAY              => [ 'delay', 0.15 ],
+			Schema::ANIM_EASING             => [ 'easing', 'power2.out' ],
+			Schema::ANIM_REPEAT             => [ 'repeat', 0 ],
+			'aae_anim_method'               => [ 'method', 'from' ],
+			'aae_anim_trigger_selector'     => [ 'triggerSelector', '' ],
+			'aae_anim_wrapper'              => [ 'wrapper', 'default' ],
+			'aae_anim_start_trigger'        => [ 'startTrigger', '' ],
+			'aae_anim_end_trigger'          => [ 'endTrigger', '' ],
+			'aae_anim_start_position'       => [ 'startPosition', 'top top' ],
+			'aae_anim_start_custom'         => [ 'startCustom', 'top top' ],
+			'aae_anim_end_position'         => [ 'endPosition', 'bottom top' ],
+			'aae_anim_end_custom'           => [ 'endCustom', 'bottom top' ],
+			'aae_anim_fade_from'            => [ 'fadeFrom', 'bottom' ],
+			'aae_anim_fade_offset'          => [ 'fadeOffset', 50 ],
+			'aae_anim_scale'                => [ 'scale', 0.7 ],
+			'aae_anim_rotation_dir'         => [ 'rotationDir', 'x' ],
+			'aae_anim_rotation'             => [ 'rotation', -80 ],
+			'aae_anim_transform_origin'     => [ 'transformOrigin', 'top center -50' ],
 		];
+
+		foreach ( $map as $base_key => [ $config_key, $default ] ) {
+			$this->emit_responsive(
+				$config,
+				$settings,
+				$base_key,
+				$config_key,
+				$default,
+				$extra_bps,
+				[ $this, 'cast_value' ],
+				$disabled_bps
+			);
+		}
+
+		// custom props is an array, we just pass the raw value directly
+		if ( isset( $settings['aae_anim_custom_props'] ) ) {
+			$this->emit_responsive_object(
+				$config,
+				$settings,
+				'aae_anim_custom_props',
+				'customProps',
+				[],
+				$extra_bps,
+				null,
+				$disabled_bps
+			);
+		}
+
+		if ( isset( $settings['aae_anim_markers'] ) ) {
+			$m_val = $settings['aae_anim_markers'];
+			$config['markers'] = is_array( $m_val ) && isset( $m_val['value'] ) ? (bool) $m_val['value'] : (bool) $m_val;
+		}
+
+		// Default fallback for desktop if empty
+		if ( ! isset( $config['effect'] ) ) {
+			$config['effect'] = $effect_map['desktop'] ?? 'none';
+		}
+
+		InteractionsMap::register( 'anim', $id, $config );
 	}
 
-	private function build_text_attrs( array $settings ): array {
-		$effect = $settings[ Schema::TEXT_EFFECT ] ?? 'none';
-
-		if ( ! $effect || 'none' === $effect ) {
-			return [];
+	private function register_text_animation( string $id, array $settings, array $extra_bps, $element ): void {
+		if ( ! in_array( $element->get_element_type(), Schema::text_animation_widgets(), true ) ) {
+			return;
 		}
 
-		// Every responsive setting → [ data-attr base, default value ].
-		// Desktop emits the bare attr; each active extra breakpoint emits "-{bp}"
-		// suffixed variants. Empty / null per-breakpoint values fall back to desktop.
-		$responsive_map = [
-			Schema::TEXT_EFFECT           => [ 'data-aae-text-anim',             'none' ],
-			Schema::TEXT_TRIGGER          => [ 'data-aae-text-trigger',          'on_scroll' ],
-			Schema::TEXT_TRIGGER_SELECTOR => [ 'data-aae-text-trigger-selector', '' ],
-			Schema::TEXT_WRAPPER          => [ 'data-aae-text-wrapper',          'default' ],
-			Schema::TEXT_WRAPPER_SELECTOR => [ 'data-aae-text-wrapper-selector', '' ],
-			Schema::TEXT_DELAY            => [ 'data-aae-text-delay',            0.15 ],
-			Schema::TEXT_DURATION         => [ 'data-aae-text-duration',         1 ],
-			Schema::TEXT_STAGGER          => [ 'data-aae-text-stagger',          0.02 ],
-			Schema::TEXT_TRANSLATE_X      => [ 'data-aae-text-translate-x',      20 ],
-			Schema::TEXT_TRANSLATE_Y      => [ 'data-aae-text-translate-y',      0 ],
-			Schema::TEXT_ROTATION_DIR     => [ 'data-aae-text-rotation-dir',     'x' ],
-			Schema::TEXT_ROTATION         => [ 'data-aae-text-rotation',         -80 ],
-			Schema::TEXT_TRANSFORM_ORIGIN => [ 'data-aae-text-transform-origin', 'top center -50' ],
+		$effect_map = $this->envelope_to_map( $settings[ Schema::TEXT_EFFECT ] ?? null );
+		if ( ! $this->any_breakpoint_active( $effect_map, $extra_bps, 'none' ) ) {
+			return;
+		}
+
+		$config = [];
+		$disabled_bps = $this->compute_disabled_bps( $effect_map, $extra_bps, 'none' );
+
+		$map = [
+			Schema::TEXT_EFFECT             => [ 'effect', 'none' ],
+			Schema::TEXT_TRIGGER            => [ 'trigger', 'in-view' ],
+			Schema::TEXT_TRIGGER_SELECTOR   => [ 'triggerSelector', '' ],
+			Schema::TEXT_WRAPPER            => [ 'wrapper', 'default' ],
+			Schema::TEXT_DELAY              => [ 'delay', 0.15 ],
+			Schema::TEXT_DURATION           => [ 'duration', 1 ],
+			Schema::TEXT_STAGGER            => [ 'stagger', 0.02 ],
+			Schema::TEXT_TRANSLATE_X        => [ 'translateX', 20 ],
+			Schema::TEXT_TRANSLATE_Y        => [ 'translateY', 0 ],
+			Schema::TEXT_ROTATION_DIR       => [ 'rotationDir', 'x' ],
+			Schema::TEXT_ROTATION           => [ 'rotation', -80 ],
+			Schema::TEXT_TRANSFORM_ORIGIN   => [ 'transformOrigin', 'top center -50' ],
+			'aae_text_start_trigger'        => [ 'startTrigger', '' ],
+			'aae_text_end_trigger'          => [ 'endTrigger', '' ],
+			'aae_text_start_position'       => [ 'startPosition', 'top top' ],
+			'aae_text_end_position'         => [ 'endPosition', 'bottom top' ],
+			'aae_text_invert_start'         => [ 'invertStart', 'top 85%' ],
+			'aae_text_invert_end'           => [ 'invertEnd', 'bottom center' ],
+			'aae_text_spin_start'           => [ 'spinStart', 'top 85%' ],
+			'aae_text_spin_end'             => [ 'spinEnd', 'bottom 30%' ],
+			'aae_text_spin_toggle'          => [ 'spinToggle', 'play none none reverse' ],
+			'aae_text_scale_ease'           => [ 'scaleEase', 'back' ],
+			'aae_text_scale_num'            => [ 'scaleNum', 1.5 ],
+			'aae_text_scale_break'          => [ 'scaleBreak', 'lines' ],
+			'aae_text_spin_color'           => [ 'spinColor', '' ],
 		];
 
-		// Non-responsive attrs (toggle + legacy alias).
-		$attrs = [
-			'data-aae-anim'               => $effect,
-			'data-aae-text-enable-editor' => ! empty( $settings[ Schema::TEXT_ENABLE_EDITOR ] ) ? '1' : '0',
-		];
+		foreach ( $map as $base_key => [ $config_key, $default ] ) {
+			$this->emit_responsive(
+				$config,
+				$settings,
+				$base_key,
+				$config_key,
+				$default,
+				$extra_bps,
+				[ $this, 'cast_value' ],
+				$disabled_bps
+			);
+		}
 
-		$extra_bps = Schema::get_extra_breakpoints();
+		if ( isset( $settings['aae_text_markers'] ) ) {
+			$m_val = $settings['aae_text_markers'];
+			$config['markers'] = is_array( $m_val ) && isset( $m_val['value'] ) ? (bool) $m_val['value'] : (bool) $m_val;
+		}
 
-		foreach ( $responsive_map as $base_key => [ $base_attr, $default ] ) {
-			$desktop_value = $settings[ $base_key ] ?? $default;
-			$attrs[ $base_attr ] = (string) $desktop_value;
+		// Default fallback
+		if ( ! isset( $config['effect'] ) ) {
+			$config['effect'] = $effect_map['desktop'] ?? 'none';
+		}
 
-			foreach ( $extra_bps as $bp ) {
-				$prop  = Schema::breakpoint_prop( $base_key, $bp );
-				$value = $settings[ $prop ] ?? null;
-				if ( null === $value || '' === $value ) {
-					$value = $desktop_value; // inherit
-				}
-				$attrs[ $base_attr . '-' . $bp ] = (string) $value;
+		InteractionsMap::register( 'text', $id, $config );
+	}
+
+	private function any_breakpoint_active( array $map, array $extra_bps, $off_value = 'none' ): bool {
+		$desktop = $map['desktop'] ?? $off_value;
+		if ( $desktop !== $off_value ) {
+			return true;
+		}
+		foreach ( $extra_bps as $bp ) {
+			if ( isset( $map[ $bp ] ) && $map[ $bp ] !== '' && $map[ $bp ] !== $off_value ) {
+				return true;
 			}
 		}
-
-		return $attrs;
+		return false;
 	}
 
-	/**
-	 * Splice key="value" pairs into the first opening tag of $html.
-	 * Uses a single regex with a callback so we never touch later tags.
-	 */
-	private function splice_attrs_into_first_tag( string $html, array $attrs ): string {
-		$serialized = '';
-		foreach ( $attrs as $key => $value ) {
-			$serialized .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+	private function compute_disabled_bps( array $map, array $extra_bps, $off_value = 'none' ): array {
+		$disabled_bps = [];
+		$resolved = [ 'desktop' => $map['desktop'] ?? $off_value ];
+		foreach ( $extra_bps as $bp ) {
+			$own = $map[ $bp ] ?? null;
+			$parent = $this->cascade_parent( $bp, $resolved, $map['desktop'] ?? $off_value );
+			$effective = ( null === $own || '' === $own ) ? $parent : $own;
+			$resolved[ $bp ] = $effective;
+			if ( $effective === $off_value ) {
+				$disabled_bps[ $bp ] = true;
+			}
 		}
+		return $disabled_bps;
+	}
 
-		$count = 0;
-		$out   = preg_replace_callback(
-			'/<([a-zA-Z][a-zA-Z0-9]*)\b/',
-			static function ( $matches ) use ( $serialized ) {
-				return $matches[0] . $serialized;
-			},
-			$html,
-			1, // only replace the first opening tag
-			$count
-		);
-
-		return $count > 0 && is_string( $out ) ? $out : $html;
+	private function cast_value( $v ) {
+		if ( is_bool( $v ) || is_int( $v ) || is_float( $v ) ) return $v;
+		if ( is_string( $v ) && is_numeric( $v ) ) {
+			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
+		}
+		return $v;
 	}
 }

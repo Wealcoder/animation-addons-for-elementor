@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import {
 	isAnimated,
+	isScrollTrigger,
 	isDurationEffect,
 	isInvert,
 	isMove,
@@ -9,12 +10,14 @@ import {
 	isTranslateEffect,
 	showEnableEditor,
 	showPlayButton,
-	showEndCustom,
+	
 	showScrollCustomBlock,
-	showSpinScrollFields,
 	showStartCustom,
+	showSpinScrollFields,
+
 	showTriggerSelector,
-	showWrapper
+	showWrapper,
+	showTriggerDropdown
 } from './predicates';
 
 /**
@@ -87,57 +90,58 @@ const config = {
 	anchorKey: 'aae-section-aae-text-animation',
 	bindPrefix: 'aae_text_',
 	fields: [
-		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none' },
+		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', play_group: 'aae_text_', responsive: true },
 
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'in-view', when: isAnimated },
+		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'in-view', when: showTriggerDropdown, responsive: true },
+		
 
 		{
 			bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
-			defaultValue: '', placeholder: '.my-class', when: showTriggerSelector
+			defaultValue: '', placeholder: '.my-class', when: showTriggerSelector, responsive: true
 		},
 
-		{ bind: 'wrapper', label: 'Text Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper },
+		{ bind: 'wrapper', label: 'Text Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper, responsive: true },
 
 		{
 			bind: 'start_trigger', label: 'Start Trigger', control: 'text',
-			defaultValue: '', placeholder: '.start_area', when: showScrollCustomBlock
+			defaultValue: '', placeholder: '.start_area', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'end_trigger', label: 'End Trigger', control: 'text',
-			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock
+			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock, responsive: true
 		},
 		{
 			bind: 'start_position', label: 'Start', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock, responsive: true
 		},
 		
 		{
 			bind: 'end_position', label: 'End', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock, responsive: true
 		},		
 
 		// Invert-specific
 		{
-			bind: 'invert_start', label: 'Invert Start', control: 'text',
-			defaultValue: 'top 85%', placeholder: 'top 85%', when: isInvert
+			bind: 'invert_start', label: 'Start', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top 85%', placeholder: 'top 85%', when: isInvert, responsive: true
 		},
 		{
-			bind: 'invert_end', label: 'Invert End', control: 'text',
-			defaultValue: 'bottom center', placeholder: 'bottom center', when: isInvert
+			bind: 'invert_end', label: 'End', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom center', placeholder: 'bottom center', when: isInvert, responsive: true
 		},
 
 		// Spin-specific (+ scroll trigger)
 		{
 			bind: 'spin_start', label: 'Spin Start', control: 'text',
-			defaultValue: 'top 85%', placeholder: 'top 85%', when: showSpinScrollFields
+			defaultValue: 'top 85%', placeholder: 'top 85%', when: showSpinScrollFields, responsive: true
 		},
 		{
 			bind: 'spin_end', label: 'Spin End', control: 'text',
-			defaultValue: 'bottom 30%', placeholder: 'bottom 30%', when: showSpinScrollFields
+			defaultValue: 'bottom 30%', placeholder: 'bottom 30%', when: showSpinScrollFields, responsive: true
 		},
 		{
 			bind: 'spin_toggle', label: 'Toggle Actions', control: 'text',
-			defaultValue: 'play none none reverse', placeholder: 'play none none reverse', when: isSpin
+			defaultValue: 'play none none reverse', placeholder: 'play none none reverse', when: isSpin, responsive: true
 		},
 
 		{
@@ -148,7 +152,7 @@ const config = {
 			max: 10,
 			step: 0.05,
 			defaultValue: 0.15,
-			when: isAnimated
+			when: isAnimated, responsive: true
 		},
 		{
 			bind: 'duration',
@@ -158,34 +162,34 @@ const config = {
 			max: 10,
 			step: 0.1,
 			defaultValue: 1,
-			when: isDurationEffect
+			when: isDurationEffect, responsive: true
 		},
-		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect },
-		{ bind: 'translate_x', label: 'Transform-X', control: 'number', defaultValue: 20, when: isTranslateEffect },
-		{ bind: 'translate_y', label: 'Transform-Y', control: 'number', defaultValue: 0, when: isTranslateEffect },
+		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect, responsive: true },
+		{ bind: 'translate_x', label: 'Transform-X', control: 'number', defaultValue: 20, when: isTranslateEffect, responsive: true },
+		{ bind: 'translate_y', label: 'Transform-Y', control: 'number', defaultValue: 0, when: isTranslateEffect, responsive: true },
 
 		{
 			bind: 'rotation_dir', label: 'Rotation Direction', control: 'select',
-			options: ROTATION_DIR_OPTIONS, defaultValue: 'x', when: isMove
+			options: ROTATION_DIR_OPTIONS, defaultValue: 'x', when: isMove, responsive: true
 		},
 		{
 			bind: 'rotation', label: 'Rotation Value', control: 'number',
-			defaultValue: -80, when: isMove
+			defaultValue: -80, when: isMove, responsive: true
 		},
 		{
 			bind: 'transform_origin', label: 'Transform Origin', control: 'text',
-			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove
+			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove, responsive: true
 		},
 
 		// Scale-specific
 		{
 			bind: 'scale_ease', label: 'Scale Ease', control: 'select',
-			options: SCALE_EASE_OPTIONS, defaultValue: 'back', when: isScale
+			options: SCALE_EASE_OPTIONS, defaultValue: 'back', when: isScale, responsive: true
 		},
-		{ bind: 'scale_num', label: 'Scale', control: 'number', defaultValue: 1.5, when: isScale },
+		{ bind: 'scale_num', label: 'Scale', control: 'number', defaultValue: 1.5, when: isScale, responsive: true },
 		{
 			bind: 'scale_break', label: 'Text Break By', control: 'select',
-			options: SCALE_BREAK_OPTIONS, defaultValue: 'lines', when: isScale
+			options: SCALE_BREAK_OPTIONS, defaultValue: 'lines', when: isScale, responsive: true
 		},
 
 		{
@@ -193,7 +197,13 @@ const config = {
 			defaultValue: '', when: isSpin, responsive: true
 		},
 
+		
+
 		// Non-responsive control rows.
+		{
+			bind: 'markers', label: 'Markers', control: 'switch',
+			responsive: false, defaultValue: false, when: isScrollTrigger
+		},	
 		{
 			bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
 			responsive: false, defaultValue: false, when: showEnableEditor

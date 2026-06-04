@@ -82,6 +82,7 @@ function bindSticky(el, config) {
 	}
 
 	const gsap = getGsap();
+
 	const ScrollTrigger = getScrollTrigger();
 	
 	if (!gsap || !ScrollTrigger) return;
@@ -91,8 +92,30 @@ function bindSticky(el, config) {
 		const customTrigger = document.querySelector(config.customPinArea);
 		if (customTrigger) trigger = customTrigger;
 	}
+	
+	 // if el is header or parent or child is header set default body
+	 let endTrigger = undefined;
 
-	let endTrigger = 'body';
+	 // if el parent .e-flexbox-base
+	 if (el.parentElement.classList.contains('e-flexbox-base')) {
+		// el.parentElement contain e-flexbox-base class so end trigger is el.parentElement
+		endTrigger = el.parentElement;
+		if (endTrigger.parentElement.classList.contains('e-flexbox-base')) {
+			// el.parentElement.parentElement contain e-flexbox-base class so end trigger is el.parentElement.parentElement
+			endTrigger = endTrigger.parentElement;
+		}
+	}
+
+	// if el parent is header 
+	if (el.closest('header') || el.parentElement.closest('header') || el.parentElement.parentElement.closest('header')) {
+		endTrigger = 'body';
+	}
+
+	// if el contains nav then end trigger is body
+	if(el.querySelector('nav')){
+		endTrigger = 'body';
+	}
+	
 	if (config.pinEndTrigger === 'custom' && config.customPinEndArea) {
 		const customEndTrigger = document.querySelector(config.customPinEndArea);
 		if (customEndTrigger) endTrigger = customEndTrigger;
@@ -120,6 +143,7 @@ function bindSticky(el, config) {
 			node.style.setProperty('will-change', 'transform', 'important');
 		}
 	});
+
 	el.__aaeStickyElements = elementsToStrip;
 
 	let prevY = null;
@@ -135,7 +159,7 @@ function bindSticky(el, config) {
 				trigger.parentElement.classList.toggle('aae-is-translating', isOn);
 			}
 		}
-	};
+	};	
 
 	let tempConfig = {
 		trigger: trigger,

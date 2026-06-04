@@ -59,12 +59,9 @@ final class Controls {
 			->set_label( __( 'Text Animation', self::TD ) )
 			->set_items( [
 				// Anchor — React replacement renders the full responsive section here.
-				Text_Control::bind_to( Schema::TEXT_SECTION_ANCHOR ),
+				Text_Control::bind_to( Schema::TEXT_SECTION_ANCHOR ),		
 
-				/* ---------- non-responsive controls ---------- */
-
-				Switch_Control::bind_to( Schema::TEXT_MARKERS )
-					->set_label( __( 'Markers', self::TD ) ),
+				
 			] );
 	}
 }

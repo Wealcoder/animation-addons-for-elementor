@@ -2,6 +2,7 @@
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
 use WCF_ADDONS\Atomic\InteractionsMap;
+use WCF_ADDONS\Atomic\TextAnimation\Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -20,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * untouched.
  */
 final class Render {
+	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
 
 	public function register(): void {
 		// `elementor/frontend/before_render` is universal (widgets + containers).
@@ -71,14 +73,13 @@ final class Render {
 	private function build_config( array $settings ): ?array {
 		$extra_bps = $this->get_extra_breakpoints();
 
-		$effect_envelope = $settings[ Schema::TEXT_EFFECT ] ?? null;
-		$effect_map      = $this->envelope_to_map( $effect_envelope );
+		$effect_map      = $this->envelope_to_map( $settings[ Schema::TEXT_EFFECT ] ?? null );
 		$effect          = $effect_map['desktop'] ?? 'none';
 		if ( ! $effect || 'none' === $effect ) {
 			return null;
 		}
 
-		$config = [ 'effect' => $effect ];
+		$config = [];
 
 		// Non-responsive single-value flags. With raw settings these arrive as
 		// { $$type: 'boolean', value: true|false } so `! empty()` would always
@@ -91,8 +92,7 @@ final class Render {
 		}
 
 		// Resolve trigger at desktop for the scroll-only-keys gate.
-		$trigger_envelope = $settings[ Schema::TEXT_TRIGGER ] ?? null;
-		$trigger_map      = $this->envelope_to_map( $trigger_envelope );
+		$trigger_map      = $this->envelope_to_map( $settings[ Schema::TEXT_TRIGGER ] ?? null );
 		$trigger_desktop  = $trigger_map['desktop'] ?? 'on_scroll';
 
 		$is_on_scroll = 'on_scroll' === $trigger_desktop || 'play_with_scroll' === $trigger_desktop;
@@ -126,8 +126,10 @@ final class Render {
 
 			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
 			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
-			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top top',    null ],		
-			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom top', null ],		
+			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top 85%',    null ],
+			Schema::TEXT_START_CUSTOM     => [ 'startCustom',   'top top',    null ],
+			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom 30%', null ],
+			Schema::TEXT_END_CUSTOM       => [ 'endCustom',     'bottom top', null ],
 
 			Schema::TEXT_INVERT_START     => [ 'invertStart',   'top 85%',       Schema::TEXT_INVERT_EFFECTS ],
 			Schema::TEXT_INVERT_END       => [ 'invertEnd',     'bottom center', Schema::TEXT_INVERT_EFFECTS ],
@@ -139,7 +141,7 @@ final class Render {
 			Schema::TEXT_SCALE_EASE       => [ 'scaleEase',     'back',                                                            Schema::TEXT_SCALE_EFFECTS ],
 			Schema::TEXT_SCALE_NUM        => [ 'scaleNum',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],      Schema::TEXT_SCALE_EFFECTS ],
 			Schema::TEXT_SCALE_BREAK      => [ 'scaleBreak',    'lines',                                                           Schema::TEXT_SCALE_EFFECTS ],
-			'aae_text_spin_color'                 => [ 'spinColor',     '#000000',                                                Schema::TEXT_SPIN_EFFECTS ],
+			Schema::TEXT_SPIN_COLOR       => [ 'spinColor',     '#000000',                                                Schema::TEXT_SPIN_EFFECTS ],
 		];
 
 		// Pre-compute breakpoints where the animation is disabled (effect=none
@@ -167,79 +169,23 @@ final class Render {
 				continue;
 			}
 
-			$expanded = $this->expand_responsive_settings( $settings, $base_key, $extra_bps );
-
-			$desktop_value = $expanded[ $base_key ] ?? $default;
-
-			// Desktop: skip when value equals JS-side default — the reader
-			// supplies that value when the key is missing.
-			if ( ! $this->values_equal( $desktop_value, $default ) ) {
-				$config[ $config_key ] = $this->cast_value( $desktop_value );
-			}
-
-			// Per-breakpoint: emit only when the value actually overrides the
-			// cascaded parent. JS walks BP_CASCADE on read.
-			$resolved_by_bp = [ 'desktop' => $desktop_value ];
-
-			foreach ( $extra_bps as $bp ) {
-				$own = $expanded[ $base_key . '_' . $bp ] ?? null;
-
-				$parent = $this->cascade_parent( $bp, $resolved_by_bp, $desktop_value );
-
-				if ( null === $own || '' === $own ) {
-					$resolved_by_bp[ $bp ] = $parent;
-					continue;
-				}
-
-				$resolved_by_bp[ $bp ] = $own;
-
-				if ( $this->values_equal( $own, $parent ) ) {
-					continue;
-				}
-
-				// Skip per-bp emission when the animation is disabled on this
-				// breakpoint. The effect key itself is always emitted so the
-				// runtime can see `effect_<bp>=none` and short-circuit.
-				if ( isset( $disabled_bps[ $bp ] ) && 'effect' !== $config_key ) {
-					continue;
-				}
-
-				$config[ $config_key . '_' . $bp ] = $this->cast_value( $own );
-			}
+			$this->emit_responsive(
+				$config,
+				$settings,
+				$base_key,
+				$config_key,
+				$default,
+				$extra_bps,
+				[ $this, 'cast_value' ],
+				$disabled_bps
+			);
+		}
+		
+		if ( ! isset( $config['effect'] ) ) {
+			$config['effect'] = $effect;
 		}
 
 		return $config;
-	}
-
-	/**
-	 * Expand a Responsive_Json_Prop_Type envelope into flat `<base>` +
-	 * `<base>_<bp>` lookup keys so callers can read it the flat way.
-	 * Pass-through when absent.
-	 *
-	 * Storage shape:
-	 *   { $$type: 'aae-rj',
-	 *     value: { desktop: <scalar>, tablet: <scalar>|null, … } }
-	 */
-	private function expand_responsive_settings( array $settings, string $base_key, array $extra_bps ): array {
-		$envelope = $settings[ $base_key ] ?? null;
-		$map      = $this->envelope_to_map( $envelope );
-
-		$expanded = $settings;
-		$expanded[ $base_key ] = $map['desktop'] ?? null;
-		foreach ( $extra_bps as $bp ) {
-			if ( array_key_exists( $bp, $map ) ) {
-				$expanded[ $base_key . '_' . $bp ] = $map[ $bp ];
-			}
-		}
-		return $expanded;
-	}
-
-	/** Pull the breakpoint→primitive map out of a Responsive_Json envelope. */
-	private function envelope_to_map( $envelope ): array {
-		if ( ! is_array( $envelope ) || ! isset( $envelope['value'] ) || ! is_array( $envelope['value'] ) ) {
-			return [];
-		}
-		return $envelope['value'];
 	}
 
 	/**
@@ -269,61 +215,5 @@ final class Render {
 			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
 		}
 		return $v;
-	}
-
-	/**
-	 * Mirror of common.js BP_CASCADE — for a given breakpoint, find the
-	 * nearest already-resolved ancestor value.
-	 */
-	private function cascade_parent( string $bp, array $resolved, $desktop_value ) {
-		static $cascade = [
-			'mobile'       => [ 'mobile_extra', 'tablet', 'tablet_extra', 'laptop' ],
-			'mobile_extra' => [ 'tablet', 'tablet_extra', 'laptop' ],
-			'tablet'       => [ 'tablet_extra', 'laptop' ],
-			'tablet_extra' => [ 'laptop' ],
-			'laptop'       => [],
-			'widescreen'   => [],
-		];
-
-		foreach ( $cascade[ $bp ] ?? [] as $step ) {
-			if ( array_key_exists( $step, $resolved ) ) {
-				return $resolved[ $step ];
-			}
-		}
-		return $desktop_value;
-	}
-
-	/**
-	 * Active extra-breakpoint keys (non-desktop), largest→smallest. Falls
-	 * back to tablet+mobile if Elementor's Breakpoints manager isn't loaded.
-	 */
-	private function get_extra_breakpoints(): array {
-		$active_keys = [];
-
-		if ( class_exists( \Elementor\Plugin::class )
-			&& isset( \Elementor\Plugin::$instance->breakpoints )
-			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
-			$active_keys = array_keys( \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints() );
-		}
-
-		if ( empty( $active_keys ) ) {
-			$active_keys = [ 'tablet', 'mobile' ];
-		}
-
-		static $order = [ 'widescreen', 'laptop', 'tablet_extra', 'tablet', 'mobile_extra', 'mobile' ];
-		$ordered = [];
-		foreach ( $order as $bp ) {
-			if ( in_array( $bp, $active_keys, true ) ) {
-				$ordered[] = $bp;
-			}
-		}
-		return $ordered;
-	}
-
-	private function values_equal( $a, $b ): bool {
-		if ( is_array( $a ) && is_array( $b ) ) {
-			return $a === $b;
-		}
-		return (string) $a === (string) $b;
 	}
 }

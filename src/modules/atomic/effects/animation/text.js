@@ -23,6 +23,26 @@ function r(cfg, key, fallback) {
 	return (v === undefined || v === null || v === '') ? fallback : v;
 }
 
+/**
+ * Find the innermost element containing the actual text.
+ * Elementor Legacy widgets use .elementor-widget-container.
+ * Elementor Atomic (e-heading, e-paragraph) don't have a container.
+ */
+function getInnerElement(el) {
+	const container = el.querySelector('.elementor-widget-container');
+	if (container) {
+		const valid = Array.from(container.children).filter(c => c.tagName !== 'SCRIPT' && c.tagName !== 'STYLE');
+		if (valid.length > 0) return valid[valid.length - 1];
+		return container;
+	}
+	
+	const textNode = el.querySelector('h1, h2, h3, h4, h5, h6, p, .elementor-heading-title, .elementor-text-editor');
+	if (textNode) return textNode;
+	
+	return el;
+}
+
+
 function parseNum(val, fallback) {
 	if (val === undefined || val === null || val === '') return fallback;
 	const num = Number(val);
@@ -67,8 +87,8 @@ export function readText(el) {
 		wrapper: r(cfg, 'wrapper', 'default'),
 		startTrigger: r(cfg, 'startTrigger', ''),
 		endTrigger: r(cfg, 'endTrigger', ''),
-		start: r(cfg, 'startPosition', 'top top'),
-		end: r(cfg, 'endPosition', 'bottom top'),
+		start: r(cfg, 'startPosition', 'top 85%'),
+		end: r(cfg, 'endPosition', 'bottom 30%'),
 		markers: !!cfg.markers,
 		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
 		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
@@ -78,10 +98,15 @@ export function readText(el) {
 		rotationDir: r(cfg, 'rotationDir', 'x'),
 		rotation: parseNum(r(cfg, 'rotation', -80), -80),
 		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
+		invertStart: r(cfg, 'invertStart', 'top 85%'),
+		invertEnd: r(cfg, 'invertEnd', 'bottom center'),
 		spinColor: r(cfg, 'spinColor', '#000'),
 		spinStart: r(cfg, 'spinStart', 'top 50%'),
 		spinEnd: r(cfg, 'spinEnd', 'bottom 30%'),
 		spinToggle: r(cfg, 'spinToggle', 'play none none reverse'),
+		scaleNum: parseNum(r(cfg, 'scaleNum', 1.5), 1.5),
+		scaleBreak: r(cfg, 'scaleBreak', 'lines'),
+		scaleEase: r(cfg, 'scaleEase', 'back'),
 	};
 }
 
@@ -98,7 +123,7 @@ const SPLIT_RECIPE = {
 	word: { type: 'chars,words', target: 'words' },
 	text_move: { type: 'lines', target: 'lines', perspective: 400 },
 	text_reveal: { type: 'lines,words,chars', target: 'chars', linesClass: 'anim-reveal-line' },
-	text_scale: { type: null, target: null },
+	text_scale: { type: 'lines,words,chars', target: 'dynamic', linesClass: 'text-scale-anim' },
 	text_invert: { type: 'lines', target: 'lines', linesClass: 'invert-line', parentClass: 'wcf-t-animation-text_invert' },
 	text_spin: { type: null, target: null },
 };
@@ -112,7 +137,7 @@ const SPLIT_RECIPE = {
  * `text_spin` is the only effect that needs a complex multi-tween timeline
  * (V3 builds it inline with cloning); we keep a placeholder for now.
  */
-function textTween(effect, config, pieces) {
+function textTween(effect, config, pieces, el) {
 	const shared = {
 		duration: config.duration,
 		delay: config.delay,
@@ -160,24 +185,86 @@ function textTween(effect, config, pieces) {
 		case 'text_scale':
 			return {
 				method: 'from',
-				props: { ...shared, scale: 0, autoAlpha: 0, transformOrigin: 'center center' },
+				props: { 
+					...shared, 
+					scale: config.scaleNum, 
+					autoAlpha: 0, 
+					transformOrigin: '50% 0%', 
+					ease: config.scaleEase 
+				},
 			};
 
-		case 'text_invert':
+		case 'text_invert': {
+			// Calculate HSL color from the original element and assign it to --text-color
+			const colorStr = window.getComputedStyle(el).color;
+			const rgb = colorStr.match(/\d+/g);
+			if (rgb && rgb.length >= 3) {
+				let r = parseInt(rgb[0]) / 255;
+				let g = parseInt(rgb[1]) / 255;
+				let b = parseInt(rgb[2]) / 255;
+				const l = Math.max(r, g, b);
+				const s = l - Math.min(r, g, b);
+				const h = s ? (l === r ? (g - b) / s : l === g ? 2 + (b - r) / s : 4 + (r - g) / s) : 0;
+				const hslH = 60 * h < 0 ? 60 * h + 360 : 60 * h;
+				const hslS = 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0);
+				const hslL = (100 * (2 * l - s)) / 2;
+				el.style.setProperty('--text-color', `${hslH.toFixed(1)}, ${hslS.toFixed(1)}%, ${hslL.toFixed(1)}%`);
+			}
+
 			// CSS parks each .invert-line at background-position-x:100% (the
-			// transparent half showing). Tween to 0% to slide the opaque half
+			// dark half). On scrub, we tween backgroundPositionX from 100%->0%
+			// which slides the gradient (which has the light half on the left)
 			// across, revealing the line. fromTo so we don't depend on the
 			// computed start state — keeps the editor preview consistent.
 			return {
 				method: 'fromTo',
 				from: { backgroundPositionX: '100%' },
-				to: { ...shared, backgroundPositionX: '0%', ease: 'none' },
+				to: { ...shared, backgroundPositionX: '0%', ease: 'none' }
 			};
+		}
 
 		case 'text_spin':
 			return {
-				method: 'from',
-				props: { ...shared, rotationY: 180, autoAlpha: 0, transformOrigin: 'center center' },
+				method: 'timeline',
+				build: (tl, originalPieces, config, el) => {
+					const clonePieces = el.__aaeTextSplitClone?.chars;
+					if (!clonePieces || !originalPieces) return;
+					
+					const duration = 0.4;
+					const delay = config.delay || 0;
+					const stagger = { each: 0.03, ease: 'power1', from: 'start' };
+					const height = el.offsetHeight || 30;
+					const origin = `50% 50% -${height / 2}`;
+					
+					tl.set(clonePieces, {
+						rotationX: -90,
+						transformOrigin: origin,
+					});
+					
+					tl.to(originalPieces, {
+						delay,
+						duration,
+						rotationX: 90,
+						transformOrigin: origin,
+						opacity: 0,
+						stagger,
+						ease: 'power2.in',
+					}, 0);
+					
+					tl.to(clonePieces, {
+						duration: 0.001,
+						delay,
+						opacity: 1,
+						stagger,
+					}, 0.001);
+					
+					tl.to(clonePieces, {
+						duration,
+						delay,
+						rotationX: 0,
+						stagger,
+					}, 0);
+				}
 			};
 
 		default:
@@ -187,7 +274,7 @@ function textTween(effect, config, pieces) {
 
 /** Build the SplitText instance for `effect` and return the tween targets.
  *  Returns null when the effect needs no split (target the element itself). */
-function splitFor(el, effect) {
+function splitFor(el, effect, config) {
 	const recipe = SPLIT_RECIPE[effect];
 
 	if (!recipe || !recipe.type) return null;
@@ -195,27 +282,72 @@ function splitFor(el, effect) {
 	const SplitText = getSplitText();
 	if (!SplitText) return null;
 
-	if (recipe.parentClass) el.classList.add(recipe.parentClass);
+	// Target the innermost text element so SplitText doesn't wrap outer divs/styles
+	let targetEl = getInnerElement(el);
+
+	if (recipe.parentClass) targetEl.classList.add(recipe.parentClass);
 
 	const opts = { type: recipe.type };
 
 	if (recipe.linesClass) opts.linesClass = recipe.linesClass;
-	const split = new SplitText(el, opts);
+	const split = new SplitText(targetEl, opts);
 
 	if (recipe.perspective) {
 		const gsap = getGsap();
-		gsap?.set(el, { perspective: recipe.perspective });
+		gsap?.set(targetEl, { perspective: recipe.perspective });
 	}
 
 	el[TEXT_SPLIT_KEY] = split;
+
+	if (recipe.target === 'dynamic') {
+		return split[config.scaleBreak || 'lines'] || null;
+	}
 
 	return split[recipe.target] || null;
 }
 
 /** Pick the actual tween targets for `effect` — the split collection when
  *  the recipe needs splitting, the element itself otherwise. */
-function targetsFor(el, effect) {
-	const pieces = splitFor(el, effect);
+function targetsFor(el, config) {
+	const effect = config.effect;
+
+	// Handle text_spin DOM cloning
+	if (effect === 'text_spin') {
+		const SplitText = getSplitText();
+		const gsap = getGsap();
+		if (SplitText && gsap) {
+			let targetEl = getInnerElement(el);
+			const clone = el.cloneNode(true);
+			clone.classList.add('duplicate-text');
+			el.style.perspective = '600px';
+			el.style.whiteSpace = 'nowrap';
+			clone.style.perspective = '600px';
+			clone.style.whiteSpace = 'nowrap';
+			
+			clone.style.position = 'absolute';
+			clone.style.top = el.offsetTop + 'px';
+			clone.style.left = el.offsetLeft + 'px';
+			clone.style.margin = '0';
+			
+			if (config.spinColor) {
+				clone.style.setProperty('color', config.spinColor, 'important');
+			}
+			
+			el.parentNode.insertBefore(clone, el.nextSibling);
+			
+			const originalSplit = new SplitText(el, { type: 'chars' });
+			const cloneSplit = new SplitText(clone, { type: 'chars' });
+			gsap.set(cloneSplit.chars, { opacity: 0 });
+			
+			el[TEXT_SPLIT_KEY] = originalSplit;
+			el.__aaeTextSplitClone = cloneSplit;
+			el.__aaeTextClone = clone;
+			
+			return originalSplit.chars;
+		}
+	}
+
+	const pieces = splitFor(el, effect, config);
 
 	if (pieces && pieces.length) return pieces;
 
@@ -238,6 +370,16 @@ export function resetText(el) {
 		try { split.revert(); } catch (_) { /* ignore */ }
 		delete el[TEXT_SPLIT_KEY];
 	}
+	const cloneSplit = el.__aaeTextSplitClone;
+	if (cloneSplit && typeof cloneSplit.revert === 'function') {
+		try { cloneSplit.revert(); } catch (_) { /* ignore */ }
+		delete el.__aaeTextSplitClone;
+	}
+	const clone = el.__aaeTextClone;
+	if (clone && clone.parentNode) {
+		clone.parentNode.removeChild(clone);
+		delete el.__aaeTextClone;
+	}
 	// Drop any per-effect parent classes we attached in splitFor().
 	for (const recipe of Object.values(SPLIT_RECIPE)) {
 		if (recipe.parentClass) el.classList.remove(recipe.parentClass);
@@ -252,14 +394,18 @@ export function playText(el, config) {
 	// DOM back so a new SplitText doesn't compound on the previous output.
 	resetText(el);
 
-	const pieces = targetsFor(el, config.effect);
+	const pieces = targetsFor(el, config);
 	if (!pieces) return;
 
-	const tween = textTween(config.effect, config, pieces);
+	const tween = textTween(config.effect, config, pieces, el);
 	if (!tween) return;
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, tween.to);
+	} else if (tween.method === 'timeline') {
+		const tl = gsap.timeline();
+		tween.build(tl, pieces, config, el);
+		el[TEXT_PLAYED] = tl;
 	} else {
 		// 'from' — V3 default for every text effect
 		el[TEXT_PLAYED] = gsap.from(pieces, tween.props);
@@ -275,10 +421,11 @@ function buildScrubbedText(el, config) {
 
 	resetText(el);
 
-	const pieces = targetsFor(el, config.effect);
+	const pieces = targetsFor(el, config);
 	if (!pieces) return null;
 
-	const tween = textTween(config.effect, config, pieces);
+	const tween = textTween(config.effect, config, pieces, el);
+	console.log(tween);
 	if (!tween) return null;
 
 	// Force linear easing + paused for scrub regardless of effect default.
@@ -286,15 +433,17 @@ function buildScrubbedText(el, config) {
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, { ...tween.to, ...overrides });
+	} else if (tween.method === 'timeline') {
+		const tl = gsap.timeline({ paused: true });
+		tween.build(tl, pieces, config, el);
+		el[TEXT_PLAYED] = tl;
 	} else {
 		el[TEXT_PLAYED] = gsap.from(pieces, { ...tween.props, ...overrides });
 	}
 	return el[TEXT_PLAYED];
 }
-// kind.bind() calls this to wire the animation to the element based on current
 export function bindText(el, config) {
-	const mode = modeFor(config.trigger);
-	
+	const mode = config.effect === 'text_invert' ? 'scrub' : modeFor(config.trigger);	
 	let triggerSelector = '';
 	if (config.wrapper === 'default' && config.triggerSelector == '') {
 		triggerSelector = el;
@@ -305,8 +454,16 @@ export function bindText(el, config) {
 		mode,
 		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
 		markers: config.markers,
-		play: () => playText(el, config),
+		play: () => {
+			console.log('wireTrigger play callback fired!');
+			playText(el, config);
+		},
 		buildScrubbed: () => buildScrubbedText(el, config),
-		config
+		config: {
+			...config,
+			// map text.js startPosition/endPosition to triggers.js start/end so it uses the correct offsets!
+			start: config.effect === 'text_invert' ? config.invertStart : (config.effect === 'text_spin' ? config.spinStart : (config.startPosition || config.start)),
+			end: config.effect === 'text_invert' ? config.invertEnd : (config.effect === 'text_spin' ? config.spinEnd : (config.endPosition || config.end))
+		}
 	});
 }
