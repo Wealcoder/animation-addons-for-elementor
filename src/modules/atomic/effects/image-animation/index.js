@@ -174,20 +174,32 @@ function bindScale(el, config) {
 
 	const image = findMedia(el);
 
-	gsap.set(image, { scale: config.scaleStart });
+	const tween = gsap.fromTo(
+		image,
+		{
+			scale: config.scaleStart,
+		},
+		{
+			scale: config.scaleEnd,
+			ease: 'none',
+			paused: true,
+		}
+	);
 
-	const tween = gsap.to(image, {
-		scale: config.scaleEnd,
-		ease:  'none',
-		paused: true,
-	});
+	const trigger = image.parentElement || el;
 
 	const st = ScrollTrigger.create({
-		trigger:   el,
-		start:     resolveStart(config),
-		scrub:     true,
+		trigger,
+		start: resolveStart(config),
+		scrub: true,
 		animation: tween,
 		invalidateOnRefresh: true,
+		markers: true,
+	});
+
+	// Force ScrollTrigger to recalculate after setup
+	requestAnimationFrame(() => {
+		ScrollTrigger.refresh();
 	});
 
 	if (image.parentElement) {
@@ -195,9 +207,10 @@ function bindScale(el, config) {
 	}
 
 	el[IMG_PLAYED] = tween;
-	el[IMG_DISPOSE_KEY] = () => { 
-		st.kill(true); 
-		tween.kill(); 
+
+	el[IMG_DISPOSE_KEY] = () => {
+		st.kill(true);
+		tween.kill();
 	};
 }
 
