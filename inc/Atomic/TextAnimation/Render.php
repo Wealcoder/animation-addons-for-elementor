@@ -116,8 +116,9 @@ final class Render {
 			Schema::TEXT_WRAPPER          => [ 'wrapper',         'default',         null ],
 			Schema::TEXT_WRAPPER_SELECTOR => [ 'wrapperSelector', '',                null ],
 			Schema::TEXT_DELAY            => [ 'delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],       null ],
-			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],    Schema::TEXT_DURATION_EFFECTS ],
-			Schema::TEXT_STAGGER          => [ 'stagger',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],     Schema::TEXT_DURATION_EFFECTS ],
+			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],    'duration_family' ],
+			Schema::TEXT_STAGGER          => [ 'stagger',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],     'duration_family' ],
+			Schema::TEXT_EASE             => [ 'ease',            '',                                                             'duration_family' ],
 			Schema::TEXT_TRANSLATE_X      => [ 'translateX',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ], $translate_family ],
 			Schema::TEXT_TRANSLATE_Y      => [ 'translateY',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ], $translate_family ],
 			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                            $translate_family ],
@@ -160,8 +161,15 @@ final class Render {
 
 		foreach ( $responsive_map as $base_key => [ $config_key, $default, $effect_family ] ) {
 			// Skip effect-specific keys when the chosen effect doesn't use them.
-			if ( null !== $effect_family && ! in_array( $effect, $effect_family, true ) ) {
-				continue;
+			if ( null !== $effect_family ) {
+				$is_premium = strpos( $effect, 'premium_' ) === 0;
+				if ( 'duration_family' === $effect_family ) {
+					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
+						continue;
+					}
+				} else if ( is_array( $effect_family ) && ! in_array( $effect, $effect_family, true ) ) {
+					continue;
+				}
 			}
 
 			// Skip scroll-trigger keys entirely when not on a scroll-style trigger.

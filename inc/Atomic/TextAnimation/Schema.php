@@ -42,6 +42,7 @@ final class Schema {
 	const TEXT_ROTATION         = 'aae_text_rotation';
 	const TEXT_TRANSFORM_ORIGIN = 'aae_text_transform_origin';
 	const TEXT_SPIN_COLOR       = 'aae_text_spin_color';
+	const TEXT_EASE             = 'aae_text_ease';
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
 
 	/* ---- scroll trigger settings ---- */
@@ -138,6 +139,7 @@ final class Schema {
 		$schema[ self::TEXT_SCALE_NUM ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_SCALE_NUM ] ] );
 		$schema[ self::TEXT_SCALE_BREAK ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'lines' ] );
 		$schema[ self::TEXT_SPIN_COLOR ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '#000000' ] );
+		$schema[ self::TEXT_EASE ]        = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 
 		/* ---------- non-responsive props (deps dropped — visibility now JS-driven) ---------- */
 

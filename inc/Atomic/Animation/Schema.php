@@ -151,6 +151,7 @@ final class Schema {
 		$schema[ 'aae_text_scale_num' ]     = Responsive_JSON_Prop_Type::make()->default( 1.5 );
 		$schema[ 'aae_text_scale_break' ]   = Responsive_JSON_Prop_Type::make()->default( 'lines' );
 		$schema[ 'aae_text_spin_color' ]    = Responsive_JSON_Prop_Type::make()->default( '' );
+		$schema[ 'aae_text_ease' ]          = Responsive_JSON_Prop_Type::make()->default( '' );
 
 		$schema[ self::TEXT_ENABLE_EDITOR ] = Boolean_Prop_Type::make()->default( false );
 		$schema[ self::TEXT_PLAY_TOKEN ]    = Boolean_Prop_Type::make()->default( false );

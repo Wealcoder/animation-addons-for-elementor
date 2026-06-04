@@ -202,6 +202,7 @@ const TEXT_RESPONSIVE = {
 	aae_text_delay: { configKey: 'delay', default: 0.15 },
 	aae_text_duration: { configKey: 'duration', default: 1 },
 	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
+	aae_text_ease: { configKey: 'ease', default: '' },
 	aae_text_translate_x: { configKey: 'translateX', default: 20 },
 	aae_text_translate_y: { configKey: 'translateY', default: 0 },
 	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },

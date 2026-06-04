@@ -108,6 +108,7 @@ export function readText(el) {
 		scaleNum: parseNum(r(cfg, 'scaleNum', 1.5), 1.5),
 		scaleBreak: r(cfg, 'scaleBreak', 'lines'),
 		scaleEase: r(cfg, 'scaleEase', 'back'),
+		ease: r(cfg, 'ease', ''),
 	};
 }
 
@@ -231,9 +232,26 @@ function textTween(effect, config, pieces, el) {
 				if (preset) {
 					const { runAsTo, ...gsapConfig } = preset;
 					
+					const overrides = {};
+					if (config.duration !== undefined && config.duration !== '') {
+						overrides.duration = config.duration;
+					}
+					
+					if (config.stagger !== undefined && config.stagger !== '') {
+						if (typeof gsapConfig.stagger === 'object' && gsapConfig.stagger !== null) {
+							overrides.stagger = { ...gsapConfig.stagger, each: config.stagger };
+						} else {
+							overrides.stagger = config.stagger;
+						}
+					}
+					
+					if (config.ease !== undefined && config.ease !== '') {
+						overrides.ease = config.ease;
+					}
+					
 					return {
 						method: runAsTo ? 'to' : 'from',
-						props: { ...shared, ...gsapConfig, force3D: true }
+						props: { ...shared, ...gsapConfig, ...overrides, force3D: true }
 					};
 				}
 			}
@@ -292,10 +310,8 @@ function splitFor(el, effect, config) {
 /** Pick the actual tween targets for `effect` — the split collection when
  *  the recipe needs splitting, the element itself otherwise. */
 function targetsFor(el, config) {
+	
 	const effect = config.effect;
-
-
-
 	const pieces = splitFor(el, effect, config);
 
 	if (pieces && pieces.length) return pieces;
@@ -365,11 +381,12 @@ function buildScrubbedText(el, config) {
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces, el);
-	console.log(tween);
+	console.log(config);
 	if (!tween) return null;
 
-	// Force linear easing + paused for scrub regardless of effect default.
-	const overrides = { ease: 'none', paused: true };
+	// Allow the preset or user ease to pass through, otherwise default to linear for scrub
+	const overrides = { paused: true };
+	if (!tween.props || !tween.props.ease) overrides.ease = 'none';
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, { ...tween.to, ...overrides });
@@ -395,7 +412,7 @@ export function bindText(el, config) {
 		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
 		markers: config.markers,
 		play: () => {
-			console.log('wireTrigger play callback fired!');
+			
 			playText(el, config);
 		},
 		buildScrubbed: () => buildScrubbedText(el, config),

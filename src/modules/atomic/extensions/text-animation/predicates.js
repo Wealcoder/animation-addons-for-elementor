@@ -24,7 +24,7 @@ export function isPremiumEffect(s, bp) {
 }
 
 export function isAnimated(s, bp)        { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, ANIMATED_EFFECTS); }
-export function isDurationEffect(s, bp)  { return !isPremiumEffect(s, bp) && valueIn(s, 'aae_text_effect',  bp, DURATION_EFFECTS); }
+export function isDurationEffect(s, bp)  { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, DURATION_EFFECTS); }
 export function isTranslateEffect(s, bp) { return valueIn(s, 'aae_text_effect',  bp, TRANSLATE_EFFECTS); }
 export function isScrollTrigger(s, bp)   { return isInvert(s, bp) || valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
 export function isSelectorTrigger(s, bp) { return valueIn(s, 'aae_text_trigger', bp, SELECTOR_TRIGGERS); }

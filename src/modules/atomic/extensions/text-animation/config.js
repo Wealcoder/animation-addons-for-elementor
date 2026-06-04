@@ -16,7 +16,8 @@ import {
 	showTriggerSelector,
 	showWrapper,
 	showTriggerDropdown,
-	showDelay
+	showDelay,
+	isPremiumEffect
 } from './predicates';
 import { PREMIUM_EFFECT_OPTIONS } from './presets';
 
@@ -67,7 +68,8 @@ const SCROLL_POSITION_OPTIONS = [
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
 }));
 
-const SCALE_EASE_OPTIONS = [
+const EASE_OPTIONS = [
+	{ value: '', label: 'Default' },
 	{ value: 'power2.out', label: 'Power2.out' },
 	{ value: 'bounce', label: 'Bounce' },
 	{ value: 'back', label: 'Back' },
@@ -151,6 +153,9 @@ const config = {
 			when: isDurationEffect, responsive: true
 		},
 		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect, responsive: true },
+		{
+			bind: 'ease', label: 'Easing', control: 'select', options: EASE_OPTIONS, defaultValue: '', when: isPremiumEffect, responsive: true
+		},
 		{ bind: 'translate_x', label: 'Transform-X', control: 'number', defaultValue: 20, when: isTranslateEffect, responsive: true },
 		{ bind: 'translate_y', label: 'Transform-Y', control: 'number', defaultValue: 0, when: isTranslateEffect, responsive: true },
 
@@ -170,7 +175,7 @@ const config = {
 		// Scale-specific
 		{
 			bind: 'scale_ease', label: 'Scale Ease', control: 'select',
-			options: SCALE_EASE_OPTIONS, defaultValue: 'back', when: isScale, responsive: true
+			options: EASE_OPTIONS, defaultValue: 'back', when: isScale, responsive: true
 		},
 		{ bind: 'scale_num', label: 'Scale', control: 'number', defaultValue: 1.5, when: isScale, responsive: true },
 		{
