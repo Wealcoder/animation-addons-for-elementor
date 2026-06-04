@@ -110,6 +110,11 @@ function bindSticky(el, config) {
 	if (el.closest('header') || el.parentElement.closest('header') || el.parentElement.parentElement.closest('header')) {
 		endTrigger = 'body';
 	}
+
+	// if el contains nav then end trigger is body
+	if(el.querySelector('nav')){
+		endTrigger = 'body';
+	}
 	
 	if (config.pinEndTrigger === 'custom' && config.customPinEndArea) {
 		const customEndTrigger = document.querySelector(config.customPinEndArea);
