@@ -17,7 +17,8 @@ import {
 
 	showTriggerSelector,
 	showWrapper,
-	showTriggerDropdown
+	showTriggerDropdown,
+	showDelay
 } from './predicates';
 
 /**
@@ -152,7 +153,7 @@ const config = {
 			max: 10,
 			step: 0.05,
 			defaultValue: 0.15,
-			when: isAnimated, responsive: true
+			when: showDelay, responsive: true
 		},
 		{
 			bind: 'duration',
@@ -195,9 +196,7 @@ const config = {
 		{
 			bind: 'spin_color', label: 'Spin Text Color', control: 'color',
 			defaultValue: '', when: isSpin, responsive: true
-		},
-
-		
+		},	
 
 		// Non-responsive control rows.
 		{

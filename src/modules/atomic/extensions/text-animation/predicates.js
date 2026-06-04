@@ -63,6 +63,10 @@ export function showSpinScrollFields(s, bp) {
 	return isSpin(s, bp) && valueEq(s, 'aae_text_trigger', bp, 'on_scroll');
 }
 
+export function showDelay(s, bp) {
+	return isAnimated(s, bp) && !isInvert(s, bp);
+}
+
 /* ----- non-responsive rows (read raw envelope.value) ----- */
 
 /** Pull a non-responsive boolean's primitive (or null). */
