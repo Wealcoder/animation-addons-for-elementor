@@ -167,7 +167,7 @@ function bind(el, config) {
 				scrub: 1,
 				start: config.start,
 				markers: config.markers,
-
+				pinSpacing: fa,
 				end: () =>
 					`+=${getScrollAmount() * speed}`,
 
@@ -191,6 +191,7 @@ function bind(el, config) {
 				scrub: 1,
 				start: config.start,
 				markers: config.markers,
+				pinSpacing: true,
 
 				end: () =>
 					`+=${getScrollAmount() * speed}`,
