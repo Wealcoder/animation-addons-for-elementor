@@ -103,7 +103,9 @@ function bindSticky(el, config) {
 		if (endTrigger.parentElement.classList.contains('e-flexbox-base')) {
 			// el.parentElement.parentElement contain e-flexbox-base class so end trigger is el.parentElement.parentElement
 			endTrigger = endTrigger.parentElement;
-		}
+		}		
+	}else if(!el.parentElement.classList.contains('e-flexbox-base')){
+		endTrigger = 'body';		
 	}
 
 	// if el parent is header 

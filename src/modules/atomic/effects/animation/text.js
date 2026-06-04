@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { wireTrigger, modeFor, resolveTriggerEl } from './triggers';
+import { PREMIUM_EFFECTS, PREMIUM_EFFECT_OPTIONS } from '../../extensions/text-animation/presets';
 
 /**
  * Text animation kind — char/word/text_move/text_reveal/text_scale/...
@@ -222,60 +223,34 @@ function textTween(effect, config, pieces, el) {
 				to: { ...shared, backgroundPositionX: '0%', ease: 'none' }
 			};
 		}
-
-		case 'text_spin':
-			return {
-				method: 'timeline',
-				build: (tl, originalPieces, config, el) => {
-					const clonePieces = el.__aaeTextSplitClone?.chars;
-					if (!clonePieces || !originalPieces) return;
+		
+		default: {
+			if (effect && effect.startsWith('premium_')) {
+				const presetKey = PREMIUM_EFFECT_OPTIONS.find(o => o.value === effect)?._originalKey;
+				const preset = PREMIUM_EFFECTS[presetKey];
+				if (preset) {
+					const { runAsTo, ...gsapConfig } = preset;
 					
-					const duration = 0.4;
-					const delay = config.delay || 0;
-					const stagger = { each: 0.03, ease: 'power1', from: 'start' };
-					const height = el.offsetHeight || 30;
-					const origin = `50% 50% -${height / 2}`;
-					
-					tl.set(clonePieces, {
-						rotationX: -90,
-						transformOrigin: origin,
-					});
-					
-					tl.to(originalPieces, {
-						delay,
-						duration,
-						rotationX: 90,
-						transformOrigin: origin,
-						opacity: 0,
-						stagger,
-						ease: 'power2.in',
-					}, 0);
-					
-					tl.to(clonePieces, {
-						duration: 0.001,
-						delay,
-						opacity: 1,
-						stagger,
-					}, 0.001);
-					
-					tl.to(clonePieces, {
-						duration,
-						delay,
-						rotationX: 0,
-						stagger,
-					}, 0);
+					return {
+						method: runAsTo ? 'to' : 'from',
+						props: { ...shared, ...gsapConfig, force3D: true }
+					};
 				}
-			};
-
-		default:
+			}
 			return null;
+		}
 	}
 }
 
 /** Build the SplitText instance for `effect` and return the tween targets.
  *  Returns null when the effect needs no split (target the element itself). */
 function splitFor(el, effect, config) {
-	const recipe = SPLIT_RECIPE[effect];
+	let recipe = SPLIT_RECIPE[effect];
+
+	const isPremium = effect && effect.startsWith('premium_');
+	if (isPremium) {
+		recipe = { type: 'chars, words', target: 'chars', perspective: 1500 };
+	}
 
 	if (!recipe || !recipe.type) return null;
 
@@ -297,6 +272,14 @@ function splitFor(el, effect, config) {
 		gsap?.set(targetEl, { perspective: recipe.perspective });
 	}
 
+	if (isPremium) {
+		const gsap = getGsap();
+		gsap?.set([split.words, split.chars], { 
+			transformStyle: "preserve-3d",
+			display: "inline-block" 
+		});
+	}
+
 	el[TEXT_SPLIT_KEY] = split;
 
 	if (recipe.target === 'dynamic') {
@@ -311,41 +294,7 @@ function splitFor(el, effect, config) {
 function targetsFor(el, config) {
 	const effect = config.effect;
 
-	// Handle text_spin DOM cloning
-	if (effect === 'text_spin') {
-		const SplitText = getSplitText();
-		const gsap = getGsap();
-		if (SplitText && gsap) {
-			let targetEl = getInnerElement(el);
-			const clone = el.cloneNode(true);
-			clone.classList.add('duplicate-text');
-			el.style.perspective = '600px';
-			el.style.whiteSpace = 'nowrap';
-			clone.style.perspective = '600px';
-			clone.style.whiteSpace = 'nowrap';
-			
-			clone.style.position = 'absolute';
-			clone.style.top = el.offsetTop + 'px';
-			clone.style.left = el.offsetLeft + 'px';
-			clone.style.margin = '0';
-			
-			if (config.spinColor) {
-				clone.style.setProperty('color', config.spinColor, 'important');
-			}
-			
-			el.parentNode.insertBefore(clone, el.nextSibling);
-			
-			const originalSplit = new SplitText(el, { type: 'chars' });
-			const cloneSplit = new SplitText(clone, { type: 'chars' });
-			gsap.set(cloneSplit.chars, { opacity: 0 });
-			
-			el[TEXT_SPLIT_KEY] = originalSplit;
-			el.__aaeTextSplitClone = cloneSplit;
-			el.__aaeTextClone = clone;
-			
-			return originalSplit.chars;
-		}
-	}
+
 
 	const pieces = splitFor(el, effect, config);
 
@@ -370,16 +319,7 @@ export function resetText(el) {
 		try { split.revert(); } catch (_) { /* ignore */ }
 		delete el[TEXT_SPLIT_KEY];
 	}
-	const cloneSplit = el.__aaeTextSplitClone;
-	if (cloneSplit && typeof cloneSplit.revert === 'function') {
-		try { cloneSplit.revert(); } catch (_) { /* ignore */ }
-		delete el.__aaeTextSplitClone;
-	}
-	const clone = el.__aaeTextClone;
-	if (clone && clone.parentNode) {
-		clone.parentNode.removeChild(clone);
-		delete el.__aaeTextClone;
-	}
+
 	// Drop any per-effect parent classes we attached in splitFor().
 	for (const recipe of Object.values(SPLIT_RECIPE)) {
 		if (recipe.parentClass) el.classList.remove(recipe.parentClass);
@@ -437,8 +377,8 @@ function buildScrubbedText(el, config) {
 		const tl = gsap.timeline({ paused: true });
 		tween.build(tl, pieces, config, el);
 		el[TEXT_PLAYED] = tl;
-	} else {
-		el[TEXT_PLAYED] = gsap.from(pieces, { ...tween.props, ...overrides });
+	} else if (tween.method) {
+		el[TEXT_PLAYED] = gsap[tween.method](pieces, { ...tween.props, ...overrides });
 	}
 	return el[TEXT_PLAYED];
 }

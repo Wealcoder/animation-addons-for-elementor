@@ -6,20 +6,19 @@ import {
 	isInvert,
 	isMove,
 	isScale,
-	isSpin,
 	isTranslateEffect,
 	showEnableEditor,
 	showPlayButton,
 	
 	showScrollCustomBlock,
 	showStartCustom,
-	showSpinScrollFields,
 
 	showTriggerSelector,
 	showWrapper,
 	showTriggerDropdown,
 	showDelay
 } from './predicates';
+import { PREMIUM_EFFECT_OPTIONS } from './presets';
 
 /**
  * Declarative table for the Text Animation section. Same structure as
@@ -36,7 +35,7 @@ const EFFECT_OPTIONS = [
 	{ value: 'text_reveal', label: 'Text Reveal' },
 	{ value: 'text_scale', label: 'Text Scale' },
 	{ value: 'text_invert', label: 'Text Invert' },
-	{ value: 'text_spin', label: '3D Spin' },
+	...PREMIUM_EFFECT_OPTIONS
 ];
 
 const TRIGGER_OPTIONS = [
@@ -131,20 +130,6 @@ const config = {
 			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom center', placeholder: 'bottom center', when: isInvert, responsive: true
 		},
 
-		// Spin-specific (+ scroll trigger)
-		{
-			bind: 'spin_start', label: 'Spin Start', control: 'text',
-			defaultValue: 'top 85%', placeholder: 'top 85%', when: showSpinScrollFields, responsive: true
-		},
-		{
-			bind: 'spin_end', label: 'Spin End', control: 'text',
-			defaultValue: 'bottom 30%', placeholder: 'bottom 30%', when: showSpinScrollFields, responsive: true
-		},
-		{
-			bind: 'spin_toggle', label: 'Toggle Actions', control: 'text',
-			defaultValue: 'play none none reverse', placeholder: 'play none none reverse', when: isSpin, responsive: true
-		},
-
 		{
 			bind: 'delay',
 			label: 'Delay',
@@ -192,11 +177,6 @@ const config = {
 			bind: 'scale_break', label: 'Text Break By', control: 'select',
 			options: SCALE_BREAK_OPTIONS, defaultValue: 'lines', when: isScale, responsive: true
 		},
-
-		{
-			bind: 'spin_color', label: 'Spin Text Color', control: 'color',
-			defaultValue: '', when: isSpin, responsive: true
-		},	
 
 		// Non-responsive control rows.
 		{
