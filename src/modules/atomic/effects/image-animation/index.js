@@ -62,75 +62,103 @@ function findMedia(el) {
 function bindReveal(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
+
 	const image = findMedia(el);
+
 	let wrap, outer;
 	let createdWrap = false;
 
-	// If `el` is the image itself (no Elementor container), we MUST wrap it
-	// to have a clipping mask for the reveal parallax effect.
 	if (image === el) {
-		if (image.parentElement && image.parentElement.classList.contains('aae-img-reveal-wrap')) {
+		if (
+			image.parentElement &&
+			image.parentElement.classList.contains('aae-img-reveal-wrap')
+		) {
 			wrap = image.parentElement;
 		} else {
 			wrap = document.createElement('div');
 			wrap.className = 'aae-img-reveal-wrap';
+
 			image.parentNode.insertBefore(wrap, image);
 			wrap.appendChild(image);
+
 			createdWrap = true;
 		}
-		outer = wrap; // We don't want to hide overflow on the column
-	} else {
-		// Normal Elementor widget (has .elementor-widget-container)
-		wrap = image.parentElement;
-		if (wrap && !el.contains(wrap)) wrap = el;
-		
-		outer = wrap === el ? el : wrap.parentElement;
-		if (outer && !el.contains(outer)) outer = el;
-	}	
 
-	// v3 forces overflow hidden on the outer + wrap, and hides wrap until
-	// the timeline runs (autoAlpha:1 in the first .set step).
-	outer.style.overflow    = 'hidden';
-	wrap.style.overflow     = 'hidden';
-	wrap.style.display      = 'block';
-	wrap.style.visibility   = 'hidden';
-	wrap.style.transition   = 'none';
+		outer = wrap;
+	} else {
+		wrap = image.parentElement;
+
+		if (wrap && !el.contains(wrap)) {
+			wrap = el;
+		}
+
+		outer = wrap === el ? el : wrap.parentElement;
+
+		if (outer && !el.contains(outer)) {
+			outer = el;
+		}
+	}
+
+	outer.style.overflow = 'hidden';
+	wrap.style.overflow = 'hidden';
 
 	const tl = gsap.timeline({
 		scrollTrigger: {
 			trigger: wrap,
-			start:   resolveStart(config),
+			start: resolveStart(config),
 			toggleActions: 'play none none none',
 		},
 	});
 
-	const contentAnim = { duration: 1.5, ease: config.ease };
-	const imageAnim   = { duration: 1.5, scale: 1.3, delay: -1.5, ease: config.ease };
+	const contentAnim = {
+		duration: 1.5,
+		ease: config.ease,
+	};
+
+	const imageAnim = {
+		duration: 1.5,
+		scale: 1.3,
+		delay: -1.5,
+		ease: config.ease,
+	};
 
 	switch (config.startFrom) {
-		case 'left':   contentAnim.xPercent =  100; imageAnim.xPercent = -100; break;
-		case 'right':  contentAnim.xPercent = -100; imageAnim.xPercent =  100; break;
-		case 'top':    contentAnim.yPercent =  100; imageAnim.yPercent = -100; break;
-		case 'bottom':
-		default:       contentAnim.yPercent = -100; imageAnim.yPercent =  100; break;
+		case 'left':
+			contentAnim.xPercent = 100;
+			imageAnim.xPercent = -100;
+			break;
+
+		case 'right':
+			contentAnim.xPercent = -100;
+			imageAnim.xPercent = 100;
+			break;
+
+		case 'top':
+			contentAnim.yPercent = 100;
+			imageAnim.yPercent = -100;
+			break;
+
+		default:
+			contentAnim.yPercent = -100;
+			imageAnim.yPercent = 100;
 	}
 
-	tl.set(wrap,  { autoAlpha: 1 });
-	tl.from(wrap,  contentAnim);
+	tl.set([wrap, image], { autoAlpha: 1 });
+
+	tl.from(wrap, contentAnim);
 	tl.from(image, imageAnim);
 
 	el[IMG_PLAYED] = tl;
+
 	el[IMG_DISPOSE_KEY] = () => {
 		tl.scrollTrigger?.kill();
 		tl.kill();
-		
-		gsap.set(wrap, { clearProps: 'all' });
-		gsap.set(image, { clearProps: 'all' });
 
-		// Unwrap if we dynamically created it
+		gsap.set([wrap, image], { clearProps: 'all' });
+
 		if (createdWrap && wrap.parentNode) {
 			wrap.parentNode.insertBefore(image, wrap);
-			wrap.parentNode.removeChild(wrap);
+			wrap.remove();
 		}
 	};
 }
