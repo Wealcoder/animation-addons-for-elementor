@@ -69,6 +69,7 @@ const config = {
 			responsive: true,
 			defaultValue: false,
 			tab: 'Content', // Goes to Content tab
+			play_group: 'aae_sticky_',
 		},
 
 		/*

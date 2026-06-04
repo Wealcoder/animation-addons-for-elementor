@@ -23,6 +23,26 @@ function r(cfg, key, fallback) {
 	return (v === undefined || v === null || v === '') ? fallback : v;
 }
 
+/**
+ * Find the innermost element containing the actual text.
+ * Elementor Legacy widgets use .elementor-widget-container.
+ * Elementor Atomic (e-heading, e-paragraph) don't have a container.
+ */
+function getInnerElement(el) {
+	const container = el.querySelector('.elementor-widget-container');
+	if (container) {
+		const valid = Array.from(container.children).filter(c => c.tagName !== 'SCRIPT' && c.tagName !== 'STYLE');
+		if (valid.length > 0) return valid[valid.length - 1];
+		return container;
+	}
+	
+	const textNode = el.querySelector('h1, h2, h3, h4, h5, h6, p, .elementor-heading-title, .elementor-text-editor');
+	if (textNode) return textNode;
+	
+	return el;
+}
+
+
 function parseNum(val, fallback) {
 	if (val === undefined || val === null || val === '') return fallback;
 	const num = Number(val);
@@ -67,8 +87,8 @@ export function readText(el) {
 		wrapper: r(cfg, 'wrapper', 'default'),
 		startTrigger: r(cfg, 'startTrigger', ''),
 		endTrigger: r(cfg, 'endTrigger', ''),
-		start: r(cfg, 'startPosition', 'top top'),
-		end: r(cfg, 'endPosition', 'bottom top'),
+		start: r(cfg, 'startPosition', 'top 85%'),
+		end: r(cfg, 'endPosition', 'bottom 30%'),
 		markers: !!cfg.markers,
 		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
 		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
@@ -78,6 +98,8 @@ export function readText(el) {
 		rotationDir: r(cfg, 'rotationDir', 'x'),
 		rotation: parseNum(r(cfg, 'rotation', -80), -80),
 		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
+		invertStart: r(cfg, 'invertStart', 'top 85%'),
+		invertEnd: r(cfg, 'invertEnd', 'bottom center'),
 		spinColor: r(cfg, 'spinColor', '#000'),
 		spinStart: r(cfg, 'spinStart', 'top 50%'),
 		spinEnd: r(cfg, 'spinEnd', 'bottom 30%'),
@@ -115,7 +137,7 @@ const SPLIT_RECIPE = {
  * `text_spin` is the only effect that needs a complex multi-tween timeline
  * (V3 builds it inline with cloning); we keep a placeholder for now.
  */
-function textTween(effect, config, pieces) {
+function textTween(effect, config, pieces, el) {
 	const shared = {
 		duration: config.duration,
 		delay: config.delay,
@@ -172,16 +194,34 @@ function textTween(effect, config, pieces) {
 				},
 			};
 
-		case 'text_invert':
+		case 'text_invert': {
+			// Calculate HSL color from the original element and assign it to --text-color
+			const colorStr = window.getComputedStyle(el).color;
+			const rgb = colorStr.match(/\d+/g);
+			if (rgb && rgb.length >= 3) {
+				let r = parseInt(rgb[0]) / 255;
+				let g = parseInt(rgb[1]) / 255;
+				let b = parseInt(rgb[2]) / 255;
+				const l = Math.max(r, g, b);
+				const s = l - Math.min(r, g, b);
+				const h = s ? (l === r ? (g - b) / s : l === g ? 2 + (b - r) / s : 4 + (r - g) / s) : 0;
+				const hslH = 60 * h < 0 ? 60 * h + 360 : 60 * h;
+				const hslS = 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0);
+				const hslL = (100 * (2 * l - s)) / 2;
+				el.style.setProperty('--text-color', `${hslH.toFixed(1)}, ${hslS.toFixed(1)}%, ${hslL.toFixed(1)}%`);
+			}
+
 			// CSS parks each .invert-line at background-position-x:100% (the
-			// transparent half showing). Tween to 0% to slide the opaque half
+			// dark half). On scrub, we tween backgroundPositionX from 100%->0%
+			// which slides the gradient (which has the light half on the left)
 			// across, revealing the line. fromTo so we don't depend on the
 			// computed start state — keeps the editor preview consistent.
 			return {
 				method: 'fromTo',
 				from: { backgroundPositionX: '100%' },
-				to: { ...shared, backgroundPositionX: '0%', ease: 'none' },
+				to: { ...shared, backgroundPositionX: '0%', ease: 'none' }
 			};
+		}
 
 		case 'text_spin':
 			return {
@@ -242,16 +282,19 @@ function splitFor(el, effect, config) {
 	const SplitText = getSplitText();
 	if (!SplitText) return null;
 
-	if (recipe.parentClass) el.classList.add(recipe.parentClass);
+	// Target the innermost text element so SplitText doesn't wrap outer divs/styles
+	let targetEl = getInnerElement(el);
+
+	if (recipe.parentClass) targetEl.classList.add(recipe.parentClass);
 
 	const opts = { type: recipe.type };
 
 	if (recipe.linesClass) opts.linesClass = recipe.linesClass;
-	const split = new SplitText(el, opts);
+	const split = new SplitText(targetEl, opts);
 
 	if (recipe.perspective) {
 		const gsap = getGsap();
-		gsap?.set(el, { perspective: recipe.perspective });
+		gsap?.set(targetEl, { perspective: recipe.perspective });
 	}
 
 	el[TEXT_SPLIT_KEY] = split;
@@ -273,6 +316,7 @@ function targetsFor(el, config) {
 		const SplitText = getSplitText();
 		const gsap = getGsap();
 		if (SplitText && gsap) {
+			let targetEl = getInnerElement(el);
 			const clone = el.cloneNode(true);
 			clone.classList.add('duplicate-text');
 			el.style.perspective = '600px';
@@ -353,7 +397,7 @@ export function playText(el, config) {
 	const pieces = targetsFor(el, config);
 	if (!pieces) return;
 
-	const tween = textTween(config.effect, config, pieces);
+	const tween = textTween(config.effect, config, pieces, el);
 	if (!tween) return;
 
 	if (tween.method === 'fromTo') {
@@ -380,7 +424,8 @@ function buildScrubbedText(el, config) {
 	const pieces = targetsFor(el, config);
 	if (!pieces) return null;
 
-	const tween = textTween(config.effect, config, pieces);
+	const tween = textTween(config.effect, config, pieces, el);
+	console.log(tween);
 	if (!tween) return null;
 
 	// Force linear easing + paused for scrub regardless of effect default.
@@ -397,10 +442,8 @@ function buildScrubbedText(el, config) {
 	}
 	return el[TEXT_PLAYED];
 }
-// kind.bind() calls this to wire the animation to the element based on current
 export function bindText(el, config) {
-	const mode = modeFor(config.trigger);
-	
+	const mode = config.effect === 'text_invert' ? 'scrub' : modeFor(config.trigger);	
 	let triggerSelector = '';
 	if (config.wrapper === 'default' && config.triggerSelector == '') {
 		triggerSelector = el;
@@ -411,8 +454,16 @@ export function bindText(el, config) {
 		mode,
 		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
 		markers: config.markers,
-		play: () => playText(el, config),
+		play: () => {
+			console.log('wireTrigger play callback fired!');
+			playText(el, config);
+		},
 		buildScrubbed: () => buildScrubbedText(el, config),
-		config
+		config: {
+			...config,
+			// map text.js startPosition/endPosition to triggers.js start/end so it uses the correct offsets!
+			start: config.effect === 'text_invert' ? config.invertStart : (config.effect === 'text_spin' ? config.spinStart : (config.startPosition || config.start)),
+			end: config.effect === 'text_invert' ? config.invertEnd : (config.effect === 'text_spin' ? config.spinEnd : (config.endPosition || config.end))
+		}
 	});
 }

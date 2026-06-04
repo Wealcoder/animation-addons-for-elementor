@@ -126,9 +126,9 @@ final class Render {
 
 			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
 			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
-			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top top',    null ],
+			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top 85%',    null ],
 			Schema::TEXT_START_CUSTOM     => [ 'startCustom',   'top top',    null ],
-			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom top', null ],
+			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom 30%', null ],
 			Schema::TEXT_END_CUSTOM       => [ 'endCustom',     'bottom top', null ],
 
 			Schema::TEXT_INVERT_START     => [ 'invertStart',   'top 85%',       Schema::TEXT_INVERT_EFFECTS ],

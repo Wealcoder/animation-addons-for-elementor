@@ -10,12 +10,14 @@ import {
 	isTranslateEffect,
 	showEnableEditor,
 	showPlayButton,
-	showEndCustom,
+	
 	showScrollCustomBlock,
-	showSpinScrollFields,
 	showStartCustom,
+	showSpinScrollFields,
+
 	showTriggerSelector,
-	showWrapper
+	showWrapper,
+	showTriggerDropdown
 } from './predicates';
 
 /**
@@ -90,7 +92,7 @@ const config = {
 	fields: [
 		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', play_group: 'aae_text_', responsive: true },
 
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'in-view', when: isAnimated, responsive: true },
+		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'in-view', when: showTriggerDropdown, responsive: true },
 		
 
 		{
@@ -120,12 +122,12 @@ const config = {
 
 		// Invert-specific
 		{
-			bind: 'invert_start', label: 'Invert Start', control: 'text',
-			defaultValue: 'top 85%', placeholder: 'top 85%', when: isInvert, responsive: true
+			bind: 'invert_start', label: 'Start', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top 85%', placeholder: 'top 85%', when: isInvert, responsive: true
 		},
 		{
-			bind: 'invert_end', label: 'Invert End', control: 'text',
-			defaultValue: 'bottom center', placeholder: 'bottom center', when: isInvert, responsive: true
+			bind: 'invert_end', label: 'End', control: 'text',
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom center', placeholder: 'bottom center', when: isInvert, responsive: true
 		},
 
 		// Spin-specific (+ scroll trigger)
@@ -195,12 +197,13 @@ const config = {
 			defaultValue: '', when: isSpin, responsive: true
 		},
 
+		
+
+		// Non-responsive control rows.
 		{
 			bind: 'markers', label: 'Markers', control: 'switch',
 			responsive: false, defaultValue: false, when: isScrollTrigger
-		},
-
-		// Non-responsive control rows.
+		},	
 		{
 			bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
 			responsive: false, defaultValue: false, when: showEnableEditor

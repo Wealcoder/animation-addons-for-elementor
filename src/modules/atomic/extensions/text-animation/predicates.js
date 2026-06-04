@@ -20,7 +20,7 @@ export function endPositionAt(s, bp)    { return valueAt(s, 'aae_text_end_positi
 export function isAnimated(s, bp)        { return valueIn(s, 'aae_text_effect',  bp, ANIMATED_EFFECTS); }
 export function isDurationEffect(s, bp)  { return valueIn(s, 'aae_text_effect',  bp, DURATION_EFFECTS); }
 export function isTranslateEffect(s, bp) { return valueIn(s, 'aae_text_effect',  bp, TRANSLATE_EFFECTS); }
-export function isScrollTrigger(s, bp)   { return valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
+export function isScrollTrigger(s, bp)   { return isInvert(s, bp) || valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
 export function isSelectorTrigger(s, bp) { return valueIn(s, 'aae_text_trigger', bp, SELECTOR_TRIGGERS); }
 
 export function isMove(s, bp)    { return valueEq(s, 'aae_text_effect', bp, 'text_move'); }
@@ -33,19 +33,21 @@ export function isWrapperCustom(s, bp) { return valueEq(s, 'aae_text_wrapper', b
 /* ----- composite gates ----- */
 
 export function showTriggerSelector(s, bp) {
-	return isAnimated(s, bp) && isSelectorTrigger(s, bp);
+	return showTriggerDropdown(s, bp) && isSelectorTrigger(s, bp);
 }
 
 export function showWrapper(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp);
+	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp);
 }
 
 export function showWrapperSelector(s, bp) {
 	return isWrapperCustom(s, bp);
 }
-
+export function showTriggerDropdown(s, bp) {
+	return isAnimated(s, bp) && !isInvert(s, bp);
+}
 export function showScrollCustomBlock(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp);
+	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp);
 }
 
 export function showStartCustom(s, bp) {
