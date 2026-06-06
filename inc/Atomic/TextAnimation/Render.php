@@ -117,13 +117,13 @@ final class Render {
 			Schema::TEXT_WRAPPER_SELECTOR => [ 'wrapperSelector', '',                null ],
 			Schema::TEXT_DELAY            => [ 'delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],       null ],
 			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],    'duration_family' ],
-			Schema::TEXT_STAGGER          => [ 'stagger',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],     'duration_family' ],
 			Schema::TEXT_EASE             => [ 'ease',            '',                                                             'duration_family' ],
 			Schema::TEXT_TRANSLATE_X      => [ 'translateX',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ], $translate_family ],
 			Schema::TEXT_TRANSLATE_Y      => [ 'translateY',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ], $translate_family ],
 			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                            $translate_family ],
 			Schema::TEXT_ROTATION         => [ 'rotation',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],    $translate_family ],
 			Schema::TEXT_TRANSFORM_ORIGIN => [ 'transformOrigin', 'top center -50',                                               $translate_family ],
+			Schema::TEXT_TEXT_SHADOW      => [ 'textShadow',      '',                                                             null ],
 
 			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
 			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
@@ -185,6 +185,38 @@ final class Render {
 				$default,
 				$extra_bps,
 				[ $this, 'cast_value' ],
+				$disabled_bps
+			);
+		}
+
+		$responsive_object_map = [
+			Schema::TEXT_STAGGER => [ 'stagger', [], 'duration_family' ],
+		];
+
+		foreach ( $responsive_object_map as $base_key => [ $config_key, $default, $effect_family ] ) {
+			if ( null !== $effect_family ) {
+				$is_premium = strpos( $effect, 'premium_' ) === 0;
+				if ( 'duration_family' === $effect_family ) {
+					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
+						continue;
+					}
+				} else if ( is_array( $effect_family ) && ! in_array( $effect, $effect_family, true ) ) {
+					continue;
+				}
+			}
+
+			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_keys, true ) ) {
+				continue;
+			}
+
+			// We use emit_responsive_object for arrays/JSON props
+			$this->emit_responsive_object(
+				$config,
+				$settings,
+				$base_key,
+				$config_key,
+				$default,
+				$extra_bps,
 				$disabled_bps
 			);
 		}

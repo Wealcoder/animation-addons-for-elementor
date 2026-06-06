@@ -17,7 +17,9 @@ import {
 	showWrapper,
 	showTriggerDropdown,
 	showDelay,
-	isPremiumEffect
+	isPremiumEffect,
+	isMoveOrPremium,
+	showTextShadow
 } from './predicates';
 import { PREMIUM_EFFECT_OPTIONS } from './presets';
 
@@ -66,6 +68,16 @@ const SCROLL_POSITION_OPTIONS = [
 ].map((v) => ({
 	value: v,
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+}));
+
+const TRANSFORM_ORIGIN_OPTIONS = [
+	'top left', 'top center', 'top right',
+	'center left', 'center center', 'center right',
+	'bottom left', 'bottom center', 'bottom right',
+	'top center -50', '50% 50% -30px', '50% 0%'
+].map((v) => ({
+	value: v,
+	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
 }));
 
 const EASE_OPTIONS = [
@@ -152,7 +164,7 @@ const config = {
 			defaultValue: 1,
 			when: isDurationEffect, responsive: true
 		},
-		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect, responsive: true },
+		{ bind: 'stagger', label: 'Stagger', control: 'stagger', defaultValue: 0.02, when: isDurationEffect, responsive: true },
 		{
 			bind: 'ease', label: 'Easing', control: 'select', options: EASE_OPTIONS, defaultValue: '', when: isPremiumEffect, responsive: true
 		},
@@ -169,7 +181,11 @@ const config = {
 		},
 		{
 			bind: 'transform_origin', label: 'Transform Origin', control: 'text',
-			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove, responsive: true
+			datalist: TRANSFORM_ORIGIN_OPTIONS, defaultValue: '', placeholder: 'top center -50', when: isMoveOrPremium, responsive: true
+		},
+		{
+			bind: 'text_shadow', label: 'Text Shadow', control: 'text_shadow',
+			defaultValue: '', placeholder: '-30px 20px 0px rgba(0,255,255,0.5)', when: showTextShadow, responsive: true
 		},
 
 		// Scale-specific

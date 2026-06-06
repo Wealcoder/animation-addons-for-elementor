@@ -33,6 +33,18 @@ export function isMove(s, bp)    { return valueEq(s, 'aae_text_effect', bp, 'tex
 export function isInvert(s, bp)  { return valueEq(s, 'aae_text_effect', bp, 'text_invert'); }
 export function isScale(s, bp)   { return valueEq(s, 'aae_text_effect', bp, 'text_scale'); }
 
+// is transform_origin show, I will provide specific preset here
+
+export function isMoveOrPremium(s, bp) {
+	if (isMove(s, bp)) return true;
+	const effect = valueAt(s, 'aae_text_effect', bp);
+	return effect === 'premium_origami_fold' || effect === 'premium_shutter_cascade';
+}
+
+export function showTextShadow(s, bp) {
+	return valueEq(s, 'aae_text_effect', bp, 'premium_cyber_phantom');
+}
+
 export function isWrapperCustom(s, bp) { return valueEq(s, 'aae_text_wrapper', bp, 'custom'); }
 
 /* ----- composite gates ----- */

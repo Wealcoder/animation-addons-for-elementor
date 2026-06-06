@@ -201,13 +201,13 @@ const TEXT_RESPONSIVE = {
 	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
 	aae_text_delay: { configKey: 'delay', default: 0.15 },
 	aae_text_duration: { configKey: 'duration', default: 1 },
-	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
 	aae_text_ease: { configKey: 'ease', default: '' },
 	aae_text_translate_x: { configKey: 'translateX', default: 20 },
 	aae_text_translate_y: { configKey: 'translateY', default: 0 },
 	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },
 	aae_text_rotation: { configKey: 'rotation', default: -80 },
 	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
+	aae_text_text_shadow: { configKey: 'textShadow', default: '' },
 	aae_text_spin_color: { configKey: 'spinColor', default: '#000000' },
 	aae_text_start_trigger: { configKey: 'startTrigger', default: '' },
 	aae_text_end_trigger: { configKey: 'endTrigger', default: '' },
@@ -221,6 +221,13 @@ const TEXT_RESPONSIVE = {
 	aae_text_scale_ease: { configKey: 'scaleEase', default: 'back' },
 	aae_text_scale_num: { configKey: 'scaleNum', default: 1.5 },
 	aae_text_scale_break: { configKey: 'scaleBreak', default: 'lines' },
+};
+
+const TEXT_OBJECTS = {
+	aae_text_stagger: {
+		configKey: 'stagger',
+		isValid: (v) => v !== undefined && v !== null,
+	},
 };
 
 function buildTextConfig(settings) {
@@ -239,6 +246,7 @@ function buildTextConfig(settings) {
 	}
 
 	emitResponsive(cfg, settings, TEXT_RESPONSIVE, disabledBps);
+	emitResponsiveObjects(cfg, settings, TEXT_OBJECTS, disabledBps);
 
 	// Effect defaults to 'none', so a non-default desktop value WILL be
 	// emitted. Guarantee presence even if equal to default — the runtime

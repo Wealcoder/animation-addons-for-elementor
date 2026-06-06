@@ -12,11 +12,13 @@ import { PlayButtonInput } from "./inputs/PlayButtonInput";
 import { SaveButtonInput } from "./inputs/SaveButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
 import { BorderInput } from "./inputs/BorderInput";
+import { TextShadowInput } from "./inputs/TextShadowInput";
 import { TextareaInput } from "./inputs/TextareaInput";
 import { SliderInput } from "./inputs/SliderInput";
 import { DimensionInput, DimensionsInput } from "./inputs/Dimension";
 import { ChooseInput } from "./inputs/ChooseInput";
 import { MediaInput } from "./inputs/MediaInput";
+import { StaggerInput } from "./inputs/StaggerInput";
 import { LinkInput } from "./inputs/LinkInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
@@ -77,9 +79,11 @@ const CONTROL_REGISTRY = {
   switch:     { Component: SwitchInput,     innerType: "boolean" },
   color:      { Component: ColorInput,      innerType: "string" },
   border:     { Component: BorderInput,     innerType: "object" },
+  text_shadow:{ Component: TextShadowInput, innerType: "string" },
   choose:     { Component: ChooseInput,     innerType: "string" },
   // Media picker — value: { id, url, size, sizes } | null
   media:      { Component: MediaInput,      innerType: "object" },
+  stagger:    { Component: StaggerInput,    innerType: "object" },
   link:       { Component: LinkInput,       innerType: "string" },
   code:       { Component: CodeInput,       innerType: "string" },
 };

@@ -41,6 +41,7 @@ final class Schema {
 	const TEXT_ROTATION_DIR     = 'aae_text_rotation_dir';
 	const TEXT_ROTATION         = 'aae_text_rotation';
 	const TEXT_TRANSFORM_ORIGIN = 'aae_text_transform_origin';
+	const TEXT_TEXT_SHADOW      = 'aae_text_text_shadow';
 	const TEXT_SPIN_COLOR       = 'aae_text_spin_color';
 	const TEXT_EASE             = 'aae_text_ease';
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
@@ -126,7 +127,8 @@ final class Schema {
 
 		$schema[ self::TEXT_ROTATION_DIR ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'x' ] );
 		$schema[ self::TEXT_ROTATION ]         = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_ROTATION ] ] );
-		$schema[ self::TEXT_TRANSFORM_ORIGIN ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top center -50' ] );
+		$schema[ self::TEXT_TRANSFORM_ORIGIN ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
+		$schema[ self::TEXT_TEXT_SHADOW ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 
 		$schema[ self::TEXT_INVERT_START ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top 85%' ] );
 		$schema[ self::TEXT_INVERT_END ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom center' ] );

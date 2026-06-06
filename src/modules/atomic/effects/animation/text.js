@@ -93,12 +93,13 @@ export function readText(el) {
 		markers: !!cfg.markers,
 		delay: parseTimeValue(r(cfg, 'delay', 0.15), 0.15),
 		duration: parseTimeValue(r(cfg, 'duration', 1), 1),
-		stagger: parseNum(r(cfg, 'stagger', 0.02), 0.02),
+		stagger: r(cfg, 'stagger', 0.02),
 		translateX: parseNum(r(cfg, 'translateX', 20), 20),
 		translateY: parseNum(r(cfg, 'translateY', 0), 0),
 		rotationDir: r(cfg, 'rotationDir', 'x'),
 		rotation: parseNum(r(cfg, 'rotation', -80), -80),
-		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
+		transformOrigin: r(cfg, 'transformOrigin', ''),
+		textShadow: r(cfg, 'textShadow', ''),
 		invertStart: r(cfg, 'invertStart', 'top 85%'),
 		invertEnd: r(cfg, 'invertEnd', 'bottom center'),
 		spinColor: r(cfg, 'spinColor', '#000'),
@@ -143,7 +144,7 @@ function textTween(effect, config, pieces, el) {
 	const shared = {
 		duration: config.duration,
 		delay: config.delay,
-		stagger: config.stagger,
+		stagger: buildStaggerConfig(config.stagger),
 		ease: 'power2.out',
 	};
 
@@ -169,7 +170,7 @@ function textTween(effect, config, pieces, el) {
 					...shared,
 					autoAlpha: 0,
 					[config.rotationDir === 'y' ? 'rotationY' : 'rotationX']: config.rotation,
-					transformOrigin: config.transformOrigin,
+					transformOrigin: config.transformOrigin || 'top center -50',
 				},
 			};
 
@@ -238,15 +239,23 @@ function textTween(effect, config, pieces, el) {
 					}
 					
 					if (config.stagger !== undefined && config.stagger !== '') {
-						if (typeof gsapConfig.stagger === 'object' && gsapConfig.stagger !== null) {
-							overrides.stagger = { ...gsapConfig.stagger, each: config.stagger };
-						} else {
-							overrides.stagger = config.stagger;
-						}
+						overrides.stagger = buildStaggerConfig(config.stagger, gsapConfig.stagger);
 					}
 					
 					if (config.ease !== undefined && config.ease !== '') {
 						overrides.ease = config.ease;
+					}
+
+					if (config.transformOrigin !== undefined && config.transformOrigin !== '') {
+						if (config.effect === 'premium_origami_fold' || config.effect === 'premium_shutter_cascade') {
+							overrides.transformOrigin = config.transformOrigin;
+						}
+					}
+
+					if (config.textShadow !== undefined && config.textShadow !== '') {
+						if (config.effect === 'premium_cyber_phantom') {
+							overrides.textShadow = config.textShadow;
+						}
 					}
 					
 					return {
@@ -258,6 +267,49 @@ function textTween(effect, config, pieces, el) {
 			return null;
 		}
 	}
+}
+
+/**
+ * Builds a GSAP-compatible stagger object from the stored data.
+ * The stored stagger data can be:
+ *   - A legacy number (e.g. 0.02)
+ *   - A stringified legacy number
+ *   - An object: { val: 0.02, type: 'each', from: 'start', repeat: 0, yoyo: false, ease: '' }
+ */
+function buildStaggerConfig(staggerData, presetStagger = null) {
+	let userStagger = {};
+	if (typeof staggerData === 'object' && staggerData !== null) {
+		if (staggerData.type === 'amount') {
+			userStagger.amount = staggerData.val;
+		} else {
+			userStagger.each = staggerData.val;
+		}
+		if (staggerData.from) userStagger.from = staggerData.from;
+		if (staggerData.ease) userStagger.ease = staggerData.ease;
+		if (staggerData.repeat !== undefined && staggerData.repeat !== 0) userStagger.repeat = staggerData.repeat;
+		if (staggerData.yoyo) userStagger.yoyo = staggerData.yoyo;
+		if (staggerData.grid) {
+			let g = staggerData.grid;
+			if (typeof g === 'string' && g.startsWith('[') && g.endsWith(']')) {
+				try { g = JSON.parse(g); } catch (e) {}
+			}
+			userStagger.grid = g;
+		}
+		if (staggerData.axis) userStagger.axis = staggerData.axis;
+	} else {
+		userStagger.each = parseNum(staggerData, 0.02);
+	}
+
+	if (typeof presetStagger === 'object' && presetStagger !== null) {
+		return { ...presetStagger, ...userStagger };
+	}
+	
+	// If presetStagger is just a number (e.g. `stagger: 0.05`), we map it to `each`
+	if (typeof presetStagger === 'number') {
+		return { each: presetStagger, ...userStagger };
+	}
+
+	return userStagger;
 }
 
 /** Build the SplitText instance for `effect` and return the tween targets.
@@ -349,7 +401,7 @@ export function playText(el, config) {
 	// Always reset before re-splitting — split.revert() puts the original
 	// DOM back so a new SplitText doesn't compound on the previous output.
 	resetText(el);
-
+	
 	const pieces = targetsFor(el, config);
 	if (!pieces) return;
 
@@ -364,6 +416,7 @@ export function playText(el, config) {
 		el[TEXT_PLAYED] = tl;
 	} else {
 		// 'from' — V3 default for every text effect
+		
 		el[TEXT_PLAYED] = gsap.from(pieces, tween.props);
 	}
 }
