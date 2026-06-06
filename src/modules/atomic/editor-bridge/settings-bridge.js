@@ -46,6 +46,7 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_horizontal_' && featureName === 'horizontal') return true;
 	if (group === 'aae_advance_tooltip_' && featureName === 'advance-tooltip') return true;
 	if (group === 'aae_tilt_' && featureName === 'tilt') return true;
+	if (group === 'aae_custom_css_' && featureName === 'custom-css') return true;
 	return false;
 }
 
@@ -105,6 +106,39 @@ export function applySettingsToDom(container, playGroup = "") {
 	if (api?.rebind) api.rebind(target, playGroup);
 
 	return { target, results };
+}
+
+/**
+ * Bulk-sync wrapper for editor load. Does NOT look for DOM elements or call rebind,
+ * it just translates all Elementor Backbone settings into the iframe maps.
+ */
+export function applySettingsToDoms(container) {
+	const features = featuresFor(container);
+	
+	if (!features.length) return null;
+
+	const win = getPreviewWindow();
+	if (!win) return null;
+
+	const results = [];
+
+	for (const feature of features) {
+		if (!feature.mapName) continue;
+
+		const cfg = buildConfigFromSettings(feature, container);
+		const map = win[feature.mapName] = win[feature.mapName] || {};
+
+		if (!cfg) {
+			delete map[container.id];
+			results.push({ feature, active: false });
+			continue;
+		}
+
+		map[container.id] = cfg;
+		results.push({ feature, active: true });
+	}	
+	
+	return { results };
 }
 
 /**

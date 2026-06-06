@@ -21,6 +21,7 @@ import { LinkInput } from "./inputs/LinkInput";
 import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
+import { CodeInput } from "./inputs/CodeInput";
 
 const HelpIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6, cursor: "help" }}>
@@ -80,6 +81,7 @@ const CONTROL_REGISTRY = {
   // Media picker — value: { id, url, size, sizes } | null
   media:      { Component: MediaInput,      innerType: "object" },
   link:       { Component: LinkInput,       innerType: "string" },
+  code:       { Component: CodeInput,       innerType: "string" },
 };
 
 /* ---------- dot indicator ---------- */

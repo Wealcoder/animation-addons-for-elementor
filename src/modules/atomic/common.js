@@ -279,21 +279,39 @@ function chainCompletionDrain(el, kind) {
 
 /** Walk a root and bind every animated element. */
 function scan(root) {
-
 	const scope = root && root.querySelectorAll ? root : document;
 
 	// Every kind shares Elementor's universal data-interaction-id, so one
 	// querySelectorAll covers all kinds. An element may carry multiple
 	// kinds at once (regular + text + future tilt) — each on its own target.
-	if (!KINDS.length) return;
-	const candidates = scope.querySelectorAll('[data-interaction-id]');
+	if (!KINDS.length) {
+		//console.log('[AAE Debug] No KINDS registered, aborting scan.');
+		return;
+	}
+	
+	// The user explicitly injects data-interaction-id via JS, so we only need to look for that.
+	const candidates = Array.from(scope.querySelectorAll('[data-interaction-id]'));
+	
+	// If the scope node itself matches (e.g. MutationObserver passed the exact widget node), include it!
+	// querySelectorAll only searches descendants, so we MUST check the node itself!
+	if (scope !== document && scope.matches && scope.matches('[data-interaction-id]')) {
+		candidates.push(scope);
+	}
 
 	for (const el of candidates) {
+		const kinds = kindsFor(el);	
 
-		for (const kind of kindsFor(el)) {
-			if (el.classList.contains(kind.boundFlag)) continue;
+		for (const kind of kinds) {
+			if (el.classList.contains(kind.boundFlag)) {
+				
+				continue;
+			}
 			const config = kind.read(el);
-			if (!config) continue;
+			if (!config) {
+				
+				continue;
+			}
+			
 			el.classList.add(kind.boundFlag);
 
 			kind.bind(el, config);
@@ -316,6 +334,7 @@ function isKindInPlayGroup(kindName, playGroup) {
 	if (group === 'aae_advance_tooltip_' && kindName === 'advance-tooltip') return true;
 	if (group === 'aae_tilt_' && kindName === 'tilt') return true;
 	if (group === 'aae_wrapper_link_' && kindName === 'wrapper-link') return true;
+	if (group === 'aae_custom_css_' && kindName === 'custom-css') return true;
 	return false;
 }
 

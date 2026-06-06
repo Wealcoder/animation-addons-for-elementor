@@ -1062,6 +1062,39 @@ function buildMouseMoveConfig(settings) {
 	return cfg;
 }
 
+/* =====================================================================
+ * Custom CSS feature
+ * =================================================================== */
+
+const CUSTOM_CSS_RESPONSIVE = {
+	aae_custom_css_enable: { configKey: 'enabled', default: false },
+	aae_custom_css_css: { configKey: 'css', default: '' },
+};
+
+function buildCustomCssConfig(settings) {
+	const enabled = readAt(settings, 'aae_custom_css_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_custom_css_enable', false);
+
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {};
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+
+	emitResponsive(cfg, settings, CUSTOM_CSS_RESPONSIVE, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
+	if (plain(settings, 'aae_custom_css_enable_editor')) cfg.enableEditor = true;
+
+	return cfg;
+}
+
 export const FEATURES = [
 	{
 		name: 'mouse-move-effect',
@@ -1172,6 +1205,15 @@ export const FEATURES = [
 		buildConfig: buildWrapperLinkConfig,
 		findTarget: findByInteractionId,
 	},
+	{
+		name: 'custom-css',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_custom_css_enable',
+		autoReplaySetting: 'aae_custom_css_enable_editor',
+		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',
+		buildConfig: buildCustomCssConfig,
+		findTarget: findByInteractionId,
+	},
 ];
 
 /**
@@ -1187,6 +1229,7 @@ export function featuresFor(container) {
 	// the prefix when missing before matching.
 	const raw = container?.model?.get?.('widgetType')
 		|| container?.model?.get?.('elType');
+		
 	if (!raw) return [];
 	const type = raw.startsWith('e-') ? raw : `e-${raw}`;
 	return FEATURES.filter((f) => f.widgetTypes.includes(type));
