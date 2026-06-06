@@ -80,15 +80,19 @@ export function cleanupTriggerOn(el) {
 }
 
 export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers, config }) {
+	console.log('[AAE Triggers] wireTrigger called with:', { mode, config });
+
 	// Always clean up the previous wiring first — in the editor, settings
 	// changes fire rebind() which can re-call us on the same element many
 	// times. Without this, listeners and ScrollTriggers stack up.
 	cleanupTriggerOn(el);
 	if (config == undefined) {
+		console.log('[AAE Triggers] config is undefined, returning');
 		return;
 	}
 
 	if (mode === 'page-load') {
+		console.log('[AAE Triggers] mode is page-load, calling play()');
 		play();
 		// page-load has nothing to dispose — the tween itself is tracked
 		// by the kind's playedKey and killed on rebind by common.js.
