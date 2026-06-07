@@ -94,23 +94,13 @@ function read(el) {
 				''
 			),
 
-		border:
-			r(
-				cfg,
-				'border',
-				'1px solid #ffffff'
-			),
+		border: r(cfg, 'border', null),
 
-		borderRadius:
-			r(
-				cfg,
-				'borderRadius',
-				null
-			),
+		borderRadius: null, // Now handled inside border object
 	};
 }
 
-function play(el, config) {
+function play(el, config) {j
 	unbind(el);
 	bind(el, config);
 }
@@ -186,8 +176,30 @@ function bind(el, config) {
 	cursor.style.background =
 		config.background;
 
-	cursor.style.border =
-		config.border;
+	/*
+	|--------------------------------------------------------------------------
+	| Border
+	|--------------------------------------------------------------------------
+	*/
+	if (config.border && config.border.style && config.border.style !== 'none' && config.border.style !== '') {
+		const b = config.border;
+		const w = b.width || {};
+		const wUnit = 'px';
+		const topW = (w.top || 0);
+		const rightW = (w.right || 0);
+		const bottomW = (w.bottom || 0);
+		const leftW = (w.left || 0);
+
+		cursor.style.borderStyle = b.style;
+		cursor.style.borderWidth = `${topW}${wUnit} ${rightW}${wUnit} ${bottomW}${wUnit} ${leftW}${wUnit}`;
+		cursor.style.borderColor = b.color || '#000000';
+
+		if (b.radius) {
+			cursor.style.borderRadius = typeof b.radius === 'number' ? `${b.radius}px` : b.radius;
+		}
+	} else {
+		cursor.style.border = 'none';
+	}
 
 	/*
 	|--------------------------------------------------------------------------
@@ -203,11 +215,6 @@ function bind(el, config) {
 	if (config.height) {
 		cursor.style.height =
 			config.height;
-	}
-
-	if (config.borderRadius) {
-		cursor.style.borderRadius =
-			config.borderRadius;
 	}
 
 	/*

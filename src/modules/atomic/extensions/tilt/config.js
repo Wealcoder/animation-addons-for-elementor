@@ -123,12 +123,13 @@ const config = {
             defaultValue: false,
             responsive: false,
             when: isEnabled,
-            tab: 'Content',
+            tab: 'Style',
         },
         {
             control: 'play-button',
             when: showPlayButton,
             play_group: 'aae_tilt_',
+            tab: 'Style',
         },
     ],
 };

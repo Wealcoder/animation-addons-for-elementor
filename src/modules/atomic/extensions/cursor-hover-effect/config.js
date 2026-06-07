@@ -72,7 +72,6 @@ const config = {
 		| Background
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'background',
 
@@ -90,7 +89,6 @@ const config = {
 		| Width Preset
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'width',
 
@@ -110,7 +108,6 @@ const config = {
 		| Height Preset
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'height',
 
@@ -130,35 +127,17 @@ const config = {
 		| Border
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'border',
-
 			label: 'Border',
-
-			control: 'text',
-
-			defaultValue:
-				'1px solid #ffffff',
-
-			when: isEnabled,
-		},
-
-		/*
-		|--------------------------------------------------------------------------
-		| Border Radius
-		|--------------------------------------------------------------------------
-		*/
-
-		{
-			bind: 'border_radius',
-
-			label: 'Border Radius',
-
-			control: 'dimensions',
-
-			defaultValue: '100%',
-
+			control: 'border',
+			responsive: true,
+			defaultValue: {
+				style: '',
+				width: { top: '', right: '', bottom: '', left: '' },
+				color: '',
+				radius: '',
+			},
 			when: isEnabled,
 		},
 
