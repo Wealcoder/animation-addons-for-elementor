@@ -126,6 +126,8 @@ const config = {
                 },
             ],
             tab: 'Content',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
         {
             bind: 'width',
@@ -134,6 +136,8 @@ const config = {
             defaultValue: '200px',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
 
         {
@@ -143,6 +147,8 @@ const config = {
             responsive: true,
             defaultValue: false,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
 
         {
@@ -152,6 +158,8 @@ const config = {
             defaultValue: '10',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
         {
             bind: 'bg',
@@ -160,6 +168,8 @@ const config = {
             defaultValue: '#000000',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
 
         {
@@ -169,6 +179,8 @@ const config = {
             defaultValue: '#004603',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_' 
         },
 
         {
@@ -181,6 +193,8 @@ const config = {
             defaultValue: '100%',
             when: isEnabled,
             tab: 'style', // Goes to Content tab
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
         },
 
         // Editor-only controls (non-responsive).

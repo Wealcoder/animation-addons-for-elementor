@@ -3,9 +3,9 @@
 import * as React from "react";
 import { useState } from "react";
 import { Button } from "@elementor/ui";
-import { getSelectedContainer } from "../../editor-bridge/helpers";
-import { replayInPreview } from "../../editor-bridge/settings-bridge";
-import { applySettingsToDom } from "../../editor-bridge/settings-bridge";
+
+import { triggerAnimationReplay } from "../../editor-bridge/settings-bridge";
+
 /**
  * "Play Now" button inside a <ResponsiveSection>.
  *
@@ -19,15 +19,7 @@ export function PlayButtonInput({ play_group = "" }) {
     e.preventDefault();
     e.stopPropagation();
 
-    const container = getSelectedContainer();
-
-    let dom_settings = applySettingsToDom(container, play_group); // Ensure the latest settings are applied to the preview before replaying.
-   
-    if (!replayInPreview(dom_settings.target, play_group)) {
-      // eslint-disable-next-line no-console
-      console.warn(  "[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?" );
-      return;
-    }
+    triggerAnimationReplay(play_group);
 
     setPlayed(true);
     setTimeout(() => setPlayed(false), 600);

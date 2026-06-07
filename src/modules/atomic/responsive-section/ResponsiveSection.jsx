@@ -55,7 +55,7 @@ export function ResponsiveSection({ config }) {
 			{fields.map((field) => {
 				// Filter fields by active tab
 				const fieldTab = field.tab || 'Content';
-				if (hasMultipleTabs && tabs.indexOf(fieldTab) !== activeTab) {
+				if (hasMultipleTabs && field.control !== 'play-button' && tabs.indexOf(fieldTab) !== activeTab) {
 					return null;
 				}
 
@@ -91,6 +91,7 @@ export function ResponsiveSection({ config }) {
 							activeBp={activeBp}
 							elementId={element.id}
 							play_group={field?.play_group}
+							live_change={field.live_change}
 							help={field.help}
 						/>					
 				);

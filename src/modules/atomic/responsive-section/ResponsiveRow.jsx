@@ -24,6 +24,7 @@ import { useCellValue } from "./use-cell-value";
 import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
 import { CodeInput } from "./inputs/CodeInput";
+import { triggerAnimationReplay } from "../editor-bridge/settings-bridge";
 
 const HelpIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6, cursor: "help" }}>
@@ -144,6 +145,7 @@ export function ResponsiveRow({
   activeBp,
   elementId,
   play_group,
+  live_change,
   help
 }) {
   if (control === "play-button") {
@@ -209,6 +211,7 @@ export function ResponsiveRow({
       activeBp={activeBp}
       elementId={elementId}
       play_group={play_group}
+      live_change={live_change}
     />
   ) : (
        
@@ -230,6 +233,7 @@ export function ResponsiveRow({
         propValue={propValue}
         elementId={elementId}
         play_group={play_group}
+        live_change={live_change}
       />
     
   );
@@ -255,6 +259,7 @@ function ResponsiveCellRow({
   activeBp,
   elementId,
   play_group,
+  live_change,
 }) {
   const { value, ownValue, setValue, resetValue } = useCellValue({
     propValue,
@@ -268,6 +273,14 @@ function ResponsiveCellRow({
   const tooltipText = hasOverride
     ? `Reset ${activeBp} value to inherit from parent breakpoint`
     : "";
+
+  const handleValueChange = (newVal) => {
+    setValue(newVal);
+    if (live_change && play_group) {
+      console.log(newVal, play_group);
+      setTimeout(() => triggerAnimationReplay(play_group), 50);
+    }
+  };
 
   return (
     <Stack direction="column" sx={{ width: "100%", mb: 1 }}>
@@ -292,6 +305,9 @@ function ResponsiveCellRow({
               onClick={(e) => {
                 e.stopPropagation();
                 resetValue();
+                if (live_change && play_group) {
+                  setTimeout(() => triggerAnimationReplay(play_group), 50);
+                }
               }}
               aria-label={tooltipText}
             />
@@ -302,7 +318,7 @@ function ResponsiveCellRow({
       </Stack>
       <Component
         value={value}
-        onChange={setValue}
+        onChange={handleValueChange}
         options={options}
         placeholder={placeholder}
         min={min}
@@ -312,6 +328,7 @@ function ResponsiveCellRow({
         defaultUnit={defaultUnit}
         datalist={datalist}
         play_group={play_group}
+        live_change={live_change}
       />
     </Stack>
   );
@@ -344,6 +361,13 @@ function RepeaterRow({
     ? `Reset ${activeBp} rows to inherit from parent breakpoint`
     : "";
 
+  const handleValueChange = (newVal) => {
+    setValue(newVal);
+    if (live_change && play_group) {
+      setTimeout(() => triggerAnimationReplay(play_group), 50);
+    }
+  };
+
   return (
     <Stack direction="column" sx={{ width: "100%", mb: 1 }}>
       <Stack direction="row" alignItems="center" gap={0.5} sx={{ mb: 0.5 }}>
@@ -367,6 +391,9 @@ function RepeaterRow({
               onClick={(e) => {
                 e.stopPropagation();
                 resetValue();
+                if (live_change && play_group) {
+                  setTimeout(() => triggerAnimationReplay(play_group), 50);
+                }
               }}
               aria-label={tooltipText}
             />
@@ -377,7 +404,7 @@ function RepeaterRow({
       </Stack>
       <RepeaterInput
         value={value}
-        onChange={setValue}
+        onChange={handleValueChange}
         cells={cells}
         addLabel={addLabel}
         rowDefaults={rowDefaults}
@@ -406,6 +433,7 @@ function PlainRow({
   propValue,
   elementId,
   play_group,
+  live_change,
 }) {
   const { value, setValue } = usePlainValue({
     propValue,
@@ -414,6 +442,13 @@ function PlainRow({
     elementId,
     defaultValue,
   });
+
+  const handleValueChange = (newVal) => {
+    setValue(newVal);
+    if (live_change && play_group) {
+      setTimeout(() => triggerAnimationReplay(play_group), 50);
+    }
+  };
 
   return (
     <Stack direction="column" sx={{ width: "100%", mb: 1 }}>
@@ -433,7 +468,7 @@ function PlainRow({
       </Stack>
       <Component
         value={value}
-        onChange={setValue}
+        onChange={handleValueChange}
         options={options}
         placeholder={placeholder}
         min={min}
@@ -443,6 +478,7 @@ function PlainRow({
         defaultUnit={defaultUnit}
         datalist={datalist}
         play_group={play_group}
+        live_change={live_change}
       />
     </Stack>
   );

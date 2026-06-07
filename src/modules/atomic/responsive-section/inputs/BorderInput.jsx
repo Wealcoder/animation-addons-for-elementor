@@ -11,7 +11,6 @@ import {
 	styled,
 } from '@elementor/ui';
 import { HexColorPicker } from 'react-colorful';
-
 /* ---------- style options ---------- */
 
 const BORDER_STYLES = [

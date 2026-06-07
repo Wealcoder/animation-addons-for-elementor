@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { getPreviewWindow } from './helpers';
+import { getPreviewWindow, getSelectedContainer } from './helpers';
 import { featuresFor } from './features';
 
 /**
@@ -160,5 +160,25 @@ export function replayInPreview(target, playGroup = "") {
 	} else if (typeof api.rebind === 'function') {
 		api.rebind(target, playGroup);
 	}
+	return true;
+}
+
+/**
+ * Convenience helper to apply settings and trigger a replay for the currently selected container.
+ * This can be used by controls (like color, dimension) to trigger live preview re-runs.
+ */
+export function triggerAnimationReplay(playGroup = "") {
+	const container = getSelectedContainer();
+	if (!container) return false;
+
+	const dom_settings = applySettingsToDom(container, playGroup);
+	if (!dom_settings || !dom_settings.target) return false;
+
+	if (!replayInPreview(dom_settings.target, playGroup)) {
+		// eslint-disable-next-line no-console
+		console.warn("[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?");
+		return false;
+	}
+
 	return true;
 }
