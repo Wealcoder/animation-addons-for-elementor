@@ -54,20 +54,7 @@ function bootstrapDispatcher() {
 	registerControlReplacement({
 		id: 'aae-responsive-section:dispatcher',
 		component: SectionDispatcher,
-		condition: ({ value }) => {
-			// Match either:
-			//   - a stored anchor value carrying one of our registered $$types
-			//     (after first save), OR
-			//   - a null value (unedited new widget) — in which case the dispatcher
-			//     checks propType.key inside React (where it IS visible) to decide
-			//     if it's actually one of ours, and falls through to OriginalControl
-			//     otherwise. This is the same pattern used in responsive/index.js.
-			if (value === null || value === undefined) return true;
-			if (typeof value === 'object' && getAllAnchorKeys().includes(value.$$type)) {
-				return true;
-			}
-			return false;
-		},
+		condition: () => true,
 	});
 }
 
