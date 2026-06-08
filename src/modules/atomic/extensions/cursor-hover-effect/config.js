@@ -141,6 +141,45 @@ const config = {
 			when: isEnabled,
 		},
 
+		/*
+		|--------------------------------------------------------------------------
+		| Font Size
+		|--------------------------------------------------------------------------
+		*/
+		{
+			bind: 'font_size',
+
+			label: 'Font Size',
+
+			control: 'slider',
+
+			units: ['px', 'em', 'rem'],
+
+			defaultValue: {
+				size: 16,
+				unit: 'px',
+			},
+
+			when: isEnabled,
+		},
+
+		/*
+		|--------------------------------------------------------------------------
+		| Padding
+		|--------------------------------------------------------------------------
+		*/
+		{
+			bind: 'padding',
+
+			label: 'Padding',
+
+			control: 'dimension',
+
+			defaultValue: '',
+
+			when: isEnabled,
+		},
+
 		{
 			bind: 'enable_editor',
 
@@ -161,6 +200,11 @@ const config = {
 			play_group: 'aae_cursor_hover_',
 		},
 	],
+
+};
+
+export const play = (hoverEffect) => {
+	hoverEffect.play();
 };
 
 export default config;

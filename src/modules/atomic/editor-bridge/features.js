@@ -931,6 +931,8 @@ const CURSOR_RESPONSIVE = {
 	aae_cursor_hover_width: { configKey: 'width', default: '' },
 	aae_cursor_hover_height: { configKey: 'height', default: '' },
 	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
+	aae_cursor_hover_font_size: { configKey: 'fontSize', default: '' },
+	aae_cursor_hover_padding: { configKey: 'padding', default: '' },
 };
 
 const CURSOR_OBJECTS = {
@@ -944,7 +946,10 @@ function dimensionToString(val) {
 		if (size === '' || size === null || size === undefined) return '';
 		return size + unit;
 	}
-	return val ? String(val) : '';
+	if (typeof val === 'number') {
+		return val + 'px';
+	}
+	return (val !== undefined && val !== null && val !== '') ? String(val) : '';
 }
 
 function translateDimensionSettings(settings, keys) {
@@ -990,7 +995,9 @@ function buildCursorHoverEffectConfig(settings) {
 
 	const translated = translateDimensionSettings(settings, [
 		'aae_cursor_hover_width',
-		'aae_cursor_hover_height'
+		'aae_cursor_hover_height',
+		'aae_cursor_hover_font_size',
+		'aae_cursor_hover_padding',
 	]);
 
 	emitResponsive(cfg, translated, CURSOR_RESPONSIVE, disabledBps);

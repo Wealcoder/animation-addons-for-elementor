@@ -71,6 +71,10 @@ final class Schema
 
 	const ENABLE = 'aae_cursor_hover_enable';
 
+	const FONT_SIZE = 'aae_cursor_hover_font_size';
+
+	const PADDING = 'aae_cursor_hover_padding';
+
 	const ENABLE_EDITOR =
 	'aae_cursor_hover_enable_editor';
 
@@ -193,6 +197,33 @@ final class Schema
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => '100%',
+			]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Font Size
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[self::FONT_SIZE] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [
+					'size' => 16,
+					'unit' => 'px',
+				],
+			]);
+
+		/*
+		|--------------------------------------------------------------------------
+		| Padding
+		|--------------------------------------------------------------------------
+		*/
+
+		$schema[self::PADDING] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => '',
 			]);
 
 		return $schema;

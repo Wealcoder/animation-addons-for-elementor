@@ -97,10 +97,14 @@ function read(el) {
 		border: r(cfg, 'border', null),
 
 		borderRadius: null, // Now handled inside border object
+
+		fontSize: r(cfg, 'fontSize', ''),
+
+		padding: r(cfg, 'padding', ''),
 	};
 }
 
-function play(el, config) {j
+function play(el, config) {
 	unbind(el);
 	bind(el, config);
 }
@@ -215,6 +219,30 @@ function bind(el, config) {
 	if (config.height) {
 		cursor.style.height =
 			config.height;
+	}
+
+	if (config.fontSize) {
+		if (typeof config.fontSize === 'object') {
+			const size = config.fontSize.size || 16;
+			const unit = config.fontSize.unit || 'px';
+			cursor.style.fontSize = `${size}${unit}`;
+		} else if (typeof config.fontSize === 'number') {
+			cursor.style.fontSize = `${config.fontSize}px`;
+		} else {
+			cursor.style.fontSize = config.fontSize;
+		}
+	}
+
+	if (config.padding) {
+		if (typeof config.padding === 'object') {
+			const size = config.padding.size || '';
+			const unit = config.padding.unit || 'px';
+			if (size !== '') {
+				cursor.style.padding = `${size}${unit}`;
+			}
+		} else {
+			cursor.style.padding = config.padding;
+		}
 	}
 
 	/*
