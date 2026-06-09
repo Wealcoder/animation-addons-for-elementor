@@ -194,7 +194,7 @@ function bindScale(el, config) {
 		scrub: true,
 		animation: tween,
 		invalidateOnRefresh: true,
-		markers: true,
+		// markers: true,
 	});
 
 	// Force ScrollTrigger to recalculate after setup
