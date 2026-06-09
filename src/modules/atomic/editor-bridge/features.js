@@ -221,6 +221,7 @@ const TEXT_RESPONSIVE = {
 	aae_text_scale_ease: { configKey: 'scaleEase', default: 'back' },
 	aae_text_scale_num: { configKey: 'scaleNum', default: 1.5 },
 	aae_text_scale_break: { configKey: 'scaleBreak', default: 'lines' },
+	aae_text_markers: { configKey: 'markers', default: false },
 };
 
 const TEXT_OBJECTS = {

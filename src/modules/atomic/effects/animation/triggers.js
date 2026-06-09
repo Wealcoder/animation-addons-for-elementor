@@ -144,8 +144,9 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 			end: end,
 			scrub: true,
 			invalidateOnRefresh: true,
-			markers: !!markers,
+			markers: markers,
 		});
+
 		// `st.kill(true)` reverts — removes the marker <div> nodes
 		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
 		// behind, which is what makes stale markers appear in the editor.

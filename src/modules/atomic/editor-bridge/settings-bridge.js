@@ -151,9 +151,9 @@ export function replayInPreview(target, playGroup = "") {
 	const api = win && win.aaeAtomicAnimations;
 	if (!api || !target) return false;
 
-	if (typeof api.reset === 'function') {
-		api.reset(target, playGroup);
-	}
+	// if (typeof api.reset === 'function') {
+	// 	api.reset(target, playGroup);
+	// }
 
 	if (typeof api.replay === 'function') {
 		api.replay(target, false, playGroup);

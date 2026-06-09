@@ -43,7 +43,6 @@ function getInnerElement(el) {
 	return el;
 }
 
-
 function parseNum(val, fallback) {
 	if (val === undefined || val === null || val === '') return fallback;
 	const num = Number(val);
@@ -76,7 +75,6 @@ function parseTimeValue(val, fallback) {
 
 export function readText(el) {
 	const cfg = configFor(el, TEXT_MAP);
-
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
