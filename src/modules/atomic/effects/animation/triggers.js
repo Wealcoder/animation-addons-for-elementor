@@ -121,7 +121,16 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	let triggerSelector = el;
 
 	if (config.triggerSelector && config.triggerSelector != '') {
-		triggerSelector = document.querySelector(config.triggerSelector);
+		triggerSelector = document.querySelector(config.triggerSelector) || config.triggerSelector;
+	}
+
+	if (config.startTrigger && config.startTrigger != '') {
+		triggerSelector = document.querySelector(config.startTrigger) || config.startTrigger;
+	}
+
+	let endTrigger;
+	if (config.endTrigger && config.endTrigger != '') {
+		endTrigger = document.querySelector(config.endTrigger) || config.endTrigger;
 	}
 
 	if (config.effect == 'text_spin') {
@@ -137,7 +146,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 		const tween = buildScrubbed();
 		if (!tween) return;
 
-		const st = ScrollTrigger.create({
+		const stConfig = {
 			trigger: triggerSelector,
 			animation: tween,
 			start: start,
@@ -145,7 +154,10 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 			scrub: true,
 			invalidateOnRefresh: true,
 			markers: markers,
-		});
+		};
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+	
+		const st = ScrollTrigger.create(stConfig);
 
 		// `st.kill(true)` reverts — removes the marker <div> nodes
 		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
@@ -163,7 +175,7 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 		// once. cleanupTriggerOn() calls dispose, which destroys the ST and
 		// drops the closure — next bind starts fresh.
 		let played = false;
-		const st = ScrollTrigger.create({
+		const stConfig = {
 			trigger: triggerSelector,
 			start: start,
 			end: end,
@@ -174,7 +186,10 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 				play();
 			},
 			markers: !!markers,
-		});
+		};
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+
+		const st = ScrollTrigger.create(stConfig);
 		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
@@ -189,8 +204,8 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 		// `once:true` only stops re-fires on the SAME ScrollTrigger; if
 		// ScrollSmoother revert+recreates it, a new instance fires again.
 		let played = false;
-		const st = ScrollTrigger.create({
-			trigger: el,
+		const stConfig = {
+			trigger: triggerSelector, // Use triggerSelector so startTrigger applies here too
 			start: 'top 85%',
 			once: true,
 			onEnter: () => {
@@ -199,7 +214,10 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 				play();
 			},
 			markers: !!markers,
-		});
+		};
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+
+		const st = ScrollTrigger.create(stConfig);
 		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
@@ -211,6 +229,6 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 			observer.unobserve(entry.target);
 		});
 	}, { threshold: 0.15 });
-	observer.observe(el);
+	observer.observe(triggerSelector instanceof HTMLElement ? triggerSelector : el);
 	el[DISPOSE_KEY] = () => observer.disconnect();
 }

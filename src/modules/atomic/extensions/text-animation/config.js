@@ -62,9 +62,9 @@ const ROTATION_DIR_OPTIONS = [
 ];
 
 const SCROLL_POSITION_OPTIONS = [
-	'top top', 'top center', 'top bottom',
-	'center top', 'center center', 'center bottom',
-	'bottom top', 'bottom center', 'bottom bottom'
+	'top top', 'top center', 'top bottom', 'top 25%', 'top 50%', 'top 75%', 'top 100%','top=+200px','top=+500px','top=30%','top=-200px','top=-500px','top=-30%',
+	'center top', 'center center', 'center bottom', 'center 25%', 'center 50%', 'center 75%', 'center 100%','center=+200px','center=+500px','center=30%','center=-200px','center=-500px','center=-30%',
+	'bottom top', 'bottom center', 'bottom bottom', 'bottom 25%', 'bottom 50%', 'bottom 75%', 'bottom 100%','bottom=+200px','bottom=+500px','bottom=30%','bottom=-200px','bottom=-500px','bottom=-30%'
 ].map((v) => ({
 	value: v,
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -74,7 +74,7 @@ const TRANSFORM_ORIGIN_OPTIONS = [
 	'top left', 'top center', 'top right',
 	'center left', 'center center', 'center right',
 	'bottom left', 'bottom center', 'bottom right',
-	'top center -50', '50% 50% -30px', '50% 0%'
+	'top center -50', '50% 50% -30px', '50% 0%', 'top=50px', 'bottom=50px', 'right=50px', 'left=50px', 'top=-50px', 'bottom=-50px', 'right=-50px', 'left=-50px'
 ].map((v) => ({
 	value: v,
 	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),

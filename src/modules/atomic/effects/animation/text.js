@@ -24,25 +24,6 @@ function r(cfg, key, fallback) {
 	return (v === undefined || v === null || v === '') ? fallback : v;
 }
 
-/**
- * Find the innermost element containing the actual text.
- * Elementor Legacy widgets use .elementor-widget-container.
- * Elementor Atomic (e-heading, e-paragraph) don't have a container.
- */
-function getInnerElement(el) {
-	const container = el.querySelector('.elementor-widget-container');
-	if (container) {
-		const valid = Array.from(container.children).filter(c => c.tagName !== 'SCRIPT' && c.tagName !== 'STYLE');
-		if (valid.length > 0) return valid[valid.length - 1];
-		return container;
-	}
-	
-	const textNode = el.querySelector('h1, h2, h3, h4, h5, h6, p, .elementor-heading-title, .elementor-text-editor');
-	if (textNode) return textNode;
-	
-	return el;
-}
-
 function parseNum(val, fallback) {
 	if (val === undefined || val === null || val === '') return fallback;
 	const num = Number(val);
@@ -196,20 +177,37 @@ function textTween(effect, config, pieces, el) {
 			};
 
 		case 'text_invert': {
-			// Calculate HSL color from the original element and assign it to --text-color
-			const colorStr = window.getComputedStyle(el).color;
+			// Find the actual text node to get the correct computed color, 
+			// as the wrapper might just have an inherited default color.
+			const textNode = el;
+			const colorStr = window.getComputedStyle(textNode).color;
 			const rgb = colorStr.match(/\d+/g);
+			
 			if (rgb && rgb.length >= 3) {
 				let r = parseInt(rgb[0]) / 255;
 				let g = parseInt(rgb[1]) / 255;
 				let b = parseInt(rgb[2]) / 255;
-				const l = Math.max(r, g, b);
-				const s = l - Math.min(r, g, b);
-				const h = s ? (l === r ? (g - b) / s : l === g ? 2 + (b - r) / s : 4 + (r - g) / s) : 0;
-				const hslH = 60 * h < 0 ? 60 * h + 360 : 60 * h;
-				const hslS = 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0);
-				const hslL = (100 * (2 * l - s)) / 2;
-				el.style.setProperty('--text-color', `${hslH.toFixed(1)}, ${hslS.toFixed(1)}%, ${hslL.toFixed(1)}%`);
+				
+				const max = Math.max(r, g, b);
+				const min = Math.min(r, g, b);
+				const chroma = max - min;
+				
+				const l = (max + min) / 2;
+				let h = 0;
+				let s = 0;
+				
+				if (chroma !== 0) {
+					s = l <= 0.5 ? chroma / (max + min) : chroma / (2 - (max + min));
+					
+					switch (max) {
+						case r: h = (g - b) / chroma + (g < b ? 6 : 0); break;
+						case g: h = (b - r) / chroma + 2; break;
+						case b: h = (r - g) / chroma + 4; break;
+					}
+					h *= 60;
+				}
+				
+				el.style.setProperty('--text-color', `${h.toFixed(1)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%`);
 			}
 
 			// CSS parks each .invert-line at background-position-x:100% (the
@@ -326,7 +324,7 @@ function splitFor(el, effect, config) {
 	if (!SplitText) return null;
 
 	// Target the innermost text element so SplitText doesn't wrap outer divs/styles
-	let targetEl = getInnerElement(el);
+	let targetEl = el;
 
 	if (recipe.parentClass) targetEl.classList.add(recipe.parentClass);
 
@@ -363,9 +361,7 @@ function targetsFor(el, config) {
 	
 	const effect = config.effect;
 	const pieces = splitFor(el, effect, config);
-
 	if (pieces && pieces.length) return pieces;
-
 	if (SPLIT_RECIPE[effect] && SPLIT_RECIPE[effect].target === null) return [el];
 	return null;
 }
@@ -392,61 +388,101 @@ export function resetText(el) {
 	}
 }
 
-export function playText(el, config) {
-	const gsap = getGsap();
-	if (!gsap) return;
-	resetText(el);
-	bindText(el,config);
-}
-
-/** Build a PAUSED text tween used by `play_with_scroll` — ScrollTrigger
- *  advances its progress to match scroll position. Returns null if GSAP
- *  isn't loaded or the effect has no tween descriptor. */
-function buildScrubbedText(el, config) {
+/**
+ * Core text animation builder. Handles splitting the text,
+ * generating the GSAP tween/timeline based on the config, 
+ * and applying optional overrides (like paused, ease).
+ */
+function buildTextTween(el, config, isScrub = false, isPaused = false) {
 	const gsap = getGsap();
 	if (!gsap) return null;
 
 	resetText(el);
-
+	
 	const pieces = targetsFor(el, config);
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces, el);
-
 	if (!tween) return null;
-
-	// Allow the preset or user ease to pass through, otherwise default to linear for scrub
-	const overrides = { paused: true };
-	if (!tween.props || !tween.props.ease) overrides.ease = 'none';
+	
+	const overrides = {};
+	if (isPaused || isScrub) overrides.paused = true;
+	
+	// Scrub mode generally prefers 'none' (linear) easing
+	if (isScrub && (!tween.props || !tween.props.ease)) {
+		overrides.ease = 'none';
+	}
 
 	if (tween.method === 'fromTo') {
 		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, { ...tween.to, ...overrides });
 	} else if (tween.method === 'timeline') {
-		const tl = gsap.timeline({ paused: true });
+		const tl = gsap.timeline({ paused: overrides.paused });
 		tween.build(tl, pieces, config, el);
 		el[TEXT_PLAYED] = tl;
 	} else if (tween.method) {
 		el[TEXT_PLAYED] = gsap[tween.method](pieces, { ...tween.props, ...overrides });
 	}
+
 	return el[TEXT_PLAYED];
 }
+
+export function playText(el, config) {
+	const mode = modeFor(config.trigger);
+	const isEditMode = window.elementorFrontend && window.elementorFrontend.isEditMode && window.elementorFrontend.isEditMode();
+
+	if (isEditMode && (mode === 'scrub' || mode === 'scroll-tied' || mode === 'in-view')) {
+		const tween = buildTextTween(el, config);
+		
+		// If the editor forces a replay, the preview auto-plays but detaches the ScrollTrigger!
+		// We use onComplete to silently rebind and re-sync the markers afterwards.
+		if (tween && !el._aaeTriggerPlay) {
+			tween.eventCallback("onComplete", () => {
+				bindText(el, config);
+			});
+		}
+		return;
+	}
+
+	buildTextTween(el, config);
+}
+
 export function bindText(el, config) {
-	const mode = config.effect === 'text_invert' ? 'scrub' : modeFor(config.trigger);	
+	const mode = modeFor(config.trigger);	
 	let triggerSelector = '';
 	if (config.wrapper === 'default' && config.triggerSelector == '') {
 		triggerSelector = el;
 	}
-
+	
+	// Pre-build the tween so SplitText modifies the DOM BEFORE ScrollTrigger 
+	// measures it. This prevents GSAP infinite loops when markers are active.
+	if (mode !== 'scrub' && mode !== 'page-load') {
+		buildTextTween(el, config, false, true);
+	}
+	
 	wireTrigger({
 		el,
 		mode,
 		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
 		markers: config.markers,
 		play: () => {
-			
-			playText(el, config);
+			if (el[TEXT_PLAYED]) {
+				if (el[TEXT_PLAYED].paused()) {
+					el[TEXT_PLAYED].play();
+				} else {
+					// Use restart so it plays again on subsequent trigger fires
+					// (e.g. scroll up and down) without rebuilding the DOM!
+					el[TEXT_PLAYED].restart(true);
+				}
+			} else {
+				// Defer slightly to avoid GSAP crash if run during ST init
+				setTimeout(() => {
+					el._aaeTriggerPlay = true;
+					playText(el, config);
+					delete el._aaeTriggerPlay;
+				}, 0);
+			}
 		},
-		buildScrubbed: () => buildScrubbedText(el, config),
+		buildScrubbed: () => buildTextTween(el, config, true, false),
 		config: {
 			...config,
 			// map text.js startPosition/endPosition to triggers.js start/end so it uses the correct offsets!

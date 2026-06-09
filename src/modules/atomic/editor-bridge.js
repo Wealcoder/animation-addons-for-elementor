@@ -113,6 +113,28 @@ window.elementor.on('document:loaded', () => {
 		const win = getPreviewWindow();
 		if (!win || !win.aaeAtomicAnimations) return;
 
+		// When an element is deleted in Elementor, it is removed from the DOM.
+		// If we don't kill its ScrollTrigger, the GSAP markers will stay on screen forever.
+		// A MutationObserver catches removed nodes so we can properly dispose of them.
+		const observer = new win.MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				mutation.removedNodes.forEach((node) => {
+					if (node.nodeType === 1) { // ELEMENT_NODE
+						const targets = Array.from(node.querySelectorAll('[data-interaction-id]'));
+						if (node.hasAttribute('data-interaction-id')) {
+							targets.push(node);
+						}
+						targets.forEach(el => {
+							if (win.aaeAtomicAnimations && typeof win.aaeAtomicAnimations.reset === 'function') {
+								win.aaeAtomicAnimations.reset(el);
+							}
+						});
+					}
+				});
+			});
+		});
+		observer.observe(win.document.body, { childList: true, subtree: true });
+
 		const elements = getElements();
 		let syncCount = 0;
 		

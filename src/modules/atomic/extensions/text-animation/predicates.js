@@ -26,7 +26,7 @@ export function isPremiumEffect(s, bp) {
 export function isAnimated(s, bp)        { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, ANIMATED_EFFECTS); }
 export function isDurationEffect(s, bp)  { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, DURATION_EFFECTS); }
 export function isTranslateEffect(s, bp) { return valueIn(s, 'aae_text_effect',  bp, TRANSLATE_EFFECTS); }
-export function isScrollTrigger(s, bp)   { return isInvert(s, bp) || valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
+export function isScrollTrigger(s, bp)   { return valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
 export function isSelectorTrigger(s, bp) { return valueIn(s, 'aae_text_trigger', bp, SELECTOR_TRIGGERS); }
 
 export function isMove(s, bp)    { return valueEq(s, 'aae_text_effect', bp, 'text_move'); }
@@ -61,10 +61,11 @@ export function showWrapperSelector(s, bp) {
 	return isWrapperCustom(s, bp);
 }
 export function showTriggerDropdown(s, bp) {
-	return isAnimated(s, bp) && !isInvert(s, bp);
+	// Let text_invert use the normal trigger dropdown!
+	return isAnimated(s, bp);
 }
 export function showScrollCustomBlock(s, bp) {
-	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp);
+	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp) && !isInvert(s, bp);
 }
 
 export function showStartCustom(s, bp) {
