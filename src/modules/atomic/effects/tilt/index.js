@@ -246,8 +246,7 @@ function play(el, config) {
     const max = config.max;
     const speed = config.speed;
     const scale = config.scale;
-    const perspective = config.perspective;
-    const glare = config.glare;
+    const perspective = config.perspective; 
     const maxGlare = config.maxGlare;
 
     let glareInner = null;

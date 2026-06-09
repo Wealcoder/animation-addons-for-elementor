@@ -395,28 +395,8 @@ export function resetText(el) {
 export function playText(el, config) {
 	const gsap = getGsap();
 	if (!gsap) return;
-
-	// Always reset before re-splitting — split.revert() puts the original
-	// DOM back so a new SplitText doesn't compound on the previous output.
 	resetText(el);
-	
-	const pieces = targetsFor(el, config);
-	if (!pieces) return;
-
-	const tween = textTween(config.effect, config, pieces, el);
-	if (!tween) return;
-
-	if (tween.method === 'fromTo') {
-		el[TEXT_PLAYED] = gsap.fromTo(pieces, tween.from, tween.to);
-	} else if (tween.method === 'timeline') {
-		const tl = gsap.timeline();
-		tween.build(tl, pieces, config, el);
-		el[TEXT_PLAYED] = tl;
-	} else {
-		// 'from' — V3 default for every text effect
-		
-		el[TEXT_PLAYED] = gsap.from(pieces, tween.props);
-	}
+	bindText(el,config);
 }
 
 /** Build a PAUSED text tween used by `play_with_scroll` — ScrollTrigger
@@ -432,7 +412,7 @@ function buildScrubbedText(el, config) {
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces, el);
-	console.log(config);
+
 	if (!tween) return null;
 
 	// Allow the preset or user ease to pass through, otherwise default to linear for scrub
