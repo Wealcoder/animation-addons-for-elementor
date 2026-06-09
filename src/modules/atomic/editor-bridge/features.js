@@ -779,6 +779,23 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		configKey: 'color',
 		default: '#ffffff',
 	},
+
+	// New controls added to features.js so editor live-preview bridge
+	// syncs them to the iframe map on every settings change.
+	aae_advance_tooltip_show_delay: {
+		configKey: 'showDelay',
+		default: 0,
+	},
+
+	aae_advance_tooltip_hide_delay: {
+		configKey: 'hideDelay',
+		default: 0,
+	},
+
+	aae_advance_tooltip_padding: {
+		configKey: 'padding',
+		default: '8px 12px',
+	},
 };
 
 const ADVANCED_TOOLTIP_OBJECTS = {
@@ -829,6 +846,14 @@ function buildAdvancedTooltipConfig(settings) {
 	if (!('enabled' in cfg)) {
 
 		cfg.enabled = enabled;
+	}
+
+	// INTERACTIVE is Boolean_Prop_Type (non-responsive) — read with plain(),
+	// same pattern as enableEditor. Always emit so the runtime gets false too.
+	cfg.interactive = !!plain(settings, 'aae_advance_tooltip_interactive');
+	// Default true when not set (first load before user touches the toggle)
+	if (settings.aae_advance_tooltip_interactive === undefined) {
+		cfg.interactive = true;
 	}
 
 	return cfg;

@@ -21,10 +21,16 @@ const TRIGGER_OPTIONS = [
 ];
 
 const ANIMATION_OPTIONS = [
-
-    { value: 'fade', label: 'Fade' },
-    { value: 'scale', label: 'Scale' },
-    { value: 'slide', label: 'Slide' },
+    { value: 'pop',    label: 'Spring Pop'   },
+    { value: 'slide',  label: 'Slide & Fade' },
+    { value: 'type',   label: 'Typewriter'   },
+    { value: 'flip',   label: 'Flip Card'    },
+    { value: 'magnet', label: 'Magnetic'     },
+    { value: 'blur',   label: 'Blur Focus'   },
+    { value: 'clip',   label: 'Clip Reveal'  },
+    { value: 'jelly',  label: 'Jelly Skew'   },
+    { value: 'glow',   label: 'Glow Pulse'   },
+    { value: 'unfold', label: 'Unfold Stack' },
 ];
 
 const config = {
@@ -99,7 +105,35 @@ const config = {
             control: 'slider',
             defaultValue: '0.3',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
+        },
+
+        {
+            bind: 'show_delay',
+            label: 'Show Delay (ms)',
+            control: 'number',
+            defaultValue: 0,
+            when: isEnabled,
+            tab: 'Content',
+        },
+
+        {
+            bind: 'hide_delay',
+            label: 'Hide Delay (ms)',
+            control: 'number',
+            defaultValue: 0,
+            when: isEnabled,
+            tab: 'Content',
+        },
+
+        {
+            bind: 'interactive',
+            label: 'Interactive',
+            control: 'switch',
+            responsive: false,
+            defaultValue: true,
+            when: isEnabled,
+            tab: 'Content',
         },
         {
             bind: 'alignment',
@@ -135,9 +169,20 @@ const config = {
             control: 'text',
             defaultValue: '200px',
             when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
             live_change: true,
-            play_group: 'aae_advance_tooltip_' 
+            play_group: 'aae_advance_tooltip_',
+        },
+
+        {
+            bind: 'padding',
+            label: 'Padding',
+            control: 'text',
+            defaultValue: '8px 12px',
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_',
         },
 
         {

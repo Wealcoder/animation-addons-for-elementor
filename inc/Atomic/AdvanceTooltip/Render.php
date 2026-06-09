@@ -136,7 +136,7 @@ final class Render
         );
 
         $this->emit_responsive(
-            $config, $settings, Schema::ANIMATION, 'animation', 'fade', $extra_bps,
+            $config, $settings, Schema::ANIMATION, 'animation', 'slide', $extra_bps,
             static fn( $v ) => (string) $v,
             $disabled_bps
         );
@@ -157,6 +157,32 @@ final class Render
             $config, $settings, Schema::ALIGNMENT, 'alignment', 'center', $extra_bps,
             static fn( $v ) => (string) $v,
             $disabled_bps
+        );
+
+        // New interactive controls
+        $this->emit_responsive(
+            $config, $settings, Schema::SHOW_DELAY, 'showDelay', 0, $extra_bps,
+            static fn( $v ) => is_numeric($v) ? (int) $v : null,
+            $disabled_bps
+        );
+
+        $this->emit_responsive(
+            $config, $settings, Schema::HIDE_DELAY, 'hideDelay', 0, $extra_bps,
+            static fn( $v ) => is_numeric($v) ? (int) $v : null,
+            $disabled_bps
+        );
+
+        $this->emit_responsive(
+            $config, $settings, Schema::PADDING, 'padding', '8px 12px', $extra_bps,
+            static fn( $v ) => (string) $v,
+            $disabled_bps
+        );
+
+        // INTERACTIVE is Boolean_Prop_Type (non-responsive) — use unwrap_primitive,
+        // same pattern as TOOLTIP_ENABLE_EDITOR. Always emit so JS gets false too.
+        $config['interactive'] = (bool) $this->unwrap_primitive(
+            $settings[ Schema::INTERACTIVE ] ?? null,
+            true
         );
 
         // Border Radius object

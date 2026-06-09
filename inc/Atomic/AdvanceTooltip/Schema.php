@@ -59,6 +59,18 @@ final class Schema
 	const TOOLTIP_ENABLE_EDITOR =
 	'aae_advance_tooltip_enable_editor';
 
+	const SHOW_DELAY =
+	'aae_advance_tooltip_show_delay';
+
+	const HIDE_DELAY =
+	'aae_advance_tooltip_hide_delay';
+
+	const INTERACTIVE =
+	'aae_advance_tooltip_interactive';
+
+	const PADDING =
+	'aae_advance_tooltip_padding';
+
 	public function register(): void
 	{
 		add_filter(
@@ -151,6 +163,35 @@ final class Schema
 		$schema[self::TOOLTIP_ENABLE_EDITOR] =
 			Boolean_Prop_Type::make()
 			->default(false);
+
+		/*
+		|------------------------------------------------------------------
+		| New interactive controls
+		|------------------------------------------------------------------
+		*/
+
+		$schema[self::SHOW_DELAY] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 0,
+			]);
+
+		$schema[self::HIDE_DELAY] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 0,
+			]);
+
+		// Non-responsive boolean — same pattern as TOOLTIP_ENABLE_EDITOR
+		$schema[self::INTERACTIVE] =
+			Boolean_Prop_Type::make()
+			->default(true);
+
+		$schema[self::PADDING] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => '8px 12px',
+			]);
 
 		return $schema;
 	}
