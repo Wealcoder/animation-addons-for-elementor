@@ -787,13 +787,13 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		default: 0,
 	},
 
-	aae_advance_tooltip_padding: {
-		configKey: 'padding',
-		default: '8px 12px',
-	},
-};
+	};
 
 const ADVANCED_TOOLTIP_OBJECTS = {
+	aae_advance_tooltip_padding: {
+		configKey: 'padding',
+		isValid: (v) => v && typeof v === 'object',
+	},
 	aae_advance_tooltip_borderRadius: {
 		configKey: 'borderRadius',
 
@@ -834,11 +834,7 @@ function buildAdvancedTooltipConfig(settings) {
 		}
 	}
 
-	// Translate dimension controls (padding stores {top,right,bottom,left,unit} objects)
-	// into CSS strings before emitResponsive tries String() comparison.
-	const tooltipSettings = translateDimensionSettings(settings, ['aae_advance_tooltip_padding']);
-
-	emitResponsive(	cfg, tooltipSettings,	ADVANCED_TOOLTIP_RESPONSIVE, disabledBps);
+	emitResponsive(	cfg, settings,	ADVANCED_TOOLTIP_RESPONSIVE, disabledBps);
 
 	emitResponsiveObjects(cfg,settings,	ADVANCED_TOOLTIP_OBJECTS,disabledBps);
 
@@ -947,13 +943,19 @@ const CURSOR_RESPONSIVE = {
 	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
 	aae_cursor_hover_width: { configKey: 'width', default: '' },
 	aae_cursor_hover_height: { configKey: 'height', default: '' },
-	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
 	aae_cursor_hover_font_size: { configKey: 'fontSize', default: '' },
 	aae_cursor_hover_padding: { configKey: 'padding', default: '' },
 };
 
 const CURSOR_OBJECTS = {
-	aae_cursor_hover_border_radius: { configKey: 'borderRadius', default: '100%' },
+	aae_cursor_hover_border: {
+		configKey: 'border',
+		isValid: (v) => v && typeof v === 'object',
+	},
+	aae_cursor_hover_border_radius: {
+		configKey: 'borderRadius',
+		isValid: (v) => v && typeof v === 'object',
+	},
 };
 
 function dimensionToString(val) {

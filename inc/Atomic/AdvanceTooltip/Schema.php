@@ -176,7 +176,13 @@ final class Schema
 		$schema[self::PADDING] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
-				'desktop' => '8px 12px',
+				'desktop' => [
+					'top' => '8',
+					'right' => '12',
+					'bottom' => '8',
+					'left' => '12',
+					'unit' => 'px',
+				],
 			]);
 
 		return $schema;

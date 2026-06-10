@@ -166,22 +166,8 @@ final class Render
             $disabled_bps
         );
 
-        $this->emit_responsive(
-            $config, $settings, Schema::PADDING, 'padding', '8px 12px', $extra_bps,
-            static function( $v ) {
-                if ( is_array( $v ) ) {
-                    $top    = $v['top'] ?? '';
-                    $right  = $v['right'] ?? '';
-                    $bottom = $v['bottom'] ?? '';
-                    $left   = $v['left'] ?? '';
-                    $unit   = $v['unit'] ?? 'px';
-                    if ( $top === '' && $right === '' && $bottom === '' && $left === '' ) {
-                        return '';
-                    }
-                    return "{$top}{$unit} {$right}{$unit} {$bottom}{$unit} {$left}{$unit}";
-                }
-                return (string) $v;
-            },
+        $this->emit_responsive_object(
+            $config, $settings, Schema::PADDING, 'padding', $extra_bps,
             $disabled_bps
         );
 

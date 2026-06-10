@@ -50,6 +50,29 @@ const config = {
 		},
 
 		/*
+|--------------------------------------------------------------------------
+| Font Size
+|--------------------------------------------------------------------------
+*/
+		{
+			bind: 'font_size',
+
+			label: 'Font Size',
+
+			control: 'slider',
+
+			units: ['px', 'em', 'rem'],
+
+			defaultValue: {
+				size: 16,
+				unit: 'px',
+			},
+
+			when: isEnabled,
+			tab: 'style',
+
+		},
+		/*
 		|--------------------------------------------------------------------------
 		| Text Color
 		|--------------------------------------------------------------------------
@@ -65,6 +88,7 @@ const config = {
 			defaultValue: '#ffffff',
 
 			when: isEnabled,
+			tab: 'style',
 		},
 
 		/*
@@ -82,6 +106,8 @@ const config = {
 			defaultValue: '#000000',
 
 			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -99,6 +125,8 @@ const config = {
 			defaultValue: '120px',
 
 			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -118,6 +146,27 @@ const config = {
 			datalist: ['80', '100', '120', '150', '200'],
 
 			when: isEnabled,
+			tab: 'style',
+
+		},
+
+		/*
+		|--------------------------------------------------------------------------
+		| Padding
+		|--------------------------------------------------------------------------
+		*/
+		{
+			bind: 'padding',
+
+			label: 'Padding',
+
+			control: 'dimension',
+
+			defaultValue: '',
+
+			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -137,45 +186,8 @@ const config = {
 				radius: '',
 			},
 			when: isEnabled,
-		},
+			tab: 'style',
 
-		/*
-		|--------------------------------------------------------------------------
-		| Font Size
-		|--------------------------------------------------------------------------
-		*/
-		{
-			bind: 'font_size',
-
-			label: 'Font Size',
-
-			control: 'slider',
-
-			units: ['px', 'em', 'rem'],
-
-			defaultValue: {
-				size: 16,
-				unit: 'px',
-			},
-
-			when: isEnabled,
-		},
-
-		/*
-		|--------------------------------------------------------------------------
-		| Padding
-		|--------------------------------------------------------------------------
-		*/
-		{
-			bind: 'padding',
-
-			label: 'Padding',
-
-			control: 'dimension',
-
-			defaultValue: '',
-
-			when: isEnabled,
 		},
 
 		{
