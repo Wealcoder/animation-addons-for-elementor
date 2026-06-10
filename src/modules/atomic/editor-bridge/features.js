@@ -728,11 +728,6 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		default: 10,
 	},
 
-	aae_advance_tooltip_duration: {
-		configKey: 'duration',
-		default: 0.3,
-	},
-
 	aae_advance_tooltip_alignment: {
 		configKey: 'alignment',
 		default: 'center',
@@ -762,9 +757,26 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		configKey: 'color',
 		default: '#ffffff',
 	},
-};
+
+	// New controls added to features.js so editor live-preview bridge
+	// syncs them to the iframe map on every settings change.
+	aae_advance_tooltip_show_delay: {
+		configKey: 'showDelay',
+		default: 0,
+	},
+
+	aae_advance_tooltip_hide_delay: {
+		configKey: 'hideDelay',
+		default: 0,
+	},
+
+	};
 
 const ADVANCED_TOOLTIP_OBJECTS = {
+	aae_advance_tooltip_padding: {
+		configKey: 'padding',
+		isValid: (v) => v && typeof v === 'object',
+	},
 	aae_advance_tooltip_borderRadius: {
 		configKey: 'borderRadius',
 
@@ -914,17 +926,34 @@ const CURSOR_RESPONSIVE = {
 	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
 	aae_cursor_hover_width: { configKey: 'width', default: '' },
 	aae_cursor_hover_height: { configKey: 'height', default: '' },
-	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
 	aae_cursor_hover_font_size: { configKey: 'fontSize', default: '' },
 	aae_cursor_hover_padding: { configKey: 'padding', default: '' },
 };
 
 const CURSOR_OBJECTS = {
-	aae_cursor_hover_border_radius: { configKey: 'borderRadius', default: '100%' },
+	aae_cursor_hover_border: {
+		configKey: 'border',
+		isValid: (v) => v && typeof v === 'object',
+	},
+	aae_cursor_hover_border_radius: {
+		configKey: 'borderRadius',
+		isValid: (v) => v && typeof v === 'object',
+	},
 };
 
 function dimensionToString(val) {
 	if (val && typeof val === 'object') {
+		// 4-sided dimension box (padding/margin): {top, right, bottom, left, unit}
+		if ('top' in val || 'bottom' in val) {
+			const top    = val.top    ?? '';
+			const right  = val.right  ?? '';
+			const bottom = val.bottom ?? '';
+			const left   = val.left   ?? '';
+			const unit   = val.unit || 'px';
+			if (top === '' && right === '' && bottom === '' && left === '') return '';
+			return `${top}${unit} ${right}${unit} ${bottom}${unit} ${left}${unit}`;
+		}
+		// Single-value dimension: {size, unit} or {value, unit}
 		const size = val.size !== undefined ? val.size : (val.value !== undefined ? val.value : '');
 		const unit = val.unit || 'px';
 		if (size === '' || size === null || size === undefined) return '';

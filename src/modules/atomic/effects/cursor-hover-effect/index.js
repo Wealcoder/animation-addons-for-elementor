@@ -96,7 +96,7 @@ function read(el) {
 
 		border: r(cfg, 'border', null),
 
-		borderRadius: null, // Now handled inside border object
+		borderRadius: r(cfg, 'borderRadius', null),
 
 		fontSize: r(cfg, 'fontSize', ''),
 
@@ -199,10 +199,39 @@ function bind(el, config) {
 		cursor.style.borderColor = b.color || '#000000';
 
 		if (b.radius) {
-			cursor.style.borderRadius = typeof b.radius === 'number' ? `${b.radius}px` : b.radius;
+			const rv = b.radius;
+			if (typeof rv === 'number') {
+				cursor.style.borderRadius = `${rv}px`;
+			} else if (/^\d+(\.\d+)?$/.test(String(rv))) {
+				cursor.style.borderRadius = `${rv}px`;
+			} else {
+				cursor.style.borderRadius = rv;
+			}
 		}
 	} else {
 		cursor.style.border = 'none';
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Border Radius (independent of border style)
+	|--------------------------------------------------------------------------
+	*/
+	if (config.borderRadius) {
+		if (typeof config.borderRadius === 'object') {
+			const r = config.borderRadius;
+			if (r.top !== undefined || r.right !== undefined) {
+				const u = r.unit || 'px';
+				cursor.style.borderRadius = `${r.top || 0}${u} ${r.right || 0}${u} ${r.bottom || 0}${u} ${r.left || 0}${u}`;
+			} else if (r.size !== undefined) {
+				const u = r.unit || 'px';
+				cursor.style.borderRadius = `${r.size}${u}`;
+			}
+		} else if (typeof config.borderRadius === 'number') {
+			cursor.style.borderRadius = `${config.borderRadius}px`;
+		} else {
+			cursor.style.borderRadius = config.borderRadius;
+		}
 	}
 
 	/*

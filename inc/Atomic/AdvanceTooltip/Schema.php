@@ -44,20 +44,26 @@ final class Schema
 	const ANIMATION =
 	'aae_advance_tooltip_animation';
 
-	const DURATION =
-	'aae_advance_tooltip_duration';
-
 	const ARROW_SIZE =
 	'aae_advance_tooltip_arrow_size';
 
-	const BORDER_RADIUS =
-	'aae_advance_tooltip_borderRadius';
+	const BORDER =
+	'aae_advance_tooltip_border';
 
 	const ALIGNMENT =
 	'aae_advance_tooltip_alignment';
 
 	const TOOLTIP_ENABLE_EDITOR =
 	'aae_advance_tooltip_enable_editor';
+
+	const SHOW_DELAY =
+	'aae_advance_tooltip_show_delay';
+
+	const HIDE_DELAY =
+	'aae_advance_tooltip_hide_delay';
+
+	const PADDING =
+	'aae_advance_tooltip_padding';
 
 	public function register(): void
 	{
@@ -103,7 +109,6 @@ final class Schema
 			self::WIDTH,
 			self::OFFSET,
 			self::ANIMATION,
-			self::DURATION,
 			self::ARROW_SIZE,
 			self::ALIGNMENT,
 		];
@@ -131,26 +136,54 @@ final class Schema
 
 		/*
 		|------------------------------------------------------------------
-		| Border Radius
+		| Border
 		|------------------------------------------------------------------
 		*/
 
-		$schema[self::BORDER_RADIUS] =
+		$schema[self::BORDER] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => [
-					'top' => 0,
-					'right' => 0,
-					'bottom' => 0,
-					'left' => 0,
-					'unit' => 'px',
-					'isLinked' => true,
+					'style'  => '',
+					'width'  => ['top' => '', 'right' => '', 'bottom' => '', 'left' => ''],
+					'color'  => '',
+					'radius' => '8px',
 				],
 			]);
 
 		$schema[self::TOOLTIP_ENABLE_EDITOR] =
 			Boolean_Prop_Type::make()
 			->default(false);
+
+		/*
+		|------------------------------------------------------------------
+		| New interactive controls
+		|------------------------------------------------------------------
+		*/
+
+		$schema[self::SHOW_DELAY] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 0,
+			]);
+
+		$schema[self::HIDE_DELAY] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => 0,
+			]);
+
+		$schema[self::PADDING] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [
+					'top' => '8',
+					'right' => '12',
+					'bottom' => '8',
+					'left' => '12',
+					'unit' => 'px',
+				],
+			]);
 
 		return $schema;
 	}
