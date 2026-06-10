@@ -65,6 +65,12 @@ final class Schema
 	const PADDING =
 	'aae_advance_tooltip_padding';
 
+	const FONT_SIZE =
+	'aae_advance_tooltip_font_size';
+
+	const LINE_HEIGHT =
+	'aae_advance_tooltip_line_height';
+
 	public function register(): void
 	{
 		add_filter(
@@ -182,6 +188,24 @@ final class Schema
 					'bottom' => '8',
 					'left' => '12',
 					'unit' => 'px',
+				],
+			]);
+
+		$schema[self::FONT_SIZE] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [
+					'size' => 14,
+					'unit' => 'px',
+				],
+			]);
+
+		$schema[self::LINE_HEIGHT] =
+			Responsive_JSON_Prop_Type::make()
+			->default([
+				'desktop' => [
+					'size' => 1.5,
+					'unit' => '',
 				],
 			]);
 

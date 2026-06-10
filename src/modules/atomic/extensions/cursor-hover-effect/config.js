@@ -29,8 +29,9 @@ const config = {
 
 			defaultValue: false,
 			play_group: 'aae_cursor_hover_',
+			tab: 'content',
+		
 		},
-
 		/*
 		|--------------------------------------------------------------------------
 		| Text
@@ -47,6 +48,7 @@ const config = {
 			defaultValue: '',
 
 			when: isEnabled,
+			tab: 'content',
 		},
 
 		/*

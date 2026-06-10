@@ -777,12 +777,20 @@ const ADVANCED_TOOLTIP_OBJECTS = {
 		configKey: 'padding',
 		isValid: (v) => v && typeof v === 'object',
 	},
-	aae_advance_tooltip_borderRadius: {
-		configKey: 'borderRadius',
+	aae_advance_tooltip_border: {
+		configKey: 'border',
 
 		isValid: (v) =>
 			v &&
 			typeof v === 'object',
+	},
+	aae_advance_tooltip_font_size: {
+		configKey: 'font_size',
+		isValid: (v) => v && typeof v === 'object',
+	},
+	aae_advance_tooltip_line_height: {
+		configKey: 'line_height',
+		isValid: (v) => v && typeof v === 'object',
 	},
 };
 
@@ -933,10 +941,6 @@ const CURSOR_RESPONSIVE = {
 const CURSOR_OBJECTS = {
 	aae_cursor_hover_border: {
 		configKey: 'border',
-		isValid: (v) => v && typeof v === 'object',
-	},
-	aae_cursor_hover_border_radius: {
-		configKey: 'borderRadius',
 		isValid: (v) => v && typeof v === 'object',
 	},
 };

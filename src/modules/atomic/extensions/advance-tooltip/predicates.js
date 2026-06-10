@@ -16,7 +16,8 @@ export function showPlayButton(s, bp) {
 	return isEnabled(s, bp) && plainBool(s, 'aae_advance_tooltip_enable_editor');
 }
 
-// arrow size should be shown only when arrow is enabled
 export function showArrowSize(s, bp) {
-	return isEnabled(s, bp) && plainBool(s, 'aae_advance_tooltip_arrow_enable');
+	const arrowVal = valueAt(s, 'aae_advance_tooltip_arrow_enable', bp);
+	const isArrowOn = arrowVal === true || arrowVal === 'true' || arrowVal === 'yes';
+	return isEnabled(s, bp) && isArrowOn;
 }

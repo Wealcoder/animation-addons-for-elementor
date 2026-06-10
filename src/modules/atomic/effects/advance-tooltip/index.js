@@ -61,6 +61,8 @@ function read(el) {
 		hideDelay    : Number(r(cfg, 'hideDelay',  0)),
 		interactive  : true,
 		padding      : r(cfg, 'padding',   '10px 14px'),
+		fontSize     : r(cfg, 'font_size', null),
+		lineHeight   : r(cfg, 'line_height', null),
 	};
 }
 
@@ -288,60 +290,64 @@ function bind(el, config) {
 	tip.id = tipId;
 	el.setAttribute('aria-describedby', tipId);
 
-	/* ── visual styles — all via JS inline, zero hardcoded CSS ── */
-	tip.style.backgroundColor = config.bg;
-	tip.style.color           = config.color;
-	tip.style.width           = config.width;
-	tip.style.textAlign       = config.alignment;
-	/* padding: dimension control may return object or string */
-	if (config.padding && typeof config.padding === 'object') {
-		const pv = config.padding;
-		if (pv.top !== undefined) {
-			const u = pv.unit || 'px';
-			tip.style.padding = `${pv.top||0}${u} ${pv.right||0}${u} ${pv.bottom||0}${u} ${pv.left||0}${u}`;
+	/* ── visual styles via CSS Variables ── */
+	const setVar = (k, v) => tip.style.setProperty(k, v);
+	setVar('--tip-bg', config.bg);
+	setVar('--tip-color', config.color);
+	setVar('--tip-width', config.width);
+	setVar('--tip-align', config.alignment);
+
+	if (config.fontSize) {
+		let fSize = '14px';
+		if (typeof config.fontSize === 'object') {
+			fSize = `${config.fontSize.size || 14}${config.fontSize.unit || 'px'}`;
 		} else {
-			const size = pv.size || '';
-			const unit = pv.unit || 'px';
-			tip.style.padding = size !== '' ? `${size}${unit}` : '10px 14px';
+			fSize = config.fontSize;
 		}
-	} else {
-		tip.style.padding = config.padding || '10px 14px';
+		setVar('--tip-font-size', fSize);
 	}
-	tip.style.boxShadow       = '0 14px 40px -12px rgba(0,0,0,.5)';
-	tip.style.zIndex          = '9999';
 
-	/* ── border (from border control: style, width, color, radius) ── */
-	if (config.border && typeof config.border === 'object') {
-		const b = config.border;
+	if (config.lineHeight) {
+		let lHeight = '1.5';
+		if (typeof config.lineHeight === 'object') {
+			lHeight = `${config.lineHeight.size || 1.5}${config.lineHeight.unit || ''}`;
+		} else {
+			lHeight = config.lineHeight;
+		}
+		setVar('--tip-line-height', lHeight);
+	}
+
+	let pad = '10px 14px';
+	if (typeof config.padding === 'object') {
+		const pv = config.padding, u = pv.unit || 'px';
+		if (pv.top !== undefined) pad = `${pv.top||0}${u} ${pv.right||0}${u} ${pv.bottom||0}${u} ${pv.left||0}${u}`;
+		else if (pv.size) pad = `${pv.size}${u}`;
+	} else if (config.padding) pad = config.padding;
+	setVar('--tip-padding', pad);
+
+	if (typeof config.border === 'object' && config.border) {
+		const b = config.border, w = b.width || {};
 		if (b.style) {
-			tip.style.borderStyle = b.style;
-			const w = b.width || {};
-			const bw = w.top || w.right || w.bottom || w.left;
-			if (bw) {
-				tip.style.borderWidth = `${w.top || 0} ${w.right || 0} ${w.bottom || 0} ${w.left || 0}`;
-			}
-			if (b.color) tip.style.borderColor = b.color;
+			setVar('--tip-b-style', b.style);
+			setVar('--tip-b-width', `${w.top||0}px ${w.right||0}px ${w.bottom||0}px ${w.left||0}px`);
+			if (b.color) setVar('--tip-b-color', b.color);
 		}
-		tip.style.borderRadius = b.radius || '8px';
-	} else {
-		tip.style.borderRadius = '8px';
-	}
+		
+		let rStr = '8px';
+		if (typeof b.radius === 'object' && b.radius !== null) {
+			rStr = `${b.radius.top||0}px ${b.radius.right||0}px ${b.radius.bottom||0}px ${b.radius.left||0}px`;
+		} else if (b.radius) {
+			rStr = typeof b.radius === 'number' || /^\d+(\.\d+)?$/.test(String(b.radius)) ? `${b.radius}px` : b.radius;
+		}
+		setVar('--tip-radius', rStr);
+	} else setVar('--tip-radius', '8px');
 
-	/* ── position via CSS classes + custom properties ── */
 	const pos = config.position || 'top';
-	const gap = config.arrowSize + config.offset;
+	tip.className = `wcf-advanced-tooltip pos-${pos} ${!config.arrowEnable ? 'no-arrow' : ''}`;
+	tip.id = tipId;
 
-	/* Remove old position classes, add new one */
-	tip.classList.remove('pos-top', 'pos-bottom', 'pos-left', 'pos-right');
-	tip.classList.add('pos-' + pos);
-
-	/* CSS custom properties drive positioning & arrow color */
-	tip.style.setProperty('--tip-bg',         config.bg);
-	tip.style.setProperty('--tip-arrow-size', config.arrowSize + 'px');
-	tip.style.setProperty('--tip-gap',        gap + 'px');
-
-	if (!config.arrowEnable) tip.classList.add('no-arrow');
-	else                     tip.classList.remove('no-arrow');
+	setVar('--tip-arrow-size', config.arrowSize + 'px');
+	setVar('--tip-gap', (config.arrowSize + config.offset) + 'px');
 
 	/* ── GSAP setup ── */
 	const dur = config.duration < 10 ? config.duration : config.duration / 1000;

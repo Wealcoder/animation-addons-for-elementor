@@ -8,8 +8,23 @@
 	pointer-events: none;
 	opacity: 0;
 	visibility: hidden;
-	z-index: 9999;
 	white-space: normal;
+	
+	/* Styles dynamically injected via CSS Variables from JS */
+	background-color: var(--tip-bg, #16181d);
+	color: var(--tip-color, #f6f2e9);
+	width: var(--tip-width, 180px);
+	font-size: var(--tip-font-size, 14px);
+	line-height: var(--tip-line-height, 1.5);
+	text-align: var(--tip-align, center);
+	padding: var(--tip-padding, 10px 14px);
+	box-shadow: 0 14px 40px -12px rgba(0,0,0,.5);
+	z-index: 9999;
+	
+	border-style: var(--tip-b-style, none);
+	border-width: var(--tip-b-width, 0);
+	border-color: var(--tip-b-color, transparent);
+	border-radius: var(--tip-radius, 8px);
 }
 
 /* ── Arrow (real DOM element) ─────────────────────────────────────────── */

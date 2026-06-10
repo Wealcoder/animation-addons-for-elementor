@@ -63,7 +63,7 @@ function read(el) {
 			r(
 				cfg,
 				'text',
-				''
+				'Cursor Hover Effect'
 			),
 
 		color:
@@ -94,9 +94,7 @@ function read(el) {
 				''
 			),
 
-		border: r(cfg, 'border', null),
-
-		borderRadius: r(cfg, 'borderRadius', null),
+		border: r(cfg, 'border', null),		
 
 		fontSize: r(cfg, 'fontSize', ''),
 
@@ -107,13 +105,12 @@ function read(el) {
 function play(el, config) {
 	unbind(el);
 	bind(el, config);
+	
 }
 
 function bind(el, config) {
 	unbind(el);
 	if (!config) return;
-
-	console.log('Cursor Hover Effect',config);
 
 	const widgetId =
 		el.dataset.id ||
@@ -200,7 +197,9 @@ function bind(el, config) {
 
 		if (b.radius) {
 			const rv = b.radius;
-			if (typeof rv === 'number') {
+			if (typeof rv === 'object' && rv !== null) {
+				cursor.style.borderRadius = `${rv.top || 0}px ${rv.right || 0}px ${rv.bottom || 0}px ${rv.left || 0}px`;
+			} else if (typeof rv === 'number') {
 				cursor.style.borderRadius = `${rv}px`;
 			} else if (/^\d+(\.\d+)?$/.test(String(rv))) {
 				cursor.style.borderRadius = `${rv}px`;

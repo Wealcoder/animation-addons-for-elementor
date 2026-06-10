@@ -220,6 +220,38 @@ const config = {
         },
 
         {
+            bind: 'font_size',
+            label: 'Font Size',
+            control: 'slider',
+            responsive: true,
+            units: ['px', 'em', 'rem'],
+            defaultValue: {
+                size: 14,
+                unit: 'px',
+            },
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
+        },
+
+        {
+            bind: 'line_height',
+            label: 'Line Height',
+            control: 'slider',
+            responsive: true,
+            units: ['px', 'em', 'rem', ''],
+            defaultValue: {
+                size: 1.5,
+                unit: '',
+            },
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
+        },
+
+        {
             bind: 'border',
             label: 'Border',
             control: 'border',

@@ -167,7 +167,35 @@ final class Render
         );
 
         $this->emit_responsive_object(
-            $config, $settings, Schema::PADDING, 'padding', $extra_bps,
+            $config, $settings, Schema::PADDING, 'padding',
+            [
+                'top' => '8',
+                'right' => '12',
+                'bottom' => '8',
+                'left' => '12',
+                'unit' => 'px',
+            ],
+            $extra_bps,
+            $disabled_bps
+        );
+
+        $this->emit_responsive_object(
+            $config, $settings, Schema::FONT_SIZE, 'font_size',
+            [
+                'size' => 14,
+                'unit' => 'px',
+            ],
+            $extra_bps,
+            $disabled_bps
+        );
+
+        $this->emit_responsive_object(
+            $config, $settings, Schema::LINE_HEIGHT, 'line_height',
+            [
+                'size' => 1.5,
+                'unit' => '',
+            ],
+            $extra_bps,
             $disabled_bps
         );
 
