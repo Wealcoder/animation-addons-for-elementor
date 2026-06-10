@@ -184,7 +184,12 @@ final class Schema
 		$schema[self::BORDER] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
-				'desktop' => '1px solid #ffffff',
+				'desktop' => [
+					'style'  => '',
+					'width'  => ['top' => '', 'right' => '', 'bottom' => '', 'left' => ''],
+					'color'  => '',
+					'radius' => '',
+				],
 			]);
 
 		/*

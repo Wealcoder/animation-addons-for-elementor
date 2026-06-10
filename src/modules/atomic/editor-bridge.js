@@ -169,6 +169,6 @@ window.elementor.on('document:loaded', () => {
 		});
 		
 
-		win.aaeAtomicAnimations.scan(win.document);
+		//win.aaeAtomicAnimations.scan(win.document);
 	}, 500);
 });
