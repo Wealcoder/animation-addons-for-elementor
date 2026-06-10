@@ -32,6 +32,20 @@ function buildConfigFromSettings(feature, container) {
 	return null;
 }
 
+function shouldBindInEditor(featureName, cfg) {
+	if (!cfg) return true;
+	if (cfg.enableEditor) return true;
+
+	const trigger = cfg.trigger || '';
+	const isScrollTrigger = trigger === 'on_scroll' || trigger === 'play_with_scroll' || trigger === 'in-view';
+	const isScrollKind = ['horizontal', 'parallax', 'sticky'].includes(featureName);
+
+	if (isScrollTrigger || isScrollKind) {
+		return false;
+	}
+	return true;
+}
+
 function isFeatureInPlayGroup(featureName, playGroup) {
 	if (!playGroup) return true;
 	const group = playGroup.toLowerCase();
@@ -97,6 +111,10 @@ export function applySettingsToDom(container, playGroup = "") {
 			continue;
 		}
 
+		if (!shouldBindInEditor(feature.name, cfg)) {
+			cfg.preventBindInEditor = true;
+		}
+
 		map[container.id] = cfg;
 		results.push({ feature, active: true });
 	}
@@ -132,6 +150,10 @@ export function applySettingsToDoms(container) {
 			delete map[container.id];
 			results.push({ feature, active: false });
 			continue;
+		}
+
+		if (!shouldBindInEditor(feature.name, cfg)) {
+			cfg.preventBindInEditor = true;
 		}
 
 		map[container.id] = cfg;

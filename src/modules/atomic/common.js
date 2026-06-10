@@ -141,11 +141,13 @@ function interactionIdFor(el) {
  */
 function configFor(el, mapName) {
 	const id = interactionIdFor(el);
-
 	if (!id) return null;
 	const map = window[mapName];
 	return (map && map[id]) || null;
 }
+
+// Track active breakpoint so we don't query the DOM repeatedly during config reads
+let activeBp = currentBreakpoint();
 
 /**
  * Pick a config field for the active breakpoint, walking BP_CASCADE.
@@ -154,7 +156,7 @@ function configFor(el, mapName) {
  */
 function pickConfigResponsive(cfg, key) {
 	if (!cfg) return undefined;
-	const bp = currentBreakpoint();
+	const bp = activeBp;
 
 	const chain = BP_CASCADE[bp] || [];
 	const isEnableKey = (key === 'enabled' || key === 'enable');
@@ -202,8 +204,11 @@ const KINDS = [];
  */
 function kindsFor(el) {
 	const result = [];
+	const id = interactionIdFor(el);
+	if (!id) return result;
 	for (const kind of KINDS) {
-		if (configFor(el, kind.mapName)) result.push(kind);
+		const map = window[kind.mapName];
+		if (map && map[id]) result.push(kind);
 	}
 	return result;
 }
@@ -308,10 +313,13 @@ function scan(root) {
 			}
 			const config = kind.read(el);
 			if (!config) {
-				
 				continue;
 			}
 			
+			if (config.preventBindInEditor) {
+				continue;
+			}
+
 			el.classList.add(kind.boundFlag);
 
 			kind.bind(el, config);
@@ -322,20 +330,22 @@ function scan(root) {
 function isKindInPlayGroup(kindName, playGroup) {
 	if (!playGroup) return true;
 	const group = playGroup.toLowerCase();
-	if (group === 'aae_text_' && kindName === 'text') return true;
-	if (group === 'aae_anim_' && kindName === 'regular') return true;
-	if (group === 'aae_img_' && kindName === 'image-animation') return true;
-	if (group === 'aae_ih_' && kindName === 'image-hover') return true;
-	if (group === 'aae_cursor_hover_' && kindName === 'cursor-hover-effect') return true;
-	if (group === 'aae_sticky_' && kindName === 'sticky') return true;
-	if (group === 'aae_mouse_move_effect_' && kindName === 'mouse-move-effect') return true;
-	if (group === 'aae_horizontal_' && kindName === 'horizontal') return true;
-	if (group === 'aae_plx_' && kindName === 'parallax') return true;
-	if (group === 'aae_advance_tooltip_' && kindName === 'advance-tooltip') return true;
-	if (group === 'aae_tilt_' && kindName === 'tilt') return true;
-	if (group === 'aae_wrapper_link_' && kindName === 'wrapper-link') return true;
-	if (group === 'aae_custom_css_' && kindName === 'custom-css') return true;
-	return false;
+	const groupMap = {
+		'aae_text_': 'text',
+		'aae_anim_': 'regular',
+		'aae_img_': 'image-animation',
+		'aae_ih_': 'image-hover',
+		'aae_cursor_hover_': 'cursor-hover-effect',
+		'aae_sticky_': 'sticky',
+		'aae_mouse_move_effect_': 'mouse-move-effect',
+		'aae_horizontal_': 'horizontal',
+		'aae_plx_': 'parallax',
+		'aae_advance_tooltip_': 'advance-tooltip',
+		'aae_tilt_': 'tilt',
+		'aae_wrapper_link_': 'wrapper-link',
+		'aae_custom_css_': 'custom-css'
+	};
+	return groupMap[group] === kindName;
 }
 
 /** Clear bound state and re-bind one element across every owning kind. */
@@ -376,6 +386,11 @@ function rebind(el, playGroup = "") {
 		}
 		const config = kind.read(el);
 		if (!config) continue;
+
+		if (config.preventBindInEditor) {
+			continue;
+		}
+
 		el.classList.add(kind.boundFlag);
 		kind.bind(el, config);
 	}
@@ -387,10 +402,9 @@ function updateBodyDeviceMode(bp) {
 	}
 }
 
-let lastBp = currentBreakpoint();
 if (typeof document !== 'undefined') {
 	if (document.body) {
-		updateBodyDeviceMode(lastBp);
+		updateBodyDeviceMode(activeBp);
 	} else {
 		document.addEventListener('DOMContentLoaded', () => {
 			updateBodyDeviceMode(currentBreakpoint());
@@ -400,8 +414,8 @@ if (typeof document !== 'undefined') {
 
 window.addEventListener('resize', () => {
 	const newBp = currentBreakpoint();
-	if (newBp !== lastBp) {
-		lastBp = newBp;
+	if (newBp !== activeBp) {
+		activeBp = newBp;
 		updateBodyDeviceMode(newBp);
 		document.querySelectorAll('[data-interaction-id]').forEach((el) => {
 			try { rebind(el); } catch (_) { }
