@@ -745,11 +745,6 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		default: 10,
 	},
 
-	aae_advance_tooltip_duration: {
-		configKey: 'duration',
-		default: 0.3,
-	},
-
 	aae_advance_tooltip_alignment: {
 		configKey: 'alignment',
 		default: 'center',
@@ -839,21 +834,17 @@ function buildAdvancedTooltipConfig(settings) {
 		}
 	}
 
-	emitResponsive(	cfg, settings,	ADVANCED_TOOLTIP_RESPONSIVE, disabledBps);
+	// Translate dimension controls (padding stores {top,right,bottom,left,unit} objects)
+	// into CSS strings before emitResponsive tries String() comparison.
+	const tooltipSettings = translateDimensionSettings(settings, ['aae_advance_tooltip_padding']);
+
+	emitResponsive(	cfg, tooltipSettings,	ADVANCED_TOOLTIP_RESPONSIVE, disabledBps);
 
 	emitResponsiveObjects(cfg,settings,	ADVANCED_TOOLTIP_OBJECTS,disabledBps);
 
 	if (!('enabled' in cfg)) {
 
 		cfg.enabled = enabled;
-	}
-
-	// INTERACTIVE is Boolean_Prop_Type (non-responsive) — read with plain(),
-	// same pattern as enableEditor. Always emit so the runtime gets false too.
-	cfg.interactive = !!plain(settings, 'aae_advance_tooltip_interactive');
-	// Default true when not set (first load before user touches the toggle)
-	if (settings.aae_advance_tooltip_interactive === undefined) {
-		cfg.interactive = true;
 	}
 
 	return cfg;
@@ -967,6 +958,17 @@ const CURSOR_OBJECTS = {
 
 function dimensionToString(val) {
 	if (val && typeof val === 'object') {
+		// 4-sided dimension box (padding/margin): {top, right, bottom, left, unit}
+		if ('top' in val || 'bottom' in val) {
+			const top    = val.top    ?? '';
+			const right  = val.right  ?? '';
+			const bottom = val.bottom ?? '';
+			const left   = val.left   ?? '';
+			const unit   = val.unit || 'px';
+			if (top === '' && right === '' && bottom === '' && left === '') return '';
+			return `${top}${unit} ${right}${unit} ${bottom}${unit} ${left}${unit}`;
+		}
+		// Single-value dimension: {size, unit} or {value, unit}
 		const size = val.size !== undefined ? val.size : (val.value !== undefined ? val.value : '');
 		const unit = val.unit || 'px';
 		if (size === '' || size === null || size === undefined) return '';

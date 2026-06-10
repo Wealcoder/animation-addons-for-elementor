@@ -22,7 +22,16 @@
 }
 
 .wcf-advanced-tooltip.no-arrow .aae-tip-arrow {
-	display: none;
+  display: none;
+}
+
+/* Reset any v3 ::after pseudo-element that might leak in */
+.wcf-advanced-tooltip::after {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* ── CSS Custom Properties (set by JS) ────────────────────────────────── */

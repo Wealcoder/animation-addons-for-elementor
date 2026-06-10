@@ -53,13 +53,13 @@ function read(el) {
 		offset       : Number(r(cfg, 'offset',    10)),
 		arrowEnable,
 		animation    : r(cfg, 'animation',  'slide'),
-		duration     : Number(r(cfg, 'duration',  0.35)),
+		duration     : 0.35,
 		arrowSize    : Number(r(cfg, 'arrowSize',  6)),
 		alignment    : r(cfg, 'alignment',  'center'),
-		borderRadius : pickConfigResponsive(cfg, 'borderRadius') || null,
+		border       : pickConfigResponsive(cfg, 'border') || null,
 		showDelay    : Number(r(cfg, 'showDelay',  0)),
 		hideDelay    : Number(r(cfg, 'hideDelay',  0)),
-		interactive  : r(cfg, 'interactive', true) !== false && r(cfg, 'interactive', true) !== 'false',
+		interactive  : true,
 		padding      : r(cfg, 'padding',   '10px 14px'),
 	};
 }
@@ -229,12 +229,6 @@ function buildTimeline(animation, tip, pos, dur) {
 /* ── DOM helper ────────────────────────────────────────────────────────── */
 
 function ensureTooltip(el) {
-	/*
-	 * Always remove every existing tooltip from the DOM before creating a
-	 * new one. Reusing old elements risks carrying over stale GSAP transform
-	 * state (yPercent, scale, x/y) from a previous bind — which is what
-	 * causes the "double tooltip" visual glitch.
-	 */
 	el.querySelectorAll(':scope > .wcf-advanced-tooltip').forEach(n => n.parentNode?.removeChild(n));
 
 	const tip   = document.createElement('span');
@@ -270,10 +264,6 @@ function bind(el, config) {
 	[...tip.childNodes].forEach(n => { if (n !== arrow) n.remove(); });
 
 	if (config.animation === 'type') {
-		/*
-		 * Typewriter: wrap every character in a span so GSAP can stagger them.
-		 * White-space is preserved so spacing looks correct.
-		 */
 		const raw = new DOMParser().parseFromString(config.text, 'text/html').body.textContent || config.text;
 		const frag = document.createDocumentFragment();
 		[...raw].forEach(ch => {
@@ -303,14 +293,36 @@ function bind(el, config) {
 	tip.style.color           = config.color;
 	tip.style.width           = config.width;
 	tip.style.textAlign       = config.alignment;
-	tip.style.padding         = config.padding || '10px 14px';
+	/* padding: dimension control may return object or string */
+	if (config.padding && typeof config.padding === 'object') {
+		const pv = config.padding;
+		if (pv.top !== undefined) {
+			const u = pv.unit || 'px';
+			tip.style.padding = `${pv.top||0}${u} ${pv.right||0}${u} ${pv.bottom||0}${u} ${pv.left||0}${u}`;
+		} else {
+			const size = pv.size || '';
+			const unit = pv.unit || 'px';
+			tip.style.padding = size !== '' ? `${size}${unit}` : '10px 14px';
+		}
+	} else {
+		tip.style.padding = config.padding || '10px 14px';
+	}
 	tip.style.boxShadow       = '0 14px 40px -12px rgba(0,0,0,.5)';
 	tip.style.zIndex          = '9999';
 
-	if (config.borderRadius && typeof config.borderRadius === 'object') {
-		const br = config.borderRadius;
-		const u  = br.unit || 'px';
-		tip.style.borderRadius = `${br.top||0}${u} ${br.right||0}${u} ${br.bottom||0}${u} ${br.left||0}${u}`;
+	/* ── border (from border control: style, width, color, radius) ── */
+	if (config.border && typeof config.border === 'object') {
+		const b = config.border;
+		if (b.style) {
+			tip.style.borderStyle = b.style;
+			const w = b.width || {};
+			const bw = w.top || w.right || w.bottom || w.left;
+			if (bw) {
+				tip.style.borderWidth = `${w.top || 0} ${w.right || 0} ${w.bottom || 0} ${w.left || 0}`;
+			}
+			if (b.color) tip.style.borderColor = b.color;
+		}
+		tip.style.borderRadius = b.radius || '8px';
 	} else {
 		tip.style.borderRadius = '8px';
 	}
@@ -361,11 +373,6 @@ function bind(el, config) {
 		const tl = tip[TL_KEY];
 		if (!tl) return;
 
-		/*
-		 * Always reset the timeline to its start before playing.
-		 * This guarantees every show animation starts from the correct
-		 * "from" position — not from whatever state a previous tween left.
-		 */
 		tl.pause(0);
 		gsap.set(tip, { visibility: 'visible' });
 		tip.style.pointerEvents = 'auto';
@@ -380,10 +387,6 @@ function bind(el, config) {
 		tip.style.pointerEvents = 'none';
 
 		if (config.animation === 'glow') {
-			/*
-			 * Glow has repeat:-1 so tl.reverse() won't work cleanly.
-			 * Kill the repeating part, then fade out manually.
-			 */
 			tl.pause();
 			gsap.killTweensOf(tip);
 			gsap.to(tip, {
@@ -446,10 +449,6 @@ function bind(el, config) {
 		}
 		document.addEventListener('keydown', onKey);
 
-		/*
-		 * Magnetic animation: bubble drifts toward the cursor on mousemove.
-		 * Only active when animation === 'magnet'.
-		 */
 		if (config.animation === 'magnet' && gsap) {
 			const onMove = (e) => {
 				const rect = el.getBoundingClientRect();

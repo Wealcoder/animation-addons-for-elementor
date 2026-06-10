@@ -142,12 +142,6 @@ final class Render
         );
 
         $this->emit_responsive(
-            $config, $settings, Schema::DURATION, 'duration', 0.3, $extra_bps,
-            static fn( $v ) => is_numeric($v) ? (float) $v : null,
-            $disabled_bps
-        );
-
-        $this->emit_responsive(
             $config, $settings, Schema::ARROW_SIZE, 'arrowSize', 10, $extra_bps,
             static fn( $v ) => is_numeric($v) ? (int) $v : null,
             $disabled_bps
@@ -174,27 +168,31 @@ final class Render
 
         $this->emit_responsive(
             $config, $settings, Schema::PADDING, 'padding', '8px 12px', $extra_bps,
-            static fn( $v ) => (string) $v,
+            static function( $v ) {
+                if ( is_array( $v ) ) {
+                    $top    = $v['top'] ?? '';
+                    $right  = $v['right'] ?? '';
+                    $bottom = $v['bottom'] ?? '';
+                    $left   = $v['left'] ?? '';
+                    $unit   = $v['unit'] ?? 'px';
+                    if ( $top === '' && $right === '' && $bottom === '' && $left === '' ) {
+                        return '';
+                    }
+                    return "{$top}{$unit} {$right}{$unit} {$bottom}{$unit} {$left}{$unit}";
+                }
+                return (string) $v;
+            },
             $disabled_bps
         );
 
-        // INTERACTIVE is Boolean_Prop_Type (non-responsive) — use unwrap_primitive,
-        // same pattern as TOOLTIP_ENABLE_EDITOR. Always emit so JS gets false too.
-        $config['interactive'] = (bool) $this->unwrap_primitive(
-            $settings[ Schema::INTERACTIVE ] ?? null,
-            true
-        );
-
-        // Border Radius object
+        // Border object
         $this->emit_responsive_object(
-            $config, $settings, Schema::BORDER_RADIUS, 'borderRadius',
+            $config, $settings, Schema::BORDER, 'border',
             [
-                'top' => 0,
-                'right' => 0,
-                'bottom' => 0,
-                'left' => 0,
-                'unit' => 'px',
-                'isLinked' => true,
+                'style'  => '',
+                'width'  => ['top' => '', 'right' => '', 'bottom' => '', 'left' => ''],
+                'color'  => '',
+                'radius' => '8px',
             ],
             $extra_bps,
             $disabled_bps

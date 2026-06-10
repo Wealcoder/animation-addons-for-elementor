@@ -44,14 +44,11 @@ final class Schema
 	const ANIMATION =
 	'aae_advance_tooltip_animation';
 
-	const DURATION =
-	'aae_advance_tooltip_duration';
-
 	const ARROW_SIZE =
 	'aae_advance_tooltip_arrow_size';
 
-	const BORDER_RADIUS =
-	'aae_advance_tooltip_borderRadius';
+	const BORDER =
+	'aae_advance_tooltip_border';
 
 	const ALIGNMENT =
 	'aae_advance_tooltip_alignment';
@@ -64,9 +61,6 @@ final class Schema
 
 	const HIDE_DELAY =
 	'aae_advance_tooltip_hide_delay';
-
-	const INTERACTIVE =
-	'aae_advance_tooltip_interactive';
 
 	const PADDING =
 	'aae_advance_tooltip_padding';
@@ -115,7 +109,6 @@ final class Schema
 			self::WIDTH,
 			self::OFFSET,
 			self::ANIMATION,
-			self::DURATION,
 			self::ARROW_SIZE,
 			self::ALIGNMENT,
 		];
@@ -143,20 +136,18 @@ final class Schema
 
 		/*
 		|------------------------------------------------------------------
-		| Border Radius
+		| Border
 		|------------------------------------------------------------------
 		*/
 
-		$schema[self::BORDER_RADIUS] =
+		$schema[self::BORDER] =
 			Responsive_JSON_Prop_Type::make()
 			->default([
 				'desktop' => [
-					'top' => 0,
-					'right' => 0,
-					'bottom' => 0,
-					'left' => 0,
-					'unit' => 'px',
-					'isLinked' => true,
+					'style'  => '',
+					'width'  => ['top' => '', 'right' => '', 'bottom' => '', 'left' => ''],
+					'color'  => '',
+					'radius' => '8px',
 				],
 			]);
 
@@ -181,11 +172,6 @@ final class Schema
 			->default([
 				'desktop' => 0,
 			]);
-
-		// Non-responsive boolean — same pattern as TOOLTIP_ENABLE_EDITOR
-		$schema[self::INTERACTIVE] =
-			Boolean_Prop_Type::make()
-			->default(true);
 
 		$schema[self::PADDING] =
 			Responsive_JSON_Prop_Type::make()

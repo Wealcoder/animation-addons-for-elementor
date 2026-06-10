@@ -94,11 +94,9 @@ const config = {
 
 			label: 'Width',
 
-			control: 'dimension',
+			control: 'dimensions',
 
 			defaultValue: '120px',
-
-			datalist: ['80', '100', '120', '150', '200'],
 
 			when: isEnabled,
 		},
@@ -113,7 +111,7 @@ const config = {
 
 			label: 'Height',
 
-			control: 'dimension',
+			control: 'dimensions',
 
 			defaultValue: '120px',
 
