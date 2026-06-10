@@ -85,8 +85,11 @@ final class Schema
 	/** Effects that expose Duration / Stagger (v3 excludes spin/invert). */
 	const TEXT_DURATION_EFFECTS = ['char', 'word', 'text_reveal', 'text_move', 'text_scale'];
 
-	/** Effects that expose Transform-X / Transform-Y / Rotation / Transform-Origin. */
+	/** Effects that expose Transform-X / Transform-Y. */
 	const TEXT_TRANSLATE_EFFECTS = ['char', 'word'];
+
+	/** Effects that expose Rotation. */
+	const TEXT_MOVE_EFFECTS = ['text_move'];
 
 	/** Single-effect families — named so Render.php doesn't carry string literals. */
 	const TEXT_INVERT_EFFECTS = ['text_invert'];

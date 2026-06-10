@@ -26,8 +26,14 @@ export function isPremiumEffect(s, bp) {
 export function isAnimated(s, bp)        { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, ANIMATED_EFFECTS); }
 export function isDurationEffect(s, bp)  { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, DURATION_EFFECTS); }
 export function isTranslateEffect(s, bp) { return valueIn(s, 'aae_text_effect',  bp, TRANSLATE_EFFECTS); }
-export function isScrollTrigger(s, bp)   { return valueIn(s, 'aae_text_trigger', bp, SCROLL_TRIGGERS); }
-export function isSelectorTrigger(s, bp) { return valueIn(s, 'aae_text_trigger', bp, SELECTOR_TRIGGERS); }
+export function isScrollTrigger(s, bp)   { 
+	const trigger = valueAt(s, 'aae_text_trigger', bp) || 'in-view';
+	return SCROLL_TRIGGERS.includes(trigger); 
+}
+export function isSelectorTrigger(s, bp) { 
+	const trigger = valueAt(s, 'aae_text_trigger', bp) || 'in-view';
+	return SELECTOR_TRIGGERS.includes(trigger); 
+}
 
 export function isMove(s, bp)    { return valueEq(s, 'aae_text_effect', bp, 'text_move'); }
 export function isInvert(s, bp)  { return valueEq(s, 'aae_text_effect', bp, 'text_invert'); }
@@ -66,6 +72,10 @@ export function showTriggerDropdown(s, bp) {
 }
 export function showScrollCustomBlock(s, bp) {
 	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp) && !isInvert(s, bp);
+}
+
+export function showScrollPosition(s, bp) {
+	return showTriggerDropdown(s, bp) && isScrollTrigger(s, bp) && !isInvert(s, bp);
 }
 
 export function showStartCustom(s, bp) {

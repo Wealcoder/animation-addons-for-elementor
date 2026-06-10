@@ -41,9 +41,7 @@ final class Schema {
 	const ANIM_START_TRIGGER  = 'aae_anim_start_trigger';   // v3 aae_anim_s_t
 	const ANIM_END_TRIGGER    = 'aae_anim_end_trigger';     // v3 aae_anim_e_t
 	const ANIM_START_POSITION = 'aae_anim_start_position';  // v3 aae_anim_s
-	const ANIM_START_CUSTOM   = 'aae_anim_start_custom';    // v3 aae_anim_s_cus
 	const ANIM_END_POSITION   = 'aae_anim_end_position';    // v3 aae_anim_e
-	const ANIM_END_CUSTOM     = 'aae_anim_end_custom';      // v3 aae_anim_e_cus
 	const ANIM_MARKERS        = 'aae_anim_markers';         // v3 aae_anim_markers
 
 	/* ---------- shared numeric/easing settings ---------- */
@@ -51,15 +49,7 @@ final class Schema {
 	const ANIM_DURATION = 'aae_anim_duration';  // v3 data-duration
 	const ANIM_EASING   = 'aae_anim_easing';    // v3 ease
 
-	/* ---------- fade effect specific ---------- */
-	const ANIM_FADE_FROM   = 'aae_anim_fade_from';    // v3 fade-from
-	const ANIM_FADE_OFFSET = 'aae_anim_fade_offset';  // v3 fade-offset
-	const ANIM_SCALE       = 'aae_anim_scale';        // v3 wcf-a-scale (start scale)
 
-	/* ---------- 3D move effect specific ---------- */
-	const ANIM_ROTATION_DIR     = 'aae_anim_rotation_dir';     // v3 wcf_a_rotation_di
-	const ANIM_ROTATION         = 'aae_anim_rotation';         // v3 wcf_a_rotation
-	const ANIM_TRANSFORM_ORIGIN = 'aae_anim_transform_origin'; // v3 wcf_a_transform_origin
 
 	/* ---------- custom effect specific ---------- */
 	// v3 had a 2-field REPEATER (property SELECT + value TEXT). v4 stores
@@ -68,6 +58,7 @@ final class Schema {
 	// row objects. JS owns the row contract entirely (RepeaterInput inside
 	// the responsive-section); PHP just round-trips the payload.
 	const ANIM_CUSTOM_PROPS         = 'aae_anim_custom_props';
+	const ANIM_CUSTOM_PROPS_TO      = 'aae_anim_custom_props_to';
 
 	/* ---------- editor toggle ---------- */
 	const ANIM_ENABLE_EDITOR = 'aae_anim_enable_editor';  // v3 wcf_enable_animation_editor
@@ -77,9 +68,6 @@ final class Schema {
 	const RESPONSIVE_NUMBER_SETTINGS = [
 		self::ANIM_DELAY       => 0.15,
 		self::ANIM_DURATION    => 1.5,
-		self::ANIM_FADE_OFFSET => 50,
-		self::ANIM_SCALE       => 0.7,
-		self::ANIM_ROTATION    => -80,
 	];
 
 	public function register(): void {
@@ -121,20 +109,11 @@ final class Schema {
 		$schema[ self::ANIM_END_TRIGGER ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
 		$schema[ self::ANIM_START_POSITION ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
 		$schema[ self::ANIM_END_POSITION ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
-		$schema[ self::ANIM_START_CUSTOM ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
-		$schema[ self::ANIM_END_CUSTOM ]        = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
 
 		$schema[ self::ANIM_DELAY ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DELAY ] ] );
 		$schema[ self::ANIM_DURATION ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_DURATION ] ] );
 		$schema[ self::ANIM_EASING ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'power2.out' ] );
 
-		$schema[ self::ANIM_FADE_FROM ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom' ] );
-		$schema[ self::ANIM_FADE_OFFSET ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_FADE_OFFSET ] ] );
-		$schema[ self::ANIM_SCALE ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_SCALE ] ] );
-
-		$schema[ self::ANIM_ROTATION_DIR ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'x' ] );
-		$schema[ self::ANIM_ROTATION ]         = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::ANIM_ROTATION ] ] );
-		$schema[ self::ANIM_TRANSFORM_ORIGIN ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top center -50' ] );
 
 		/* ---------- non-responsive props ----------
 		 *
@@ -154,6 +133,7 @@ final class Schema {
 
 		$schema[ self::ANIM_MARKERS ]        = Boolean_Prop_Type::make()->default( false );
 		$schema[ self::ANIM_CUSTOM_PROPS ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => [] ] );
+		$schema[ self::ANIM_CUSTOM_PROPS_TO ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => [] ] );
 		$schema[ self::ANIM_ENABLE_EDITOR ]  = Boolean_Prop_Type::make()->default( false );
 
 		return $schema;

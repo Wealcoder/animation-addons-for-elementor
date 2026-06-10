@@ -502,8 +502,12 @@ function replay(el, fromChain = false, playGroup = "") {
 
 			if (!config) continue;
 			if (el[kind.playedKey]) {
-				el[kind.playedKey].kill?.();
-				delete el[kind.playedKey];
+				if (typeof kind.reset === 'function') {
+					try { kind.reset(el); } catch (_) {}
+				} else {
+					el[kind.playedKey].kill?.();
+					delete el[kind.playedKey];
+				}
 			}
 			if (typeof kind.play === 'function') {
 				kind.play(el, config);

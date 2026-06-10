@@ -403,6 +403,7 @@ function buildTextTween(el, config, isScrub = false, isPaused = false) {
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces, el);
+	console.log(tween);	
 	if (!tween) return null;
 	
 	const overrides = {};

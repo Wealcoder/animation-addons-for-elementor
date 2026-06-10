@@ -25,6 +25,8 @@ import { usePlainValue } from "./use-plain-value";
 import { useArrayCellValue } from "./use-array-cell-value";
 import { CodeInput } from "./inputs/CodeInput";
 import { triggerAnimationReplay } from "../editor-bridge/settings-bridge";
+import { __privateRunCommandSync as runCommandSync } from '@elementor/editor-v1-adapters';
+import { getContainer } from '@elementor/editor-elements';
 
 const HelpIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6, cursor: "help" }}>
@@ -89,6 +91,32 @@ const CONTROL_REGISTRY = {
   code:       { Component: CodeInput,       innerType: "string" },
 };
 
+const PRESETS = {
+  custom: { start: {}, end: {} },
+  fadeUp: { start: { opacity: 0, y: 80 }, end: { opacity: 1, y: 0 } },
+  blurReveal: { start: { opacity: 0, filter: "blur(20px)", y: 40 }, end: { opacity: 1, filter: "blur(0px)", y: 0 } },
+  skewUp: { start: { opacity: 0, y: 100, skewY: 12 }, end: { opacity: 1, y: 0, skewY: 0 } },
+  clipReveal: { start: { clipPath: "polygon(0 0, 0 0, 0 100%, 0% 100%)" }, end: { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" } },
+  scaleIn: { start: { opacity: 0, scale: 0.6 }, end: { opacity: 1, scale: 1 } },
+  zoomOut: { start: { opacity: 0, scale: 1.5, filter: "blur(15px)" }, end: { opacity: 1, scale: 1, filter: "blur(0px)" } },
+  flipUp3D: { start: { opacity: 0, rotationX: -90, transformOrigin: "50% 100%" }, end: { opacity: 1, rotationX: 0 } },
+  swingDrop: { start: { opacity: 0, rotationX: -90, transformOrigin: "50% 0%" }, end: { opacity: 1, rotationX: 0 } },
+  elasticPop: { start: { opacity: 0, scale: 0.2, rotation: -15 }, end: { opacity: 1, scale: 1, rotation: 0 } },
+  flipY: { start: { opacity: 0, rotationY: 90, transformOrigin: "50% 50%" }, end: { opacity: 1, rotationY: 0 } },
+  spinIn: { start: { opacity: 0, rotation: 180, scale: 0.5 }, end: { opacity: 1, rotation: 0, scale: 1 } },
+  slideRight: { start: { opacity: 0, x: -100 }, end: { opacity: 1, x: 0 } },
+  cinematicFocus: { start: { opacity: 0, scale: 1.15, filter: "blur(12px) brightness(1.5)" }, end: { opacity: 1, scale: 1, filter: "blur(0px) brightness(1)" } },
+  maskRevealUp: { start: { clipPath: "inset(100% 0% 0% 0%)", y: 40 }, end: { clipPath: "inset(0% 0% 0% 0%)", y: 0 } },
+  perspectiveFall: { start: { opacity: 0, z: 400, rotationX: 25, y: -80 }, end: { opacity: 1, z: 0, rotationX: 0, y: 0 } },
+  unfold3D: { start: { opacity: 0, rotationX: -90, scale: 0.9, transformOrigin: "50% 0%" }, end: { opacity: 1, rotationX: 0, scale: 1 } },
+  magneticSlide: { start: { opacity: 0, x: -100, skewX: 15 }, end: { opacity: 1, x: 0, skewX: 0 } },
+  luxDrift: { start: { opacity: 0, y: 30, filter: "grayscale(100%)" }, end: { opacity: 1, y: 0, filter: "grayscale(0%)" } },
+  saasDashboard: { start: { opacity: 0, y: 60, scale: 0.95 }, end: { opacity: 1, y: 0, scale: 1 } },
+  ecomUnbox: { start: { clipPath: "inset(20% 20% 20% 20% round 30px)", scale: 1.15, opacity: 0 }, end: { clipPath: "inset(0% 0% 0% 0% round 16px)", scale: 1, opacity: 1 } },
+  neonPulse: { start: { opacity: 0, scale: 0.85, boxShadow: "0 0 60px 10px rgba(99, 102, 241, 0.6)" }, end: { opacity: 1, scale: 1, boxShadow: "0 0 0px 0px rgba(99, 102, 241, 0)" } },
+  floatIn: { start: { opacity: 0, y: 40, rotation: -2 }, end: { opacity: 1, y: 0, rotation: 0 } }
+};
+
 /* ---------- dot indicator ---------- */
 
 const Dot = styled("button", {
@@ -146,7 +174,8 @@ export function ResponsiveRow({
   elementId,
   play_group,
   live_change,
-  help
+  help,
+  settings
 }) {
   if (control === "play-button") {
     return (
@@ -177,6 +206,9 @@ export function ResponsiveRow({
         propValue={propValue}
         activeBp={activeBp}
         elementId={elementId}
+        play_group={play_group}
+        live_change={live_change}
+        settings={settings}
       />
     );
   }
@@ -212,6 +244,7 @@ export function ResponsiveRow({
       elementId={elementId}
       play_group={play_group}
       live_change={live_change}
+      settings={settings}
     />
   ) : (
        
@@ -234,6 +267,7 @@ export function ResponsiveRow({
         elementId={elementId}
         play_group={play_group}
         live_change={live_change}
+        settings={settings}
       />
     
   );
@@ -260,6 +294,7 @@ function ResponsiveCellRow({
   elementId,
   play_group,
   live_change,
+  settings,
 }) {
   const { value, ownValue, setValue, resetValue } = useCellValue({
     propValue,
@@ -276,6 +311,60 @@ function ResponsiveCellRow({
 
   const handleValueChange = (newVal) => {
     setValue(newVal);
+
+    if (bind === 'aae_anim_effect') {
+      let fromProps = [];
+      let toProps = [];
+      let methodToSet = null;
+      const preset = PRESETS[newVal];
+      const customPropsBind = 'aae_anim_custom_props';
+      const currentProps = settings ? settings[customPropsBind] : null;
+      const map = (currentProps && typeof currentProps === 'object' && currentProps.$$type === 'aae-rj')
+        ? (currentProps.value || {})
+        : {};
+      const desktopProps = map['desktop'];
+
+      if (preset) {
+        fromProps = Object.entries(preset.start || {}).map(([property, value]) => ({ property, value: String(value) }));
+        toProps = Object.entries(preset.end || {}).map(([property, value]) => ({ property, value: String(value) }));
+        methodToSet = 'fromTo';
+      } else if (newVal === 'custom' && (!desktopProps || desktopProps.length === 0)) {
+        fromProps = [
+          { property: 'x', value: '80' },
+          { property: 'y', value: '80' },
+          { property: 'delay', value: '0' },
+          { property: 'duration', value: '1.5' }
+        ];
+      }
+
+      if (fromProps.length > 0 || preset) {
+        const customPropsToBind = 'aae_anim_custom_props_to';
+        const methodBind = 'aae_anim_method';
+        const currentPropsTo = settings ? settings[customPropsToBind] : null;
+        const currentMethod = settings ? settings[methodBind] : null;
+        const mapTo = (currentPropsTo && typeof currentPropsTo === 'object' && currentPropsTo.$$type === 'aae-rj') ? (currentPropsTo.value || {}) : {};
+        
+        const nextSettingsToUpdate = {
+          [customPropsBind]: { $$type: 'aae-rj', value: { ...map, 'desktop': fromProps } },
+          [customPropsToBind]: { $$type: 'aae-rj', value: { ...mapTo, 'desktop': toProps } }
+        };
+
+        if (methodToSet) {
+          const methodMap = (currentMethod && typeof currentMethod === 'object' && currentMethod.$$type === 'aae-rj') ? (currentMethod.value || {}) : {};
+          nextSettingsToUpdate[methodBind] = { $$type: 'aae-rj', value: { ...methodMap, 'desktop': methodToSet } };
+        }
+
+        const container = getContainer(elementId);
+        if (container) {
+          runCommandSync('document/elements/settings', {
+            container,
+            settings: nextSettingsToUpdate,
+            options: { external: true, render: false, renderUI: false },
+          });
+        }
+      }
+    }
+
     if (live_change && play_group) {
       console.log(newVal, play_group);
       setTimeout(() => triggerAnimationReplay(play_group), 50);
@@ -347,6 +436,9 @@ function RepeaterRow({
   propValue,
   activeBp,
   elementId,
+  play_group,
+  live_change,
+  settings,
 }) {
   const { value, ownValue, setValue, resetValue } = useArrayCellValue({
     propValue,
@@ -408,6 +500,8 @@ function RepeaterRow({
         cells={cells}
         addLabel={addLabel}
         rowDefaults={rowDefaults}
+        settings={settings}
+        activeBp={activeBp}
       />
     </Stack>
   );
@@ -434,6 +528,7 @@ function PlainRow({
   elementId,
   play_group,
   live_change,
+  settings,
 }) {
   const { value, setValue } = usePlainValue({
     propValue,
@@ -445,6 +540,60 @@ function PlainRow({
 
   const handleValueChange = (newVal) => {
     setValue(newVal);
+
+    if (bind === 'aae_anim_effect') {
+      let fromProps = [];
+      let toProps = [];
+      let methodToSet = null;
+      const preset = PRESETS[newVal];
+      const customPropsBind = 'aae_anim_custom_props';
+      const currentProps = settings ? settings[customPropsBind] : null;
+      const map = (currentProps && typeof currentProps === 'object' && currentProps.$$type === 'aae-rj')
+        ? (currentProps.value || {})
+        : {};
+      const desktopProps = map['desktop'];
+
+      if (preset) {
+        fromProps = Object.entries(preset.start || {}).map(([property, value]) => ({ property, value: String(value) }));
+        toProps = Object.entries(preset.end || {}).map(([property, value]) => ({ property, value: String(value) }));
+        methodToSet = 'fromTo';
+      } else if (newVal === 'custom' && (!desktopProps || desktopProps.length === 0)) {
+        fromProps = [
+          { property: 'x', value: '80' },
+          { property: 'y', value: '80' },
+          { property: 'delay', value: '0' },
+          { property: 'duration', value: '1.5' }
+        ];
+      }
+
+      if (fromProps.length > 0 || preset) {
+        const customPropsToBind = 'aae_anim_custom_props_to';
+        const methodBind = 'aae_anim_method';
+        const currentPropsTo = settings ? settings[customPropsToBind] : null;
+        const currentMethod = settings ? settings[methodBind] : null;
+        const mapTo = (currentPropsTo && typeof currentPropsTo === 'object' && currentPropsTo.$$type === 'aae-rj') ? (currentPropsTo.value || {}) : {};
+        
+        const nextSettingsToUpdate = {
+          [customPropsBind]: { $$type: 'aae-rj', value: { ...map, 'desktop': fromProps } },
+          [customPropsToBind]: { $$type: 'aae-rj', value: { ...mapTo, 'desktop': toProps } }
+        };
+
+        if (methodToSet) {
+          const methodMap = (currentMethod && typeof currentMethod === 'object' && currentMethod.$$type === 'aae-rj') ? (currentMethod.value || {}) : {};
+          nextSettingsToUpdate[methodBind] = { $$type: 'aae-rj', value: { ...methodMap, 'desktop': methodToSet } };
+        }
+
+        const container = getContainer(elementId);
+        if (container) {
+          runCommandSync('document/elements/settings', {
+            container,
+            settings: nextSettingsToUpdate,
+            options: { external: true, render: false, renderUI: false },
+          });
+        }
+      }
+    }
+
     if (live_change && play_group) {
       setTimeout(() => triggerAnimationReplay(play_group), 50);
     }

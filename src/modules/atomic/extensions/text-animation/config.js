@@ -9,8 +9,8 @@ import {
 	isTranslateEffect,
 	showEnableEditor,
 	showPlayButton,
-	
 	showScrollCustomBlock,
+	showScrollPosition,
 	showStartCustom,
 
 	showTriggerSelector,
@@ -126,12 +126,12 @@ const config = {
 		},
 		{
 			bind: 'start_position', label: 'Start', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock, responsive: true
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollPosition, responsive: true
 		},
 		
 		{
 			bind: 'end_position', label: 'End', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock, responsive: true
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollPosition, responsive: true
 		},		
 
 		// Invert-specific

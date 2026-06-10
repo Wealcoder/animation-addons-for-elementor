@@ -2,18 +2,6 @@
 
 import { wireTrigger, modeFor, resolveTriggerEl } from './triggers';
 
-/**
- * Regular animation kind — composes a GSAP tween from the (effect, …)
- * config emitted by Render.php (frontend) or the editor-bridge (preview).
- *
- * Reads from `window.AAE_INTERACTIONS_ANIM[<interactionId>]`. Mirrors the
- * shape used by text.js: read once via configFor → resolve responsive
- * primitives via pickConfigResponsive → compose (from, to) per effect →
- * tween the element itself.
- *
- * Helpers come from window.AAEADDON. NEVER import from '../../common' —
- * that would inline ~1.5 KB of helpers into every effect bundle.
- */
 const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
 
 export const ANIM_MAP = 'AAE_INTERACTIONS_ANIM';
@@ -28,7 +16,7 @@ function r(cfg, key, fallback) {
 
 export function readRegular(el) {
 	const cfg = configFor(el, ANIM_MAP);
-	
+
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
@@ -37,22 +25,25 @@ export function readRegular(el) {
 		method:          r(cfg, 'method',  'from'),
 		trigger:         r(cfg, 'trigger', 'on_scroll'),
 		triggerSelector: r(cfg, 'triggerSelector', ''),
+		
+		wrapper:         r(cfg, 'wrapper', 'default'),
+		startTrigger:    r(cfg, 'startTrigger', ''),
+		endTrigger:      r(cfg, 'endTrigger', ''),
+		start:           r(cfg, 'startPosition', 'top top'),
+		end:             r(cfg, 'endPosition', 'bottom bottom'),
+
 		easing:          r(cfg, 'easing',   'power2.out'),
 		duration:        Number(r(cfg, 'duration', 1.5)),
 		delay:           Number(r(cfg, 'delay',    0.15)),
 		// Non-responsive: cfg.markers is a top-level boolean.
 		markers:         !!cfg.markers,
-		// fade
-		fadeFrom:        r(cfg, 'fadeFrom',   'bottom'),
-		fadeOffset:      Number(r(cfg, 'fadeOffset', 50)),
-		scale:           Number(r(cfg, 'scale',      0.7)),
-		// move
-		rotationDir:     r(cfg, 'rotationDir',     'x'),
-		rotation:        Number(r(cfg, 'rotation', -80)),
-		transformOrigin: r(cfg, 'transformOrigin', 'top center -50'),
+
 		// custom
 		customProps:     Array.isArray(pickConfigResponsive(cfg, 'customProps'))
 			? pickConfigResponsive(cfg, 'customProps')
+			: [],
+		customPropsTo:   Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
+			? pickConfigResponsive(cfg, 'customPropsTo')
 			: [],
 	};
 }
@@ -64,118 +55,104 @@ export function readRegular(el) {
  * fadeFrom=left + fadeOffset=120) without exploding the preset table.
  */
 function regularTween(config) {
-	if (config.effect === 'fade') {
-		const { fadeFrom, fadeOffset, scale } = config;
-		if (fadeFrom === 'scale') {
-			return {
-				from: { opacity: 0, scale },
-				to:   { opacity: 1, scale: 1 },
-			};
-		}
-		if (fadeFrom === 'in') {
-			return {
-				from: { opacity: 0 },
-				to:   { opacity: 1 },
-			};
-		}
-		const axis = (fadeFrom === 'left' || fadeFrom === 'right') ? 'x' : 'y';
-		const sign = (fadeFrom === 'left' || fadeFrom === 'top') ? -1 : 1;
-		return {
-			from: { opacity: 0, [axis]: sign * fadeOffset },
-			to:   { opacity: 1, [axis]: 0 },
-		};
+	// Presets are editor-side macros that populate customProps/customPropsTo.
+	// We just read those directly to build the tween target.
+	const fromTarget = {};
+	for (const { k, v } of config.customProps || []) {
+		if (!k) continue;
+		const num = Number(v);
+		fromTarget[k] = (v !== '' && Number.isFinite(num)) ? num : v;
 	}
 
-	if (config.effect === 'move') {
-		const axisKey = config.rotationDir === 'y' ? 'rotationY' : 'rotationX';
-		return {
-			from: {
-				opacity: 0,
-				[axisKey]: config.rotation,
-				transformOrigin: config.transformOrigin,
-			},
-			to: {
-				opacity: 1,
-				rotationX: 0,
-				rotationY: 0,
-				transformOrigin: config.transformOrigin,
-			},
-		};
+	const toTarget = {};
+	for (const { k, v } of config.customPropsTo || []) {
+		if (!k) continue;
+		const num = Number(v);
+		toTarget[k] = (v !== '' && Number.isFinite(num)) ? num : v;
 	}
 
-	if (config.effect === 'custom') {
-		// `customProps` is the editor's repeater output, normalised to
-		// `[{ k, v }]` pairs in features.js. Each pair becomes a GSAP
-		// tween target: method=from animates FROM the listed state TO
-		// the existing one, method=to animates the opposite way.
-		const target = {};
-		for (const { k, v } of config.customProps || []) {
-			if (!k) continue;
-			// Numeric strings become numbers; anything else stays string
-			// (so colour/transform-origin/etc. pass through verbatim).
-			const num = Number(v);
-			target[k] = (v !== '' && Number.isFinite(num)) ? num : v;
-		}
-		return config.method === 'to'
-			? { from: {}, to: target }
-			: { from: target, to: {} };
+	const tween = { from: {}, to: {} };
+	if (config.method === 'from') {
+		tween.from = fromTarget;
+	} else if (config.method === 'to') {
+		tween.to = fromTarget; // 'To' method uses fromTarget because the UI binds the single repeater to customProps
+	} else if (config.method === 'fromTo') {
+		tween.from = fromTarget;
+		tween.to = toTarget;
+	} else {
+		return null;
 	}
 
-	return null;
+	tween.duration = tween.to.duration ?? tween.from.duration ?? config.duration;
+	tween.delay = tween.to.delay ?? tween.from.delay ?? config.delay;
+	tween.ease = tween.to.ease ?? tween.to.easing ?? tween.from.ease ?? tween.from.easing ?? config.easing;
+
+	delete tween.from.duration; delete tween.from.delay; delete tween.from.ease; delete tween.from.easing;
+	delete tween.to.duration; delete tween.to.delay; delete tween.to.ease; delete tween.to.easing;
+	
+	return tween;
 }
 
 /** Strip ONLY the props this effect touched. `clearProps: 'all'` would
  *  erase Elementor's own inline styles. */
 function clearPropsFor(fromObj, toObj) {
-	const props = new Set();
-	const addFromKey = (k) => {
-		if (k === 'opacity') props.add('opacity');
-		else if (k === 'x' || k === 'y' || k === 'scale'
-			|| k === 'rotation' || k === 'rotationX' || k === 'rotationY') {
-			props.add('transform');
-		}
-		else if (k === 'transformOrigin') props.add('transform-origin');
-		else props.add(k);
-	};
-	Object.keys(fromObj || {}).forEach(addFromKey);
-	Object.keys(toObj   || {}).forEach(addFromKey);
+	const props = new Set([
+		...Object.keys(fromObj || {}),
+		...Object.keys(toObj || {})
+	]);
 	return props.size ? Array.from(props).join(',') : false;
 }
 
-export function playRegular(el, config) {
-	const gsap = getGsap();
-	if (!gsap) return;
-
-	if (el[REGULAR_PLAYED]) el[REGULAR_PLAYED].kill();
-
-	const tween = regularTween(config);
-	if (!tween) return;
-
-	el[REGULAR_PLAYED] = gsap.fromTo(el, tween.from, {
-		...tween.to,
-		duration:   config.duration,
-		delay:      config.delay,
-		ease:       config.easing,
-		clearProps: clearPropsFor(tween.from, tween.to),
-	});
-}
-
-function buildScrubbedRegular(el, config) {
+function buildRegularTween(el, config, isPaused = false, isScrubbed = false) {
 	const gsap = getGsap();
 	if (!gsap) return null;
 
 	if (el[REGULAR_PLAYED]) el[REGULAR_PLAYED].kill();
 
-	const tween = regularTween(config);
-	if (!tween) return null;
+	const tweenCfg = regularTween(config);
+	if (!tweenCfg) return null;
 
-	el[REGULAR_PLAYED] = gsap.fromTo(el, tween.from, {
-		...tween.to,
-		duration: config.duration,
-		ease:     'none',
-		paused:   true,
-	});
+	const overrides = {};
+	if (isPaused || isScrubbed) overrides.paused = true;
+	if (isScrubbed) overrides.ease = 'none';
+
+	if (config.method === 'to') {
+		el[REGULAR_PLAYED] = gsap.to(el, {
+			...tweenCfg.to,
+			duration: tweenCfg.duration,
+			delay: tweenCfg.delay,
+			ease: tweenCfg.ease,
+			clearProps: clearPropsFor(tweenCfg.from, tweenCfg.to),
+			...overrides
+		});
+	} else if (config.method === 'fromTo') {
+		el[REGULAR_PLAYED] = gsap.fromTo(el, tweenCfg.from, {
+			...tweenCfg.to,
+			duration: tweenCfg.duration,
+			delay: tweenCfg.delay,
+			ease: tweenCfg.ease,
+			clearProps: clearPropsFor(tweenCfg.from, tweenCfg.to),
+			...overrides
+		});
+	} else {
+		el[REGULAR_PLAYED] = gsap.from(el, {
+			...tweenCfg.from,
+			duration: tweenCfg.duration,
+			delay: tweenCfg.delay,
+			ease: tweenCfg.ease,
+			clearProps: clearPropsFor(tweenCfg.from, tweenCfg.to),
+			...overrides
+		});
+	}
 	return el[REGULAR_PLAYED];
+}
+
+export function playRegular(el, config) {
+	buildRegularTween(el, config, false, false);
+}
+
+function buildScrubbedRegular(el, config) {
+	return buildRegularTween(el, config, false, true);
 }
 
 /**
@@ -185,19 +162,57 @@ function buildScrubbedRegular(el, config) {
  */
 export function resetRegular(el) {
 	if (!el[REGULAR_PLAYED]) return;
-	try { el[REGULAR_PLAYED].revert(); } catch (_) { /* ignore */ }
-	el[REGULAR_PLAYED].kill?.();
+	
+	const tween = el[REGULAR_PLAYED];
+	const clearProps = tween.vars && tween.vars.clearProps;
+	
+	try { tween.revert(); } catch (_) { /* ignore */ }
+	tween.kill?.();
 	delete el[REGULAR_PLAYED];
+
+	if (clearProps) {
+		const gsap = getGsap();
+		if (gsap) gsap.set(el, { clearProps });
+	}
 }
 
 export function bindRegular(el, config) {
 	const mode = modeFor(config.trigger);
+	let triggerSelector = '';
+	if (config.wrapper === 'default' && config.triggerSelector == '') {
+		triggerSelector = el;
+	}
+
+	if (mode !== 'scrub' && mode !== 'page-load') {
+		buildRegularTween(el, config, true, false);
+	}
+
 	wireTrigger({
 		el,
 		mode,
-		triggerEl:     resolveTriggerEl(mode, config.triggerSelector),
-		markers:       config.markers,
-		play:          () => playRegular(el, config),
+		animation: el[REGULAR_PLAYED],
+		triggerEl: resolveTriggerEl(mode, triggerSelector, config),
+		markers: config.markers,
+		play: () => {
+			if (el[REGULAR_PLAYED]) {
+				if (el[REGULAR_PLAYED].paused()) {
+					el[REGULAR_PLAYED].play();
+				} else {
+					el[REGULAR_PLAYED].restart(true);
+				}
+			} else {
+				setTimeout(() => {
+					el._aaeTriggerPlay = true;
+					playRegular(el, config);
+					delete el._aaeTriggerPlay;
+				}, 0);
+			}
+		},
 		buildScrubbed: () => buildScrubbedRegular(el, config),
+		config: {
+			...config,
+			start: config.startPosition || config.start,
+			end: config.endPosition || config.end
+		}
 	});
 }

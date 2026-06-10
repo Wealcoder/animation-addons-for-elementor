@@ -323,17 +323,7 @@ const REGULAR_RESPONSIVE_ALWAYS = {
 	aae_anim_easing: { configKey: 'easing', default: 'power2.out' },
 };
 
-const REGULAR_RESPONSIVE_FADE = {
-	aae_anim_fade_from: { configKey: 'fadeFrom', default: 'bottom' },
-	aae_anim_fade_offset: { configKey: 'fadeOffset', default: 50 },
-	aae_anim_scale: { configKey: 'scale', default: 0.7 },
-};
 
-const REGULAR_RESPONSIVE_MOVE = {
-	aae_anim_rotation_dir: { configKey: 'rotationDir', default: 'x' },
-	aae_anim_rotation: { configKey: 'rotation', default: -80 },
-	aae_anim_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
-};
 
 const REGULAR_RESPONSIVE_SCROLL_CUSTOM = {
 	aae_anim_start_trigger: { configKey: 'startTrigger', default: '' },
@@ -377,29 +367,18 @@ function buildRegularConfig(settings) {
 	// keeps the editor toggle in sync with what the user sees.
 	if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
 
-	if (effect === 'fade') {
-		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_FADE, disabledBps);
-	}
-
-	if (effect === 'move') {
-		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_MOVE, disabledBps);
-	}
-
-	if (effect === 'custom') {
-		// Custom Properties repeater — stored as Responsive_Json_Prop_Type
-		// whose `.value` is a per-bp map of row arrays. JS owns the row
-		// shape: `{ property: string, value: string }`. Frontend reader
-		// expects `{ k, v }` pairs.
-		const map = envelopeToMap(settings.aae_anim_custom_props);
+	const processRepeater = (bindName, cfgKey) => {
+		const map = envelopeToMap(settings[bindName]);
 		const rows = Array.isArray(map.desktop) ? map.desktop : [];
 		const pairs = [];
 		for (const row of rows) {
-			const k = typeof row?.property === 'string' ? row.property.trim() : '';
+			if (row?.enabled === false) continue;
+			const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 			if (!k || k === 'none') continue;
-			const v = typeof row?.value === 'string' ? row.value.trim() : '';
+			const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 			pairs.push({ k, v });
 		}
-		if (pairs.length) cfg.customProps = pairs;
+		if (pairs.length) cfg[cfgKey] = pairs;
 
 		for (const bp of BPS) {
 			if (disabledBps.has(bp)) continue;
@@ -407,14 +386,18 @@ function buildRegularConfig(settings) {
 			if (!bpRows) continue;
 			const bpPairs = [];
 			for (const row of bpRows) {
-				const k = typeof row?.property === 'string' ? row.property.trim() : '';
+				if (row?.enabled === false) continue;
+				const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 				if (!k || k === 'none') continue;
-				const v = typeof row?.value === 'string' ? row.value.trim() : '';
+				const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 				bpPairs.push({ k, v });
 			}
-			if (bpPairs.length) cfg['customProps_' + bp] = bpPairs;
+			if (bpPairs.length) cfg[cfgKey + '_' + bp] = bpPairs;
 		}
-	}
+	};
+
+	processRepeater('aae_anim_custom_props', 'customProps');
+	processRepeater('aae_anim_custom_props_to', 'customPropsTo');
 
 	if (plain(settings, 'aae_anim_enable_editor')) cfg.enableEditor = true;
 	return cfg;
