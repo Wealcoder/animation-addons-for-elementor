@@ -40,13 +40,24 @@ export function readImg(el) {
 		scaleStart:  Number(r(cfg, 'scaleStart', 0.5)),
 		scaleEnd:    Number(r(cfg, 'scaleEnd',   1)),
 		startPos:    r(cfg, 'startPos',    'top center'),
-		customStart: r(cfg, 'customStart', 'top 90%'),
+		customStart: r(cfg, 'customStart', 'top 10%'),
+		endPos: r(cfg, 'endPos', 'bottom bottom+=100'),
+
+		enableMarker: !!pickConfigResponsive(cfg, 'enableMarker'),
 	};
 }
 
 /** Resolve the trigger's `start` value — falls back to startPos unless 'custom'. */
 function resolveStart(config) {
 	return config.startPos === 'custom' ? config.customStart : config.startPos;
+}
+
+function resolveEnd(config) {
+	if (!config.endPos) {
+		return undefined;
+	}
+
+	return config.endPos === 'custom' ? config.customEnd : config.endPos;
 }
 
 /** Find the inner <img> the effect should tween. e-image renders <img> inside
@@ -106,6 +117,7 @@ function bindReveal(el, config) {
 		scrollTrigger: {
 			trigger: wrap,
 			start: resolveStart(config),
+			end: resolveEnd(config),
 			toggleActions: 'play none none none',
 		},
 	});
@@ -143,7 +155,13 @@ function bindReveal(el, config) {
 			imageAnim.yPercent = 100;
 	}
 
-	tl.set([wrap, image], { autoAlpha: 1 });
+	// Remove stale inline visibility
+	gsap.set(wrap, { opacity: 0 });
+
+	tl.to(wrap, {
+		opacity: 1,
+		duration: 0.01,
+	});
 
 	tl.from(wrap, contentAnim);
 	tl.from(image, imageAnim);
@@ -168,6 +186,7 @@ function bindReveal(el, config) {
  * =================================================================== */
 
 function bindScale(el, config) {
+	console.log(config.enableMarker);
 	const gsap = getGsap();
 	const ScrollTrigger = getScrollTrigger();
 	if (!gsap || !ScrollTrigger) return;
@@ -191,10 +210,11 @@ function bindScale(el, config) {
 	const st = ScrollTrigger.create({
 		trigger,
 		start: resolveStart(config),
+		end: resolveEnd(config),
 		scrub: true,
 		animation: tween,
 		invalidateOnRefresh: true,
-		// markers: true,
+		markers: config.enableMarker,
 	});
 
 	// Force ScrollTrigger to recalculate after setup

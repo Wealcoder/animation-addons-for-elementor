@@ -354,8 +354,3 @@ button {
 .wcf--countdown .timer-content {
   display: flex;
 }
-
-.aae-img-reveal-wrap,
-.aae-img-reveal-wrap img {
-  visibility: hidden;
-}
