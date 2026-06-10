@@ -183,7 +183,8 @@ const config = {
             defaultValue: false,
             tab: 'style',
             live_change: true,
-            play_group: 'aae_advance_tooltip_'
+            play_group: 'aae_advance_tooltip_',
+            when: isEnabled,
         },
 
         {
