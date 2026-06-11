@@ -44,7 +44,7 @@ function read(el) {
 
 	return {
 		enabled      : true,
-		text         : r(cfg, 'text',       ''),
+		text         : r(cfg, 'text',       'view tooltip'),
 		position     : r(cfg, 'position',   'top'),
 		trigger      : r(cfg, 'trigger',    'hover'),
 		bg           : r(cfg, 'bg',         '#16181d'),

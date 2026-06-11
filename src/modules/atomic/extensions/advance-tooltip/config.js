@@ -51,6 +51,7 @@ const config = {
             responsive: true,
             defaultValue: false,
             tab: 'Content',
+            play_group: 'aae_advance_tooltip_',
         },
 
         {
