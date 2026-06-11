@@ -125,19 +125,27 @@ function bindReveal(el, config, preview = false) {
 	}
 
 	// ✅ FIX: GSAP controls visibility (no CSS visibility hacks)
-	gsap.set(wrap, { autoAlpha: 0 });
+		gsap.set(wrap, { autoAlpha: 0 });
 
-	const tl = gsap.timeline();
+		const tl = gsap.timeline({
+			scrollTrigger: {
+				trigger: wrap,
+				start: resolveStart(config),
+				//end: resolveEnd(config),
+				//scrub: true,
+				invalidateOnRefresh: true,
+			}
+		});
 
-	if (preview) {
-		tl.set(wrap, { autoAlpha: 1 });
-		tl.from(wrap, contentAnim);
-		tl.from(image, imageAnim);
-	} else {
-		tl.set(wrap, { autoAlpha: 1 });
-		tl.from(wrap, contentAnim, 0);
-		tl.from(image, imageAnim, 0);
-	}
+		if (preview) {
+			tl.set(wrap, { autoAlpha: 1 });
+			tl.from(wrap, contentAnim);
+			tl.from(image, imageAnim);
+		} else {
+			tl.set(wrap, { autoAlpha: 1 });
+			tl.from(wrap, contentAnim, 0);
+			tl.from(image, imageAnim, 0);
+		}
 
 	el[IMG_PLAYED] = tl;
 
