@@ -16,10 +16,36 @@ function r(cfg, key, fallback) {
 
 export function readRegular(el) {
 	const cfg = configFor(el, ANIM_MAP);
-
+	
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
+	console.log({
+		effect,
+		method:          r(cfg, 'method',  'from'),
+		trigger:         r(cfg, 'trigger', 'on_scroll'),
+		triggerSelector: r(cfg, 'triggerSelector', ''),
+		
+		wrapper:         r(cfg, 'wrapper', 'default'),
+		startTrigger:    r(cfg, 'startTrigger', ''),
+		endTrigger:      r(cfg, 'endTrigger', ''),
+		start:           r(cfg, 'startPosition', 'top center'),
+		end:             r(cfg, 'endPosition', 'bottom bottom'),
+
+		easing:          r(cfg, 'easing',   'power2.out'),
+		duration:        Number(r(cfg, 'duration', 1.5)),
+		delay:           Number(r(cfg, 'delay',    0.15)),
+		// Non-responsive: cfg.markers is a top-level boolean.
+		markers:         !!cfg.markers,
+
+		// custom
+		customProps:     (Array.isArray(pickConfigResponsive(cfg, 'customProps'))
+			? pickConfigResponsive(cfg, 'customProps')
+			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
+		customPropsTo:   (Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
+			? pickConfigResponsive(cfg, 'customPropsTo')
+			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
+	});
 	return {
 		effect,
 		method:          r(cfg, 'method',  'from'),
@@ -39,12 +65,12 @@ export function readRegular(el) {
 		markers:         !!cfg.markers,
 
 		// custom
-		customProps:     Array.isArray(pickConfigResponsive(cfg, 'customProps'))
+		customProps:     (Array.isArray(pickConfigResponsive(cfg, 'customProps'))
 			? pickConfigResponsive(cfg, 'customProps')
-			: [],
-		customPropsTo:   Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
+			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
+		customPropsTo:   (Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
 			? pickConfigResponsive(cfg, 'customPropsTo')
-			: [],
+			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
 	};
 }
 
@@ -57,6 +83,7 @@ export function readRegular(el) {
 function regularTween(config) {
 	// Presets are editor-side macros that populate customProps/customPropsTo.
 	// We just read those directly to build the tween target.
+	console.log('lowercase issue',config);
 	const fromTarget = {};
 	for (const { k, v } of config.customProps || []) {
 		if (!k) continue;
@@ -104,6 +131,7 @@ function clearPropsFor(fromObj, toObj) {
 }
 
 function buildRegularTween(el, config, isPaused = false, isScrubbed = false) {
+	console.log(config);
 	const gsap = getGsap();
 	if (!gsap) return null;
 
