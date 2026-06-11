@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { wireTrigger, modeFor, resolveTriggerEl } from './triggers';
-import { PREMIUM_EFFECTS, PREMIUM_EFFECT_OPTIONS } from '../../extensions/text-animation/presets';
+import { PREMIUM_EFFECTS_BY_ID } from '../../extensions/text-animation/presets';
 
 /**
  * Text animation kind — char/word/text_move/text_reveal/text_scale/...
@@ -120,6 +120,7 @@ const SPLIT_RECIPE = {
  * (V3 builds it inline with cloning); we keep a placeholder for now.
  */
 function textTween(effect, config, pieces, el) {
+	
 	const shared = {
 		duration: config.duration,
 		delay: config.delay,
@@ -223,11 +224,9 @@ function textTween(effect, config, pieces, el) {
 		}
 		
 		default: {
-			if (effect && effect.startsWith('premium_')) {
-				const presetKey = PREMIUM_EFFECT_OPTIONS.find(o => o.value === effect)?._originalKey;
-				const preset = PREMIUM_EFFECTS[presetKey];
-				if (preset) {
-					const { runAsTo, ...gsapConfig } = preset;
+			const preset = PREMIUM_EFFECTS_BY_ID[effect];
+			if (preset) {
+				const { runAsTo, ...gsapConfig } = preset;
 					
 					const overrides = {};
 					if (config.duration !== undefined && config.duration !== '') {
@@ -242,16 +241,12 @@ function textTween(effect, config, pieces, el) {
 						overrides.ease = config.ease;
 					}
 
-					if (config.transformOrigin !== undefined && config.transformOrigin !== '') {
-						if (config.effect === 'premium_origami_fold' || config.effect === 'premium_shutter_cascade') {
-							overrides.transformOrigin = config.transformOrigin;
-						}
+					if (config.transformOrigin) {
+						overrides.transformOrigin = config.transformOrigin;
 					}
 
-					if (config.textShadow !== undefined && config.textShadow !== '') {
-						if (config.effect === 'premium_cyber_phantom') {
-							overrides.textShadow = config.textShadow;
-						}
+					if (config.textShadow) {
+						overrides.textShadow = config.textShadow;
 					}
 					
 					return {
@@ -259,7 +254,6 @@ function textTween(effect, config, pieces, el) {
 						props: { ...shared, ...gsapConfig, ...overrides, force3D: true }
 					};
 				}
-			}
 			return null;
 		}
 	}
@@ -267,45 +261,23 @@ function textTween(effect, config, pieces, el) {
 
 /**
  * Builds a GSAP-compatible stagger object from the stored data.
- * The stored stagger data can be:
- *   - A legacy number (e.g. 0.02)
- *   - A stringified legacy number
- *   - An object: { val: 0.02, type: 'each', from: 'start', repeat: 0, yoyo: false, ease: '' }
+ * The complex parsing of legacy formats is now handled by the backend PHP.
  */
-function buildStaggerConfig(staggerData, presetStagger = null) {
-	let userStagger = {};
-	if (typeof staggerData === 'object' && staggerData !== null) {
-		if (staggerData.type === 'amount') {
-			userStagger.amount = staggerData.val;
-		} else {
-			userStagger.each = staggerData.val;
-		}
-		if (staggerData.from) userStagger.from = staggerData.from;
-		if (staggerData.ease) userStagger.ease = staggerData.ease;
-		if (staggerData.repeat !== undefined && staggerData.repeat !== 0) userStagger.repeat = staggerData.repeat;
-		if (staggerData.yoyo) userStagger.yoyo = staggerData.yoyo;
-		if (staggerData.grid) {
-			let g = staggerData.grid;
-			if (typeof g === 'string' && g.startsWith('[') && g.endsWith(']')) {
-				try { g = JSON.parse(g); } catch (e) {}
-			}
-			userStagger.grid = g;
-		}
-		if (staggerData.axis) userStagger.axis = staggerData.axis;
-	} else {
-		userStagger.each = parseNum(staggerData, 0.02);
-	}
+function buildStaggerConfig(userStagger, presetStagger = null) {
+	let staggerObj = typeof userStagger === 'object' && userStagger !== null 
+		? userStagger 
+		: { each: parseNum(userStagger, 0.02) };
 
 	if (typeof presetStagger === 'object' && presetStagger !== null) {
-		return { ...presetStagger, ...userStagger };
+		return { ...presetStagger, ...staggerObj };
 	}
 	
 	// If presetStagger is just a number (e.g. `stagger: 0.05`), we map it to `each`
 	if (typeof presetStagger === 'number') {
-		return { each: presetStagger, ...userStagger };
+		return { each: presetStagger, ...staggerObj };
 	}
 
-	return userStagger;
+	return staggerObj;
 }
 
 /** Build the SplitText instance for `effect` and return the tween targets.
@@ -313,7 +285,7 @@ function buildStaggerConfig(staggerData, presetStagger = null) {
 function splitFor(el, effect, config) {
 	let recipe = SPLIT_RECIPE[effect];
 
-	const isPremium = effect && effect.startsWith('premium_');
+	const isPremium = effect && !!PREMIUM_EFFECTS_BY_ID[effect];
 	if (isPremium) {
 		recipe = { type: 'chars, words', target: 'chars', perspective: 1500 };
 	}
@@ -403,7 +375,7 @@ function buildTextTween(el, config, isScrub = false, isPaused = false) {
 	if (!pieces) return null;
 
 	const tween = textTween(config.effect, config, pieces, el);
-	console.log(tween);	
+
 	if (!tween) return null;
 	
 	const overrides = {};

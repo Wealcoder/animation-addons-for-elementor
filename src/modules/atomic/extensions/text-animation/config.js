@@ -21,7 +21,7 @@ import {
 	isMoveOrPremium,
 	showTextShadow
 } from './predicates';
-import { PREMIUM_EFFECT_OPTIONS } from './presets';
+import { PREMIUM_EFFECTS } from './presets';
 
 /**
  * Declarative table for the Text Animation section. Same structure as
@@ -38,7 +38,10 @@ const EFFECT_OPTIONS = [
 	{ value: 'text_reveal', label: 'Text Reveal' },
 	{ value: 'text_scale', label: 'Text Scale' },
 	{ value: 'text_invert', label: 'Text Invert' },
-	...PREMIUM_EFFECT_OPTIONS
+	...Object.keys(PREMIUM_EFFECTS).map(key => ({
+		value: key.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+		label: key
+	}))
 ];
 
 const TRIGGER_OPTIONS = [
@@ -164,7 +167,7 @@ const config = {
 			defaultValue: 1,
 			when: isDurationEffect, responsive: true
 		},
-		{ bind: 'stagger', label: 'Stagger', control: 'stagger', defaultValue: 0.02, when: isDurationEffect, responsive: true },
+		{ bind: 'stagger', label: 'Stagger', control: 'stagger', min: -1, max: 100, step: 0.01, defaultValue: 0.02, when: isDurationEffect, responsive: true },
 		{
 			bind: 'ease', label: 'Easing', control: 'select', options: EASE_OPTIONS, defaultValue: '', when: isPremiumEffect, responsive: true
 		},

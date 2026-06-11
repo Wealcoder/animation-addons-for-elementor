@@ -164,4 +164,14 @@ final class Schema
 	{
 		return ['e-heading', 'e-paragraph', 'e-button'];
 	}
+
+	public static function is_premium_effect( $effect ): bool {
+		$core_effects = array_merge(
+			self::TEXT_DURATION_EFFECTS,
+			self::TEXT_INVERT_EFFECTS,
+			self::TEXT_SPIN_EFFECTS,
+			['none']
+		);
+		return ! empty( $effect ) && ! in_array( $effect, $core_effects, true );
+	}
 }

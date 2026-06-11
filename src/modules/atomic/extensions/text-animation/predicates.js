@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { valueAt, valueEq, valueIn } from '../../responsive-section/helpers';
+import { PREMIUM_EFFECTS_BY_ID } from './presets';
 
 /**
  * Predicate helpers for TextAnimation field visibility. Each takes
@@ -20,7 +21,7 @@ export function endPositionAt(s, bp)    { return valueAt(s, 'aae_text_end_positi
 
 export function isPremiumEffect(s, bp) {
 	const effect = valueAt(s, 'aae_text_effect', bp);
-	return effect && typeof effect === 'string' && effect.startsWith('premium_');
+	return effect && !!PREMIUM_EFFECTS_BY_ID[effect];
 }
 
 export function isAnimated(s, bp)        { return isPremiumEffect(s, bp) || valueIn(s, 'aae_text_effect',  bp, ANIMATED_EFFECTS); }
@@ -44,11 +45,11 @@ export function isScale(s, bp)   { return valueEq(s, 'aae_text_effect', bp, 'tex
 export function isMoveOrPremium(s, bp) {
 	if (isMove(s, bp)) return true;
 	const effect = valueAt(s, 'aae_text_effect', bp);
-	return effect === 'premium_origami_fold' || effect === 'premium_shutter_cascade';
+	return effect === 'origami_fold' || effect === 'shutter_cascade';
 }
 
 export function showTextShadow(s, bp) {
-	return valueEq(s, 'aae_text_effect', bp, 'premium_cyber_phantom');
+	return valueEq(s, 'aae_text_effect', bp, 'cyber_phantom');
 }
 
 export function isWrapperCustom(s, bp) { return valueEq(s, 'aae_text_wrapper', bp, 'custom'); }
