@@ -35,7 +35,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 	 * @abstract
 	 */
 	public function get_title() {
-		return __( 'Style 1', 'animation-addons-for-elementor-pro' );
+		return __( 'Style 1', 'animation-addons-for-elementor' );
 	}
 
 	/**
@@ -75,7 +75,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'pt-icon',
 			[
-				'label' => esc_html__( 'Icon', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
 				'default'          => [
 					'value'   => 'far fa-paper-plane',
 					'library' => 'fa-solid',
@@ -96,7 +96,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'heading_icon_style',
 			[
-				'label'     => esc_html__( 'Icon', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Icon', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -105,7 +105,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'hading_icon_color',
 			[
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .skin-pricing-table-1 .icon i'   => 'color: {{VALUE}}',
@@ -117,7 +117,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_responsive_control(
 			'hading_icon_size',
 			[
-				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Size', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SLIDER,
 				'range'     => [
 					'px' => [
@@ -134,7 +134,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_responsive_control(
 			'heading_icon_padding',
 			[
-				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Margin', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'selectors' => [
@@ -146,19 +146,19 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'header_icon_align',
 			[
-				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Alignment', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Left', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Center', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'animation-addons-for-elementor-pro' ),
+						'title' => esc_html__( 'Right', 'animation-addons-for-elementor' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -172,7 +172,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'title_bg_color',
 			[
-				'label'     => esc_html__( 'Header Top Background', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Header Top Background', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'separator' => 'before',
 				'selectors' => [
@@ -199,14 +199,14 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->start_controls_section(
 			'section_pt_layout',
 			[
-				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor' ),
 			]
 		);
 		// Items Order
 		$this->add_control(
 			'pt_items_order_heading',
 			[
-				'label' => esc_html__( 'Items Order', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Items Order', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -215,7 +215,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'header_price_order',
 			[
-				'label' => esc_html__( 'Header & Pricing', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Header & Pricing', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 3,
@@ -229,7 +229,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'feature_list_order',
 			[
-				'label' => esc_html__( 'Feature', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Feature', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 3,
@@ -243,7 +243,7 @@ class Skin_Pricing_Table_1 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'btn_order',
 			[
-				'label'     => esc_html__( 'Button', 'animation-addons-for-elementor-pro' ),
+				'label'     => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 1,
 				'max'       => 3,

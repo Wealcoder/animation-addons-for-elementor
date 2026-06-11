@@ -129,6 +129,9 @@ trait WCF_Button_Trait {
 					'left'  => esc_html__( 'Before', 'animation-addons-for-elementor' ),
 					'right' => esc_html__( 'After', 'animation-addons-for-elementor' ),
 				),
+				'condition' => array(
+					'button_icon[value]!' => '',
+				),
 			)
 		);
 
@@ -151,6 +154,9 @@ trait WCF_Button_Trait {
 				'selectors' => array(
 					'{{WRAPPER}} .wcf__btn a' => 'flex-direction: {{VALUE}};',
 				),
+				'condition' => array(
+					'button_icon[value]!' => '',
+				),
 			)
 		);
 
@@ -166,6 +172,10 @@ trait WCF_Button_Trait {
 				),
 				'selectors' => array(
 					'{{WRAPPER}} .wcf__btn a' => 'gap: {{SIZE}}{{UNIT}};',
+				),
+
+				'condition' => array(
+					'button_icon[value]!' => '',
 				),
 			)
 		);
@@ -214,8 +224,10 @@ trait WCF_Button_Trait {
 				),
 				'selectors'  => array(
 					'{{WRAPPER}} .wcf__btn a i'   => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .wcf__btn a svg' => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .wcf__btn a svg' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wcf__btn a svg' => 'font-size: {{SIZE}}{{UNIT}}; width: {{SIZE}}{{UNIT}};',
+				),
+				'condition'  => array(
+					'button_icon[value]!' => '',
 				),
 			)
 		);

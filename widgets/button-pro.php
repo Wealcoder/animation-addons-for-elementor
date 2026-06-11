@@ -145,6 +145,7 @@ class Button_Pro extends Widget_Base
 				'type'        => Controls_Manager::ICONS,
 				'skin'        => 'inline',
 				'label_block' => false,
+				'fa4compatibility' => 'icon',
 				'default'     => [
 					'value'   => 'fas fa-arrow-right',
 					'library' => 'fa-solid',
@@ -168,6 +169,7 @@ class Button_Pro extends Widget_Base
 				],
 				'condition' => [
 					'btn_style!' => ['5', '6'],
+					'btn_icon[value]!' => ''
 				],
 			]
 		);
@@ -343,6 +345,10 @@ class Button_Pro extends Widget_Base
 				'label'     => esc_html__('Icon', 'animation-addons-for-elementor'),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
+				'condition' => [
+					'btn_icon_enabled' => 'yes',
+					'btn_icon[value]!' => ''
+				],
 			]
 		);
 
@@ -362,6 +368,9 @@ class Button_Pro extends Widget_Base
 					'{{WRAPPER}} .aae--btn-pro .icon, {{WRAPPER}} .g-btn-icon' => 'font-size: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .style-4 .aae--btn-pro strong'                => 'width: {{SIZE}}{{UNIT}};',
 				],
+				'condition' => [
+					'btn_icon[value]!' => ''
+				],
 			]
 		);
 		$this->add_responsive_control(
@@ -379,7 +388,10 @@ class Button_Pro extends Widget_Base
 				'selectors'  => [
 					'{{WRAPPER}} .g-btn-icon' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; --icon-width: {{SIZE}}{{UNIT}};',
 				],
-				'condition'  => ['btn_style' => ['5', '6']],
+				'condition'  => [
+					'btn_style' => ['5', '6'],
+					'btn_icon[value]!' => ''
+				],
 			]
 		);
 
@@ -398,7 +410,10 @@ class Button_Pro extends Widget_Base
 				'selectors'  => [
 					'{{WRAPPER}} .aae--btn-pro, {{WRAPPER}} .g-btn-text' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'condition'  => ['btn_style!' => ['5', '6']],
+				'condition'  => [
+					'btn_style!' => ['5', '6'],
+					'btn_icon[value]!' => '',
+				],
 			]
 		);
 
