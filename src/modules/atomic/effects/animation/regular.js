@@ -14,38 +14,24 @@ function r(cfg, key, fallback) {
 	return (v === undefined || v === '') ? fallback : v;
 }
 
+const camelize = (s) => {
+	const str = String(s).trim();
+	const c = str.replace(/[-_ ]+([a-zA-Z])/g, (_, l) => l.toUpperCase());
+	return c.charAt(0).toLowerCase() + c.slice(1);
+};
+
 export function readRegular(el) {
 	const cfg = configFor(el, ANIM_MAP);
 	
 	if (!cfg) return null;
 	const effect = pickConfigResponsive(cfg, 'effect');
 	if (!effect || effect === 'none') return null;
-	console.log({
-		effect,
-		method:          r(cfg, 'method',  'from'),
-		trigger:         r(cfg, 'trigger', 'on_scroll'),
-		triggerSelector: r(cfg, 'triggerSelector', ''),
-		
-		wrapper:         r(cfg, 'wrapper', 'default'),
-		startTrigger:    r(cfg, 'startTrigger', ''),
-		endTrigger:      r(cfg, 'endTrigger', ''),
-		start:           r(cfg, 'startPosition', 'top center'),
-		end:             r(cfg, 'endPosition', 'bottom bottom'),
-
-		easing:          r(cfg, 'easing',   'power2.out'),
-		duration:        Number(r(cfg, 'duration', 1.5)),
-		delay:           Number(r(cfg, 'delay',    0.15)),
-		// Non-responsive: cfg.markers is a top-level boolean.
-		markers:         !!cfg.markers,
-
-		// custom
-		customProps:     (Array.isArray(pickConfigResponsive(cfg, 'customProps'))
-			? pickConfigResponsive(cfg, 'customProps')
-			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
-		customPropsTo:   (Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
-			? pickConfigResponsive(cfg, 'customPropsTo')
-			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
-	});
+	
+	const normalizeProps = (arr) => {
+		if (!Array.isArray(arr)) return [];
+		return arr.map(p => (p && p.k ? { ...p, k: camelize(p.k) } : p));
+	};
+	
 	return {
 		effect,
 		method:          r(cfg, 'method',  'from'),
@@ -65,12 +51,8 @@ export function readRegular(el) {
 		markers:         !!cfg.markers,
 
 		// custom
-		customProps:     (Array.isArray(pickConfigResponsive(cfg, 'customProps'))
-			? pickConfigResponsive(cfg, 'customProps')
-			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
-		customPropsTo:   (Array.isArray(pickConfigResponsive(cfg, 'customPropsTo'))
-			? pickConfigResponsive(cfg, 'customPropsTo')
-			: []).map(p => (p && p.k ? { ...p, k: p.k.toLowerCase() } : p)),
+		customProps:     normalizeProps(pickConfigResponsive(cfg, 'customProps')),
+		customPropsTo:   normalizeProps(pickConfigResponsive(cfg, 'customPropsTo')),
 	};
 }
 
@@ -87,15 +69,45 @@ function regularTween(config) {
 	const fromTarget = {};
 	for (const { k, v } of config.customProps || []) {
 		if (!k) continue;
-		const num = Number(v);
-		fromTarget[k] = (v !== '' && Number.isFinite(num)) ? num : v;
+		let finalVal = v;
+		if (k === 'stagger' && typeof v === 'string' && v.startsWith('{')) {
+			try { finalVal = JSON.parse(v); } catch (e) {}
+		} else if (typeof v === 'string' && v.startsWith('__JS__')) {
+			try {
+				const body = v.replace('__JS__', '');
+				finalVal = new Function('index', 'target', 'targets', body);
+			} catch (e) {
+				console.error("AAE GSAP Custom Function Error:", e);
+			}
+		}
+
+		if (typeof finalVal === 'function') {
+			fromTarget[k] = finalVal;
+		} else if (typeof finalVal === 'string' && finalVal.startsWith('random(')) {
+			fromTarget[k] = finalVal;
+		} else {
+			const num = Number(finalVal);
+			fromTarget[k] = (finalVal !== '' && Number.isFinite(num)) ? num : finalVal;
+		}
 	}
 
 	const toTarget = {};
 	for (const { k, v } of config.customPropsTo || []) {
 		if (!k) continue;
-		const num = Number(v);
-		toTarget[k] = (v !== '' && Number.isFinite(num)) ? num : v;
+		let finalVal = v;
+		if (k === 'stagger' && typeof v === 'string' && v.startsWith('{')) {
+			try { finalVal = JSON.parse(v); } catch (e) {}
+		} else if (typeof v === 'string' && v.startsWith('random(')) {
+			// Random ranges and arrays pass through
+			finalVal = v;
+		}
+
+		if (typeof finalVal === 'string' && finalVal.startsWith('random(')) {
+			toTarget[k] = finalVal;
+		} else {
+			const num = Number(finalVal);
+			toTarget[k] = (finalVal !== '' && Number.isFinite(num)) ? num : finalVal;
+		}
 	}
 
 	const tween = { from: {}, to: {} };

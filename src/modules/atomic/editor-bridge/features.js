@@ -365,14 +365,26 @@ function buildRegularConfig(settings) {
 	// keeps the editor toggle in sync with what the user sees.
 	if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
 
+	const GSAP_KEYS = ['opacity', 'x', 'y', 'z', 'width', 'height', 'scale', 'repeat', 'rotate', 'rotateX', 'rotateY', 'rotation', 'rotationX', 'rotationY', 'transformOrigin', 'perspective', 'color', 'background', 'border', 'boxShadow', 'textShadow', 'force3D', 'delay', 'duration', 'maxWidth', 'maxHeight', 'minWidth', 'minHeight', 'mixBlendMode', 'padding', 'margin', 'borderRadius', 'repeatDelay', 'scaleX', 'scaleY', 'xPercent', 'yPercent', 'autoAlpha', 'yoyo', 'filter', 'skewX', 'skewY', 'clipPath', 'fontSize', 'lineHeight', 'letterSpacing', 'wordSpacing', 'stroke', 'strokeWidth', 'fill', 'strokeDashoffset', 'strokeDasharray', 'backdropFilter', 'backgroundColor', 'backgroundPosition', 'backgroundPositionX', 'backgroundPositionY', 'borderColor', 'outline', 'outlineWidth', 'outlineColor', 'outlineOffset', 'top', 'left', 'right', 'bottom', 'overflow', 'overflowX', 'overflowY', 'ease', 'stagger', 'transformPerspective', 'overwrite', 'backfaceVisibility', 'transformStyle', 'zIndex'];
+
+	const normalizeKey = (key) => {
+		const str = String(key).trim();
+		const lower = str.toLowerCase().replace(/[\s-_]/g, '');
+		for (const gk of GSAP_KEYS) {
+			if (gk.toLowerCase() === lower) return gk;
+		}
+		return str; // Fallback to what they typed
+	};
+
 	const processRepeater = (bindName, cfgKey) => {
 		const map = envelopeToMap(settings[bindName]);
 		const rows = Array.isArray(map.desktop) ? map.desktop : [];
 		const pairs = [];
 		for (const row of rows) {
 			if (row?.enabled === false) continue;
-			const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
+			let k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 			if (!k || k === 'none') continue;
+			k = normalizeKey(k);
 			const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 			pairs.push({ k, v });
 		}
@@ -385,8 +397,9 @@ function buildRegularConfig(settings) {
 			const bpPairs = [];
 			for (const row of bpRows) {
 				if (row?.enabled === false) continue;
-				const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
+				let k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 				if (!k || k === 'none') continue;
+				k = normalizeKey(k);
 				const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 				bpPairs.push({ k, v });
 			}
