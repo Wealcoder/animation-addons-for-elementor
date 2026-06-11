@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { DesktopIcon } from "@radix-ui/react-icons";
 import logo from "../../../../../../public/images/extensions/scroll_smother.png";
-
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -248,35 +248,11 @@ const ScrollSmootherSettings = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="bg-background p-4 rounded-lg mt-4 mb-2">
-                <FormField
-                  control={form.control}
-                  name="disableInEditor"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center gap-3">
-                      <FormLabel className="min-w-[220px]">
-                        {__("Disable in Editor Mode", "animation-addons-for-elementor")}
-                      </FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={!!field.value}
-                          onCheckedChange={field.onChange}
-                          sx={{ marginTop: "0" }}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <p className="text-[12px] text-[var(--600,#525866)] mt-2">
-                  {__(
-                    "Turn off ScrollSmoother while editing pages in Elementor.",
-                    "animation-addons-for-elementor"
-                  )}
-                </p>
-              </div>
+         
 
               {deviceList.map((device) => (
                 <TabsContent
+                  key={device.id}
                   value={device.id}
                   className="bg-background p-4 rounded-lg mt-0"
                 >
@@ -302,14 +278,14 @@ const ScrollSmootherSettings = () => {
                     />
                   </div>
 
-                  <div className="mt-5 max-w-[180px]">
+                  <div className="mt-5 max-w-[240px]">
                     <FormField
                       control={form.control}
                       name={`${device.id}.smotherLevel`}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[12px] text-[var(--600,#525866)] mb-2">
-                            {__("Set the scroll smoother level", "animation-addons-for-elementor")}
+                            {__("Set ScrollSmoother Value of", "animation-addons-for-elementor")} {device.label}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -336,6 +312,33 @@ const ScrollSmootherSettings = () => {
                   </div>
                 </TabsContent>
               ))}
+              <Separator className="my-4 max-w-[95%] opacity-50 mx-auto" />
+                <div className="bg-background p-4 rounded-lg mt-4 mb-2">
+                <FormField
+                  control={form.control}
+                  name="disableInEditor"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center gap-3">
+                      <FormLabel className="min-w-[220px]">
+                        {__("Disable in Editor Mode for All Devices", "animation-addons-for-elementor")}
+                      </FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={!!field.value}
+                          onCheckedChange={field.onChange}
+                          sx={{ marginTop: "0" }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <p className="text-[12px] text-[var(--600,#525866)] mt-2">
+                  {__(
+                    "Turn off ScrollSmoother while editing pages in Elementor.",
+                    "animation-addons-for-elementor"
+                  )}
+                </p>
+              </div>
 
               <div className="flex gap-2.5 items-center mt-9">
                 <Button

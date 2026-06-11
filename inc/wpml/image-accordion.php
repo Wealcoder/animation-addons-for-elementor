@@ -40,19 +40,19 @@ class Image_Accordion extends \WPML_Elementor_Module_With_Items
 	{
 		switch ($field) {
 			case 'title':
-				return __('Image Accordion: Title', 'animation-addons-for-elementor-pro');
+				return __('Image Accordion: Title', 'animation-addons-for-elementor');
 
 			case 'subtitle':
-				return __('Image Accordion: Sub Title', 'animation-addons-for-elementor-pro');
+				return __('Image Accordion: Sub Title', 'animation-addons-for-elementor');
 
 			case 'description':
-				return __('Image Accordion: Description', 'animation-addons-for-elementor-pro');
+				return __('Image Accordion: Description', 'animation-addons-for-elementor');
 
 			case 'details_link':
-				return __('Image Accordion: Link', 'animation-addons-for-elementor-pro');
+				return __('Image Accordion: Link', 'animation-addons-for-elementor');
 
 			case 'btn_text':
-				return __('Image Accordion: Button', 'animation-addons-for-elementor-pro');
+				return __('Image Accordion: Button', 'animation-addons-for-elementor');
 
 			default:
 				return '';

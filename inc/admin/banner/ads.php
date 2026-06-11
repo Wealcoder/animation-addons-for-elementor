@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="aae-dashboard-banner" style="text-align:center;">
     <a href="https://animation-addons.com" target="_blank" style="display:block;">
         <img src="<?php echo esc_url( WCF_ADDONS_URL ) ; ?>assets/images/halloween-widget.png"
