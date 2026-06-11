@@ -473,6 +473,7 @@ function buildImgConfig(settings) {
 		}
 	}
 
+	if (plain(settings, 'aae_img_enable_marker')) cfg.enableMarker = true;
 	if (plain(settings, 'aae_img_enable_editor')) cfg.enableEditor = true;
 
 	return cfg;

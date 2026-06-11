@@ -174,9 +174,13 @@ function bindScale(el, config, preview = false) {
 
 	const image = findMedia(el);
 
+	// Always clean previous state
 	gsap.killTweensOf(image);
 	gsap.set(image, { clearProps: 'transform' });
 
+	/* =========================
+	 * PREVIEW MODE (Editor Play)
+	 * ========================= */
 	if (preview) {
 		const tl = gsap.timeline();
 
@@ -186,24 +190,48 @@ function bindScale(el, config, preview = false) {
 			{
 				scale: config.scaleEnd,
 				duration: 1.5,
-				ease: 'power2.out'
+				ease: 'power2.out',
 			}
 		);
+
+		let markerST = null;
+
+		// if (config.enableMarker) {
+		// 	tl.call(() => {
+		// 		markerST?.kill();
+		// 		markerST = ScrollTrigger.create({
+		// 			trigger: image.parentElement || el,
+		// 			start: resolveStart(config),
+		// 			end: resolveEnd(config),
+		// 			markers: true,
+		// 			invalidateOnRefresh: true,
+		// 		});
+		// 		ScrollTrigger.refresh();
+		// 	});
+		// }
 
 		el[IMG_PLAYED] = tl;
 
 		el[IMG_DISPOSE_KEY] = () => {
 			tl.kill();
+			markerST?.kill();
 			gsap.set(image, { clearProps: 'transform' });
 		};
 
 		return tl;
 	}
 
+	/* =========================
+	 * FRONTEND MODE (Scroll)
+	 * ========================= */
+
 	const tween = gsap.fromTo(
 		image,
 		{ scale: config.scaleStart },
-		{ scale: config.scaleEnd, ease: 'none' }
+		{
+			scale: config.scaleEnd,
+			ease: 'none',
+		}
 	);
 
 	const st = ScrollTrigger.create({
@@ -213,14 +241,21 @@ function bindScale(el, config, preview = false) {
 		scrub: true,
 		animation: tween,
 		invalidateOnRefresh: true,
-		markers: config.enableMarker
+		markers: !!config.enableMarker, // ✅ correct usage
 	});
+
+	requestAnimationFrame(() => ScrollTrigger.refresh());
+
+	if (image.parentElement) {
+		image.parentElement.style.overflow = 'hidden';
+	}
 
 	el[IMG_PLAYED] = tween;
 
 	el[IMG_DISPOSE_KEY] = () => {
 		st.kill();
 		tween.kill();
+		gsap.set(image, { clearProps: 'transform' });
 	};
 }
 
@@ -301,35 +336,14 @@ function bindStretch(el, config, preview = false) {
  * ========================= */
 
 export function playImg(el, config) {
-	const gsap = getGsap();
-	if (!gsap) return;
-
 	cleanupImg(el);
 
 	switch (config.effect) {
-		case 'reveal':
-			bindReveal(el, config, true);
-			break;
-
-		case 'scale':
-			bindScale(el, config, true);
-			break;
-
-		case 'stretch':
-			bindStretch(el, config, true);
-			break;
-
-		default:
-			bindImg(el, config);
+		case 'reveal':  return bindReveal(el, config, true);
+		case 'scale':   return bindScale(el, config, true);
+		case 'stretch': return bindStretch(el, config, true);
+		default:        return bindImg(el, config);
 	}
-
-	el[IMG_DISPOSE_KEY] = () => {
-		el[IMG_PLAYED]?.kill?.();
-
-		gsap.set(findMedia(el), {
-			clearProps: 'transform,width,borderRadius,opacity,visibility'
-		});
-	};
 }
 
 /* =========================
