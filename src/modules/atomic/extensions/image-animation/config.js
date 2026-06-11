@@ -112,7 +112,7 @@ const config = {
 			datalist: POSITION_OPTIONS,
 			defaultValue: 'top center',
 			when: isRevealOrScale,
-			tab: 'Content', // Goes to Content tab
+			
 		},
 
 		{
@@ -122,7 +122,6 @@ const config = {
 			datalist: POSITION_OPTIONS,
 			defaultValue: 'bottom 50%',
 			when: isScale,
-			tab: 'Content', // Goes to Content tab
 		},
 		// { bind: 'custom_start', label: 'Custom', control: 'text',
 		//   defaultValue: 'top 90%', placeholder: 'top 90%',
