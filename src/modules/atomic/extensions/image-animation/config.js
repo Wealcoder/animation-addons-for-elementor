@@ -120,8 +120,8 @@ const config = {
 			label: 'Animation End',
 			control: 'text',
 			datalist: POSITION_OPTIONS,
-			defaultValue: 'bottom bottom+=100',
-			when: isRevealOrScale,
+			defaultValue: 'bottom 50%',
+			when: isScale,
 			tab: 'Content', // Goes to Content tab
 		},
 		// { bind: 'custom_start', label: 'Custom', control: 'text',

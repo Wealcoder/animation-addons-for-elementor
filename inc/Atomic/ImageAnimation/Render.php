@@ -113,16 +113,7 @@ final class Render {
 			);
 
 
-			$this->emit_responsive(
-				$config,
-				$settings,
-				Schema::IMG_END_POS,
-				'endPos',
-				'',
-				$extra_bps,
-				static fn( $v ) => is_string( $v ) ? $v : ''
-			);
-
+			
 
 			// Emit customStart only when desktop start_pos === 'custom'. The
 			// runtime falls back to startPos otherwise.
@@ -143,6 +134,17 @@ final class Render {
 		// 	$config['enableMarker'] = true;
 		// }
 		if ( $this->family_used( $effect_map, $extra_bps, [ 'scale' ] ) ) {
+
+			$this->emit_responsive(
+				$config,
+				$settings,
+				Schema::IMG_END_POS,
+				'endPos',
+				'',
+				$extra_bps,
+				static fn( $v ) => is_string( $v ) ? $v : ''
+			);
+
 			$marker = $settings[ Schema::IMG_ENABLE_MARKER ] ?? false;
 
 			if ( is_array( $marker ) ) {
