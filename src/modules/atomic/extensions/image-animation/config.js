@@ -41,6 +41,30 @@ const START_POSITION_OPTIONS = [
 	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
 }));
 
+const POSITION_OPTIONS = [
+	'top top',
+	'top center',
+	'top bottom',
+	'top 80px',
+	'top 80%',
+
+	'center top',
+	'center center',
+	'center bottom',
+	'center 80px',
+	'center 80%',
+
+	'bottom top',
+	'bottom center',
+	'bottom bottom',
+
+	'bottom 80px',
+	'bottom 80%',
+].map((v) => ({
+	value: v,
+	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
+}));
+
 const EASE_OPTIONS = [
 	{ value: 'power2.out', label: 'Power2.out' },
 	{ value: 'bounce',     label: 'Bounce' },
@@ -72,12 +96,40 @@ const config = {
 		  defaultValue: 1,   when: isScale },
 
 		// Reveal + Scale share the start position picker
-		{ bind: 'start_pos', label: 'Animation Start', control: 'select',
-		  options: START_POSITION_OPTIONS, defaultValue: 'top center',
-		  when: isRevealOrScale },
-		{ bind: 'custom_start', label: 'Custom', control: 'text',
-		  defaultValue: 'top 90%', placeholder: 'top 90%',
-		  when: showCustomStart },
+		// { 
+		// 	bind: 'start_pos', 
+		// 	label: 'Animation Start',
+		// 	control: 'select',
+		// 	options: START_POSITION_OPTIONS, 
+		// 	defaultValue: 'top center',
+		// 	when: isRevealOrScale 
+		// },
+
+		{
+			bind: 'start_pos',
+			label: 'Animation Start',
+			control: 'text',
+			datalist: POSITION_OPTIONS,
+			defaultValue: 'top center',
+			when: isRevealOrScale,
+			
+		},
+
+		{
+			bind: 'end_pos',
+			label: 'Animation End',
+			control: 'text',
+			datalist: POSITION_OPTIONS,
+			defaultValue: 'bottom 50%',
+			when: isScale,
+		},
+		// { bind: 'custom_start', label: 'Custom', control: 'text',
+		//   defaultValue: 'top 90%', placeholder: 'top 90%',
+		//   when: showCustomStart },
+
+
+		{ bind: 'enable_marker', label: 'Enable Marker', control: 'switch',
+		  responsive: false, defaultValue: false, when: isScale },
 
 		// Non-responsive editor toggle + Play Now button
 		{ bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
