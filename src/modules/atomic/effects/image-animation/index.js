@@ -106,7 +106,7 @@ function bindReveal(el, config, preview = false) {
 
 	const imageAnim = {
 		duration: 1.5,
-		scale: 1.3,
+		scale: 1,
 		ease: config.ease,
 	};
 
