@@ -112,18 +112,48 @@ final class Render {
 				static fn( $v ) => is_string( $v ) ? $v : 'top center'
 			);
 
+
+			
+
 			// Emit customStart only when desktop start_pos === 'custom'. The
 			// runtime falls back to startPos otherwise.
-			$start_pos_map = $this->envelope_to_map( $settings[ Schema::IMG_START_POS ] ?? null );
-			if ( ( $start_pos_map['desktop'] ?? '' ) === 'custom' ) {
-				$this->emit_responsive(
-					$config, $settings, Schema::IMG_CUSTOM_START, 'customStart', 'top 90%', $extra_bps,
-					static fn( $v ) => is_string( $v ) ? $v : 'top 90%'
-				);
-			}
+
+			// $start_pos_map = $this->envelope_to_map( $settings[ Schema::IMG_START_POS ] ?? null );
+			// if ( ( $start_pos_map['desktop'] ?? '' ) === 'custom' ) {
+			// 	$this->emit_responsive(
+			// 		$config, $settings, Schema::IMG_CUSTOM_START, 'customStart', 'top 90%', $extra_bps,
+			// 		static fn( $v ) => is_string( $v ) ? $v : 'top 90%'
+			// 	);
+			// }
 		}
 
 		// Non-responsive editor flag.
+
+		// $marker = $settings[ Schema::IMG_ENABLE_MARKER ] ?? null;
+		// if ( is_array( $marker ) && ! empty( $marker['value'] ) ) {
+		// 	$config['enableMarker'] = true;
+		// }
+		if ( $this->family_used( $effect_map, $extra_bps, [ 'scale' ] ) ) {
+
+			$this->emit_responsive(
+				$config,
+				$settings,
+				Schema::IMG_END_POS,
+				'endPos',
+				'',
+				$extra_bps,
+				static fn( $v ) => is_string( $v ) ? $v : ''
+			);
+
+			$marker = $settings[ Schema::IMG_ENABLE_MARKER ] ?? false;
+
+			if ( is_array( $marker ) ) {
+				$config['enableMarker'] = (bool) ( $marker['value'] ?? false );
+			} else {
+				$config['enableMarker'] = (bool) $marker;
+			}
+		}
+
 		$editor = $settings[ Schema::IMG_ENABLE_EDITOR ] ?? null;
 		if ( is_array( $editor ) && ! empty( $editor['value'] ) ) {
 			$config['enableEditor'] = true;
