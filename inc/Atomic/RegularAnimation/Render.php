@@ -100,7 +100,7 @@ final class Render
 				Schema::ANIM_WRAPPER          => ['wrapper',         'default',      null],
 				Schema::ANIM_START_TRIGGER    => ['startTrigger',    '',             null],
 				Schema::ANIM_END_TRIGGER      => ['endTrigger',      '',             null],
-				Schema::ANIM_START_POSITION   => ['startPosition',   'top top',      null],
+				Schema::ANIM_START_POSITION   => ['startPosition',   'top center',      null],
 				Schema::ANIM_END_POSITION     => ['endPosition',     'bottom bottom',   null],
 				Schema::ANIM_DELAY            => ['delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[Schema::ANIM_DELAY]    ?? 0.15, null],
 				Schema::ANIM_DURATION         => ['duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[Schema::ANIM_DURATION] ?? 1.5,  null],

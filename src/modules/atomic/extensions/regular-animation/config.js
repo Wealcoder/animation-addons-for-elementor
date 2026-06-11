@@ -74,8 +74,6 @@ const WRAPPER_OPTIONS = [
 	{ value: 'custom', label: 'Custom' },
 ];
 
-
-
 const EASE_OPTIONS = [
 	{ value: 'power2.out', label: 'Power2.out' },
 	{ value: 'bounce', label: 'Bounce' },
@@ -174,7 +172,7 @@ const config = {
 		},
 		{
 			bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
-			defaultValue: 'top top', placeholder: 'top 50%', when: showScrollPosition, responsive: true
+			defaultValue: 'top center', placeholder: 'top 50%', when: showScrollPosition, responsive: true
 		},
 		{
 			bind: 'end_position', label: 'End', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
@@ -184,8 +182,6 @@ const config = {
 		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isDurationEffect, responsive: true },
 		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5, when: isDurationEffect, responsive: true },
 		{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect, responsive: true },
-
-
 
 		// Custom Properties repeater (effect = custom). Stored as a
 		// Responsive_Json_Prop_Type so the whole list can vary per breakpoint.

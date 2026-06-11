@@ -29,7 +29,7 @@ export function readRegular(el) {
 		wrapper:         r(cfg, 'wrapper', 'default'),
 		startTrigger:    r(cfg, 'startTrigger', ''),
 		endTrigger:      r(cfg, 'endTrigger', ''),
-		start:           r(cfg, 'startPosition', 'top top'),
+		start:           r(cfg, 'startPosition', 'top center'),
 		end:             r(cfg, 'endPosition', 'bottom bottom'),
 
 		easing:          r(cfg, 'easing',   'power2.out'),

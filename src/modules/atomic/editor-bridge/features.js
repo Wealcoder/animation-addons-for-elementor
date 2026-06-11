@@ -323,8 +323,6 @@ const REGULAR_RESPONSIVE_ALWAYS = {
 	aae_anim_easing: { configKey: 'easing', default: 'power2.out' },
 };
 
-
-
 const REGULAR_RESPONSIVE_SCROLL_CUSTOM = {
 	aae_anim_start_trigger: { configKey: 'startTrigger', default: '' },
 	aae_anim_end_trigger: { configKey: 'endTrigger', default: '' },
@@ -705,7 +703,7 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 
 	aae_advance_tooltip_text: {
 		configKey: 'text',
-		default: '',
+		default: 'view tooltip',
 	},
 
 	aae_advance_tooltip_position: {

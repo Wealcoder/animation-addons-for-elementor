@@ -162,7 +162,7 @@ const config = {
 
 			label: 'Padding',
 
-			control: 'dimension',
+			control: 'dimensions',
 
 			defaultValue: '',
 
