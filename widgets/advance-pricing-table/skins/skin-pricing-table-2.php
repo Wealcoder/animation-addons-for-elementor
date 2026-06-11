@@ -34,7 +34,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 	 * @abstract
 	 */
 	public function get_title() {
-		return __( 'Style 2', 'animation-addons-for-elementor-pro' );
+		return __( 'Style 2', 'animation-addons-for-elementor' );
 	}
 
 	/**
@@ -70,14 +70,14 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->start_controls_section(
 			'section_pt_layout_2',
 			[
-				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Layout', 'animation-addons-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'pt_items_order_heading',
 			[
-				'label' => esc_html__( 'Items Order', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Items Order', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -86,7 +86,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'title_order',
 			[
-				'label' => esc_html__( 'Title', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Title', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 5,
@@ -100,7 +100,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'subtitle_order',
 			[
-				'label' => esc_html__( 'Sub Title', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Sub Title', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 5,
@@ -114,7 +114,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'price_order',
 			[
-				'label' => esc_html__( 'Price', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Price', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 5,
@@ -128,7 +128,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'feature_order',
 			[
-				'label' => esc_html__( 'Features', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Features', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 5,
@@ -142,7 +142,7 @@ class Skin_Pricing_Table_2 extends Skin_Pricing_Table_Base {
 		$this->add_control(
 			'button_order',
 			[
-				'label' => esc_html__( 'Button', 'animation-addons-for-elementor-pro' ),
+				'label' => esc_html__( 'Button', 'animation-addons-for-elementor' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 1,
 				'max' => 5,

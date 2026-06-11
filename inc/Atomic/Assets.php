@@ -35,6 +35,7 @@ final class Assets
 		'aae-effect-wrapper-link'    => 'effects/wrapper-link.js',
 		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
 		'aae-effect-parallax'        => 'effects/parallax.js',
+		'aae-effect-custom-css'      => 'effects/custom-css.js',
 	];
 
 	public function register(): void

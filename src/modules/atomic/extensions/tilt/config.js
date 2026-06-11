@@ -3,6 +3,7 @@
 import {
     isEnabled,
     showPlayButton,
+    isGlareEnabled,
 } from './predicates';
 
 const config = {
@@ -82,6 +83,7 @@ const config = {
             responsive: true,
             defaultValue: 0.5,
             when: isEnabled,
+            when: isGlareEnabled,
             tab: 'Style',
         },
 

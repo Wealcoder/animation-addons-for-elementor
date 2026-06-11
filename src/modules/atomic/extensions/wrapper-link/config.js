@@ -13,16 +13,14 @@ const config = {
 			label: 'Enable Wrapper Link',
 			control: 'switch',
 			defaultValue: false,
-			responsive: false,
-			tab: 'Content',
+			responsive: false,			
 		},
 		{
 			bind: 'aae_wrapper_link',
 			label: 'Link',
 			control: 'link',
 			responsive: false,
-			when: isEnabled,
-			tab: 'Content',
+			when: isEnabled,			
 		},
 		{
 			bind: 'aae_wrapper_link_is_external',
@@ -30,8 +28,7 @@ const config = {
 			control: 'switch',
 			defaultValue: false,
 			responsive: false,
-			when: isEnabled,
-			tab: 'Content',
+			when: isEnabled,			
 		},
 	],
 };

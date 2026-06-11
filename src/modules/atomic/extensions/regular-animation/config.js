@@ -2,21 +2,17 @@
 
 import {
 	isAnimated,
-	isCustom,
 	isDurationEffect,
 	isEaseEffect,
-	isFade,
-	isMove,
 	showEnableEditor,
-	showFadeOffset,
 	showPlayButton,
-	showScale,
 	showScrollCustomBlock,
-	showStartCustom,
-	showEndCustom,
+	showScrollPosition,
 	showTriggerSelector,
 	showWrapper,
+	showMarkers,
 } from './predicates';
+import { valueAt } from '../../responsive-section/helpers';
 
 /**
  * Declarative table for the RegularAnimation section. Each row is rendered
@@ -34,14 +30,35 @@ import {
 
 const EFFECT_OPTIONS = [
 	{ value: 'none', label: 'None' },
-	{ value: 'fade', label: 'Fade animation' },
-	{ value: 'move', label: '3D Move' },
-	{ value: 'custom', label: 'Custom' },
+	{ value: 'custom', label: '--- Custom Animations ---' },
+	{ value: 'fadeUp', label: '1. Classic Fade Up' },
+	{ value: 'blurReveal', label: '2. Blur Reveal (Apple Style)' },
+	{ value: 'skewUp', label: '3. Skew Up (Awwwards)' },
+	{ value: 'clipReveal', label: '4. Clip-Path Unmask' },
+	{ value: 'scaleIn', label: '5. Scale In Pop' },
+	{ value: 'zoomOut', label: '6. Zoom Out' },
+	{ value: 'flipUp3D', label: '7. 3D Flip Up' },
+	{ value: 'swingDrop', label: '8. Swing Drop' },
+	{ value: 'elasticPop', label: '9. Elastic Pop' },
+	{ value: 'flipY', label: '10. 3D Card Flip (Y)' },
+	{ value: 'spinIn', label: '11. Spin & Scale' },
+	{ value: 'slideRight', label: '12. Slide Right' },
+	{ value: 'cinematicFocus', label: '13. Cinematic Focus (Premium)' },
+	{ value: 'maskRevealUp', label: '14. Mask Reveal Up (Luxury)' },
+	{ value: 'perspectiveFall', label: '15. Perspective Fall (3D)' },
+	{ value: 'unfold3D', label: '16. 3D Unfold (SaaS)' },
+	{ value: 'magneticSlide', label: '17. Magnetic Slide' },
+	{ value: 'luxDrift', label: '18. Luxury Drift (Colorize)' },
+	{ value: 'saasDashboard', label: '19. SaaS Dashboard Build' },
+	{ value: 'ecomUnbox', label: '20. E-com Product Unbox' },
+	{ value: 'neonPulse', label: '21. Neon Glow Pulse (Pricing)' },
+	{ value: 'floatIn', label: '22. Gentle Float In (Editorial)' },
 ];
 
 const METHOD_OPTIONS = [
 	{ value: 'from', label: 'From' },
 	{ value: 'to', label: 'To' },
+	{ value: 'fromTo', label: 'From To' },
 ];
 
 const TRIGGER_OPTIONS = [
@@ -55,20 +72,6 @@ const TRIGGER_OPTIONS = [
 const WRAPPER_OPTIONS = [
 	{ value: 'default', label: 'Default' },
 	{ value: 'custom', label: 'Custom' },
-];
-
-const FADE_DIRECTION_OPTIONS = [
-	{ value: 'top', label: 'Top' },
-	{ value: 'bottom', label: 'Bottom' },
-	{ value: 'left', label: 'Left' },
-	{ value: 'right', label: 'Right' },
-	{ value: 'in', label: 'In' },
-	{ value: 'scale', label: 'Zoom' },
-];
-
-const ROTATION_DIR_OPTIONS = [
-	{ value: 'x', label: 'X' },
-	{ value: 'y', label: 'Y' },
 ];
 
 const EASE_OPTIONS = [
@@ -87,7 +90,6 @@ const SCROLL_POSITION_OPTIONS = [
 	'top top', 'top center', 'top bottom',
 	'center top', 'center center', 'center bottom',
 	'bottom top', 'bottom center', 'bottom bottom',
-	'custom',
 ].map((v) => ({
 	value: v,
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -132,6 +134,14 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'yPercent', label: 'YPercent' },
 	{ value: 'autoAlpha', label: 'Auto Alpha' },
 	{ value: 'yoyo', label: 'YoYo' },
+	{ value: 'filter', label: 'Filter' },
+	{ value: 'skewX', label: 'SkewX' },
+	{ value: 'skewY', label: 'SkewY' },
+	{ value: 'clipPath', label: 'ClipPath' },
+	{ value: 'z', label: 'Z' },
+	{ value: 'rotation', label: 'Rotation' },
+	{ value: 'rotationX', label: 'RotationX' },
+	{ value: 'rotationY', label: 'RotationY' },
 ];
 
 /* ---------- the table ---------- */
@@ -140,10 +150,10 @@ const config = {
 	anchorKey: 'aae-section-aae-animation',
 	bindPrefix: 'aae_anim_',
 	fields: [
-		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', responsive: true },
+		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', responsive: true, play_group: 'aae_anim_'  },
 
 		{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: isAnimated, responsive: true },
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_page_load', when: isAnimated, responsive: true },
+		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: isAnimated, responsive: true },
 
 		{
 			bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
@@ -161,77 +171,61 @@ const config = {
 			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock, responsive: true
 		},
 		{
-			bind: 'start_position', label: 'Start', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock, responsive: true
+			bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
+			defaultValue: 'top center', placeholder: 'top 50%', when: showScrollPosition, responsive: true
 		},
 		{
-			bind: 'start_custom', label: 'Custom Start', control: 'text',
-			defaultValue: 'top top', placeholder: 'top top+=100', when: showStartCustom, responsive: true
-		},
-		{
-			bind: 'end_position', label: 'End', control: 'select',
-			options: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock, responsive: true
-		},
-		{
-			bind: 'end_custom', label: 'Custom End', control: 'text',
-			defaultValue: 'bottom top', placeholder: 'bottom top+=100', when: showEndCustom, responsive: true
+			bind: 'end_position', label: 'End', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
+			defaultValue: 'bottom bottom', placeholder: 'bottom center', when: showScrollPosition, responsive: true
 		},
 
 		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isDurationEffect, responsive: true },
 		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5, when: isDurationEffect, responsive: true },
 		{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect, responsive: true },
 
-		{
-			bind: 'fade_from', label: 'Fade From', control: 'select',
-			options: FADE_DIRECTION_OPTIONS, defaultValue: 'bottom', when: isFade, responsive: true
-		},
-		{
-			bind: 'fade_offset', label: 'Fade Offset', control: 'number',
-			defaultValue: 50, when: showFadeOffset, responsive: true
-		},
-		{
-			bind: 'scale', label: 'Start Scale', control: 'number',
-			defaultValue: 0.7, when: showScale, responsive: true
-		},
-
-		{
-			bind: 'rotation_dir', label: 'Rotation Direction', control: 'select',
-			options: ROTATION_DIR_OPTIONS, defaultValue: 'x', when: isMove, responsive: true
-		},
-		{
-			bind: 'rotation', label: 'Rotation Value', control: 'number',
-			defaultValue: -80, when: isMove, responsive: true
-		},
-		{
-			bind: 'transform_origin', label: 'Transform Origin', control: 'text',
-			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove, responsive: true
-		},
-
 		// Custom Properties repeater (effect = custom). Stored as a
 		// Responsive_Json_Prop_Type so the whole list can vary per breakpoint.
 		// Each row is a plain { enabled, property, value } object — JS owns
 		// the shape; PHP just round-trips the payload.
 		{
-			bind: 'custom_props', label: 'Custom Properties', control: 'repeater',
-			defaultValue: [], when: isCustom, responsive: true,
+			bind: 'custom_props', 
+			label: (s, bp) => valueAt(s, 'aae_anim_method', bp) === 'fromTo' ? 'From Properties' : 'Custom Properties', 
+			control: 'repeater',
+			defaultValue: [], when: isAnimated, responsive: true,
 			addLabel: 'Add Property',
-			rowDefaults: { property: 'opacity', value: '' },
+			innerTabGroup: (s, bp) => valueAt(s, 'aae_anim_method', bp) === 'fromTo' ? 'props' : null,
+			innerTabLabel: 'From',
+			rowDefaults: { property: '', value: '' },
 			cells: [
 				{
 					bind: 'property', type: 'select', placeholder: 'Property',
-					options: CUSTOM_PROPERTY_OPTIONS
+					options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true
 				},
-				{ bind: 'value', type: 'text', placeholder: 'value' },
+				{ bind: 'value', type: 'text', placeholder: 'value', width: 3 },
+			]
+		},
+		{
+			bind: 'custom_props_to', label: 'To Properties', control: 'repeater',
+			defaultValue: [], when: (s, bp) => isAnimated(s, bp) && valueAt(s, 'aae_anim_method', bp) === 'fromTo', responsive: true,
+			addLabel: 'Add Property',
+			innerTabGroup: 'props',
+			innerTabLabel: 'To',
+			rowDefaults: { property: '', value: '' },
+			cells: [
+				{
+					bind: 'property', type: 'select', placeholder: 'Property',
+					options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true
+				},
+				{ bind: 'value', type: 'text', placeholder: 'value', width: 3 },
 			]
 		},
 
 		// Non-responsive control rows.
 		// Markers is a ScrollTrigger debug overlay — only meaningful for the
-		// scroll-tied triggers, but we surface it whenever an effect is
-		// selected (matches Animation/Method/Trigger visibility).
+		// scroll-tied triggers, so we only show it when the trigger is a scroll type.
 		{
 			bind: 'markers', label: 'Markers', control: 'switch',
-			responsive: false, defaultValue: false, when: isAnimated
+			responsive: false, defaultValue: false, when: showMarkers
 		},
 		{
 			bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',

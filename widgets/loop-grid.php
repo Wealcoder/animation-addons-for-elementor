@@ -1284,7 +1284,10 @@ class Loop_Grid extends \Elementor\Widget_Base {
 
 		?>
 		<div class="custom-loop-wrapper aae-loop-builder wcf__posts-pro" data-widget-id="<?php echo esc_attr( $this->get_id() ); ?>">
-			<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+			<div <?php 
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_render_attribute_string( 'wrapper' ); 
+			?>>
 				<?php
 				if ( $query->have_posts() ) {
 					while ( $query->have_posts() ) {

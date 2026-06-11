@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { getPreviewWindow } from './helpers';
+import { getPreviewWindow, getSelectedContainer } from './helpers';
 import { featuresFor } from './features';
 
 /**
@@ -32,6 +32,20 @@ function buildConfigFromSettings(feature, container) {
 	return null;
 }
 
+function shouldBindInEditor(featureName, cfg) {
+	if (!cfg) return true;
+	if (cfg.enableEditor) return true;
+
+	const trigger = cfg.trigger || '';
+	const isScrollTrigger = trigger === 'on_scroll' || trigger === 'play_with_scroll' || trigger === 'in-view';
+	const isScrollKind = ['horizontal', 'parallax', 'sticky'].includes(featureName);
+
+	if (isScrollTrigger || isScrollKind) {
+		return false;
+	}
+	return true;
+}
+
 function isFeatureInPlayGroup(featureName, playGroup) {
 	if (!playGroup) return true;
 	const group = playGroup.toLowerCase();
@@ -46,6 +60,7 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_horizontal_' && featureName === 'horizontal') return true;
 	if (group === 'aae_advance_tooltip_' && featureName === 'advance-tooltip') return true;
 	if (group === 'aae_tilt_' && featureName === 'tilt') return true;
+	if (group === 'aae_custom_css_' && featureName === 'custom-css') return true;
 	return false;
 }
 
@@ -96,6 +111,10 @@ export function applySettingsToDom(container, playGroup = "") {
 			continue;
 		}
 
+		if (!shouldBindInEditor(feature.name, cfg)) {
+			cfg.preventBindInEditor = true;
+		}
+
 		map[container.id] = cfg;
 		results.push({ feature, active: true });
 	}
@@ -108,6 +127,43 @@ export function applySettingsToDom(container, playGroup = "") {
 }
 
 /**
+ * Bulk-sync wrapper for editor load. Does NOT look for DOM elements or call rebind,
+ * it just translates all Elementor Backbone settings into the iframe maps.
+ */
+export function applySettingsToDoms(container) {
+	const features = featuresFor(container);
+	
+	if (!features.length) return null;
+
+	const win = getPreviewWindow();
+	if (!win) return null;
+
+	const results = [];
+
+	for (const feature of features) {
+		if (!feature.mapName) continue;
+
+		const cfg = buildConfigFromSettings(feature, container);
+		const map = win[feature.mapName] = win[feature.mapName] || {};
+
+		if (!cfg) {
+			delete map[container.id];
+			results.push({ feature, active: false });
+			continue;
+		}
+
+		if (!shouldBindInEditor(feature.name, cfg)) {
+			cfg.preventBindInEditor = true;
+		}
+
+		map[container.id] = cfg;
+		results.push({ feature, active: true });
+	}	
+	
+	return { results };
+}
+
+/**
  * Trigger the preview-iframe runtime to replay an animation on `target`.
  * Returns true if the runtime API was found and called.
  */
@@ -117,14 +173,34 @@ export function replayInPreview(target, playGroup = "") {
 	const api = win && win.aaeAtomicAnimations;
 	if (!api || !target) return false;
 
-	if (typeof api.reset === 'function') {
-		api.reset(target, playGroup);
-	}
+	// if (typeof api.reset === 'function') {
+	// 	api.reset(target, playGroup);
+	// }
 
 	if (typeof api.replay === 'function') {
 		api.replay(target, false, playGroup);
 	} else if (typeof api.rebind === 'function') {
 		api.rebind(target, playGroup);
 	}
+	return true;
+}
+
+/**
+ * Convenience helper to apply settings and trigger a replay for the currently selected container.
+ * This can be used by controls (like color, dimension) to trigger live preview re-runs.
+ */
+export function triggerAnimationReplay(playGroup = "") {
+	const container = getSelectedContainer();
+	if (!container) return false;
+
+	const dom_settings = applySettingsToDom(container, playGroup);
+	if (!dom_settings || !dom_settings.target) return false;
+
+	if (!replayInPreview(dom_settings.target, playGroup)) {
+		// eslint-disable-next-line no-console
+		console.warn("[AAE] Play: animation runtime (aaeAtomicAnimations) not available in preview. Is GSAP enqueued?");
+		return false;
+	}
+
 	return true;
 }

@@ -136,14 +136,8 @@ final class Render
         );
 
         $this->emit_responsive(
-            $config, $settings, Schema::ANIMATION, 'animation', 'fade', $extra_bps,
+            $config, $settings, Schema::ANIMATION, 'animation', 'slide', $extra_bps,
             static fn( $v ) => (string) $v,
-            $disabled_bps
-        );
-
-        $this->emit_responsive(
-            $config, $settings, Schema::DURATION, 'duration', 0.3, $extra_bps,
-            static fn( $v ) => is_numeric($v) ? (float) $v : null,
             $disabled_bps
         );
 
@@ -159,16 +153,60 @@ final class Render
             $disabled_bps
         );
 
-        // Border Radius object
+        // New interactive controls
+        $this->emit_responsive(
+            $config, $settings, Schema::SHOW_DELAY, 'showDelay', 0, $extra_bps,
+            static fn( $v ) => is_numeric($v) ? (int) $v : null,
+            $disabled_bps
+        );
+
+        $this->emit_responsive(
+            $config, $settings, Schema::HIDE_DELAY, 'hideDelay', 0, $extra_bps,
+            static fn( $v ) => is_numeric($v) ? (int) $v : null,
+            $disabled_bps
+        );
+
         $this->emit_responsive_object(
-            $config, $settings, Schema::BORDER_RADIUS, 'borderRadius',
+            $config, $settings, Schema::PADDING, 'padding',
             [
-                'top' => 0,
-                'right' => 0,
-                'bottom' => 0,
-                'left' => 0,
+                'top' => '8',
+                'right' => '12',
+                'bottom' => '8',
+                'left' => '12',
                 'unit' => 'px',
-                'isLinked' => true,
+            ],
+            $extra_bps,
+            $disabled_bps
+        );
+
+        $this->emit_responsive_object(
+            $config, $settings, Schema::FONT_SIZE, 'font_size',
+            [
+                'size' => 14,
+                'unit' => 'px',
+            ],
+            $extra_bps,
+            $disabled_bps
+        );
+
+        $this->emit_responsive_object(
+            $config, $settings, Schema::LINE_HEIGHT, 'line_height',
+            [
+                'size' => 1.5,
+                'unit' => '',
+            ],
+            $extra_bps,
+            $disabled_bps
+        );
+
+        // Border object
+        $this->emit_responsive_object(
+            $config, $settings, Schema::BORDER, 'border',
+            [
+                'style'  => '',
+                'width'  => ['top' => '', 'right' => '', 'bottom' => '', 'left' => ''],
+                'color'  => '',
+                'radius' => '8px',
             ],
             $extra_bps,
             $disabled_bps

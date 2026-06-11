@@ -16,6 +16,7 @@ import advancetooltipSection from './extensions/advance-tooltip/config';
 import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
 import wrapperLinkSection from './extensions/wrapper-link/config';
+import customCssSection from './extensions/custom-css/config';
 import './effects/wrapper-link/index';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
@@ -48,6 +49,7 @@ registerResponsiveSection( advancetooltipSection );
 registerResponsiveSection( tilt );
 registerResponsiveSection( scrollTo );
 registerResponsiveSection( wrapperLinkSection );
+registerResponsiveSection( customCssSection );
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *
@@ -73,23 +75,17 @@ registerResponsiveSection( wrapperLinkSection );
  * Bootstrap — idempotent. Tears down on document switch / unload.
  * =================================================================== */
 
+import { getPreviewWindow } from './editor-bridge/helpers';
+import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './editor-bridge/settings-bridge';
+
 let bootstrapped = false;
 
 function bootstrap() {
-	
 	if (bootstrapped) {
-		// Document switched — tear down old listeners and re-init.
-		//disposeAll();
 		bootstrapped = false;
-		//resetLiveBridgeFlag();
-		//resetPipeState();
-		//resetInitialReplayFlag();
-		//resetSeedFlag();
 	}
 	bootstrapped = true;
-
-	//tryPipe();
-	//startLiveBridge();
+	
 }
 
 if (window.elementor && window.elementor.on) {
@@ -106,3 +102,73 @@ window.__aaeAtomicBridge = {
 	disposeAll,
 	getFeatures: () => FEATURES,
 };
+
+// Best approach for V4 Atomic Elements
+import { getElements } from '@elementor/editor-elements';
+
+window.elementor.on('document:loaded', () => {
+
+	setTimeout(() => {
+		
+		const win = getPreviewWindow();
+		if (!win || !win.aaeAtomicAnimations) return;
+
+		// When an element is deleted in Elementor, it is removed from the DOM.
+		// If we don't kill its ScrollTrigger, the GSAP markers will stay on screen forever.
+		// A MutationObserver catches removed nodes so we can properly dispose of them.
+		const observer = new win.MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				mutation.removedNodes.forEach((node) => {
+					if (node.nodeType === 1) { // ELEMENT_NODE
+						const targets = Array.from(node.querySelectorAll('[data-interaction-id]'));
+						if (node.hasAttribute('data-interaction-id')) {
+							targets.push(node);
+						}
+						targets.forEach(el => {
+							if (win.aaeAtomicAnimations && typeof win.aaeAtomicAnimations.reset === 'function') {
+								win.aaeAtomicAnimations.reset(el);
+							}
+						});
+					}
+				});
+			});
+		});
+		observer.observe(win.document.body, { childList: true, subtree: true });
+
+		const elements = getElements();
+		let syncCount = 0;
+		
+		elements.forEach((element) => {
+			const elType = element.model.get('elType');
+			const widgetType = element.model.get('widgetType');
+			
+			// Get ALL settings from the element
+			const allSettings = element.settings.toJSON();
+			if(element.id == 'document'){
+				return;
+			}
+			
+			// Create a mock container that settings-bridge / featuresFor can read.
+			// featuresFor() accesses container.model.get('widgetType'), so the
+			// getter MUST live under `.model`, not at the top level.
+			const mockContainer = {
+				id: element.id,
+				model: {
+					get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
+				},
+				settings: {
+					attributes: allSettings
+				}
+			};
+
+			// Bulk sync without requiring the target DOM element to exist yet
+			applySettingsToDoms(mockContainer);
+			
+			syncCount++;	
+		
+		});
+		
+
+		win.aaeAtomicAnimations.scan(win.document);
+	}, 500);
+});

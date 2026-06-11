@@ -48,7 +48,7 @@ const config = {
             control: 'switch',
             responsive: true,
             defaultValue: false,
-            tab: 'Content',
+           
         },
 
         {
@@ -58,7 +58,7 @@ const config = {
             responsive: true,
             defaultValue: '#section-id',
             when: isEnabled,
-            tab: 'Content',
+            
         },
 
         {
@@ -68,7 +68,7 @@ const config = {
             responsive: true,
             defaultValue: 1,
             when: isEnabled,
-            tab: 'Content',
+           
         },
 
         {
@@ -79,7 +79,7 @@ const config = {
             defaultValue: 'power2.out',
             options: EASE_OPTIONS,
             when: isEnabled,
-            tab: 'Content',
+            
         },
     ],
 };

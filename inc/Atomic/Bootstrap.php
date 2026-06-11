@@ -90,6 +90,11 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\WrapperLink\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\WrapperLink\Render() )->register();
 
+		// Custom CSS
+		( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
+
 		( new Assets() )->register();
 	}
 

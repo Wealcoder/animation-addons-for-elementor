@@ -11,7 +11,6 @@ import {
 	styled,
 } from '@elementor/ui';
 import { HexColorPicker } from 'react-colorful';
-
 /* ---------- style options ---------- */
 
 const BORDER_STYLES = [
@@ -60,6 +59,19 @@ const LinkIcon = ({ linked }) => (
 
 function parse(val) {
 	if (val && typeof val === 'object' && !Array.isArray(val)) {
+		let parsedRadius = { top: '', right: '', bottom: '', left: '' };
+		if (typeof val.radius === 'object' && val.radius !== null) {
+			parsedRadius = {
+				top: val.radius.top ?? '',
+				right: val.radius.right ?? '',
+				bottom: val.radius.bottom ?? '',
+				left: val.radius.left ?? '',
+			};
+		} else if (typeof val.radius === 'string' || typeof val.radius === 'number') {
+			let rv = String(val.radius).replace(/[^0-9.]/g, '');
+			parsedRadius = { top: rv, right: rv, bottom: rv, left: rv };
+		}
+
 		return {
 			style:  val.style  || '',
 			width: {
@@ -69,14 +81,14 @@ function parse(val) {
 				left:   val.width?.left   ?? '',
 			},
 			color:  val.color  || '',
-			radius: val.radius ?? '',
+			radius: parsedRadius,
 		};
 	}
 	return {
 		style: '',
 		width: { top: '', right: '', bottom: '', left: '' },
 		color: '',
-		radius: '',
+		radius: { top: '', right: '', bottom: '', left: '' },
 	};
 }
 
@@ -96,6 +108,7 @@ function allSidesEqual(w) {
 export function BorderInput({ value, onChange, disabled }) {
 	const current = parse(value);
 	const [linked, setLinked] = useState(() => allSidesEqual(current.width));
+	const [radiusLinked, setRadiusLinked] = useState(() => allSidesEqual(current.radius));
 	const [pickerOpen, setPickerOpen] = useState(false);
 	const swatchRef = useRef(null);
 
@@ -113,17 +126,33 @@ export function BorderInput({ value, onChange, disabled }) {
 
 	const toggleLinked = () => {
 		if (!linked) {
-			// Linking — unify all sides to the top value
 			const unify = current.width.top || '';
 			update('width', { top: unify, right: unify, bottom: unify, left: unify });
 		}
 		setLinked(!linked);
 	};
 
+	const updateRadius = (side, val) => {
+		if (radiusLinked) {
+			update('radius', { top: val, right: val, bottom: val, left: val });
+		} else {
+			update('radius', { ...current.radius, [side]: val });
+		}
+	};
+
+	const toggleRadiusLinked = () => {
+		if (!radiusLinked) {
+			const unify = current.radius.top || '';
+			update('radius', { top: unify, right: unify, bottom: unify, left: unify });
+		}
+		setRadiusLinked(!radiusLinked);
+	};
+
 	const selectedStyle = BORDER_STYLES.find((o) => o.value === current.style) || null;
 
 	// Unified width display when linked
 	const unifiedWidth = current.width.top || '';
+	const unifiedRadius = current.radius.top || '';
 
 	return (
 		<Stack direction="column" spacing={1.5} sx={{ width: '100%', mt: 0.5 }}>
@@ -203,19 +232,51 @@ export function BorderInput({ value, onChange, disabled }) {
 
 					{/* Radius */}
 					<Box>
-						<Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-							Radius (px)
-						</Typography>
-						<TextField
-							size="small"
-							type="number"
-							inputProps={{ min: 0, step: 1 }}
-							value={current.radius}
-							onChange={(e) => update('radius', e.target.value)}
-							disabled={disabled}
-							fullWidth
-							placeholder="0"
-						/>
+						<Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+							<Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
+								Radius (px)
+							</Typography>
+							<IconButton
+								size="small"
+								onClick={toggleRadiusLinked}
+								disabled={disabled}
+								sx={{ p: 0.25 }}
+								title={radiusLinked ? 'Unlink sides' : 'Link sides'}
+							>
+								<LinkIcon linked={radiusLinked} />
+							</IconButton>
+						</Stack>
+
+						{radiusLinked ? (
+							<TextField
+								size="small"
+								type="number"
+								inputProps={{ min: 0, step: 1 }}
+								value={unifiedRadius}
+								onChange={(e) => updateRadius('top', e.target.value)}
+								disabled={disabled}
+								fullWidth
+								placeholder="0"
+							/>
+						) : (
+							<Stack direction="row" spacing={0.5}>
+								{['top', 'right', 'bottom', 'left'].map((side) => (
+									<Box key={side} sx={{ flex: 1 }}>
+										<TextField
+											size="small"
+											type="number"
+											inputProps={{ min: 0, step: 1 }}
+											value={current.radius[side] || ''}
+											onChange={(e) => updateRadius(side, e.target.value)}
+											disabled={disabled}
+											fullWidth
+											placeholder="0"
+											label={side.charAt(0).toUpperCase() + side.slice(1)}
+										/>
+									</Box>
+								))}
+							</Stack>
+						)}
 					</Box>
 
 					{/* Color */}

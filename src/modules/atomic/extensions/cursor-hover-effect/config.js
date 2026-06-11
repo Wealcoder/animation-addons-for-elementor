@@ -29,8 +29,9 @@ const config = {
 
 			defaultValue: false,
 			play_group: 'aae_cursor_hover_',
+			tab: 'content',
+		
 		},
-
 		/*
 		|--------------------------------------------------------------------------
 		| Text
@@ -47,8 +48,32 @@ const config = {
 			defaultValue: '',
 
 			when: isEnabled,
+			tab: 'content',
 		},
 
+		/*
+|--------------------------------------------------------------------------
+| Font Size
+|--------------------------------------------------------------------------
+*/
+		{
+			bind: 'font_size',
+
+			label: 'Font Size',
+
+			control: 'slider',
+
+			units: ['px', 'em', 'rem'],
+
+			defaultValue: {
+				size: 16,
+				unit: 'px',
+			},
+
+			when: isEnabled,
+			tab: 'style',
+
+		},
 		/*
 		|--------------------------------------------------------------------------
 		| Text Color
@@ -65,6 +90,7 @@ const config = {
 			defaultValue: '#ffffff',
 
 			when: isEnabled,
+			tab: 'style',
 		},
 
 		/*
@@ -72,7 +98,6 @@ const config = {
 		| Background
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'background',
 
@@ -83,6 +108,8 @@ const config = {
 			defaultValue: '#000000',
 
 			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -90,19 +117,18 @@ const config = {
 		| Width Preset
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'width',
 
 			label: 'Width',
 
-			control: 'dimension',
+			control: 'dimensions',
 
 			defaultValue: '120px',
 
-			datalist: ['80', '100', '120', '150', '200'],
-
 			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -110,19 +136,39 @@ const config = {
 		| Height Preset
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'height',
 
 			label: 'Height',
 
-			control: 'dimension',
+			control: 'dimensions',
 
 			defaultValue: '120px',
 
 			datalist: ['80', '100', '120', '150', '200'],
 
 			when: isEnabled,
+			tab: 'style',
+
+		},
+
+		/*
+		|--------------------------------------------------------------------------
+		| Padding
+		|--------------------------------------------------------------------------
+		*/
+		{
+			bind: 'padding',
+
+			label: 'Padding',
+
+			control: 'dimensions',
+
+			defaultValue: '',
+
+			when: isEnabled,
+			tab: 'style',
+
 		},
 
 		/*
@@ -130,36 +176,20 @@ const config = {
 		| Border
 		|--------------------------------------------------------------------------
 		*/
-
 		{
 			bind: 'border',
-
 			label: 'Border',
-
-			control: 'text',
-
-			defaultValue:
-				'1px solid #ffffff',
-
+			control: 'border',
+			responsive: true,
+			defaultValue: {
+				style: '',
+				width: { top: '', right: '', bottom: '', left: '' },
+				color: '',
+				radius: '',
+			},
 			when: isEnabled,
-		},
+			tab: 'style',
 
-		/*
-		|--------------------------------------------------------------------------
-		| Border Radius
-		|--------------------------------------------------------------------------
-		*/
-
-		{
-			bind: 'border_radius',
-
-			label: 'Border Radius',
-
-			control: 'dimensions',
-
-			defaultValue: '100%',
-
-			when: isEnabled,
 		},
 
 		{
@@ -182,6 +212,11 @@ const config = {
 			play_group: 'aae_cursor_hover_',
 		},
 	],
+
+};
+
+export const play = (hoverEffect) => {
+	hoverEffect.play();
 };
 
 export default config;

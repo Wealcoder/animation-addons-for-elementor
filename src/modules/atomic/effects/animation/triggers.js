@@ -79,20 +79,16 @@ export function cleanupTriggerOn(el) {
 	el[DISPOSE_KEY] = null;
 }
 
-export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers, config }) {
-	console.log('[AAE Triggers] wireTrigger called with:', { mode, config });
-
+export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerEl, markers, config }) {
 	// Always clean up the previous wiring first — in the editor, settings
 	// changes fire rebind() which can re-call us on the same element many
-	// times. Without this, listeners and ScrollTriggers stack up.
-	cleanupTriggerOn(el);
+	
+	cleanupTriggerOn({ el, mode, play, buildScrubbed, triggerEl, markers, config });
 	if (config == undefined) {
-		console.log('[AAE Triggers] config is undefined, returning');
 		return;
 	}
 
 	if (mode === 'page-load') {
-		console.log('[AAE Triggers] mode is page-load, calling play()');
 		play();
 		// page-load has nothing to dispose — the tween itself is tracked
 		// by the kind's playedKey and killed on rebind by common.js.
@@ -125,7 +121,16 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	let triggerSelector = el;
 
 	if (config.triggerSelector && config.triggerSelector != '') {
-		triggerSelector = document.querySelector(config.triggerSelector);
+		triggerSelector = document.querySelector(config.triggerSelector) || config.triggerSelector;
+	}
+
+	if (config.startTrigger && config.startTrigger != '') {
+		triggerSelector = document.querySelector(config.startTrigger) || config.startTrigger;
+	}
+
+	let endTrigger;
+	if (config.endTrigger && config.endTrigger != '') {
+		endTrigger = document.querySelector(config.endTrigger) || config.endTrigger;
 	}
 
 	if (config.effect == 'text_spin') {
@@ -137,19 +142,25 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	// Scrub mode: tween progress follows scroll position. The kind must
 	// build a PAUSED tween and return it from buildScrubbed(); we hand it
 	// to ScrollTrigger as the `animation` so it can advance/reverse it.
+	
 	if (mode === 'scrub' && ScrollTrigger && typeof buildScrubbed === 'function') {
 		const tween = buildScrubbed();
 		if (!tween) return;
 
-		const st = ScrollTrigger.create({
+		const stConfig = {
 			trigger: triggerSelector,
 			animation: tween,
 			start: start,
 			end: end,
 			scrub: true,
 			invalidateOnRefresh: true,
-			markers: !!markers,
-		});
+			markers: markers,
+		};
+	
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+	
+		const st = ScrollTrigger.create(stConfig);
+
 		// `st.kill(true)` reverts — removes the marker <div> nodes
 		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
 		// behind, which is what makes stale markers appear in the editor.
@@ -158,26 +169,30 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 	}
 
 	if (mode === 'scroll-tied' && ScrollTrigger) {
-		// Guard against ScrollSmoother / ScrollTrigger.refresh() re-firing
-		// onEnter on already-played elements. Refresh re-runs init
-		// synchronously and re-checks viewport position — so a single bind
-		// can fire onEnter 2-3 times before the user scrolls anywhere.
-		// Per-bind `played` flag means each ScrollTrigger only fires play()
-		// once. cleanupTriggerOn() calls dispose, which destroys the ST and
-		// drops the closure — next bind starts fresh.
-		let played = false;
-		const st = ScrollTrigger.create({
+		// times. Without this, listeners and ScrollTriggers stack up.
+	
+		const stConfig = {
 			trigger: triggerSelector,
 			start: start,
 			end: end,
 			toggleActions: toggleActions,
-			onEnter: () => {
+			markers: markers,
+		};
+		
+		if (animation) {
+			stConfig.animation = animation;
+		} else {
+			let played = false;
+			stConfig.onEnter = () => {
 				if (played) return;
 				played = true;
 				play();
-			},
-			markers: !!markers,
-		});
+			};
+		}
+		
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+
+		const st = ScrollTrigger.create(stConfig);
 		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
@@ -191,18 +206,27 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 		// init/refresh when the element is already in the viewport. ST's
 		// `once:true` only stops re-fires on the SAME ScrollTrigger; if
 		// ScrollSmoother revert+recreates it, a new instance fires again.
-		let played = false;
-		const st = ScrollTrigger.create({
-			trigger: el,
+		const stConfig = {
+			trigger: triggerSelector, // Use triggerSelector so startTrigger applies here too
 			start: 'top 85%',
 			once: true,
-			onEnter: () => {
+			markers: !!markers,
+		};
+		
+		if (animation) {
+			stConfig.animation = animation;
+		} else {
+			let played = false;
+			stConfig.onEnter = () => {
 				if (played) return;
 				played = true;
 				play();
-			},
-			markers: !!markers,
-		});
+			};
+		}
+		
+		if (endTrigger) stConfig.endTrigger = endTrigger;
+
+		const st = ScrollTrigger.create(stConfig);
 		el[DISPOSE_KEY] = () => st.kill(true);
 		return;
 	}
@@ -214,6 +238,6 @@ export function wireTrigger({ el, mode, play, buildScrubbed, triggerEl, markers,
 			observer.unobserve(entry.target);
 		});
 	}, { threshold: 0.15 });
-	observer.observe(el);
+	observer.observe(triggerSelector instanceof HTMLElement ? triggerSelector : el);
 	el[DISPOSE_KEY] = () => observer.disconnect();
 }

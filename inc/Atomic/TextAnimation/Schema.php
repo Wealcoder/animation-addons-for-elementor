@@ -1,11 +1,12 @@
 <?php
+
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
@@ -22,7 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * longer be evaluated reliably, so the JS section is the source of truth
  * for visibility everywhere.
  */
-final class Schema {
+final class Schema
+{
 
 	/* ---- section anchor ---- */
 	const TEXT_SECTION_ANCHOR = 'aae_text_section_anchor';
@@ -41,6 +43,7 @@ final class Schema {
 	const TEXT_ROTATION_DIR     = 'aae_text_rotation_dir';
 	const TEXT_ROTATION         = 'aae_text_rotation';
 	const TEXT_TRANSFORM_ORIGIN = 'aae_text_transform_origin';
+	const TEXT_TEXT_SHADOW      = 'aae_text_text_shadow';
 	const TEXT_SPIN_COLOR       = 'aae_text_spin_color';
 	const TEXT_EASE             = 'aae_text_ease';
 	const TEXT_ENABLE_EDITOR    = 'aae_text_enable_editor';
@@ -78,80 +81,97 @@ final class Schema {
 		self::TEXT_ROTATION    => -80,
 		self::TEXT_SCALE_NUM   => 1.5,
 	];
-	
-	/** Effects that expose Duration / Stagger (v3 excludes spin/invert). */
-	const TEXT_DURATION_EFFECTS = [ 'char', 'word', 'text_reveal', 'text_move', 'text_scale' ];
 
-	/** Effects that expose Transform-X / Transform-Y / Rotation / Transform-Origin. */
-	const TEXT_TRANSLATE_EFFECTS = [ 'char', 'word' ];
+	/** Effects that expose Duration / Stagger (v3 excludes spin/invert). */
+	const TEXT_DURATION_EFFECTS = ['char', 'word', 'text_reveal', 'text_move', 'text_scale'];
+
+	/** Effects that expose Transform-X / Transform-Y. */
+	const TEXT_TRANSLATE_EFFECTS = ['char', 'word'];
+
+	/** Effects that expose Rotation. */
+	const TEXT_MOVE_EFFECTS = ['text_move'];
 
 	/** Single-effect families — named so Render.php doesn't carry string literals. */
-	const TEXT_INVERT_EFFECTS = [ 'text_invert' ];
-	const TEXT_SPIN_EFFECTS   = [ 'text_spin', 'text_spin_color' ];
-	const TEXT_SCALE_EFFECTS  = [ 'text_scale' ];
+	const TEXT_INVERT_EFFECTS = ['text_invert'];
+	const TEXT_SPIN_EFFECTS   = ['text_spin', 'text_spin_color'];
+	const TEXT_SCALE_EFFECTS  = ['text_scale'];
 
-	public function register(): void {
-		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_animation_props' ] );
+	public function register(): void
+	{
+		add_filter('elementor/atomic-widgets/props-schema', [$this, 'add_animation_props']);
 	}
 
-	public function add_animation_props( array $schema ): array {
-		if ( ! class_exists( String_Prop_Type::class ) ) {
+	public function add_animation_props(array $schema): array
+	{
+		if (! class_exists(String_Prop_Type::class)) {
 			return $schema;
 		}
 
 		/* ---------- section anchor ---------- */
-		$schema[ self::TEXT_SECTION_ANCHOR ] = Section_Anchor_Prop_Type::make()->default( '' );
+		$schema[self::TEXT_SECTION_ANCHOR] = Section_Anchor_Prop_Type::make()->default('');
 
 		/* ---------- responsive props (visibility via JS section, no PHP deps) ---------- */
 
-		$schema[ self::TEXT_EFFECT ]           = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'none' ] );
-		$schema[ self::TEXT_TRIGGER ]          = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'on_scroll' ] );
-		$schema[ self::TEXT_TRIGGER_SELECTOR ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
-		$schema[ self::TEXT_WRAPPER ]          = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'default' ] );
-		$schema[ self::TEXT_WRAPPER_SELECTOR ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
+		$schema[self::TEXT_EFFECT]           = Responsive_Json_Prop_Type::make()->default(['desktop' => 'none']);
+		$schema[self::TEXT_TRIGGER]          = Responsive_Json_Prop_Type::make()->default(['desktop' => 'on_scroll']);
+		$schema[self::TEXT_TRIGGER_SELECTOR] = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
+		$schema[self::TEXT_WRAPPER]          = Responsive_Json_Prop_Type::make()->default(['desktop' => 'default']);
+		$schema[self::TEXT_WRAPPER_SELECTOR] = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
 
-		$schema[ self::TEXT_START_TRIGGER ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
-		$schema[ self::TEXT_END_TRIGGER ]      = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
-		$schema[ self::TEXT_START_POSITION ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
-		$schema[ self::TEXT_START_CUSTOM ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top top' ] );
-		$schema[ self::TEXT_END_POSITION ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
-		$schema[ self::TEXT_END_CUSTOM ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom top' ] );
-		
+		$schema[self::TEXT_START_TRIGGER]    = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
+		$schema[self::TEXT_END_TRIGGER]      = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
+		$schema[self::TEXT_START_POSITION]   = Responsive_Json_Prop_Type::make()->default(['desktop' => 'top top']);
+		$schema[self::TEXT_START_CUSTOM]     = Responsive_Json_Prop_Type::make()->default(['desktop' => 'top top']);
+		$schema[self::TEXT_END_POSITION]     = Responsive_Json_Prop_Type::make()->default(['desktop' => 'bottom top']);
+		$schema[self::TEXT_END_CUSTOM]       = Responsive_Json_Prop_Type::make()->default(['desktop' => 'bottom top']);
 
-		$schema[ self::TEXT_DELAY ]       = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_DELAY ] ] );
-		$schema[ self::TEXT_DURATION ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_DURATION ] ] );
-		$schema[ self::TEXT_STAGGER ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_STAGGER ] ] );
-		$schema[ self::TEXT_TRANSLATE_X ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_TRANSLATE_X ] ] );
-		$schema[ self::TEXT_TRANSLATE_Y ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_TRANSLATE_Y ] ] );
 
-		$schema[ self::TEXT_ROTATION_DIR ]     = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'x' ] );
-		$schema[ self::TEXT_ROTATION ]         = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_ROTATION ] ] );
-		$schema[ self::TEXT_TRANSFORM_ORIGIN ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top center -50' ] );
+		$schema[self::TEXT_DELAY]       = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_DELAY]]);
+		$schema[self::TEXT_DURATION]    = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_DURATION]]);
+		$schema[self::TEXT_STAGGER]     = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_STAGGER]]);
+		$schema[self::TEXT_TRANSLATE_X] = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_TRANSLATE_X]]);
+		$schema[self::TEXT_TRANSLATE_Y] = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_TRANSLATE_Y]]);
 
-		$schema[ self::TEXT_INVERT_START ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top 85%' ] );
-		$schema[ self::TEXT_INVERT_END ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom center' ] );
+		$schema[self::TEXT_ROTATION_DIR]     = Responsive_Json_Prop_Type::make()->default(['desktop' => 'x']);
+		$schema[self::TEXT_ROTATION]         = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_ROTATION]]);
+		$schema[self::TEXT_TRANSFORM_ORIGIN] = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
+		$schema[self::TEXT_TEXT_SHADOW]      = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
 
-		$schema[ self::TEXT_SPIN_START ]  = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'top 50%' ] );
-		$schema[ self::TEXT_SPIN_END ]    = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'bottom 30%' ] );
-		$schema[ self::TEXT_SPIN_TOGGLE ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'play none none reverse' ] );
+		$schema[self::TEXT_INVERT_START] = Responsive_Json_Prop_Type::make()->default(['desktop' => 'top 85%']);
+		$schema[self::TEXT_INVERT_END]   = Responsive_Json_Prop_Type::make()->default(['desktop' => 'bottom center']);
 
-		$schema[ self::TEXT_SCALE_EASE ]  = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'back' ] );
-		$schema[ self::TEXT_SCALE_NUM ]   = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => self::RESPONSIVE_NUMBER_SETTINGS[ self::TEXT_SCALE_NUM ] ] );
-		$schema[ self::TEXT_SCALE_BREAK ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'lines' ] );
-		$schema[ self::TEXT_SPIN_COLOR ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '#000000' ] );
-		$schema[ self::TEXT_EASE ]        = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => '' ] );
+		$schema[self::TEXT_SPIN_START]  = Responsive_Json_Prop_Type::make()->default(['desktop' => 'top 50%']);
+		$schema[self::TEXT_SPIN_END]    = Responsive_Json_Prop_Type::make()->default(['desktop' => 'bottom 30%']);
+		$schema[self::TEXT_SPIN_TOGGLE] = Responsive_Json_Prop_Type::make()->default(['desktop' => 'play none none reverse']);
+
+		$schema[self::TEXT_SCALE_EASE]  = Responsive_Json_Prop_Type::make()->default(['desktop' => 'back']);
+		$schema[self::TEXT_SCALE_NUM]   = Responsive_Json_Prop_Type::make()->default(['desktop' => self::RESPONSIVE_NUMBER_SETTINGS[self::TEXT_SCALE_NUM]]);
+		$schema[self::TEXT_SCALE_BREAK] = Responsive_Json_Prop_Type::make()->default(['desktop' => 'lines']);
+		$schema[self::TEXT_SPIN_COLOR] = Responsive_Json_Prop_Type::make()->default(['desktop' => '#000000']);
+		$schema[self::TEXT_EASE]        = Responsive_Json_Prop_Type::make()->default(['desktop' => '']);
 
 		/* ---------- non-responsive props (deps dropped — visibility now JS-driven) ---------- */
 
-		$schema[ self::TEXT_MARKERS ]       = Boolean_Prop_Type::make()->default( false );
-		$schema[ self::TEXT_ENABLE_EDITOR ] = Boolean_Prop_Type::make()->default( false );
+		$schema[self::TEXT_MARKERS]       = Boolean_Prop_Type::make()->default(false);
+		$schema[self::TEXT_ENABLE_EDITOR] = Boolean_Prop_Type::make()->default(false);
 
 		return $schema;
 	}
 
 	/* ---------- widget targets ---------- */
 
-	public static function text_animation_widgets(): array {
-		return [ 'e-heading','e-paragraph' ];
+	public static function text_animation_widgets(): array
+	{
+		return ['e-heading', 'e-paragraph', 'e-button'];
+	}
+
+	public static function is_premium_effect( $effect ): bool {
+		$core_effects = array_merge(
+			self::TEXT_DURATION_EFFECTS,
+			self::TEXT_INVERT_EFFECTS,
+			self::TEXT_SPIN_EFFECTS,
+			['none']
+		);
+		return ! empty( $effect ) && ! in_array( $effect, $core_effects, true );
 	}
 }

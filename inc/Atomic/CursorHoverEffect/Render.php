@@ -120,14 +120,26 @@ final class Render {
 				}
 				return $size . $unit;
 			}
+			// Plain number from slider (no units) — append 'px'
+			if ( is_numeric( $v ) ) {
+				return $v . 'px';
+			}
 			return (string) $v;
 		};
 
 		$this->emit_responsive( $config, $settings, Schema::WIDTH, 'width', '', $extra_bps, $dimension_cast, $disabled_bps );
 		$this->emit_responsive( $config, $settings, Schema::HEIGHT, 'height', '', $extra_bps, $dimension_cast, $disabled_bps );
-		$this->emit_responsive( $config, $settings, Schema::BORDER, 'border', '1px solid #ffffff', $extra_bps, $cast_string, $disabled_bps );
 
-		// objects (responsive)
+		// Font size — slider may save {size, unit} object or plain number
+		$this->emit_responsive( $config, $settings, Schema::FONT_SIZE, 'fontSize', '', $extra_bps, $dimension_cast, $disabled_bps );
+
+		// Padding — dimension control saves {size, unit} object
+		$this->emit_responsive( $config, $settings, Schema::PADDING, 'padding', '', $extra_bps, $dimension_cast, $disabled_bps );
+
+		// Border object (responsive) — contains style, width, color, radius
+		$this->emit_responsive_object( $config, $settings, Schema::BORDER, 'border', $extra_bps, $disabled_bps );
+
+		// Border Radius object (responsive)
 		$this->emit_responsive_object( $config, $settings, Schema::BORDER_RADIUS, 'borderRadius', $extra_bps, $disabled_bps );
 
 		// Ensure the enabled flag is always present for runtime if it wasn't written

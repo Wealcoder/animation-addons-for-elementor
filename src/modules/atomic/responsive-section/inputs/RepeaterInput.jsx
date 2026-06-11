@@ -36,6 +36,8 @@ export function RepeaterInput({
 	cells = [],
 	addLabel = 'Add Item',
 	rowDefaults = {},
+	settings,
+	activeBp,
 }) {
 	const rows = Array.isArray(value) ? value : [];
 
@@ -77,6 +79,10 @@ export function RepeaterInput({
 							sx={{ flex: 1, minWidth: 0 }}
 						>
 							{cells.map((cellCfg) => {
+								if (typeof cellCfg.when === 'function' && !cellCfg.when(settings, activeBp)) {
+									return null;
+								}
+								
 								const Cell = CELL_COMPONENTS[cellCfg.type];
 								if (!Cell) {
 									return (
@@ -94,6 +100,8 @@ export function RepeaterInput({
 											config={cellCfg}
 											disabled={disabled}
 											onChange={(next) => updateRowCell(index, cellCfg.bind, next)}
+											rows={rows}
+											index={index}
 										/>
 									</Box>
 								);
@@ -185,9 +193,19 @@ function SwitchCell({ value, onChange, disabled }) {
 	);
 }
 
-function SelectCell({ value, onChange, disabled, config }) {
-	const options = config.options || [];
-	const selected = options.find((o) => o.value === value) || null;
+function SelectCell({ value, onChange, disabled, config, rows, index }) {
+	let options = config.options || [];
+	
+	if (config.unique && rows) {
+		const usedValues = rows
+			.map((r, i) => i !== index ? r[config.bind] : null)
+			.filter(Boolean);
+		options = options.filter((opt) => !usedValues.includes(typeof opt === 'string' ? opt : opt.value));
+	}
+
+	const found = options.find((o) => (typeof o === 'string' ? o : o.value) === value);
+	const selected = found || (config.freeSolo && value ? value : null);
+
 	return (
 		<Autocomplete
 			size="tiny"
@@ -195,17 +213,43 @@ function SelectCell({ value, onChange, disabled, config }) {
 			disabled={disabled}
 			options={options}
 			value={selected}
-			isOptionEqualToValue={(opt, val) => opt.value === val.value}
-			getOptionLabel={(opt) => opt.label || String(opt.value)}
-			onChange={(_, next) => onChange(next ? next.value : '')}
+			freeSolo={!!config.freeSolo}
+			isOptionEqualToValue={(opt, val) => {
+				const optValue = typeof opt === 'object' && opt !== null ? opt.value : opt;
+				const valValue = typeof val === 'object' && val !== null ? val.value : val;
+				return optValue === valValue;
+			}}
+			getOptionLabel={(opt) => {
+				if (typeof opt === 'string') return opt;
+				return opt.label || String(opt.value);
+			}}
+			onChange={(_, next) => {
+				if (typeof next === 'string') {
+					onChange(next);
+				} else {
+					onChange(next ? next.value : '');
+				}
+			}}
 			ListboxProps={{ style: { maxHeight: 300 } }}
-			renderInput={(params) => (
-				<TextField
-					{...params}
-					size="tiny"
-					placeholder={config.placeholder || ''}
-				/>
-			)}
+			renderInput={(params) => {
+				const { onBlur, ...restInputProps } = params.inputProps;
+				return (
+					<TextField
+						{...params}
+						size="tiny"
+						placeholder={config.placeholder || ''}
+						inputProps={{
+							...restInputProps,
+							onBlur: (e) => {
+								if (config.freeSolo) {
+									onChange(e.target.value);
+								}
+								if (onBlur) onBlur(e);
+							}
+						}}
+					/>
+				);
+			}}
 		/>
 	);
 }

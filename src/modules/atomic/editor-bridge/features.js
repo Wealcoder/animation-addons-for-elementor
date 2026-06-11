@@ -201,13 +201,13 @@ const TEXT_RESPONSIVE = {
 	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
 	aae_text_delay: { configKey: 'delay', default: 0.15 },
 	aae_text_duration: { configKey: 'duration', default: 1 },
-	aae_text_stagger: { configKey: 'stagger', default: 0.02 },
 	aae_text_ease: { configKey: 'ease', default: '' },
 	aae_text_translate_x: { configKey: 'translateX', default: 20 },
 	aae_text_translate_y: { configKey: 'translateY', default: 0 },
 	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },
 	aae_text_rotation: { configKey: 'rotation', default: -80 },
 	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
+	aae_text_text_shadow: { configKey: 'textShadow', default: '' },
 	aae_text_spin_color: { configKey: 'spinColor', default: '#000000' },
 	aae_text_start_trigger: { configKey: 'startTrigger', default: '' },
 	aae_text_end_trigger: { configKey: 'endTrigger', default: '' },
@@ -221,6 +221,14 @@ const TEXT_RESPONSIVE = {
 	aae_text_scale_ease: { configKey: 'scaleEase', default: 'back' },
 	aae_text_scale_num: { configKey: 'scaleNum', default: 1.5 },
 	aae_text_scale_break: { configKey: 'scaleBreak', default: 'lines' },
+	aae_text_markers: { configKey: 'markers', default: false },
+};
+
+const TEXT_OBJECTS = {
+	aae_text_stagger: {
+		configKey: 'stagger',
+		isValid: (v) => v !== undefined && v !== null,
+	},
 };
 
 function buildTextConfig(settings) {
@@ -239,6 +247,7 @@ function buildTextConfig(settings) {
 	}
 
 	emitResponsive(cfg, settings, TEXT_RESPONSIVE, disabledBps);
+	emitResponsiveObjects(cfg, settings, TEXT_OBJECTS, disabledBps);
 
 	// Effect defaults to 'none', so a non-default desktop value WILL be
 	// emitted. Guarantee presence even if equal to default — the runtime
@@ -314,18 +323,6 @@ const REGULAR_RESPONSIVE_ALWAYS = {
 	aae_anim_easing: { configKey: 'easing', default: 'power2.out' },
 };
 
-const REGULAR_RESPONSIVE_FADE = {
-	aae_anim_fade_from: { configKey: 'fadeFrom', default: 'bottom' },
-	aae_anim_fade_offset: { configKey: 'fadeOffset', default: 50 },
-	aae_anim_scale: { configKey: 'scale', default: 0.7 },
-};
-
-const REGULAR_RESPONSIVE_MOVE = {
-	aae_anim_rotation_dir: { configKey: 'rotationDir', default: 'x' },
-	aae_anim_rotation: { configKey: 'rotation', default: -80 },
-	aae_anim_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
-};
-
 const REGULAR_RESPONSIVE_SCROLL_CUSTOM = {
 	aae_anim_start_trigger: { configKey: 'startTrigger', default: '' },
 	aae_anim_end_trigger: { configKey: 'endTrigger', default: '' },
@@ -368,29 +365,18 @@ function buildRegularConfig(settings) {
 	// keeps the editor toggle in sync with what the user sees.
 	if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
 
-	if (effect === 'fade') {
-		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_FADE, disabledBps);
-	}
-
-	if (effect === 'move') {
-		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_MOVE, disabledBps);
-	}
-
-	if (effect === 'custom') {
-		// Custom Properties repeater — stored as Responsive_Json_Prop_Type
-		// whose `.value` is a per-bp map of row arrays. JS owns the row
-		// shape: `{ property: string, value: string }`. Frontend reader
-		// expects `{ k, v }` pairs.
-		const map = envelopeToMap(settings.aae_anim_custom_props);
+	const processRepeater = (bindName, cfgKey) => {
+		const map = envelopeToMap(settings[bindName]);
 		const rows = Array.isArray(map.desktop) ? map.desktop : [];
 		const pairs = [];
 		for (const row of rows) {
-			const k = typeof row?.property === 'string' ? row.property.trim() : '';
+			if (row?.enabled === false) continue;
+			const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 			if (!k || k === 'none') continue;
-			const v = typeof row?.value === 'string' ? row.value.trim() : '';
+			const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 			pairs.push({ k, v });
 		}
-		if (pairs.length) cfg.customProps = pairs;
+		if (pairs.length) cfg[cfgKey] = pairs;
 
 		for (const bp of BPS) {
 			if (disabledBps.has(bp)) continue;
@@ -398,14 +384,18 @@ function buildRegularConfig(settings) {
 			if (!bpRows) continue;
 			const bpPairs = [];
 			for (const row of bpRows) {
-				const k = typeof row?.property === 'string' ? row.property.trim() : '';
+				if (row?.enabled === false) continue;
+				const k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
 				if (!k || k === 'none') continue;
-				const v = typeof row?.value === 'string' ? row.value.trim() : '';
+				const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
 				bpPairs.push({ k, v });
 			}
-			if (bpPairs.length) cfg['customProps_' + bp] = bpPairs;
+			if (bpPairs.length) cfg[cfgKey + '_' + bp] = bpPairs;
 		}
-	}
+	};
+
+	processRepeater('aae_anim_custom_props', 'customProps');
+	processRepeater('aae_anim_custom_props_to', 'customPropsTo');
 
 	if (plain(settings, 'aae_anim_enable_editor')) cfg.enableEditor = true;
 	return cfg;
@@ -714,7 +704,7 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 
 	aae_advance_tooltip_text: {
 		configKey: 'text',
-		default: '',
+		default: 'view tooltip',
 	},
 
 	aae_advance_tooltip_position: {
@@ -735,11 +725,6 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 	aae_advance_tooltip_offset: {
 		configKey: 'offset',
 		default: 10,
-	},
-
-	aae_advance_tooltip_duration: {
-		configKey: 'duration',
-		default: 0.3,
 	},
 
 	aae_advance_tooltip_alignment: {
@@ -771,15 +756,40 @@ const ADVANCED_TOOLTIP_RESPONSIVE = {
 		configKey: 'color',
 		default: '#ffffff',
 	},
-};
+
+	// New controls added to features.js so editor live-preview bridge
+	// syncs them to the iframe map on every settings change.
+	aae_advance_tooltip_show_delay: {
+		configKey: 'showDelay',
+		default: 0,
+	},
+
+	aae_advance_tooltip_hide_delay: {
+		configKey: 'hideDelay',
+		default: 0,
+	},
+
+	};
 
 const ADVANCED_TOOLTIP_OBJECTS = {
-	aae_advance_tooltip_borderRadius: {
-		configKey: 'borderRadius',
+	aae_advance_tooltip_padding: {
+		configKey: 'padding',
+		isValid: (v) => v && typeof v === 'object',
+	},
+	aae_advance_tooltip_border: {
+		configKey: 'border',
 
 		isValid: (v) =>
 			v &&
 			typeof v === 'object',
+	},
+	aae_advance_tooltip_font_size: {
+		configKey: 'font_size',
+		isValid: (v) => v && typeof v === 'object',
+	},
+	aae_advance_tooltip_line_height: {
+		configKey: 'line_height',
+		isValid: (v) => v && typeof v === 'object',
 	},
 };
 
@@ -923,21 +933,39 @@ const CURSOR_RESPONSIVE = {
 	aae_cursor_hover_background: { configKey: 'background', default: '#000000' },
 	aae_cursor_hover_width: { configKey: 'width', default: '' },
 	aae_cursor_hover_height: { configKey: 'height', default: '' },
-	aae_cursor_hover_border: { configKey: 'border', default: '1px solid #ffffff' },
+	aae_cursor_hover_font_size: { configKey: 'fontSize', default: '' },
+	aae_cursor_hover_padding: { configKey: 'padding', default: '' },
 };
 
 const CURSOR_OBJECTS = {
-	aae_cursor_hover_border_radius: { configKey: 'borderRadius', default: '100%' },
+	aae_cursor_hover_border: {
+		configKey: 'border',
+		isValid: (v) => v && typeof v === 'object',
+	},
 };
 
 function dimensionToString(val) {
 	if (val && typeof val === 'object') {
+		// 4-sided dimension box (padding/margin): {top, right, bottom, left, unit}
+		if ('top' in val || 'bottom' in val) {
+			const top    = val.top    ?? '';
+			const right  = val.right  ?? '';
+			const bottom = val.bottom ?? '';
+			const left   = val.left   ?? '';
+			const unit   = val.unit || 'px';
+			if (top === '' && right === '' && bottom === '' && left === '') return '';
+			return `${top}${unit} ${right}${unit} ${bottom}${unit} ${left}${unit}`;
+		}
+		// Single-value dimension: {size, unit} or {value, unit}
 		const size = val.size !== undefined ? val.size : (val.value !== undefined ? val.value : '');
 		const unit = val.unit || 'px';
 		if (size === '' || size === null || size === undefined) return '';
 		return size + unit;
 	}
-	return val ? String(val) : '';
+	if (typeof val === 'number') {
+		return val + 'px';
+	}
+	return (val !== undefined && val !== null && val !== '') ? String(val) : '';
 }
 
 function translateDimensionSettings(settings, keys) {
@@ -983,7 +1011,9 @@ function buildCursorHoverEffectConfig(settings) {
 
 	const translated = translateDimensionSettings(settings, [
 		'aae_cursor_hover_width',
-		'aae_cursor_hover_height'
+		'aae_cursor_hover_height',
+		'aae_cursor_hover_font_size',
+		'aae_cursor_hover_padding',
 	]);
 
 	emitResponsive(cfg, translated, CURSOR_RESPONSIVE, disabledBps);
@@ -1059,6 +1089,39 @@ function buildMouseMoveConfig(settings) {
 	if (!('enable' in cfg)) {
 		cfg.enable = enabled;
 	}
+
+	return cfg;
+}
+
+/* =====================================================================
+ * Custom CSS feature
+ * =================================================================== */
+
+const CUSTOM_CSS_RESPONSIVE = {
+	aae_custom_css_enable: { configKey: 'enabled', default: false },
+	aae_custom_css_css: { configKey: 'css', default: '' },
+};
+
+function buildCustomCssConfig(settings) {
+	const enabled = readAt(settings, 'aae_custom_css_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_custom_css_enable', false);
+
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {};
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) disabledBps.add(bp);
+	}
+
+	emitResponsive(cfg, settings, CUSTOM_CSS_RESPONSIVE, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
+	if (plain(settings, 'aae_custom_css_enable_editor')) cfg.enableEditor = true;
 
 	return cfg;
 }
@@ -1173,6 +1236,15 @@ export const FEATURES = [
 		buildConfig: buildWrapperLinkConfig,
 		findTarget: findByInteractionId,
 	},
+	{
+		name: 'custom-css',
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_custom_css_enable',
+		autoReplaySetting: 'aae_custom_css_enable_editor',
+		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',
+		buildConfig: buildCustomCssConfig,
+		findTarget: findByInteractionId,
+	},
 ];
 
 /**
@@ -1188,6 +1260,7 @@ export function featuresFor(container) {
 	// the prefix when missing before matching.
 	const raw = container?.model?.get?.('widgetType')
 		|| container?.model?.get?.('elType');
+		
 	if (!raw) return [];
 	const type = raw.startsWith('e-') ? raw : `e-${raw}`;
 	return FEATURES.filter((f) => f.widgetTypes.includes(type));

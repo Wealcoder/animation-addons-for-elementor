@@ -9,17 +9,19 @@ import {
 	isTranslateEffect,
 	showEnableEditor,
 	showPlayButton,
-	
 	showScrollCustomBlock,
+	showScrollPosition,
 	showStartCustom,
 
 	showTriggerSelector,
 	showWrapper,
 	showTriggerDropdown,
 	showDelay,
-	isPremiumEffect
+	isPremiumEffect,
+	isMoveOrPremium,
+	showTextShadow
 } from './predicates';
-import { PREMIUM_EFFECT_OPTIONS } from './presets';
+import { PREMIUM_EFFECTS } from './presets';
 
 /**
  * Declarative table for the Text Animation section. Same structure as
@@ -36,7 +38,10 @@ const EFFECT_OPTIONS = [
 	{ value: 'text_reveal', label: 'Text Reveal' },
 	{ value: 'text_scale', label: 'Text Scale' },
 	{ value: 'text_invert', label: 'Text Invert' },
-	...PREMIUM_EFFECT_OPTIONS
+	...Object.keys(PREMIUM_EFFECTS).map(key => ({
+		value: key.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+		label: key
+	}))
 ];
 
 const TRIGGER_OPTIONS = [
@@ -60,12 +65,22 @@ const ROTATION_DIR_OPTIONS = [
 ];
 
 const SCROLL_POSITION_OPTIONS = [
-	'top top', 'top center', 'top bottom',
-	'center top', 'center center', 'center bottom',
-	'bottom top', 'bottom center', 'bottom bottom'
+	'top top', 'top center', 'top bottom', 'top 25%', 'top 50%', 'top 75%', 'top 100%','top=+200px','top=+500px','top=30%','top=-200px','top=-500px','top=-30%',
+	'center top', 'center center', 'center bottom', 'center 25%', 'center 50%', 'center 75%', 'center 100%','center=+200px','center=+500px','center=30%','center=-200px','center=-500px','center=-30%',
+	'bottom top', 'bottom center', 'bottom bottom', 'bottom 25%', 'bottom 50%', 'bottom 75%', 'bottom 100%','bottom=+200px','bottom=+500px','bottom=30%','bottom=-200px','bottom=-500px','bottom=-30%'
 ].map((v) => ({
 	value: v,
 	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+}));
+
+const TRANSFORM_ORIGIN_OPTIONS = [
+	'top left', 'top center', 'top right',
+	'center left', 'center center', 'center right',
+	'bottom left', 'bottom center', 'bottom right',
+	'top center -50', '50% 50% -30px', '50% 0%', 'top=50px', 'bottom=50px', 'right=50px', 'left=50px', 'top=-50px', 'bottom=-50px', 'right=-50px', 'left=-50px'
+].map((v) => ({
+	value: v,
+	label: v.replace(/\b\w/g, (c) => c.toUpperCase()),
 }));
 
 const EASE_OPTIONS = [
@@ -114,12 +129,12 @@ const config = {
 		},
 		{
 			bind: 'start_position', label: 'Start', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollCustomBlock, responsive: true
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'top top', when: showScrollPosition, responsive: true
 		},
 		
 		{
 			bind: 'end_position', label: 'End', control: 'text',
-			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollCustomBlock, responsive: true
+			datalist: SCROLL_POSITION_OPTIONS, defaultValue: 'bottom top', when: showScrollPosition, responsive: true
 		},		
 
 		// Invert-specific
@@ -152,7 +167,7 @@ const config = {
 			defaultValue: 1,
 			when: isDurationEffect, responsive: true
 		},
-		{ bind: 'stagger', label: 'Stagger', control: 'number', defaultValue: 0.02, when: isDurationEffect, responsive: true },
+		{ bind: 'stagger', label: 'Stagger', control: 'stagger', min: -1, max: 100, step: 0.01, defaultValue: 0.02, when: isDurationEffect, responsive: true },
 		{
 			bind: 'ease', label: 'Easing', control: 'select', options: EASE_OPTIONS, defaultValue: '', when: isPremiumEffect, responsive: true
 		},
@@ -169,7 +184,11 @@ const config = {
 		},
 		{
 			bind: 'transform_origin', label: 'Transform Origin', control: 'text',
-			defaultValue: 'top center -50', placeholder: 'top center -50', when: isMove, responsive: true
+			datalist: TRANSFORM_ORIGIN_OPTIONS, defaultValue: '', placeholder: 'top center -50', when: isMoveOrPremium, responsive: true
+		},
+		{
+			bind: 'text_shadow', label: 'Text Shadow', control: 'text_shadow',
+			defaultValue: '', placeholder: '-30px 20px 0px rgba(0,255,255,0.5)', when: showTextShadow, responsive: true
 		},
 
 		// Scale-specific

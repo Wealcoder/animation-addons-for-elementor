@@ -63,7 +63,7 @@ function read(el) {
 			r(
 				cfg,
 				'text',
-				''
+				'Cursor Hover Effect'
 			),
 
 		color:
@@ -94,32 +94,23 @@ function read(el) {
 				''
 			),
 
-		border:
-			r(
-				cfg,
-				'border',
-				'1px solid #ffffff'
-			),
+		border: r(cfg, 'border', null),		
 
-		borderRadius:
-			r(
-				cfg,
-				'borderRadius',
-				null
-			),
+		fontSize: r(cfg, 'fontSize', ''),
+
+		padding: r(cfg, 'padding', ''),
 	};
 }
 
 function play(el, config) {
 	unbind(el);
 	bind(el, config);
+	
 }
 
 function bind(el, config) {
 	unbind(el);
 	if (!config) return;
-
-	console.log('Cursor Hover Effect',config);
 
 	const widgetId =
 		el.dataset.id ||
@@ -186,8 +177,61 @@ function bind(el, config) {
 	cursor.style.background =
 		config.background;
 
-	cursor.style.border =
-		config.border;
+	/*
+	|--------------------------------------------------------------------------
+	| Border
+	|--------------------------------------------------------------------------
+	*/
+	if (config.border && config.border.style && config.border.style !== 'none' && config.border.style !== '') {
+		const b = config.border;
+		const w = b.width || {};
+		const wUnit = 'px';
+		const topW = (w.top || 0);
+		const rightW = (w.right || 0);
+		const bottomW = (w.bottom || 0);
+		const leftW = (w.left || 0);
+
+		cursor.style.borderStyle = b.style;
+		cursor.style.borderWidth = `${topW}${wUnit} ${rightW}${wUnit} ${bottomW}${wUnit} ${leftW}${wUnit}`;
+		cursor.style.borderColor = b.color || '#000000';
+
+		if (b.radius) {
+			const rv = b.radius;
+			if (typeof rv === 'object' && rv !== null) {
+				cursor.style.borderRadius = `${rv.top || 0}px ${rv.right || 0}px ${rv.bottom || 0}px ${rv.left || 0}px`;
+			} else if (typeof rv === 'number') {
+				cursor.style.borderRadius = `${rv}px`;
+			} else if (/^\d+(\.\d+)?$/.test(String(rv))) {
+				cursor.style.borderRadius = `${rv}px`;
+			} else {
+				cursor.style.borderRadius = rv;
+			}
+		}
+	} else {
+		cursor.style.border = 'none';
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Border Radius (independent of border style)
+	|--------------------------------------------------------------------------
+	*/
+	if (config.borderRadius) {
+		if (typeof config.borderRadius === 'object') {
+			const r = config.borderRadius;
+			if (r.top !== undefined || r.right !== undefined) {
+				const u = r.unit || 'px';
+				cursor.style.borderRadius = `${r.top || 0}${u} ${r.right || 0}${u} ${r.bottom || 0}${u} ${r.left || 0}${u}`;
+			} else if (r.size !== undefined) {
+				const u = r.unit || 'px';
+				cursor.style.borderRadius = `${r.size}${u}`;
+			}
+		} else if (typeof config.borderRadius === 'number') {
+			cursor.style.borderRadius = `${config.borderRadius}px`;
+		} else {
+			cursor.style.borderRadius = config.borderRadius;
+		}
+	}
 
 	/*
 	|--------------------------------------------------------------------------
@@ -205,9 +249,28 @@ function bind(el, config) {
 			config.height;
 	}
 
-	if (config.borderRadius) {
-		cursor.style.borderRadius =
-			config.borderRadius;
+	if (config.fontSize) {
+		if (typeof config.fontSize === 'object') {
+			const size = config.fontSize.size || 16;
+			const unit = config.fontSize.unit || 'px';
+			cursor.style.fontSize = `${size}${unit}`;
+		} else if (typeof config.fontSize === 'number') {
+			cursor.style.fontSize = `${config.fontSize}px`;
+		} else {
+			cursor.style.fontSize = config.fontSize;
+		}
+	}
+
+	if (config.padding) {
+		if (typeof config.padding === 'object') {
+			const size = config.padding.size || '';
+			const unit = config.padding.unit || 'px';
+			if (size !== '') {
+				cursor.style.padding = `${size}${unit}`;
+			}
+		} else {
+			cursor.style.padding = config.padding;
+		}
 	}
 
 	/*

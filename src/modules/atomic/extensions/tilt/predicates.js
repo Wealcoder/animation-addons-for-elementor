@@ -14,4 +14,8 @@ function plainBool(s, bind) {
 
 export function showPlayButton(s, bp) {
 	return isEnabled(s, bp) && plainBool(s, 'aae_tilt_enable_editor');
-}
+}
+// enable glary condition
+export function isGlareEnabled(s, bp) {
+	return valueAt(s, 'aae_tilt_glare', bp) === true;
+}

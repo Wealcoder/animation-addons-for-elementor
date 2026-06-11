@@ -117,13 +117,13 @@ final class Render {
 			Schema::TEXT_WRAPPER_SELECTOR => [ 'wrapperSelector', '',                null ],
 			Schema::TEXT_DELAY            => [ 'delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],       null ],
 			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],    'duration_family' ],
-			Schema::TEXT_STAGGER          => [ 'stagger',         Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_STAGGER ],     'duration_family' ],
 			Schema::TEXT_EASE             => [ 'ease',            '',                                                             'duration_family' ],
 			Schema::TEXT_TRANSLATE_X      => [ 'translateX',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ], $translate_family ],
 			Schema::TEXT_TRANSLATE_Y      => [ 'translateY',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ], $translate_family ],
-			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                            $translate_family ],
-			Schema::TEXT_ROTATION         => [ 'rotation',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],    $translate_family ],
-			Schema::TEXT_TRANSFORM_ORIGIN => [ 'transformOrigin', 'top center -50',                                               $translate_family ],
+			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                            Schema::TEXT_MOVE_EFFECTS ],
+			Schema::TEXT_ROTATION         => [ 'rotation',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],    Schema::TEXT_MOVE_EFFECTS ],
+			Schema::TEXT_TRANSFORM_ORIGIN => [ 'transformOrigin', 'top center -50',                                               ['text_move', 'origami_fold', 'shutter_cascade'] ],
+			Schema::TEXT_TEXT_SHADOW      => [ 'textShadow',      '',                                                             ['cyber_phantom'] ],
 
 			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
 			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
@@ -162,7 +162,7 @@ final class Render {
 		foreach ( $responsive_map as $base_key => [ $config_key, $default, $effect_family ] ) {
 			// Skip effect-specific keys when the chosen effect doesn't use them.
 			if ( null !== $effect_family ) {
-				$is_premium = strpos( $effect, 'premium_' ) === 0;
+				$is_premium = Schema::is_premium_effect( $effect );
 				if ( 'duration_family' === $effect_family ) {
 					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
 						continue;
@@ -185,6 +185,48 @@ final class Render {
 				$default,
 				$extra_bps,
 				[ $this, 'cast_value' ],
+				$disabled_bps
+			);
+		}
+
+		$responsive_object_map = [
+			Schema::TEXT_STAGGER => [ 'stagger', [], 'duration_family' ],
+		];
+
+		foreach ( $responsive_object_map as $base_key => [ $config_key, $default, $effect_family ] ) {
+			if ( null !== $effect_family ) {
+				$is_premium = Schema::is_premium_effect( $effect );
+				if ( 'duration_family' === $effect_family ) {
+					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
+						continue;
+					}
+				} else if ( is_array( $effect_family ) && ! in_array( $effect, $effect_family, true ) ) {
+					continue;
+				}
+			}
+
+			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_keys, true ) ) {
+				continue;
+			}
+
+			if ( Schema::TEXT_STAGGER === $base_key && isset( $settings[ $base_key ] ) ) {
+				if ( is_array( $settings[ $base_key ] ) && isset( $settings[ $base_key ]['value'] ) && is_array( $settings[ $base_key ]['value'] ) ) {
+					foreach ( $settings[ $base_key ]['value'] as $bp => $val ) {
+						$settings[ $base_key ]['value'][ $bp ] = $this->parse_stagger_data( $val );
+					}
+				} else {
+					$settings[ $base_key ] = $this->parse_stagger_data( $settings[ $base_key ] );
+				}
+			}
+
+			// We use emit_responsive_object for arrays/JSON props
+			$this->emit_responsive_object(
+				$config,
+				$settings,
+				$base_key,
+				$config_key,
+				$default,
+				$extra_bps,
 				$disabled_bps
 			);
 		}
@@ -223,5 +265,38 @@ final class Render {
 			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
 		}
 		return $v;
+	}
+
+	/**
+	 * Parses the raw stagger data from Elementor into a GSAP-compatible array.
+	 * Moves logic previously handled by buildStaggerConfig in text.js.
+	 */
+	private function parse_stagger_data( $staggerData ) {
+		$userStagger = [];
+		if ( is_array( $staggerData ) && null !== $staggerData ) {
+			if ( isset( $staggerData['type'] ) && 'amount' === $staggerData['type'] ) {
+				$userStagger['amount'] = isset($staggerData['val']) ? (float) $staggerData['val'] : 0.02;
+			} else {
+				$userStagger['each'] = isset($staggerData['val']) ? (float) $staggerData['val'] : 0.02;
+			}
+			if ( ! empty( $staggerData['from'] ) ) $userStagger['from'] = $staggerData['from'];
+			if ( ! empty( $staggerData['ease'] ) ) $userStagger['ease'] = $staggerData['ease'];
+			if ( ! empty( $staggerData['repeat'] ) ) $userStagger['repeat'] = (int) $staggerData['repeat'];
+			if ( ! empty( $staggerData['yoyo'] ) ) $userStagger['yoyo'] = (bool) $staggerData['yoyo'];
+			if ( ! empty( $staggerData['grid'] ) ) {
+				$g = $staggerData['grid'];
+				if ( is_string( $g ) && strpos( trim($g), '[' ) === 0 ) {
+					$parsed = json_decode( $g, true );
+					if ( is_array( $parsed ) ) {
+						$g = $parsed;
+					}
+				}
+				$userStagger['grid'] = $g;
+			}
+			if ( ! empty( $staggerData['axis'] ) ) $userStagger['axis'] = $staggerData['axis'];
+		} else {
+			$userStagger['each'] = is_numeric( $staggerData ) ? (float) $staggerData : 0.02;
+		}
+		return $userStagger;
 	}
 }

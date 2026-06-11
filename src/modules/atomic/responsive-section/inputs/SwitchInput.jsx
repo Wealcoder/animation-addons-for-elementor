@@ -8,6 +8,7 @@ import { applySettingsToDom } from "../../editor-bridge/settings-bridge";
 
 /** Plain Switch input. */
 export function SwitchInput({ value, onChange, disabled, play_group = "" }) {
+  
   const handleChange = (_, checked) => {   
     onChange(checked);
 
@@ -15,6 +16,7 @@ export function SwitchInput({ value, onChange, disabled, play_group = "" }) {
       // Simulate play behavior slightly after state update
       setTimeout(() => {
         const container = getSelectedContainer();
+      
         if (!container) return;
         
         let dom_settings = applySettingsToDom(container, play_group);

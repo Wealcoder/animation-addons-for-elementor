@@ -1,7 +1,28 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
+
+    - Improved: Text Domain Mismatch at Image Accordion, Advanced Pricing Table and Weather widgets.
+    - Improved: WPML Compatibility at Post social share and Image Accordion widget.
+    - Fixed: security fixed in Image and Loop Grid Widget.
+
+= 🌀 Animation Addons for Elementor v2.6.6 – 23th May 2026
+
+    - Fixed: Button icon size was not working properly, it now works correctly.
+    - Improved: Button — All icon-related fields are now dependent on the icon being enabled.
+    - Improved: Advanced Button - All Icon-related fields are now dependent on the icon being enabled.
+    - Imporoved : DisableEditor Mode Field order changes and UI more user-friendly.
+    - Improved: Nav Menu- Each Items Of Menu  are now full block clickable and Submenu working fine.
+
+= 🌀 Animation Addons for Elementor v2.6.5 – 19th May 2026
+
+    - Fixed : Icon Box- for style 2 Icon Hover Style add for Control Icon Hover Effect
+    - Fixed: Advance accordion- Close and Open Icon doesn't properly Synchronize. Now working fine.
+    - Imporoved : Animated-Heading- Text Decoration no need in heading style settings.
+
 = 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026
+
     - Fixed : Loop Grid Default pagination Icon size.
     - Fixed : Loop Grid Pagination alignment.
     - Improved: Widget Categories Toggle Position reorder.

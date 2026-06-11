@@ -13,8 +13,8 @@ export const PREMIUM_EFFECTS = {
 	"RB Curved Loop": { runAsTo: true, y: -25, rotationZ: (i, el, arr) => (i - arr.length/2) * 2, stagger: { each: 0.1, repeat: -1, yoyo: true }, duration: 0.8, ease: "sine.inOut" }
 };
 
-export const PREMIUM_EFFECT_OPTIONS = Object.keys(PREMIUM_EFFECTS).map((key) => {
-	// e.g. "Cinematic Unfold" -> "premium_cinematic_unfold"
-	const value = "premium_" + key.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-	return { value, label: '★ ' + key, _originalKey: key };
-});
+export const PREMIUM_EFFECTS_BY_ID = Object.keys(PREMIUM_EFFECTS).reduce((acc, key) => {
+	const value = key.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+	acc[value] = PREMIUM_EFFECTS[key];
+	return acc;
+}, {});

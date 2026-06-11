@@ -3,6 +3,7 @@
 import {
     isEnabled,
     showPlayButton,
+    showArrowSize,
 } from './predicates';
 
 const POSITION_OPTIONS = [
@@ -21,10 +22,16 @@ const TRIGGER_OPTIONS = [
 ];
 
 const ANIMATION_OPTIONS = [
-
-    { value: 'fade', label: 'Fade' },
-    { value: 'scale', label: 'Scale' },
-    { value: 'slide', label: 'Slide' },
+    { value: 'pop',    label: 'Spring Pop'   },
+    { value: 'slide',  label: 'Slide & Fade' },
+    { value: 'type',   label: 'Typewriter'   },
+    { value: 'flip',   label: 'Flip Card'    },
+    { value: 'magnet', label: 'Magnetic'     },
+    { value: 'blur',   label: 'Blur Focus'   },
+    { value: 'clip',   label: 'Clip Reveal'  },
+    { value: 'jelly',  label: 'Jelly Skew'   },
+    { value: 'glow',   label: 'Glow Pulse'   },
+    { value: 'unfold', label: 'Unfold Stack' },
 ];
 
 const config = {
@@ -43,7 +50,8 @@ const config = {
             control: 'switch',
             responsive: true,
             defaultValue: false,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
+            play_group: 'aae_advance_tooltip_',
         },
 
         {
@@ -52,7 +60,7 @@ const config = {
             control: 'textarea',
             defaultValue: '',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
 
         {
@@ -62,7 +70,7 @@ const config = {
             options: POSITION_OPTIONS,
             defaultValue: 'top',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
         {
             bind: 'animation',
@@ -71,7 +79,7 @@ const config = {
             options: ANIMATION_OPTIONS,
             defaultValue: 'fade',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
 
         {
@@ -81,7 +89,7 @@ const config = {
             options: TRIGGER_OPTIONS,
             defaultValue: 'hover',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
 
         {
@@ -90,17 +98,27 @@ const config = {
             control: 'slider',
             defaultValue: '10',
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
 
         {
-            bind: 'duration',
-            label: 'Duration',
-            control: 'slider',
-            defaultValue: '0.3',
+            bind: 'show_delay',
+            label: 'Show Delay (ms)',
+            control: 'number',
+            defaultValue: 0,
             when: isEnabled,
-            tab: 'Content', // Goes to Content tab
+            tab: 'Content',
         },
+
+        {
+            bind: 'hide_delay',
+            label: 'Hide Delay (ms)',
+            control: 'number',
+            defaultValue: 0,
+            when: isEnabled,
+            tab: 'Content',
+        },
+
         {
             bind: 'alignment',
             label: 'Alignment',
@@ -112,7 +130,7 @@ const config = {
                 {
                     value: 'left',
                     label: 'Left',
-                    icon: 'eicon-text-align-left' // CSS class from Elementor's core icon library
+                    icon: 'eicon-text-align-left'
                 },
                 {
                     value: 'center',
@@ -125,7 +143,9 @@ const config = {
                     icon: 'eicon-text-align-right'
                 },
             ],
-            tab: 'Content',
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
         },
         {
             bind: 'width',
@@ -133,7 +153,27 @@ const config = {
             control: 'text',
             defaultValue: '200px',
             when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_',
+        },
+
+        {
+            bind: 'padding',
+            label: 'Padding',
+            control: 'dimensions',
+            responsive: true,
+            defaultValue: {
+                top: '8',
+                right: '12',
+                bottom: '8',
+                left: '12',
+                unit: 'px',
+            },
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_',
         },
 
         {
@@ -142,7 +182,10 @@ const config = {
             control: 'switch',
             responsive: true,
             defaultValue: false,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_',
+            when: isEnabled,
         },
 
         {
@@ -150,8 +193,10 @@ const config = {
             label: 'Arrow Size',
             control: 'slider',
             defaultValue: '10',
-            when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            when: showArrowSize,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
         },
         {
             bind: 'bg',
@@ -159,7 +204,9 @@ const config = {
             control: 'color',
             defaultValue: '#000000',
             when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
         },
 
         {
@@ -168,19 +215,58 @@ const config = {
             control: 'color',
             defaultValue: '#004603',
             when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
         },
 
         {
-            bind: 'borderRadius',
-
-            label: 'Border Radius',
-
-            control: 'dimensions',
-
-            defaultValue: '100%',
+            bind: 'font_size',
+            label: 'Font Size',
+            control: 'slider',
+            responsive: true,
+            units: ['px', 'em', 'rem'],
+            defaultValue: {
+                size: 14,
+                unit: 'px',
+            },
             when: isEnabled,
-            tab: 'style', // Goes to Content tab
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
+        },
+
+        {
+            bind: 'line_height',
+            label: 'Line Height',
+            control: 'slider',
+            responsive: true,
+            units: ['px', 'em', 'rem', ''],
+            defaultValue: {
+                size: 1.5,
+                unit: '',
+            },
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_'
+        },
+
+        {
+            bind: 'border',
+            label: 'Border',
+            control: 'border',
+            responsive: true,
+            defaultValue: {
+                style: '',
+                width: { top: '', right: '', bottom: '', left: '' },
+                color: '',
+                radius: '8px',
+            },
+            when: isEnabled,
+            tab: 'style',
+            live_change: true,
+            play_group: 'aae_advance_tooltip_',
         },
 
         // Editor-only controls (non-responsive).

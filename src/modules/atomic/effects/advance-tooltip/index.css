@@ -1,264 +1,114 @@
-/* =====================================================================
- * Advanced Tooltip Stylesheet (Atomic Co-located)
- * =================================================================== */
+/* Advance Tooltip — CSS handles positioning & arrow, GSAP handles animation */
 
-.wcf-advanced-tooltip { 
-  position: absolute;
-  z-index: 999;
+/* ── Base tooltip ─────────────────────────────────────────────────────── */
+.wcf-advanced-tooltip {
+	position: absolute;
+	display: block;
+	box-sizing: border-box;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	white-space: normal;
+	
+	/* Styles dynamically injected via CSS Variables from JS */
+	background-color: var(--tip-bg, #16181d);
+	color: var(--tip-color, #f6f2e9);
+	width: var(--tip-width, 180px);
+	font-size: var(--tip-font-size, 14px);
+	line-height: var(--tip-line-height, 1.5);
+	text-align: var(--tip-align, center);
+	padding: var(--tip-padding, 10px 14px);
+	box-shadow: 0 14px 40px -12px rgba(0,0,0,.5);
+	z-index: 9999;
+	
+	border-style: var(--tip-b-style, none);
+	border-width: var(--tip-b-width, 0);
+	border-color: var(--tip-b-color, transparent);
+	border-radius: var(--tip-radius, 8px);
+}
+
+/* ── Arrow (real DOM element) ─────────────────────────────────────────── */
+.wcf-advanced-tooltip .aae-tip-arrow {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-color: transparent;
+}
+
+.wcf-advanced-tooltip.no-arrow .aae-tip-arrow {
   display: none;
-  padding: 8px 12px;
-  width: 120px;
-  height: auto;
-  border-radius: 6px;
-  background-color: #000;
-  color: #fff;
-  text-align: center;
-  opacity: 0;
-  box-sizing: border-box;
-  pointer-events: none;
-  --tooltip-arrow-color: black;
-  --tooltip-arrow-distance: 0px;
 }
 
+/* Reset any v3 ::after pseudo-element that might leak in */
 .wcf-advanced-tooltip::after {
-  position: absolute;
-  border-width: 5px;
-  border-style: solid;
-  content: "";
+  display: none !important;
+  content: none !important;
+  border: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-.wcf-advanced-tooltip.no-arrow::after {
-  visibility: hidden;
+/* ── CSS Custom Properties (set by JS) ────────────────────────────────── */
+/*
+   JS sets these on the tooltip element:
+   --tip-bg         : background color
+   --tip-arrow-size : arrow border-width in px
+   --tip-gap        : arrow-size + offset in px
+*/
+
+/* ── Position: TOP ────────────────────────────────────────────────────── */
+.wcf-advanced-tooltip.pos-top {
+	bottom: calc(100% + var(--tip-gap, 16px));
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
+.wcf-advanced-tooltip.pos-top .aae-tip-arrow {
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: var(--tip-arrow-size, 6px);
+	border-top-color: var(--tip-bg, #16181d);
 }
 
-.wcf-advanced-tooltip.show {
-  display: inline-block;
-  opacity: 1;
+/* ── Position: BOTTOM ─────────────────────────────────────────────────── */
+.wcf-advanced-tooltip.pos-bottom {
+	top: calc(100% + var(--tip-gap, 16px));
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
+.wcf-advanced-tooltip.pos-bottom .aae-tip-arrow {
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: var(--tip-arrow-size, 6px);
+	border-bottom-color: var(--tip-bg, #16181d);
 }
 
-/* Animations & Transitions */
-.wcf-advanced-tooltip.fade {
-  transition: opacity 0.3s ease;
+/* ── Position: LEFT ───────────────────────────────────────────────────── */
+.wcf-advanced-tooltip.pos-left {
+	top: 50%;
+	right: calc(100% + var(--tip-gap, 16px));
 }
-.wcf-advanced-tooltip.fade:not(.show) {
-  opacity: 0;
-}
-
-.wcf-advanced-tooltip.scale {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: scale(0.7);
-}
-.wcf-advanced-tooltip.scale.show {
-  transform: scale(1);
-}
-.wcf-advanced-tooltip.scale:not(.show) {
-  opacity: 0;
+.wcf-advanced-tooltip.pos-left .aae-tip-arrow {
+	top: 50%;
+	left: 100%;
+	transform: translateY(-50%);
+	border-width: var(--tip-arrow-size, 6px);
+	border-left-color: var(--tip-bg, #16181d);
 }
 
-.wcf-advanced-tooltip.slide {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+/* ── Position: RIGHT ──────────────────────────────────────────────────── */
+.wcf-advanced-tooltip.pos-right {
+	top: 50%;
+	left: calc(100% + var(--tip-gap, 16px));
 }
-.wcf-advanced-tooltip.slide:not(.show) {
-  opacity: 0;
-}
-
-/* --- Position: TOP --- */
-.wcf-advanced-tooltip-top .wcf-advanced-tooltip,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-top .wcf-advanced-tooltip {
-  top: unset;
-  right: 0;
-  bottom: calc(101% + var(--tooltip-arrow-distance));
-  left: 0;
-  margin: 0 auto;
-}
-.wcf-advanced-tooltip-top .wcf-advanced-tooltip.slide,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-top .wcf-advanced-tooltip.slide {
-  transform: translateY(10px);
-}
-.wcf-advanced-tooltip-top .wcf-advanced-tooltip.slide.show,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-top .wcf-advanced-tooltip.slide.show {
-  transform: translateY(0);
-}
-
-.wcf-advanced-tooltip-top .wcf-advanced-tooltip::after,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-top .wcf-advanced-tooltip::after {
-  top: 100%;
-  right: unset;
-  bottom: unset;
-  left: 50%;
-  border-color: var(--tooltip-arrow-color) transparent transparent transparent;
-  transform: translateX(-50%);
-}
-
-/* --- Position: BOTTOM --- */
-.wcf-advanced-tooltip-bottom .wcf-advanced-tooltip,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-bottom .wcf-advanced-tooltip {
-  top: calc(101% + var(--tooltip-arrow-distance));
-  right: 0;
-  bottom: unset;
-  left: 0;
-  margin: 0 auto;
-}
-.wcf-advanced-tooltip-bottom .wcf-advanced-tooltip.slide,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-bottom .wcf-advanced-tooltip.slide {
-  transform: translateY(-10px);
-}
-.wcf-advanced-tooltip-bottom .wcf-advanced-tooltip.slide.show,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-bottom .wcf-advanced-tooltip.slide.show {
-  transform: translateY(0);
-}
-
-.wcf-advanced-tooltip-bottom .wcf-advanced-tooltip::after,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-bottom .wcf-advanced-tooltip::after {
-  top: unset;
-  right: unset;
-  bottom: 100%;
-  left: 50%;
-  border-color: transparent transparent var(--tooltip-arrow-color) transparent;
-  transform: translateX(-50%);
-}
-
-/* --- Position: LEFT --- */
-.wcf-advanced-tooltip-left .wcf-advanced-tooltip,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-left .wcf-advanced-tooltip {
-  top: 50%;
-  right: calc(101% + var(--tooltip-arrow-distance));
-  bottom: unset;
-  left: unset;
-  transform: translateY(-50%);
-}
-.wcf-advanced-tooltip-left .wcf-advanced-tooltip.slide,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-left .wcf-advanced-tooltip.slide {
-  transform: translateX(10px) translateY(-50%);
-}
-.wcf-advanced-tooltip-left .wcf-advanced-tooltip.slide.show,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-left .wcf-advanced-tooltip.slide.show {
-  transform: translateX(0) translateY(-50%);
-}
-
-.wcf-advanced-tooltip-left .wcf-advanced-tooltip::after,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-left .wcf-advanced-tooltip::after {
-  top: 50%;
-  right: unset;
-  bottom: unset;
-  left: 100%;
-  border-color: transparent transparent transparent var(--tooltip-arrow-color);
-  transform: translateY(-50%);
-}
-
-/* --- Position: RIGHT --- */
-.wcf-advanced-tooltip-right .wcf-advanced-tooltip,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-right .wcf-advanced-tooltip {
-  top: 50%;
-  right: unset;
-  bottom: unset;
-  left: calc(101% + var(--tooltip-arrow-distance));
-  transform: translateY(-50%);
-}
-.wcf-advanced-tooltip-right .wcf-advanced-tooltip.slide,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-right .wcf-advanced-tooltip.slide {
-  transform: translateX(-10px) translateY(-50%);
-}
-.wcf-advanced-tooltip-right .wcf-advanced-tooltip.slide.show,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-right .wcf-advanced-tooltip.slide.show {
-  transform: translateX(0) translateY(-50%);
-}
-
-.wcf-advanced-tooltip-right .wcf-advanced-tooltip::after,
-body[data-elementor-device-mode="tablet"] .wcf-advanced-tooltip-tablet-right .wcf-advanced-tooltip::after {
-  top: 50%;
-  right: 100%;
-  bottom: unset;
-  left: unset;
-  border-color: transparent var(--tooltip-arrow-color) transparent transparent;
-  transform: translateY(-50%);
-}
-
-/* ==================== MOBILE BREAKPOINT ==================== */
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-top .wcf-advanced-tooltip {
-  top: unset;
-  right: 0;
-  bottom: calc(101% + var(--tooltip-arrow-distance));
-  left: 0;
-  margin: 0 auto;
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-top .wcf-advanced-tooltip.slide {
-  transform: translateY(10px);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-top .wcf-advanced-tooltip.slide.show {
-  transform: translateY(0);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-top .wcf-advanced-tooltip::after {
-  top: 100%;
-  right: unset;
-  bottom: unset;
-  left: 50%;
-  border-color: var(--tooltip-arrow-color) transparent transparent transparent;
-  transform: translateX(-50%);
-}
-
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-bottom .wcf-advanced-tooltip {
-  top: calc(101% + var(--tooltip-arrow-distance));
-  right: 0;
-  bottom: unset;
-  left: 0;
-  margin: 0 auto;
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-bottom .wcf-advanced-tooltip.slide {
-  transform: translateY(-10px);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-bottom .wcf-advanced-tooltip.slide.show {
-  transform: translateY(0);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-bottom .wcf-advanced-tooltip::after {
-  top: unset;
-  right: unset;
-  bottom: 100%;
-  left: 50%;
-  border-color: transparent transparent var(--tooltip-arrow-color) transparent;
-  transform: translateX(-50%);
-}
-
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-left .wcf-advanced-tooltip {
-  top: 50%;
-  right: calc(101% + var(--tooltip-arrow-distance));
-  bottom: unset;
-  left: unset;
-  transform: translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-left .wcf-advanced-tooltip.slide {
-  transform: translateX(10px) translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-left .wcf-advanced-tooltip.slide.show {
-  transform: translateX(0) translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-left .wcf-advanced-tooltip::after {
-  top: 50%;
-  right: unset;
-  bottom: unset;
-  left: 100%;
-  border-color: transparent transparent transparent var(--tooltip-arrow-color);
-  transform: translateY(-50%);
-}
-
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-right .wcf-advanced-tooltip {
-  top: 50%;
-  right: unset;
-  bottom: unset;
-  left: calc(101% + var(--tooltip-arrow-distance));
-  transform: translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-right .wcf-advanced-tooltip.slide {
-  transform: translateX(-10px) translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-right .wcf-advanced-tooltip.slide.show {
-  transform: translateX(0) translateY(-50%);
-}
-body[data-elementor-device-mode="mobile"] .wcf-advanced-tooltip-mobile-right .wcf-advanced-tooltip::after {
-  top: 50%;
-  right: 100%;
-  bottom: unset;
-  left: unset;
-  border-color: transparent var(--tooltip-arrow-color) transparent transparent;
-  transform: translateY(-50%);
+.wcf-advanced-tooltip.pos-right .aae-tip-arrow {
+	top: 50%;
+	right: 100%;
+	transform: translateY(-50%);
+	border-width: var(--tip-arrow-size, 6px);
+	border-right-color: var(--tip-bg, #16181d);
 }
