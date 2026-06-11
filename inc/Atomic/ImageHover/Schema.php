@@ -35,6 +35,8 @@ final class Schema {
 	const IH_TOP    = 'aae_ih_top';
 	const IH_LEFT   = 'aae_ih_left';
 
+	const IH_PRESET = 'aae_ih_preset';
+
 	const IH_ENABLE_EDITOR = 'aae_ih_enable_editor';
 
 	/** Atomic widget types this section appears on. */
@@ -66,6 +68,10 @@ final class Schema {
 		$schema[ self::IH_HEIGHT  ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 300 ] );
 		$schema[ self::IH_TOP     ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0 ] );
 		$schema[ self::IH_LEFT    ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 0 ] );
+
+		// Preset animation — none | magnetic-lag | spring-bounce | tilt-3d | trail-ghost | elastic-snap.
+		$schema[ self::IH_PRESET  ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => 'none' ] );
+
 		$schema[ self::IH_ENABLE_EDITOR ] = Boolean_Prop_Type::make()->default( false );
 
 		return $schema;

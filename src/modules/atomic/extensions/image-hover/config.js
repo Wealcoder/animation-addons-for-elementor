@@ -10,6 +10,16 @@ import { isImageHoverEnabled, showPlayButton } from './predicates';
  *
  * All px-values are px implicit (no unit picker).
  */
+
+const PRESET_OPTIONS = [
+	{ value: 'none',          label: 'None' },
+	{ value: 'magnetic-lag',  label: 'Magnetic Lag' },
+	{ value: 'spring-bounce', label: 'Spring Bounce' },
+	{ value: 'tilt-3d',       label: 'Tilt 3D' },
+	{ value: 'trail-ghost',   label: 'Trail Ghost' },
+	{ value: 'elastic-snap',  label: 'Elastic Snap' },
+];
+
 const config = {
 	anchorKey: 'aae-section-aae-image-hover',
 	bindPrefix: 'aae_ih_',
@@ -18,12 +28,19 @@ const config = {
 		{
 			bind: 'enable', label: 'Enable', control: 'switch',
 			defaultValue: false,
+			play_group: 'aae_ih_'
 		},
 
 		// Hover Image picker
 		{
 			bind: 'image', label: 'Hover Image', control: 'media',
 			defaultValue: null, when: isImageHoverEnabled,
+		},
+
+		// Animation preset — governs hover animation behavior.
+		{
+			bind: 'preset', label: 'Animation Preset', control: 'select',
+			options: PRESET_OPTIONS, defaultValue: 'none', when: isImageHoverEnabled,
 		},
 
 		// Dimensional numerics — shown only when enabled at this bp.
