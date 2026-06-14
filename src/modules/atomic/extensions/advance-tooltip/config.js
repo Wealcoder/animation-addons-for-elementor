@@ -12,7 +12,6 @@ const POSITION_OPTIONS = [
     { value: 'bottom', label: 'Bottom' },
     { value: 'left', label: 'Left' },
     { value: 'right', label: 'Right' },
-    { value: 'custom', label: 'Custom' },
 ];
 
 const TRIGGER_OPTIONS = [
