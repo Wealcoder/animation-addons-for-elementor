@@ -77,9 +77,59 @@ gulp.task('minify:css', function () {
         .pipe(gulp.dest('assets/css'));
 });
 
+gulp.task('compile:atomic-js', () => {
+    return gulp.src([
+        'inc/AtomicWidgets/Widgets/**/*.js',
+        '!inc/AtomicWidgets/Widgets/**/*.min.js',
+    ])
+        .pipe(mode.development(sourcemaps.init({largeFile: true})))
+        .pipe(eslint())
+        .pipe(mode.development(eslint.format()))
+        .pipe(mode.development(prettify({"indent_with_tabs": true,})))
+        .pipe(rename({dirname: ''})) // Flatten directory structure
+        .pipe(mode.development(sourcemaps.write('/.')))
+        .pipe(gulp.dest('assets/atomic/js'));
+});
+
+gulp.task('minify:atomic-js', () => {
+    return gulp.src([
+        'assets/atomic/js/**/*.js',
+        '!assets/atomic/js/**/*.min.js',
+    ])
+        .pipe(mode.development(sourcemaps.init({largeFile: true})))
+        .pipe(terser())
+        .pipe(rename({suffix: '.min'}))
+        .pipe(mode.development(sourcemaps.write('/.')))
+        .pipe(gulp.dest('assets/atomic/js'));
+});
+
+gulp.task('compile:atomic-scss', () => {
+    return gulp.src([
+        'inc/AtomicWidgets/Widgets/**/*.scss',
+    ])
+        .pipe(mode.development(sourcemaps.init({largeFile: true})))
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoprefixer())
+        .pipe(rename({dirname: ''})) // Flatten directory structure
+        .pipe(mode.development(sourcemaps.write('/.')))
+        .pipe(gulp.dest('assets/atomic/css'));
+});
+
+gulp.task('minify:atomic-css', function () {
+    return gulp.src([
+        'assets/atomic/css/**/*.css',
+        '!assets/atomic/css/**/*.min.css'
+    ])
+        .pipe(mode.development(sourcemaps.init({largeFile: true})))
+        .pipe(minifyCSS())
+        .pipe(rename({suffix: '.min'}))
+        .pipe(mode.development(sourcemaps.write('/.')))
+        .pipe(gulp.dest('assets/atomic/css'));
+});
+
 // Combined tasks.
-gulp.task('buildJs', gulp.series('compile:js', 'minify:js'));
-gulp.task('buildCss', gulp.series('compile:scss', 'minify:css'));
+gulp.task('buildJs', gulp.series('compile:js', 'minify:js', 'compile:atomic-js', 'minify:atomic-js'));
+gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'minify:atomic-css'));
 
 gulp.task('build', gulp.series('buildCss', 'buildJs'));
 

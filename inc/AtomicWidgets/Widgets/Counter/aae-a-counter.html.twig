@@ -1,0 +1,17 @@
+<div {{ attributes }}>
+	<template x-if="props.prefix">
+		<span class="aae-a-counter-prefix" x-text="props.prefix"></span>
+	</template>
+	
+	<span class="aae-a-counter-number"
+		  style="font-variant-numeric: tabular-nums;"
+		  x-text="props.startNumber"
+		  x-bind:data-from="props.startNumber"
+		  x-bind:data-to="props.endNumber"
+		  x-bind:data-duration="props.duration"
+	></span>
+	
+	<template x-if="props.suffix">
+		<span class="aae-a-counter-suffix" x-text="props.suffix"></span>
+	</template>
+</div>

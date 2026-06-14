@@ -958,6 +958,8 @@ class Plugin
 				}
 			}
 		}
+
+		// Atomic
 	}
 
 	/**

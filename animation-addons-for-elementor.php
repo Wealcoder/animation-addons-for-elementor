@@ -204,6 +204,9 @@ final class WCF_ADDONS_Plugin
 
 			'aae_send_activation_event',
 			'aae_send_deactivation_event',
+
+			// Atomic widgets
+			'aae_atomic_widgets',
 		];
 
 		foreach ($options as $option) {
@@ -277,7 +280,8 @@ final class WCF_ADDONS_Plugin
 
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once 'class-plugin.php';
-
+		// atomic widgets
+		require_once 'inc/AtomicWidgets/class-atomic.php';
 		//wcf plugin loaded
 		do_action('wcf_plugins_loaded');
 	}

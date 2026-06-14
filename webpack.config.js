@@ -49,6 +49,9 @@ module.exports = {
     "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
     "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
+    
+    // Atomic Widgets
+    "../atomic/js/counter": "./inc/AtomicWidgets/Widgets/Counter/assets/js/counter.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
