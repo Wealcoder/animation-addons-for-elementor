@@ -1,17 +1,16 @@
-<div {{ attributes }}>
-	<template x-if="props.prefix">
-		<span class="aae-a-counter-prefix" x-text="props.prefix"></span>
-	</template>
+<div data-id="{{ id }}" data-e-type="{{ type }}" class="{{ settings.classes }}" {{ settings.attributes|raw }}>
+	{% if settings.prefix %}
+		<span class="aae-a-counter-prefix">{{ settings.prefix }}</span>
+	{% endif %}
 	
 	<span class="aae-a-counter-number"
 		  style="font-variant-numeric: tabular-nums;"
-		  x-text="props.startNumber"
-		  x-bind:data-from="props.startNumber"
-		  x-bind:data-to="props.endNumber"
-		  x-bind:data-duration="props.duration"
-	></span>
+		  data-from="{{ settings.startNumber|default(0) }}"
+		  data-to="{{ settings.endNumber|default(100) }}"
+		  data-duration="{{ settings.duration|default(2000) }}"
+	>{{ settings.startNumber|default(0) }}</span>
 	
-	<template x-if="props.suffix">
-		<span class="aae-a-counter-suffix" x-text="props.suffix"></span>
-	</template>
+	{% if settings.suffix %}
+		<span class="aae-a-counter-suffix">{{ settings.suffix }}</span>
+	{% endif %}
 </div>

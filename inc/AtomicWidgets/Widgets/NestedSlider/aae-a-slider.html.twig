@@ -1,0 +1,42 @@
+{% set classes = ['aae-a-slider', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set slides_per_view = settings.slides_per_view | default(3) %}
+{% set gap = settings.gap | default(20) %}
+{% set speed = settings.speed | default(1000) %}
+{% set center_mode = settings.center_mode | default(false) %}
+{% set enable_3d = settings.enable_3d | default(false) %}
+{% set perspective = settings.perspective | default(1000) %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    style="--aae-slides-per-view: {{ slides_per_view }}; --aae-slide-gap: {{ gap }}px; --aae-slide-speed: {{ speed }}ms; --aae-perspective: {{ perspective }}px;"
+    data-slides-per-view="{{ slides_per_view }}"
+    data-center-mode="{{ center_mode ? 'true' : 'false' }}"
+    data-enable-3d="{{ enable_3d ? 'true' : 'false' }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    
+    <div class="aae-slider-track" style="display: flex; gap: var(--aae-slide-gap); width: 100%; touch-action: pan-y; perspective: var(--aae-perspective); transform-style: preserve-3d;">
+        <style>
+            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > * {
+                flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
+                max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
+                box-sizing: border-box;
+                transform-style: preserve-3d;
+                transition: transform 0.5s ease-out;
+            }
+            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > style,
+            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > script {
+                display: none !important;
+            }
+        </style>
+        
+        {{ children_placeholder | raw }}
+    </div>
+</div>

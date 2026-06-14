@@ -3,6 +3,29 @@ const defaultConfig = require("@wordpress/scripts/config/webpack.config");
 const { getWebpackEntryPoints } = require("@wordpress/scripts/utils/config");
 const path = require("path");
 
+const fs = require('fs');
+
+// Helper to automatically find all JS files inside AtomicWidgets/Widgets/*/assets/js/
+const getAtomicWidgetEntries = () => {
+  const entries = {};
+  const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
+  if (fs.existsSync(widgetsPath)) {
+    const widgets = fs.readdirSync(widgetsPath);
+    widgets.forEach((widget) => {
+      const jsDir = path.join(widgetsPath, widget, "assets/js");
+      if (fs.existsSync(jsDir)) {
+        const jsFiles = fs.readdirSync(jsDir).filter((file) => file.endsWith(".js"));
+        jsFiles.forEach((file) => {
+          const basename = path.basename(file, ".js");
+          // Outputs to assets/atomic/js/[basename].js
+          entries[`../atomic/js/${basename}`] = `./inc/AtomicWidgets/Widgets/${widget}/assets/js/${file}`;
+        });
+      }
+    });
+  }
+  return entries;
+};
+
 module.exports = {
   ...defaultConfig,
   externals: {
@@ -15,12 +38,14 @@ module.exports = {
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
     "@elementor/editor-ui":         ["elementorV2", "editorUi"],
+    "@elementor/frontend-handlers": ["elementorV2", "frontendHandlers"],
     "@elementor/ui":                ["elementorV2", "ui"],
     react:                          "React",
     "react-dom":                    "ReactDOM",
   },
   entry: {
     ...getWebpackEntryPoints(),
+    ...getAtomicWidgetEntries(),
     "modules/dashboard/index": "./src/modules/dashboard/main.js",
     "modules/dashboard/wizardSetup": "./src/modules/dashboard/wizardSetup.js",
     "modules/dashboard/opt-out": "./src/modules/dashboard/opt-out.js",
@@ -49,9 +74,6 @@ module.exports = {
     "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
     "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
-    
-    // Atomic Widgets
-    "../atomic/js/counter": "./inc/AtomicWidgets/Widgets/Counter/assets/js/counter.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

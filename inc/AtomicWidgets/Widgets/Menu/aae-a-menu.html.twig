@@ -1,0 +1,34 @@
+{% set classes = ['aae-a-menu', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    data-layout="{{ settings.layout }}"
+    data-hamburger="{{ settings.hamburger ? 'true' : 'false' }}"
+    style="--aae-menu-align: {{ settings.align }};"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | default('') | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    
+    {% if settings.hamburger %}
+        <button class="aae-a-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
+            <span class="aae-a-menu-hamburger-line"></span>
+            <span class="aae-a-menu-hamburger-line"></span>
+            <span class="aae-a-menu-hamburger-line"></span>
+        </button>
+    {% endif %}
+
+    <nav class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu }}">
+        {% if settings.rendered_menu is defined and settings.rendered_menu is not empty %}
+            {{ settings.rendered_menu | raw }}
+        {% else %}
+            <div class="aae-a-menu-placeholder" style="padding: 10px; border: 1px dashed #ccc; text-align: center; color: #777;">
+                Menu rendered on frontend / preview.
+            </div>
+        {% endif %}
+    </nav>
+</div>

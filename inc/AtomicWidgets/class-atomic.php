@@ -98,7 +98,7 @@ final class Atomic
 	 */
 	private function __construct()
 	{
-	
+
 		$this->register_widget_definitions();
 		$this->register_extension_definitions();
 		$this->init_hooks();
@@ -268,6 +268,27 @@ final class Atomic
 	{
 		$this->widgets_registry = [
 
+			'aae-a-menu' => [
+				'label'        => 'Menu',
+				'description'  => 'A modern standard navigation menu with GSAP interactions.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'menu',
+					'nav',
+					'navigation',
+					'atomic',
+					'gsap',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-counter' => [
 				'label'        => 'Counter',
 				'description'  => 'An animated number counter using pure GSAP with minimal CSS footprint.',
@@ -285,6 +306,44 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-slider' => [
+				'label'        => 'Nested Slider',
+				'description'  => 'A GSAP powered fully draggable nested slider container.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'slider',
+					'nested',
+					'carousel',
+					'gsap',
+				],
+				'category'     => 'general',
+				'order'        => 1,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-slide' => [
+				'label'        => 'Slide (Internal)',
+				'description'  => 'Internal child container for Nested Slider.',
+				'icon'         => 'eicon-document-file',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'slide',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 2,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -612,8 +671,13 @@ final class Atomic
 		}
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
-		add_action('elementor/frontend/after_enqueue_scripts', [$this, 'enqueue_scripts']);
-		add_action('elementor/frontend/after_enqueue_styles', [$this, 'enqueue_styles']);
+		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts']);
+		add_action('wp_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
+
+		// AJAX endpoints for Editor previews
+		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
 
 		// Seed defaults on first install (option doesn't exist yet).
 		$this->maybe_seed_widgets_defaults();
@@ -625,43 +689,112 @@ final class Atomic
 	 * =================================================================== */
 
 	/**
+	 * Define all available atomic widgets and their scripts.
+	 * Simply add a new array entry here when creating a new widget!
+	 */
+	protected function get_available_widgets()
+	{
+		return [
+			'aae-a-counter' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter',
+				'file' => 'Widgets/Counter/class-aae-a-counter.php',
+				'script_handle' => 'aae-a-counter-js',
+				'script_path' => '/assets/atomic/js/counter.js',
+				'has_script' => true,
+			],
+			'aae-a-slider' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
+				'script_handle' => 'aae-a-slider-js',
+				'script_path' => '/assets/atomic/js/nestedslider.js',
+				'has_script' => true,
+			],
+			'aae-a-slide' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slide.php',
+				'has_script' => false,
+			],
+			'aae-a-menu' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Menu\AAE_A_Menu',
+				'file' => 'Widgets/Menu/class-aae-a-menu.php',
+				'script_handle' => 'aae-a-menu-js',
+				'script_path' => '/assets/atomic/js/menu.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-menu-css',
+				'style_path' => '/assets/atomic/css/menu.css',
+			],
+			// Add new atomic widgets below...
+		];
+	}
+
+	/**
 	 * Register active atomic widgets with Elementor.
 	 *
 	 * @param \Elementor\Widgets_Manager $widgets_manager
 	 */
 	public function register_widgets($widgets_manager)
 	{
-		if ($this->is_widget_active('aae-a-counter')) {
-			require_once __DIR__ . '/Widgets/Counter/class-aae-a-counter.php';
-			if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter')) {
-				$widgets_manager->register(new \WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter());
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id)) {
+				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (class_exists($widget_data['class']) && is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
+					$widgets_manager->register(new $widget_data['class']());
+				}
 			}
 		}
-		// Add other atomic widgets here when they are built
 	}
 
 	/**
-	 * Enqueue frontend scripts for active atomic widgets.
+	 * Register active atomic elements (containers) with Elementor.
+	 *
+	 * @param \Elementor\Elements_Manager $elements_manager
 	 */
-	public function enqueue_scripts()
+	public function register_elements($elements_manager)
 	{
-		if ($this->is_widget_active('aae-a-counter')) {
-			wp_enqueue_script(
-				'aae-a-counter-js',
-				WCF_ADDONS_URL . '/assets/atomic/js/counter.js',
-				[], // We do not set 'gsap' as a strict WP dependency here so we don't break if it's loaded elsewhere, script checks for window.gsap
-				'1.0.0',
-				true
-			);
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id)) {
+				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (class_exists($widget_data['class']) && !is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
+					$elements_manager->register_element_type(new $widget_data['class']());
+				}
+			}
 		}
 	}
 
 	/**
-	 * Enqueue frontend styles for active atomic widgets.
+	 * Register frontend scripts for active atomic widgets.
 	 */
-	public function enqueue_styles()
+	public function register_atomic_scripts($loader)
 	{
-		// No atomic widgets currently require a dedicated CSS file.
+		
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
+				wp_register_script(
+					$widget_data['script_handle'],
+					WCF_ADDONS_URL . $widget_data['script_path'],
+					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
+					'1.0.0',
+					true
+				);
+			}
+		}
+	}
+
+	/**
+	 * Register frontend styles for active atomic widgets.
+	 */
+	public function register_atomic_styles()
+	{
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
+				wp_register_style(
+					$widget_data['style_handle'],
+					WCF_ADDONS_URL . $widget_data['style_path'],
+					[],
+					'1.0.0'
+				);
+			}
+		}
 	}
 
 	/* =====================================================================
@@ -743,6 +876,32 @@ final class Atomic
 			'settings' => $this->get_saved_options(),
 			'config'   => $this->get_dashboard_config(),
 		]);
+	}
+
+	/**
+	 * AJAX handler — fetch WP Menu HTML for the Elementor Editor (since Atomic JS render lacks it).
+	 */
+	public function ajax_get_menu_html(): void
+	{
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		$menu = isset($_GET['menu']) ? sanitize_text_field(wp_unslash($_GET['menu'])) : '';
+
+		if (empty($menu)) {
+			wp_send_json_error(esc_html__('No menu slug provided.', 'animation-addons-for-elementor'));
+		}
+
+		$args = [
+			'menu' => $menu,
+			'menu_class' => 'aae-a-menu-list',
+			'container' => false,
+			'echo' => false,
+			'fallback_cb' => false,
+		];
+
+		wp_send_json_success(wp_nav_menu($args));
 	}
 
 	/**
