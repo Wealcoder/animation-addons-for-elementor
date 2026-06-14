@@ -162,7 +162,7 @@ final class Schema
 
 	public static function text_animation_widgets(): array
 	{
-		return ['e-heading', 'e-paragraph', 'e-button'];
+		return ['e-heading', 'e-paragraph', 'e-button', 'e-aae-a-post-title'];
 	}
 
 	public static function is_premium_effect( $effect ): bool {

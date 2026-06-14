@@ -108,6 +108,8 @@ final class Bootstrap {
 			'e-flexbox',
 			'e-div-block',
 			'e-grid',
+			'e-aae-a-post-title',
+			'e-aae-a-post-image',
 		];
 	}
 }

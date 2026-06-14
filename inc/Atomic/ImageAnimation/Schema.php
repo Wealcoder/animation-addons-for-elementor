@@ -37,7 +37,7 @@ final class Schema {
 
 	/** Atomic widget types this section appears on. */
 	public static function image_animation_widgets(): array {
-		return [ 'e-image', 'e-svg' ];
+		return [ 'e-image', 'e-svg', 'e-aae-a-post-image' ];
 	}
 
 	public function register(): void {

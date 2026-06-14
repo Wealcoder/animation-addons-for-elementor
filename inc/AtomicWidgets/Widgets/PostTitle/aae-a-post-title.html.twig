@@ -1,0 +1,6 @@
+{% import 'elementor/macros' as m %}
+{% set tag = settings.tag | default('h2') %}
+{% set classes = settings.classes | merge([ base_styles.base ]) | join(' ') %}
+<{{ tag }} class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
+    {{ settings.post_title | default('') | raw }}
+</{{ tag }}>

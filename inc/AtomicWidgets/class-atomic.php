@@ -289,6 +289,69 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-title' => [
+				'label'        => 'Post Title',
+				'description'  => 'Dynamically displays the current post title natively in Elementor V4.',
+				'icon'         => 'eicon-post-title',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'title',
+					'heading',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-image' => [
+				'label'        => 'Post Image',
+				'description'  => 'Dynamically displays the current post featured image natively in Elementor V4.',
+				'icon'         => 'eicon-featured-image',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => [
+					'post',
+					'image',
+					'featured',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-posts' => [
+				'label'        => 'Posts Grid',
+				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
+				'icon'         => 'eicon-posts-grid',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => [
+					'posts',
+					'grid',
+					'blog',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-counter' => [
 				'label'        => 'Counter',
 				'description'  => 'An animated number counter using pure GSAP with minimal CSS footprint.',
@@ -723,6 +786,32 @@ final class Atomic
 				'style_handle' => 'aae-a-menu-css',
 				'style_path' => '/assets/atomic/css/menu.css',
 			],
+			'aae-a-post-title' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title',
+				'file' => 'Widgets/PostTitle/class-aae-a-post-title.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-post-title-css',
+				'style_path' => '/assets/atomic/css/post-title.css',
+			],
+
+			'aae-a-post-image' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
+				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-post-image-css',
+				'style_path' => '/assets/atomic/css/post-image.css',
+			],
+			
+			'aae-a-posts' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
+				'file' => 'Widgets/Posts/class-aae-a-posts.php',
+				'script_handle' => 'aae-a-posts-js',
+				'script_path' => '/assets/atomic/js/posts.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-posts-css',
+				'style_path' => '/assets/atomic/css/posts.css',
+			],
+			
 			// Add new atomic widgets below...
 		];
 	}
@@ -766,7 +855,7 @@ final class Atomic
 	 */
 	public function register_atomic_scripts($loader)
 	{
-		
+
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
 				wp_register_script(

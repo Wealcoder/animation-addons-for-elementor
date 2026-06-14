@@ -1143,7 +1143,7 @@ function buildCustomCssConfig(settings) {
 export const FEATURES = [
 	{
 		name: 'mouse-move-effect',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_mouse_move_effect_enable',
 		autoReplaySetting: 'aae_mouse_move_effect_enable_editor',
 		mapName: 'AAE_INTERACTIONS_MOUSE_MOVE_EFFECT',
@@ -1152,7 +1152,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'text-animation',
-		widgetTypes: ['e-heading', 'e-paragraph'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-aae-a-post-title'],
 		enableSetting: 'aae_text_effect',
 		autoReplaySetting: 'aae_text_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TEXT',
@@ -1161,7 +1161,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'regular-animation',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_anim_effect',
 		autoReplaySetting: 'aae_anim_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ANIM',
@@ -1170,7 +1170,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'image-animation',
-		widgetTypes: ['e-image', 'e-svg'],
+		widgetTypes: ['e-image', 'e-svg', 'e-aae-a-post-image'],
 		enableSetting: 'aae_img_effect',
 		autoReplaySetting: 'aae_img_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMG',
@@ -1179,7 +1179,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'image-hover',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_ih_enable',
 		autoReplaySetting: 'aae_ih_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMGHOVER',
@@ -1188,7 +1188,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'cursor-hover-effect',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_cursor_hover_enable',
 		autoReplaySetting: 'aae_cursor_hover_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
@@ -1206,7 +1206,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'parallax',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_plx_enable',
 		autoReplaySetting: 'aae_plx_enable_editor',
 		mapName: 'AAE_INTERACTIONS_PLX',
@@ -1225,7 +1225,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'advance-tooltip',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_advance_tooltip_enable',
 		autoReplaySetting: 'aae_advance_tooltip_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ADVANCE_TOOLTIP',
@@ -1234,7 +1234,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'tilt',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_tilt_enable',
 		autoReplaySetting: 'aae_tilt_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TILT',
@@ -1243,7 +1243,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'wrapper-link',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_wrapper_link_enable',
 		autoReplaySetting: 'aae_wrapper_link_enable_editor',
 		mapName: 'AAE_INTERACTIONS_WRAPPER_LINK',
@@ -1252,7 +1252,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'custom-css',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts'],
 		enableSetting: 'aae_custom_css_enable',
 		autoReplaySetting: 'aae_custom_css_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',

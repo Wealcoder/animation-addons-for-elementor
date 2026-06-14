@@ -1,0 +1,6 @@
+{% import 'elementor/macros' as m %}
+{% if settings.image_url %}
+<div class="aae-a-post-image-wrapper" data-aspect-ratio="{{ settings.aspect_ratio | default('16/9') }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
+    <img src="{{ settings.image_url }}" alt="{{ settings.image_alt }}" class="aae-a-post-image" style="object-fit: {{ settings.object_fit | default('cover') }};" />
+</div>
+{% endif %}
