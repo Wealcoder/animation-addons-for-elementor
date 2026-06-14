@@ -102,9 +102,13 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
-			'display' => String_Prop_Type::generate( 'block' ),
-			'position' => String_Prop_Type::generate( 'relative' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'display' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate( 'block' ),
+			'position' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate( 'relative' ),
+			'width' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate( '100%' ),
+			'color' => \Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type::generate( '#333333' ),
+			'background' => \Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type::generate( [
+				'color' => \Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type::generate( 'transparent' ),
+			] ),
 		];
 
 		return [
