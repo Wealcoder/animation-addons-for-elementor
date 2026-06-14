@@ -476,6 +476,7 @@ function buildImgConfig(settings) {
 		}
 	}
 
+	if (plain(settings, 'aae_img_enable_marker')) cfg.enableMarker = true;
 	if (plain(settings, 'aae_img_enable_editor')) cfg.enableEditor = true;
 
 	return cfg;
@@ -487,6 +488,7 @@ function buildImgConfig(settings) {
 
 const IH_RESPONSIVE = {
 	aae_ih_enable: { configKey: 'enabled', default: false },
+	aae_ih_preset: { configKey: 'preset', default: 'none' },
 	aae_ih_width: { configKey: 'width', default: 300 },
 	aae_ih_height: { configKey: 'height', default: 300 },
 	aae_ih_top: { configKey: 'top', default: 0 },

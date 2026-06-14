@@ -122,7 +122,7 @@ const config = {
 
 			label: 'Width',
 
-			control: 'dimensions',
+			control: 'text',
 
 			defaultValue: '120px',
 
@@ -141,7 +141,7 @@ const config = {
 
 			label: 'Height',
 
-			control: 'dimensions',
+			control: 'text',
 
 			defaultValue: '120px',
 

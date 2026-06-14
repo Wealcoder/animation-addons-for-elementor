@@ -162,6 +162,13 @@ final class Render {
 			$disabled_bps
 		);
 
+		// Preset animation — string select: none | magnetic-lag | spring-bounce | tilt-3d | trail-ghost | elastic-snap.
+		$this->emit_responsive(
+			$config, $settings, Schema::IH_PRESET, 'preset', 'none', $extra_bps,
+			static fn( $v ) => is_string( $v ) ? $v : 'none',
+			$disabled_bps
+		);
+
 		InteractionsMap::register( 'imghover', $id, $config );
 
 		if ( ! is_admin() ) {
