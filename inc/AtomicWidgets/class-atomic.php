@@ -801,7 +801,7 @@ final class Atomic
 				'style_handle' => 'aae-a-post-image-css',
 				'style_path' => '/assets/atomic/css/post-image.css',
 			],
-			
+
 			'aae-a-posts' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
@@ -811,7 +811,22 @@ final class Atomic
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
-			
+
+			// 'aae-atomic-button' => [
+			// 	'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
+			// 	'file'  => 'Widgets/Button/class-aae-atomic-button.php',
+			// 	'has_script' => false,
+			// ],
+
+
+			'aae-atomic-button' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
+				'file'  => 'Widgets/Button/class-aae-atomic-button.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-button-css',
+				'style_path' => '/assets/atomic/js/button.css',
+			],
+
 			// Add new atomic widgets below...
 		];
 	}

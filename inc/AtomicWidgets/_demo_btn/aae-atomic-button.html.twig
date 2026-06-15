@@ -1,0 +1,75 @@
+{# Determine if this style needs an extra wrapper div #}
+{% set is_ext_wrap = settings.btn_style in ['oval', 'circle', 'ellipse'] %}
+
+{# Build the <a> class list — wcf CSS + base styles (Style tab) + user classes #}
+{% set link_classes = [
+    'wcf-btn-' ~ (settings.btn_style | default('default')),
+    'btn-' ~ (settings.btn_hover_style | default('hover-none')),
+    base_styles.base
+] | merge(settings.classes | default([])) %}
+
+{% if is_ext_wrap %}
+    {% set link_classes = link_classes | merge(['btn-item']) %}
+    {% if settings.btn_style != 'ellipse' %}
+        {% set link_classes = link_classes | merge(['btn-hover-bgchange']) %}
+    {% endif %}
+{% endif %}
+
+{# Build link rel attribute #}
+{% if settings.btn_target == '_blank' %}
+    {% set rel_attr = 'noopener' ~ (settings.btn_nofollow ? ' nofollow' : '') %}
+{% elseif settings.btn_nofollow %}
+    {% set rel_attr = 'nofollow' %}
+{% else %}
+    {% set rel_attr = '' %}
+{% endif %}
+
+{# Icon inline style: size applies to both SVG and font icons; color applies to font icons
+   and to SVGs that use currentColor for their fill. #}
+{% set icon_size  = settings.btn_icon_size | default(20) %}
+{% set icon_color = settings.btn_icon_color | default('') %}
+{% set icon_style = 'width:' ~ icon_size ~ 'px;height:' ~ icon_size ~ 'px;font-size:' ~ icon_size ~ 'px;'
+    ~ (icon_color ? 'color:' ~ icon_color ~ ';fill:' ~ icon_color ~ ';' : '') %}
+
+{# Outer div: layout + Elementor tracking only — no style classes #}
+<div class="aae-atomic-button e-atomic-element {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     style="text-align: {{ settings.btn_alignment | default('center') }};"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | default('') | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+
+    <div class="wcf__btn {{ settings.btn_icon_position == 'right' ? 'icon-position-after' : '' }}">
+
+        {% if is_ext_wrap %}<div class="btn-wrapper">{% endif %}
+
+        {# base_styles.base and settings.classes live on the <a> so the Style tab targets the button #}
+        <a class="{{ link_classes | join(' ') }}"
+           href="{{ settings.btn_url | default('#') | e('html_attr') }}"
+           {% if settings.btn_target == '_blank' %}target="_blank"{% endif %}
+           {% if rel_attr is not empty %}rel="{{ rel_attr }}"{% endif %}
+           {% if settings.btn_style == 'mask' %}data-text="{{ settings.btn_text | default('') | e('html_attr') }}"{% endif %}>
+
+            {% if settings.btn_icon_svg_inline is defined and settings.btn_icon_svg_inline is not empty %}
+                {# Inline SVG — inherits currentColor so the Icon Color control works #}
+                <span class="aae-btn-icon-svg" style="{{ icon_style }}" aria-hidden="true">
+                    {{ settings.btn_icon_svg_inline | raw }}
+                </span>
+            {% elseif settings.btn_icon_css is defined and settings.btn_icon_css is not empty %}
+                <i class="{{ settings.btn_icon_css }}" style="{{ icon_style }}" aria-hidden="true"></i>
+            {% endif %}
+
+            {{ settings.btn_text | default('Click here') | e }}
+
+        </a>
+
+        {% if is_ext_wrap %}</div>{% endif %}
+
+    </div>
+</div>
