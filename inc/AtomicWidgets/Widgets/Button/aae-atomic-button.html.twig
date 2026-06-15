@@ -45,12 +45,33 @@
     {% endif %}
 {% endif %}
 
+{# Build inline style string — text-align + CSS custom properties for user colors #}
+{% set inline_style = 'text-align: ' ~ (settings.btn_alignment | default('center')) ~ ';' %}
+{% if settings.btn_color is defined and settings.btn_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-color:' ~ settings.btn_color ~ ';' %}
+{% endif %}
+{% if settings.btn_bg_color is defined and settings.btn_bg_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-bg:' ~ settings.btn_bg_color ~ ';' %}
+{% endif %}
+{% if settings.btn_border_color is defined and settings.btn_border_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-border-color:' ~ settings.btn_border_color ~ ';' %}
+{% endif %}
+{% if settings.btn_hover_color is defined and settings.btn_hover_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-color:' ~ settings.btn_hover_color ~ ';' %}
+{% endif %}
+{% if settings.btn_hover_bg_color is defined and settings.btn_hover_bg_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-bg:' ~ settings.btn_hover_bg_color ~ ';' %}
+{% endif %}
+{% if settings.btn_hover_border_color is defined and settings.btn_hover_border_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_hover_border_color ~ ';' %}
+{% endif %}
+
 {# Outer wrapper — same for every style #}
 <div class="aae-atomic-button e-atomic-element {{ editor_classes | default('') }}"
      data-id="{{ id }}"
      data-e-type="{{ type }}"
      data-interaction-id="{{ interaction_id | default('') }}"
-     style="text-align: {{ settings.btn_alignment | default('center') }};"
+     style="{{ inline_style }}"
      {% if settings._cssid is defined and settings._cssid is not empty %}
          id="{{ settings._cssid | e('html_attr') }}"
      {% endif %}

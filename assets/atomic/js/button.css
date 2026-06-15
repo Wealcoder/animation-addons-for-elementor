@@ -60,20 +60,22 @@
 
 .wcf-btn-default {
   padding: 17px 35px;
-  border: 1px solid #1C1D20;
+  border: 1px solid var(--aae-btn-border-color, #1C1D20);
+  background-color: var(--aae-btn-bg, transparent);
   overflow: hidden;
   z-index: 0;
 }
 .wcf-btn-default:hover {
-  color: #1C1D20;
+  color: var(--aae-btn-hover-color, #1C1D20) !important;
+  border-color: var(--aae-btn-border-color, #1C1D20) !important;
 }
 .wcf-btn-circle {
   width: 140px;
   height: 140px;
-  color: #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
   border-radius: 100%;
   flex-direction: column;
-  background-color: #E8BF96;
+  background-color: var(--aae-btn-bg, #E8BF96);
 }
 @media only screen and (max-width: 1199px) {
   .wcf-btn-circle {
@@ -82,11 +84,11 @@
   }
 }
 .wcf-btn-circle:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
 }
 .wcf-btn-oval {
-  color: #1C1D20;
-  border: 1px solid #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
+  border: 1px solid var(--aae-btn-border-color, #1C1D20);
   padding: 32px 52px;
   border-radius: 50% 50% 50% 50%/50% 50% 50% 50%;
 }
@@ -96,28 +98,31 @@
   }
 }
 .wcf-btn-oval:hover {
-  color: #E8BF96;
+  color: var(--aae-btn-hover-color, #E8BF96) !important;
 }
 .wcf-btn-ellipse {
-  color: #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
   padding: 45px 45px;
   position: relative;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-border-color, #1C1D20);
   border-radius: 100%;
   border-top-left-radius: 200%;
   border-bottom-right-radius: 200%;
   z-index: 1;
 }
 .wcf-btn-ellipse:hover {
-  color: #FFBC7D;
-  background-color: #E8BF96;
+  color: var(--aae-btn-hover-color, #FFBC7D);
+  background-color: var(--aae-btn-hover-border-color, #E8BF96) !important;
+}
+.wcf-btn-ellipse:hover::before {
+  background-color: var(--aae-btn-hover-bg, #fff);
 }
 .wcf-btn-ellipse:before {
   position: absolute;
   content: "";
   width: calc(100% - 16px);
   height: calc(100% - 2px);
-  background-color: #fff;
+  background-color: var(--aae-btn-bg, #fff);
   z-index: -1;
   top: 50%;
   left: 50%;
@@ -128,7 +133,7 @@
 }
 .wcf-btn-square {
   flex-direction: column;
-  color: #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
   text-align: center;
   border: 1px solid currentColor;
   height: 215px;
@@ -151,10 +156,10 @@
   }
 }
 .wcf-btn-square:hover {
-  color: #E8BF96;
+  color: var(--aae-btn-hover-color, #E8BF96) !important;
 }
 .wcf-btn-underline {
-  color: #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
   padding-bottom: 5px;
   position: relative;
 }
@@ -165,12 +170,12 @@
   height: 1px;
   left: 0;
   bottom: 0;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-border-color, #1C1D20);
   transition: all 0.3s;
 }
 .wcf-btn-underline:hover {
-  color: #E8BF96;
-  fill: #E8BF96;
+  color: var(--aae-btn-hover-color, #E8BF96) !important;
+  fill: var(--aae-btn-hover-color, #E8BF96) !important;
 }
 .wcf-btn-underline:hover::after {
   width: 0%;
@@ -181,8 +186,8 @@
   overflow: hidden;
   transition: all 0.5s;
   border-radius: 5px;
-  color: #1C1D20;
-  border: 1px solid #1C1D20;
+  color: var(--aae-btn-color, #1C1D20);
+  border: 1px solid var(--aae-btn-border-color, #1C1D20);
   z-index: 1;
 }
 .wcf-btn-mask i, .wcf-btn-mask svg {
@@ -201,14 +206,14 @@
   height: 100%;
   left: 0;
   top: 0;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   -webkit-mask-size: 2300% 100%;
           mask-size: 2300% 100%;
   animation: mask_animation_2 0.7s steps(22) forwards;
   padding: 15px 30px;
 }
 .wcf-btn-mask:hover {
-  color: #1C1D20;
+  color: var(--aae-btn-hover-color, #1C1D20) !important;
 }
 .wcf-btn-mask:hover::after {
   animation: mask_animation 0.7s steps(22) forwards;
@@ -229,21 +234,25 @@
   z-index: -1;
   border-radius: 100%;
   transition: all 1s;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transform: translate(-50%, -50%);
 }
 .btn-hover-bgchange:hover {
-  color: #fff;
-  border: 1px solid #1C1D20;
+  color: var(--aae-btn-hover-color, #fff) !important;
+  border: 1px solid var(--aae-btn-border-color, #1C1D20);
 }
 .btn-hover-bgchange:hover span {
   width: 400px;
   height: 400px;
 }
 
+.btn-hover-none:hover {
+  background-color: var(--aae-btn-hover-bg, transparent);
+  color: var(--aae-btn-hover-color, inherit) !important;
+}
 .btn-hover-default:hover {
-  color: #1C1D20;
-  background-color: #fff;
+  color: var(--aae-btn-hover-color, #1C1D20) !important;
+  background-color: var(--aae-btn-hover-bg, #fff);
 }
 .btn-hover-cross {
   overflow: hidden;
@@ -257,14 +266,14 @@
   height: 0%;
   left: 50%;
   top: 50%;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transform: translateX(-50%) translateY(-50%);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
 .btn-hover-cross:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
   background-color: transparent;
 }
 .btn-hover-cross:hover::after {
@@ -284,14 +293,14 @@
   height: 100%;
   left: 50%;
   top: 50%;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transform: translateX(-50%) translateY(-50%);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
 .btn-hover-divide:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
   background-color: transparent;
 }
 .btn-hover-divide:hover::after {
@@ -310,14 +319,14 @@
   height: 0%;
   left: 50%;
   top: 50%;
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transform: translateX(-50%) translateY(-50%) rotate(25deg);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
 .btn-hover-cropping:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
   background-color: transparent;
 }
 .btn-hover-cropping:hover::after {
@@ -336,11 +345,11 @@
   width: 100%;
   z-index: -1;
   content: "";
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1) 0s;
 }
 .btn-rollover-top:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
   background-color: transparent;
 }
 .btn-rollover-top:hover::after {
@@ -360,11 +369,11 @@
   width: 0px;
   z-index: -1;
   content: "";
-  background-color: #1C1D20;
+  background-color: var(--aae-btn-hover-bg, #1C1D20);
   transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1) 0s;
 }
 .btn-rollover-left:hover {
-  color: #fff;
+  color: var(--aae-btn-hover-color, #fff) !important;
   background-color: transparent;
 }
 .btn-rollover-left:hover::after {
@@ -385,8 +394,8 @@
   bottom: 100%;
   left: 100%;
   opacity: 0;
-  border-bottom: 1px solid #1C1D20;
-  border-left: 1px solid #1C1D20;
+  border-bottom: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+  border-left: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
   transition: all 0.75s;
 }
 .btn-rollover-cross::after {
@@ -397,13 +406,14 @@
   top: 100%;
   right: 100%;
   opacity: 0;
-  border-top: 1px solid #1C1D20;
-  border-right: 1px solid #1C1D20;
+  border-top: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+  border-right: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
   transition: all 0.75s;
 }
 .btn-rollover-cross:hover {
   border-color: transparent !important;
-  color: #1C1D20;
+  color: var(--aae-btn-hover-color, #1C1D20) !important;
+  background-color: var(--aae-btn-hover-bg, transparent);
 }
 .btn-rollover-cross:hover::before {
   bottom: 0;
@@ -432,8 +442,8 @@
   bottom: 0;
   left: 0;
   opacity: 0;
-  border-bottom: 1px solid #1C1D20;
-  border-left: 1px solid #1C1D20;
+  border-bottom: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+  border-left: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
   transition: all 0.75s;
 }
 .btn-parallal-border::after {
@@ -444,13 +454,14 @@
   top: 0;
   right: 0;
   opacity: 0;
-  border-top: 1px solid #1C1D20;
-  border-right: 1px solid #1C1D20;
+  border-top: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+  border-right: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
   transition: all 0.75s;
 }
 .btn-parallal-border:hover {
   border-color: transparent !important;
-  color: #1C1D20;
+  color: var(--aae-btn-hover-color, #1C1D20) !important;
+  background-color: var(--aae-btn-hover-bg, transparent);
 }
 .btn-parallal-border:hover::before {
   opacity: 1;

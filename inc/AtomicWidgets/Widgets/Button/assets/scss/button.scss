@@ -49,7 +49,7 @@
     }
   }
 
-  a{
+  a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -58,6 +58,7 @@
     line-height: 1;
     font-weight: 500;
     transition: all 0.3s;
+    // color: var(--aae-btn-color, inherit);
   }
 
   &.icon-position-after {
@@ -66,7 +67,7 @@
       order: 15;
     }
 
-    .wcf-btn-mask::after{
+    .wcf-btn-mask::after {
       align-items: flex-start;
       justify-content: flex-start;
     }
@@ -76,22 +77,25 @@
 .wcf-btn {
   &-default {
     padding: 17px 35px;
-    border: 1px solid #1C1D20;
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
+    background-color: var(--aae-btn-bg, transparent);
     overflow: hidden;
     z-index: 0;
 
     &:hover {
-      color: #1C1D20;
+      color: var(--aae-btn-hover-color, #1C1D20) !important;
+    border-color: var(--aae-btn-border-color, #1C1D20) !important;
+
     }
   }
 
   &-circle {
     width: 140px;
     height: 140px;
-    color: #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
     border-radius: 100%;
     flex-direction: column;
-    background-color: #E8BF96;
+    background-color: var(--aae-btn-bg, #E8BF96);
 
     @media #{$lg} {
       width: 130px;
@@ -99,13 +103,13 @@
     }
 
     &:hover {
-      color: #fff;
+      color: var(--aae-btn-hover-color, #fff) !important;
     }
   }
 
   &-oval {
-    color: #1C1D20;
-    border: 1px solid #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
     padding: 32px 52px;
     border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
 
@@ -114,23 +118,30 @@
     }
 
     &:hover {
-      color: #E8BF96;
+      color: var(--aae-btn-hover-color, #E8BF96) !important;
     }
   }
 
   &-ellipse {
-    color: #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
     padding: 45px 45px;
     position: relative;
-    background-color: #1C1D20;
+    // outer ring colour uses --aae-btn-border-color (matches V3 ellipse_border_color)
+    background-color: var(--aae-btn-border-color, #1C1D20);
     border-radius: 100%;
     border-top-left-radius: 200%;
     border-bottom-right-radius: 200%;
     z-index: 1;
 
     &:hover {
-      color: #FFBC7D;
-      background-color: #E8BF96;
+      color: var(--aae-btn-hover-color, #FFBC7D);
+      // outer ring hover colour (V3 ellipse_border_hover_color → btn_hover_border_color)
+      background-color: var(--aae-btn-hover-border-color, #E8BF96) !important;
+
+      &::before {
+        // inner fill hover colour (V3 hover bg → btn_hover_bg_color)
+        background-color: var(--aae-btn-hover-bg, #fff);
+      }
     }
 
     &:before {
@@ -138,7 +149,8 @@
       content: "";
       width: calc(100% - 16px);
       height: calc(100% - 2px);
-      background-color: #fff;
+      // inner fill normal colour (V3 normal bg → btn_bg_color)
+      background-color: var(--aae-btn-bg, #fff);
       z-index: -1;
       top: 50%;
       left: 50%;
@@ -151,7 +163,7 @@
 
   &-square {
     flex-direction: column;
-    color: #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
     text-align: center;
     border: 1px solid currentColor;
     height: 215px;
@@ -172,12 +184,12 @@
     }
 
     &:hover {
-      color: #E8BF96;
+      color: var(--aae-btn-hover-color, #E8BF96) !important;
     }
   }
 
   &-underline {
-    color: #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
     padding-bottom: 5px;
     position: relative;
 
@@ -188,13 +200,13 @@
       height: 1px;
       left: 0;
       bottom: 0;
-      background-color: #1C1D20;
+      background-color: var(--aae-btn-border-color, #1C1D20);
       transition: all 0.3s;
     }
 
     &:hover {
-      color: #E8BF96;
-      fill: #E8BF96;
+      color: var(--aae-btn-hover-color, #E8BF96) !important;
+      fill: var(--aae-btn-hover-color, #E8BF96) !important;
 
       &::after {
         width: 0%;
@@ -208,14 +220,15 @@
     overflow: hidden;
     transition: all 0.5s;
     border-radius: 5px;
-    color: #1C1D20;
-    border: 1px solid #1C1D20;
+    color: var(--aae-btn-color, #1C1D20);
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
     z-index: 1;
 
-    i,svg{
+    i, svg {
       position: relative;
       z-index: 1;
     }
+
     &::after {
       display: flex;
       align-items: flex-end;
@@ -228,14 +241,15 @@
       height: 100%;
       left: 0;
       top: 0;
-      background-color: #1C1D20;
+      // hover bg drives the animated reveal overlay colour
+      background-color: var(--aae-btn-hover-bg, #1C1D20);
       mask-size: 2300% 100%;
       animation: mask_animation_2 0.7s steps(22) forwards;
       padding: 15px 30px;
     }
 
     &:hover {
-      color: #1C1D20;
+      color: var(--aae-btn-hover-color, #1C1D20) !important;
 
       &::after {
         animation: mask_animation 0.7s steps(22) forwards;
@@ -259,13 +273,14 @@
     z-index: -1;
     border-radius: 100%;
     transition: all 1s;
-    background-color: #1C1D20;
+    // hover bg drives the expanding circle fill (oval / circle styles)
+    background-color: var(--aae-btn-hover-bg, #1C1D20);
     transform: translate(-50%, -50%);
   }
 
   &:hover {
-    color: #fff;
-    border: 1px solid #1C1D20;
+    color: var(--aae-btn-hover-color, #fff) !important;
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
 
     span {
       width: 400px;
@@ -274,14 +289,21 @@
   }
 }
 
-// Hover
+// Hover styles
 .btn {
   &-hover {
 
+    &-none {
+      &:hover {
+        background-color: var(--aae-btn-hover-bg, transparent);
+        color: var(--aae-btn-hover-color, inherit) !important;
+      }
+    }
+
     &-default {
       &:hover {
-        color: #1C1D20;
-        background-color: #fff;
+        color: var(--aae-btn-hover-color, #1C1D20) !important;
+        background-color: var(--aae-btn-hover-bg, #fff);
       }
     }
 
@@ -297,7 +319,7 @@
         height: 0%;
         left: 50%;
         top: 50%;
-        background-color: #1C1D20;
+        background-color: var(--aae-btn-hover-bg, #1C1D20);
         transform: translateX(-50%) translateY(-50%);
         transition: all 0.75s;
         opacity: 0.5;
@@ -305,7 +327,7 @@
       }
 
       &:hover {
-        color: #fff;
+        color: var(--aae-btn-hover-color, #fff) !important;
         background-color: transparent;
 
         &::after {
@@ -328,7 +350,7 @@
         height: 100%;
         left: 50%;
         top: 50%;
-        background-color: #1C1D20;
+        background-color: var(--aae-btn-hover-bg, #1C1D20);
         transform: translateX(-50%) translateY(-50%);
         transition: all 0.75s;
         opacity: 0.5;
@@ -336,7 +358,7 @@
       }
 
       &:hover {
-        color: #fff;
+        color: var(--aae-btn-hover-color, #fff) !important;
         background-color: transparent;
 
         &::after {
@@ -358,7 +380,7 @@
         height: 0%;
         left: 50%;
         top: 50%;
-        background-color: #1C1D20;
+        background-color: var(--aae-btn-hover-bg, #1C1D20);
         transform: translateX(-50%) translateY(-50%) rotate(25deg);
         transition: all 0.75s;
         opacity: 0.5;
@@ -366,7 +388,7 @@
       }
 
       &:hover {
-        color: #fff;
+        color: var(--aae-btn-hover-color, #fff) !important;
         background-color: transparent;
 
         &::after {
@@ -390,12 +412,12 @@
         width: 100%;
         z-index: -1;
         content: '';
-        background-color: #1C1D20;
+        background-color: var(--aae-btn-hover-bg, #1C1D20);
         transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1) 0s;
       }
 
       &:hover {
-        color: #fff;
+        color: var(--aae-btn-hover-color, #fff) !important;
         background-color: transparent;
 
         &::after {
@@ -418,12 +440,12 @@
         width: 0px;
         z-index: -1;
         content: '';
-        background-color: #1C1D20;
+        background-color: var(--aae-btn-hover-bg, #1C1D20);
         transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1) 0s;
       }
 
       &:hover {
-        color: #fff;
+        color: var(--aae-btn-hover-color, #fff) !important;
         background-color: transparent;
 
         &::after {
@@ -447,8 +469,8 @@
         bottom: 100%;
         left: 100%;
         opacity: 0;
-        border-bottom: 1px solid #1C1D20;
-        border-left: 1px solid #1C1D20;
+        border-bottom: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+        border-left: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
         transition: all 0.75s;
       }
 
@@ -460,14 +482,15 @@
         top: 100%;
         right: 100%;
         opacity: 0;
-        border-top: 1px solid #1C1D20;
-        border-right: 1px solid #1C1D20;
+        border-top: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+        border-right: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
         transition: all 0.75s;
       }
 
       &:hover {
         border-color: transparent !important;
-        color: #1C1D20;
+        color: var(--aae-btn-hover-color, #1C1D20) !important;
+        background-color: var(--aae-btn-hover-bg, transparent);
 
         &::before {
           bottom: 0;
@@ -501,8 +524,8 @@
       bottom: 0;
       left: 0;
       opacity: 0;
-      border-bottom: 1px solid #1C1D20;
-      border-left: 1px solid #1C1D20;
+      border-bottom: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+      border-left: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
       transition: all 0.75s;
     }
 
@@ -514,14 +537,15 @@
       top: 0;
       right: 0;
       opacity: 0;
-      border-top: 1px solid #1C1D20;
-      border-right: 1px solid #1C1D20;
+      border-top: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
+      border-right: 1px solid var(--aae-btn-hover-border-color, #1C1D20) !important;
       transition: all 0.75s;
     }
 
     &:hover {
       border-color: transparent !important;
-      color: #1C1D20;
+      color: var(--aae-btn-hover-color, #1C1D20) !important;
+      background-color: var(--aae-btn-hover-bg, transparent);
 
       &::before {
         opacity: 1;
@@ -908,8 +932,8 @@
 }
 
 //contact form 7
-.elementor-widget-wcf--contact-form-7{
-  .wcf-btn-default{
+.elementor-widget-wcf--contact-form-7 {
+  .wcf-btn-default {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -926,12 +950,12 @@
 
   &.icon-position-after {
     i,
-    svg{
+    svg {
       order: 15;
     }
   }
 
-  .wpcf7-list-item:first-child{
+  .wpcf7-list-item:first-child {
     margin-left: 0;
   }
 }

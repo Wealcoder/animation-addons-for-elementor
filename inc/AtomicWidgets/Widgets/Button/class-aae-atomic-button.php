@@ -80,23 +80,31 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			'btn_show_icon'     => Boolean_Prop_Type::make()->default(false),
 
 			'btn_icon_svg'      => Svg_Src_Prop_Type::make()
-									->set_dependencies($icon_hidden),
+				->set_dependencies($icon_hidden),
 
 			'btn_icon_css'      => String_Prop_Type::make()->default('')
-									->set_dependencies($icon_hidden),
+				->set_dependencies($icon_hidden),
 
 			'btn_icon_position' => String_Prop_Type::make()->default('left')
-									->set_dependencies($icon_hidden),
+				->set_dependencies($icon_hidden),
 
 			'btn_icon_size'     => Number_Prop_Type::make()->default(20)
-									->set_dependencies($icon_hidden),
+				->set_dependencies($icon_hidden),
 
 			'btn_icon_color'    => String_Prop_Type::make()->default('')
-									->set_dependencies($icon_hidden),
+				->set_dependencies($icon_hidden),
 
 			'btn_outline_gap'   => Number_Prop_Type::make()->default(10),
 
-			'btn_alignment'     => String_Prop_Type::make()->default('center'),
+			'btn_alignment'     => String_Prop_Type::make()->default('left'),
+
+			// Color props — output as CSS custom properties via Twig inline style
+			'btn_color'              => String_Prop_Type::make()->default(''),
+			'btn_bg_color'           => String_Prop_Type::make()->default(''),
+			'btn_border_color'       => String_Prop_Type::make()->default(''),
+			'btn_hover_color'        => String_Prop_Type::make()->default(''),
+			'btn_hover_bg_color'     => String_Prop_Type::make()->default(''),
+			'btn_hover_border_color' => String_Prop_Type::make()->default(''),
 		];
 	}
 
@@ -120,14 +128,14 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 							['value' => 'circle',    'label' => __('Circle',           'animation-addons-for-elementor')],
 							['value' => 'ellipse',   'label' => __('Ellipse',          'animation-addons-for-elementor')],
 							// Pro styles (from Advanced Button)
-							['value' => 'pro-1',     'label' => __('Pro 1 – Border Divide', 'animation-addons-for-elementor')],
-							['value' => 'pro-2',     'label' => __('Pro 2 – Shadow',        'animation-addons-for-elementor')],
-							['value' => 'pro-3',     'label' => __('Pro 3 – Text Flip',     'animation-addons-for-elementor')],
-							['value' => 'pro-4',     'label' => __('Pro 4 – Ripple',        'animation-addons-for-elementor')],
-							['value' => 'pro-5',     'label' => __('Pro 5 – Group Swap L',  'animation-addons-for-elementor')],
-							['value' => 'pro-6',     'label' => __('Pro 6 – Group Swap R',  'animation-addons-for-elementor')],
-							['value' => 'pro-7',     'label' => __('Pro 7 – Outline Pill',  'animation-addons-for-elementor')],
-							['value' => 'pro-8',     'label' => __('Pro 8 – Slide Fill',    'animation-addons-for-elementor')],
+							['value' => 'pro-1',     'label' => __('Border Divide', 'animation-addons-for-elementor')],
+							['value' => 'pro-2',     'label' => __('Shadow',        'animation-addons-for-elementor')],
+							['value' => 'pro-3',     'label' => __('Text Flip',     'animation-addons-for-elementor')],
+							['value' => 'pro-4',     'label' => __('Ripple',        'animation-addons-for-elementor')],
+							['value' => 'pro-5',     'label' => __('Group Swap L',  'animation-addons-for-elementor')],
+							['value' => 'pro-6',     'label' => __('Group Swap R',  'animation-addons-for-elementor')],
+							['value' => 'pro-7',     'label' => __('Outline Pill',  'animation-addons-for-elementor')],
+							['value' => 'pro-8',     'label' => __('Slide Fill',    'animation-addons-for-elementor')],
 						]),
 
 					Select_Control::bind_to('btn_hover_style')
@@ -159,6 +167,25 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 					Switch_Control::bind_to('btn_nofollow')
 						->set_label(__('Add Nofollow', 'animation-addons-for-elementor')),
 
+					Number_Control::bind_to('btn_outline_gap')
+						->set_label(__('Outline Gap (px)', 'animation-addons-for-elementor'))
+						->set_meta(['min' => 0, 'max' => 20, 'step' => 1]),
+
+					Select_Control::bind_to('btn_alignment')
+						->set_label(__('Alignment', 'animation-addons-for-elementor'))
+						->set_options([
+							['value' => 'left',   'label' => __('Left',   'animation-addons-for-elementor')],
+							['value' => 'center', 'label' => __('Center', 'animation-addons-for-elementor')],
+							['value' => 'right',  'label' => __('Right',  'animation-addons-for-elementor')],
+						]),
+
+				]),
+
+
+			Section::make()
+				->set_label(__('Icon', 'animation-addons-for-elementor'))
+				->set_id('btn_icon_tab')
+				->set_items([
 					Switch_Control::bind_to('btn_show_icon')
 						->set_label(__('Show Icon', 'animation-addons-for-elementor')),
 
@@ -183,19 +210,24 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 
 					Text_Control::bind_to('btn_icon_color')
 						->set_label(__('Icon Color', 'animation-addons-for-elementor')),
+				]),
 
-					Number_Control::bind_to('btn_outline_gap')
-						->set_label(__('Outline Gap (px)', 'animation-addons-for-elementor'))
-						->set_meta(['min' => 0, 'max' => 20, 'step' => 1]),
-
-					Select_Control::bind_to('btn_alignment')
-						->set_label(__('Alignment', 'animation-addons-for-elementor'))
-						->set_options([
-							['value' => 'left',   'label' => __('Left',   'animation-addons-for-elementor')],
-							['value' => 'center', 'label' => __('Center', 'animation-addons-for-elementor')],
-							['value' => 'right',  'label' => __('Right',  'animation-addons-for-elementor')],
-						]),
-
+			Section::make()
+				->set_label(__('Hover Colors', 'animation-addons-for-elementor'))
+				->set_id('btn_hv_colors_tab')
+				->set_items([
+					// Text_Control::bind_to('btn_color')
+					// 	->set_label(__('Text Color', 'animation-addons-for-elementor')),
+					// Text_Control::bind_to('btn_bg_color')
+					// 	->set_label(__('Background Color', 'animation-addons-for-elementor')),
+					// Text_Control::bind_to('btn_border_color')
+					// 	->set_label(__('Border Color', 'animation-addons-for-elementor')),
+					Text_Control::bind_to('btn_hover_color')
+						->set_label(__('Hover Text Color', 'animation-addons-for-elementor')),
+					Text_Control::bind_to('btn_hover_bg_color')
+						->set_label(__('Hover Background', 'animation-addons-for-elementor')),
+					Text_Control::bind_to('btn_hover_border_color')
+						->set_label(__('Hover Border Color', 'animation-addons-for-elementor')),
 				]),
 
 			Section::make()
