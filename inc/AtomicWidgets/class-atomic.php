@@ -549,6 +549,28 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-icon-list' => [
+				'label'        => 'Icon List',
+				'description'  => 'A minimal icon-driven bullet list with vertical/inline layout and optional dividers.',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'icon list',
+					'icon',
+					'list',
+					'bullet',
+					'atomic',
+					'aae',
+				],
+				'category'     => 'general',
+				'order'        => 6,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -833,6 +855,13 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-menu-css',
 				'style_path' => '/assets/atomic/css/menu.css',
+			],
+			'aae-a-icon-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_IconList',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-icon-list-css',
+				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
 			// Add new atomic widgets below...
 		];
