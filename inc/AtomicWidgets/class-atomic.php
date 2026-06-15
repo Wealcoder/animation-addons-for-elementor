@@ -619,43 +619,26 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-<<<<<<< HEAD
 			'aae-a-accordion' => [
 				'label'        => 'Accordion',
 				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
 				'icon'         => 'eicon-accordion',
-=======
-			'aae-a-icon-list' => [
-				'label'        => 'Icon List',
-				'description'  => 'A minimal icon-driven bullet list with vertical/inline layout and optional dividers.',
-				'icon'         => 'eicon-bullet-list',
->>>>>>> icon-list
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [
-<<<<<<< HEAD
 					'accordion',
 					'tabs',
 					'toggle',
 					'atomic',
 					'gsap',
-=======
-					'icon list',
-					'icon',
-					'list',
-					'bullet',
-					'atomic',
-					'aae',
->>>>>>> icon-list
 				],
 				'category'     => 'general',
 				'order'        => 6,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
-<<<<<<< HEAD
 
 			'aae-a-accordion-item' => [
 				'label'        => 'Accordion Item',
@@ -713,8 +696,6 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
-=======
->>>>>>> icon-list
 		];
 	}
 
@@ -1045,20 +1026,14 @@ final class Atomic
 			'aae-a-icon-list' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List',
 				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
-				'has_script' => false,				
+				'has_script' => false,
+				'style_handle' => 'aae-a-icon-list-css',
+				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
 			'aae-a-icon-list-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
 				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
 				'has_script' => false,
-			],
-			
-			'aae-a-icon-list' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_IconList',
-				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
-				'has_script' => false,
-				'style_handle' => 'aae-a-icon-list-css',
-				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
 			// Add new atomic widgets below...
 		];

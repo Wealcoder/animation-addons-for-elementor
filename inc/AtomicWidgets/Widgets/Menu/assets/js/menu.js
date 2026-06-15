@@ -39,20 +39,61 @@ const wireSubmenus = (nav) => {
 
 const wireDrawer = (container, toggle) => {
 	const overlay = container.querySelector('.aae-a-menu-overlay');
+	const nav = container.querySelector('.aae-a-menu-nav');
 	const close = container.querySelector('.aae-a-menu-close');
 	const bp = parseInt(container.dataset.breakpoint, 10) || 768;
+	const navHome = nav?.parentElement;
+	const overlayHome = overlay?.parentElement;
+	let portaled = false;
+
+	const portal = () => {
+		if (portaled) return;
+		portaled = true;
+		// Carry CSS custom properties from container so user style controls still apply
+		const inline = container.getAttribute('style') || '';
+		if (overlay) {
+			overlay.setAttribute('style', inline);
+			overlay.classList.add('aae-a-menu-portal');
+			document.body.appendChild(overlay);
+		}
+		if (nav) {
+			nav.setAttribute('style', inline);
+			nav.classList.add('aae-a-menu-portal');
+			document.body.appendChild(nav);
+		}
+	};
+	const unportal = () => {
+		if (!portaled) return;
+		portaled = false;
+		overlay?.removeAttribute('style');
+		nav?.removeAttribute('style');
+		overlay?.classList.remove('aae-a-menu-portal');
+		nav?.classList.remove('aae-a-menu-portal');
+		if (overlay && overlayHome) overlayHome.appendChild(overlay);
+		if (nav && navHome) navHome.appendChild(nav);
+	};
+
 	const set = (state) => {
+		if (state) portal();
 		container.classList.toggle('aae-a-menu--open', state);
+		overlay?.classList.toggle('aae-a-menu--open', state);
+		nav?.classList.toggle('aae-a-menu--open', state);
 		toggle.classList.toggle('aae-a-menu-active', state);
 		toggle.setAttribute('aria-expanded', state);
 		document.body.style.overflow = state ? 'hidden' : '';
 		if (!state) closeAllSubmenus(container);
 	};
+
 	toggle.addEventListener('click', (e) => { e.preventDefault(); set(!container.classList.contains('aae-a-menu--open')); });
 	overlay?.addEventListener('click', () => set(false));
 	close?.addEventListener('click', () => set(false));
 	document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
-	window.addEventListener('resize', () => { if (window.innerWidth > bp) set(false); });
+	window.addEventListener('resize', () => {
+		if (window.innerWidth > bp) {
+			set(false);
+			unportal();
+		}
+	});
 };
 
 const initMenu = (container) => {
