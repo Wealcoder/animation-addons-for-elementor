@@ -5,6 +5,8 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -53,7 +55,16 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
-		return [];
+		return [
+			Section::make()
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'settings' )
+				->set_items( [
+					Text_Control::bind_to( '_cssid' )
+						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
+						->set_meta( $this->get_css_id_control_meta() ),
+				] ),
+		];
 	}
 
 	protected function define_base_styles(): array {

@@ -10,6 +10,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -54,7 +55,6 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			'list_tag' => String_Prop_Type::make()->enum( [ 'ul', 'ol' ] )->default( 'ul' ),
-			'gap_spacing' => Number_Prop_Type::make()->default( 10 ),
 		];
 	}
 
@@ -70,11 +70,14 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 							[ 'value' => 'ul', 'label' => __( 'Unordered List (ul)', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'ol', 'label' => __( 'Ordered List (ol)', 'animation-addons-for-elementor' ) ],
 						] ),
-
-					Number_Control::bind_to( 'gap_spacing' )
-						->set_label( __( 'Spacing (px)', 'animation-addons-for-elementor' ) )
-						->set_min( 0 )
-						->set_max( 100 ),
+				] ),
+			Section::make()
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'settings' )
+				->set_items( [
+					Text_Control::bind_to( '_cssid' )
+						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
+						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
 		];
 	}
