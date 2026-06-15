@@ -6,7 +6,6 @@
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id }}"
     role="listitem"
-    style="display: inline-flex; align-items: center;"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
