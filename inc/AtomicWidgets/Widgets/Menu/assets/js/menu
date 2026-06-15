@@ -4,13 +4,13 @@ const initMenu = (container) => {
 	const nav = container.querySelector('.aae-a-menu-nav');
 	const toggle = container.querySelector('.aae-a-menu-toggle');
 	const overlay = container.querySelector('.aae-a-menu-overlay');
-	const closeBtn = container.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
 	const isHamburger = container.getAttribute('data-hamburger') === 'true';
 	const hasGsap = typeof window.gsap !== 'undefined';
 	const isMobile = () => window.innerWidth <= 768;
 
+	// Flag the container so the CSS knows GSAP owns dropdown animations
 	if (hasGsap) {
 		container.classList.add('aae-a-menu--gsap');
 	}
@@ -19,9 +19,10 @@ const initMenu = (container) => {
 		const menuList = nav.querySelector('.aae-a-menu-list');
 		if (!menuList) return;
 
+		// Inject arrow toggle buttons for each parent item (accordion)
 		const parentItems = menuList.querySelectorAll('.menu-item-has-children');
 		parentItems.forEach((item) => {
-			if (item.querySelector(':scope > .aae-a-menu-arrow')) return;
+			if (item.querySelector(':scope > .aae-a-menu-arrow')) return; // already injected
 			const arrow = document.createElement('button');
 			arrow.type = 'button';
 			arrow.className = 'aae-a-menu-arrow';
@@ -30,6 +31,7 @@ const initMenu = (container) => {
 			item.appendChild(arrow);
 		});
 
+		// Close all open submenus (used on resize / drawer close)
 		const closeAllSubmenus = () => {
 			menuList.querySelectorAll('.aae-a-menu-item--open').forEach((openItem) => {
 				openItem.classList.remove('aae-a-menu-item--open');
@@ -38,6 +40,7 @@ const initMenu = (container) => {
 			});
 		};
 
+		// Desktop GSAP hover animations for dropdowns
 		parentItems.forEach((item) => {
 			const subMenu = item.querySelector(':scope > .sub-menu');
 			const link = item.querySelector(':scope > a');
@@ -49,18 +52,33 @@ const initMenu = (container) => {
 			const openMenu = () => {
 				clearTimeout(hoverIntentTimeout);
 				if (hasGsap) {
-					window.gsap.to(subMenu, { autoAlpha: 1, y: 0, display: 'block', duration: 0.3, ease: 'power2.out', overwrite: true });
+					window.gsap.to(subMenu, {
+						autoAlpha: 1,
+						y: 0,
+						display: 'block',
+						duration: 0.3,
+						ease: 'power2.out',
+						overwrite: true,
+					});
 				}
 			};
 
 			const closeMenu = () => {
 				hoverIntentTimeout = setTimeout(() => {
 					if (hasGsap) {
-						window.gsap.to(subMenu, { autoAlpha: 0, y: 15, display: 'none', duration: 0.2, ease: 'power2.in', overwrite: true });
+						window.gsap.to(subMenu, {
+							autoAlpha: 0,
+							y: 15,
+							display: 'none',
+							duration: 0.2,
+							ease: 'power2.in',
+							overwrite: true,
+						});
 					}
 				}, 100);
 			};
 
+			// Desktop hover open/close
 			item.addEventListener('mouseenter', () => { if (!isMobile()) openMenu(); });
 			item.addEventListener('mouseleave', () => { if (!isMobile()) closeMenu(); });
 
@@ -69,6 +87,7 @@ const initMenu = (container) => {
 				link.addEventListener('blur', () => { if (!isMobile()) closeMenu(); });
 			}
 
+			// ARROW click → toggle this submenu (desktop click AND mobile accordion)
 			if (arrow) {
 				arrow.addEventListener('click', (e) => {
 					e.preventDefault();
@@ -77,9 +96,11 @@ const initMenu = (container) => {
 					const isOpen = item.classList.contains('aae-a-menu-item--open');
 
 					if (isOpen) {
+						// Collapse this item
 						item.classList.remove('aae-a-menu-item--open');
 						arrow.setAttribute('aria-expanded', 'false');
 					} else {
+						// Collapse sibling items at the same level (single-open per level)
 						const siblings = item.parentElement.children;
 						Array.from(siblings).forEach((sibling) => {
 							if (sibling !== item && sibling.classList.contains('aae-a-menu-item--open')) {
@@ -88,6 +109,7 @@ const initMenu = (container) => {
 								if (sibArrow) sibArrow.setAttribute('aria-expanded', 'false');
 							}
 						});
+						// Expand this item
 						item.classList.add('aae-a-menu-item--open');
 						arrow.setAttribute('aria-expanded', 'true');
 					}
@@ -100,6 +122,7 @@ const initMenu = (container) => {
 
 	let closeAllSubmenusFn = null;
 
+	// Editor mode: AJAX-load the menu HTML, then init dropdowns
 	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
 	if (placeholder && typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.isEditMode()) {
 		const slug = nav.getAttribute('data-menu-slug');
@@ -109,7 +132,7 @@ const initMenu = (container) => {
 				.then((res) => res.json())
 				.then((data) => {
 					if (data.success && data.data) {
-						nav.querySelector('.aae-a-menu-nav-body').innerHTML = data.data;
+						nav.innerHTML = data.data;
 						closeAllSubmenusFn = initDropdowns();
 					}
 				})
@@ -119,21 +142,16 @@ const initMenu = (container) => {
 		closeAllSubmenusFn = initDropdowns();
 	}
 
-	// Mobile Offcanvas drawer (Spark UI style)
+	// Mobile Hamburger → Off-canvas Drawer toggle
 	if (isHamburger && toggle && !container.dataset.drawerInit) {
 		container.dataset.drawerInit = 'true';
 		let isOpen = false;
-		let lastFocused = null;
-
-		const getFocusable = () => nav.querySelectorAll('a[href], button:not([disabled])');
 
 		const openDrawer = () => {
 			isOpen = true;
-			lastFocused = document.activeElement;
 			container.classList.add('aae-a-menu--open');
 			toggle.setAttribute('aria-expanded', 'true');
 			document.body.style.overflow = 'hidden';
-			if (closeBtn) closeBtn.focus();
 		};
 
 		const closeDrawer = () => {
@@ -142,9 +160,9 @@ const initMenu = (container) => {
 			toggle.setAttribute('aria-expanded', 'false');
 			document.body.style.overflow = '';
 			if (closeAllSubmenusFn) closeAllSubmenusFn();
-			if (lastFocused) lastFocused.focus();
 		};
 
+		// Hamburger click toggles drawer
 		toggle.addEventListener('click', (e) => {
 			e.preventDefault();
 			if (!isMobile()) return;
@@ -152,13 +170,7 @@ const initMenu = (container) => {
 			else openDrawer();
 		});
 
-		if (closeBtn) {
-			closeBtn.addEventListener('click', (e) => {
-				e.preventDefault();
-				closeDrawer();
-			});
-		}
-
+		// Overlay click closes drawer
 		if (overlay) {
 			overlay.addEventListener('click', (e) => {
 				e.preventDefault();
@@ -166,29 +178,12 @@ const initMenu = (container) => {
 			});
 		}
 
+		// Escape key closes drawer
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'Escape' && isOpen) closeDrawer();
 		});
 
-		nav.addEventListener('keydown', (e) => {
-			if (e.key !== 'Tab') return;
-			const focusable = getFocusable();
-			if (!focusable.length) return;
-			const first = focusable[0];
-			const last = focusable[focusable.length - 1];
-			if (e.shiftKey) {
-				if (document.activeElement === first) {
-					e.preventDefault();
-					last.focus();
-				}
-			} else {
-				if (document.activeElement === last) {
-					e.preventDefault();
-					first.focus();
-				}
-			}
-		});
-
+		// Close drawer when resizing to desktop
 		window.addEventListener('resize', () => {
 			if (!isMobile() && isOpen) closeDrawer();
 		});

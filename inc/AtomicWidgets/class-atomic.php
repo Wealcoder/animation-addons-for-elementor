@@ -1048,7 +1048,11 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
-				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (! file_exists($file_path)) {
+					continue; // Skip missing widget files gracefully.
+				}
+				require_once $file_path;
 				if (class_exists($widget_data['class']) && is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
 					$widgets_manager->register(new $widget_data['class']());
 				}
@@ -1065,7 +1069,11 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
-				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (! file_exists($file_path)) {
+					continue; // Skip missing widget files gracefully.
+				}
+				require_once $file_path;
 				if (class_exists($widget_data['class']) && !is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
 					$elements_manager->register_element_type(new $widget_data['class']());
 				}

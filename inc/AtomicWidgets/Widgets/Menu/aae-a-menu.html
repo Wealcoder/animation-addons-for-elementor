@@ -47,14 +47,6 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
-    {# Hamburger toggle button (mobile only) #}
-    <button class="aae-a-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-    </button>
-
-    {# Overlay (mobile drawer) #}
-    <div class="aae-a-menu-overlay"></div>
-
     <nav class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu | default('') }}">
         <div class="aae-a-menu-nav-body">
             {% if settings.rendered_menu is defined and settings.rendered_menu is not empty %}

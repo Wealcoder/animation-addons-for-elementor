@@ -55,6 +55,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'align'     => String_Prop_Type::make()->default( 'center' ),
 			'hamburger' => Boolean_Prop_Type::make()->default( true ),
 			'breakpoint' => Number_Prop_Type::make()->default( 768 ),
+			'mobile_label' => String_Prop_Type::make()->default( 'Menu' ),
 
 			// Items
 			'text_color'   => String_Prop_Type::make()->default( '' ),
@@ -121,10 +122,13 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 							[ 'value' => 'flex-end',      'label' => __( 'Right',   self::TD ) ],
 							[ 'value' => 'space-between', 'label' => __( 'Justify', self::TD ) ],
 						] ),
-					Switch_Control::bind_to( 'hamburger' )
+				Switch_Control::bind_to( 'hamburger' )
 						->set_label( __( 'Mobile Hamburger', self::TD ) ),
 					Number_Control::bind_to( 'breakpoint' )
 						->set_label( __( 'Mobile Breakpoint (px)', self::TD ) ),
+					Text_Control::bind_to( 'mobile_label' )
+						->set_label( __( 'Mobile Header Label', self::TD ) )
+						->set_placeholder( __( 'Menu', self::TD ) ),
 				] ),
 
 			Section::make()
