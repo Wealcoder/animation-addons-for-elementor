@@ -1,5 +1,4 @@
 {% set classes = ['aae-a-icon-list', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
-{% set gap = settings.gap_spacing | default(10) %}
 {% set list_tag = settings.list_tag | default('ul') %}
 
 <{{ list_tag }} class="{{ classes }} {{ editor_classes | default('') }}"
