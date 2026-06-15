@@ -1,11 +1,45 @@
 {% set classes = ['aae-a-menu', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+
+{% set text_color    = settings.text_color   | default('') %}
+{% set hover_color   = settings.hover_color  | default('') %}
+{% set active_color  = settings.active_color | default('') %}
+{% set dd_bg         = settings.dropdown_bg        | default('') %}
+{% set dd_hover_bg   = settings.dropdown_hover_bg  | default('') %}
+{% set ham_color     = settings.hamburger_color    | default('') %}
+{% set drawer_bg     = settings.drawer_bg          | default('') %}
+{% set overlay_color = settings.overlay_color      | default('') %}
+
+{% set style_vars %}
+--aae-menu-align: {{ settings.align | default('center') }};
+{% if text_color    %}--c: {{ text_color }};{% endif %}
+{% if hover_color   %}--accent: {{ hover_color }};{% endif %}
+{% if active_color  %}--active: {{ active_color }};{% endif %}
+{% if dd_bg         %}--bg: {{ dd_bg }};{% endif %}
+{% if dd_hover_bg   %}--hover-bg: {{ dd_hover_bg }};{% endif %}
+{% if ham_color     %}--ham-color: {{ ham_color }};{% endif %}
+{% if drawer_bg     %}--drawer-bg: {{ drawer_bg }};{% endif %}
+{% if overlay_color %}--overlay: {{ overlay_color }};{% endif %}
+--aae-fs: {{ settings.font_size          | default(15) }}px;
+--aae-fw: {{ settings.font_weight        | default('500') }};
+--aae-px: {{ settings.padding_x          | default(14) }}px;
+--aae-py: {{ settings.padding_y          | default(10) }}px;
+--aae-gap: {{ settings.item_gap          | default(4) }}px;
+--aae-r: {{ settings.link_radius         | default(6) }}px;
+--aae-dd-min: {{ settings.dropdown_min_width | default(220) }}px;
+--aae-dd-r: {{ settings.dropdown_radius      | default(8) }}px;
+--aae-drawer-w: {{ settings.drawer_width     | default(320) }}px;
+--t: {{ settings.transition_ms | default(200) }}ms ease;
+--bp: {{ settings.breakpoint | default(768) }}px;
+{% endset %}
+
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id }}"
-    data-layout="{{ settings.layout }}"
+    data-layout="{{ settings.layout | default('horizontal') }}"
     data-hamburger="{{ settings.hamburger ? 'true' : 'false' }}"
-    style="--aae-menu-align: {{ settings.align }};"
+    data-breakpoint="{{ settings.breakpoint | default(768) }}"
+    style="{{ style_vars | replace({'\n':' '}) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -13,7 +47,7 @@
         {{ settings.attributes | default('') | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-    
+
     {% if settings.hamburger %}
         <button class="aae-a-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
             <span class="aae-a-menu-hamburger-line"></span>
@@ -22,13 +56,26 @@
         </button>
     {% endif %}
 
-    <nav class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu }}">
-        {% if settings.rendered_menu is defined and settings.rendered_menu is not empty %}
-            {{ settings.rendered_menu | raw }}
-        {% else %}
-            <div class="aae-a-menu-placeholder" style="padding: 10px; border: 1px dashed #ccc; text-align: center; color: #777;">
-                Menu rendered on frontend / preview.
-            </div>
-        {% endif %}
+    <div class="aae-a-menu-overlay" aria-hidden="true"></div>
+
+    <nav class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu | default('') }}">
+        <div class="aae-a-menu-nav-header">
+            <span class="aae-a-menu-nav-title">Menu</span>
+            <button class="aae-a-menu-close" aria-label="Close Menu">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="4" x2="16" y2="16"></line>
+                    <line x1="16" y1="4" x2="4" y2="16"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="aae-a-menu-nav-body">
+            {% if settings.rendered_menu is defined and settings.rendered_menu is not empty %}
+                {{ settings.rendered_menu | raw }}
+            {% else %}
+                <div class="aae-a-menu-placeholder">
+                    Menu rendered on frontend / preview.
+                </div>
+            {% endif %}
+        </div>
     </nav>
 </div>
