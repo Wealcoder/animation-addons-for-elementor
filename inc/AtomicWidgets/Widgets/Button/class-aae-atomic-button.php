@@ -27,6 +27,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 
 class AAE_Atomic_Button extends Atomic_Widget_Base
 {
@@ -55,6 +56,15 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 
 	protected static function define_props_schema(): array
 	{
+		$icon_hidden = Dependency_Manager::make()
+			->where([
+				'operator' => 'eq',
+				'path'     => ['btn_show_icon'],
+				'value'    => true,
+				'effect'   => 'hide',
+			])
+			->get();
+
 		return [
 			'classes'           => Classes_Prop_Type::make()->default([]),
 			'attributes'        => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
@@ -67,15 +77,24 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			'btn_style'         => String_Prop_Type::make()->default('default'),
 			'btn_hover_style'   => String_Prop_Type::make()->default('hover-none'),
 
-			// SVG icon: user picks an SVG file from the media library
-			'btn_icon_svg'      => Svg_Src_Prop_Type::make(),
+			'btn_show_icon'     => Boolean_Prop_Type::make()->default(false),
 
-			// CSS class icon: user types e.g. "eicon-arrow-right" or "fas fa-arrow"
-			'btn_icon_css'      => String_Prop_Type::make()->default(''),
+			'btn_icon_svg'      => Svg_Src_Prop_Type::make()
+									->set_dependencies($icon_hidden),
 
-			'btn_icon_position' => String_Prop_Type::make()->default('left'),
-			'btn_icon_size'     => Number_Prop_Type::make()->default(20),
-			'btn_icon_color'    => String_Prop_Type::make()->default(''),
+			'btn_icon_css'      => String_Prop_Type::make()->default('')
+									->set_dependencies($icon_hidden),
+
+			'btn_icon_position' => String_Prop_Type::make()->default('left')
+									->set_dependencies($icon_hidden),
+
+			'btn_icon_size'     => Number_Prop_Type::make()->default(20)
+									->set_dependencies($icon_hidden),
+
+			'btn_icon_color'    => String_Prop_Type::make()->default('')
+									->set_dependencies($icon_hidden),
+
+			'btn_outline_gap'   => Number_Prop_Type::make()->default(10),
 
 			'btn_alignment'     => String_Prop_Type::make()->default('center'),
 		];
@@ -92,6 +111,7 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 					Select_Control::bind_to('btn_style')
 						->set_label(__('Style', 'animation-addons-for-elementor'))
 						->set_options([
+							// Classic styles
 							['value' => 'default',   'label' => __('Default',         'animation-addons-for-elementor')],
 							['value' => 'square',    'label' => __('Square',           'animation-addons-for-elementor')],
 							['value' => 'underline', 'label' => __('Underline',        'animation-addons-for-elementor')],
@@ -99,6 +119,15 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 							['value' => 'oval',      'label' => __('Oval',             'animation-addons-for-elementor')],
 							['value' => 'circle',    'label' => __('Circle',           'animation-addons-for-elementor')],
 							['value' => 'ellipse',   'label' => __('Ellipse',          'animation-addons-for-elementor')],
+							// Pro styles (from Advanced Button)
+							['value' => 'pro-1',     'label' => __('Pro 1 – Border Divide', 'animation-addons-for-elementor')],
+							['value' => 'pro-2',     'label' => __('Pro 2 – Shadow',        'animation-addons-for-elementor')],
+							['value' => 'pro-3',     'label' => __('Pro 3 – Text Flip',     'animation-addons-for-elementor')],
+							['value' => 'pro-4',     'label' => __('Pro 4 – Ripple',        'animation-addons-for-elementor')],
+							['value' => 'pro-5',     'label' => __('Pro 5 – Group Swap L',  'animation-addons-for-elementor')],
+							['value' => 'pro-6',     'label' => __('Pro 6 – Group Swap R',  'animation-addons-for-elementor')],
+							['value' => 'pro-7',     'label' => __('Pro 7 – Outline Pill',  'animation-addons-for-elementor')],
+							['value' => 'pro-8',     'label' => __('Pro 8 – Slide Fill',    'animation-addons-for-elementor')],
 						]),
 
 					Select_Control::bind_to('btn_hover_style')
@@ -130,6 +159,9 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 					Switch_Control::bind_to('btn_nofollow')
 						->set_label(__('Add Nofollow', 'animation-addons-for-elementor')),
 
+					Switch_Control::bind_to('btn_show_icon')
+						->set_label(__('Show Icon', 'animation-addons-for-elementor')),
+
 					// SVG picker — opens the WP media library filtered to SVGs
 					Svg_Control::bind_to('btn_icon_svg')
 						->set_label(__('Icon (SVG)', 'animation-addons-for-elementor')),
@@ -151,6 +183,10 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 
 					Text_Control::bind_to('btn_icon_color')
 						->set_label(__('Icon Color', 'animation-addons-for-elementor')),
+
+					Number_Control::bind_to('btn_outline_gap')
+						->set_label(__('Outline Gap (px)', 'animation-addons-for-elementor'))
+						->set_meta(['min' => 0, 'max' => 20, 'step' => 1]),
 
 					Select_Control::bind_to('btn_alignment')
 						->set_label(__('Alignment', 'animation-addons-for-elementor'))
@@ -191,6 +227,11 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 		return [
 			'elementor/elements/aae-atomic-button' => __DIR__ . '/aae-atomic-button.html.twig',
 		];
+	}
+
+	public function get_script_depends(): array
+	{
+		return ['aae-a-button-js'];
 	}
 
 	public function get_style_depends(): array

@@ -822,7 +822,9 @@ final class Atomic
 			'aae-atomic-button' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
 				'file'  => 'Widgets/Button/class-aae-atomic-button.php',
-				'has_script' => false,
+				'has_script' => true,
+				'script_handle' => 'aae-a-button-js',
+				'script_path' => '/assets/atomic/js/button.js',
 				'style_handle' => 'aae-a-button-css',
 				'style_path' => '/assets/atomic/js/button.css',
 			],
