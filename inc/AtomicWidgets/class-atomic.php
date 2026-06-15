@@ -154,6 +154,12 @@ final class Atomic
 	 */
 	public function is_widget_active(string $slug): bool
 	{
+		// Force internal child widgets to be active always
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item'];
+		if (in_array($slug, $internal_widgets)) {
+			return true;
+		}
+
 		$saved = $this->get_saved_options();
 
 		return isset($saved[$slug]);
@@ -517,6 +523,45 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-accordion' => [
+				'label'        => 'Accordion',
+				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
+				'icon'         => 'eicon-accordion',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'accordion',
+					'tabs',
+					'toggle',
+					'atomic',
+					'gsap',
+				],
+				'category'     => 'general',
+				'order'        => 6,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-accordion-item' => [
+				'label'        => 'Accordion Item',
+				'description'  => 'Internal child container for Accordion.',
+				'icon'         => 'eicon-accordion',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'accordion item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 7,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -812,6 +857,22 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
 			
+			'aae-a-accordion' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
+				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
+				'script_handle' => 'aae-a-accordion-js',
+				'script_path' => '/assets/atomic/js/accordion.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-accordion-css',
+				'style_path' => '/assets/atomic/css/accordion.css',
+			],
+			
+			'aae-a-accordion-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
+				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
+				'has_script' => false,
+			],
+			
 			// Add new atomic widgets below...
 		];
 	}
@@ -858,11 +919,13 @@ final class Atomic
 
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
+				$file_path = WCF_ADDONS_PATH . $widget_data['script_path'];
+				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_script(
 					$widget_data['script_handle'],
 					WCF_ADDONS_URL . $widget_data['script_path'],
 					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
-					'1.0.0',
+					$version,
 					true
 				);
 			}
@@ -876,11 +939,13 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
+				$file_path = WCF_ADDONS_PATH . $widget_data['style_path'];
+				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_style(
 					$widget_data['style_handle'],
 					WCF_ADDONS_URL . $widget_data['style_path'],
 					[],
-					'1.0.0'
+					$version
 				);
 			}
 		}

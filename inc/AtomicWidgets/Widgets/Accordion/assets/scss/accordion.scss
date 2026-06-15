@@ -1,0 +1,153 @@
+.aae-a-accordion {
+    .aae-a-accordion-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background: #fff;
+        overflow: hidden;
+        margin-bottom: var(--aae-accordion-gap, 0);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    /* Item alignment (Desktop) */
+    &[data-item-pos="flex-start"] { align-items: flex-start; }
+    &[data-item-pos="center"] { align-items: center; }
+    &[data-item-pos="flex-end"] { align-items: flex-end; }
+    &[data-item-pos="stretch"] { align-items: stretch; }
+
+    /* Item alignment (Tablet) */
+    @media (max-width: 1024px) {
+        &[data-item-pos-tablet="flex-start"] { align-items: flex-start; }
+        &[data-item-pos-tablet="center"] { align-items: center; }
+        &[data-item-pos-tablet="flex-end"] { align-items: flex-end; }
+        &[data-item-pos-tablet="stretch"] { align-items: stretch; }
+    }
+
+    /* Item alignment (Mobile) */
+    @media (max-width: 767px) {
+        &[data-item-pos-mobile="flex-start"] { align-items: flex-start; }
+        &[data-item-pos-mobile="center"] { align-items: center; }
+        &[data-item-pos-mobile="flex-end"] { align-items: flex-end; }
+        &[data-item-pos-mobile="stretch"] { align-items: stretch; }
+    }
+
+    /* Icon position */
+    .aae-a-accordion-item[data-icon-pos="left"] .aae-accordion-header {
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .aae-accordion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 15px 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        text-align: left;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background: #f9f9f9;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .aae-accordion-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+
+            &.aae-icon-minus {
+                display: none;
+            }
+        }
+    }
+
+    /* Custom Icons via CSS Mask */
+    .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus {
+        background-color: currentColor;
+        mask-image: var(--aae-custom-expand);
+        mask-size: contain;
+        mask-position: center;
+        mask-repeat: no-repeat;
+        line, path, polygon, polyline, circle, rect { display: none; }
+    }
+
+    .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus {
+        background-color: currentColor;
+        mask-image: var(--aae-custom-collapse);
+        mask-size: contain;
+        mask-position: center;
+        mask-repeat: no-repeat;
+        line, path, polygon, polyline, circle, rect { display: none; }
+    }
+
+    .aae-accordion-content-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        overflow: hidden;
+        transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;
+    }
+
+    .aae-a-accordion-item.active {
+        .aae-accordion-content-wrapper {
+            grid-template-rows: 1fr !important;
+        }
+        
+        .aae-accordion-icon {
+            .aae-icon-plus {
+                display: none;
+            }
+            .aae-icon-minus {
+                display: block;
+            }
+        }
+        
+        .aae-accordion-header {
+            background: #f1f1f1;
+        }
+
+        .aae-accordion-content {
+            padding: 20px;
+
+            &.e-con {
+                --padding-top: 20px;
+                --padding-bottom: 20px;
+            }
+        }
+    }
+
+    .aae-accordion-content {
+        padding: 0 20px;
+        transition: padding var(--aae-accordion-speed, 400ms) ease;
+        
+        /* Inner container padding can be overridden by Elementor, but we give a default */
+        &.e-con {
+            --padding-top: 0px;
+            --padding-bottom: 0px;
+            --padding-left: 20px;
+            --padding-right: 20px;
+            padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+            transition: padding var(--aae-accordion-speed, 400ms) ease;
+        }
+    }
+}

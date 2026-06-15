@@ -31,6 +31,7 @@ const initPosts = (grid) => {
 			}
 		}
 	);
+	
 };
 
 register({

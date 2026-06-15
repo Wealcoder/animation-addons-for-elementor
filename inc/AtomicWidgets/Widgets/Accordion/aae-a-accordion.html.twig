@@ -1,0 +1,35 @@
+{% set classes = ['aae-a-accordion', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set multiple_open = settings.multiple_open | default(false) %}
+{% set animation_speed = settings.animation_speed | default(400) %}
+{% set gap = settings.gap | default(10) %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    {% set custom_expand = '' %}
+    {% set custom_collapse = '' %}
+    style="display: flex; flex-direction: column; width: 100%; gap: {{ gap }}px; --aae-accordion-speed: {{ settings.animation_duration.size | default(400) }}{{ settings.animation_duration.unit | default('ms') }};"
+    data-item-pos="{{ settings.item_position_desktop | default('flex-start') }}"
+    data-item-pos-tablet="{{ settings.item_position_tablet | default('flex-start') }}"
+    data-item-pos-mobile="{{ settings.item_position_mobile | default('flex-start') }}"
+    data-max-items-expanded="{{ settings.max_items_expanded | default('one') }}"
+    data-default-state="{{ settings.default_state | default('first') }}"
+    data-animation-speed="{{ settings.animation_duration.size | default(400) }}"
+    data-faq-schema="{{ settings.faq_schema ? 'true' : 'false' }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    
+    {{ children_placeholder | raw }}
+    
+    {% if faq_schema_json is defined and faq_schema_json is not empty %}
+        <script type="application/ld+json">
+            {{ faq_schema_json | raw }}
+        </script>
+    {% endif %}
+</div>

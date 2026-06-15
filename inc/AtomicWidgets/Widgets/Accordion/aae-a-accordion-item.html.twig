@@ -1,0 +1,41 @@
+{% set is_active_class = settings.is_active ? 'active' : '' %}
+{% set classes = ['aae-a-accordion-item', 'e-con', 'e-atomic-element', base_styles.base, is_active_class] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    {% set custom_expand = settings.expand_icon.url | default('') %}
+    {% set custom_collapse = settings.collapse_icon.url | default('') %}
+    style="{% if custom_expand %}--aae-custom-expand: url('{{ custom_expand }}');{% endif %} {% if custom_collapse %}--aae-custom-collapse: url('{{ custom_collapse }}');{% endif %}"
+    data-icon-pos="{{ settings.icon_position | default('right') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    {% set heading_tag = settings.title_html_tag | default('div') %}
+    <{{ heading_tag }} class="aae-accordion-title-wrapper" style="margin: 0; padding: 0;">
+        <button class="aae-accordion-header {{ base_styles.header | default('') }}" 
+            aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
+            aria-controls="aae-accordion-content-{{ id }}"
+            id="aae-accordion-header-{{ id }}">
+            <span class="aae-accordion-title">{{ settings.item_title | default('') }}</span>
+            <span class="aae-accordion-icon {{ base_styles.icon | default('') }}" style="display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </span>
+        </button>
+    </{{ heading_tag }}>
+    
+    <div id="aae-accordion-content-{{ id }}"
+         class="aae-accordion-content-wrapper" 
+         role="region" 
+         aria-labelledby="aae-accordion-header-{{ id }}">
+        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="min-height: 0; overflow: hidden;">
+            {{ children_placeholder | raw }}
+        </div>
+    </div>
+</div>
