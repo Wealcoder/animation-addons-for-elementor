@@ -110,6 +110,8 @@ final class Bootstrap {
 			'e-grid',
 			'e-aae-a-post-title',
 			'e-aae-a-post-image',
+			'e-aae-a-icon-list',
+			'e-aae-a-icon-list-item',
 		];
 	}
 }

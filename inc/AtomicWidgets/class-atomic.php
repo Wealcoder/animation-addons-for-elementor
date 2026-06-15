@@ -155,7 +155,7 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item'];
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -562,6 +562,45 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-icon-list' => [
+				'label'        => 'Icon List',
+				'description'  => 'An atomic icon list widget with custom icons, text, and link support.',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'list',
+					'icon',
+					'bullet',
+					'atomic',
+					'item',
+				],
+				'category'     => 'general',
+				'order'        => 8,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-icon-list-item' => [
+				'label'        => 'Icon List Item',
+				'description'  => 'Internal child item for Icon List.',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'list item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 9,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -872,6 +911,17 @@ final class Atomic
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
 				'has_script' => false,
 			],
+
+			'aae-a-icon-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
+				'has_script' => false,				
+			],
+			'aae-a-icon-list-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+				'has_script' => false,
+			],
 			
 			// Add new atomic widgets below...
 		];
@@ -911,19 +961,23 @@ final class Atomic
 		}
 	}
 
-	/**
-	 * Register frontend scripts for active atomic widgets.
-	 */
 	public function register_atomic_scripts($loader)
 	{
 
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
-				$file_path = WCF_ADDONS_PATH . $widget_data['script_path'];
+				$path = $widget_data['script_path'];
+				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+					$min_path = str_replace( '.js', '.min.js', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						$path = $min_path;
+					}
+				}
+				$file_path = WCF_ADDONS_PATH . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_script(
 					$widget_data['script_handle'],
-					WCF_ADDONS_URL . $widget_data['script_path'],
+					WCF_ADDONS_URL . $path,
 					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
 					$version,
 					true
@@ -939,11 +993,18 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
-				$file_path = WCF_ADDONS_PATH . $widget_data['style_path'];
+				$path = $widget_data['style_path'];
+				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+					$min_path = str_replace( '.css', '.min.css', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						$path = $min_path;
+					}
+				}
+				$file_path = WCF_ADDONS_PATH . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_style(
 					$widget_data['style_handle'],
-					WCF_ADDONS_URL . $widget_data['style_path'],
+					WCF_ADDONS_URL . $path,
 					[],
 					$version
 				);
