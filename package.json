@@ -104,6 +104,7 @@
     "build-win": "gulp build --production",
     "watch-win": "gulp watch --development",
     "build": "wp-scripts build",
+    "production": "gulp zip",
     "release": "npm run build-win && npm run production",
     "start": "wp-scripts start",
     "i18n": "wp i18n make-pot ."
