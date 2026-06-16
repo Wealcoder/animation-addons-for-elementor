@@ -28,7 +28,7 @@
 --aae-menu-dropdown-min-width: {{ settings.dropdown_min_width | default(220) }}px;
 --aae-menu-dropdown-radius: {{ settings.dropdown_radius      | default(8) }}px;
 --aae-menu-drawer-width: {{ settings.drawer_width     | default(320) }}px;
---aae-menu-transition: {{ settings.transition_ms | default(200) }}ms ease;
+--aae-menu-transition: {{ settings.transition_ms | default(250) }}ms cubic-bezier(.4,0,.2,1);
 {% endset %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
@@ -38,6 +38,8 @@
     data-layout="{{ settings.layout | default('horizontal') }}"
     data-hamburger="{{ settings.hamburger ? 'true' : 'false' }}"
     data-breakpoint="{{ settings.breakpoint | default(768) }}"
+    data-drawer-effect="{{ settings.drawer_animation | default('slide-left') }}"
+    data-dropdown-effect="{{ settings.dropdown_animation | default('slide') }}"
     style="{{ style_vars | replace({'\n':' '}) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
@@ -47,7 +49,21 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
-    <nav class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu | default('') }}">
+    <button class="aae-a-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="aae-a-menu-nav-{{ id }}">
+        <span class="aae-a-menu-toggle-bars" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </span>
+    </button>
+
+    <div class="aae-a-menu-overlay" aria-hidden="true"></div>
+
+    <nav id="aae-a-menu-nav-{{ id }}" class="aae-a-menu-nav" role="navigation" data-menu-slug="{{ settings.menu | default('') }}">
+        <div class="aae-a-menu-nav-header">
+            <span class="aae-a-menu-nav-title">{{ settings.mobile_label | default('Menu') }}</span>
+            <button class="aae-a-menu-close" type="button" aria-label="Close menu">
+                <span class="aae-a-menu-close-icon" aria-hidden="true"></span>
+            </button>
+        </div>
         <div class="aae-a-menu-nav-body">
             {% if settings.rendered_menu is defined and settings.rendered_menu is not empty %}
                 {{ settings.rendered_menu | raw }}

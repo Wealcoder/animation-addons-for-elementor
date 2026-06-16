@@ -1,35 +1,44 @@
 @charset "UTF-8";
-/* AAE Atomic Menu — desktop hover + mobile offcanvas (Spark UI style) */
+/* AAE Atomic Menu — pure CSS dropdown (desktop hover) + mobile offcanvas drawer */
 .aae-a-menu {
   --c: var(--aae-menu-color, var(--e-global-color-text, #1a1a18));
   --accent: var(--aae-menu-hover-color, var(--e-global-color-accent, #534ab7));
   --active: var(--aae-menu-active-color, var(--accent));
-  --bg: var(--aae-menu-dropdown-bg, #fff);
-  --bg-2: var(--aae-menu-dropdown-hover-bg, rgba(0,0,0,0.05));
-  --border: 0.5px solid rgba(0,0,0,0.12);
-  --shadow: 0 8px 24px rgba(0,0,0,0.12);
+  --bg: var(--aae-menu-dropdown-bg, #ffffff);
+  --bg-2: var(--aae-menu-dropdown-hover-bg, rgba(0, 0, 0, 0.05));
+  --border: 1px solid rgba(0, 0, 0, 0.08);
+  --shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
   --ham-color: var(--aae-menu-hamburger-color, var(--c));
   --drawer-bg: var(--aae-menu-drawer-bg, var(--bg));
-  --overlay-c: var(--aae-menu-drawer-overlay, rgba(0,0,0,0.4));
+  --overlay-c: var(--aae-menu-drawer-overlay, rgba(0, 0, 0, 0.5));
   --aae-fs: var(--aae-menu-font-size, 15px);
   --aae-fw: var(--aae-menu-font-weight, 500);
   --aae-px: var(--aae-menu-item-padding-x, 14px);
   --aae-py: var(--aae-menu-item-padding-y, 10px);
-  --aae-gap: var(--aae-menu-item-gap, 2px);
+  --aae-gap: var(--aae-menu-item-gap, 4px);
   --aae-r: var(--aae-menu-link-radius, 8px);
   --aae-dd-min: var(--aae-menu-dropdown-min-width, 220px);
   --aae-dd-r: var(--aae-menu-dropdown-radius, 12px);
   --aae-drawer-w: var(--aae-menu-drawer-width, 320px);
-  --t: var(--aae-menu-transition, 0.28s cubic-bezier(.4,0,.2,1));
+  --t: var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
   position: relative;
   width: 100%;
   color: var(--c);
   font: var(--aae-fw) var(--aae-fs)/1.4 inherit;
+  box-sizing: border-box;
 }
 
+.aae-a-menu *,
+.aae-a-menu *::before,
+.aae-a-menu *::after {
+  box-sizing: border-box;
+}
+
+/* ============== NAV (desktop default) ============== */
 .aae-a-menu-nav {
   display: flex;
   width: 100%;
+  min-width: 0;
 }
 
 .aae-a-menu[data-layout=horizontal] .aae-a-menu-nav {
@@ -46,6 +55,7 @@
   align-items: var(--aae-menu-align, flex-start);
 }
 
+/* ============== LIST ============== */
 .aae-a-menu-list {
   display: flex;
   gap: var(--aae-gap);
@@ -71,6 +81,7 @@
   padding: var(--aae-py) var(--aae-px);
   color: inherit;
   text-decoration: none;
+  line-height: 1.4;
   border-radius: var(--aae-r);
   transition: background var(--t), color var(--t);
 }
@@ -85,9 +96,10 @@
 .aae-a-menu-list .current-menu-parent > a,
 .aae-a-menu-list .current-menu-ancestor > a {
   color: var(--active);
-  font-weight: 500;
+  font-weight: 600;
 }
 
+/* ============== CHEVRON ARROW (toggle) ============== */
 .aae-a-menu-arrow {
   all: unset;
   display: inline-flex;
@@ -95,36 +107,39 @@
   flex-shrink: 0;
   width: 28px;
   height: 28px;
+  margin-left: -4px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: inherit;
-  background: none;
-  border-radius: var(--aae-r);
-  transition: background var(--t);
+  background: transparent;
+  border-radius: 50%;
+  transition: background var(--t), color var(--t);
 }
 
 .aae-a-menu-arrow:hover,
 .aae-a-menu-arrow:focus-visible {
   background: var(--bg-2);
+  color: var(--accent);
   outline: none;
 }
 
 .aae-a-menu-arrow::after {
   content: "";
   display: block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: rotate(45deg) translateY(-2px);
+  transform: rotate(45deg) translate(-1px, -1px);
   transition: transform var(--t);
 }
 
 .aae-a-menu-item--open > .aae-a-menu-arrow::after {
-  transform: rotate(225deg) translateY(-2px);
+  transform: rotate(-135deg) translate(-1px, -1px);
 }
 
+/* ============== DESKTOP SUB-MENU (dropdown) ============== */
 .aae-a-menu-list .sub-menu {
   position: absolute;
   top: calc(100% + 8px);
@@ -142,28 +157,26 @@
   box-shadow: var(--shadow);
   z-index: 1000;
   opacity: 0;
+  visibility: hidden;
   transform: translateY(-6px) scale(0.97);
   pointer-events: none;
-  transition: opacity var(--t), transform var(--t);
+  transition: opacity var(--t), transform var(--t), visibility var(--t);
 }
 
 .aae-a-menu-list .sub-menu a {
   padding: 9px 14px;
   font-size: 0.92em;
-}
-
-.aae-a-menu-list .sub-menu a:hover,
-.aae-a-menu-list .sub-menu a:focus-visible {
-  background: var(--bg-2);
+  border-radius: calc(var(--aae-r) - 2px);
 }
 
 .aae-a-menu-list .sub-menu .sub-menu {
-  top: 0;
+  top: -6px;
   left: 100%;
+  margin-left: 6px;
   transform: translateX(-6px) scale(0.97);
 }
 
-/* Invisible bridge to prevent mouseleave when moving item → submenu */
+/* Invisible hover bridge */
 .aae-a-menu-list > li > .sub-menu::before {
   content: "";
   position: absolute;
@@ -180,39 +193,75 @@
   height: 100%;
 }
 
+/* Desktop: hover, focus-within, click-open all reveal dropdown */
 @media (min-width: 769px) {
-  .aae-a-menu:not(.aae-a-menu--gsap) .menu-item-has-children:hover > .sub-menu,
-  .aae-a-menu:not(.aae-a-menu--gsap) .menu-item-has-children:focus-within > .sub-menu,
-  .aae-a-menu:not(.aae-a-menu--gsap) .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+  .aae-a-menu .menu-item-has-children:hover > .sub-menu,
+  .aae-a-menu .menu-item-has-children:focus-within > .sub-menu,
+  .aae-a-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
     opacity: 1;
+    visibility: visible;
     transform: translateY(0) scale(1);
     pointer-events: auto;
   }
-  .aae-a-menu:not(.aae-a-menu--gsap) .sub-menu .menu-item-has-children:hover > .sub-menu,
-  .aae-a-menu:not(.aae-a-menu--gsap) .sub-menu .menu-item-has-children:focus-within > .sub-menu,
-  .aae-a-menu:not(.aae-a-menu--gsap) .sub-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+  .aae-a-menu .sub-menu .menu-item-has-children:hover > .sub-menu,
+  .aae-a-menu .sub-menu .menu-item-has-children:focus-within > .sub-menu,
+  .aae-a-menu .sub-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
     transform: translateX(0) scale(1);
   }
 }
+/* ============== HAMBURGER TOGGLE (mobile only) ============== */
 .aae-a-menu-toggle {
   all: unset;
   display: none;
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--aae-r);
   border: var(--border);
+  background: transparent;
   color: var(--ham-color);
   cursor: pointer;
-  transition: background var(--t);
+  transition: background var(--t), border-color var(--t);
 }
 
 .aae-a-menu-toggle:hover {
   background: var(--bg-2);
 }
 
+.aae-a-menu-toggle-bars {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 18px;
+}
+
+.aae-a-menu-toggle-bars span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform var(--t), opacity var(--t);
+  transform-origin: center;
+}
+
+.aae-a-menu--open .aae-a-menu-toggle-bars span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.aae-a-menu--open .aae-a-menu-toggle-bars span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.aae-a-menu--open .aae-a-menu-toggle-bars span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ============== DRAWER HEADER + OVERLAY (default hidden on desktop) ============== */
 .aae-a-menu-overlay {
   display: none;
 }
@@ -223,6 +272,8 @@
 
 .aae-a-menu-nav-body {
   display: block;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .aae-a-menu :is(a, button):focus-visible {
@@ -239,71 +290,124 @@
   text-align: center;
 }
 
+/* ============== MOBILE / OFFCANVAS DRAWER ============== */
 @media (max-width: 768px) {
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-toggle {
+  .aae-a-menu[data-hamburger=true] {
     display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 40px;
   }
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-toggle {
+    display: inline-flex;
+    position: relative;
+    z-index: 2;
+  }
+  /* Overlay — completely hidden until drawer opens (prevents off-screen artifacts) */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-overlay {
     display: block;
     position: fixed;
     inset: 0;
-    z-index: 90;
+    z-index: 9990;
     background: var(--overlay-c);
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity var(--t);
+    transition: opacity var(--t), visibility var(--t);
   }
   .aae-a-menu[data-hamburger=true].aae-a-menu--open .aae-a-menu-overlay {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
   }
+  /* Drawer — completely hidden + clipped from layout when closed */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-nav {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     width: min(var(--aae-drawer-w), 90vw);
+    max-width: 100vw;
     background: var(--drawer-bg);
-    z-index: 95;
+    color: var(--c);
+    z-index: 9995;
     flex-direction: column;
     overflow: hidden;
     transform: translateX(-100%);
-    transition: transform var(--t);
-    box-shadow: 2px 0 24px rgba(0, 0, 0, 0.15);
+    visibility: hidden;
+    transition: transform var(--t), visibility var(--t);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
+    will-change: transform;
   }
   .aae-a-menu[data-hamburger=true].aae-a-menu--open .aae-a-menu-nav {
     transform: translateX(0);
+    visibility: visible;
   }
+  /* Drawer header (title + close) */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-nav-header {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    height: 56px;
-    padding: 0 1rem;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 60px;
+    padding: 0 1.25rem;
     border-bottom: var(--border);
     flex-shrink: 0;
   }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-close {
+  .aae-a-menu-nav-title {
+    font-weight: 600;
+    font-size: 1.05em;
+    letter-spacing: 0.01em;
+  }
+  .aae-a-menu-close {
     all: unset;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--aae-r);
-    border: var(--border);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     cursor: pointer;
     color: var(--c);
-    transition: background var(--t);
+    transition: background var(--t), color var(--t);
   }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-close:hover {
+  .aae-a-menu-close:hover {
     background: var(--bg-2);
+    color: var(--accent);
   }
+  .aae-a-menu-close-icon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+  }
+  .aae-a-menu-close-icon::before,
+  .aae-a-menu-close-icon::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transform-origin: center;
+  }
+  .aae-a-menu-close-icon::before {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .aae-a-menu-close-icon::after {
+    transform: translateY(-50%) rotate(-45deg);
+  }
+  /* Drawer scrollable body */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-nav-body {
-    flex: 1;
+    flex: 1 1 auto;
     overflow-y: auto;
-    padding: 1rem;
+    overscroll-behavior: contain;
+    padding: 0.5rem 0.75rem 1.25rem;
+    -webkit-overflow-scrolling: touch;
   }
+  /* Mobile list — full-width stack */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list {
     flex-direction: column;
     width: 100%;
@@ -312,43 +416,78 @@
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list li {
     flex-direction: row;
     flex-wrap: wrap;
+    width: 100%;
     align-items: center;
   }
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list a {
-    padding: 10px 12px;
+    padding: 12px 14px;
     flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
     font-size: 15px;
+    border-radius: var(--aae-r);
   }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu a {
-    padding-left: 2.5rem;
-    font-size: 14px;
+  /* Bigger, right-aligned tap target for chevron on mobile */
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-arrow {
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    flex-shrink: 0;
   }
+  /* Mobile sub-menu — collapsible via .aae-a-menu-item--open class */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu {
     position: static;
     flex: 0 0 100%;
+    width: 100%;
     min-width: 0;
     padding: 0;
+    margin: 0;
     background: transparent;
     border: 0;
     box-shadow: none;
+    border-radius: 0;
     transform: none;
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     max-height: 0;
     overflow: hidden;
-    transition: max-height var(--t);
+    transition: max-height var(--t), opacity calc(var(--t) * 0.8), visibility var(--t);
   }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-item--open > .sub-menu {
-    max-height: 1500px;
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    max-height: 2000px;
   }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-arrow {
-    width: 36px;
-    height: 36px;
+  /* Indented nested levels */
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu a {
+    padding-left: 2rem;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu a {
+    padding-left: 3rem;
+  }
+  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu .sub-menu a {
+    padding-left: 4rem;
+  }
+  /* If hamburger explicitly disabled, hide drawer chrome */
+  .aae-a-menu[data-hamburger=false] .aae-a-menu-toggle,
+  .aae-a-menu[data-hamburger=false] .aae-a-menu-overlay,
+  .aae-a-menu[data-hamburger=false] .aae-a-menu-nav-header {
+    display: none;
   }
 }
+/* Prevent body scroll-shift when drawer is open */
+.aae-a-menu-body-lock {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .aae-a-menu * {
+  .aae-a-menu *,
+  .aae-a-menu *::before,
+  .aae-a-menu *::after {
     transition-duration: 0.01ms !important;
   }
 }
-/*# sourceMappingURL=menu.css.map */

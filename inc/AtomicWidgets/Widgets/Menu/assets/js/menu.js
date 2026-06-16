@@ -1,207 +1,155 @@
 import { register } from '@elementor/frontend-handlers';
 
-const initMenu = (container) => {
-	const nav = container.querySelector('.aae-a-menu-nav');
-	const toggle = container.querySelector('.aae-a-menu-toggle');
-	const overlay = container.querySelector('.aae-a-menu-overlay');
-	const closeBtn = container.querySelector('.aae-a-menu-close');
+/* AAE Atomic Menu — minimal vanilla JS. CSS does all transitions. */
+
+const initMenu = (root) => {
+	if (root.dataset.aaeMenuInit === '1') return;
+	root.dataset.aaeMenuInit = '1';
+
+	const nav      = root.querySelector('.aae-a-menu-nav');
+	const toggle   = root.querySelector('.aae-a-menu-toggle');
+	const overlay  = root.querySelector('.aae-a-menu-overlay');
+	const closeBtn = root.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
-	const isHamburger = container.getAttribute('data-hamburger') === 'true';
-	const hasGsap = typeof window.gsap !== 'undefined';
-	const isMobile = () => window.innerWidth <= 768;
+	const breakpoint  = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
+	const isHamburger = root.getAttribute('data-hamburger') === 'true';
+	const isMobile    = () => window.innerWidth <= breakpoint;
 
-	if (hasGsap) {
-		container.classList.add('aae-a-menu--gsap');
-	}
+	/* ---------- Dropdown arrows + click-to-toggle ---------- */
+	const buildDropdowns = () => {
+		const list = nav.querySelector('.aae-a-menu-list');
+		if (!list) return null;
 
-	const initDropdowns = () => {
-		const menuList = nav.querySelector('.aae-a-menu-list');
-		if (!menuList) return;
-
-		const parentItems = menuList.querySelectorAll('.menu-item-has-children');
-		parentItems.forEach((item) => {
+		list.querySelectorAll('.menu-item-has-children').forEach((item) => {
 			if (item.querySelector(':scope > .aae-a-menu-arrow')) return;
+			const subMenu = item.querySelector(':scope > .sub-menu');
+			if (!subMenu) return;
+
 			const arrow = document.createElement('button');
 			arrow.type = 'button';
 			arrow.className = 'aae-a-menu-arrow';
 			arrow.setAttribute('aria-label', 'Toggle submenu');
 			arrow.setAttribute('aria-expanded', 'false');
-			item.appendChild(arrow);
+			// Insert BEFORE the sub-menu so DOM order is: link → arrow → sub-menu.
+			// (Sub-menu is flex-basis:100% on mobile, so anything after it gets pushed
+			// to its own row, which is why arrows were appearing below.)
+			item.insertBefore(arrow, subMenu);
+
+			arrow.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				const open = item.classList.toggle('aae-a-menu-item--open');
+				arrow.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+				// Close siblings at the same level
+				if (open && item.parentElement) {
+					Array.from(item.parentElement.children).forEach((sib) => {
+						if (sib !== item && sib.classList && sib.classList.contains('aae-a-menu-item--open')) {
+							sib.classList.remove('aae-a-menu-item--open');
+							const sArrow = sib.querySelector(':scope > .aae-a-menu-arrow');
+							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
+						}
+					});
+				}
+			});
 		});
 
-		const closeAllSubmenus = () => {
-			menuList.querySelectorAll('.aae-a-menu-item--open').forEach((openItem) => {
-				openItem.classList.remove('aae-a-menu-item--open');
-				const arr = openItem.querySelector(':scope > .aae-a-menu-arrow');
-				if (arr) arr.setAttribute('aria-expanded', 'false');
+		return () => {
+			list.querySelectorAll('.aae-a-menu-item--open').forEach((el) => {
+				el.classList.remove('aae-a-menu-item--open');
+				const a = el.querySelector(':scope > .aae-a-menu-arrow');
+				if (a) a.setAttribute('aria-expanded', 'false');
 			});
 		};
-
-		parentItems.forEach((item) => {
-			const subMenu = item.querySelector(':scope > .sub-menu');
-			const link = item.querySelector(':scope > a');
-			const arrow = item.querySelector(':scope > .aae-a-menu-arrow');
-			if (!subMenu) return;
-
-			let hoverIntentTimeout;
-
-			const openMenu = () => {
-				clearTimeout(hoverIntentTimeout);
-				if (hasGsap) {
-					window.gsap.to(subMenu, { autoAlpha: 1, y: 0, display: 'block', duration: 0.3, ease: 'power2.out', overwrite: true });
-				}
-			};
-
-			const closeMenu = () => {
-				hoverIntentTimeout = setTimeout(() => {
-					if (hasGsap) {
-						window.gsap.to(subMenu, { autoAlpha: 0, y: 15, display: 'none', duration: 0.2, ease: 'power2.in', overwrite: true });
-					}
-				}, 100);
-			};
-
-			item.addEventListener('mouseenter', () => { if (!isMobile()) openMenu(); });
-			item.addEventListener('mouseleave', () => { if (!isMobile()) closeMenu(); });
-
-			if (link) {
-				link.addEventListener('focus', () => { if (!isMobile()) openMenu(); });
-				link.addEventListener('blur', () => { if (!isMobile()) closeMenu(); });
-			}
-
-			if (arrow) {
-				arrow.addEventListener('click', (e) => {
-					e.preventDefault();
-					e.stopPropagation();
-
-					const isOpen = item.classList.contains('aae-a-menu-item--open');
-
-					if (isOpen) {
-						item.classList.remove('aae-a-menu-item--open');
-						arrow.setAttribute('aria-expanded', 'false');
-					} else {
-						const siblings = item.parentElement.children;
-						Array.from(siblings).forEach((sibling) => {
-							if (sibling !== item && sibling.classList.contains('aae-a-menu-item--open')) {
-								sibling.classList.remove('aae-a-menu-item--open');
-								const sibArrow = sibling.querySelector(':scope > .aae-a-menu-arrow');
-								if (sibArrow) sibArrow.setAttribute('aria-expanded', 'false');
-							}
-						});
-						item.classList.add('aae-a-menu-item--open');
-						arrow.setAttribute('aria-expanded', 'true');
-					}
-				});
-			}
-		});
-
-		return closeAllSubmenus;
 	};
 
-	let closeAllSubmenusFn = null;
+	let closeAllSubmenus = null;
 
+	/* ---------- Editor preview AJAX fallback ---------- */
+	const inEditor = !!(window.elementorFrontend
+		&& typeof window.elementorFrontend.isEditMode === 'function'
+		&& window.elementorFrontend.isEditMode());
 	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
-	if (placeholder && typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.isEditMode()) {
+
+	if (inEditor && placeholder) {
 		const slug = nav.getAttribute('data-menu-slug');
 		if (slug) {
-			const ajaxUrl = elementorFrontend.config.ajaxurl || (window.ajaxurl ? window.ajaxurl : '/wp-admin/admin-ajax.php');
+			const ajaxUrl = (window.elementorFrontend
+				&& window.elementorFrontend.config
+				&& window.elementorFrontend.config.ajaxurl)
+				|| window.ajaxurl
+				|| '/wp-admin/admin-ajax.php';
 			fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`)
-				.then((res) => res.json())
+				.then((r) => r.json())
 				.then((data) => {
-					if (data.success && data.data) {
-						nav.querySelector('.aae-a-menu-nav-body').innerHTML = data.data;
-						closeAllSubmenusFn = initDropdowns();
+					if (data && data.success && data.data) {
+						const body = nav.querySelector('.aae-a-menu-nav-body');
+						if (body) body.innerHTML = data.data;
+						closeAllSubmenus = buildDropdowns();
 					}
 				})
-				.catch((err) => console.error(err));
+				.catch(() => {});
 		}
 	} else {
-		closeAllSubmenusFn = initDropdowns();
+		closeAllSubmenus = buildDropdowns();
 	}
 
-	// Mobile Offcanvas drawer (Spark UI style)
-	if (isHamburger && toggle && !container.dataset.drawerInit) {
-		container.dataset.drawerInit = 'true';
-		let isOpen = false;
-		let lastFocused = null;
-
-		const getFocusable = () => nav.querySelectorAll('a[href], button:not([disabled])');
-
-		const openDrawer = () => {
-			isOpen = true;
-			lastFocused = document.activeElement;
-			container.classList.add('aae-a-menu--open');
-			toggle.setAttribute('aria-expanded', 'true');
-			document.body.style.overflow = 'hidden';
-			if (closeBtn) closeBtn.focus();
-		};
-
-		const closeDrawer = () => {
-			isOpen = false;
-			container.classList.remove('aae-a-menu--open');
-			toggle.setAttribute('aria-expanded', 'false');
-			document.body.style.overflow = '';
-			if (closeAllSubmenusFn) closeAllSubmenusFn();
-			if (lastFocused) lastFocused.focus();
-		};
-
-		toggle.addEventListener('click', (e) => {
-			e.preventDefault();
-			if (!isMobile()) return;
-			if (isOpen) closeDrawer();
-			else openDrawer();
-		});
-
-		if (closeBtn) {
-			closeBtn.addEventListener('click', (e) => {
-				e.preventDefault();
-				closeDrawer();
-			});
+	/* ---------- Outside-click + Escape closes desktop dropdowns ---------- */
+	document.addEventListener('click', (e) => {
+		if (isMobile()) return;
+		if (!root.contains(e.target) && typeof closeAllSubmenus === 'function') {
+			closeAllSubmenus();
 		}
+	});
 
-		if (overlay) {
-			overlay.addEventListener('click', (e) => {
-				e.preventDefault();
-				closeDrawer();
-			});
-		}
+	/* ---------- Mobile drawer ---------- */
+	if (!isHamburger || !toggle) return;
 
-		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && isOpen) closeDrawer();
-		});
+	const openDrawer = () => {
+		root.classList.add('aae-a-menu--open');
+		toggle.setAttribute('aria-expanded', 'true');
+		document.body.classList.add('aae-a-menu-body-lock');
+	};
 
-		nav.addEventListener('keydown', (e) => {
-			if (e.key !== 'Tab') return;
-			const focusable = getFocusable();
-			if (!focusable.length) return;
-			const first = focusable[0];
-			const last = focusable[focusable.length - 1];
-			if (e.shiftKey) {
-				if (document.activeElement === first) {
-					e.preventDefault();
-					last.focus();
-				}
-			} else {
-				if (document.activeElement === last) {
-					e.preventDefault();
-					first.focus();
-				}
-			}
-		});
+	const closeDrawer = () => {
+		root.classList.remove('aae-a-menu--open');
+		toggle.setAttribute('aria-expanded', 'false');
+		document.body.classList.remove('aae-a-menu-body-lock');
+		if (typeof closeAllSubmenus === 'function') closeAllSubmenus();
+	};
 
-		window.addEventListener('resize', () => {
-			if (!isMobile() && isOpen) closeDrawer();
-		});
-	}
+	toggle.addEventListener('click', (e) => {
+		e.preventDefault();
+		if (root.classList.contains('aae-a-menu--open')) closeDrawer();
+		else openDrawer();
+	});
+
+	if (closeBtn) closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeDrawer(); });
+	if (overlay)  overlay.addEventListener('click',  (e) => { e.preventDefault(); closeDrawer(); });
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && root.classList.contains('aae-a-menu--open')) closeDrawer();
+	});
+
+	window.addEventListener('resize', () => {
+		if (!isMobile() && root.classList.contains('aae-a-menu--open')) closeDrawer();
+	});
 };
 
 register({
 	elementType: 'e-aae-a-menu',
 	id: 'aae-a-menu-handler',
 	callback: ({ element }) => {
-		const container = element.classList.contains('aae-a-menu') ? element : element.querySelector('.aae-a-menu');
-		if (container) {
-			initMenu(container);
-		}
+		const root = element.classList.contains('aae-a-menu') ? element : element.querySelector('.aae-a-menu');
+		if (root) initMenu(root);
 	},
 });
+
+/* Fallback: also init on DOMContentLoaded for non-Elementor contexts */
+const initAll = () => document.querySelectorAll('.aae-a-menu').forEach(initMenu);
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initAll);
+} else {
+	initAll();
+}

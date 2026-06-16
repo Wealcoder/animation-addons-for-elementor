@@ -81,7 +81,9 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'overlay_color'   => String_Prop_Type::make()->default( '' ),
 
 			// Motion
-			'transition_ms' => Number_Prop_Type::make()->default( 200 ),
+			'transition_ms'      => Number_Prop_Type::make()->default( 250 ),
+			'drawer_animation'   => String_Prop_Type::make()->default( 'slide-left' ),
+			'dropdown_animation' => String_Prop_Type::make()->default( 'slide' ),
 		];
 	}
 
@@ -203,6 +205,28 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				->set_items( [
 					Number_Control::bind_to( 'transition_ms' )
 						->set_label( __( 'Transition Duration (ms)', self::TD ) ),
+					Select_Control::bind_to( 'drawer_animation' )
+						->set_label( __( 'Mobile Drawer Effect', self::TD ) )
+						->set_options( [
+							[ 'value' => 'slide-left',   'label' => __( 'Slide from Left',   self::TD ) ],
+							[ 'value' => 'slide-right',  'label' => __( 'Slide from Right',  self::TD ) ],
+							[ 'value' => 'slide-top',    'label' => __( 'Slide from Top',    self::TD ) ],
+							[ 'value' => 'slide-bottom', 'label' => __( 'Slide from Bottom', self::TD ) ],
+							[ 'value' => 'fade',         'label' => __( 'Fade',              self::TD ) ],
+							[ 'value' => 'scale',        'label' => __( 'Scale',             self::TD ) ],
+							[ 'value' => 'zoom-in',      'label' => __( 'Zoom In',           self::TD ) ],
+							[ 'value' => 'flip',         'label' => __( 'Flip',              self::TD ) ],
+						] ),
+					Select_Control::bind_to( 'dropdown_animation' )
+						->set_label( __( 'Sub-menu Dropdown Effect', self::TD ) )
+						->set_options( [
+							[ 'value' => 'slide',      'label' => __( 'Slide Down',     self::TD ) ],
+							[ 'value' => 'fade',       'label' => __( 'Fade',           self::TD ) ],
+							[ 'value' => 'slide-fade', 'label' => __( 'Slide + Fade',   self::TD ) ],
+							[ 'value' => 'scale',      'label' => __( 'Scale (Origin)', self::TD ) ],
+							[ 'value' => 'zoom',       'label' => __( 'Zoom',           self::TD ) ],
+							[ 'value' => 'flip',       'label' => __( 'Flip',           self::TD ) ],
+						] ),
 				] ),
 		];
 	}
