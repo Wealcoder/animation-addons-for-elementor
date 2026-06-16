@@ -65,6 +65,16 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			])
 			->get();
 
+		$pro_style_values = ['pro-1', 'pro-2', 'pro-3', 'pro-4', 'pro-5', 'pro-6', 'pro-7', 'pro-8'];
+		$is_classic_style = Dependency_Manager::make()
+			->where([
+				'operator' => 'nin',
+				'path'     => ['btn_style'],
+				'value'    => $pro_style_values,
+				'effect'   => 'hide',
+			])
+			->get();
+
 		return [
 			'classes'           => Classes_Prop_Type::make()->default([]),
 			'attributes'        => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
@@ -75,7 +85,8 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			'btn_nofollow'      => Boolean_Prop_Type::make()->default(false),
 
 			'btn_style'         => String_Prop_Type::make()->default('default'),
-			'btn_hover_style'   => String_Prop_Type::make()->default('hover-none'),
+			'btn_hover_style'   => String_Prop_Type::make()->default('hover-none')
+				->set_dependencies($is_classic_style),
 
 			'btn_show_icon'     => Boolean_Prop_Type::make()->default(false),
 
@@ -91,8 +102,8 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			'btn_icon_size'     => Number_Prop_Type::make()->default(20)
 				->set_dependencies($icon_hidden),
 
-			'btn_icon_color'    => String_Prop_Type::make()->default('')
-				->set_dependencies($icon_hidden),
+			// 'btn_icon_color'    => String_Prop_Type::make()->default('')
+			// 	->set_dependencies($icon_hidden),
 
 			'btn_outline_gap'   => Number_Prop_Type::make()->default(10),
 
@@ -104,6 +115,7 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 			'btn_border_color'       => String_Prop_Type::make()->default(''),
 			'btn_hover_color'        => String_Prop_Type::make()->default(''),
 			'btn_hover_bg_color'     => String_Prop_Type::make()->default(''),
+			// 'btn_hover_icon_color'     => String_Prop_Type::make()->default(''),
 			'btn_hover_border_color' => String_Prop_Type::make()->default(''),
 		];
 	}
@@ -124,18 +136,18 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 							['value' => 'square',    'label' => __('Square',           'animation-addons-for-elementor')],
 							['value' => 'underline', 'label' => __('Underline',        'animation-addons-for-elementor')],
 							['value' => 'mask',      'label' => __('Mask',             'animation-addons-for-elementor')],
-							['value' => 'oval',      'label' => __('Oval',             'animation-addons-for-elementor')],
-							['value' => 'circle',    'label' => __('Circle',           'animation-addons-for-elementor')],
-							['value' => 'ellipse',   'label' => __('Ellipse',          'animation-addons-for-elementor')],
+							// ['value' => 'oval',      'label' => __('Oval',             'animation-addons-for-elementor')],
+							// ['value' => 'circle',    'label' => __('Circle',           'animation-addons-for-elementor')],
+							// ['value' => 'ellipse',   'label' => __('Ellipse',          'animation-addons-for-elementor')],
 							// Pro styles (from Advanced Button)
-							['value' => 'pro-1',     'label' => __('Border Divide', 'animation-addons-for-elementor')],
-							['value' => 'pro-2',     'label' => __('Shadow',        'animation-addons-for-elementor')],
-							['value' => 'pro-3',     'label' => __('Text Flip',     'animation-addons-for-elementor')],
-							['value' => 'pro-4',     'label' => __('Ripple',        'animation-addons-for-elementor')],
-							['value' => 'pro-5',     'label' => __('Group Swap L',  'animation-addons-for-elementor')],
-							['value' => 'pro-6',     'label' => __('Group Swap R',  'animation-addons-for-elementor')],
-							['value' => 'pro-7',     'label' => __('Outline Pill',  'animation-addons-for-elementor')],
-							['value' => 'pro-8',     'label' => __('Slide Fill',    'animation-addons-for-elementor')],
+							['value' => 'pro-1',     'label' => __('1-Border Divide', 'animation-addons-for-elementor')],
+							['value' => 'pro-2',     'label' => __('2-Shadow',        'animation-addons-for-elementor')],
+							['value' => 'pro-3',     'label' => __('3-Text Flip',     'animation-addons-for-elementor')],
+							['value' => 'pro-4',     'label' => __('4-Ripple',        'animation-addons-for-elementor')],
+							['value' => 'pro-5',     'label' => __('5-Group Swap L',  'animation-addons-for-elementor')],
+							['value' => 'pro-6',     'label' => __('6-Group Swap R',  'animation-addons-for-elementor')],
+							['value' => 'pro-7',     'label' => __('7-Outline Pill',  'animation-addons-for-elementor')],
+							['value' => 'pro-8',     'label' => __('8-Slide Fill',    'animation-addons-for-elementor')],
 						]),
 
 					Select_Control::bind_to('btn_hover_style')
@@ -208,8 +220,8 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 						->set_label(__('Icon Size (px)', 'animation-addons-for-elementor'))
 						->set_meta(['min' => 8, 'max' => 200, 'step' => 1]),
 
-					Text_Control::bind_to('btn_icon_color')
-						->set_label(__('Icon Color', 'animation-addons-for-elementor')),
+					// Text_Control::bind_to('btn_icon_color')
+					// 	->set_label(__('Icon Color', 'animation-addons-for-elementor')),
 				]),
 
 			Section::make()
@@ -226,6 +238,8 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 						->set_label(__('Hover Text Color', 'animation-addons-for-elementor')),
 					Text_Control::bind_to('btn_hover_bg_color')
 						->set_label(__('Hover Background', 'animation-addons-for-elementor')),
+					// Text_Control::bind_to('btn_hover_icon_color')
+					// 	->set_label(__('Hover Background', 'animation-addons-for-elementor')),
 					Text_Control::bind_to('btn_hover_border_color')
 						->set_label(__('Hover Border Color', 'animation-addons-for-elementor')),
 				]),

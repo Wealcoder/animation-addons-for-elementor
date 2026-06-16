@@ -36,6 +36,7 @@
   flex-shrink: 0;
 }
 .wcf__btn .aae-btn-icon-svg svg {
+  fill: currentColor;
   width: 100% !important;
   height: 100% !important;
 }
@@ -58,6 +59,45 @@
   justify-content: flex-start;
 }
 
+.aae-btn-main .aae-btn-icon-svg {
+  fill: currentColor;
+}
+.aae-btn-main .aae-btn-icon-svg svg {
+  fill: currentColor;
+}
+.aae-btn-main .aae-btn-icon-svg svg path {
+  fill: currentColor;
+}
+
+.aae--btn-pro .icon {
+  line-height: 0;
+  font-size: var(--aae-btn-icon-size, 1em);
+  width: var(--aae-btn-icon-size, 1em);
+  height: var(--aae-btn-icon-size, 1em);
+  color: var(--aae-btn-icon-color, inherit);
+  fill: var(--aae-btn-icon-color, inherit);
+  fill: currentColor;
+}
+.aae--btn-pro .icon svg {
+  fill: currentColor;
+}
+.aae--btn-pro .icon svg path {
+  fill: currentColor;
+}
+
+.btn-text-flip svg {
+  fill: currentColor;
+  line-height: 0;
+  font-size: var(--aae-btn-icon-size, 1em);
+  width: var(--aae-btn-icon-size, 1em) !important;
+  height: var(--aae-btn-icon-size, 1em) !important;
+  color: var(--aae-btn-icon-color, inherit);
+  fill: var(--aae-btn-icon-color, inherit);
+}
+.btn-text-flip svg path {
+  fill: currentColor;
+}
+
 .wcf-btn-default {
   padding: 17px 35px;
   border: 1px solid var(--aae-btn-border-color, #1C1D20);
@@ -67,7 +107,7 @@
 }
 .wcf-btn-default:hover {
   color: var(--aae-btn-hover-color, #1C1D20) !important;
-  border-color: var(--aae-btn-border-color, #1C1D20) !important;
+  border-color: var(--aae-btn-hover-border-color, #1C1D20) !important;
 }
 .wcf-btn-circle {
   width: 140px;
@@ -239,7 +279,7 @@
 }
 .btn-hover-bgchange:hover {
   color: var(--aae-btn-hover-color, #fff) !important;
-  border: 1px solid var(--aae-btn-border-color, #1C1D20);
+  border: 1px solid var(--aae-btn-hover-border-color, #1C1D20);
 }
 .btn-hover-bgchange:hover span {
   width: 400px;
@@ -474,14 +514,6 @@
   height: 100%;
 }
 
-.aae--btn-pro-wrapper svg {
-  width: 1em;
-  height: 1em;
-}
-.aae--btn-pro-wrapper .icon {
-  line-height: 0;
-}
-
 .aae--btn-pro {
   gap: 5px;
   display: inline-flex;
@@ -494,6 +526,14 @@
 .style-1 .btn-border-divide {
   align-items: flex-end;
   overflow: hidden;
+  color: var(--aae-btn-color, inherit);
+}
+.style-1 .btn-border-divide:hover {
+  color: var(--aae-btn-hover-color, inherit);
+}
+.style-1 .btn-border-divide:hover .text,
+.style-1 .btn-border-divide:hover .icon {
+  border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
 }
 .style-1 .btn-border-divide:hover .icon i:first-child,
 .style-1 .btn-border-divide:hover .icon svg:first-child {
@@ -508,7 +548,7 @@
 .style-1 .btn-border-divide .text,
 .style-1 .btn-border-divide .icon {
   transition: all 0.3s;
-  border-bottom: 1px solid #101A33;
+  border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
 }
 .style-1 .btn-border-divide .icon {
   display: inline-flex;
@@ -531,18 +571,27 @@
 
 /* Style Two — drop shadow on hover */
 .style-2 .aae--btn-pro {
-  border: 3px solid #1C1D20;
+  color: var(--aae-btn-color, inherit);
+  background-color: var(--aae-btn-bg, transparent);
+  border: 3px solid var(--aae-btn-border-color, #1C1D20);
   padding: 12px 30px;
   border-radius: 10px;
 }
 .style-2 .aae--btn-pro:hover {
-  box-shadow: -7px 7px 0 #1C1D20;
+  color: var(--aae-btn-hover-color, inherit);
+  border-color: var(--aae-btn-hover-border-color, #1C1D20);
+  box-shadow: -7px 7px 0 var(--aae-btn-hover-border-color, #1C1D20);
 }
 
 /* Style Three — 3-D text flip */
 .style-3 .btn-text-flip {
   perspective: 1000px;
   align-items: center;
+  color: var(--aae-btn-color, #121212);
+  background-color: var(--aae-btn-bg, transparent);
+}
+.style-3 .btn-text-flip:hover {
+  color: var(--aae-btn-hover-color, #121212);
 }
 .style-3 .btn-text-flip:hover span {
   transform: rotateX(90deg) translateY(-12px);
@@ -551,7 +600,6 @@
   position: relative;
   display: inline-block;
   padding: 0;
-  color: #121212;
   transition: transform 0.3s;
   transform-origin: 50% 0;
   transform-style: preserve-3d;
@@ -574,13 +622,16 @@
   font-weight: 500;
   font-size: 16px;
   text-align: center;
-  color: #fff;
-  background-color: #121212;
+  color: var(--aae-btn-color, #fca2a2);
+  background-color: var(--aae-btn-bg, #121212);
   padding: 18px 42px;
   border-radius: 5px;
   position: relative;
   overflow: hidden;
   z-index: 1;
+}
+.style-4 .aae--btn-pro:hover {
+  color: var(--aae-btn-hover-color, #fff);
 }
 .style-4 .aae--btn-pro:hover span {
   width: 500px;
@@ -594,7 +645,7 @@
   position: absolute;
   width: 0;
   height: 0;
-  background: #FC5A11;
+  background: var(--aae-btn-hover-bg, #FC5A11);
   border-radius: 50%;
   transform: translate(50%, -50%);
   transition: all 0.5s ease;
@@ -604,7 +655,7 @@
   width: 50px;
   display: inherit;
   height: 1px;
-  background: #fff;
+  background: var(--aae-btn-color, #fff);
   margin-right: 5px;
   position: relative;
 }
@@ -613,7 +664,7 @@
   content: "";
   top: -5px;
   left: 30px;
-  border: solid #fff;
+  border: solid var(--aae-btn-color, #fff);
   border-width: 0 0 1px 1px;
   padding: 5px;
   transform: rotate(45deg);
@@ -632,8 +683,8 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 1;
-  color: #fff;
-  background-color: #0A1A3D;
+  color: var(--aae-btn-color, #fff);
+  background-color: var(--aae-btn-bg, #0A1A3D);
   text-transform: capitalize;
   transition: all 0.3s;
   display: inline-flex;
@@ -646,17 +697,24 @@
   text-decoration: none;
 }
 .aae-btn-pro-group .g-btn-icon {
-  color: #fff;
-  fill: #fff;
+  color: var(--aae-btn-icon-color, var(--aae-btn-color, #fff));
+  fill: currentColor;
   border-radius: 50px;
-  background-color: #0A1A3D;
+  background-color: var(--aae-btn-bg, #0A1A3D);
   border: 1px solid transparent;
-  height: 60px;
-  width: 60px;
+  width: var(--aae-btn-icon-size, 1em);
+  height: var(--aae-btn-icon-size, 1em);
+  font-size: var(--aae-btn-icon-size, 1em);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.5s;
+}
+.aae-btn-pro-group .g-btn-icon svg {
+  fill: currentColor;
+}
+.aae-btn-pro-group .g-btn-icon svg path {
+  fill: currentColor;
 }
 
 .aae-btn-pro-group > *:nth-child(2) {
@@ -670,7 +728,7 @@
 /* Style Five — right icon slides in from right */
 .style-5 .aae-btn-pro-group > *:nth-child(1) {
   transform: scale3d(0.5, 0.5, 1);
-  margin-left: calc(var(--icon-width, 60px) * -1);
+  margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 .style-5 .aae-btn-pro-group > *:nth-child(3) {
@@ -685,7 +743,7 @@
 }
 .style-5 .aae-btn-pro-group:hover > *:nth-child(3) {
   transform: scale3d(0.5, 0.5, 1);
-  margin-right: calc(var(--icon-width, 60px) * -1);
+  margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 
@@ -697,12 +755,12 @@
 }
 .style-6 .aae-btn-pro-group > *:nth-child(3) {
   transform: scale3d(0.5, 0.5, 1);
-  margin-right: calc(var(--icon-width, 60px) * -1);
+  margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 .style-6 .aae-btn-pro-group:hover > *:nth-child(1) {
   transform: scale3d(0.5, 0.5, 1);
-  margin-left: calc(var(--icon-width, 60px) * -1);
+  margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 .style-6 .aae-btn-pro-group:hover > *:nth-child(3) {
@@ -713,9 +771,9 @@
 
 /* Style Seven — outline pill, inner fill shrinks on hover */
 .style-7 .aae--btn-pro {
-  color: #fff;
-  fill: #fff;
-  border: 1px solid #ddd;
+  color: var(--aae-btn-color, #fff);
+  fill: var(--aae-btn-color, #fff);
+  border: 1px solid var(--aae-btn-border-color, #ddd);
   padding: 18px 30px;
   border-radius: 35px;
   position: relative;
@@ -723,8 +781,9 @@
   --outline-gap: 10px;
 }
 .style-7 .aae--btn-pro:hover {
-  fill: #121212;
-  color: #121212;
+  fill: var(--aae-btn-hover-color, #121212);
+  color: var(--aae-btn-hover-color, #121212);
+  border-color: var(--aae-btn-hover-border-color, #ddd);
 }
 .style-7 .aae--btn-pro:hover::after {
   width: 50%;
@@ -739,7 +798,7 @@
   height: calc(100% - var(--outline-gap) * 2);
   right: 50%;
   top: 50%;
-  background: #121212;
+  background: var(--aae-btn-bg, #121212);
   transform: translate(50%, -50%);
   border-radius: 35px;
   z-index: -1;
@@ -757,16 +816,16 @@
     right: 0;
   }
 }
-/* Style Eight — white background slides out on hover */
+/* Style Eight — slide-fill bg slides out on hover revealing button bg */
 .style-8 .aae--btn-pro {
-  color: #121212;
-  fill: #121212;
-  border: 1px solid #121212;
+  color: var(--aae-btn-color, #121212);
+  fill: var(--aae-btn-color, #121212);
+  border: 1px solid var(--aae-btn-border-color, #121212);
   padding: 18px 30px;
   border-radius: 35px;
   position: relative;
   overflow: hidden;
-  background-color: #121212;
+  background-color: var(--aae-btn-hover-bg, #121212);
   z-index: 1;
   cursor: pointer;
 }
@@ -777,14 +836,14 @@
   height: 100%;
   right: 0;
   top: 0;
-  background: #fff;
+  background: var(--aae-btn-bg, #fff);
   border-radius: 35px;
   z-index: -1;
   transition: right 0.6s cubic-bezier(0.65, 0, 0.26, 1.2);
 }
 .style-8 .aae--btn-pro:hover {
-  color: #fff;
-  fill: #fff;
+  color: var(--aae-btn-hover-color, #fff);
+  fill: var(--aae-btn-hover-color, #fff);
 }
 .style-8 .aae--btn-pro:hover::after {
   right: -92%;

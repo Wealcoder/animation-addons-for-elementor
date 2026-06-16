@@ -44,8 +44,14 @@
     flex-shrink: 0;
 
     svg {
+      fill: currentColor;
       width: 100% !important;
       height: 100% !important;
+
+      // path {
+      //   fill: currentColor;
+      // }
+
     }
   }
 
@@ -74,6 +80,65 @@
   }
 }
 
+// ___ manage icon color _____________________________________________________________
+
+.aae-btn-main {
+  .aae-btn-icon-svg {
+    fill: currentColor;
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
+  }
+}
+
+.aae--btn-pro {
+  .icon {
+    line-height: 0;
+    font-size: var(--aae-btn-icon-size, 1em);
+    width: var(--aae-btn-icon-size, 1em);
+    height: var(--aae-btn-icon-size, 1em);
+    color: var(--aae-btn-icon-color, inherit);
+    fill: var(--aae-btn-icon-color, inherit);
+    fill: currentColor;
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
+  }
+
+  // svg {
+  //   fill: currentColor;
+  //   path {
+  //     fill: currentColor;
+  //   }
+  // }
+
+}
+
+.btn-text-flip {
+    svg {
+    fill: currentColor;
+    line-height: 0;
+    font-size: var(--aae-btn-icon-size, 1em);
+    width: var(--aae-btn-icon-size, 1em) !important;
+    height: var(--aae-btn-icon-size, 1em) !important;
+    color: var(--aae-btn-icon-color, inherit);
+    fill: var(--aae-btn-icon-color, inherit);
+    path {
+      fill: currentColor;
+    }
+  }
+}
+
+
+// ______________________________________________________________________
+
+
 .wcf-btn {
   &-default {
     padding: 17px 35px;
@@ -84,8 +149,7 @@
 
     &:hover {
       color: var(--aae-btn-hover-color, #1C1D20) !important;
-    border-color: var(--aae-btn-border-color, #1C1D20) !important;
-
+      border-color: var(--aae-btn-hover-border-color, #1C1D20) !important;
     }
   }
 
@@ -280,7 +344,7 @@
 
   &:hover {
     color: var(--aae-btn-hover-color, #fff) !important;
-    border: 1px solid var(--aae-btn-border-color, #1C1D20);
+    border: 1px solid var(--aae-btn-hover-border-color, #1C1D20);
 
     span {
       width: 400px;
@@ -567,16 +631,27 @@
 // Mirrors assets/src/scss/widgets/button-pro.scss
 // ─────────────────────────────────────────────
 
-.aae--btn-pro-wrapper {
-  svg {
-    width: 1em;
-    height: 1em;
-  }
+// .aae--btn-pro-wrapper {
+//   svg {
+//     width: 1em;
+//     height: 1em;
+//     fill: currentColor;
 
-  .icon {
-    line-height: 0;
-  }
-}
+//     // path {
+//     //   fill: currentColor;
+//     // }
+
+//   }
+
+//   .icon {
+//     line-height: 0;
+//     font-size: var(--aae-btn-icon-size, 1em);
+//     width: var(--aae-btn-icon-size, 1em);
+//     height: var(--aae-btn-icon-size, 1em);
+//     color: var(--aae-btn-icon-color, inherit);
+//     fill: var(--aae-btn-icon-color, inherit);
+//   }
+// }
 
 .aae--btn-pro {
   gap: 5px;
@@ -591,8 +666,16 @@
   .btn-border-divide {
     align-items: flex-end;
     overflow: hidden;
+    color: var(--aae-btn-color, inherit);
 
     &:hover {
+      color: var(--aae-btn-hover-color, inherit);
+
+      .text,
+      .icon {
+        border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
+      }
+
       .icon {
         i:first-child,
         svg:first-child {
@@ -611,7 +694,7 @@
     .text,
     .icon {
       transition: all 0.3s;
-      border-bottom: 1px solid #101A33;
+      border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
     }
 
     .icon {
@@ -640,12 +723,16 @@
 /* Style Two — drop shadow on hover */
 .style-2 {
   .aae--btn-pro {
-    border: 3px solid #1C1D20;
+    color: var(--aae-btn-color, inherit);
+    background-color: var(--aae-btn-bg, transparent);
+    border: 3px solid var(--aae-btn-border-color, #1C1D20);
     padding: 12px 30px;
     border-radius: 10px;
 
     &:hover {
-      box-shadow: 7px 7px 0 #1C1D20;
+      color: var(--aae-btn-hover-color, inherit);
+      border-color: var(--aae-btn-hover-border-color, #1C1D20);
+      box-shadow: 7px 7px 0 var(--aae-btn-hover-border-color, #1C1D20);
     }
   }
 }
@@ -655,16 +742,21 @@
   .btn-text-flip {
     perspective: 1000px;
     align-items: center;
+    color: var(--aae-btn-color, #121212);
+    background-color: var(--aae-btn-bg, transparent);
 
-    &:hover span {
-      transform: rotateX(90deg) translateY(-12px);
+    &:hover {
+      color: var(--aae-btn-hover-color, #121212);
+
+      span {
+        transform: rotateX(90deg) translateY(-12px);
+      }
     }
 
     span {
       position: relative;
       display: inline-block;
       padding: 0;
-      color: #121212;
       transition: transform 0.3s;
       transform-origin: 50% 0;
       transform-style: preserve-3d;
@@ -691,8 +783,8 @@
     font-weight: 500;
     font-size: 16px;
     text-align: center;
-    color: #fff;
-    background-color: #121212;
+    color: var(--aae-btn-color, #fca2a2);
+    background-color: var(--aae-btn-bg, #121212);
     padding: 18px 42px;
     border-radius: 5px;
     position: relative;
@@ -700,6 +792,8 @@
     z-index: 1;
 
     &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+
       span {
         width: 500px;
         height: 500px;
@@ -715,7 +809,7 @@
       position: absolute;
       width: 0;
       height: 0;
-      background: #FC5A11;
+      background: var(--aae-btn-hover-bg, #FC5A11);
       border-radius: 50%;
       transform: translate(-50%, -50%);
       transition: all 0.5s ease;
@@ -726,7 +820,7 @@
       width: 50px;
       display: inherit;
       height: 1px;
-      background: #fff;
+      background: var(--aae-btn-color, #fff);
       margin-left: 5px;
       position: relative;
 
@@ -735,7 +829,7 @@
         content: "";
         top: -5px;
         right: 30px;
-        border: solid #fff;
+        border: solid var(--aae-btn-color, #fff);
         border-width: 0 1px 1px 0;
         padding: 5px;
         transform: rotate(-45deg);
@@ -756,8 +850,8 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 1;
-    color: #fff;
-    background-color: #0A1A3D;
+    color: var(--aae-btn-color, #fff);
+    background-color: var(--aae-btn-bg, #0A1A3D);
     text-transform: capitalize;
     transition: all 0.3s;
     display: inline-flex;
@@ -771,17 +865,26 @@
   }
 
   .g-btn-icon {
-    color: #fff;
-    fill: #fff;
+    color: var(--aae-btn-icon-color, var(--aae-btn-color, #fff));
+    fill: currentColor;
     border-radius: 50px;
-    background-color: #0A1A3D;
+    background-color: var(--aae-btn-bg, #0A1A3D);
     border: 1px solid transparent;
-    height: 60px;
-    width: 60px;
+    width: var(--aae-btn-icon-size, 1em);
+    height: var(--aae-btn-icon-size, 1em);
+    font-size: var(--aae-btn-icon-size, 1em);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.5s;
+
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
+
   }
 }
 
@@ -797,7 +900,7 @@
 .style-5 {
   .aae-btn-pro-group > *:nth-child(1) {
     transform: scale3d(0.5, 0.5, 1);
-    margin-right: calc(var(--icon-width, 60px) * -1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
     opacity: 0;
   }
 
@@ -815,7 +918,7 @@
 
   .aae-btn-pro-group:hover > *:nth-child(3) {
     transform: scale3d(0.5, 0.5, 1);
-    margin-left: calc(var(--icon-width, 60px) * -1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
     opacity: 0;
   }
 }
@@ -830,13 +933,13 @@
 
   .aae-btn-pro-group > *:nth-child(3) {
     transform: scale3d(0.5, 0.5, 1);
-    margin-left: calc(var(--icon-width, 60px) * -1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
     opacity: 0;
   }
 
   .aae-btn-pro-group:hover > *:nth-child(1) {
     transform: scale3d(0.5, 0.5, 1);
-    margin-right: calc(var(--icon-width, 60px) * -1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
     opacity: 0;
   }
 
@@ -850,9 +953,9 @@
 /* Style Seven — outline pill, inner fill shrinks on hover */
 .style-7 {
   .aae--btn-pro {
-    color: #fff;
-    fill: #fff;
-    border: 1px solid #ddd;
+    color: var(--aae-btn-color, #fff);
+    fill: var(--aae-btn-color, #fff);
+    border: 1px solid var(--aae-btn-border-color, #ddd);
     padding: 18px 30px;
     border-radius: 35px;
     position: relative;
@@ -860,8 +963,9 @@
     --outline-gap: 10px;
 
     &:hover {
-      fill: #121212;
-      color: #121212;
+      fill: var(--aae-btn-hover-color, #121212);
+      color: var(--aae-btn-hover-color, #121212);
+      border-color: var(--aae-btn-hover-border-color, #ddd);
 
       &::after {
         width: 50%;
@@ -878,7 +982,7 @@
       height: calc(100% - calc(var(--outline-gap) * 2));
       left: 50%;
       top: 50%;
-      background: #121212;
+      background: var(--aae-btn-bg, #121212);
       transform: translate(-50%, -50%);
       border-radius: 35px;
       z-index: -1;
@@ -893,17 +997,17 @@
   100% { left:   0;  }
 }
 
-/* Style Eight — white background slides out on hover */
+/* Style Eight — slide-fill bg slides out on hover revealing button bg */
 .style-8 {
   .aae--btn-pro {
-    color: #121212;
-    fill: #121212;
-    border: 1px solid #121212;
+    color: var(--aae-btn-color, #121212);
+    fill: var(--aae-btn-color, #121212);
+    border: 1px solid var(--aae-btn-border-color, #121212);
     padding: 18px 30px;
     border-radius: 35px;
     position: relative;
     overflow: hidden;
-    background-color: #121212;
+    background-color: var(--aae-btn-hover-bg, #121212);
     z-index: 1;
     cursor: pointer;
 
@@ -914,15 +1018,15 @@
       height: 100%;
       left: 0;
       top: 0;
-      background: #fff;
+      background: var(--aae-btn-bg, #fff);
       border-radius: 35px;
       z-index: -1;
       transition: left 0.6s cubic-bezier(0.65, 0, 0.26, 1.2);
     }
 
     &:hover {
-      color: #fff;
-      fill: #fff;
+      color: var(--aae-btn-hover-color, #fff);
+      fill: var(--aae-btn-hover-color, #fff);
 
       &::after {
         left: -92%;
