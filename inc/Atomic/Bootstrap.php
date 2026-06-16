@@ -95,6 +95,9 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
+		// Style Manager
+		( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
+
 		( new Assets() )->register();
 	}
 
@@ -110,6 +113,8 @@ final class Bootstrap {
 			'e-grid',
 			'e-aae-a-post-title',
 			'e-aae-a-post-image',
+			'e-aae-a-icon-list',
+			'e-aae-a-icon-list-item',
 		];
 	}
 }

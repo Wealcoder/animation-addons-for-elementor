@@ -1,0 +1,229 @@
+<?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\Accordion;
+
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Html_Tag_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+class AAE_A_Accordion_Item extends Atomic_Element_Base {
+	use Has_Element_Template;
+
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->meta( 'is_container', true );
+	}
+
+	public static function get_type() {
+		return 'e-aae-a-accordion-item';
+	}
+
+	public static function get_element_type(): string {
+		return 'e-aae-a-accordion-item';
+	}
+
+	public function get_title() {
+		return esc_html__( 'Accordion Item', 'animation-addons-for-elementor' );
+	}
+
+	public function get_icon() {
+		return 'eicon-accordion';
+	}
+
+	public function get_keywords() {
+		return [ 'accordion', 'item', 'tab', 'atomic' ];
+	}
+
+	public function should_show_in_panel() {
+		return false; // Should only be inserted via Accordion container
+	}
+
+	protected static function define_props_schema(): array {
+		return [
+			'classes' => Classes_Prop_Type::make()->default( [] ),
+			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'item_title' => String_Prop_Type::make()->default( 'Accordion Title' ),
+			'is_active' => Boolean_Prop_Type::make()->default( false ),
+			'icon_position' => String_Prop_Type::make()->enum( [ 'left', 'right' ] )->default( 'right' ),
+			'expand_icon' => Svg_Src_Prop_Type::make(),
+			'collapse_icon' => Svg_Src_Prop_Type::make(),
+			'title_html_tag' => String_Prop_Type::make()->enum( [ 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )->default( 'div' ),
+		];
+	}
+
+	protected function define_atomic_controls(): array {
+		return [
+			Section::make()
+				->set_id( 'content' )
+				->set_label( __( 'Item Settings', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Text_Control::bind_to( 'item_title' )
+						->set_label( __( 'Title', 'animation-addons-for-elementor' ) ),
+					Html_Tag_Control::bind_to( 'title_html_tag' )
+						->set_label( __( 'Title HTML Tag', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'div', 'label' => 'div' ],
+							[ 'value' => 'h1', 'label' => 'H1' ],
+							[ 'value' => 'h2', 'label' => 'H2' ],
+							[ 'value' => 'h3', 'label' => 'H3' ],
+							[ 'value' => 'h4', 'label' => 'H4' ],
+							[ 'value' => 'h5', 'label' => 'H5' ],
+							[ 'value' => 'h6', 'label' => 'H6' ],
+						] ),
+					Switch_Control::bind_to( 'is_active' )
+						->set_label( __( 'Active by Default', 'animation-addons-for-elementor' ) ),
+				] ),
+				
+			Section::make()
+				->set_id( 'icon_settings' )
+				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Toggle_Control::bind_to( 'icon_position' )
+						->set_label( __( 'Position', 'animation-addons-for-elementor' ) )
+						->add_options( [
+							'left'  => [ 'title' => __( 'Left', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
+							'right' => [ 'title' => __( 'Right', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
+						] )
+						->set_exclusive( true )
+						->set_convert_options( true ),
+					Svg_Control::bind_to( 'expand_icon' )
+						->set_label( __( 'Expand', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'collapse_icon' )
+						->set_label( __( 'Collapse', 'animation-addons-for-elementor' ) ),
+				] ),
+		];
+	}
+
+	protected function define_atomic_style_states(): array {
+		return [
+			Style_States::get_class_states_map()['selected']
+		];
+	}
+
+	protected function define_base_styles(): array {
+		$wrapper_styles = [
+			'display' => String_Prop_Type::generate( 'block' ),
+			'width' => String_Prop_Type::generate( '100%' ),
+			'background' => Background_Prop_Type::generate([]),
+			'border-style' => String_Prop_Type::generate(''),
+			'border-color' => Color_Prop_Type::generate(''),
+			'border-width' => Size_Prop_Type::generate([]),
+			'border-radius' => Dimensions_Prop_Type::generate([]),
+			'padding' => Dimensions_Prop_Type::generate([]),
+			'margin' => Dimensions_Prop_Type::generate([]),
+		];
+
+		$wrapper_hover_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'border-color' => Color_Prop_Type::generate(''),
+		];
+
+		$wrapper_selected_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'border-color' => Color_Prop_Type::generate(''),
+		];
+
+		$header_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'color' => Color_Prop_Type::generate(''),
+			'border-style' => String_Prop_Type::generate(''),
+			'border-color' => Color_Prop_Type::generate(''),
+			'border-width' => Size_Prop_Type::generate([]),
+			'border-radius' => Dimensions_Prop_Type::generate([]),
+			'padding' => Dimensions_Prop_Type::generate([]),
+			'margin' => Dimensions_Prop_Type::generate([]),
+		];
+
+		$header_hover_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'color' => Color_Prop_Type::generate(''),
+			'border-color' => Color_Prop_Type::generate(''),
+		];
+
+		$header_selected_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'color' => Color_Prop_Type::generate(''),
+			'border-color' => Color_Prop_Type::generate(''),
+		];
+
+		$icon_styles = [
+			'color' => Color_Prop_Type::generate(''),
+			'font-size' => Size_Prop_Type::generate([]), // For SVG size usually mapped via width/height or font-size depending on SVG setup
+			'padding' => Dimensions_Prop_Type::generate([]),
+			'background' => Background_Prop_Type::generate([]),
+			'border-radius' => Dimensions_Prop_Type::generate([]),
+		];
+
+		$icon_hover_styles = [
+			'color' => Color_Prop_Type::generate(''),
+			'background' => Background_Prop_Type::generate([]),
+		];
+
+		$icon_selected_styles = [
+			'color' => Color_Prop_Type::generate(''),
+			'background' => Background_Prop_Type::generate([]),
+		];
+
+		$content_styles = [
+			'background' => Background_Prop_Type::generate([]),
+			'color' => Color_Prop_Type::generate(''),
+			'border-style' => String_Prop_Type::generate(''),
+			'border-color' => Color_Prop_Type::generate(''),
+			'border-width' => Size_Prop_Type::generate([]),
+			'border-radius' => Dimensions_Prop_Type::generate([]),
+			'padding' => Dimensions_Prop_Type::generate([]),
+			'margin' => Dimensions_Prop_Type::generate([]),
+		];
+
+		return [
+			'base' => Style_Definition::make()
+				->set_label( __( 'Item Box', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $wrapper_hover_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::SELECTED )->add_props( $wrapper_selected_styles ) ),
+			
+			'header' => Style_Definition::make()
+				->set_label( __( 'Header', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $header_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $header_hover_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::SELECTED )->add_props( $header_selected_styles ) ),
+			
+			'icon' => Style_Definition::make()
+				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $icon_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $icon_hover_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::SELECTED )->add_props( $icon_selected_styles ) ),
+			
+			'content' => Style_Definition::make()
+				->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $content_styles ) ),
+		];
+	}
+
+	protected function get_templates(): array {
+		return [
+			'elementor/elements/aae-a-accordion-item' => __DIR__ . '/aae-a-accordion-item.html.twig',
+		];
+	}
+}

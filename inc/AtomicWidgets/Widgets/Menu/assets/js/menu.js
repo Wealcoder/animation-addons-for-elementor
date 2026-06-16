@@ -1,162 +1,155 @@
 import { register } from '@elementor/frontend-handlers';
 
-const initMenu = (container) => {
-	const nav = container.querySelector('.aae-a-menu-nav');
-	const toggle = container.querySelector('.aae-a-menu-toggle');
+/* AAE Atomic Menu — minimal vanilla JS. CSS does all transitions. */
+
+const initMenu = (root) => {
+	if (root.dataset.aaeMenuInit === '1') return;
+	root.dataset.aaeMenuInit = '1';
+
+	const nav      = root.querySelector('.aae-a-menu-nav');
+	const toggle   = root.querySelector('.aae-a-menu-toggle');
+	const overlay  = root.querySelector('.aae-a-menu-overlay');
+	const closeBtn = root.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
-	const isHamburger = container.getAttribute('data-hamburger') === 'true';
-	const initDropdowns = () => {
-		const menuList = nav.querySelector('.aae-a-menu-list');
-		if (!menuList) return;
+	const breakpoint  = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
+	const isHamburger = root.getAttribute('data-hamburger') === 'true';
+	const isMobile    = () => window.innerWidth <= breakpoint;
 
-		// GSAP Hover animations for dropdowns
-		const menuItemsWithChildren = menuList.querySelectorAll('.menu-item-has-children');
-		
-		menuItemsWithChildren.forEach(item => {
-			const subMenu = item.querySelector('.sub-menu');
+	/* ---------- Dropdown arrows + click-to-toggle ---------- */
+	const buildDropdowns = () => {
+		const list = nav.querySelector('.aae-a-menu-list');
+		if (!list) return null;
+
+		list.querySelectorAll('.menu-item-has-children').forEach((item) => {
+			if (item.querySelector(':scope > .aae-a-menu-arrow')) return;
+			const subMenu = item.querySelector(':scope > .sub-menu');
 			if (!subMenu) return;
 
-			// Initial state
-			if (typeof window.gsap !== 'undefined') {
-				window.gsap.set(subMenu, { autoAlpha: 0, y: 15, display: 'none' });
-			}
+			const arrow = document.createElement('button');
+			arrow.type = 'button';
+			arrow.className = 'aae-a-menu-arrow';
+			arrow.setAttribute('aria-label', 'Toggle submenu');
+			arrow.setAttribute('aria-expanded', 'false');
+			// Insert BEFORE the sub-menu so DOM order is: link → arrow → sub-menu.
+			// (Sub-menu is flex-basis:100% on mobile, so anything after it gets pushed
+			// to its own row, which is why arrows were appearing below.)
+			item.insertBefore(arrow, subMenu);
 
-		let hoverIntentTimeout;
+			arrow.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				const open = item.classList.toggle('aae-a-menu-item--open');
+				arrow.setAttribute('aria-expanded', open ? 'true' : 'false');
 
-		const openMenu = () => {
-			clearTimeout(hoverIntentTimeout);
-			if (typeof window.gsap !== 'undefined') {
-				window.gsap.to(subMenu, {
-					autoAlpha: 1,
-					y: 0,
-					display: 'block',
-					duration: 0.3,
-					ease: "power2.out",
-					overwrite: true
-				});
-			} else {
-				subMenu.style.display = 'block';
-			}
-		};
-
-		const closeMenu = () => {
-			hoverIntentTimeout = setTimeout(() => {
-				if (typeof window.gsap !== 'undefined') {
-					window.gsap.to(subMenu, {
-						autoAlpha: 0,
-						y: 15,
-						display: 'none',
-						duration: 0.2,
-						ease: "power2.in",
-						overwrite: true
+				// Close siblings at the same level
+				if (open && item.parentElement) {
+					Array.from(item.parentElement.children).forEach((sib) => {
+						if (sib !== item && sib.classList && sib.classList.contains('aae-a-menu-item--open')) {
+							sib.classList.remove('aae-a-menu-item--open');
+							const sArrow = sib.querySelector(':scope > .aae-a-menu-arrow');
+							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
+						}
 					});
-				} else {
-					subMenu.style.display = 'none';
 				}
-			}, 100);
-		};
-
-		item.addEventListener('mouseenter', openMenu);
-		item.addEventListener('mouseleave', closeMenu);
-		
-		// Accessibility / touch focus
-			const link = item.querySelector('a');
-			if (link) {
-				link.addEventListener('focus', openMenu);
-				link.addEventListener('blur', closeMenu);
-			}
+			});
 		});
+
+		return () => {
+			list.querySelectorAll('.aae-a-menu-item--open').forEach((el) => {
+				el.classList.remove('aae-a-menu-item--open');
+				const a = el.querySelector(':scope > .aae-a-menu-arrow');
+				if (a) a.setAttribute('aria-expanded', 'false');
+			});
+		};
 	};
 
+	let closeAllSubmenus = null;
+
+	/* ---------- Editor preview AJAX fallback ---------- */
+	const inEditor = !!(window.elementorFrontend
+		&& typeof window.elementorFrontend.isEditMode === 'function'
+		&& window.elementorFrontend.isEditMode());
 	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
-	if (placeholder && typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.isEditMode()) {
+
+	if (inEditor && placeholder) {
 		const slug = nav.getAttribute('data-menu-slug');
 		if (slug) {
-			const ajaxUrl = elementorFrontend.config.ajaxurl || (window.ajaxurl ? window.ajaxurl : '/wp-admin/admin-ajax.php');
+			const ajaxUrl = (window.elementorFrontend
+				&& window.elementorFrontend.config
+				&& window.elementorFrontend.config.ajaxurl)
+				|| window.ajaxurl
+				|| '/wp-admin/admin-ajax.php';
 			fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`)
-				.then(res => res.json())
-				.then(data => {
-					if (data.success && data.data) {
-						nav.innerHTML = data.data;
-						initDropdowns();
+				.then((r) => r.json())
+				.then((data) => {
+					if (data && data.success && data.data) {
+						const body = nav.querySelector('.aae-a-menu-nav-body');
+						if (body) body.innerHTML = data.data;
+						closeAllSubmenus = buildDropdowns();
 					}
 				})
-				.catch(err => console.error(err));
+				.catch(() => {});
 		}
 	} else {
-		initDropdowns();
+		closeAllSubmenus = buildDropdowns();
 	}
 
-	// Mobile Hamburger Toggle
-	if (isHamburger && toggle && !container.dataset.hamburgerInit) {
-		container.dataset.hamburgerInit = 'true';
-		let isOpen = false;
-		
-		// Initial state for mobile
-		const checkMobile = () => window.innerWidth <= 768;
+	/* ---------- Outside-click + Escape closes desktop dropdowns ---------- */
+	document.addEventListener('click', (e) => {
+		if (isMobile()) return;
+		if (!root.contains(e.target) && typeof closeAllSubmenus === 'function') {
+			closeAllSubmenus();
+		}
+	});
 
-		const setMobileInitialState = () => {
-			if (checkMobile()) {
-				if (typeof window.gsap !== 'undefined') {
-					window.gsap.set(nav, { height: 0, overflow: 'hidden', autoAlpha: 0 });
-				} else {
-					nav.style.display = 'none';
-				}
-			} else {
-				// Reset for desktop
-				if (typeof window.gsap !== 'undefined') {
-					window.gsap.set(nav, { height: 'auto', overflow: 'visible', autoAlpha: 1 });
-				} else {
-					nav.style.display = 'block';
-				}
-				isOpen = false;
-				toggle.classList.remove('aae-a-menu-active');
-				toggle.setAttribute('aria-expanded', 'false');
-			}
-		};
+	/* ---------- Mobile drawer ---------- */
+	if (!isHamburger || !toggle) return;
 
-		setMobileInitialState();
-		window.addEventListener('resize', setMobileInitialState);
+	const openDrawer = () => {
+		root.classList.add('aae-a-menu--open');
+		toggle.setAttribute('aria-expanded', 'true');
+		document.body.classList.add('aae-a-menu-body-lock');
+	};
 
-		toggle.addEventListener('click', (e) => {
-			e.preventDefault();
-			if (!checkMobile()) return;
+	const closeDrawer = () => {
+		root.classList.remove('aae-a-menu--open');
+		toggle.setAttribute('aria-expanded', 'false');
+		document.body.classList.remove('aae-a-menu-body-lock');
+		if (typeof closeAllSubmenus === 'function') closeAllSubmenus();
+	};
 
-			isOpen = !isOpen;
-			toggle.classList.toggle('aae-a-menu-active', isOpen);
-			toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+	toggle.addEventListener('click', (e) => {
+		e.preventDefault();
+		if (root.classList.contains('aae-a-menu--open')) closeDrawer();
+		else openDrawer();
+	});
 
-			if (typeof window.gsap !== 'undefined') {
-				if (isOpen) {
-					window.gsap.to(nav, {
-						height: 'auto',
-						autoAlpha: 1,
-						duration: 0.4,
-						ease: "power3.out"
-					});
-				} else {
-					window.gsap.to(nav, {
-						height: 0,
-						autoAlpha: 0,
-						duration: 0.3,
-						ease: "power3.in"
-					});
-				}
-			} else {
-				nav.style.display = isOpen ? 'block' : 'none';
-			}
-		});
-	}
+	if (closeBtn) closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeDrawer(); });
+	if (overlay)  overlay.addEventListener('click',  (e) => { e.preventDefault(); closeDrawer(); });
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && root.classList.contains('aae-a-menu--open')) closeDrawer();
+	});
+
+	window.addEventListener('resize', () => {
+		if (!isMobile() && root.classList.contains('aae-a-menu--open')) closeDrawer();
+	});
 };
 
 register({
 	elementType: 'e-aae-a-menu',
 	id: 'aae-a-menu-handler',
-	callback: ( { element } ) => {
-		const container = element.classList.contains('aae-a-menu') ? element : element.querySelector('.aae-a-menu');
-		if (container) {
-			initMenu(container);
-		}
-	}
+	callback: ({ element }) => {
+		const root = element.classList.contains('aae-a-menu') ? element : element.querySelector('.aae-a-menu');
+		if (root) initMenu(root);
+	},
 });
+
+/* Fallback: also init on DOMContentLoaded for non-Elementor contexts */
+const initAll = () => document.querySelectorAll('.aae-a-menu').forEach(initMenu);
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initAll);
+} else {
+	initAll();
+}

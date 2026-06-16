@@ -128,7 +128,7 @@ gulp.task('minify:atomic-css', function () {
 });
 
 // Combined tasks.
-gulp.task('buildJs', gulp.series('compile:js', 'minify:js', 'compile:atomic-js', 'minify:atomic-js'));
+gulp.task('buildJs', gulp.series('compile:js', 'minify:js', 'minify:atomic-js'));
 gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'minify:atomic-css'));
 
 gulp.task('build', gulp.series('buildCss', 'buildJs'));

@@ -154,6 +154,12 @@ final class Atomic
 	 */
 	public function is_widget_active(string $slug): bool
 	{
+		// Force internal child widgets to be active always
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
+		if (in_array($slug, $internal_widgets)) {
+			return true;
+		}
+
 		$saved = $this->get_saved_options();
 
 		return isset($saved[$slug]);
@@ -258,11 +264,106 @@ final class Atomic
 	 *  Initialisation
 	 * =================================================================== */
 
+	/* =====================================================================
+	 *  HOW TO ADD A NEW ATOMIC WIDGET
+	 * ---------------------------------------------------------------------
+	 *  Adding a new v4 atomic widget to this plugin is a 2-step edit
+	 *  inside this file (after you create the widget folder under
+	 *  inc/AtomicWidgets/Widgets/<PascalName>/). The Menu widget is the
+	 *  canonical reference — follow its exact folder structure:
+	 *
+	 *    inc/AtomicWidgets/Widgets/<PascalName>/
+	 *      ├── class-aae-a-<slug>.php   (Atomic_Widget_Base subclass)
+	 *      ├── aae-a-<slug>.html.twig   (Twig template)
+	 *      └── assets/
+	 *          ├── js/<slug>.js         (source JS — uses @elementor/frontend-handlers)
+	 *          └── scss/<slug>.scss     (source SCSS — optional)
+	 *
+	 *  Built outputs land at:
+	 *    /assets/atomic/js/<slug>.js
+	 *    /assets/atomic/css/<slug>.css
+	 *
+	 * ---------------------------------------------------------------------
+	 *  STEP 1 — Append a definition inside register_widget_definitions()
+	 *           below. This makes the widget appear as a toggle on the
+	 *           AAE dashboard so users can enable/disable it.
+	 *
+	 *      'aae-a-<slug>' => [
+	 *          'label'        => '<Human Title>',
+	 *          'description'  => '<one-line description for dashboard card>',
+	 *          'icon'         => 'eicon-<elementor-icon>',
+	 *          'is_pro'       => false,
+	 *          'is_extension' => false,
+	 *          'is_upcoming'  => false,
+	 *          'default'      => true,   // enabled on fresh installs
+	 *          'keywords'     => [ '<slug>', 'atomic', 'aae' ],
+	 *          'category'     => 'general',
+	 *          'order'        => 0,
+	 *          'demo_url'     => '',
+	 *          'doc_url'      => '',
+	 *      ],
+	 *
+	 * ---------------------------------------------------------------------
+	 *  STEP 2 — Append a mapping inside get_available_widgets() below.
+	 *           This tells Elementor which PHP class to instantiate and
+	 *           which JS/CSS handles to register.
+	 *
+	 *      'aae-a-<slug>' => [
+	 *          'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>\AAE_A_<PascalSlug>',
+	 *          'file'          => 'Widgets/<PascalName>/class-aae-a-<slug>.php',
+	 *          'script_handle' => 'aae-a-<slug>-js',
+	 *          'script_path'   => '/assets/atomic/js/<slug>.js',
+	 *          'has_script'    => true,
+	 *          'style_handle'  => 'aae-a-<slug>-css',          // omit if no SCSS
+	 *          'style_path'    => '/assets/atomic/css/<slug>.css', // omit if no SCSS
+	 *      ],
+	 *
+	 *  That's it. The loops in register_widgets(), register_atomic_scripts(),
+	 *  and register_atomic_styles() pick up the new entry automatically —
+	 *  NO further edits inside this file are needed.
+	 *
+	 * ---------------------------------------------------------------------
+	 *  CONTAINER WIDGETS (Atomic_Element_Base — like Nested Slider)
+	 *
+	 *  If your widget extends Atomic_Element_Base instead of
+	 *  Atomic_Widget_Base, omit the script bits if it has no JS, and
+	 *  register_elements() (not register_widgets()) will handle it
+	 *  automatically because is_subclass_of() routes the two.
+	 *
+	 * ---------------------------------------------------------------------
+	 *  NAMING RULES (keep these EXACT — they appear in 6+ places)
+	 *
+	 *    <slug>       lowercase kebab            e.g.  menu       / counter
+	 *    <PascalName> folder name                e.g.  Menu       / Counter
+	 *    <PascalSlug> class-name slug            e.g.  Menu       / Counter
+	 *    element type 'e-aae-a-<slug>'           e.g.  e-aae-a-menu
+	 *    PHP class    AAE_A_<PascalSlug>         e.g.  AAE_A_Menu
+	 *    namespace    WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>
+	 *    dashboard    'aae-a-<slug>'             (key in both arrays below)
+	 *    JS handle    'aae-a-<slug>-js'
+	 *    CSS handle   'aae-a-<slug>-css'
+	 *
+	 * ---------------------------------------------------------------------
+	 *  COMMON MISTAKES
+	 *
+	 *  - Toggle visible but widget not in Elementor panel ........... missing entry in get_available_widgets()
+	 *  - Widget not in dashboard at all ............................. missing entry in register_widget_definitions()
+	 *  - "Prop 'foo' not defined in schema" ......................... bind_to('foo') without matching key in define_props_schema()
+	 *  - Twig renders blank in editor ............................... get_templates() key must be 'elementor/elements/aae-a-<slug>' (NO 'e-' prefix on key)
+	 *  - JS doesn't fire on frontend ................................ register() elementType in source JS must equal get_element_type() ('e-aae-a-<slug>')
+	 *  - CSS missing on frontend .................................... style_handle / style_path not set OR build pipeline didn't emit /assets/atomic/css/<slug>.css
+	 *
+	 * =================================================================== */
+
 	/**
 	 * Register all available atomic widget definitions.
 	 *
-	 * This is the dummy/test array the user requested.
-	 * Replace or extend with real widget classes later.
+	 * This array drives the AAE dashboard toggle UI. Each entry here is
+	 * rendered as a card with an on/off switch — toggling on then calls
+	 * Elementor's register_widgets() through is_widget_active().
+	 *
+	 * To add a new widget, append an entry here AND in get_available_widgets().
+	 * See the "HOW TO ADD A NEW ATOMIC WIDGET" comment block above.
 	 */
 	private function register_widget_definitions(): void
 	{
@@ -432,28 +533,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-toggle-switcher' => [
-				'label'        => 'Toggle Switcher',
-				'description'  => 'A two-state toggle switcher for displaying alternating content panels.',
-				'icon'         => 'eicon-toggle',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle',
-					'switcher',
-					'switch',
-					'tabs',
-					'pricing',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 2,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-atomic-image-box' => [
 				'label'        => 'Image Box',
 				'description'  => 'An atomic image box widget combining image, heading, and description with animation support.',
@@ -536,6 +615,84 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 5,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-accordion' => [
+				'label'        => 'Accordion',
+				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
+				'icon'         => 'eicon-accordion',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'accordion',
+					'tabs',
+					'toggle',
+					'atomic',
+					'gsap',
+				],
+				'category'     => 'general',
+				'order'        => 6,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-accordion-item' => [
+				'label'        => 'Accordion Item',
+				'description'  => 'Internal child container for Accordion.',
+				'icon'         => 'eicon-accordion',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'accordion item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 7,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-icon-list' => [
+				'label'        => 'Icon List',
+				'description'  => 'An atomic icon list widget with custom icons, text, and link support.',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'list',
+					'icon',
+					'bullet',
+					'atomic',
+					'item',
+				],
+				'category'     => 'general',
+				'order'        => 8,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-icon-list-item' => [
+				'label'        => 'Icon List Item',
+				'description'  => 'Internal child item for Icon List.',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'list item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 9,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -775,7 +932,23 @@ final class Atomic
 
 	/**
 	 * Define all available atomic widgets and their scripts.
-	 * Simply add a new array entry here when creating a new widget!
+	 *
+	 * STEP 2 of adding a new widget — append a new entry to the returned
+	 * array using the key 'aae-a-<slug>' (must match the dashboard slug in
+	 * register_widget_definitions()).
+	 *
+	 *   'aae-a-<slug>' => [
+	 *       'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>\AAE_A_<PascalSlug>',
+	 *       'file'          => 'Widgets/<PascalName>/class-aae-a-<slug>.php',
+	 *       'script_handle' => 'aae-a-<slug>-js',
+	 *       'script_path'   => '/assets/atomic/js/<slug>.js',
+	 *       'has_script'    => true,
+	 *       'style_handle'  => 'aae-a-<slug>-css',          // omit if no SCSS
+	 *       'style_path'    => '/assets/atomic/css/<slug>.css',
+	 *   ],
+	 *
+	 * See the full "HOW TO ADD A NEW ATOMIC WIDGET" block above
+	 * register_widget_definitions() for the complete walkthrough.
 	 */
 	protected function get_available_widgets()
 	{
@@ -823,7 +996,7 @@ final class Atomic
 				'style_handle' => 'aae-a-post-image-css',
 				'style_path' => '/assets/atomic/css/post-image.css',
 			],
-
+			
 			'aae-a-posts' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
@@ -833,27 +1006,35 @@ final class Atomic
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
-
-			'aae-atomic-button' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
-				'file'  => 'Widgets/Button/class-aae-atomic-button.php',
+			
+			'aae-a-accordion' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
+				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
+				'script_handle' => 'aae-a-accordion-js',
+				'script_path' => '/assets/atomic/js/accordion.js',
 				'has_script' => true,
-				'script_handle' => 'aae-a-button-js',
-				'script_path' => '/assets/atomic/js/button.js',
-				'style_handle' => 'aae-a-button-css',
-				'style_path' => '/assets/atomic/js/button.css',
+				'style_handle' => 'aae-a-accordion-css',
+				'style_path' => '/assets/atomic/css/accordion.css',
+			],
+			
+			'aae-a-accordion-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
+				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
+				'has_script' => false,
 			],
 
-			'aae-a-toggle-switcher' => [
-				'class'          => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
-				'file'           => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
-				'has_script'     => true,
-				'script_handle'  => 'aae-a-toggle-switcher-js',
-				'script_path'    => '/assets/atomic/js/toggle-switcher.js',
-				'style_handle'   => 'aae-a-toggle-switcher-css',
-				'style_path'     => '/assets/atomic/js/toggle-switcher.css',
+			'aae-a-icon-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-icon-list-css',
+				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-
+			'aae-a-icon-list-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+				'has_script' => false,
+			],
 			// Add new atomic widgets below...
 		];
 	}
@@ -867,7 +1048,11 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
-				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (! file_exists($file_path)) {
+					continue; // Skip missing widget files gracefully.
+				}
+				require_once $file_path;
 				if (class_exists($widget_data['class']) && is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
 					$widgets_manager->register(new $widget_data['class']());
 				}
@@ -884,7 +1069,11 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
-				require_once wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				if (! file_exists($file_path)) {
+					continue; // Skip missing widget files gracefully.
+				}
+				require_once $file_path;
 				if (class_exists($widget_data['class']) && !is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
 					$elements_manager->register_element_type(new $widget_data['class']());
 				}
@@ -892,19 +1081,25 @@ final class Atomic
 		}
 	}
 
-	/**
-	 * Register frontend scripts for active atomic widgets.
-	 */
 	public function register_atomic_scripts($loader)
 	{
 
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
+				$path = $widget_data['script_path'];
+				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+					$min_path = str_replace( '.js', '.min.js', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						$path = $min_path;
+					}
+				}
+				$file_path = WCF_ADDONS_PATH . $path;
+				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_script(
 					$widget_data['script_handle'],
-					WCF_ADDONS_URL . $widget_data['script_path'],
+					WCF_ADDONS_URL . $path,
 					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
-					'1.0.0',
+					$version,
 					true
 				);
 			}
@@ -918,11 +1113,20 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
+				$path = $widget_data['style_path'];
+				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+					$min_path = str_replace( '.css', '.min.css', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						$path = $min_path;
+					}
+				}
+				$file_path = WCF_ADDONS_PATH . $path;
+				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_style(
 					$widget_data['style_handle'],
-					WCF_ADDONS_URL . $widget_data['style_path'],
+					WCF_ADDONS_URL . $path,
 					[],
-					'1.0.0'
+					$version
 				);
 			}
 		}
@@ -1113,65 +1317,43 @@ final class Atomic
 	}
 
 	/**
-	 * Seed widget defaults on first install; merge new default widgets on upgrades.
+	 * On first activation (option does not exist), seed with defaults.
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		$existing = \get_option(self::OPTION_NAME);
-
-		if (false === $existing) {
-			$defaults = [];
-			foreach ($this->widgets_registry as $slug => $def) {
-				if (! empty($def['default'])) {
-					$defaults[$slug] = true;
-				}
-			}
-			\add_option(self::OPTION_NAME, $defaults, '', false);
-			return;
+		if (false !== get_option(self::OPTION_NAME)) {
+			return; // Already seeded.
 		}
 
-		// Merge any newly registered widgets (with default => true) that are not
-		// yet present in the saved option so they activate automatically on upgrade.
-		$merged  = false;
+		$defaults = [];
+
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default']) && ! \array_key_exists($slug, $existing)) {
-				$existing[$slug] = true;
-				$merged          = true;
+			if (! empty($def['default'])) {
+				$defaults[$slug] = true;
 			}
 		}
-		if ($merged) {
-			\update_option(self::OPTION_NAME, $existing);
-		}
+
+		add_option(self::OPTION_NAME, $defaults, '', false);
 	}
 
 	/**
-	 * Seed extension defaults on first install; merge new default extensions on upgrades.
+	 * On first activation (option does not exist), seed extension defaults.
 	 */
 	private function maybe_seed_extension_defaults(): void
 	{
-		$existing = \get_option(self::EXTENSIONS_OPTION_NAME);
-
-		if (false === $existing) {
-			$defaults = [];
-			foreach ($this->extensions_registry as $slug => $def) {
-				if (! empty($def['default'])) {
-					$defaults[$slug] = true;
-				}
-			}
-			\add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
+		if (false !== get_option(self::EXTENSIONS_OPTION_NAME)) {
 			return;
 		}
 
-		$merged = false;
+		$defaults = [];
+
 		foreach ($this->extensions_registry as $slug => $def) {
-			if (! empty($def['default']) && ! \array_key_exists($slug, $existing)) {
-				$existing[$slug] = true;
-				$merged          = true;
+			if (! empty($def['default'])) {
+				$defaults[$slug] = true;
 			}
 		}
-		if ($merged) {
-			\update_option(self::EXTENSIONS_OPTION_NAME, $existing);
-		}
+
+		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
 	}
 }
 
