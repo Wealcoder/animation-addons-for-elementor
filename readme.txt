@@ -603,6 +603,15 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.8 – 16th June 2026
+
+  - **Fixed:** Image Gallery - Lightbox doesn’t work, Now its working perfectly.
+
+= 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
+
+  - **Improved:** Text Domain Mismatch at Image Accordion, Advanced Pricing Table and Weather widgets.
+  - **Improved:** WPML Compatibility at Post social share and Image Accordion widget.
+  - **Fixed:** security fixed in Image and Loop Grid Widget.
 = 🌀 Animation Addons for Elementor v2.6.6 – 23th May 2026 =
 
   - **Fixed:** Button icon size was not working properly, it now works correctly.
