@@ -436,7 +436,7 @@ class Plugin
 				),
 				'image-gallery'        => array(
 					'handler' => 'wcf--image-gallery-js',
-					'src'     => 'widgets/image-gallery.js',
+					'src'     => 'widgets/image-gallery.min.js',
 					'dep'     => array('jquery'),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,

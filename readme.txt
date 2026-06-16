@@ -603,88 +603,97 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= 🌀 Animation Addons for Elementor v2.6.6 – 23th May 2026
+= 🌀 Animation Addons for Elementor v2.6.8 – 16th June 2026
 
-    - Fixed: Button icon size was not working properly, it now works correctly.
-    - Improved: Button — All icon-related fields are now dependent on the icon being enabled.
-    - Improved: Advanced Button - All Icon-related fields are now dependent on the icon being enabled.
-    - Imporoved : DisableEditor Mode Field order changes and UI more user-friendly.
-    - Improved: Nav Menu- Each Items Of Menu  are now full block clickable and Submenu working fine.
+  - **Fixed:** Image Gallery - Lightbox doesn’t work, Now its working perfectly.
 
-= 🌀 Animation Addons for Elementor v2.6.5 – 19th May 2026
-    - Fixed : Icon Box- Icon Hover Style add for Control Icon Hover Effect
-    - Fixed: Advance accordion- Close and Open Icon doesn't properly Synchronize. Now working fine.
-    - Imporoved : Animated-Heading- Text Decoration no need in heading style settings.
+= 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
 
-= 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026
+  - **Improved:** Text Domain Mismatch at Image Accordion, Advanced Pricing Table and Weather widgets.
+  - **Improved:** WPML Compatibility at Post social share and Image Accordion widget.
+  - **Fixed:** security fixed in Image and Loop Grid Widget.
+= 🌀 Animation Addons for Elementor v2.6.6 – 23th May 2026 =
+
+  - **Fixed:** Button icon size was not working properly, it now works correctly.
+  - **Improved:** Button — All icon-related fields are now dependent on the icon being enabled.
+  - **Improved:** Advanced Button - All Icon-related fields are now dependent on the icon being enabled.
+  - **Improved:** DisableEditor Mode Field order changes and UI more user-friendly.
+  - **Improved:** Nav Menu- Each Items Of Menu  are now full block clickable and Submenu working fine.
+
+= 🌀 Animation Addons for Elementor v2.6.5 – 19th May 2026 =
+  - **Fixed:** Icon Box- Icon Hover Style add for Control Icon Hover Effect
+  - **Fixed:** Advance accordion- Close and Open Icon doesn't properly Synchronize. Now working fine.
+  - **Improved:** Animated-Heading- Text Decoration no need in heading style settings.
+
+= 🌀 Animation Addons for Elementor v2.6.4 – 4th May 2026 =
   
-    - Improved: Widget Categories Toggle Position reorder.
+  - **Improved:** Widget Categories Toggle Position reorder.
     
-= 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026
+= 🌀 Animation Addons for Elementor v2.6.3 – 20th April 2026 =
   
-    - Added: Lightbox Feature Added at  Image Gallery Widget
-    - Imporoved: Dashboard Performance Improved.
-    - Added: Brand Slider Widget- New control auto slide width
+  - **Added:** Lightbox Feature Added at  Image Gallery Widget
+  - **Improved:** Dashboard Performance Improved.
+  - **Added:** Brand Slider Widget- New control auto slide width
 
-= 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026
-  - Added: Language Support at Dashboard.
-  - Improved: Moderate performance issues solved in both the builder and frontend.
+= 🌀 Animation Addons for Elementor v2.6.2 – 9th April 2026 =
+  - **Added:** Language Support at Dashboard.
+  - **Improved:** Moderate performance issues solved in both the builder and frontend.
 
-= 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026
+= 🌀 Animation Addons for Elementor v2.6.1 – 1st April 2026 =
 
-    - Fixed: Single Post Template Issues.
+  - **Fixed:** Single Post Template Issues.
     
-= 🌀 Animation Addons for Elementor v2.6.0 – 29th March 2026
+= 🌀 Animation Addons for Elementor v2.6.0 – 29th March 2026 =
 
-    - Fixed: React Lazyload issues.
-    - Improved: Modarate performance issues solved in both the builder and frontend.
+  - **Fixed:** React Lazyload issues.
+  - **Improved:** Modarate performance issues solved in both the builder and frontend.
     
-= 🌀 Animation Addons for Elementor v2.5.9 – 16th March 2026
+= 🌀 Animation Addons for Elementor v2.5.9 – 16th March 2026 =
 
-    - Improved: Boost performance in both the builder and frontend.
+  - **Improved:** Boost performance in both the builder and frontend.
 
-= 🌀 Animation Addons for Elementor v2.5.8 – 12th March 2026
+= 🌀 Animation Addons for Elementor v2.5.8 – 12th March 2026 =
 
-    - Fixed: Nav menu widget conflict issues.
+  - **Fixed:** Nav menu widget conflict issues.
 
-= 🌀 Animation Addons for Elementor v2.5.7 – 10th March 2026
+= 🌀 Animation Addons for Elementor v2.5.7 – 10th March 2026 =
 
-    - Fixed: Starter Animation conflict issues.
+  - **Fixed:** Starter Animation conflict issues.
     
-= 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026
+= 🌀 Animation Addons for Elementor v2.5.6 – 5th March 2026 =
 
   - **Fixed:** Starter Animation Issue Fixed.
   - **Fixed:** Loop grid widget conflict with Elmentor Loop grid issue fixed.
   - **Imporved:** Starter Animation Dependancy remove as extension.
 
-= 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026
+= 🌀 Animation Addons for Elementor v2.5.5 – 22th February 2026 =
 
   - **Added:** New Free Starter Animation For Text, Image, Container .
   - **Added:** Advanced Pricing Table -New Widget Introduce.
   - **Added:** Weather -New Widget Introduce.
   - **Added:** 27 Free templates.
 
-= 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026
+= 🌀 Animation Addons for Elementor v2.5.4 – 16th February 2026 =
 
   - **Improved:** Cleaned up unnecessary code
   - **Added:** 3+ Section's Added.
   
-= 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026
+= 🌀 Animation Addons for Elementor v2.5.3 – 1st February 2026 =
 
   - **Feature:** Add WPML Support for All Widgets.
   - **Feature:** Add None Option of Ease Field at Animation Extension section.
 
-= 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026
+= 🌀 Animation Addons for Elementor v2.5.2 – 26 January 2026 =
 
   - **Updated:** Extensions Icons
   - **Fixed:** Filterable Slider issue
 
-= 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026
+= 🌀 Animation Addons for Elementor v2.5.1 – 19 January 2026 =
 
   - **Fix:** ScrollSmoother saving issue
 
 
-= 🌀 Animation Addons for Elementor v2.5.0 – 18 January 2026
+= 🌀 Animation Addons for Elementor v2.5.0 – 18 January 2026 =
 
   - **Fix:** Dashboard RTL issues
   - **Fix:** Korean Language design load issue
@@ -692,17 +701,17 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - **Added:** ScrollSmoother responsive Controls
   - **Added:** Animated Heading Color Mode
 
-= 🌀 Animation Addons for Elementor v2.4.9 – 04 Jan 2026
+= 🌀 Animation Addons for Elementor v2.4.9 – 04 Jan 2026 =
 
   - **Fix:** Stacking Card Url 
   - **Fix:** Dynamic Tag for taxonomy page
 
-= 🌀 Animation Addons for Elementor v2.4.8 – 28 December 2025
+= 🌀 Animation Addons for Elementor v2.4.8 – 28 December 2025 =
 
   - **Fix:** ThemeBuilder slug and id while import demo
   - **Fix:** Add Dynamic Tag support in several widgets
 
-= 🌀 Animation Addons for Elementor v2.4.7 – 08 Dec 2025
+= 🌀 Animation Addons for Elementor v2.4.7 – 08 Dec 2025 =
 
 - **Fix: Animation Markup Control**  
   Resolved an issue where animation markup controls were not rendering correctly, ensuring smoother and more consistent animation behavior.
@@ -710,13 +719,13 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 - **Fix: Theme Builder – Header/Footer Condition**  
   Improved the trigger logic so header and footer conditions now work properly across all layouts.
 
-= 🌀 Animation Addons for Elementor v2.4.6 – 01 Dec 2025
+= 🌀 Animation Addons for Elementor v2.4.6 – 01 Dec 2025 =
 
    - **Fix: Widget** - Loop grid style
    - **Fix: Widget** - Youtube video
    - **Fix: Widget** - Grid hover post responsive
 
-= 🌀 Animation Addons for Elementor v2.4.5 – 19 November 2025
+= 🌀 Animation Addons for Elementor v2.4.5 – 19 November 2025 =
 
   - **Feature:** Add new widget Loop Builder
   - **Feature:** Add Dynamic Tag support in several widgets
@@ -740,11 +749,11 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - **Security:** Fix some sanitizing and escaping issues
   - **Added:** 15+ RTL Website templates 
 
-= 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025
+= 🌀 Animation Addons for Elementor v2.4.4 – 06 November 2025 =
 
   - 🎨 **Added:** BlackFriday Offer  
 
-= 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025
+= 🌀 Animation Addons for Elementor v2.4.3 – 02 November 2025 =
   
   - 🪟 **Offcanvas Widget:** Added new control options, updated markup for better flexibility, optimized CSS, and replaced jQuery with lightweight JavaScript for enhanced speed.
 
@@ -756,20 +765,20 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
   - 🖼️ **Image Accordion Widget:** Fixed functionality issues and completely refactored to vanilla JavaScript.
   - 🔘 **Toggle Switcher:** Resolved toggle issues and refactored to pure JavaScript.
 
-= 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025
-    - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
+= 🌀 Animation Addons for Elementor v2.4.2 – 27 October 2025 =
+  - 🎨 **Fixed:** Dashboard ScrollSmother Settings  
 
-= 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025
+= 🌀 Animation Addons for Elementor v2.4.1 – 26 October 2025 =
   - 🧩 **Added:** Dashboard new widget  
 
-= 🌀 Animation Addons for Elementor v2.4.0 – 23 October 2025
+= 🌀 Animation Addons for Elementor v2.4.0 – 23 October 2025 =
   - 🧩 **Improved:** Dashboard interface
   - 🧩 **Improved:** Notice interface
 
-= 🌀 Animation Addons for Elementor v2.3.15 – 13 October 2025
+= 🌀 Animation Addons for Elementor v2.3.15 – 13 October 2025 =
   - 🧩 **Fixed:** Resolved js on demand object
 
-= 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025
+= 🌀 Animation Addons for Elementor v2.3.14 – 12 October 2025 =
 
   - ⚡ **Improved:** On-demand JS loading for **Contact Form 7**, **Toggle Switcher**, and **Counter** widgets for faster performance.  
   - 📦 **Improved:** **Section Import Library** for smoother and more efficient section imports.  
