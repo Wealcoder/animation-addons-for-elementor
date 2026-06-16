@@ -1,0 +1,38 @@
+{# Outer wrapper — data attributes are required by Elementor's atomic element system #}
+<div class="aae-atomic-toggle-switcher e-atomic-element {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | default('') | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+
+    <div class="wcf__toggle_switcher style-{{ settings.switcher_style | default('1') }}">
+
+        <div class="slide-toggle-wrapper">
+            <label for="aae-toggle-{{ id }}" class="before_label active">
+                {{ settings.item1_title | default('Monthly') | e }}
+            </label>
+            <input type="checkbox" id="aae-toggle-{{ id }}">
+            <label for="aae-toggle-{{ id }}" class="switcher"></label>
+            <label for="aae-toggle-{{ id }}" class="after_label">
+                {{ settings.item2_title | default('Yearly') | e }}
+            </label>
+        </div>
+
+        <div class="toggle-content">
+            <div class="toggle-pane show">
+                {{ settings.item1_content | default('') | raw }}
+            </div>
+            <div class="toggle-pane">
+                {{ settings.item2_content | default('') | raw }}
+            </div>
+        </div>
+
+    </div>
+
+</div>

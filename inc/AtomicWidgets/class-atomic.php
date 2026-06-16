@@ -432,6 +432,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-toggle-switcher' => [
+				'label'        => 'Toggle Switcher',
+				'description'  => 'A two-state toggle switcher for displaying alternating content panels.',
+				'icon'         => 'eicon-toggle',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle',
+					'switcher',
+					'switch',
+					'tabs',
+					'pricing',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 2,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-atomic-image-box' => [
 				'label'        => 'Image Box',
 				'description'  => 'An atomic image box widget combining image, heading, and description with animation support.',
@@ -812,13 +834,6 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
 
-			// 'aae-atomic-button' => [
-			// 	'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
-			// 	'file'  => 'Widgets/Button/class-aae-atomic-button.php',
-			// 	'has_script' => false,
-			// ],
-
-
 			'aae-atomic-button' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_Atomic_Button',
 				'file'  => 'Widgets/Button/class-aae-atomic-button.php',
@@ -827,6 +842,16 @@ final class Atomic
 				'script_path' => '/assets/atomic/js/button.js',
 				'style_handle' => 'aae-a-button-css',
 				'style_path' => '/assets/atomic/js/button.css',
+			],
+
+			'aae-a-toggle-switcher' => [
+				'class'          => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
+				'file'           => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
+				'has_script'     => true,
+				'script_handle'  => 'aae-a-toggle-switcher-js',
+				'script_path'    => '/assets/atomic/js/toggle-switcher.js',
+				'style_handle'   => 'aae-a-toggle-switcher-css',
+				'style_path'     => '/assets/atomic/js/toggle-switcher.css',
 			],
 
 			// Add new atomic widgets below...
@@ -1088,43 +1113,65 @@ final class Atomic
 	}
 
 	/**
-	 * On first activation (option does not exist), seed with defaults.
+	 * Seed widget defaults on first install; merge new default widgets on upgrades.
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		if (false !== get_option(self::OPTION_NAME)) {
-			return; // Already seeded.
-		}
+		$existing = \get_option(self::OPTION_NAME);
 
-		$defaults = [];
-
-		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
+		if (false === $existing) {
+			$defaults = [];
+			foreach ($this->widgets_registry as $slug => $def) {
+				if (! empty($def['default'])) {
+					$defaults[$slug] = true;
+				}
 			}
-		}
-
-		add_option(self::OPTION_NAME, $defaults, '', false);
-	}
-
-	/**
-	 * On first activation (option does not exist), seed extension defaults.
-	 */
-	private function maybe_seed_extension_defaults(): void
-	{
-		if (false !== get_option(self::EXTENSIONS_OPTION_NAME)) {
+			\add_option(self::OPTION_NAME, $defaults, '', false);
 			return;
 		}
 
-		$defaults = [];
-
-		foreach ($this->extensions_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
+		// Merge any newly registered widgets (with default => true) that are not
+		// yet present in the saved option so they activate automatically on upgrade.
+		$merged  = false;
+		foreach ($this->widgets_registry as $slug => $def) {
+			if (! empty($def['default']) && ! \array_key_exists($slug, $existing)) {
+				$existing[$slug] = true;
+				$merged          = true;
 			}
 		}
+		if ($merged) {
+			\update_option(self::OPTION_NAME, $existing);
+		}
+	}
 
-		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
+	/**
+	 * Seed extension defaults on first install; merge new default extensions on upgrades.
+	 */
+	private function maybe_seed_extension_defaults(): void
+	{
+		$existing = \get_option(self::EXTENSIONS_OPTION_NAME);
+
+		if (false === $existing) {
+			$defaults = [];
+			foreach ($this->extensions_registry as $slug => $def) {
+				if (! empty($def['default'])) {
+					$defaults[$slug] = true;
+				}
+			}
+			\add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
+			return;
+		}
+
+		$merged = false;
+		foreach ($this->extensions_registry as $slug => $def) {
+			if (! empty($def['default']) && ! \array_key_exists($slug, $existing)) {
+				$existing[$slug] = true;
+				$merged          = true;
+			}
+		}
+		if ($merged) {
+			\update_option(self::EXTENSIONS_OPTION_NAME, $existing);
+		}
 	}
 }
 

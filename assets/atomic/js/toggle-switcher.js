@@ -1,0 +1,131 @@
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss":
+/*!***********************************************************************************!*\
+  !*** ./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "@elementor/frontend-handlers":
+/*!***************************************************!*\
+  !*** external ["elementorV2","frontendHandlers"] ***!
+  \***************************************************/
+/***/ (function(module) {
+
+module.exports = elementorV2.frontendHandlers;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Check if module exists (development only)
+/******/ 		if (__webpack_modules__[moduleId] === undefined) {
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+!function() {
+/*!*******************************************************************************!*\
+  !*** ./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/js/toggle-switcher.js ***!
+  \*******************************************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
+/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _scss_toggle_switcher_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/toggle-switcher.scss */ "./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss");
+
+
+const initToggleSwitcher = container => {
+  const inputs = container.querySelectorAll('input[type="checkbox"]');
+  const togglePanes = container.querySelectorAll('.toggle-pane');
+  const toggleLabels = container.querySelectorAll('.before_label, .after_label');
+  inputs.forEach(input => {
+    input.addEventListener('change', () => {
+      togglePanes.forEach(pane => pane.classList.toggle('show'));
+      toggleLabels.forEach(label => label.classList.toggle('active'));
+    });
+  });
+};
+(0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
+  handler: initToggleSwitcher,
+  widgetType: 'e-aae-a-toggle-switcher'
+});
+}();
+/******/ })()
+;
+//# sourceMappingURL=toggle-switcher.js.map
