@@ -92,8 +92,6 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
         reject(e);
     }
 }));
-<<<<<<< Updated upstream
-=======
 
 const gulpZip = require('gulp-zip').default;
 const path = require('path');
@@ -162,4 +160,3 @@ gulp.task('release', gulp.series(
     'build',
     'zip'
 ));
->>>>>>> Stashed changes
