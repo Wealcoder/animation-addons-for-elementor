@@ -257,14 +257,22 @@ class AAE_Atomic_Button extends Atomic_Widget_Base
 
 	protected function define_base_styles(): array
 	{
+		$button_styles = [
+			'display'         => String_Prop_Type::generate( 'inline-flex' ),
+			'align-items'     => String_Prop_Type::generate( 'center' ),
+			'justify-content' => String_Prop_Type::generate( 'center' ),
+			'font-size'       => String_Prop_Type::generate( '16px' ),
+			'font-weight'     => String_Prop_Type::generate( '500' ),
+			'line-height'     => String_Prop_Type::generate( '1' ),
+			'text-decoration' => String_Prop_Type::generate( 'none' ),
+			'cursor'          => String_Prop_Type::generate( 'pointer' ),
+			'transition'      => String_Prop_Type::generate( 'all 0.3s' ),
+			'outline'         => String_Prop_Type::generate( 'none' ),
+		];
+
 		return [
 			'base' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop('display', 'inline-flex')
-						->add_prop('align-items', 'center')
-						->add_prop('justify-content', 'center')
-				),
+				->add_variant( Style_Variant::make()->add_props( $button_styles ) ),
 		];
 	}
 

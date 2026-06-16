@@ -22,51 +22,22 @@
     mask-position: 0 0;
   }
 }
-.wcf__btn i {
-  transition: all 0.3s;
-}
-.wcf__btn svg {
-  width: 1em;
-  height: 1em;
-}
-.wcf__btn .aae-btn-icon-svg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.wcf__btn .aae-btn-icon-svg svg {
+.aae-a-button svg,
+.aae-a-button svg path,
+.aae-btn-main svg,
+.aae-btn-main svg path,
+.aae--btn-pro svg,
+.aae--btn-pro svg path,
+.btn-text-flip svg,
+.btn-text-flip svg path,
+.aae-btn-pro-group svg,
+.aae-btn-pro-group svg path {
   fill: currentColor;
-  width: 100% !important;
-  height: 100% !important;
-}
-.wcf__btn a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 16px;
-  line-height: 1;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-.wcf__btn.icon-position-after i,
-.wcf__btn.icon-position-after .aae-btn-icon-svg {
-  order: 15;
-}
-.wcf__btn.icon-position-after .wcf-btn-mask::after {
-  align-items: flex-start;
-  justify-content: flex-start;
 }
 
-.aae-btn-main .aae-btn-icon-svg {
-  fill: currentColor;
-}
-.aae-btn-main .aae-btn-icon-svg svg {
-  fill: currentColor;
-}
-.aae-btn-main .aae-btn-icon-svg svg path {
-  fill: currentColor;
+.aae-a-button svg {
+  width: 1em;
+  height: 1em;
 }
 
 .aae--btn-pro .icon {
@@ -75,18 +46,9 @@
   width: var(--aae-btn-icon-size, 1em);
   height: var(--aae-btn-icon-size, 1em);
   color: var(--aae-btn-icon-color, inherit);
-  fill: var(--aae-btn-icon-color, inherit);
-  fill: currentColor;
-}
-.aae--btn-pro .icon svg {
-  fill: currentColor;
-}
-.aae--btn-pro .icon svg path {
-  fill: currentColor;
 }
 
 .btn-text-flip svg {
-  fill: currentColor;
   line-height: 0;
   font-size: var(--aae-btn-icon-size, 1em);
   width: var(--aae-btn-icon-size, 1em) !important;
@@ -94,12 +56,8 @@
   color: var(--aae-btn-icon-color, inherit);
   fill: var(--aae-btn-icon-color, inherit);
 }
-.btn-text-flip svg path {
-  fill: currentColor;
-}
 
 .wcf-btn-default {
-  padding: 17px 35px;
   border: 1px solid var(--aae-btn-border-color, #1C1D20);
   background-color: var(--aae-btn-bg, transparent);
   overflow: hidden;
@@ -516,10 +474,6 @@
 
 .aae--btn-pro {
   gap: 5px;
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.3s;
-  outline: none;
 }
 
 /* Style One — border divide */
@@ -619,8 +573,6 @@
 
 /* Style Four — JS ripple at cursor position */
 .style-4 .aae--btn-pro {
-  font-weight: 500;
-  font-size: 16px;
   text-align: center;
   color: var(--aae-btn-color, #fca2a2);
   background-color: var(--aae-btn-bg, #121212);
@@ -709,12 +661,6 @@
   align-items: center;
   justify-content: center;
   transition: all 0.5s;
-}
-.aae-btn-pro-group .g-btn-icon svg {
-  fill: currentColor;
-}
-.aae-btn-pro-group .g-btn-icon svg path {
-  fill: currentColor;
 }
 
 .aae-btn-pro-group > *:nth-child(2) {

@@ -25,75 +25,27 @@
   }
 }
 
-// Style
-.wcf__btn {
-  i {
-    transition: all 0.3s;
+// SVG fill follows text color in all button variants
+.aae-a-button,
+.aae-btn-main,
+.aae--btn-pro,
+.btn-text-flip,
+.aae-btn-pro-group {
+  svg,
+  svg path {
+    fill: currentColor;
   }
+}
 
+// SVG size — relative to button text in the container-based widget
+.aae-a-button {
   svg {
     width: 1em;
     height: 1em;
   }
-
-  // SVG icon wrapper — inline-flex so width/height from inline style take effect
-  .aae-btn-icon-svg {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    svg {
-      fill: currentColor;
-      width: 100% !important;
-      height: 100% !important;
-
-      // path {
-      //   fill: currentColor;
-      // }
-
-    }
-  }
-
-  a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 16px;
-    line-height: 1;
-    font-weight: 500;
-    transition: all 0.3s;
-    // color: var(--aae-btn-color, inherit);
-  }
-
-  &.icon-position-after {
-    i,
-    .aae-btn-icon-svg {
-      order: 15;
-    }
-
-    .wcf-btn-mask::after {
-      align-items: flex-start;
-      justify-content: flex-start;
-    }
-  }
 }
 
-// ___ manage icon color _____________________________________________________________
-
-.aae-btn-main {
-  .aae-btn-icon-svg {
-    fill: currentColor;
-    svg {
-      fill: currentColor;
-      path {
-        fill: currentColor;
-      }
-    }
-  }
-}
-
+// Icon size/color for classic and pro .icon spans
 .aae--btn-pro {
   .icon {
     line-height: 0;
@@ -101,37 +53,17 @@
     width: var(--aae-btn-icon-size, 1em);
     height: var(--aae-btn-icon-size, 1em);
     color: var(--aae-btn-icon-color, inherit);
-    fill: var(--aae-btn-icon-color, inherit);
-    fill: currentColor;
-    svg {
-      fill: currentColor;
-      path {
-        fill: currentColor;
-      }
-    }
   }
-
-  // svg {
-  //   fill: currentColor;
-  //   path {
-  //     fill: currentColor;
-  //   }
-  // }
-
 }
 
 .btn-text-flip {
-    svg {
-    fill: currentColor;
+  svg {
     line-height: 0;
     font-size: var(--aae-btn-icon-size, 1em);
     width: var(--aae-btn-icon-size, 1em) !important;
     height: var(--aae-btn-icon-size, 1em) !important;
     color: var(--aae-btn-icon-color, inherit);
     fill: var(--aae-btn-icon-color, inherit);
-    path {
-      fill: currentColor;
-    }
   }
 }
 
@@ -141,7 +73,6 @@
 
 .wcf-btn {
   &-default {
-    padding: 17px 35px;
     border: 1px solid var(--aae-btn-border-color, #1C1D20);
     background-color: var(--aae-btn-bg, transparent);
     overflow: hidden;
@@ -631,34 +562,8 @@
 // Mirrors assets/src/scss/widgets/button-pro.scss
 // ─────────────────────────────────────────────
 
-// .aae--btn-pro-wrapper {
-//   svg {
-//     width: 1em;
-//     height: 1em;
-//     fill: currentColor;
-
-//     // path {
-//     //   fill: currentColor;
-//     // }
-
-//   }
-
-//   .icon {
-//     line-height: 0;
-//     font-size: var(--aae-btn-icon-size, 1em);
-//     width: var(--aae-btn-icon-size, 1em);
-//     height: var(--aae-btn-icon-size, 1em);
-//     color: var(--aae-btn-icon-color, inherit);
-//     fill: var(--aae-btn-icon-color, inherit);
-//   }
-// }
-
 .aae--btn-pro {
   gap: 5px;
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.3s;
-  outline: none;
 }
 
 /* Style One — border divide */
@@ -780,8 +685,6 @@
 /* Style Four — JS ripple at cursor position */
 .style-4 {
   .aae--btn-pro {
-    font-weight: 500;
-    font-size: 16px;
     text-align: center;
     color: var(--aae-btn-color, #fca2a2);
     background-color: var(--aae-btn-bg, #121212);
@@ -877,14 +780,6 @@
     align-items: center;
     justify-content: center;
     transition: all 0.5s;
-
-    svg {
-      fill: currentColor;
-      path {
-        fill: currentColor;
-      }
-    }
-
   }
 }
 

@@ -512,7 +512,7 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-atomic-button' => [
+			'aae-a-button' => [
 				'label'        => 'Button',
 				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
 				'icon'         => 'wcf-icon-Button',
@@ -996,7 +996,7 @@ final class Atomic
 				'style_handle' => 'aae-a-post-image-css',
 				'style_path' => '/assets/atomic/css/post-image.css',
 			],
-			
+
 			'aae-a-posts' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
@@ -1006,7 +1006,7 @@ final class Atomic
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
-			
+
 			'aae-a-accordion' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
@@ -1016,7 +1016,7 @@ final class Atomic
 				'style_handle' => 'aae-a-accordion-css',
 				'style_path' => '/assets/atomic/css/accordion.css',
 			],
-			
+
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
@@ -1034,6 +1034,16 @@ final class Atomic
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
 				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
 				'has_script' => false,
+			],
+
+			'aae-a-button' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
+				'file'          => 'Widgets/Button/class-aae-a-button.php',
+				'script_handle' => 'aae-a-button-js',
+				'script_path'   => '/assets/atomic/js/button.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-button-css',
+				'style_path'    => '/assets/atomic/js/button.css',
 			],
 			// Add new atomic widgets below...
 		];
@@ -1087,9 +1097,9 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
 				$path = $widget_data['script_path'];
-				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
-					$min_path = str_replace( '.js', '.min.js', $path );
-					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+				if (! (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
+					$min_path = str_replace('.js', '.min.js', $path);
+					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
 						$path = $min_path;
 					}
 				}
@@ -1114,9 +1124,9 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
 				$path = $widget_data['style_path'];
-				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
-					$min_path = str_replace( '.css', '.min.css', $path );
-					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+				if (! (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
+					$min_path = str_replace('.css', '.min.css', $path);
+					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
 						$path = $min_path;
 					}
 				}
@@ -1317,23 +1327,36 @@ final class Atomic
 	}
 
 	/**
-	 * On first activation (option does not exist), seed with defaults.
+	 * Seed default widget states on fresh installs, and enable any newly added
+	 * default widgets on existing installs (handles slug renames/additions).
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		if (false !== get_option(self::OPTION_NAME)) {
-			return; // Already seeded.
+		$current = get_option(self::OPTION_NAME);
+
+		if (false === $current) {
+			$defaults = [];
+			foreach ($this->widgets_registry as $slug => $def) {
+				if (! empty($def['default'])) {
+					$defaults[$slug] = true;
+				}
+			}
+			add_option(self::OPTION_NAME, $defaults, '', false);
+			return;
 		}
 
-		$defaults = [];
-
+		// Existing install — enable any new registry entries with 'default => true'.
+		$updated = false;
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
+			if (! empty($def['default']) && ! isset($current[$slug])) {
+				$current[$slug] = true;
+				$updated          = true;
 			}
 		}
 
-		add_option(self::OPTION_NAME, $defaults, '', false);
+		if ($updated) {
+			update_option(self::OPTION_NAME, $current);
+		}
 	}
 
 	/**
