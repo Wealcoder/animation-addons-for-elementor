@@ -3,7 +3,8 @@
 
 = 🌀 Animation Addons for Elementor v2.6.8 – 16th June 2026
 
-    - Fixed: Image Gallery - Lightbox doesn’t work, Now its working perfectly. 
+    Fixed: Image Gallery lightbox issue — it is now working perfectly.
+    Improved: Reduced plugin size for better performance and faster loading.  
 
 = 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
 
