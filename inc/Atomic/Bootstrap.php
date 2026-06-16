@@ -95,6 +95,9 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
+		// Style Manager
+		( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
+
 		( new Assets() )->register();
 	}
 
