@@ -3,7 +3,21 @@
 
 {% if is_pro %}
     {% set pro_num = settings.btn_style | replace({'pro-': ''}) %}
-    {% set btn_classes = ['aae-a-button', 'e-con', 'e-atomic-element', base_styles.base, 'aae--btn-pro', 'style-' ~ pro_num] | merge(settings.classes | default([])) %}
+
+    {# Style-specific extra classes so compound CSS selectors match when the <a> is the root #}
+    {% if pro_num == '1' %}
+        {% set pro_extra = 'btn-border-divide' %}
+    {% elseif pro_num == '3' %}
+        {% set pro_extra = 'btn-text-flip' %}
+    {% elseif pro_num in ['5', '6'] %}
+        {% set pro_extra = 'aae-btn-pro-group' %}
+    {% else %}
+        {% set pro_extra = '' %}
+    {% endif %}
+
+    {% set base_pro_classes = ['aae-a-button', 'e-con', 'e-atomic-element', base_styles.base, 'aae--btn-pro', 'style-' ~ pro_num] %}
+    {% if pro_extra %}{% set base_pro_classes = base_pro_classes | merge([pro_extra]) %}{% endif %}
+    {% set btn_classes = base_pro_classes | merge(settings.classes | default([])) %}
 {% else %}
     {% set btn_classes = ['aae-a-button', 'e-con', 'e-atomic-element', base_styles.base, 'aae-btn-main', 'wcf-btn-' ~ (settings.btn_style | default('default')), 'btn-' ~ (settings.btn_hover_style | default('hover-none'))] | merge(settings.classes | default([])) %}
 {% endif %}
@@ -29,9 +43,9 @@
 {% if settings.btn_hover_border_color is defined and settings.btn_hover_border_color is not empty %}
     {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_hover_border_color ~ ';' %}
 {% endif %}
-{% if settings.btn_outline_gap is defined %}
-    {% set inline_style = inline_style ~ '--outline-gap:' ~ settings.btn_outline_gap ~ 'px;' %}
-{% endif %}
+{# {% if settings.btn_outline_gap is defined %}
+    {% set inline_style = inline_style ~ '--outline-gap:' ~ settings.btn_outline_gap ~ 'px;' %} #}
+{# {% endif %} #}
 
 <a class="{{ btn_classes | join(' ') }} {{ editor_classes | default('') }}"
    href="{{ settings.btn_url | default('#') | e('html_attr') }}"

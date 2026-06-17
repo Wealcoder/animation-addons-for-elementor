@@ -2,6 +2,8 @@
 
 namespace WCF_ADDONS\AtomicWidgets\Widgets\Button;
 
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
@@ -183,43 +185,43 @@ class AAE_A_Button extends Atomic_Element_Base
 	{
 		$button_styles = [
 			// Layout
-			'display'         => String_Prop_Type::generate( 'inline-flex' ),
-			'align-items'     => String_Prop_Type::generate( 'center' ),
-			'justify-content' => String_Prop_Type::generate( 'center' ),
-			'gap'             => String_Prop_Type::generate( '8px' ),
+			'display'         => String_Prop_Type::generate('inline-flex'),
+			'align-items'     => String_Prop_Type::generate('center'),
+			'justify-content' => String_Prop_Type::generate('center'),
+			'column-gap'      => Size_Prop_Type::generate(['size' => 60, 'unit' => 'px']),
+			'width'           => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
 
-			// Spacing — mirrors .wcf-btn-default padding as starting point
-			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 17, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 17, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 35, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 35, 'unit' => 'px' ] ),
-			] ),
+			'padding' => Dimensions_Prop_Type::generate([
+				'block-start'  => Size_Prop_Type::generate(['size' => 17, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 17, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 35, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 35, 'unit' => 'px']),
+			]),
 
 			// Typography
-			'font-size'       => String_Prop_Type::generate( '16px' ),
-			'font-weight'     => String_Prop_Type::generate( '500' ),
-			'line-height'     => String_Prop_Type::generate( '1' ),
-			'text-decoration' => String_Prop_Type::generate( 'none' ),
+			'font-size'       => String_Prop_Type::generate('16px'),
+			'font-weight'     => String_Prop_Type::generate('500'),
+			'line-height'     => String_Prop_Type::generate('1'),
+			'text-decoration' => String_Prop_Type::generate('none'),
 
 			// Interaction
-			'cursor'          => String_Prop_Type::generate( 'pointer' ),
-			'transition'      => String_Prop_Type::generate( 'all 0.3s' ),
-			'outline'         => String_Prop_Type::generate( 'none' ),
+			'cursor'          => String_Prop_Type::generate('pointer'),
+			'transition'      => String_Prop_Type::generate('all 0.3s'),
+			'outline'         => String_Prop_Type::generate('none'),
+
 		];
 
 		return [
 			'base' => Style_Definition::make()
-				->add_variant( Style_Variant::make()->add_props( $button_styles ) ),
+				->add_variant(Style_Variant::make()->add_props($button_styles)),
 		];
 	}
 
 	protected function define_default_children()
 	{
 		return [
-			\Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg::generate()
-				->build(),
-			\Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph::generate()
+			Atomic_Svg::generate()->build(),
+			Atomic_Paragraph::generate()
 				->settings([
 					'paragraph' => \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::generate([
 						'content'  => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('Click here'),
