@@ -219,8 +219,9 @@ class AAE_A_Button extends Atomic_Element_Base
 
 	protected function define_default_children()
 	{
+		// Paragraph first so text appears before the icon in flex order —
+		// matches every pro style where text is left and icon/arrow is right.
 		return [
-			Atomic_Svg::generate()->build(),
 			Atomic_Paragraph::generate()
 				->settings([
 					'paragraph' => \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::generate([
@@ -230,6 +231,7 @@ class AAE_A_Button extends Atomic_Element_Base
 					'tag' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('span'),
 				])
 				->build(),
+			Atomic_Svg::generate()->build(),
 		];
 	}
 
@@ -248,6 +250,11 @@ class AAE_A_Button extends Atomic_Element_Base
 		return [
 			'elementor/elements/aae-a-button' => __DIR__ . '/aae-a-button.html.twig',
 		];
+	}
+
+	public function get_script_depends(): array
+	{
+		return ['aae-a-button-js'];
 	}
 
 	public function get_style_depends(): array

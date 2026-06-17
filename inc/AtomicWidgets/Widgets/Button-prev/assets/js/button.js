@@ -3,19 +3,13 @@ import "../scss/button.scss";
 
 // Style-4 only: track the cursor position so the ripple span originates at the click point.
 const initButton = (container) => {
-  // In V4 atomic the container IS the <a> root element, so check the element
-  // itself before falling back to a descendant search (needed for V3 compat).
-  const rippleBtn = container.classList.contains("btn-hover")
-    ? container
-    : container.querySelector(".btn-hover");
+  console.log("hrere");
 
+  const rippleBtn = container.querySelector(".btn-hover");
   if (!rippleBtn) return;
 
   const moveRipple = (e) => {
-    // Prefer the named ripple element injected by twig; fall back to bare span.
-    const span =
-      rippleBtn.querySelector(".aae-ripple-el") ||
-      rippleBtn.querySelector("span:first-child");
+    const span = rippleBtn.querySelector("span:first-child");
     if (!span) return;
     const rect = rippleBtn.getBoundingClientRect();
     span.style.left = e.clientX - rect.left + "px";
@@ -26,4 +20,4 @@ const initButton = (container) => {
   rippleBtn.addEventListener("mouseleave", moveRipple);
 };
 
-register({ handler: initButton, widgetType: "e-aae-a-button" });
+register({ handler: initButton, widgetType: "e-aae-atomic-button" });

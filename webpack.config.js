@@ -10,7 +10,7 @@ const getAtomicWidgetEntries = () => {
   const entries = {};
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {
-    const widgets = fs.readdirSync(widgetsPath);
+    const widgets = fs.readdirSync(widgetsPath).filter((w) => !w.endsWith('-prev'));
     widgets.forEach((widget) => {
       const jsDir = path.join(widgetsPath, widget, "assets/js");
       if (fs.existsSync(jsDir)) {

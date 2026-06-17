@@ -25,56 +25,75 @@
   }
 }
 
-.aae-a-button {
-  // column-gap: 66px;
-}
-
-.elementor .aae-a-button {
-  .e-svg-base {
-    width: 23px;
-    height: 23px;
+// Style
+.wcf__btn {
+  i {
+    transition: all 0.3s;
   }
 
   svg {
-    width: 100%;
-    height: 100%;
+    width: 1em;
+    height: 1em;
+  }
+
+  // SVG icon wrapper — inline-flex so width/height from inline style take effect
+  .aae-btn-icon-svg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      fill: currentColor;
+      width: 100% !important;
+      height: 100% !important;
+
+      // path {
+      //   fill: currentColor;
+      // }
+
+    }
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 500;
+    transition: all 0.3s;
+    // color: var(--aae-btn-color, inherit);
+  }
+
+  &.icon-position-after {
+    i,
+    .aae-btn-icon-svg {
+      order: 15;
+    }
+
+    .wcf-btn-mask::after {
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
   }
 }
 
+// ___ manage icon color _____________________________________________________________
 
-
-// SVG fill follows text color in all button variants
-.aae-a-button,
-.aae-btn-main,
-.aae--btn-pro,
-.btn-text-flip,
-.aae-btn-pro-group {
-  svg,
-  svg path {
+.aae-btn-main {
+  .aae-btn-icon-svg {
     fill: currentColor;
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
   }
 }
 
-.aae-a-button {
-  // display: inline-flex;
-  // align-items: center;
-  // justify-content: center;
-  // font-weight: 500;
-  // line-height: 1;
-  // text-decoration: none;
-  // cursor: pointer;
-  // transition: all 0.3s;
-  // outline: none;
-
-  width: auto;
-
-}
-
-// Override the Atomic_Svg base size (65px) to 23px for the button icon.
-// Needs 3-class specificity (.elementor .aae-a-button .e-svg-base = 0,3,0) to beat
-// the atomic base-styles CSS (.elementor .e-svg-base = 0,2,0) which loads later.
-
-// Icon size/color for classic and pro .icon spans
 .aae--btn-pro {
   .icon {
     line-height: 0;
@@ -82,17 +101,37 @@
     width: var(--aae-btn-icon-size, 1em);
     height: var(--aae-btn-icon-size, 1em);
     color: var(--aae-btn-icon-color, inherit);
+    fill: var(--aae-btn-icon-color, inherit);
+    fill: currentColor;
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
   }
+
+  // svg {
+  //   fill: currentColor;
+  //   path {
+  //     fill: currentColor;
+  //   }
+  // }
+
 }
 
 .btn-text-flip {
-  svg {
+    svg {
+    fill: currentColor;
     line-height: 0;
     font-size: var(--aae-btn-icon-size, 1em);
     width: var(--aae-btn-icon-size, 1em) !important;
     height: var(--aae-btn-icon-size, 1em) !important;
     color: var(--aae-btn-icon-color, inherit);
     fill: var(--aae-btn-icon-color, inherit);
+    path {
+      fill: currentColor;
+    }
   }
 }
 
@@ -102,6 +141,7 @@
 
 .wcf-btn {
   &-default {
+    padding: 17px 35px;
     border: 1px solid var(--aae-btn-border-color, #1C1D20);
     background-color: var(--aae-btn-bg, transparent);
     overflow: hidden;
@@ -591,190 +631,211 @@
 // Mirrors assets/src/scss/widgets/button-pro.scss
 // ─────────────────────────────────────────────
 
+// .aae--btn-pro-wrapper {
+//   svg {
+//     width: 1em;
+//     height: 1em;
+//     fill: currentColor;
+
+//     // path {
+//     //   fill: currentColor;
+//     // }
+
+//   }
+
+//   .icon {
+//     line-height: 0;
+//     font-size: var(--aae-btn-icon-size, 1em);
+//     width: var(--aae-btn-icon-size, 1em);
+//     height: var(--aae-btn-icon-size, 1em);
+//     color: var(--aae-btn-icon-color, inherit);
+//     fill: var(--aae-btn-icon-color, inherit);
+//   }
+// }
+
 .aae--btn-pro {
   gap: 5px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s;
+  outline: none;
 }
 
 /* Style One — border divide */
-.style-1.btn-border-divide,
-.style-1 .btn-border-divide {
-  align-items: flex-end;
-  overflow: hidden;
-  color: var(--aae-btn-color, inherit);
+.style-1 {
+  .btn-border-divide {
+    align-items: flex-end;
+    overflow: hidden;
+    color: var(--aae-btn-color, inherit);
 
-  &:hover {
-    color: var(--aae-btn-hover-color, inherit);
+    &:hover {
+      color: var(--aae-btn-hover-color, inherit);
 
-    // V3 class-based children + V4 atomic direct children
+      .text,
+      .icon {
+        border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
+      }
+
+      .icon {
+        i:first-child,
+        svg:first-child {
+          transform: translate(0, 0);
+          opacity: 1;
+        }
+
+        i:last-child,
+        svg:last-child {
+          transform: translate(10px, -10px);
+          opacity: 0;
+        }
+      }
+    }
+
     .text,
-    .icon,
-    > * {
-      border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
+    .icon {
+      transition: all 0.3s;
+      border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
     }
 
     .icon {
+      display: inline-flex;
+      padding-bottom: 3px;
+      position: relative;
+      overflow: hidden;
+
       i:first-child,
       svg:first-child {
-        transform: translate(0, 0);
-        opacity: 1;
+        position: absolute;
+        transform: translate(-10px, 10px);
+        transition: all .3s;
+        opacity: 0;
       }
 
       i:last-child,
       svg:last-child {
-        transform: translate(10px, -10px);
-        opacity: 0;
+        transition: all .3s;
+        opacity: 1;
       }
-    }
-  }
-
-  // V3 class-based children + V4 atomic direct children
-  .text,
-  .icon,
-  > * {
-    transition: all 0.3s;
-    border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
-  }
-
-  .icon {
-    display: inline-flex;
-    padding-bottom: 3px;
-    position: relative;
-    overflow: hidden;
-
-    i:first-child,
-    svg:first-child {
-      position: absolute;
-      transform: translate(-10px, 10px);
-      transition: all .3s;
-      opacity: 0;
-    }
-
-    i:last-child,
-    svg:last-child {
-      transition: all .3s;
-      opacity: 1;
     }
   }
 }
 
 /* Style Two — drop shadow on hover */
-.style-2.aae--btn-pro,
-.style-2 .aae--btn-pro {
-  color: var(--aae-btn-color, inherit);
-  background-color: var(--aae-btn-bg, transparent);
-  border: 3px solid var(--aae-btn-border-color, #1C1D20);
-  padding: 12px 30px;
-  border-radius: 10px;
+.style-2 {
+  .aae--btn-pro {
+    color: var(--aae-btn-color, inherit);
+    background-color: var(--aae-btn-bg, transparent);
+    border: 3px solid var(--aae-btn-border-color, #1C1D20);
+    padding: 12px 30px;
+    border-radius: 10px;
 
-  &:hover {
-    color: var(--aae-btn-hover-color, inherit);
-    border-color: var(--aae-btn-hover-border-color, #1C1D20);
-    box-shadow: 7px 7px 0 var(--aae-btn-hover-border-color, #1C1D20);
+    &:hover {
+      color: var(--aae-btn-hover-color, inherit);
+      border-color: var(--aae-btn-hover-border-color, #1C1D20);
+      box-shadow: 7px 7px 0 var(--aae-btn-hover-border-color, #1C1D20);
+    }
   }
 }
 
 /* Style Three — 3-D text flip */
-.style-3.btn-text-flip,
-.style-3 .btn-text-flip {
-  perspective: 1000px;
-  align-items: center;
-  color: var(--aae-btn-color, #121212);
-  background-color: var(--aae-btn-bg, transparent);
+.style-3 {
+  .btn-text-flip {
+    perspective: 1000px;
+    align-items: center;
+    color: var(--aae-btn-color, #121212);
+    background-color: var(--aae-btn-bg, transparent);
 
-  &:hover {
-    color: var(--aae-btn-hover-color, #121212);
+    &:hover {
+      color: var(--aae-btn-hover-color, #121212);
+
+      span {
+        transform: rotateX(90deg) translateY(-12px);
+      }
+    }
 
     span {
-      transform: rotateX(90deg) translateY(-12px);
-    }
-  }
-
-  span {
-    position: relative;
-    display: inline-block;
-    padding: 0;
-    transition: transform 0.3s;
-    transform-origin: 50% 0;
-    transform-style: preserve-3d;
-
-    &:before {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      content: attr(data-text);
-      transition: color 0.3s;
-      transform: rotateX(-90deg);
+      position: relative;
+      display: inline-block;
+      padding: 0;
+      transition: transform 0.3s;
       transform-origin: 50% 0;
-      text-align: center;
+      transform-style: preserve-3d;
+
+      &:before {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        content: attr(data-text);
+        transition: color 0.3s;
+        transform: rotateX(-90deg);
+        transform-origin: 50% 0;
+        text-align: center;
+      }
     }
   }
 }
 
 /* Style Four — JS ripple at cursor position */
-.style-4.aae--btn-pro,
-.style-4 .aae--btn-pro {
-  text-align: center;
-  color: var(--aae-btn-color, #fca2a2);
-  background-color: var(--aae-btn-bg, #121212);
-  padding: 18px 42px;
-  border-radius: 5px;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-
-  &:hover {
-    color: var(--aae-btn-hover-color, #fff);
-
-    // V4 atomic uses .aae-ripple-el injected by twig; V3 uses a bare <span>
-    .aae-ripple-el,
-    > span:not([class]) {
-      width: 500px;
-      height: 500px;
-    }
-
-    .aae-arrow-el::after,
-    > strong::after {
-      right: 0;
-      opacity: 1;
-    }
-  }
-
-  // V4 atomic ripple element injected before children_placeholder
-  .aae-ripple-el,
-  > span:not([class]) {
-    position: absolute;
-    width: 0;
-    height: 0;
-    background: var(--aae-btn-hover-bg, #FC5A11);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.5s ease;
-    z-index: -1;
-  }
-
-  // V4 atomic arrow element injected after children_placeholder
-  .aae-arrow-el,
-  > strong {
-    width: 50px;
-    display: inherit;
-    height: 1px;
-    background: var(--aae-btn-color, #fff);
-    margin-left: 5px;
+.style-4 {
+  .aae--btn-pro {
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    color: var(--aae-btn-color, #fca2a2);
+    background-color: var(--aae-btn-bg, #121212);
+    padding: 18px 42px;
+    border-radius: 5px;
     position: relative;
+    overflow: hidden;
+    z-index: 1;
 
-    &::after {
+    &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+
+      span {
+        width: 500px;
+        height: 500px;
+      }
+
+      strong::after {
+        right: 0;
+        opacity: 1;
+      }
+    }
+
+    span {
       position: absolute;
-      content: "";
-      top: -5px;
-      right: 30px;
-      border: solid var(--aae-btn-color, #fff);
-      border-width: 0 1px 1px 0;
-      padding: 5px;
-      transform: rotate(-45deg);
-      transition: all 0.3s;
-      opacity: 0;
+      width: 0;
+      height: 0;
+      background: var(--aae-btn-hover-bg, #FC5A11);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+
+    strong {
+      width: 50px;
+      display: inherit;
+      height: 1px;
+      background: var(--aae-btn-color, #fff);
+      margin-left: 5px;
+      position: relative;
+
+      &::after {
+        position: absolute;
+        content: "";
+        top: -5px;
+        right: 30px;
+        border: solid var(--aae-btn-color, #fff);
+        border-width: 0 1px 1px 0;
+        padding: 5px;
+        transform: rotate(-45deg);
+        transition: all 0.3s;
+        opacity: 0;
+      }
     }
   }
 }
@@ -784,13 +845,6 @@
   display: inline-flex;
   width: fit-content;
 
-  // When combined with .aae--btn-pro (V4 atomic), the inherited gap
-  // must be zero so margin-based animation on children works correctly.
-  &.aae--btn-pro {
-    gap: 0;
-  }
-
-  // V3 class-based styling (used when the HTML has .g-btn-text / .g-btn-icon spans)
   .g-btn-text {
     padding: 21px 40px;
     font-weight: 600;
@@ -823,16 +877,14 @@
     align-items: center;
     justify-content: center;
     transition: all 0.5s;
-  }
 
-  // V4 atomic: only add transition so the nth-child animation is smooth.
-  // Do NOT add width/height/background here — those override atomic element
-  // rendering and cause layout errors. Visual styling for atomic children
-  // is done via Elementor's own style controls on each child element.
-  > *:nth-child(1),
-  > *:nth-child(2),
-  > *:nth-child(3) {
-    transition: all 0.5s;
+    svg {
+      fill: currentColor;
+      path {
+        fill: currentColor;
+      }
+    }
+
   }
 }
 
@@ -845,100 +897,97 @@
 }
 
 /* Style Five — right icon slides in from right */
-.style-5.aae-btn-pro-group > *:nth-child(1),
-.style-5 .aae-btn-pro-group > *:nth-child(1) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
-  opacity: 0;
-}
+.style-5 {
+  .aae-btn-pro-group > *:nth-child(1) {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
 
-.style-5.aae-btn-pro-group > *:nth-child(3),
-.style-5 .aae-btn-pro-group > *:nth-child(3) {
-  transform: scale3d(1, 1, 1);
-  margin-left: 0;
-  opacity: 1;
-}
+  .aae-btn-pro-group > *:nth-child(3) {
+    transform: scale3d(1, 1, 1);
+    margin-left: 0;
+    opacity: 1;
+  }
 
-.style-5.aae-btn-pro-group:hover > *:nth-child(1),
-.style-5 .aae-btn-pro-group:hover > *:nth-child(1) {
-  transform: scale3d(1, 1, 1);
-  margin-right: 0;
-  opacity: 1;
-}
+  .aae-btn-pro-group:hover > *:nth-child(1) {
+    transform: scale3d(1, 1, 1);
+    margin-right: 0;
+    opacity: 1;
+  }
 
-.style-5.aae-btn-pro-group:hover > *:nth-child(3),
-.style-5 .aae-btn-pro-group:hover > *:nth-child(3) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
-  opacity: 0;
+  .aae-btn-pro-group:hover > *:nth-child(3) {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
 }
 
 /* Style Six — left icon slides in from left */
-.style-6.aae-btn-pro-group > *:nth-child(1),
-.style-6 .aae-btn-pro-group > *:nth-child(1) {
-  transform: scale3d(1, 1, 1);
-  margin-right: 0;
-  opacity: 1;
-}
+.style-6 {
+  .aae-btn-pro-group > *:nth-child(1) {
+    transform: scale3d(1, 1, 1);
+    margin-right: 0;
+    opacity: 1;
+  }
 
-.style-6.aae-btn-pro-group > *:nth-child(3),
-.style-6 .aae-btn-pro-group > *:nth-child(3) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
-  opacity: 0;
-}
+  .aae-btn-pro-group > *:nth-child(3) {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
 
-.style-6.aae-btn-pro-group:hover > *:nth-child(1),
-.style-6 .aae-btn-pro-group:hover > *:nth-child(1) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
-  opacity: 0;
-}
+  .aae-btn-pro-group:hover > *:nth-child(1) {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
 
-.style-6.aae-btn-pro-group:hover > *:nth-child(3),
-.style-6 .aae-btn-pro-group:hover > *:nth-child(3) {
-  transform: scale3d(1, 1, 1);
-  margin-left: 0;
-  opacity: 1;
+  .aae-btn-pro-group:hover > *:nth-child(3) {
+    transform: scale3d(1, 1, 1);
+    margin-left: 0;
+    opacity: 1;
+  }
 }
 
 /* Style Seven — outline pill, inner fill shrinks on hover */
-.style-7.aae--btn-pro,
-.style-7 .aae--btn-pro {
-  color: var(--aae-btn-color, #fff);
-  fill: var(--aae-btn-color, #fff);
-  border: 1px solid var(--aae-btn-border-color, #ddd);
-  padding: 18px 30px;
-  border-radius: 35px;
-  position: relative;
-  overflow: hidden;
-  --outline-gap: 10px;
+.style-7 {
+  .aae--btn-pro {
+    color: var(--aae-btn-color, #fff);
+    fill: var(--aae-btn-color, #fff);
+    border: 1px solid var(--aae-btn-border-color, #ddd);
+    padding: 18px 30px;
+    border-radius: 35px;
+    position: relative;
+    overflow: hidden;
+    --outline-gap: 10px;
 
-  &:hover {
-    fill: var(--aae-btn-hover-color, #121212);
-    color: var(--aae-btn-hover-color, #121212);
-    border-color: var(--aae-btn-hover-border-color, #ddd);
+    &:hover {
+      fill: var(--aae-btn-hover-color, #121212);
+      color: var(--aae-btn-hover-color, #121212);
+      border-color: var(--aae-btn-hover-border-color, #ddd);
+
+      &::after {
+        width: 50%;
+        top: 4px;
+        transform: translate(-50%, -100%);
+        z-index: 0;
+      }
+    }
 
     &::after {
-      width: 50%;
-      top: 4px;
-      transform: translate(-50%, -100%);
-      z-index: 0;
+      position: absolute;
+      content: "";
+      width: calc(100% - calc(var(--outline-gap) * 2));
+      height: calc(100% - calc(var(--outline-gap) * 2));
+      left: 50%;
+      top: 50%;
+      background: var(--aae-btn-bg, #121212);
+      transform: translate(-50%, -50%);
+      border-radius: 35px;
+      z-index: -1;
+      transition: all 0.3s;
     }
-  }
-
-  &::after {
-    position: absolute;
-    content: "";
-    width: calc(100% - calc(var(--outline-gap) * 2));
-    height: calc(100% - calc(var(--outline-gap) * 2));
-    left: 50%;
-    top: 50%;
-    background: var(--aae-btn-bg, #121212);
-    transform: translate(-50%, -50%);
-    border-radius: 35px;
-    z-index: -1;
-    transition: all 0.3s;
   }
 }
 
@@ -949,38 +998,39 @@
 }
 
 /* Style Eight — slide-fill bg slides out on hover revealing button bg */
-.style-8.aae--btn-pro,
-.style-8 .aae--btn-pro {
-  color: var(--aae-btn-color, #121212);
-  fill: var(--aae-btn-color, #121212);
-  border: 1px solid var(--aae-btn-border-color, #121212);
-  padding: 18px 30px;
-  border-radius: 35px;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--aae-btn-hover-bg, #121212);
-  z-index: 1;
-  cursor: pointer;
-
-  &::after {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background: var(--aae-btn-bg, #fff);
+.style-8 {
+  .aae--btn-pro {
+    color: var(--aae-btn-color, #121212);
+    fill: var(--aae-btn-color, #121212);
+    border: 1px solid var(--aae-btn-border-color, #121212);
+    padding: 18px 30px;
     border-radius: 35px;
-    z-index: -1;
-    transition: left 0.6s cubic-bezier(0.65, 0, 0.26, 1.2);
-  }
-
-  &:hover {
-    color: var(--aae-btn-hover-color, #fff);
-    fill: var(--aae-btn-hover-color, #fff);
+    position: relative;
+    overflow: hidden;
+    background-color: var(--aae-btn-hover-bg, #121212);
+    z-index: 1;
+    cursor: pointer;
 
     &::after {
-      left: -92%;
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background: var(--aae-btn-bg, #fff);
+      border-radius: 35px;
+      z-index: -1;
+      transition: left 0.6s cubic-bezier(0.65, 0, 0.26, 1.2);
+    }
+
+    &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+      fill: var(--aae-btn-hover-color, #fff);
+
+      &::after {
+        left: -92%;
+      }
     }
   }
 }
