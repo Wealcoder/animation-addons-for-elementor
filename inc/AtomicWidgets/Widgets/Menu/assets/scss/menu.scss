@@ -39,47 +39,20 @@
 .aae-a-menu *::before,
 .aae-a-menu *::after { box-sizing: border-box; }
 
-/* ============== DROPDOWN EFFECT VARIANTS ============== */
-/* Desktop uses --aae-dd-from-transform / --aae-dd-to-transform via CSS transitions.
-   Mobile uses --aae-dd-anim (keyframe animation name) for guaranteed playback. */
-.aae-a-menu                                    { --aae-dd-anim: aae-dd-slide; }
-.aae-a-menu[data-dropdown-effect="slide"]      { --aae-dd-from-transform: translateY(-6px) scale(0.97);          --aae-dd-to-transform: translateY(0) scale(1);             --aae-dd-anim: aae-dd-slide; }
-.aae-a-menu[data-dropdown-effect="fade"]       { --aae-dd-from-transform: none;                                  --aae-dd-to-transform: none;                               --aae-dd-anim: aae-dd-fade; }
-.aae-a-menu[data-dropdown-effect="slide-fade"] { --aae-dd-from-transform: translateY(-14px);                     --aae-dd-to-transform: translateY(0);                      --aae-dd-anim: aae-dd-slide-fade; }
-.aae-a-menu[data-dropdown-effect="scale"]      { --aae-dd-from-transform: scale(0.85);                           --aae-dd-to-transform: scale(1);                           --aae-dd-anim: aae-dd-scale; }
-.aae-a-menu[data-dropdown-effect="zoom"]       { --aae-dd-from-transform: scale(0.5);                            --aae-dd-to-transform: scale(1);                           --aae-dd-anim: aae-dd-zoom; }
-.aae-a-menu[data-dropdown-effect="flip"]       { --aae-dd-from-transform: perspective(600px) rotateX(-90deg);    --aae-dd-to-transform: perspective(600px) rotateX(0deg);   --aae-dd-anim: aae-dd-flip; }
+/* Dropdown effect variants — set per-effect transform vars used by the
+   desktop hover transition. Mobile open/close animations are run from JS
+   (menu.js Web Animations API) so no CSS keyframes are needed here. */
+.aae-a-menu[data-dropdown-effect="slide"]      { --aae-dd-from-transform: translateY(-6px) scale(0.97);       --aae-dd-to-transform: translateY(0) scale(1); }
+.aae-a-menu[data-dropdown-effect="fade"]       { --aae-dd-from-transform: none;                               --aae-dd-to-transform: none; }
+.aae-a-menu[data-dropdown-effect="slide-fade"] { --aae-dd-from-transform: translateY(-14px);                  --aae-dd-to-transform: translateY(0); }
+.aae-a-menu[data-dropdown-effect="scale"]      { --aae-dd-from-transform: scale(0.85);                        --aae-dd-to-transform: scale(1); }
+.aae-a-menu[data-dropdown-effect="zoom"]       { --aae-dd-from-transform: scale(0.5);                         --aae-dd-to-transform: scale(1); }
+.aae-a-menu[data-dropdown-effect="flip"]       { --aae-dd-from-transform: perspective(600px) rotateX(-90deg); --aae-dd-to-transform: perspective(600px) rotateX(0deg); }
 
 .aae-a-menu[data-dropdown-effect="scale"] .aae-a-menu-list > li > .sub-menu,
 .aae-a-menu[data-dropdown-effect="zoom"]  .aae-a-menu-list > li > .sub-menu,
 .aae-a-menu[data-dropdown-effect="flip"]  .aae-a-menu-list > li > .sub-menu {
 	transform-origin: top center;
-}
-
-/* Mobile sub-menu keyframe animations — fired on .aae-a-menu-item--open */
-@keyframes aae-dd-slide {
-	0%   { opacity: 0; transform: translateY(-18px) scale(0.95); }
-	100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes aae-dd-fade {
-	0%   { opacity: 0; }
-	100% { opacity: 1; }
-}
-@keyframes aae-dd-slide-fade {
-	0%   { opacity: 0; transform: translateY(-40px); }
-	100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes aae-dd-scale {
-	0%   { opacity: 0; transform: scale(0.55); }
-	100% { opacity: 1; transform: scale(1); }
-}
-@keyframes aae-dd-zoom {
-	0%   { opacity: 0; transform: scale(0.2); }
-	100% { opacity: 1; transform: scale(1); }
-}
-@keyframes aae-dd-flip {
-	0%   { opacity: 0; transform: perspective(800px) rotateX(-90deg); }
-	100% { opacity: 1; transform: perspective(800px) rotateX(0deg); }
 }
 
 /* ============== NAV (desktop default) ============== */
@@ -267,7 +240,7 @@
 	background: transparent;
 	color: var(--ham-color);
 	cursor: pointer;
-	transition: background var(--t), border-color var(--t);
+	transition: background var(--t);
 }
 .aae-a-menu-toggle:hover { background: var(--bg-2); }
 .aae-a-menu-toggle-bars {
@@ -284,7 +257,6 @@
 	background: currentColor;
 	border-radius: 2px;
 	transition: transform var(--t), opacity var(--t);
-	transform-origin: center;
 }
 .aae-a-menu--open .aae-a-menu-toggle-bars span:nth-child(1) {
 	transform: translateY(6px) rotate(45deg);
@@ -367,7 +339,6 @@
 		visibility: hidden;
 		transition: transform var(--t), opacity var(--t), visibility var(--t);
 		box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
-		will-change: transform, opacity;
 	}
 	.aae-a-menu[data-hamburger="true"].aae-a-menu--open .aae-a-menu-nav {
 		opacity: 1;
@@ -479,7 +450,6 @@
 		height: 2px;
 		background: currentColor;
 		border-radius: 2px;
-		transform-origin: center;
 	}
 	.aae-a-menu-close-icon::before { transform: translateY(-50%) rotate(45deg); }
 	.aae-a-menu-close-icon::after  { transform: translateY(-50%) rotate(-45deg); }
@@ -490,7 +460,6 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		padding: 0.5rem 0.75rem 1.25rem;
-		-webkit-overflow-scrolling: touch;
 	}
 
 	/* Mobile list — full-width stack */
@@ -522,11 +491,10 @@
 		flex-shrink: 0;
 	}
 
-	/* Mobile sub-menu — closed = hidden from layout (display:none).
-	   When .aae-a-menu-item--open is added on the parent <li>, the sub-menu
-	   becomes visible and a keyframe animation plays. The opened-state
-	   explicitly sets opacity/visibility/transform/pointer-events so even
-	   if the keyframe is missing, items still render correctly. */
+	/* Mobile sub-menu — closed = display:none, open = display:flex.
+	   The open/close visual effect is driven by menu.js (Web Animations API).
+	   Opened state explicitly resets the desktop-only hidden properties from
+	   the base rule (opacity / visibility / pointer-events / transform). */
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-list .sub-menu {
 		position: static;
 		display: none;
@@ -539,9 +507,6 @@
 		border: 0;
 		box-shadow: none;
 		border-radius: 0;
-		max-height: none;
-		overflow: visible;
-		transform-origin: top center;
 	}
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
 		display: flex;
@@ -550,14 +515,7 @@
 		visibility: visible;
 		pointer-events: auto;
 		transform: none;
-		animation: aae-dd-slide calc(var(--t) * 1.4) cubic-bezier(.2, .8, .2, 1) both;
 	}
-	/* Per-effect animation override (uses explicit names to avoid var() resolution edge cases) */
-	.aae-a-menu[data-hamburger="true"][data-dropdown-effect="fade"]       .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu { animation-name: aae-dd-fade; }
-	.aae-a-menu[data-hamburger="true"][data-dropdown-effect="slide-fade"] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu { animation-name: aae-dd-slide-fade; }
-	.aae-a-menu[data-hamburger="true"][data-dropdown-effect="scale"]      .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu { animation-name: aae-dd-scale; }
-	.aae-a-menu[data-hamburger="true"][data-dropdown-effect="zoom"]       .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu { animation-name: aae-dd-zoom; }
-	.aae-a-menu[data-hamburger="true"][data-dropdown-effect="flip"]       .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu { animation-name: aae-dd-flip; }
 
 	/* Indented nested levels */
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-list .sub-menu a {
@@ -572,12 +530,6 @@
 		padding-left: 4rem;
 	}
 
-	/* If hamburger explicitly disabled, hide drawer chrome */
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-toggle,
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-overlay,
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-nav-header {
-		display: none;
-	}
 }
 
 /* Prevent body scroll-shift when drawer is open */
