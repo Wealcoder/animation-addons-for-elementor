@@ -474,6 +474,24 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-counter-number' => [
+				'label'        => 'Counter Number',
+				'description'  => 'Internal child item for Counter.',
+				'icon'         => 'eicon-counter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'counter number',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
 				'description'  => 'A GSAP powered fully draggable nested slider container.',
@@ -916,7 +934,7 @@ final class Atomic
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'],16);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
-		add_action('wp_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
 
 		// AJAX endpoints for Editor previews
@@ -960,6 +978,11 @@ final class Atomic
 				'script_handle' => 'aae-a-counter-js',
 				'script_path' => '/assets/atomic/js/counter.js',
 				'has_script' => true,
+			],
+			'aae-a-counter-number' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter_Number',
+				'file' => 'Widgets/Counter/class-aae-a-counter-number.php',
+				'has_script' => false,
 			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
@@ -1142,7 +1165,7 @@ final class Atomic
 	/**
 	 * Register frontend styles for active atomic widgets.
 	 */
-	public function register_atomic_styles()
+	public function register_atomic_styles( $_styles_manager = null, array $_post_ids = [] )
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
