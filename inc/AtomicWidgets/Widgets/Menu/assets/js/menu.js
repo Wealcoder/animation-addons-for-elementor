@@ -12,6 +12,34 @@ const DROPDOWN_EFFECT_KEYFRAMES = {
 	flip:         [{ opacity: 0, transform: 'perspective(800px) rotateX(-90deg)' }, { opacity: 1, transform: 'perspective(800px) rotateX(0deg)' }],
 };
 
+/* Drawer effects — applied as inline styles on the root + .aae-a-menu-nav.
+   from/to drive the CSS transition via the --aae-drawer-*-transform custom
+   props; navStyle handles per-effect anchor / dimensions (slide-top is full
+   width pinned to top, fade/zoom-in are centered, etc.). */
+const DRAWER_EFFECTS = {
+	'slide-left':   { from: 'translateX(-100%)', to: 'translateX(0)' },
+	'slide-right':  { from: 'translateX(100%)',  to: 'translateX(0)',  navStyle: { left: 'auto', right: '0', boxShadow: '-4px 0 32px rgba(0,0,0,0.18)' } },
+	'slide-top':    { from: 'translateY(-100%)', to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: '0', bottom: 'auto', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 4px 32px rgba(0,0,0,0.18)' } },
+	'slide-bottom': { from: 'translateY(100%)',  to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: 'auto', bottom: '0', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 -4px 32px rgba(0,0,0,0.18)' } },
+	fade:           { from: 'none', to: 'none', navStyle: { left: '50%', right: 'auto', top: '50%', bottom: 'auto', width: 'min(var(--aae-drawer-w),92vw)', height: 'min(80vh,600px)', margin: 'calc(-1 * min(80vh,600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w),92vw) / 2)', borderRadius: 'var(--aae-dd-r)', transformOrigin: 'center center' } },
+	scale:          { from: 'scale(0.7)', to: 'scale(1)', navStyle: { transformOrigin: 'left center' } },
+	'zoom-in':      { from: 'scale(0)',   to: 'scale(1)', navStyle: { left: '50%', right: 'auto', top: '50%', bottom: 'auto', width: 'min(var(--aae-drawer-w),92vw)', height: 'min(80vh,600px)', margin: 'calc(-1 * min(80vh,600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w),92vw) / 2)', borderRadius: 'var(--aae-dd-r)', transformOrigin: 'center center' } },
+	flip:           { from: 'perspective(1200px) rotateY(-90deg)', to: 'perspective(1200px) rotateY(0deg)', navStyle: { transformOrigin: 'left center' } },
+};
+
+// Inline-style keys we may write on the drawer nav per effect — used to
+// fully reset before applying a new effect (so switching effects in the
+// editor doesn't leave stale inline styles behind).
+const DRAWER_NAV_RESET_KEYS = ['left','right','top','bottom','width','maxWidth','height','maxHeight','margin','borderRadius','transformOrigin','boxShadow'];
+
+const applyDrawerEffect = (root, nav, effectName) => {
+	const eff = DRAWER_EFFECTS[effectName] || DRAWER_EFFECTS['slide-left'];
+	root.style.setProperty('--aae-drawer-from-transform', eff.from);
+	root.style.setProperty('--aae-drawer-to-transform', eff.to);
+	DRAWER_NAV_RESET_KEYS.forEach((k) => { nav.style[k] = ''; });
+	if (eff.navStyle) Object.assign(nav.style, eff.navStyle);
+};
+
 const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish) => {
 	const done = (cancelled) => { if (typeof onFinish === 'function') onFinish(cancelled === true); };
 	if (!subMenu || typeof subMenu.animate !== 'function') { done(); return; }
@@ -65,8 +93,18 @@ const initMenu = (root) => {
 	const breakpoint     = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
 	const isHamburger    = root.getAttribute('data-hamburger') === 'true';
 	const isMobile       = () => window.innerWidth <= breakpoint;
-	const dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
+	let   dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
 	const transitionMs   = (parseInt(root.style.getPropertyValue('--aae-menu-transition'), 10) || 250);
+
+	// Apply drawer effect (transform vars + per-effect nav positioning) on init,
+	// and keep it in sync when the editor changes the data-drawer-effect attribute.
+	applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
+	if (typeof MutationObserver !== 'undefined') {
+		new MutationObserver(() => {
+			applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
+			dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
+		}).observe(root, { attributes: true, attributeFilter: ['data-drawer-effect', 'data-dropdown-effect'] });
+	}
 
 	/* ---------- Dropdown arrows + click-to-toggle ---------- */
 	const buildDropdowns = () => {

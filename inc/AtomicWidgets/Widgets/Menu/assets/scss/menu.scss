@@ -346,61 +346,8 @@
 		visibility: visible;
 	}
 
-	/* ============== DRAWER EFFECT VARIANTS ============== */
-	.aae-a-menu[data-drawer-effect="slide-right"]  { --aae-drawer-from-transform: translateX(100%);                       --aae-drawer-to-transform: translateX(0); }
-	.aae-a-menu[data-drawer-effect="slide-top"]    { --aae-drawer-from-transform: translateY(-100%);                      --aae-drawer-to-transform: translateY(0); }
-	.aae-a-menu[data-drawer-effect="slide-bottom"] { --aae-drawer-from-transform: translateY(100%);                       --aae-drawer-to-transform: translateY(0); }
-	.aae-a-menu[data-drawer-effect="fade"]         { --aae-drawer-from-transform: none;                                   --aae-drawer-to-transform: none; }
-	.aae-a-menu[data-drawer-effect="scale"]        { --aae-drawer-from-transform: scale(0.7);                             --aae-drawer-to-transform: scale(1); }
-	.aae-a-menu[data-drawer-effect="zoom-in"]      { --aae-drawer-from-transform: scale(0);                               --aae-drawer-to-transform: scale(1); }
-	.aae-a-menu[data-drawer-effect="flip"]         { --aae-drawer-from-transform: perspective(1200px) rotateY(-90deg);    --aae-drawer-to-transform: perspective(1200px) rotateY(0deg); }
-
-	/* Anchor + dimensions per drawer effect */
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="slide-right"] .aae-a-menu-nav {
-		left: auto;
-		right: 0;
-		box-shadow: -4px 0 32px rgba(0, 0, 0, 0.18);
-	}
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="slide-top"] .aae-a-menu-nav {
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: auto;
-		width: 100%;
-		max-width: 100vw;
-		height: auto;
-		max-height: 85vh;
-		box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
-	}
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="slide-bottom"] .aae-a-menu-nav {
-		left: 0;
-		right: 0;
-		top: auto;
-		bottom: 0;
-		width: 100%;
-		max-width: 100vw;
-		height: auto;
-		max-height: 85vh;
-		box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.18);
-	}
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="scale"] .aae-a-menu-nav {
-		transform-origin: left center;
-	}
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="zoom-in"] .aae-a-menu-nav,
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="fade"]    .aae-a-menu-nav {
-		left: 50%;
-		right: auto;
-		top: 50%;
-		bottom: auto;
-		width: min(var(--aae-drawer-w), 92vw);
-		height: min(80vh, 600px);
-		margin: calc(-1 * min(80vh, 600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w), 92vw) / 2);
-		border-radius: var(--aae-dd-r);
-		transform-origin: center center;
-	}
-	.aae-a-menu[data-hamburger="true"][data-drawer-effect="flip"] .aae-a-menu-nav {
-		transform-origin: left center;
-	}
+	/* Drawer effect (transform vars + per-effect nav positioning) is applied
+	   from JS — see DRAWER_EFFECTS / applyDrawerEffect in menu.js. */
 
 	/* Drawer header (title + close) */
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-nav-header {
