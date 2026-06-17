@@ -105,7 +105,9 @@
     "build-win": "gulp build --production",
     "watch-win": "gulp watch --development",
     "build": "wp-scripts build",
+    "build:atomic": "wp-scripts build --config webpack.atomic.config.js && gulp minify:atomic-js && gulp compile:atomic-scss && gulp minify:atomic-css",
     "start": "wp-scripts start",
+    "start:atomic": "wp-scripts start --config webpack.atomic.config.js",
     "i18n": "wp i18n make-pot ."
   },
   "author": "wealcoder",
