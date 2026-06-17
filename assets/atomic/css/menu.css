@@ -21,6 +21,11 @@
   --aae-dd-r: var(--aae-menu-dropdown-radius, 12px);
   --aae-drawer-w: var(--aae-menu-drawer-width, 320px);
   --t: var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
+  /* Effect defaults — overridden by data-dropdown-effect / data-drawer-effect */
+  --aae-dd-from-transform: translateY(-6px) scale(0.97);
+  --aae-dd-to-transform: translateY(0) scale(1);
+  --aae-drawer-from-transform: translateX(-100%);
+  --aae-drawer-to-transform: translateX(0);
   position: relative;
   width: 100%;
   color: var(--c);
@@ -34,6 +39,114 @@
   box-sizing: border-box;
 }
 
+/* ============== DROPDOWN EFFECT VARIANTS ============== */
+/* Desktop uses --aae-dd-from-transform / --aae-dd-to-transform via CSS transitions.
+   Mobile uses --aae-dd-anim (keyframe animation name) for guaranteed playback. */
+.aae-a-menu {
+  --aae-dd-anim: aae-dd-slide;
+}
+
+.aae-a-menu[data-dropdown-effect=slide] {
+  --aae-dd-from-transform: translateY(-6px) scale(0.97);
+  --aae-dd-to-transform: translateY(0) scale(1);
+  --aae-dd-anim: aae-dd-slide;
+}
+
+.aae-a-menu[data-dropdown-effect=fade] {
+  --aae-dd-from-transform: none;
+  --aae-dd-to-transform: none;
+  --aae-dd-anim: aae-dd-fade;
+}
+
+.aae-a-menu[data-dropdown-effect=slide-fade] {
+  --aae-dd-from-transform: translateY(-14px);
+  --aae-dd-to-transform: translateY(0);
+  --aae-dd-anim: aae-dd-slide-fade;
+}
+
+.aae-a-menu[data-dropdown-effect=scale] {
+  --aae-dd-from-transform: scale(0.85);
+  --aae-dd-to-transform: scale(1);
+  --aae-dd-anim: aae-dd-scale;
+}
+
+.aae-a-menu[data-dropdown-effect=zoom] {
+  --aae-dd-from-transform: scale(0.5);
+  --aae-dd-to-transform: scale(1);
+  --aae-dd-anim: aae-dd-zoom;
+}
+
+.aae-a-menu[data-dropdown-effect=flip] {
+  --aae-dd-from-transform: perspective(600px) rotateX(-90deg);
+  --aae-dd-to-transform: perspective(600px) rotateX(0deg);
+  --aae-dd-anim: aae-dd-flip;
+}
+
+.aae-a-menu[data-dropdown-effect=scale] .aae-a-menu-list > li > .sub-menu,
+.aae-a-menu[data-dropdown-effect=zoom] .aae-a-menu-list > li > .sub-menu,
+.aae-a-menu[data-dropdown-effect=flip] .aae-a-menu-list > li > .sub-menu {
+  transform-origin: top center;
+}
+
+/* Mobile sub-menu keyframe animations — fired on .aae-a-menu-item--open */
+@keyframes aae-dd-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes aae-dd-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes aae-dd-slide-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes aae-dd-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes aae-dd-zoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes aae-dd-flip {
+  0% {
+    opacity: 0;
+    transform: perspective(800px) rotateX(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0deg);
+  }
+}
 /* ============== NAV (desktop default) ============== */
 .aae-a-menu-nav {
   display: flex;
@@ -158,7 +271,7 @@
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-6px) scale(0.97);
+  transform: var(--aae-dd-from-transform);
   pointer-events: none;
   transition: opacity var(--t), transform var(--t), visibility var(--t);
 }
@@ -200,7 +313,7 @@
   .aae-a-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: var(--aae-dd-to-transform);
     pointer-events: auto;
   }
   .aae-a-menu .sub-menu .menu-item-has-children:hover > .sub-menu,
@@ -333,15 +446,92 @@
     z-index: 9995;
     flex-direction: column;
     overflow: hidden;
-    transform: translateX(-100%);
+    opacity: 0;
+    transform: var(--aae-drawer-from-transform);
     visibility: hidden;
-    transition: transform var(--t), visibility var(--t);
+    transition: transform var(--t), opacity var(--t), visibility var(--t);
     box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
-    will-change: transform;
+    will-change: transform, opacity;
   }
   .aae-a-menu[data-hamburger=true].aae-a-menu--open .aae-a-menu-nav {
-    transform: translateX(0);
+    opacity: 1;
+    transform: var(--aae-drawer-to-transform);
     visibility: visible;
+  }
+  /* ============== DRAWER EFFECT VARIANTS ============== */
+  .aae-a-menu[data-drawer-effect=slide-right] {
+    --aae-drawer-from-transform: translateX(100%);
+    --aae-drawer-to-transform: translateX(0);
+  }
+  .aae-a-menu[data-drawer-effect=slide-top] {
+    --aae-drawer-from-transform: translateY(-100%);
+    --aae-drawer-to-transform: translateY(0);
+  }
+  .aae-a-menu[data-drawer-effect=slide-bottom] {
+    --aae-drawer-from-transform: translateY(100%);
+    --aae-drawer-to-transform: translateY(0);
+  }
+  .aae-a-menu[data-drawer-effect=fade] {
+    --aae-drawer-from-transform: none;
+    --aae-drawer-to-transform: none;
+  }
+  .aae-a-menu[data-drawer-effect=scale] {
+    --aae-drawer-from-transform: scale(0.7);
+    --aae-drawer-to-transform: scale(1);
+  }
+  .aae-a-menu[data-drawer-effect=zoom-in] {
+    --aae-drawer-from-transform: scale(0);
+    --aae-drawer-to-transform: scale(1);
+  }
+  .aae-a-menu[data-drawer-effect=flip] {
+    --aae-drawer-from-transform: perspective(1200px) rotateY(-90deg);
+    --aae-drawer-to-transform: perspective(1200px) rotateY(0deg);
+  }
+  /* Anchor + dimensions per drawer effect */
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=slide-right] .aae-a-menu-nav {
+    left: auto;
+    right: 0;
+    box-shadow: -4px 0 32px rgba(0, 0, 0, 0.18);
+  }
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=slide-top] .aae-a-menu-nav {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    max-width: 100vw;
+    height: auto;
+    max-height: 85vh;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+  }
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=slide-bottom] .aae-a-menu-nav {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-width: 100vw;
+    height: auto;
+    max-height: 85vh;
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.18);
+  }
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=scale] .aae-a-menu-nav {
+    transform-origin: left center;
+  }
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=zoom-in] .aae-a-menu-nav,
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=fade] .aae-a-menu-nav {
+    left: 50%;
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    width: min(var(--aae-drawer-w), 92vw);
+    height: min(80vh, 600px);
+    margin: calc(-1 * min(80vh, 600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w), 92vw) / 2);
+    border-radius: var(--aae-dd-r);
+    transform-origin: center center;
+  }
+  .aae-a-menu[data-hamburger=true][data-drawer-effect=flip] .aae-a-menu-nav {
+    transform-origin: left center;
   }
   /* Drawer header (title + close) */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-nav-header {
@@ -434,31 +624,51 @@
     margin-left: auto;
     flex-shrink: 0;
   }
-  /* Mobile sub-menu — collapsible via .aae-a-menu-item--open class */
+  /* Mobile sub-menu — closed = hidden from layout (display:none).
+     When .aae-a-menu-item--open is added on the parent <li>, the sub-menu
+     becomes visible and a keyframe animation plays. The opened-state
+     explicitly sets opacity/visibility/transform/pointer-events so even
+     if the keyframe is missing, items still render correctly. */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu {
     position: static;
+    display: none;
     flex: 0 0 100%;
     width: 100%;
     min-width: 0;
     padding: 0;
     margin: 0;
-    background: transparent;
+    background: var(--aae-menu-dropdown-bg, transparent);
     border: 0;
     box-shadow: none;
     border-radius: 0;
-    transform: none;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height var(--t), opacity calc(var(--t) * 0.8), visibility var(--t);
+    max-height: none;
+    overflow: visible;
+    transform-origin: top center;
   }
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    display: flex;
+    flex-direction: column;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    max-height: 2000px;
+    transform: none;
+    animation: aae-dd-slide calc(var(--t) * 1.4) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  /* Per-effect animation override (uses explicit names to avoid var() resolution edge cases) */
+  .aae-a-menu[data-hamburger=true][data-dropdown-effect=fade] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    animation-name: aae-dd-fade;
+  }
+  .aae-a-menu[data-hamburger=true][data-dropdown-effect=slide-fade] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    animation-name: aae-dd-slide-fade;
+  }
+  .aae-a-menu[data-hamburger=true][data-dropdown-effect=scale] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    animation-name: aae-dd-scale;
+  }
+  .aae-a-menu[data-hamburger=true][data-dropdown-effect=zoom] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    animation-name: aae-dd-zoom;
+  }
+  .aae-a-menu[data-hamburger=true][data-dropdown-effect=flip] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+    animation-name: aae-dd-flip;
   }
   /* Indented nested levels */
   .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu a {
