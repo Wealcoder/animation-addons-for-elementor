@@ -126,6 +126,21 @@
 	color: var(--accent);
 	background: var(--bg-2);
 }
+
+/* Top-level menu items use the dedicated Item Hover Background.
+   Falls back to transparent so the drawer/page background shows through unless set. */
+.aae-a-menu-list > li > a:hover,
+.aae-a-menu-list > li > a:focus-visible {
+	background: var(--aae-menu-item-hover-bg, transparent);
+}
+
+/* Dropdown (sub-menu) items use their own Item Hover Text Color when set,
+   otherwise fall back to the global hover text color. */
+.aae-a-menu-list .sub-menu a:hover,
+.aae-a-menu-list .sub-menu a:focus-visible {
+	color: var(--aae-menu-dropdown-hover-text-color, var(--accent));
+}
+
 .aae-a-menu-list .current-menu-item > a,
 .aae-a-menu-list .current-menu-parent > a,
 .aae-a-menu-list .current-menu-ancestor > a {

@@ -1,21 +1,25 @@
 {% set classes = ['aae-a-menu', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
 
-{% set text_color    = settings.text_color   | default('') %}
-{% set hover_color   = settings.hover_color  | default('') %}
-{% set active_color  = settings.active_color | default('') %}
-{% set dd_bg         = settings.dropdown_bg        | default('') %}
-{% set dd_hover_bg   = settings.dropdown_hover_bg  | default('') %}
-{% set ham_color     = settings.hamburger_color    | default('') %}
-{% set drawer_bg     = settings.drawer_bg          | default('') %}
-{% set overlay_color = settings.overlay_color      | default('') %}
+{% set text_color         = settings.text_color                | default('') %}
+{% set hover_color        = settings.hover_color               | default('') %}
+{% set item_hover_bg      = settings.item_hover_bg             | default('') %}
+{% set active_color       = settings.active_color              | default('') %}
+{% set dd_bg              = settings.dropdown_bg               | default('') %}
+{% set dd_hover_bg        = settings.dropdown_hover_bg         | default('') %}
+{% set dd_hover_text      = settings.dropdown_hover_text_color | default('') %}
+{% set ham_color          = settings.hamburger_color           | default('') %}
+{% set drawer_bg          = settings.drawer_bg                 | default('') %}
+{% set overlay_color      = settings.overlay_color             | default('') %}
 
 {% set style_vars %}
 --aae-menu-align: {{ settings.align | default('center') }};
 {% if text_color    %}--aae-menu-color: {{ text_color }};{% endif %}
 {% if hover_color   %}--aae-menu-hover-color: {{ hover_color }};{% endif %}
+{% if item_hover_bg %}--aae-menu-item-hover-bg: {{ item_hover_bg }};{% endif %}
 {% if active_color  %}--aae-menu-active-color: {{ active_color }};{% endif %}
 {% if dd_bg         %}--aae-menu-dropdown-bg: {{ dd_bg }};{% endif %}
 {% if dd_hover_bg   %}--aae-menu-dropdown-hover-bg: {{ dd_hover_bg }};{% endif %}
+{% if dd_hover_text %}--aae-menu-dropdown-hover-text-color: {{ dd_hover_text }};{% endif %}
 {% if ham_color     %}--aae-menu-hamburger-color: {{ ham_color }};{% endif %}
 {% if drawer_bg     %}--aae-menu-drawer-bg: {{ drawer_bg }};{% endif %}
 {% if overlay_color %}--aae-menu-drawer-overlay: {{ overlay_color }};{% endif %}
