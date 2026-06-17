@@ -6,31 +6,41 @@ if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-if (! class_exists('\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base')) {
+if (! class_exists('\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base')) {
 	return;
 }
 
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type as Style_String;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder;
 
-class AAE_A_Counter extends Atomic_Widget_Base
+class AAE_A_Counter extends Atomic_Element_Base
 {
-	use Has_Template;
+	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Display an animated counter using GSAP.';
+	public static $widget_description = 'Display an animated counter using GSAP. Contains Prefix, Number, and Suffix child elements.';
+
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->meta( 'is_container', true );
+	}
+
+	public static function get_type() {
+		return 'e-aae-a-counter';
+	}
 
 	public function get_title()
 	{
@@ -57,26 +67,6 @@ class AAE_A_Counter extends Atomic_Widget_Base
 			'classes' => Classes_Prop_Type::make()
 				->default([]),
 
-			'startNumber' => Number_Prop_Type::make()
-				->default(0)
-				->description('Starting number'),
-
-			'endNumber' => Number_Prop_Type::make()
-				->default(100)
-				->description('Ending number'),
-
-			'prefix' => String_Prop_Type::make()
-				->default('')
-				->description('Prefix before the number'),
-
-			'suffix' => String_Prop_Type::make()
-				->default('+')
-				->description('Suffix after the number'),
-
-			'duration' => Number_Prop_Type::make()
-				->default(2000)
-				->description('Animation duration in milliseconds'),
-
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 		];
 	}
@@ -84,22 +74,6 @@ class AAE_A_Counter extends Atomic_Widget_Base
 	protected function define_atomic_controls(): array
 	{
 		return [
-			Section::make()
-				->set_label(__('Content', 'animation-addons-for-elementor'))
-				->set_id('content')
-				->set_items([
-					Number_Control::bind_to('startNumber')
-						->set_label(__('Starting Number', 'animation-addons-for-elementor')),
-					Number_Control::bind_to('endNumber')
-						->set_label(__('Ending Number', 'animation-addons-for-elementor')),
-					Text_Control::bind_to('prefix')
-						->set_label(__('Prefix', 'animation-addons-for-elementor')),
-					Text_Control::bind_to('suffix')
-						->set_label(__('Suffix', 'animation-addons-for-elementor')),
-					Number_Control::bind_to('duration')
-						->set_label(__('Animation Duration (ms)', 'animation-addons-for-elementor'))
-						->set_meta(['min' => 100, 'max' => 10000, 'step' => 100]),
-				]),
 			Section::make()
 				->set_label(__('Settings', 'animation-addons-for-elementor'))
 				->set_id('settings')
@@ -121,11 +95,43 @@ class AAE_A_Counter extends Atomic_Widget_Base
 						->add_prop( 'align-items',      Style_String::generate( 'center' ) )
 						->add_prop( 'justify-content',  Style_String::generate( 'center' ) )
 						->add_prop( 'gap',              Style_String::generate( '5px' ) )
-						->add_prop( 'font-size',        Style_String::generate( '2rem' ) )
-						->add_prop( 'font-weight',      Style_String::generate( 'bold' ) )
-						->add_prop( 'font-family',      Style_String::generate( 'inherit' ) )
-						->add_prop( 'line-height',      Style_String::generate( '1' ) )
 				),
+		];
+	}
+
+	protected function define_default_children() {
+		return [
+			Atomic_Paragraph::generate()
+				->editor_settings([
+					'title' => 'Prefix',
+				])
+				->settings([
+					'paragraph' => Html_V3_Prop_Type::generate([
+						'content'  => String_Prop_Type::generate('Prefix '),
+						'children' => [],
+					]),
+					'tag' => String_Prop_Type::generate('span'),
+				])
+				->build(),
+				
+			Widget_Builder::make( 'e-aae-a-counter-number' )
+				->editor_settings([
+					'title' => 'Animated Number',
+				])
+				->build(),
+
+			Atomic_Paragraph::generate()
+				->editor_settings([
+					'title' => 'Suffix',
+				])
+				->settings([
+					'paragraph' => Html_V3_Prop_Type::generate([
+						'content'  => String_Prop_Type::generate(' +'),
+						'children' => [],
+					]),
+					'tag' => String_Prop_Type::generate('span'),
+				])
+				->build(),
 		];
 	}
 
@@ -134,16 +140,6 @@ class AAE_A_Counter extends Atomic_Widget_Base
 		return [
 			'elementor/elements/aae-a-counter' => __DIR__ . '/aae-a-counter.html.twig',
 		];
-	}
-
-	public function render_markdown(): string
-	{
-		$settings = $this->get_atomic_settings();
-		$endNumber = $settings['endNumber'] ?? 100;
-		$prefix = $settings['prefix'] ?? '';
-		$suffix = $settings['suffix'] ?? '';
-
-		return $prefix . $endNumber . $suffix;
 	}
 
 	public function get_script_depends(): array
