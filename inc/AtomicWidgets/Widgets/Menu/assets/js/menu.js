@@ -270,10 +270,4 @@ register({
 	},
 });
 
-/* Fallback: also init on DOMContentLoaded for non-Elementor contexts */
-const initAll = () => document.querySelectorAll('.aae-a-menu').forEach(initMenu);
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initAll);
-} else {
-	initAll();
-}
+

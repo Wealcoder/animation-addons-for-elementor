@@ -914,7 +914,8 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
-		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts']);
+		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'],16);
+		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('wp_enqueue_scripts', [$this, 'register_atomic_styles']);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
 
@@ -1087,7 +1088,7 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
 				$path = $widget_data['script_path'];
-				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+				if ( ! $this->is_dev_environment() ) {
 					$min_path = str_replace( '.js', '.min.js', $path );
 					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 						$path = $min_path;
@@ -1095,6 +1096,7 @@ final class Atomic
 				}
 				$file_path = WCF_ADDONS_PATH . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+			
 				wp_register_script(
 					$widget_data['script_handle'],
 					WCF_ADDONS_URL . $path,
@@ -1107,6 +1109,37 @@ final class Atomic
 	}
 
 	/**
+	 * Enqueue the widget's script when that element type is actually rendered on the page.
+	 *
+	 * WHY THIS EXISTS:
+	 * Atomic_Widget_Base::before_render() is an intentionally empty override of
+	 * Widget_Base::before_render(). The parent's before_render() is the only place
+	 * enqueue_scripts() is triggered, so get_script_depends() is DEAD CODE for every
+	 * atomic widget. We instead hook into Element_Base::print_element() which fires
+	 * `elementor/frontend/before_render` for all elements including atomic widgets,
+	 * and enqueue the matching script handle here — once, on first encounter.
+	 *
+	 * @param \Elementor\Element_Base $element
+	 */
+	public function maybe_enqueue_widget_script( $element ): void {
+		if ( ! method_exists( $element, 'get_element_type' ) ) {
+			return;
+		}
+
+		$element_type = $element::get_element_type();	
+        // get widget settings condition css / js file load
+		//$widget_settings = $element->get_atomic_settings();
+		
+		foreach ( $this->get_available_widgets() as $slug => $data ) {
+		
+			if ( ! empty( $data['has_script'] ) && ( 'e-' . $slug ) === $element_type ) {
+				wp_enqueue_script( $data['script_handle'] );
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Register frontend styles for active atomic widgets.
 	 */
 	public function register_atomic_styles()
@@ -1114,7 +1147,7 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
 				$path = $widget_data['style_path'];
-				if ( ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
+				if ( ! $this->is_dev_environment() ) {
 					$min_path = str_replace( '.css', '.min.css', $path );
 					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 						$path = $min_path;
@@ -1130,6 +1163,38 @@ final class Atomic
 				);
 			}
 		}
+	}
+
+	/**
+	 * Return true when running in a dev / local environment.
+	 *
+	 * Minified assets are skipped when ANY of the following is true:
+	 *   - WordPress SCRIPT_DEBUG constant is set to true.
+	 *   - The HTTP_HOST header is 127.0.0.1, localhost, or a *.local / *.test domain.
+	 *   - The server's own IP address (SERVER_ADDR / LOCAL_ADDR) is 127.0.0.1.
+	 *
+	 * @return bool
+	 */
+	private function is_dev_environment(): bool {
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			return true;
+		}
+
+		$host = strtolower( $_SERVER['HTTP_HOST'] ?? '' );
+
+		if (
+			$host === '127.0.0.1' ||
+			$host === 'localhost' ||
+			str_ends_with( $host, '.local' ) ||
+			str_ends_with( $host, '.test' )
+		) {
+			return true;
+		}
+
+		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
+		$server_ip = $_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? '';
+
+		return $server_ip === '127.0.0.1';
 	}
 
 	/* =====================================================================

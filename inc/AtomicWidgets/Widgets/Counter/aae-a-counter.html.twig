@@ -1,15 +1,17 @@
-<div data-id="{{ id }}" data-e-type="{{ type }}" class="{{ settings.classes }}" {{ settings.attributes|raw }}>
+{% import 'elementor/macros' as m %}
+{% set classes = settings.classes | merge([ base_styles.base ]) | join(' ') %}
+<div class="{{ classes }}" data-id="{{ id }}" data-e-type="{{ type }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
 	{% if settings.prefix %}
 		<span class="aae-a-counter-prefix">{{ settings.prefix }}</span>
 	{% endif %}
-	
+
 	<span class="aae-a-counter-number"
 		  style="font-variant-numeric: tabular-nums;"
-		  data-from="{{ settings.startNumber|default(0) }}"
-		  data-to="{{ settings.endNumber|default(100) }}"
-		  data-duration="{{ settings.duration|default(2000) }}"
-	>{{ settings.startNumber|default(0) }}</span>
-	
+		  data-from="{{ settings.startNumber | default(0) }}"
+		  data-to="{{ settings.endNumber | default(100) }}"
+		  data-duration="{{ settings.duration | default(2000) }}"
+	>{{ settings.startNumber | default(0) }}</span>
+
 	{% if settings.suffix %}
 		<span class="aae-a-counter-suffix">{{ settings.suffix }}</span>
 	{% endif %}

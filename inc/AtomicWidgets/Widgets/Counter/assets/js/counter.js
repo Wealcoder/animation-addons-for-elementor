@@ -40,17 +40,20 @@ const initCounter = (element) => {
 	}
 };
 
-register( {
+register({
 	elementType: 'e-aae-a-counter',
 	id: 'e-aae-a-counter-handler',
-	callback: ( { element } ) => {
-		
-		const numberEl = element.querySelector('.aae-a-counter-number');		
+	callback: ({ element }) => {
+	
+		const numberEl = element.querySelector('.aae-a-counter-number');
 		if (numberEl) {
 			// Remove init class so it safely re-animates when settings change in the editor
 			numberEl.classList.remove('aae-counter-initialized');
 			initCounter(numberEl);
 		}
 	}
-} );
+});
+
+// Fallback for frontend non-Elementor rendering context
+
 
