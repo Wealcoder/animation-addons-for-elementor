@@ -95,6 +95,7 @@ class AAE_A_Counter extends Atomic_Element_Base
 						->add_prop( 'align-items',      Style_String::generate( 'center' ) )
 						->add_prop( 'justify-content',  Style_String::generate( 'center' ) )
 						->add_prop( 'gap',              Style_String::generate( '5px' ) )
+						->add_prop( 'padding',          Style_String::generate( '0 8px' ) )
 				),
 		];
 	}
