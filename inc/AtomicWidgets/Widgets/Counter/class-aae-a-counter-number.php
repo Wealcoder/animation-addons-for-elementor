@@ -22,6 +22,8 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type as Style_String;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 class AAE_A_Counter_Number extends Atomic_Widget_Base
 {
@@ -108,7 +110,7 @@ class AAE_A_Counter_Number extends Atomic_Widget_Base
 						->add_prop( 'font-weight',      Style_String::generate( 'bold' ) )
 						->add_prop( 'font-family',      Style_String::generate( 'inherit' ) )
 						->add_prop( 'line-height',      Style_String::generate( '1' ) )
-						->add_prop( 'color',            Style_String::generate( 'inherit' ) )
+						->add_prop( 'color',            Style_String::generate( 'inherit' ) )					
 				),
 		];
 	}

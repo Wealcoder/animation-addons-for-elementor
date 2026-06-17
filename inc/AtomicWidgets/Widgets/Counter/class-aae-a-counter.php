@@ -24,6 +24,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 class AAE_A_Counter extends Atomic_Element_Base
 {
@@ -94,8 +95,10 @@ class AAE_A_Counter extends Atomic_Element_Base
 						->add_prop( 'display',          Style_String::generate( 'inline-flex' ) )
 						->add_prop( 'align-items',      Style_String::generate( 'center' ) )
 						->add_prop( 'justify-content',  Style_String::generate( 'center' ) )
-						->add_prop( 'gap',              Style_String::generate( '5px' ) )
-						->add_prop( 'padding',          Style_String::generate( '0 8px' ) )
+						->add_prop( 'gap',              Size_Prop_Type::generate( [
+							'size' => 5,
+							'unit' => 'px',
+						] ) )
 				),
 		];
 	}
