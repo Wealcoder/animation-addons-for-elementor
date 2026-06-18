@@ -4,6 +4,8 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
+    data-counter-from="{{ settings.start_number | default(0) }}"
+    data-counter-duration="{{ settings.duration | default(2000) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -11,6 +13,5 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-    <!-- elementor-children-placeholder -->
-	
+    {{ children_placeholder | raw }}
 </div>

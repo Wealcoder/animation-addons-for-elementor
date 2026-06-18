@@ -483,24 +483,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-counter-number' => [
-				'label'        => 'Counter Number',
-				'description'  => 'Internal child item for Counter.',
-				'icon'         => 'eicon-counter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'counter number',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
@@ -732,25 +714,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-icon-list-item' => [
-				'label'        => 'Icon List Item',
-				'description'  => 'Internal child item for Icon List.',
-				'icon'         => 'eicon-bullet-list',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'list item',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 9,
-				'demo_url'     => '',
-				'doc_url'      => '',
+		'aae-a-icon-list-item' => [
+			'label'        => 'Icon List Item',
+			'description'  => 'Internal child item for Icon List.',
+			'icon'         => 'eicon-bullet-list',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'list item',
+				'internal',
 			],
-		];
-	}
+			'category'     => 'general',
+			'order'        => 9,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+
+		'aae-a-image-compare' => [
+			'label'        => 'Image Compare',
+			'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
+			'icon'         => 'eicon-image-before-after',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'image',
+				'compare',
+				'before',
+				'after',
+				'slider',
+				'atomic',
+			],
+			'category'     => 'general',
+			'order'        => 10,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+	];
+}
 
 	/**
 	 * Register all available atomic extension definitions.
@@ -1015,11 +1019,6 @@ final class Atomic
 				'script_path' => '/assets/atomic/js/counter.js',
 				'has_script' => true,
 			],
-			'aae-a-counter-number' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter_Number',
-				'file' => 'Widgets/Counter/class-aae-a-counter-number.php',
-				'has_script' => false,
-			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
@@ -1112,12 +1111,23 @@ final class Atomic
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-			'aae-a-icon-list-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
-				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
-				'has_script' => false,
-			],
-			// Add new atomic widgets below...
+		'aae-a-icon-list-item' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+			'has_script' => false,
+			'style_handle' => 'aae-a-icon-list-css',
+			'style_path' => '/assets/atomic/css/icon-list.css',
+		],
+		'aae-a-image-compare' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+		'script_handle' => 'aae-a-image-compare-js',
+			'script_path' => '/assets/atomic/js/image-compare.js',
+			'has_script' => true,
+			'style_handle' => 'aae-a-image-compare-css',
+			'style_path' => '/assets/atomic/css/image-compare.css',
+		],
+		// Add new atomic widgets below...
 		];
 	}
 
@@ -1212,9 +1222,14 @@ final class Atomic
 		//$widget_settings = $element->get_atomic_settings();
 		
 		foreach ( $this->get_available_widgets() as $slug => $data ) {
-		
-			if ( ! empty( $data['has_script'] ) && ( 'e-' . $slug ) === $element_type ) {
-				wp_enqueue_script( $data['script_handle'] );
+
+			if ( ( 'e-' . $slug ) === $element_type ) {
+				if ( ! empty( $data['has_script'] ) ) {
+					wp_enqueue_script( $data['script_handle'] );
+				}
+				if ( ! empty( $data['style_handle'] ) ) {
+					wp_enqueue_style( $data['style_handle'] );
+				}
 				break;
 			}
 		}
@@ -1467,19 +1482,40 @@ final class Atomic
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		if (false !== get_option(self::OPTION_NAME)) {
-			return; // Already seeded.
+	$saved = get_option(self::OPTION_NAME);
+
+		// First install: option doesn't exist yet, seed all defaults.
+		if (false === $saved) {
+			$defaults = [];
+
+			foreach ($this->widgets_registry as $slug => $def) {
+				if (! empty($def['default'])) {
+					$defaults[$slug] = true;
+				}
+			}
+
+			add_option(self::OPTION_NAME, $defaults, '', false);
+			return;
 		}
 
-		$defaults = [];
+		// Existing install: merge in any newly-added default widgets
+		// that aren't yet in the saved option. This allows new widgets
+		// (added in a plugin update) to auto-activate by default.
+		if (! is_array($saved)) {
+			$saved = [];
+		}
 
+		$changed = false;
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
+			if (! empty($def['default']) && ! isset($saved[$slug])) {
+				$saved[$slug] = true;
+				$changed = true;
 			}
 		}
 
-		add_option(self::OPTION_NAME, $defaults, '', false);
+		if ($changed) {
+			update_option(self::OPTION_NAME, $saved, false);
+		}
 	}
 
 	/**

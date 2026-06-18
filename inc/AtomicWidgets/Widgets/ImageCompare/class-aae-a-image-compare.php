@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Counter;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -23,16 +23,17 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Counter extends Atomic_Element_Base {
+class AAE_A_Image_Compare extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Display an animated counter using GSAP. Prefix, animated number, and suffix are independently styleable.';
+	public static $widget_description = 'A draggable before/after image comparison slider. Each image, caption and button is an independent atomic child you can style from its own Style panel.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -40,45 +41,42 @@ class AAE_A_Counter extends Atomic_Element_Base {
 	}
 
 	public static function get_type() {
-		return 'e-aae-a-counter';
+		return 'e-aae-a-image-compare';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-counter';
+		return 'e-aae-a-image-compare';
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Counter', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Image Compare', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
-		return [ 'atomic', 'counter', 'number', 'animation', 'gsap' ];
+		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider' ];
 	}
 
 	public function get_icon() {
-		return 'eicon-counter';
+		return 'eicon-image-before-after';
 	}
 
 	protected static function define_props_schema(): array {
 		return [
-			'classes'      => Classes_Prop_Type::make()->default( [] ),
-			'attributes'   => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'start_number' => Number_Prop_Type::make()->default( 0 ),
-			'duration'     => Number_Prop_Type::make()->default( 2000 ),
+			'classes'           => Classes_Prop_Type::make()->default( [] ),
+			'attributes'        => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'default_position'  => Number_Prop_Type::make()->default( 50 ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
-				->set_label( __( 'Counter', 'animation-addons-for-elementor' ) )
+				->set_label( __( 'Image Compare', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
 				->set_items( [
-					Number_Control::bind_to( 'start_number' )
-						->set_label( __( 'Start Number', 'animation-addons-for-elementor' ) ),
-					Number_Control::bind_to( 'duration' )
-						->set_label( __( 'Duration (ms)', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'min' => 100, 'max' => 10000, 'step' => 100 ] ),
+					Number_Control::bind_to( 'default_position' )
+						->set_label( __( 'Default Handle Position (%)', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'min' => 0, 'max' => 100, 'step' => 1 ] ),
 				] ),
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
@@ -96,46 +94,54 @@ class AAE_A_Counter extends Atomic_Element_Base {
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'display',         String_Prop_Type::generate( 'inline-flex' ) )
-						->add_prop( 'align-items',     String_Prop_Type::generate( 'baseline' ) )
-						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 5, 'unit' => 'px' ] ) )
+						->add_prop( 'position',         String_Prop_Type::generate( 'relative' ) )
+						->add_prop( 'overflow',         String_Prop_Type::generate( 'hidden' ) )
+						->add_prop( 'width',            String_Prop_Type::generate( '100%' ) )
+						->add_prop( 'user-select',      String_Prop_Type::generate( 'none' ) )
+						->add_prop( 'min-height',       Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'px' ] ) )
 				),
 		];
 	}
 
 	protected function define_default_children() {
 		return [
+		// 1. BEFORE image (clipped left side).
+		// Image prop omitted on purpose — Atomic_Image supplies its own
+		// placeholder by default; the user replaces it from the Style panel.
+		Atomic_Image::generate()
+			->editor_settings( [ 'title' => 'After Image' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-after' ] ),
+			] )
+			->build(),
+
+		Atomic_Image::generate()
+			->editor_settings( [ 'title' => 'Before Image' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-before' ] ),
+			] )
+			->build(),
+
+			// 3. BEFORE caption.
 			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Prefix' ] )
+				->editor_settings( [ 'title' => 'Caption Before' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-counter-prefix' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-before' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '' ),
+						'content'  => String_Prop_Type::generate( 'Before' ),
 						'children' => [],
 					] ),
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
 
+		// 4. AFTER caption.
 			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Number' ] )
+				->editor_settings( [ 'title' => 'Caption After' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-counter-number' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-after' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '0' ),
-						'children' => [],
-					] ),
-					'tag'       => String_Prop_Type::generate( 'span' ),
-				] )
-				->build(),
-
-			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Suffix' ] )
-				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-counter-suffix' ] ),
-					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '+' ),
+						'content'  => String_Prop_Type::generate( 'After' ),
 						'children' => [],
 					] ),
 					'tag'       => String_Prop_Type::generate( 'span' ),
@@ -145,7 +151,7 @@ class AAE_A_Counter extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-paragraph', 'e-heading' ];
+		return [ 'widget', 'e-image', 'e-paragraph', 'e-button' ];
 	}
 
 	protected function define_default_html_tag() {
@@ -154,11 +160,11 @@ class AAE_A_Counter extends Atomic_Element_Base {
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-counter' => __DIR__ . '/aae-a-counter.html.twig',
+			'elementor/elements/aae-a-image-compare' => __DIR__ . '/aae-a-image-compare.html.twig',
 		];
 	}
 
 	public function get_script_depends(): array {
-		return [ 'aae-a-counter-js' ];
+		return [ 'aae-a-image-compare-js' ];
 	}
 }
