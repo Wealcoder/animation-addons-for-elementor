@@ -155,7 +155,7 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item', 'aae-a-counter-number'];
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -467,24 +467,6 @@ final class Atomic
 					'atomic',
 					'gsap',
 					'animate',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-counter-number' => [
-				'label'        => 'Counter Number',
-				'description'  => 'Internal child item for Counter.',
-				'icon'         => 'eicon-counter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'counter number',
-					'internal',
 				],
 				'category'     => 'general',
 				'order'        => 0,
@@ -978,11 +960,6 @@ final class Atomic
 				'script_handle' => 'aae-a-counter-js',
 				'script_path' => '/assets/atomic/js/counter.js',
 				'has_script' => true,
-			],
-			'aae-a-counter-number' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter_Number',
-				'file' => 'Widgets/Counter/class-aae-a-counter-number.php',
-				'has_script' => false,
 			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
