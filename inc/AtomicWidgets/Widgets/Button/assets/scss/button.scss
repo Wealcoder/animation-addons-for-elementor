@@ -25,10 +25,6 @@
   }
 }
 
-.aae-a-button {
-  // column-gap: 66px;
-}
-
 .elementor .aae-a-button {
   .e-svg-base {
     width: 23px;
@@ -56,24 +52,10 @@
 }
 
 .aae-a-button {
-  // display: inline-flex;
-  // align-items: center;
-  // justify-content: center;
-  // font-weight: 500;
-  // line-height: 1;
-  // text-decoration: none;
-  // cursor: pointer;
-  // transition: all 0.3s;
-  // outline: none;
-
   width: auto;
-
 }
 
 // Override the Atomic_Svg base size (65px) to 23px for the button icon.
-// Needs 3-class specificity (.elementor .aae-a-button .e-svg-base = 0,3,0) to beat
-// the atomic base-styles CSS (.elementor .e-svg-base = 0,2,0) which loads later.
-
 // Icon size/color for classic and pro .icon spans
 .aae--btn-pro {
   .icon {

@@ -188,7 +188,7 @@ class AAE_A_Button extends Atomic_Element_Base
 			'display'         => String_Prop_Type::generate('inline-flex'),
 			'align-items'     => String_Prop_Type::generate('center'),
 			'justify-content' => String_Prop_Type::generate('center'),
-			'column-gap'      => Size_Prop_Type::generate(['size' => 60, 'unit' => 'px']),
+			'column-gap'      => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
 			'width'           => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
 
 			'padding' => Dimensions_Prop_Type::generate([

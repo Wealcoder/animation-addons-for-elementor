@@ -1,8 +1,7 @@
 import { register } from "@elementor/frontend-handlers";
 import "../scss/button.scss";
 
-// Style-4 only: track the cursor position so the ripple span originates at the click point.
-const initButton = (container) => {
+const rippleBtn = (container) => {
   // In V4 atomic the container IS the <a> root element, so check the element
   // itself before falling back to a descendant search (needed for V3 compat).
   const rippleBtn = container.classList.contains("btn-hover")
@@ -26,4 +25,33 @@ const initButton = (container) => {
   rippleBtn.addEventListener("mouseleave", moveRipple);
 };
 
-register({ handler: initButton, widgetType: "e-aae-a-button" });
+const groupSwap = (container) => {
+  // const is_l = container.classList.contains("style-5");
+
+  // if (!is_l) return null;
+
+  console.log("inside grupSwat");
+
+  const svgEl = container.querySelector(".e-svg-base");
+  if (!svgEl) return null;
+
+  const duplicatedSvg = svgEl.cloneNode(true);
+
+  container.prepend(duplicatedSvg);
+  // if (is_l) {
+  // } else {
+  //   container.append(duplicatedSvg);
+  // }
+};
+
+register({
+  elementType: "e-aae-a-button",
+  id: "e-aae-a-button-handler",
+  callback: ({ element }) => {
+    if (element.classList.contains("btn-hover")) {
+      rippleBtn(element);
+    } else if (element.classList.contains("aae-btn-pro-group")) {
+      groupSwap(element);
+    }
+  },
+});
