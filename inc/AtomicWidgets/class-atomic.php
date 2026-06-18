@@ -155,7 +155,16 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
+		$internal_widgets = [
+			'aae-a-slide', 
+			'aae-a-slider-track',
+			'aae-a-slider-nav-prev',
+			'aae-a-slider-nav-next', 
+			'aae-a-slider-pagination',
+			'aae-a-counter-number',
+			'aae-a-accordion-item', 
+			'aae-a-icon-list-item'
+		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -494,22 +503,48 @@ final class Atomic
 
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
-				'description'  => 'A GSAP powered fully draggable nested slider container.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
+				'keywords'     => ['atomic', 'slider', 'carousel'],
 				'icon'         => 'eicon-slider-push',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'slider',
-					'nested',
-					'carousel',
-					'gsap',
-				],
 				'category'     => 'general',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+			'aae-a-slide' => [
+				'label'        => 'Slide (Internal)',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
+				'keywords'     => ['atomic', 'slide'],
+				'icon'         => 'eicon-slide',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-track' => [
+				'label'        => 'Slider Track',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'keywords'     => ['atomic', 'slider', 'track'],
+				'icon'         => 'eicon-slider-push',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-nav-prev' => [
+				'label'        => 'Slider Prev Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'keywords'     => ['atomic', 'slider', 'navigator', 'prev'],
+				'icon'         => 'eicon-chevron-left',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-nav-next' => [
+				'label'        => 'Slider Next Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'keywords'     => ['atomic', 'slider', 'navigator', 'next'],
+				'icon'         => 'eicon-chevron-right',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-pagination' => [
+				'label'        => 'Slider Pagination',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
+				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-slide' => [
@@ -936,6 +971,7 @@ final class Atomic
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
 
 		// AJAX endpoints for Editor previews
 		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
@@ -989,11 +1025,33 @@ final class Atomic
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
 				'script_handle' => 'aae-a-slider-js',
 				'script_path' => '/assets/atomic/js/nestedslider.js',
+				'style_handle' => 'aae-a-slider-css',
+				'style_path' => '/assets/atomic/css/nestedslider.css',
 				'has_script' => true,
 			],
 			'aae-a-slide' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slide.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-track' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-track.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-nav-prev' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-prev.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-nav-next' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-pagination.php',
 				'has_script' => false,
 			],
 			'aae-a-menu' => [
@@ -1442,6 +1500,30 @@ final class Atomic
 		}
 
 		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
+	}
+	/**
+	 * Enqueue global atomic editor scripts into the top-level window.
+	 */
+	public function enqueue_atomic_editor_scripts(): void
+	{
+		$suffix = $this->is_dev_environment() ? '' : '.min';
+		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
+		$file_path = WCF_ADDONS_PATH . $path;
+		$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+
+		wp_enqueue_script(
+			'aae-atomic-editor',
+			WCF_ADDONS_URL . $path,
+			[
+				'nested-elements',
+				'elementor-editor',
+				'elementor-common',
+				'wp-element',
+				'jquery',
+			],
+			$version,
+			true
+		);
 	}
 }
 

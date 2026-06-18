@@ -3,7 +3,7 @@
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
-    data-interaction-id="{{ interaction_id | default('') }}"
+    data-interaction-id="{{ interaction_id }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -11,6 +11,7 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-    <!-- elementor-children-placeholder -->
-	
+
+    {# Dots will be injected here by nestedslider.js based on the number of slides #}
+
 </div>

@@ -17,6 +17,7 @@ final class Bootstrap {
 		if ( version_compare( ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '<' ) ) {
 			return;
 		}
+		
 		// Regular (preset-based) animation — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_ANIM[<id>].
 		( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();

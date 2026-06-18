@@ -319,6 +319,10 @@ class Nested_Slider extends Widget_Nested_Base {
 			'role': 'group',
 			'aria-roledescription': 'slide',
 			'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'animation-addons-for-elementor' ); ?> ' + numOfSlides,
+			'data-binding-type': 'repeater-item',
+			'data-binding-repeater-name': 'carousel_items',
+			'data-binding-setting': ['slide_title'],
+			'data-binding-index': slideCount,
 		};
 
 		view.addRenderAttribute( 'single-slide', slideWrapperKeyItem, null, true );
@@ -524,6 +528,10 @@ class Nested_Slider extends Widget_Nested_Base {
 									'role': 'group',
 									'aria-roledescription': 'slide',
 									'aria-label': slideCount + ' <?php echo esc_attr__( 'of', 'animation-addons-for-elementor' ); ?> ' + settings['carousel_items'].length,
+									'data-binding-type': 'repeater-item',
+									'data-binding-repeater-name': 'carousel_items',
+									'data-binding-setting': ['slide_title'],
+									'data-binding-index': slideCount,
 								} );
 							#>
 								<div {{{ view.getRenderAttributeString( slideWrapperKey ) }}}></div>

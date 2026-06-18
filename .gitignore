@@ -3,6 +3,7 @@ node_modules/
 /dist
 .sass-cache/
 build/
+assets/atomic/*
 assets/css/*
 assets/js/*
 log/

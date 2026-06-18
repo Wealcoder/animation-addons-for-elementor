@@ -22,21 +22,5 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
     
-    <div class="aae-slider-track" style="display: flex; gap: var(--aae-slide-gap); width: 100%; touch-action: pan-y; perspective: var(--aae-perspective); transform-style: preserve-3d;">
-        <style>
-            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > * {
-                flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
-                max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
-                box-sizing: border-box;
-                transform-style: preserve-3d;
-                transition: transform 0.5s ease-out;
-            }
-            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > style,
-            .aae-a-slider[data-id="{{ id }}"] .aae-slider-track > script {
-                display: none !important;
-            }
-        </style>
-        
-        {{ children_placeholder | raw }}
-    </div>
+    {{ children_placeholder | raw }}
 </div>
