@@ -58,6 +58,7 @@
 // Override the Atomic_Svg base size (65px) to 23px for the button icon.
 // Icon size/color for classic and pro .icon spans
 .aae--btn-pro {
+
   .icon {
     line-height: 0;
     font-size: var(--aae-btn-icon-size, 1em);
@@ -66,6 +67,13 @@
     color: var(--aae-btn-icon-color, inherit);
   }
 }
+
+  .style-1 {
+    .icon {
+      width: auto !important;
+      height: auto !important;
+    }
+  }
 
 .btn-text-flip {
   svg {
@@ -578,6 +586,67 @@
 }
 
 /* Style One — border divide */
+// .style-1.btn-border-divide,
+// .style-1 .btn-border-divide {
+//   align-items: flex-end;
+//   overflow: hidden;
+//   color: var(--aae-btn-color, inherit);
+
+//   &:hover {
+//     color: var(--aae-btn-hover-color, inherit);
+
+//     .text,
+//     .icon,
+//     > * {
+//       border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
+//     }
+
+//     .icon {
+//       i:first-child,
+//       svg:first-child {
+//         transform: translate(0, 0);
+//         opacity: 1;
+//       }
+
+//       i:last-child,
+//       svg:last-child {
+//         transform: translate(10px, -10px);
+//         opacity: 0;
+//       }
+//     }
+//   }
+
+//   // V3 class-based children + V4 atomic direct children
+//   .text,
+//   .icon,
+//   > * {
+//     transition: all 0.3s;
+//     border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
+//   }
+
+//   .icon {
+//     display: inline-flex;
+//     padding-bottom: 3px;
+//     position: relative;
+//     overflow: hidden;
+
+//     i:first-child,
+//     svg:first-child {
+//       position: absolute;
+//       transform: translate(-10px, 10px);
+//       transition: all .3s;
+//       opacity: 0;
+//     }
+
+//     i:last-child,
+//     svg:last-child {
+//       transition: all .3s;
+//       opacity: 1;
+//     }
+//   }
+// }
+
+
 .style-1.btn-border-divide,
 .style-1 .btn-border-divide {
   align-items: flex-end;
@@ -587,32 +656,28 @@
   &:hover {
     color: var(--aae-btn-hover-color, inherit);
 
-    // V3 class-based children + V4 atomic direct children
     .text,
-    .icon,
-    > * {
+    .icon {
       border-bottom-color: var(--aae-btn-hover-border-color, #101A33);
     }
 
     .icon {
-      i:first-child,
-      svg:first-child {
+      // clone (first) slides in
+      .e-svg-base[data-swap-clone] {
         transform: translate(0, 0);
         opacity: 1;
       }
 
-      i:last-child,
-      svg:last-child {
+      // original (last) slides out
+      .e-svg-base:not([data-swap-clone]) {
         transform: translate(10px, -10px);
         opacity: 0;
       }
     }
   }
 
-  // V3 class-based children + V4 atomic direct children
   .text,
-  .icon,
-  > * {
+  .icon {
     transition: all 0.3s;
     border-bottom: 1px solid var(--aae-btn-border-color, #101A33);
   }
@@ -623,21 +688,35 @@
     position: relative;
     overflow: hidden;
 
-    i:first-child,
-    svg:first-child {
+    // clone (first) starts hidden, slides in on hover
+    .e-svg-base[data-swap-clone] {
       position: absolute;
       transform: translate(-10px, 10px);
-      transition: all .3s;
+      transition: all 0.3s;
       opacity: 0;
     }
 
-    i:last-child,
-    svg:last-child {
-      transition: all .3s;
+    // original (last) starts visible, slides out on hover
+    .e-svg-base:not([data-swap-clone]) {
+      transition: all 0.3s;
       opacity: 1;
     }
   }
 }
+
+
+.style-1.btn-border-divide,
+.style-1 .btn-border-divide {
+  // Hide the raw Elementor wrappers — only show our cloned wrappers
+  > .elementor-widget-e-paragraph,
+  > .elementor-widget-e-svg,
+  > .e-paragraph-base,
+  > .e-svg-base:not([data-swap-clone]) {
+    display: none !important;
+  }
+}
+
+
 
 /* Style Two — drop shadow on hover */
 .style-2.aae--btn-pro,
@@ -826,63 +905,74 @@
   transform: scale3d(1, 1, 1);
 }
 
-/* Style Five — right icon slides in from right */
-.style-5.aae-btn-pro-group > *:nth-child(1),
-.style-5 .aae-btn-pro-group > *:nth-child(1) {
+
+/* ──________________________________________________________________________________________________── */
+/* ─── Style 5 ─── */
+.style-5.aae-btn-pro-group > [data-swap-clone],
+.style-5 .aae-btn-pro-group > [data-swap-clone] {
   transform: scale3d(0.5, 0.5, 1);
   margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 
-.style-5.aae-btn-pro-group > *:nth-child(3),
-.style-5 .aae-btn-pro-group > *:nth-child(3) {
+.style-5.aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+.style-5 .aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+.style-5.aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base,
+.style-5 .aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base {
   transform: scale3d(1, 1, 1);
   margin-left: 0;
   opacity: 1;
 }
 
-.style-5.aae-btn-pro-group:hover > *:nth-child(1),
-.style-5 .aae-btn-pro-group:hover > *:nth-child(1) {
+.style-5.aae-btn-pro-group:hover > [data-swap-clone],
+.style-5 .aae-btn-pro-group:hover > [data-swap-clone] {
   transform: scale3d(1, 1, 1);
   margin-right: 0;
   opacity: 1;
 }
 
-.style-5.aae-btn-pro-group:hover > *:nth-child(3),
-.style-5 .aae-btn-pro-group:hover > *:nth-child(3) {
+.style-5.aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+.style-5 .aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+.style-5.aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base,
+.style-5 .aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base {
   transform: scale3d(0.5, 0.5, 1);
   margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 
-/* Style Six — left icon slides in from left */
-.style-6.aae-btn-pro-group > *:nth-child(1),
-.style-6 .aae-btn-pro-group > *:nth-child(1) {
+/* ─── Style 6 ─── */
+.style-6.aae-btn-pro-group > [data-swap-clone],
+.style-6 .aae-btn-pro-group > [data-swap-clone] {
   transform: scale3d(1, 1, 1);
   margin-right: 0;
   opacity: 1;
 }
 
-.style-6.aae-btn-pro-group > *:nth-child(3),
-.style-6 .aae-btn-pro-group > *:nth-child(3) {
+.style-6.aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+.style-6 .aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+.style-6.aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base,
+.style-6 .aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base {
   transform: scale3d(0.5, 0.5, 1);
   margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 
-.style-6.aae-btn-pro-group:hover > *:nth-child(1),
-.style-6 .aae-btn-pro-group:hover > *:nth-child(1) {
+.style-6.aae-btn-pro-group:hover > [data-swap-clone],
+.style-6 .aae-btn-pro-group:hover > [data-swap-clone] {
   transform: scale3d(0.5, 0.5, 1);
   margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
   opacity: 0;
 }
 
-.style-6.aae-btn-pro-group:hover > *:nth-child(3),
-.style-6 .aae-btn-pro-group:hover > *:nth-child(3) {
+.style-6.aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+.style-6 .aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+.style-6.aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base,
+.style-6 .aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base {
   transform: scale3d(1, 1, 1);
   margin-left: 0;
   opacity: 1;
 }
+
 
 /* Style Seven — outline pill, inner fill shrinks on hover */
 .style-7.aae--btn-pro,

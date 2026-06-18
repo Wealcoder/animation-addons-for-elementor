@@ -9,6 +9,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
@@ -64,12 +65,12 @@ class AAE_A_Button extends Atomic_Element_Base
 
 	protected static function define_props_schema(): array
 	{
-		$pro_style_values = ['pro-1', 'pro-2', 'pro-3', 'pro-4', 'pro-5', 'pro-6', 'pro-7', 'pro-8'];
+		$indpendent_style_values = ['pro-1', 'pro-2', 'pro-3', 'pro-4', 'pro-5', 'pro-6', 'pro-7', 'pro-8', 'underline', 'mask'];
 		$is_classic_style = Dependency_Manager::make()
 			->where([
 				'operator' => 'nin',
 				'path'     => ['btn_style'],
-				'value'    => $pro_style_values,
+				'value'    => $indpendent_style_values,
 				'effect'   => 'hide',
 			])
 			->get();
@@ -208,6 +209,10 @@ class AAE_A_Button extends Atomic_Element_Base
 			'cursor'          => String_Prop_Type::generate('pointer'),
 			'transition'      => String_Prop_Type::generate('all 0.3s'),
 			'outline'         => String_Prop_Type::generate('none'),
+			'color' => Color_Prop_Type::generate('#000'),
+
+			// 			Background_Prop_Type::generate([
+			// ])
 
 		];
 
