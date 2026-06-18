@@ -155,7 +155,7 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item', 'aae-a-counter-number'];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -1058,6 +1058,8 @@ final class Atomic
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
 				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
 				'has_script' => false,
+				'style_handle' => 'aae-a-icon-list-css',
+				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
 			// Add new atomic widgets below...
 		];
