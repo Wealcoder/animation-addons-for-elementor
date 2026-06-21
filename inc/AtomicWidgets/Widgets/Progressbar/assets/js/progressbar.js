@@ -48,20 +48,13 @@ register({
 			easing:   'easeInOut',
 		};
 
-		if ( showPct ) {
-			const circleCenter = type === 'circle'
-				? { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: '0', padding: '0' }
-				: {};
-			opts.text = {
-				style: {
-					color:    'inherit',
-					position: 'absolute',
-					...circleCenter,
-				},
-				autoStyleContainer: false,
-			};
+		// Native Atomic_Paragraph child tagged with .aae-pb-pct receives the
+		// animated value — no ProgressBar.js text node needed.
+		const pctEl = showPct ? el.querySelector( '.aae-pb-pct' ) : null;
+
+		if ( pctEl ) {
 			opts.step = ( state, bar ) => {
-				bar.setText( Math.round( bar.value() * 100 ) + '%' );
+				pctEl.textContent = Math.round( bar.value() * 100 ) + '%';
 			};
 		}
 

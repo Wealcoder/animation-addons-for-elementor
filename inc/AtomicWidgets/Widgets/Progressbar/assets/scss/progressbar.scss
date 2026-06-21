@@ -1,35 +1,47 @@
 .wcf__progressbar {
-    // Line style
+    // Line style — position:relative and padding-top are set inline in the twig
+    // so they win over any .e-con CSS on both frontend and editor.
     &.style-1 {
         .progressbar {
             position: relative;
             min-height: 8px;
         }
 
-        .progressbar-text {
+        .aae-pb-pct {
             position: absolute;
-            top:       -30px;
-            left:      50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            color: currentColor;
+            top:   0;
+            left:  0;
+            right: 0;
+            text-align:     center;
+            white-space:    nowrap;
+            pointer-events: none;
         }
     }
 
-    // Circle style
+    // Circle style — width/height/position are set inline in the twig.
     &.style-2 {
-        width:  var(--aae-pb-size, 150px);
-        height: var(--aae-pb-size, 150px);
-
         .progressbar {
             position: relative;
-            width:     100%;
-            height:    100%;
+            width:  100%;
+            height: 100%;
+        }
+
+        .aae-pb-pct {
+            position: absolute;
+            top:  50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
         }
     }
 
     // Dot style
     &.style-3 {
+        .aae-pb-pct {
+            display: none;
+        }
+
         .progressbar.dots {
             display:     flex;
             flex-wrap:   wrap;

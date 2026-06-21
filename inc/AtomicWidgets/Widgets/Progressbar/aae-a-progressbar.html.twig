@@ -1,10 +1,13 @@
 {% set pb_style = settings.pb_style | default('1') %}
 {% set progress_map = {'1': 'line', '2': 'circle', '3': 'dot'} %}
 {% set progress_type = progress_map[pb_style] | default('line') %}
+{% set pb_size = settings.pb_size | default(150) %}
 
 {% set inline_style = '' %}
-{% if pb_style == '2' and settings.pb_size is defined and settings.pb_size %}
-    {% set inline_style = inline_style ~ '--aae-pb-size:' ~ settings.pb_size ~ 'px;' %}
+{% if pb_style == '1' %}
+    {% set inline_style = 'position:relative;padding-top:1.8em;' %}
+{% elseif pb_style == '2' %}
+    {% set inline_style = 'position:relative;display:block;width:' ~ pb_size ~ 'px;height:' ~ pb_size ~ 'px;' %}
 {% endif %}
 
 {% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar', 'style-' ~ pb_style] | merge(settings.classes | default([])) | join(' ') %}
