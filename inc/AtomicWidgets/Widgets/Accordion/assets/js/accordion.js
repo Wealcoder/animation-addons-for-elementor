@@ -9,10 +9,84 @@ const openItems = new Set();
 
 const itemId = (item) => item.getAttribute('data-id') || item.id || '';
 
-const setItemActive = (item, active) => {
+// Measure the wrapper's natural (fully-expanded) pixel height reliably — even
+// in the editor where scrollHeight is flaky mid-render. We temporarily disable
+// the transition and un-clip max-height, read the layout height, then restore
+// the previous inline values. This forces a synchronous reflow so the reading
+// reflects the real content rather than a stale/partial layout.
+const measureNaturalHeight = (wrapper) => {
+    const prevTransition = wrapper.style.transition;
+    const prevMaxHeight = wrapper.style.maxHeight;
+
+    wrapper.style.transition = 'none';
+    wrapper.style.maxHeight = 'none';
+    const h = wrapper.scrollHeight;
+
+    wrapper.style.maxHeight = prevMaxHeight;
+    void wrapper.offsetHeight; // flush so the restore doesn't animate
+    wrapper.style.transition = prevTransition;
+    return h;
+};
+
+// Smoothly animate a content wrapper's height. The CSS keeps it at
+// `max-height: 0; overflow: hidden` collapsed and transitions max-height; here
+// we drive the explicit px target so the open/close animates, then settle an
+// open wrapper to `max-height: none` so its content can reflow freely. This
+// runs the same in the editor and on the frontend.
+//
+// `animate=false` jumps straight to the end state with no transition — used
+// when applying the initial/default state and when healing editor re-renders,
+// so those don't visibly slide.
+const setWrapperHeight = (wrapper, open, animate = true) => {
+    if (!wrapper) return;
+    const win = wrapper.ownerDocument.defaultView || window;
+
+    if (!animate) {
+        wrapper.style.transition = 'none';
+        wrapper.style.maxHeight = open ? 'none' : '0px';
+        // Flush, then restore the transition for subsequent user toggles.
+        void wrapper.offsetHeight;
+        wrapper.style.transition = '';
+        return;
+    }
+
+    if (open) {
+        const target = measureNaturalHeight(wrapper);
+        // Ensure we animate from the collapsed value, then to the measured one.
+        wrapper.style.maxHeight = '0px';
+        void wrapper.offsetHeight;
+        win.requestAnimationFrame(() => {
+            wrapper.style.maxHeight = target + 'px';
+        });
+
+        const onOpenEnd = (e) => {
+            if (e.target !== wrapper || e.propertyName !== 'max-height') return;
+            wrapper.removeEventListener('transitionend', onOpenEnd);
+            // Only settle to `none` if still open (user may have re-toggled).
+            if (wrapper.closest('.aae-a-accordion-item')?.classList.contains('active')) {
+                wrapper.style.maxHeight = 'none';
+            }
+        };
+        wrapper.addEventListener('transitionend', onOpenEnd);
+    } else {
+        // From `none` we must first pin the current px height, then collapse,
+        // otherwise there is no value to animate from.
+        if (wrapper.style.maxHeight === 'none' || wrapper.style.maxHeight === '') {
+            wrapper.style.maxHeight = measureNaturalHeight(wrapper) + 'px';
+        }
+        void wrapper.offsetHeight; // force reflow so the next change animates
+        win.requestAnimationFrame(() => {
+            wrapper.style.maxHeight = '0px';
+        });
+    }
+};
+
+const setItemActive = (item, active, animate = true) => {
     const header = item.querySelector('.aae-accordion-header');
+    const wrapper = item.querySelector('.aae-accordion-content-wrapper');
     item.classList.toggle('active', active);
     if (header) header.setAttribute('aria-expanded', String(active));
+    setWrapperHeight(wrapper, active, animate);
 
     const id = itemId(item);
     if (!id) return;
@@ -39,7 +113,9 @@ const applyDefaultState = (container) => {
     items.forEach((item, index) => {
         const startsActive = item.classList.contains('active') ||
             (defaultState === 'first' && index === 0);
-        setItemActive(item, defaultState === 'none' ? false : startsActive);
+        // No animation for the initial state — items render in their resting
+        // open/closed position without a visible slide.
+        setItemActive(item, defaultState === 'none' ? false : startsActive, false);
     });
 };
 
@@ -49,10 +125,21 @@ const restoreState = (container) => {
     container.querySelectorAll('.aae-a-accordion-item').forEach((item) => {
         const id = itemId(item);
         const shouldBeActive = id ? openItems.has(id) : item.classList.contains('active');
+        const wrapper = item.querySelector('.aae-accordion-content-wrapper');
+
         if (item.classList.contains('active') !== shouldBeActive) {
             const header = item.querySelector('.aae-accordion-header');
             item.classList.toggle('active', shouldBeActive);
             if (header) header.setAttribute('aria-expanded', String(shouldBeActive));
+            // Re-render heal — snap to the correct height with no slide.
+            setWrapperHeight(wrapper, shouldBeActive, false);
+        } else if (wrapper) {
+            // A re-render resets inline max-height; re-assert the resting value
+            // for open items so their content stays visible.
+            const current = wrapper.style.maxHeight;
+            if (shouldBeActive && (current === '' || current === '0px')) {
+                setWrapperHeight(wrapper, true, false);
+            }
         }
     });
 };
@@ -75,14 +162,18 @@ const toggleItem = (item) => {
     const maxItemsExpanded = accordion ? (accordion.dataset.maxItemsExpanded || 'one') : 'one';
     const isActive = item.classList.contains('active');
 
+    // Animate user toggles in both the editor and the frontend. Height is
+    // measured via measureNaturalHeight() so it's reliable even in the editor.
+    const animate = true;
+
     // Close siblings when only one item may stay open.
     if (maxItemsExpanded === 'one' && !isActive && accordion) {
         accordion.querySelectorAll('.aae-a-accordion-item.active').forEach((other) => {
-            if (other !== item) setItemActive(other, false);
+            if (other !== item) setItemActive(other, false, animate);
         });
     }
 
-    setItemActive(item, !isActive);
+    setItemActive(item, !isActive, animate);
 };
 
 // Delegated click handler. Bound once per document (including the editor

@@ -1,4 +1,3 @@
-@charset "UTF-8";
 .aae-a-accordion .aae-a-accordion-item {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -123,17 +122,18 @@
   display: none;
 }
 .aae-a-accordion {
-  /* Collapsed by default — hidden outright (no grid trick) so the editor's
-     re-rendered .e-con content can't keep it visible. */
+  /* Collapsed by default. Height is animated via max-height, driven by JS
+     (it sets an explicit px target so the transition is smooth, then settles
+     to `none` when fully open). overflow:hidden keeps content clipped while
+     collapsing. Works the same in the editor and on the frontend. */
 }
 .aae-a-accordion .aae-accordion-content-wrapper {
-  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--aae-accordion-speed, 400ms) ease;
 }
 .aae-a-accordion {
   /* ---------- OPEN STATE ---------- */
-}
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content-wrapper {
-  display: block !important;
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-open {
   display: none;
@@ -164,12 +164,15 @@
 
 /* ---------- EDITOR ONLY ----------
    Scoped to Elementor's editor preview (body.elementor-editor-active); these
-   rules do not apply on the published page. Active item shows its content
-   element, inactive item hides it. */
+   rules do not apply on the published page. Smoothly reveal/hide the injected
+   content Div_Block (.aae-content-element) based on the item's .active state. */
 .elementor-editor-active .aae-a-accordion-item .aae-content-element {
-  display: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease;
 }
 .elementor-editor-active .aae-a-accordion-item.active .aae-content-element {
-  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 /*# sourceMappingURL=accordion.css.map */
