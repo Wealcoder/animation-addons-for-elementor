@@ -33,11 +33,10 @@
         &[data-item-pos-mobile="stretch"] { align-items: stretch; }
     }
 
-    /* Icon position */
-    .aae-a-accordion-item[data-icon-pos="left"] .aae-accordion-header {
+    /* Icon position - affects header layout.
+       Title + Icon live inside the injected .aae-header-element. */
+    .aae-a-accordion-item[data-icon-pos="left"] .aae-header-element {
         flex-direction: row-reverse;
-        justify-content: flex-end;
-        gap: 10px;
     }
 
     .aae-accordion-header {
@@ -62,43 +61,53 @@
         &:focus {
             outline: none;
         }
-    }
 
-    .aae-accordion-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
+        // Header slot - holds the injected Header Div_Block
+        .aae-header-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
 
-        svg {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+        // Injected Header Div_Block (Title + Icon)
+        .aae-header-element {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 10px;
+            min-width: 0;
 
-            &.aae-icon-minus {
+            // Header Title (Paragraph / span)
+            .aae-header-title-element {
+                flex: 1;
+                min-width: 0;
+                margin: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            // Header Icons (SVG) — open/close indicators
+            .aae-header-icon-element {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                width: 24px;
+                height: 24px;
+
+                svg {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            // Collapsed state: show the open (expand) icon, hide the close icon
+            .aae-header-icon-close {
                 display: none;
             }
         }
-    }
-
-    /* Custom Icons via CSS Mask */
-    .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus {
-        background-color: currentColor;
-        mask-image: var(--aae-custom-expand);
-        mask-size: contain;
-        mask-position: center;
-        mask-repeat: no-repeat;
-        line, path, polygon, polyline, circle, rect { display: none; }
-    }
-
-    .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus {
-        background-color: currentColor;
-        mask-image: var(--aae-custom-collapse);
-        mask-size: contain;
-        mask-position: center;
-        mask-repeat: no-repeat;
-        line, path, polygon, polyline, circle, rect { display: none; }
     }
 
     .aae-accordion-content-wrapper {
@@ -108,27 +117,26 @@
         transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;
     }
 
+    /* ---------- OPEN STATE ---------- */
     .aae-a-accordion-item.active {
         .aae-accordion-content-wrapper {
             grid-template-rows: 1fr !important;
         }
-        
-        .aae-accordion-icon {
-            .aae-icon-plus {
-                display: none;
-            }
-            .aae-icon-minus {
-                display: block;
-            }
+
+        // Active state: hide the open (expand) icon, show the close icon
+        .aae-header-icon-open {
+            display: none;
         }
-        
+
+        .aae-header-icon-close {
+            display: inline-flex;
+        }
+
         .aae-accordion-header {
             background: #f1f1f1;
         }
 
         .aae-accordion-content {
-            padding: 20px;
-
             &.e-con {
                 --padding-top: 20px;
                 --padding-bottom: 20px;
@@ -139,8 +147,8 @@
     .aae-accordion-content {
         padding: 0 20px;
         transition: padding var(--aae-accordion-speed, 400ms) ease;
-        
-        /* Inner container padding can be overridden by Elementor, but we give a default */
+
+        /* Inner container padding can be overridden by Elementor */
         &.e-con {
             --padding-top: 0px;
             --padding-bottom: 0px;
@@ -148,6 +156,24 @@
             --padding-right: 20px;
             padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
             transition: padding var(--aae-accordion-speed, 400ms) ease;
+        }
+
+        // Injected Content Div_Block (Text + Image)
+        .aae-content-element {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            .aae-content-text-element {
+                margin: 0;
+                line-height: 1.6;
+            }
+
+            .aae-content-image-element {
+                max-width: 100%;
+                height: auto;
+                border-radius: 4px;
+            }
         }
     }
 }

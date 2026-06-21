@@ -1,5 +1,6 @@
 {% set is_active_class = settings.is_active ? 'active' : '' %}
 {% set classes = ['aae-a-accordion-item', 'e-con', 'e-atomic-element', base_styles.base, is_active_class] | merge(settings.classes | default([])) | join(' ') %}
+
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
@@ -16,26 +17,92 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
+
+    {# Hidden container for children injection by Elementor #}
+    <div class="aae-children-injector" style="display: none;">
+        {{ children_placeholder | raw }}
+    </div>
+
+    {# Header Div - Clickable area #}
     {% set heading_tag = settings.title_html_tag | default('div') %}
     <{{ heading_tag }} class="aae-accordion-title-wrapper" style="margin: 0; padding: 0;">
-        <button class="aae-accordion-header {{ base_styles.header | default('') }}" 
+        <button class="aae-accordion-header {{ base_styles.header | default('') }}"
+            type="button"
             aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
             aria-controls="aae-accordion-content-{{ id }}"
-            id="aae-accordion-header-{{ id }}">
-            <span class="aae-accordion-title">{{ settings.item_title | default('') }}</span>
-            <span class="aae-accordion-icon {{ base_styles.icon | default('') }}" style="display: flex; align-items: center; justify-content: center;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </span>
+            id="aae-accordion-header-{{ id }}"
+            style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 15px 20px; background: transparent; border: none; cursor: pointer;">
+
+            {# Header Div_Block (Title + Icon) injected here — the icon IS the toggle #}
+            <div class="aae-header-content" style="display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0;"></div>
         </button>
     </{{ heading_tag }}>
-    
+
+    {# Content Div #}
     <div id="aae-accordion-content-{{ id }}"
-         class="aae-accordion-content-wrapper" 
-         role="region" 
-         aria-labelledby="aae-accordion-header-{{ id }}">
-        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="min-height: 0; overflow: hidden;">
-            {{ children_placeholder | raw }}
-        </div>
+         class="aae-accordion-content-wrapper"
+         role="region"
+         aria-labelledby="aae-accordion-header-{{ id }}"
+         style="display: grid; grid-template-rows: 0fr; overflow: hidden; transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;">
+        {# Content Div_Block (Text + Image) - injected here by JS #}
+        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 15px;"></div>
     </div>
 </div>
+
+{# Script to distribute the two Div_Blocks into header and content #}
+<script>
+(function(){
+    function distributeChildren(item) {
+        if (!item || item.dataset.aaeDistributed === 'true') return;
+
+        const injector = item.querySelector(':scope > .aae-children-injector');
+        if (!injector) return;
+
+        const headerContent = item.querySelector('.aae-header-content');
+        const contentArea = item.querySelector('.aae-accordion-content');
+
+        if (!headerContent || !contentArea) return;
+
+        const children = Array.from(injector.children).filter(child =>
+            child.classList.contains('elementor-element') ||
+            child.classList.contains('e-con') ||
+            child.classList.contains('e-widget') ||
+            child.hasAttribute('data-element_type')
+        );
+
+        if (children.length === 0) return;
+
+        // children[0] = Header Div_Block, children[1] = Content Div_Block
+        children.forEach((child, index) => {
+            if (index === 0) {
+                headerContent.appendChild(child);
+            } else {
+                contentArea.appendChild(child);
+            }
+        });
+
+        item.dataset.aaeDistributed = 'true';
+    }
+
+    document.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
+
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                    if (node.classList?.contains('aae-a-accordion-item')) {
+                        distributeChildren(node);
+                    } else {
+                        const item = node.closest?.('.aae-a-accordion-item');
+                        if (item) distributeChildren(item);
+                    }
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.aae-a-accordion').forEach(accordion => {
+        observer.observe(accordion, { childList: true, subtree: true });
+    });
+})();
+</script>
