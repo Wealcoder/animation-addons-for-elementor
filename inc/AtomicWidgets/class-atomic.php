@@ -1367,38 +1367,66 @@ final class Atomic
 	 * never fires for them — meaning their JS never loads in the preview and
 	 * interactive behavior (e.g. the accordion toggle) is dead in editor view.
 	 * The preview iframe lets the user freely edit any widget, so we blanket-
-	 * enqueue all active widget scripts here, mirroring how the effect bundles
-	 * are blanket-enqueued for the preview.
+	 * enqueue all active widget scripts AND styles here, mirroring how the
+	 * effect bundles are blanket-enqueued for the preview. The styles matter for
+	 * editor-only CSS (e.g. body.elementor-editor-active rules) to take effect.
 	 */
 	public function enqueue_widget_scripts_in_preview(): void {
 		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( ! $this->is_widget_active( $widget_id ) || empty( $widget_data['has_script'] ) ) {
+			if ( ! $this->is_widget_active( $widget_id ) ) {
 				continue;
 			}
 
-			// The atomic frontend loader's register hook may not have run in the
-			// preview context, so register the handle here if it's missing.
-			if ( ! wp_script_is( $widget_data['script_handle'], 'registered' ) ) {
-				$path = $widget_data['script_path'];
-				if ( ! $this->is_dev_environment() ) {
-					$min_path = str_replace( '.js', '.min.js', $path );
-					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
-						$path = $min_path;
+			if ( ! empty( $widget_data['has_script'] ) ) {
+				// The atomic frontend loader's register hook may not have run in
+				// the preview context, so register the handle here if missing.
+				if ( ! wp_script_is( $widget_data['script_handle'], 'registered' ) ) {
+					$path = $widget_data['script_path'];
+					if ( ! $this->is_dev_environment() ) {
+						$min_path = str_replace( '.js', '.min.js', $path );
+						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+							$path = $min_path;
+						}
 					}
-				}
-				$file_path = WCF_ADDONS_PATH . $path;
-				$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+					$file_path = WCF_ADDONS_PATH . $path;
+					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
 
-				wp_register_script(
-					$widget_data['script_handle'],
-					WCF_ADDONS_URL . $path,
-					[ 'elementor-v2-frontend-handlers' ],
-					$version,
-					true
-				);
+					wp_register_script(
+						$widget_data['script_handle'],
+						WCF_ADDONS_URL . $path,
+						[ 'elementor-v2-frontend-handlers' ],
+						$version,
+						true
+					);
+				}
+
+				wp_enqueue_script( $widget_data['script_handle'] );
 			}
 
-			wp_enqueue_script( $widget_data['script_handle'] );
+			if ( ! empty( $widget_data['style_handle'] ) ) {
+				// Register the style handle on the spot if the styles/register
+				// hook hasn't run in the preview context.
+				if ( ! wp_style_is( $widget_data['style_handle'], 'registered' ) && ! empty( $widget_data['style_path'] ) ) {
+					$style_path = $widget_data['style_path'];
+					if ( ! $this->is_dev_environment() ) {
+						$min_path = str_replace( '.css', '.min.css', $style_path );
+						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+							$style_path = $min_path;
+						}
+					}
+					$style_file = WCF_ADDONS_PATH . $style_path;
+					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : WCF_ADDONS_VERSION;
+
+					wp_register_style(
+						$widget_data['style_handle'],
+						WCF_ADDONS_URL . $style_path,
+						[],
+						$style_ver
+					);
+				}
+
+				wp_enqueue_style( $widget_data['style_handle'] );
+			}
 		}
 	}
 

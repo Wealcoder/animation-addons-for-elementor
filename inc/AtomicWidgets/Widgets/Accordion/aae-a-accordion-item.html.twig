@@ -43,9 +43,9 @@
          class="aae-accordion-content-wrapper"
          role="region"
          aria-labelledby="aae-accordion-header-{{ id }}"
-         style="display: grid; grid-template-rows: 0fr; overflow: hidden; transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;">
+         style="overflow: hidden;">
         {# Content Div_Block (Text + Image) - injected here by JS #}
-        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 15px;"></div>
+        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="display: flex; flex-direction: column; gap: 15px;"></div>
     </div>
 </div>
 

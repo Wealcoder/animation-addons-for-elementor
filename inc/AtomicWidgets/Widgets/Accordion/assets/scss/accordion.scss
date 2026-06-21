@@ -110,17 +110,16 @@
         }
     }
 
+    /* Collapsed by default — hidden outright (no grid trick) so the editor's
+       re-rendered .e-con content can't keep it visible. */
     .aae-accordion-content-wrapper {
-        display: grid;
-        grid-template-rows: 0fr;
-        overflow: hidden;
-        transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;
+        display: none;
     }
 
     /* ---------- OPEN STATE ---------- */
     .aae-a-accordion-item.active {
         .aae-accordion-content-wrapper {
-            grid-template-rows: 1fr !important;
+            display: block !important;
         }
 
         // Active state: hide the open (expand) icon, show the close icon
@@ -175,5 +174,19 @@
         //         border-radius: 4px;
         //     }
         // }
+    }
+}
+
+/* ---------- EDITOR ONLY ----------
+   Scoped to Elementor's editor preview (body.elementor-editor-active); these
+   rules do not apply on the published page. Active item shows its content
+   element, inactive item hides it. */
+.elementor-editor-active {
+    .aae-a-accordion-item .aae-content-element {
+        display: none;
+    }
+
+    .aae-a-accordion-item.active .aae-content-element {
+        display: block;
     }
 }

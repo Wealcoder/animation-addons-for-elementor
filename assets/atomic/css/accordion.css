@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .aae-a-accordion .aae-a-accordion-item {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -121,17 +122,18 @@
 .aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-close {
   display: none;
 }
+.aae-a-accordion {
+  /* Collapsed by default — hidden outright (no grid trick) so the editor's
+     re-rendered .e-con content can't keep it visible. */
+}
 .aae-a-accordion .aae-accordion-content-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  overflow: hidden;
-  transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;
+  display: none;
 }
 .aae-a-accordion {
   /* ---------- OPEN STATE ---------- */
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content-wrapper {
-  grid-template-rows: 1fr !important;
+  display: block !important;
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-open {
   display: none;
@@ -158,5 +160,16 @@
   --padding-right: 20px;
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
+}
+
+/* ---------- EDITOR ONLY ----------
+   Scoped to Elementor's editor preview (body.elementor-editor-active); these
+   rules do not apply on the published page. Active item shows its content
+   element, inactive item hides it. */
+.elementor-editor-active .aae-a-accordion-item .aae-content-element {
+  display: none;
+}
+.elementor-editor-active .aae-a-accordion-item.active .aae-content-element {
+  display: block;
 }
 /*# sourceMappingURL=accordion.css.map */
