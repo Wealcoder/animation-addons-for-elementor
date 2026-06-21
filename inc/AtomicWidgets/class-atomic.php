@@ -156,14 +156,15 @@ final class Atomic
 	{
 		// Force internal child widgets to be active always
 		$internal_widgets = [
-			'aae-a-slide', 
+			'aae-a-slide',
 			'aae-a-slider-track',
 			'aae-a-slider-nav-prev',
-			'aae-a-slider-nav-next', 
+			'aae-a-slider-nav-next',
 			'aae-a-slider-pagination',
 			'aae-a-counter-number',
-			'aae-a-accordion-item', 
-			'aae-a-icon-list-item'
+			'aae-a-accordion-item',
+			'aae-a-icon-list-item',
+			'aae-a-toggle-pane',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -753,6 +754,88 @@ final class Atomic
 			'demo_url'     => '',
 			'doc_url'      => '',
 		],
+
+		'aae-a-button' => [
+			'label'        => 'Button',
+			'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
+			'icon'         => 'wcf-icon-Button',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'button',
+				'cta',
+				'call to action',
+				'atomic button',
+				'click',
+			],
+			'category'     => 'general',
+			'order'        => 11,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+
+		'aae-a-progressbar' => [
+			'label'        => 'Progress Bar',
+			'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
+			'icon'         => 'eicon-skill-bar',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'progress',
+				'progressbar',
+				'bar',
+				'circle',
+				'skill',
+				'atomic',
+			],
+			'category'     => 'general',
+			'order'        => 12,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+
+		'aae-a-toggle-switcher' => [
+			'label'        => 'Toggle Switcher',
+			'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
+			'icon'         => 'eicon-t-letter',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'toggle',
+				'switch',
+				'tabs',
+				'atomic',
+				'switcher',
+			],
+			'category'     => 'general',
+			'order'        => 13,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+
+		'aae-a-toggle-pane' => [
+			'label'        => 'Toggle Pane (Internal)',
+			'description'  => 'Internal child container for Toggle Switcher.',
+			'icon'         => 'eicon-inner-section',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'toggle pane',
+				'internal',
+			],
+			'category'     => 'general',
+			'order'        => 14,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
 	];
 }
 
@@ -1119,14 +1202,52 @@ final class Atomic
 			'style_path' => '/assets/atomic/css/icon-list.css',
 		],
 		'aae-a-image-compare' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
-			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
-		'script_handle' => 'aae-a-image-compare-js',
-			'script_path' => '/assets/atomic/js/image-compare.js',
-			'has_script' => true,
-			'style_handle' => 'aae-a-image-compare-css',
-			'style_path' => '/assets/atomic/css/image-compare.css',
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file'          => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+			'script_handle' => 'aae-a-image-compare-js',
+			'script_path'   => '/assets/atomic/js/image-compare.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-image-compare-css',
+			'style_path'    => '/assets/atomic/css/image-compare.css',
 		],
+
+		'aae-a-button' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
+			'file'          => 'Widgets/Button/class-aae-a-button.php',
+			'script_handle' => 'aae-a-button-js',
+			'script_path'   => '/assets/atomic/js/button.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-button-css',
+			'style_path'    => '/assets/atomic/js/button.css',
+		],
+
+		'aae-a-progressbar' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar',
+			'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
+			'script_handle' => 'aae-a-progressbar-js',
+			'script_path'   => '/assets/atomic/js/progressbar.js',
+			'script_deps'   => ['progressbar'],
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-progressbar-css',
+			'style_path'    => '/assets/atomic/css/progressbar.css',
+		],
+
+		'aae-a-toggle-switcher' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
+			'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
+			'script_handle' => 'aae-a-toggle-switcher-js',
+			'script_path'   => '/assets/atomic/js/toggle-switcher.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-toggle-switcher-css',
+			'style_path'    => '/assets/atomic/js/toggle-switcher.css',
+		],
+
+		'aae-a-toggle-pane' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
+			'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+			'has_script' => false,
+		],
+
 		// Add new atomic widgets below...
 		];
 	}
