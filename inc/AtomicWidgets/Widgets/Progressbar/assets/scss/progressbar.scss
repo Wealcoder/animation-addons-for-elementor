@@ -1,67 +1,101 @@
 .wcf__progressbar {
-    // Line style — position:relative and padding-top are set inline in the twig
-    // so they win over any .e-con CSS on both frontend and editor.
-    &.style-1 {
-        .progressbar {
-            position: relative;
-            min-height: 8px;
-        }
+    --aae-pb-color:        currentColor;    // progress fill / stroke
+    --aae-pb-trail:        rgba(0,0,0,.12); // track / trail
+    --aae-pb-stroke-width: 10;              // fallback — overridden by pb_stroke_width control
+    --aae-pb-track-height: 8px;             // fallback — overridden by pb_track_height control
+}
 
-        .aae-pb-pct {
-            position: absolute;
-            top:   0;
-            left:  0;
-            right: 0;
-            text-align:     center;
-            white-space:    nowrap;
-            pointer-events: none;
-        }
+// ── Line ─────────────────────────────────────────────────────────────────────
+.wcf__progressbar.style-1 {
+
+    .progressbar {
+        height:        var(--aae-pb-track-height);
+        border-radius: 4px;
+        overflow:      hidden;
+        background:    var(--aae-pb-trail);
     }
 
-    // Circle style — width/height/position are set inline in the twig.
-    &.style-2 {
-        .progressbar {
-            position: relative;
-            width:  100%;
-            height: 100%;
-        }
-
-        .aae-pb-pct {
-            position: absolute;
-            top:  50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            pointer-events: none;
-        }
+    .progressbar-fill {
+        height:        100%;
+        width:         0%;
+        background:    var(--aae-pb-color);
+        border-radius: inherit;
+        transition:    width 1.4s ease-in-out;
     }
 
-    // Dot style
-    &.style-3 {
-        .aae-pb-pct {
-            display: none;
-        }
+    // percentage text floats above the bar in the padding-top space
+    .aae-pb-pct {
+        position:       absolute;
+        top:            0;
+        left:           50%;
+        transform:      translateX(-50%);
+        white-space:    nowrap;
+        pointer-events: none;
+    }
+}
 
-        .progressbar.dots {
-            display:     flex;
-            flex-wrap:   wrap;
-            gap:         4px;
-            align-items: center;
-        }
+// ── Circle ───────────────────────────────────────────────────────────────────
+.wcf__progressbar.style-2 {
+    width:  150px;
+    height: 150px;
 
-        .dot {
-            display:       inline-block;
-            width:         16px;
-            height:        16px;
-            border-radius: 50%;
-            border:        1px solid currentColor;
-            opacity:       0.3;
-            transition:    background-color 0.3s, opacity 0.3s;
+    .progressbar {
+        display:  block;
+        width:    100%;
+        height:   100%;
+        overflow: visible;
+    }
 
-            &.active {
-                opacity:          1;
-                background-color: currentColor;
-            }
+    // trail ring — style via CSS: .wcf__progressbar.style-2 .progressbar-trail { stroke: #ccc; }
+    .progressbar-trail {
+        stroke:       var(--aae-pb-trail);
+        stroke-width: var(--aae-pb-stroke-width);
+    }
+
+    // progress arc — inherits currentColor from the widget's text-color control
+    .progressbar-path {
+        stroke:       var(--aae-pb-color);
+        stroke-width: var(--aae-pb-stroke-width);
+        transition:   stroke-dashoffset 1.4s ease-in-out;
+    }
+
+    // percentage text centred inside the circle
+    .aae-pb-pct {
+        position:       absolute;
+        top:            50%;
+        left:           50%;
+        transform:      translate(-50%, -50%);
+        z-index:        1;
+        pointer-events: none;
+    }
+}
+
+// ── Dot ──────────────────────────────────────────────────────────────────────
+.wcf__progressbar.style-3 {
+
+    .aae-pb-pct {
+        display: none;
+    }
+
+    .progressbar.dots {
+        display:     flex;
+        flex-wrap:   wrap;
+        gap:         4px;
+        align-items: center;
+    }
+
+    .dot {
+        display:       inline-block;
+        width:         16px;
+        height:        16px;
+        border-radius: 50%;
+        border:        1px solid currentColor;
+        opacity:       0.3;
+        transition:    background-color 0.3s, opacity 0.3s;
+
+        &.active {
+            opacity:          1;
+            background-color: currentColor;
         }
     }
 }

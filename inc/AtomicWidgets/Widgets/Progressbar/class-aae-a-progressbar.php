@@ -68,7 +68,6 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 
 	protected static function define_props_schema(): array
 	{
-		// Shown when style is NOT dot ('3')
 		$not_dot = Dependency_Manager::make()
 			->where([
 				'operator' => 'nin',
@@ -78,7 +77,15 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 			])
 			->get();
 
-		// Shown ONLY when style IS circle ('2')
+		$only_line = Dependency_Manager::make()
+			->where([
+				'operator' => 'in',
+				'path'     => ['pb_style'],
+				'value'    => ['1'],
+				'effect'   => 'hide',
+			])
+			->get();
+
 		$only_circle = Dependency_Manager::make()
 			->where([
 				'operator' => 'in',
@@ -92,24 +99,15 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 			'classes'    => Classes_Prop_Type::make()->default([]),
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 
-			// Content
 			'pb_style'              => String_Prop_Type::make()->default('1'),
 			'pb_percentage'         => Number_Prop_Type::make()->default(50),
 			'pb_display_percentage' => Boolean_Prop_Type::make()->default(true)
 				->set_dependencies($not_dot),
 
-			// Progressbar appearance
-			'pb_color'              => String_Prop_Type::make()->default('#7DDED8'),
-			'pb_bg_color'           => String_Prop_Type::make()->default(''),
+			'pb_track_height' => Number_Prop_Type::make()->default(8)
+				->set_dependencies($only_line),
 
-			// Line/Circle only
-			'pb_stroke_width'       => Number_Prop_Type::make()->default(2)
-				->set_dependencies($not_dot),
-			'pb_trail_width'        => Number_Prop_Type::make()->default(1)
-				->set_dependencies($not_dot),
-
-			// Circle size only
-			'pb_size'               => Number_Prop_Type::make()->default(150)
+			'pb_stroke_width' => Number_Prop_Type::make()->default(10)
 				->set_dependencies($only_circle),
 		];
 	}
@@ -140,29 +138,14 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 
 					Switch_Control::bind_to('pb_display_percentage')
 						->set_label(__('Display Percentage', 'animation-addons-for-elementor')),
-				]),
 
-			Section::make()
-				->set_label(__('Progress Bar Style', 'animation-addons-for-elementor'))
-				->set_id('progressbar_style')
-				->set_items([
-					Text_Control::bind_to('pb_color')
-						->set_label(__('Color', 'animation-addons-for-elementor')),
-
-					Text_Control::bind_to('pb_bg_color')
-						->set_label(__('Trail / Background Color', 'animation-addons-for-elementor')),
+					Number_Control::bind_to('pb_track_height')
+						->set_label(__('Track Height (px)', 'animation-addons-for-elementor'))
+						->set_meta(['min' => 1, 'max' => 50, 'step' => 1]),
 
 					Number_Control::bind_to('pb_stroke_width')
-						->set_label(__('Stroke Width (em)', 'animation-addons-for-elementor'))
-						->set_meta(['min' => 0, 'max' => 20, 'step' => 1]),
-
-					Number_Control::bind_to('pb_trail_width')
-						->set_label(__('Trail Width (em)', 'animation-addons-for-elementor'))
-						->set_meta(['min' => 0, 'max' => 20, 'step' => 1]),
-
-					Number_Control::bind_to('pb_size')
-						->set_label(__('Size (px)', 'animation-addons-for-elementor'))
-						->set_meta(['min' => 50, 'max' => 500, 'step' => 1]),
+						->set_label(__('Stroke Width (px)', 'animation-addons-for-elementor'))
+						->set_meta(['min' => 1, 'max' => 50, 'step' => 1]),
 				]),
 
 			Section::make()
@@ -192,16 +175,16 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	protected function define_default_children(): array
 	{
 		return [
-			// Editable label — user can change this text in the panel.
-			Atomic_Paragraph::generate()
-				->settings([
-					'paragraph' => \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::generate([
-						'content'  => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate(''),
-						'children' => [],
-					]),
-					'tag' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('span'),
-				])
-				->build(),
+			// // Editable label — user can change this text in the panel.
+			// Atomic_Paragraph::generate()
+			// 	->settings([
+			// 		'paragraph' => \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::generate([
+			// 			'content'  => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('Progress Label'),
+			// 			'children' => [],
+			// 		]),
+			// 		'tag' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('span'),
+			// 	])
+			// 	->build(),
 
 			// Percentage counter — JS writes the animated value into this element.
 			Atomic_Paragraph::generate()
