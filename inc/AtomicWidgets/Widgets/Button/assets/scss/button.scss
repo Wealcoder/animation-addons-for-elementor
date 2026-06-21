@@ -257,6 +257,9 @@
       top: 0;
       // hover bg drives the animated reveal overlay colour
       background-color: var(--aae-btn-hover-bg, #1C1D20);
+      -webkit-mask: url("../../../../../../assets/images/mask-btn.png");
+      mask: url("../../../../../../assets/images/mask-btn.png");
+      -webkit-mask-size: 2300% 100%;
       mask-size: 2300% 100%;
       animation: mask_animation_2 0.7s steps(22) forwards;
       padding: 15px 30px;

@@ -26,8 +26,8 @@ const rippleBtn = (container) => {
 };
 
 const groupSwap = (container) => {
-  // Guard: already processed
-  if (container.dataset.groupSwapped) return null;
+  // Remove any existing clones first — idempotent across editor re-renders
+  container.querySelectorAll("[data-swap-clone]").forEach((el) => el.remove());
 
   // Find the LAST .e-svg-base (the "original" icon at the end)
   const svgEls = container.querySelectorAll(".e-svg-base");
@@ -38,45 +38,6 @@ const groupSwap = (container) => {
   duplicatedSvg.setAttribute("data-swap-clone", "true");
 
   container.prepend(duplicatedSvg);
-  container.dataset.groupSwapped = "true";
-};
-
-const borderDivideSwap_prev = (container) => {
-  // Guard: already processed
-  if (container.dataset.borderDivideSwapped) return null;
-
-  // Find the .e-svg-base (the icon)
-  const svgEl = container.querySelector(".e-svg-base");
-  if (!svgEl) return null;
-
-  // Find the text span
-  const textEl = container.querySelector(".e-paragraph-base");
-  if (!textEl) return null;
-
-  // Create wrapper spans
-  const textWrapper = document.createElement("span");
-  textWrapper.classList.add("text");
-
-  const iconWrapper = document.createElement("span");
-  iconWrapper.classList.add("icon");
-
-  // Clone the svg for the duplicate
-  const duplicatedSvg = svgEl.cloneNode(true);
-  duplicatedSvg.setAttribute("data-swap-clone", "true");
-
-  // Build icon wrapper: original + clone
-  iconWrapper.appendChild(svgEl);
-  iconWrapper.appendChild(duplicatedSvg);
-
-  // Build text wrapper
-  textWrapper.appendChild(textEl);
-
-  // Clear container and rebuild
-  // Remove only the children we're wrapping (leave editor overlays etc untouched)
-  container.prepend(iconWrapper);
-  container.prepend(textWrapper);
-
-  container.dataset.borderDivideSwapped = "true";
 };
 
 const borderDivideSwap = (container) => {
@@ -125,6 +86,12 @@ const borderDivideSwap = (container) => {
   container.dataset.borderDivideSwapped = "true";
 };
 
+const maskBtn = (container) => {
+  const textEl = container.querySelector(".e-paragraph-base");
+  if (!textEl) return;
+  container.setAttribute("data-text", textEl.textContent.trim());
+};
+
 register({
   elementType: "e-aae-a-button",
   id: "e-aae-a-button-handler",
@@ -134,7 +101,9 @@ register({
     } else if (element.classList.contains("aae-btn-pro-group")) {
       groupSwap(element);
     } else if (element.classList.contains("btn-border-divide")) {
-      borderDivideSwap_prev(element);
+      borderDivideSwap(element);
+    } else if (element.classList.contains("wcf-btn-mask")) {
+      maskBtn(element);
     }
   },
 });
