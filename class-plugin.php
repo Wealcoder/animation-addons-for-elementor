@@ -568,6 +568,9 @@ class Plugin
 	 */
 	public static function get_widget_style()
 	{
+
+		return [];
+
 		return array(
 			'icon-box'           => array(
 				'handler' => 'wcf--icon-box',
@@ -1025,14 +1028,14 @@ class Plugin
 		$old_categories = $elements_manager->get_categories();
 
 		$top_categories = array();
-		foreach ( array( 'layout', 'basic' ) as $top_key ) {
-			if ( isset( $old_categories[ $top_key ] ) ) {
-				$top_categories[ $top_key ] = $old_categories[ $top_key ];
-				unset( $old_categories[ $top_key ] );
+		foreach (array('layout', 'basic') as $top_key) {
+			if (isset($old_categories[$top_key])) {
+				$top_categories[$top_key] = $old_categories[$top_key];
+				unset($old_categories[$top_key]);
 			}
 		}
 
-		$categories = array_merge( $top_categories, $categories, $old_categories );
+		$categories = array_merge($top_categories, $categories, $old_categories);
 
 		$set_categories = function ($categories) {
 			$this->categories = $categories;
@@ -1072,8 +1075,8 @@ class Plugin
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
-		if ( is_admin() || ! wp_doing_ajax() ) {
-			require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';  
+		if (is_admin() || ! wp_doing_ajax()) {
+			require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
 		}
 
 		require_once WCF_ADDONS_PATH . 'inc/hook.php';
@@ -1123,8 +1126,9 @@ class Plugin
 	// 	return add_query_arg('aaeid', 1, $url);
 	// }
 
-	
-	public function elementor_editor_url($url) {
+
+	public function elementor_editor_url($url)
+	{
 
 		// If already fetched, reuse it
 		if ($this->preview_post_id !== null) {
@@ -1441,18 +1445,19 @@ class Plugin
 		}
 	}
 
-		/**
+	/**
 	 * Get Widget Skins List.
 	 *
 	 * @return array
 	 */
-	public static function get_widget_skins() {
+	public static function get_widget_skins()
+	{
 
 		return apply_filters(
 			'wcf_widget_skins',
 			array(
 				'advance-pricing-table' => array( // widget file/dir name.
-					'label'       => __( 'Advanced Pricing Table', 'animation-addons-for-elementor' ),
+					'label'       => __('Advanced Pricing Table', 'animation-addons-for-elementor'),
 					'widget_name' => 'wcf--a-pricing-table',
 					'is_active'   => true,
 					'skins'       => array( // skin file names.
@@ -1460,16 +1465,16 @@ class Plugin
 							'is_active'    => true,
 							'is_base_skin' => true,
 						),
-						'skin-pricing-table-1'    => array( 'is_active' => true ),
-						'skin-pricing-table-2'    => array( 'is_active' => true ),
+						'skin-pricing-table-1'    => array('is_active' => true),
+						'skin-pricing-table-2'    => array('is_active' => true),
 					),
 				),
-	
+
 			)
 		);
 	}
 
-		/**
+	/**
 	 * Include Widgets skins
 	 *
 	 * Load widgets skins
@@ -1477,42 +1482,43 @@ class Plugin
 	 * @since 0.0.1
 	 * @access private
 	 */
-	private function include_skins_files() {
-		foreach ( self::get_widget_skins() as $slug => $data ) {
+	private function include_skins_files()
+	{
+		foreach (self::get_widget_skins() as $slug => $data) {
 
 			// is widget all skins are not active
-			if ( ! $data['is_active'] ) {
+			if (! $data['is_active']) {
 				continue;
 			}
 
-			foreach ( $data['skins'] as $skin_slug => $skin ) {
-				if ( ! $skin['is_active'] ) {
+			foreach ($data['skins'] as $skin_slug => $skin) {
+				if (! $skin['is_active']) {
 					continue;
 				}
 
 				require_once WCF_ADDONS_WIDGETS_PATH . $slug . '/skins/' . $skin_slug . '.php';
 
-				$class = explode( '-', $skin_slug );
-				$class = array_map( 'ucfirst', $class );
-				$class = implode( '_', $class );
+				$class = explode('-', $skin_slug);
+				$class = array_map('ucfirst', $class);
+				$class = implode('_', $class);
 				$class = 'WCF_ADDONS\\Widgets\\Skin\\' . $class;
 
 				// has base base skin dont need register
-				if ( isset( $skin['is_base_skin'] ) ) {
+				if (isset($skin['is_base_skin'])) {
 					continue;
 				}
 
 				add_action(
 					'elementor/widget/' . $data['widget_name'] . '/skins_init',
-					function ( $widget ) use ( $class ) {
-						$widget->add_skin( new $class( $widget ) );
+					function ($widget) use ($class) {
+						$widget->add_skin(new $class($widget));
 					}
 				);
 			}
 		}
 	}
 
-		/**
+	/**
 	 * Initialize the elementor plugin
 	 *
 	 * Validates that Elementor is already loaded.
@@ -1523,7 +1529,8 @@ class Plugin
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public function elementor_init() {
+	public function elementor_init()
+	{
 
 		$this->include_skins_files();
 	}
@@ -1538,7 +1545,8 @@ class Plugin
 	 * @since 1.2.1
 	 * @access public
 	 */
-	public function register_starter_animation_style() {
+	public function register_starter_animation_style()
+	{
 
 		wp_register_style(
 			'aae-starter-animations',
@@ -1548,10 +1556,10 @@ class Plugin
 		);
 
 		wp_enqueue_style('aae-starter-animations');
-
 	}
 
-	public function register_starter_animation_script() {
+	public function register_starter_animation_script()
+	{
 
 		wp_register_script(
 			'aae-starter-animations',
@@ -1560,9 +1568,8 @@ class Plugin
 			WCF_ADDONS_VERSION,
 			true
 		);
-		
+
 		wp_enqueue_script('aae-starter-animations');
-		
 	}
 
 
@@ -1610,14 +1617,14 @@ class Plugin
 
 		add_action(
 			'elementor/editor/after_enqueue_scripts',
-			function() {
+			function () {
 				wp_enqueue_script('aae-starter-animations');
 			}
 		);
 
 		add_action(
 			'elementor/editor/after_enqueue_styles',
-			function() {
+			function () {
 				wp_enqueue_style('aae-starter-animations');
 			}
 		);
@@ -1626,9 +1633,9 @@ class Plugin
 
 		$this->include_files();
 
-		add_action( 'elementor/init', array( $this, 'elementor_init' ), 0 );
+		add_action('elementor/init', array($this, 'elementor_init'), 0);
 
-		if ( class_exists( '\WCF_ADDONS\Library_Source' ) ) {
+		if (class_exists('\WCF_ADDONS\Library_Source')) {
 
 			add_action('elementor/editor/footer', array($this, 'print_templates'));
 			// enqueue modal's preview css.
