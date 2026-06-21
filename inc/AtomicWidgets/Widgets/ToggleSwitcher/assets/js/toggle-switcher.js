@@ -2,16 +2,28 @@ import { register } from '@elementor/frontend-handlers';
 import '../scss/toggle-switcher.scss';
 
 const initToggleSwitcher = ( container ) => {
-	const inputs       = container.querySelectorAll( 'input[type="checkbox"]' );
-	const togglePanes  = container.querySelectorAll( '.toggle-pane' );
-	const toggleLabels = container.querySelectorAll( '.before_label, .after_label' );
+	const input    = container.querySelector( 'input[type="checkbox"]' );
+	const panes    = container.querySelectorAll( '.aae-a-toggle-pane' );
+	const labels   = container.querySelectorAll( '.before_label, .after_label' );
 
-	inputs.forEach( ( input ) => {
-		input.addEventListener( 'change', () => {
-			togglePanes.forEach( ( pane ) => pane.classList.toggle( 'show' ) );
-			toggleLabels.forEach( ( label ) => label.classList.toggle( 'active' ) );
-		} );
+	if ( ! input || panes.length < 2 ) return;
+
+	// Show first pane by default.
+	panes[ 0 ].classList.add( 'show' );
+
+	input.addEventListener( 'change', () => {
+		panes.forEach( ( pane ) => pane.classList.toggle( 'show' ) );
+		labels.forEach( ( label ) => label.classList.toggle( 'active' ) );
 	} );
 };
 
-register( { handler: initToggleSwitcher, widgetType: 'e-aae-a-toggle-switcher' } );
+register( {
+	elementType: 'e-aae-a-toggle-switcher',
+	id: 'aae-a-toggle-switcher-handler',
+	callback: ( { element } ) => {
+		const container = element.classList.contains( 'aae-a-toggle-switcher' )
+			? element
+			: element.querySelector( '.aae-a-toggle-switcher' );
+		if ( container ) initToggleSwitcher( container );
+	},
+} );

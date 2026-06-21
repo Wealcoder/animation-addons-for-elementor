@@ -1,0 +1,55 @@
+.wcf__progressbar {
+    position: relative;
+    width: 100%;
+
+    // Line style: full-width bar
+    &.style-1 {
+        .progressbar {
+            position: relative;
+        }
+
+        .progressbar-text {
+            color:    var(--pb-percentage-color, inherit) !important;
+            position: absolute;
+            top:      -30px !important;
+        }
+    }
+
+    // Circle style: fixed-size SVG ring
+    &.style-2 {
+        width:  var(--pb-size, 150px);
+        height: var(--pb-size, 150px);
+
+        .progressbar {
+            width:  100%;
+            height: 100%;
+        }
+
+        .progressbar-text {
+            color: var(--pb-percentage-color, inherit) !important;
+        }
+    }
+
+    // Dot style: row of circles
+    &.style-3 {
+        .progressbar.dots {
+            display:     flex;
+            flex-wrap:   wrap;
+            gap:         4px;
+            align-items: center;
+        }
+
+        .dot {
+            display:       inline-block;
+            width:         var(--pb-size, 16px);
+            height:        var(--pb-size, 16px);
+            border-radius: 50%;
+            border:        var(--pb-border-width, 1px) solid currentColor;
+            transition:    background-color 0.3s;
+
+            &.active {
+                background-color: currentColor;
+            }
+        }
+    }
+}

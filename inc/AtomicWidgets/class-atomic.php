@@ -155,7 +155,7 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item'];
+		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item', 'aae-a-toggle-pane'];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -533,6 +533,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-progressbar' => [
+				'label'        => 'Progress Bar',
+				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'progress',
+					'progressbar',
+					'bar',
+					'circle',
+					'skill',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 10,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-atomic-image-box' => [
 				'label'        => 'Image Box',
 				'description'  => 'An atomic image box widget combining image, heading, and description with animation support.',
@@ -693,6 +715,45 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 9,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher' => [
+				'label'        => 'Toggle Switcher',
+				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle',
+					'switch',
+					'tabs',
+					'atomic',
+					'switcher',
+				],
+				'category'     => 'general',
+				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane' => [
+				'label'        => 'Toggle Pane (Internal)',
+				'description'  => 'Internal child container for Toggle Switcher.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle pane',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 12,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1045,6 +1106,33 @@ final class Atomic
 				'style_handle'  => 'aae-a-button-css',
 				'style_path'    => '/assets/atomic/js/button.css',
 			],
+
+			'aae-a-progressbar' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar',
+				'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
+				'script_handle' => 'aae-a-progressbar-js',
+				'script_path'   => '/assets/atomic/js/progressbar.js',
+				'script_deps'   => ['progressbar'], // ProgressBar.js library (registered by main plugin)
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-progressbar-css',
+				'style_path'    => '/assets/atomic/js/progressbar.css',
+			],
+			'aae-a-toggle-switcher' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
+				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
+				'script_handle' => 'aae-a-toggle-switcher-js',
+				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-toggle-switcher-css',
+				'style_path'    => '/assets/atomic/js/toggle-switcher.css',
+			],
+
+			'aae-a-toggle-pane' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
+				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
 			// Add new atomic widgets below...
 		];
 	}
@@ -1104,11 +1192,15 @@ final class Atomic
 					}
 				}
 				$file_path = WCF_ADDONS_PATH . $path;
-				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+				$version      = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+				$script_deps  = ['elementor-v2-frontend-handlers'];
+				if (! empty($widget_data['script_deps'])) {
+					$script_deps = array_merge($script_deps, $widget_data['script_deps']);
+				}
 				wp_register_script(
 					$widget_data['script_handle'],
 					WCF_ADDONS_URL . $path,
-					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
+					$script_deps,
 					$version,
 					true
 				);
