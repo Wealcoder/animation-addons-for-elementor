@@ -6,6 +6,7 @@
     &.style-1 {
         .progressbar {
             position: relative;
+            min-height: 8px; // visible track before JS runs
         }
 
         .progressbar-text {

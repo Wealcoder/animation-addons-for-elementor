@@ -2,7 +2,6 @@
 {% set progress_map = {'1': 'line', '2': 'circle', '3': 'dot'} %}
 {% set progress_type = progress_map[pb_style] | default('line') %}
 
-{# Build inline CSS custom properties for dynamic values #}
 {% set inline_style = '' %}
 {% if pb_style != '1' and settings.pb_size is defined and settings.pb_size %}
     {% set inline_style = inline_style ~ '--pb-size:' ~ settings.pb_size ~ 'px;' %}
@@ -14,9 +13,13 @@
     {% set inline_style = inline_style ~ '--pb-percentage-color:' ~ settings.pb_percentage_color ~ ';' %}
 {% endif %}
 
-<div class="wcf__progressbar style-{{ pb_style }} {{ settings.classes | join(' ') }}"
+{% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar', 'style-' ~ pb_style] | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"
+     data-element_type="{{ type }}"
      data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
      data-pb-type="{{ progress_type }}"
      data-pb-percentage="{{ settings.pb_percentage | default(50) }}"
      data-pb-color="{{ settings.pb_color | default('#7DDED8') }}"
@@ -40,5 +43,7 @@
     {% else %}
         <div class="progressbar"></div>
     {% endif %}
+
+    {{ children_placeholder | raw }}
 
 </div>

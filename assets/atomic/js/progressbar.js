@@ -2,6 +2,18 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./inc/AtomicWidgets/Widgets/Progressbar/assets/scss/progressbar.scss":
+/*!****************************************************************************!*\
+  !*** ./inc/AtomicWidgets/Widgets/Progressbar/assets/scss/progressbar.scss ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "@elementor/frontend-handlers":
 /*!***************************************************!*\
   !*** external ["elementorV2","frontendHandlers"] ***!
@@ -95,13 +107,16 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _scss_progressbar_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/progressbar.scss */ "./inc/AtomicWidgets/Widgets/Progressbar/assets/scss/progressbar.scss");
+
 
 (0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
   elementType: 'e-aae-a-progressbar',
-  handler: ({
+  id: 'e-aae-a-progressbar-handler',
+  callback: ({
     element
   }) => {
-    const el = element.get(0);
+    const el = element;
     if (!el) return;
     const type = el.dataset.pbType || 'line';
     const pct = parseFloat(el.dataset.pbPercentage || 50) / 100;
@@ -127,6 +142,9 @@ __webpack_require__.r(__webpack_exports__);
     }
     const container = el.querySelector('.progressbar');
     if (!container) return;
+
+    // Clear any previously-injected SVG so re-runs in the editor don't stack bars.
+    container.innerHTML = '';
     const opts = {
       color,
       trailColor,
