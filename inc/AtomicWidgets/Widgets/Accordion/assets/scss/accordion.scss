@@ -159,21 +159,21 @@
         }
 
         // Injected Content Div_Block (Text + Image)
-        .aae-content-element {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        // .aae-content-element {
+        //     display: flex;
+        //     flex-direction: column;
+        //     gap: 15px;
 
-            .aae-content-text-element {
-                margin: 0;
-                line-height: 1.6;
-            }
+        //     .aae-content-text-element {
+        //         margin: 0;
+        //         line-height: 1.6;
+        //     }
 
-            .aae-content-image-element {
-                max-width: 100%;
-                height: auto;
-                border-radius: 4px;
-            }
-        }
+        //     .aae-content-image-element {
+        //         max-width: 100%;
+        //         height: auto;
+        //         border-radius: 4px;
+        //     }
+        // }
     }
 }

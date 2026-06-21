@@ -159,18 +159,4 @@
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
-.aae-a-accordion .aae-accordion-content .aae-content-element {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-.aae-a-accordion .aae-accordion-content .aae-content-element .aae-content-text-element {
-  margin: 0;
-  line-height: 1.6;
-}
-.aae-a-accordion .aae-accordion-content .aae-content-element .aae-content-image-element {
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-}
 /*# sourceMappingURL=accordion.css.map */

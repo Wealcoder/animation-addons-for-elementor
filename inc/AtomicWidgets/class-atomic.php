@@ -1056,6 +1056,7 @@ final class Atomic
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'],16);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
+		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_widget_scripts_in_preview']);
 		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
@@ -1353,6 +1354,51 @@ final class Atomic
 				}
 				break;
 			}
+		}
+	}
+
+	/**
+	 * Enqueue every active atomic widget's frontend script into the editor
+	 * preview iframe.
+	 *
+	 * WHY THIS EXISTS:
+	 * In the editor, atomic widgets render client-side, so
+	 * `elementor/frontend/before_render` (which drives maybe_enqueue_widget_script)
+	 * never fires for them — meaning their JS never loads in the preview and
+	 * interactive behavior (e.g. the accordion toggle) is dead in editor view.
+	 * The preview iframe lets the user freely edit any widget, so we blanket-
+	 * enqueue all active widget scripts here, mirroring how the effect bundles
+	 * are blanket-enqueued for the preview.
+	 */
+	public function enqueue_widget_scripts_in_preview(): void {
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( ! $this->is_widget_active( $widget_id ) || empty( $widget_data['has_script'] ) ) {
+				continue;
+			}
+
+			// The atomic frontend loader's register hook may not have run in the
+			// preview context, so register the handle here if it's missing.
+			if ( ! wp_script_is( $widget_data['script_handle'], 'registered' ) ) {
+				$path = $widget_data['script_path'];
+				if ( ! $this->is_dev_environment() ) {
+					$min_path = str_replace( '.js', '.min.js', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						$path = $min_path;
+					}
+				}
+				$file_path = WCF_ADDONS_PATH . $path;
+				$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+
+				wp_register_script(
+					$widget_data['script_handle'],
+					WCF_ADDONS_URL . $path,
+					[ 'elementor-v2-frontend-handlers' ],
+					$version,
+					true
+				);
+			}
+
+			wp_enqueue_script( $widget_data['script_handle'] );
 		}
 	}
 
