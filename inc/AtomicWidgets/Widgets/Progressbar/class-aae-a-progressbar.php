@@ -69,32 +69,12 @@ class AAE_A_Progressbar extends Atomic_Element_Base {
 			] )
 			->get();
 
-		// Shown ONLY when style IS dot ('3')
-		$only_dot = Dependency_Manager::make()
+		// Shown ONLY when style IS circle ('2')
+		$only_circle = Dependency_Manager::make()
 			->where( [
 				'operator' => 'in',
 				'path'     => [ 'pb_style' ],
-				'value'    => [ '3' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		// Shown when style is NOT line ('1')
-		$not_line = Dependency_Manager::make()
-			->where( [
-				'operator' => 'nin',
-				'path'     => [ 'pb_style' ],
-				'value'    => [ '1' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		// Shown when pb_display_percentage is true
-		$pct_enabled = Dependency_Manager::make()
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ 'pb_display_percentage' ],
-				'value'    => true,
+				'value'    => [ '2' ],
 				'effect'   => 'hide',
 			] )
 			->get();
@@ -113,23 +93,15 @@ class AAE_A_Progressbar extends Atomic_Element_Base {
 			'pb_color'              => String_Prop_Type::make()->default( '#7DDED8' ),
 			'pb_bg_color'           => String_Prop_Type::make()->default( '' ),
 
-			// Dot-style only
-			'pb_border_width'       => Number_Prop_Type::make()->default( 1 )
-				->set_dependencies( $only_dot ),
-
 			// Line/Circle only
 			'pb_stroke_width'       => Number_Prop_Type::make()->default( 2 )
 				->set_dependencies( $not_dot ),
 			'pb_trail_width'        => Number_Prop_Type::make()->default( 1 )
 				->set_dependencies( $not_dot ),
 
-			// Circle + Dot size
+			// Circle size only
 			'pb_size'               => Number_Prop_Type::make()->default( 150 )
-				->set_dependencies( $not_line ),
-
-			// Percentage text color
-			'pb_percentage_color'   => String_Prop_Type::make()->default( '' )
-				->set_dependencies( $pct_enabled ),
+				->set_dependencies( $only_circle ),
 		];
 	}
 
@@ -178,21 +150,9 @@ class AAE_A_Progressbar extends Atomic_Element_Base {
 						->set_label( __( 'Trail Width (em)', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'min' => 0, 'max' => 20, 'step' => 1 ] ),
 
-					Number_Control::bind_to( 'pb_border_width' )
-						->set_label( __( 'Dot Border Width (px)', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'min' => 0, 'max' => 20, 'step' => 1 ] ),
-
 					Number_Control::bind_to( 'pb_size' )
 						->set_label( __( 'Size (px)', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'min' => 50, 'max' => 500, 'step' => 1 ] ),
-				] ),
-
-			Section::make()
-				->set_label( __( 'Percentage Text', 'animation-addons-for-elementor' ) )
-				->set_id( 'percentage_style' )
-				->set_items( [
-					Text_Control::bind_to( 'pb_percentage_color' )
-						->set_label( __( 'Color', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -213,6 +173,7 @@ class AAE_A_Progressbar extends Atomic_Element_Base {
 					Style_Variant::make()
 						->add_prop( 'display', String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'width', String_Prop_Type::generate( '100%' ) )
+						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
 				),
 		];
 	}

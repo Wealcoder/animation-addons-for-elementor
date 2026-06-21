@@ -1,37 +1,34 @@
 .wcf__progressbar {
-    position: relative;
-    width: 100%;
-
-    // Line style: full-width bar
+    // Line style
     &.style-1 {
         .progressbar {
             position: relative;
-            min-height: 8px; // visible track before JS runs
+            min-height: 8px;
         }
 
         .progressbar-text {
-            color:    var(--pb-percentage-color, inherit) !important;
             position: absolute;
-            top:      -30px !important;
+            top:       -30px;
+            left:      50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            color: currentColor;
         }
     }
 
-    // Circle style: fixed-size SVG ring
+    // Circle style
     &.style-2 {
-        width:  var(--pb-size, 150px);
-        height: var(--pb-size, 150px);
+        width:  var(--aae-pb-size, 150px);
+        height: var(--aae-pb-size, 150px);
 
         .progressbar {
-            width:  100%;
-            height: 100%;
-        }
-
-        .progressbar-text {
-            color: var(--pb-percentage-color, inherit) !important;
+            position: relative;
+            width:     100%;
+            height:    100%;
         }
     }
 
-    // Dot style: row of circles
+    // Dot style
     &.style-3 {
         .progressbar.dots {
             display:     flex;
@@ -42,13 +39,15 @@
 
         .dot {
             display:       inline-block;
-            width:         var(--pb-size, 16px);
-            height:        var(--pb-size, 16px);
+            width:         16px;
+            height:        16px;
             border-radius: 50%;
-            border:        var(--pb-border-width, 1px) solid currentColor;
-            transition:    background-color 0.3s;
+            border:        1px solid currentColor;
+            opacity:       0.3;
+            transition:    background-color 0.3s, opacity 0.3s;
 
             &.active {
+                opacity:          1;
                 background-color: currentColor;
             }
         }

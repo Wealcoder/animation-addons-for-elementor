@@ -126,11 +126,13 @@ __webpack_require__.r(__webpack_exports__);
     const trailWidth = parseFloat(el.dataset.pbTrailWidth || 1);
     const showPct = el.dataset.pbDisplayPercentage === 'true';
 
-    // Dot style: activate spans based on percentage
+    // Dot style: staggered fill animation
     if (type === 'dot') {
       const dots = el.querySelectorAll('.dot');
       const active = Math.round(pct * dots.length);
-      dots.forEach((dot, i) => dot.classList.toggle('active', i < active));
+      dots.forEach((dot, i) => {
+        setTimeout(() => dot.classList.toggle('active', i < active), i * 150);
+      });
       return;
     }
 
@@ -154,10 +156,18 @@ __webpack_require__.r(__webpack_exports__);
       easing: 'easeInOut'
     };
     if (showPct) {
+      const circleCenter = type === 'circle' ? {
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        margin: '0',
+        padding: '0'
+      } : {};
       opts.text = {
         style: {
-          color: 'var(--pb-percentage-color, inherit)',
-          position: 'absolute'
+          color: 'inherit',
+          position: 'absolute',
+          ...circleCenter
         },
         autoStyleContainer: false
       };

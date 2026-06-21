@@ -3,14 +3,8 @@
 {% set progress_type = progress_map[pb_style] | default('line') %}
 
 {% set inline_style = '' %}
-{% if pb_style != '1' and settings.pb_size is defined and settings.pb_size %}
-    {% set inline_style = inline_style ~ '--pb-size:' ~ settings.pb_size ~ 'px;' %}
-{% endif %}
-{% if pb_style == '3' and settings.pb_border_width is defined %}
-    {% set inline_style = inline_style ~ '--pb-border-width:' ~ settings.pb_border_width ~ 'px;' %}
-{% endif %}
-{% if settings.pb_percentage_color is defined and settings.pb_percentage_color is not empty %}
-    {% set inline_style = inline_style ~ '--pb-percentage-color:' ~ settings.pb_percentage_color ~ ';' %}
+{% if pb_style == '2' and settings.pb_size is defined and settings.pb_size %}
+    {% set inline_style = inline_style ~ '--aae-pb-size:' ~ settings.pb_size ~ 'px;' %}
 {% endif %}
 
 {% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar', 'style-' ~ pb_style] | merge(settings.classes | default([])) | join(' ') %}
