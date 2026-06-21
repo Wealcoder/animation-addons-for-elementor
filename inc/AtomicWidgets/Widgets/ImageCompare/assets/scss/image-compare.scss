@@ -1,181 +1,20 @@
-/* AAE Atomic Image Compare — simple version using native range input.
-   Technique: the "before" image wrapper has a dynamic width (set by JS
-   from the range value). The image inside is forced to the container's
-   full width so it doesn't squish — it gets clipped by overflow:hidden. */
+/* AAE Atomic Image Compare — intentionally empty.
 
-.aae-a-image-compare {
-	position: relative;
-	overflow: hidden;
-	width: 100%;
-	max-width: 100%;
-	min-width: 0;
-	display: grid !important;
-	flex: 1 1 100%;
-	align-self: stretch;
-	--aae-image-compare-position: 50%;
-}
+   All per-element styles now live in two places that travel with the widget:
 
-/* The "after" image — stays in natural flow, defines the height. */
-.aae-a-image-compare-after {
-	position: relative;
-	z-index: 1;
-	width: 100% !important;
-	max-width: 100% !important;
-	height: auto !important;
-	display: block;
-}
+   1. PHP base_styles in class-aae-a-image-compare.php
+      → compound selectors (e.g. `base .aae-a-image-compare-before`) emit
+        one CSS block per child class through Elementor's atomic-styles
+        pipeline. No external CSS file needs to be enqueued in editor or
+        frontend.
 
-.aae-a-image-compare-before,
-.aae-a-image-compare-after {
-	grid-area: 1 / 1;
-	width: 100% !important;
-	max-width: 100% !important;
-	min-height: 100%;
-	margin: 0 !important;
-	display: block;
-	object-fit: cover !important;
-	object-position: 0 50%;
-}
+   2. Inline <style> in aae-a-image-compare.html.twig
+      → only the rules the v4 style schema can't express (CSS-variable
+        driven `left`, sibling-combinator hover, pointer-events,
+        user-select, ::-webkit-slider-thumb, etc.).
 
-/* The "before" image — clipped overlay.
-   We make it ABSOLUTE so its width can be set to the container's width,
-   preventing the image from squishing when the wrapper shrinks. */
-.aae-a-image-compare-before {
-	position: absolute !important;
-	top: 0 !important;
-	left: 0 !important;
-	width: 100% !important;
-	height: 100% !important;
-	clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-	-webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-	z-index: 2;
-}
-
-.aae-a-image-compare > .elementor-element-overlay {
-	position: absolute;
-	inset: 0;
-	z-index: 30;
-	pointer-events: none;
-}
-
-.aae-a-image-compare > .elementor-element-overlay .elementor-editor-element-settings {
-	pointer-events: auto;
-}
-
-.aae-a-image-compare-caption-before,
-.aae-a-image-compare-caption-after {
-	position: absolute !important;
-	top: 16px;
-	z-index: 12;
-	margin: 0 !important;
-	pointer-events: none;
-	line-height: 1;
-	transition: opacity 0.2s ease;
-}
-
-.aae-a-image-compare-caption-before {
-	left: 16px;
-	clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-	-webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-}
-
-.aae-a-image-compare-caption-after {
-	right: 16px;
-	text-align: right;
-}
-
-.aae-a-image-compare[data-before-label-hidden="true"] .aae-a-image-compare-caption-before,
-.aae-a-image-compare[data-after-label-hidden="true"] .aae-a-image-compare-caption-after {
-	opacity: 0;
-}
-
-/* ============ RANGE INPUT (invisible, full-area) ============ */
-.aae-a-image-compare__label {
-	font-size: 0;
-	line-height: 0;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-}
-
-.aae-a-image-compare__range {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	background-color: transparent;
-	border: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	outline: none;
-	cursor: ew-resize;
-	z-index: 20;
-	opacity: 0;
-}
-
-/* Make the range thumb cover a decent area for grabbing */
-.aae-a-image-compare__range::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	width: 40px;
-	height: 100%;
-	opacity: 0;
-	cursor: ew-resize;
-}
-
-.aae-a-image-compare__range::-moz-range-thumb {
-	width: 40px;
-	height: 100%;
-	opacity: 0;
-	border: none;
-	border-radius: 0;
-	cursor: ew-resize;
-}
-
-/* ============ SLIDER LINE + THUMB ============ */
-.aae-a-image-compare__slider {
-	position: absolute;
-	top: 0;
-	left: var(--aae-image-compare-position, 50%);
-	width: 2px;
-	height: 100%;
-	background-color: #fff;
-	z-index: 10;
-	pointer-events: none;
-}
-
-.aae-a-image-compare__thumb {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 40px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #0091df;
-	color: #fff;
-	border-radius: 50%;
-	box-shadow: 0 0 22px 0 rgba(0, 0, 0, 0.5);
-	transform: translate(-50%, -50%);
-	transition: transform 0.3s ease-in-out;
-}
-
-@media (hover: hover) {
-	.aae-a-image-compare__range:hover ~ .aae-a-image-compare__slider .aae-a-image-compare__thumb {
-		transform: translate(-50%, -50%) scale(1.2);
-	}
-}
-
-.aae-a-image-compare__range:active ~ .aae-a-image-compare__slider .aae-a-image-compare__thumb,
-.aae-a-image-compare__range:focus ~ .aae-a-image-compare__slider .aae-a-image-compare__thumb {
-	transform: translate(-50%, -50%) scale(0.8);
-	background-color: rgba(0, 145, 223, 0.5);
-}
+   The widget no longer registers `aae-a-image-compare-css` — see
+   inc/AtomicWidgets/class-atomic.php. This file is kept only so the build
+   pipeline that globs scss/*.scss still has a target to emit (an empty
+   stylesheet) for backwards compatibility.
+*/
