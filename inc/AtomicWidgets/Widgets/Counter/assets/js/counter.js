@@ -1,56 +1,56 @@
 import { register } from '@elementor/frontend-handlers';
 
-const initCounter = (element) => {
-	// Prevent double initialization
-	if (element.classList.contains('aae-counter-initialized')) return;
-	element.classList.add('aae-counter-initialized');
+/* AAE Atomic Counter (single-class composite).
+   - Start value + duration come from the parent's data-counter-* attrs
+     (set by the panel's Start Number / Duration controls).
+   - End value is read from the Number child's text content — whatever
+     the user types into the Number element on canvas is the target.
+     This makes the editable child the single source of truth for the
+     end value and removes the panel-vs-child conflict. */
 
-	const from = parseFloat(element.getAttribute('data-from')) || 0;
-	const to = parseFloat(element.getAttribute('data-to')) || 100;
-	const durationMs = parseFloat(element.getAttribute('data-duration')) || 2000;
+const initCounter = (parent, numberEl) => {
+	if (numberEl.classList.contains('aae-counter-initialized')) return;
+	numberEl.classList.add('aae-counter-initialized');
+
+	// Capture the user-typed target BEFORE GSAP overwrites innerHTML.
+	const typed = parseFloat((numberEl.textContent || '').trim());
+	const to    = Number.isFinite(typed) ? typed : 100;
+
+	const from        = parseFloat(parent.getAttribute('data-counter-from')) || 0;
+	const durationMs  = parseFloat(parent.getAttribute('data-counter-duration')) || 2000;
 	const durationSec = durationMs / 1000;
 
-	if (typeof window.gsap !== 'undefined' && window.gsap.ScrollTrigger) {
-		window.gsap.fromTo(element, {
-			innerHTML: from
-		}, {
-			innerHTML: to,
-			duration: durationSec,
-			snap: { innerHTML: 1 },
-			ease: "power1.out",
-			scrollTrigger: {
-				trigger: element,
-				start: "top 85%", // Start when element is 85% down the viewport
-				toggleActions: "play none none none"
-			}
-		});
-	} else if (typeof window.gsap !== 'undefined') {
-		// Fallback if ScrollTrigger is missing
-		window.gsap.fromTo(element, {
-			innerHTML: from
-		}, {
-			innerHTML: to,
-			duration: durationSec,
-			snap: { innerHTML: 1 },
-			ease: "power1.out",
-		});
-	} else {
-		// Fallback if GSAP is not loaded
-		element.innerHTML = to;
+	if (typeof window.gsap === 'undefined') {
+		numberEl.innerHTML = to;
+		return;
 	}
+
+	const tweenConfig = {
+		innerHTML: to,
+		duration: durationSec,
+		snap: { innerHTML: 1 },
+		ease: 'power1.out',
+	};
+
+	if (window.gsap.ScrollTrigger) {
+		tweenConfig.scrollTrigger = {
+			trigger: parent,
+			start: 'top 85%',
+			toggleActions: 'play none none none',
+		};
+	}
+
+	window.gsap.fromTo(numberEl, { innerHTML: from }, tweenConfig);
 };
 
-register( {
+register({
 	elementType: 'e-aae-a-counter',
 	id: 'e-aae-a-counter-handler',
-	callback: ( { element } ) => {
-		
-		const numberEl = element.querySelector('.aae-a-counter-number');		
-		if (numberEl) {
-			// Remove init class so it safely re-animates when settings change in the editor
-			numberEl.classList.remove('aae-counter-initialized');
-			initCounter(numberEl);
-		}
-	}
-} );
-
+	callback: ({ element }) => {
+		const numberEl = element.querySelector('.aae-a-counter-number');
+		if (!numberEl) return;
+		// Clear init flag so editor re-renders re-run the animation.
+		numberEl.classList.remove('aae-counter-initialized');
+		initCounter(element, numberEl);
+	},
+});

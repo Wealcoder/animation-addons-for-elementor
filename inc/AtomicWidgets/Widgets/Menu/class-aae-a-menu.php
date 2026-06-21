@@ -58,21 +58,23 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'mobile_label' => String_Prop_Type::make()->default( 'Menu' ),
 
 			// Items
-			'text_color'   => String_Prop_Type::make()->default( '' ),
-			'hover_color'  => String_Prop_Type::make()->default( '' ),
-			'active_color' => String_Prop_Type::make()->default( '' ),
-			'font_size'    => Number_Prop_Type::make()->default( 15 ),
-			'font_weight'  => String_Prop_Type::make()->default( '500' ),
-			'padding_x'    => Number_Prop_Type::make()->default( 14 ),
-			'padding_y'    => Number_Prop_Type::make()->default( 10 ),
-			'item_gap'     => Number_Prop_Type::make()->default( 4 ),
-			'link_radius'  => Number_Prop_Type::make()->default( 6 ),
+			'text_color'    => String_Prop_Type::make()->default( '' ),
+			'hover_color'   => String_Prop_Type::make()->default( '' ),
+			'item_hover_bg' => String_Prop_Type::make()->default( '' ),
+			'active_color'  => String_Prop_Type::make()->default( '' ),
+			'font_size'     => Number_Prop_Type::make()->default( 15 ),
+			'font_weight'   => String_Prop_Type::make()->default( '500' ),
+			'padding_x'     => Number_Prop_Type::make()->default( 14 ),
+			'padding_y'     => Number_Prop_Type::make()->default( 10 ),
+			'item_gap'      => Number_Prop_Type::make()->default( 4 ),
+			'link_radius'   => Number_Prop_Type::make()->default( 6 ),
 
 			// Dropdown
-			'dropdown_bg'        => String_Prop_Type::make()->default( '' ),
-			'dropdown_hover_bg'  => String_Prop_Type::make()->default( '' ),
-			'dropdown_min_width' => Number_Prop_Type::make()->default( 220 ),
-			'dropdown_radius'    => Number_Prop_Type::make()->default( 8 ),
+			'dropdown_bg'               => String_Prop_Type::make()->default( '' ),
+			'dropdown_hover_bg'         => String_Prop_Type::make()->default( '' ),
+			'dropdown_hover_text_color' => String_Prop_Type::make()->default( '' ),
+			'dropdown_min_width'        => Number_Prop_Type::make()->default( 220 ),
+			'dropdown_radius'           => Number_Prop_Type::make()->default( 8 ),
 
 			// Hamburger / Drawer
 			'hamburger_color' => String_Prop_Type::make()->default( '' ),
@@ -141,8 +143,11 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 						->set_label( __( 'Text Color', self::TD ) )
 						->set_placeholder( '#1f2937' ),
 					Text_Control::bind_to( 'hover_color' )
-						->set_label( __( 'Hover Color', self::TD ) )
+						->set_label( __( 'Hover Text Color', self::TD ) )
 						->set_placeholder( '#2563eb' ),
+					Text_Control::bind_to( 'item_hover_bg' )
+						->set_label( __( 'Hover Background', self::TD ) )
+						->set_placeholder( 'rgba(0,0,0,0.05)' ),
 					Text_Control::bind_to( 'active_color' )
 						->set_label( __( 'Active Color', self::TD ) )
 						->set_placeholder( '#2563eb' ),
@@ -176,6 +181,9 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					Text_Control::bind_to( 'dropdown_hover_bg' )
 						->set_label( __( 'Item Hover Background', self::TD ) )
 						->set_placeholder( 'rgba(15,23,42,0.05)' ),
+					Text_Control::bind_to( 'dropdown_hover_text_color' )
+						->set_label( __( 'Item Hover Text Color', self::TD ) )
+						->set_placeholder( '#2563eb' ),
 					Number_Control::bind_to( 'dropdown_min_width' )
 						->set_label( __( 'Min Width (px)', self::TD ) ),
 					Number_Control::bind_to( 'dropdown_radius' )

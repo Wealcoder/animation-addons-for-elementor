@@ -155,7 +155,16 @@ final class Atomic
 	public function is_widget_active(string $slug): bool
 	{
 		// Force internal child widgets to be active always
-		$internal_widgets = ['aae-a-slide', 'aae-a-accordion-item', 'aae-a-icon-list-item', 'aae-a-toggle-pane'];
+		$internal_widgets = [
+			'aae-a-slide', 
+			'aae-a-slider-track',
+			'aae-a-slider-nav-prev',
+			'aae-a-slider-nav-next', 
+			'aae-a-slider-pagination',
+			'aae-a-counter-number',
+			'aae-a-accordion-item', 
+			'aae-a-icon-list-item'
+		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
 		}
@@ -476,22 +485,48 @@ final class Atomic
 
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
-				'description'  => 'A GSAP powered fully draggable nested slider container.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
+				'keywords'     => ['atomic', 'slider', 'carousel'],
 				'icon'         => 'eicon-slider-push',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'slider',
-					'nested',
-					'carousel',
-					'gsap',
-				],
 				'category'     => 'general',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+			'aae-a-slide' => [
+				'label'        => 'Slide (Internal)',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
+				'keywords'     => ['atomic', 'slide'],
+				'icon'         => 'eicon-slide',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-track' => [
+				'label'        => 'Slider Track',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'keywords'     => ['atomic', 'slider', 'track'],
+				'icon'         => 'eicon-slider-push',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-nav-prev' => [
+				'label'        => 'Slider Prev Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'keywords'     => ['atomic', 'slider', 'navigator', 'prev'],
+				'icon'         => 'eicon-chevron-left',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-nav-next' => [
+				'label'        => 'Slider Next Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'keywords'     => ['atomic', 'slider', 'navigator', 'next'],
+				'icon'         => 'eicon-chevron-right',
+				'hide_from_panel' => true,
+			],
+			'aae-a-slider-pagination' => [
+				'label'        => 'Slider Pagination',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
+				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-slide' => [
@@ -512,7 +547,7 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-button' => [
+			'aae-atomic-button' => [
 				'label'        => 'Button',
 				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
 				'icon'         => 'wcf-icon-Button',
@@ -529,28 +564,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar',
-				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
-				'icon'         => 'eicon-skill-bar',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'progress',
-					'progressbar',
-					'bar',
-					'circle',
-					'skill',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 10,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -701,64 +714,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-icon-list-item' => [
-				'label'        => 'Icon List Item',
-				'description'  => 'Internal child item for Icon List.',
-				'icon'         => 'eicon-bullet-list',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'list item',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 9,
-				'demo_url'     => '',
-				'doc_url'      => '',
+		'aae-a-icon-list-item' => [
+			'label'        => 'Icon List Item',
+			'description'  => 'Internal child item for Icon List.',
+			'icon'         => 'eicon-bullet-list',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'list item',
+				'internal',
 			],
+			'category'     => 'general',
+			'order'        => 9,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
 
-			'aae-a-toggle-switcher' => [
-				'label'        => 'Toggle Switcher',
-				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
-				'icon'         => 'eicon-t-letter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle',
-					'switch',
-					'tabs',
-					'atomic',
-					'switcher',
-				],
-				'category'     => 'general',
-				'order'        => 11,
-				'demo_url'     => '',
-				'doc_url'      => '',
+		'aae-a-image-compare' => [
+			'label'        => 'Image Compare',
+			'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
+			'icon'         => 'eicon-image-before-after',
+			'is_pro'       => false,
+			'is_extension' => false,
+			'is_upcoming'  => false,
+			'default'      => true,
+			'keywords'     => [
+				'image',
+				'compare',
+				'before',
+				'after',
+				'slider',
+				'atomic',
 			],
-
-			'aae-a-toggle-pane' => [
-				'label'        => 'Toggle Pane (Internal)',
-				'description'  => 'Internal child container for Toggle Switcher.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle pane',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 12,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-		];
-	}
+			'category'     => 'general',
+			'order'        => 10,
+			'demo_url'     => '',
+			'doc_url'      => '',
+		],
+	];
+}
 
 	/**
 	 * Register all available atomic extension definitions.
@@ -975,9 +971,11 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
-		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts']);
-		add_action('wp_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'],16);
+		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
+		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
 
 		// AJAX endpoints for Editor previews
 		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
@@ -1026,11 +1024,33 @@ final class Atomic
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
 				'script_handle' => 'aae-a-slider-js',
 				'script_path' => '/assets/atomic/js/nestedslider.js',
+				'style_handle' => 'aae-a-slider-css',
+				'style_path' => '/assets/atomic/css/nestedslider.css',
 				'has_script' => true,
 			],
 			'aae-a-slide' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slide.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-track' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-track.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-nav-prev' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-prev.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-nav-next' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-pagination.php',
 				'has_script' => false,
 			],
 			'aae-a-menu' => [
@@ -1057,7 +1077,7 @@ final class Atomic
 				'style_handle' => 'aae-a-post-image-css',
 				'style_path' => '/assets/atomic/css/post-image.css',
 			],
-
+			
 			'aae-a-posts' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
@@ -1067,7 +1087,7 @@ final class Atomic
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
 			],
-
+			
 			'aae-a-accordion' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
@@ -1077,7 +1097,7 @@ final class Atomic
 				'style_handle' => 'aae-a-accordion-css',
 				'style_path' => '/assets/atomic/css/accordion.css',
 			],
-
+			
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
@@ -1091,49 +1111,23 @@ final class Atomic
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-			'aae-a-icon-list-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
-				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
-				'has_script' => false,
-			],
-
-			'aae-a-button' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
-				'file'          => 'Widgets/Button/class-aae-a-button.php',
-				'script_handle' => 'aae-a-button-js',
-				'script_path'   => '/assets/atomic/js/button.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-button-css',
-				'style_path'    => '/assets/atomic/js/button.css',
-			],
-
-			'aae-a-progressbar' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar',
-				'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
-				'script_handle' => 'aae-a-progressbar-js',
-				'script_path'   => '/assets/atomic/js/progressbar.js',
-				'script_deps'   => ['progressbar'], // ProgressBar.js library (registered by main plugin)
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-progressbar-css',
-				'style_path'    => '/assets/atomic/js/progressbar.css',
-			],
-			'aae-a-toggle-switcher' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
-				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
-				'script_handle' => 'aae-a-toggle-switcher-js',
-				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-toggle-switcher-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher.css',
-			],
-
-			'aae-a-toggle-pane' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
-				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
-				'has_script' => false,
-			],
-
-			// Add new atomic widgets below...
+		'aae-a-icon-list-item' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+			'has_script' => false,
+			'style_handle' => 'aae-a-icon-list-css',
+			'style_path' => '/assets/atomic/css/icon-list.css',
+		],
+		'aae-a-image-compare' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+		'script_handle' => 'aae-a-image-compare-js',
+			'script_path' => '/assets/atomic/js/image-compare.js',
+			'has_script' => true,
+			'style_handle' => 'aae-a-image-compare-css',
+			'style_path' => '/assets/atomic/css/image-compare.css',
+		],
+		// Add new atomic widgets below...
 		];
 	}
 
@@ -1185,22 +1179,19 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
 				$path = $widget_data['script_path'];
-				if (! (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
-					$min_path = str_replace('.js', '.min.js', $path);
-					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+				if ( ! $this->is_dev_environment() ) {
+					$min_path = str_replace( '.js', '.min.js', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 						$path = $min_path;
 					}
 				}
 				$file_path = WCF_ADDONS_PATH . $path;
-				$version      = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
-				$script_deps  = ['elementor-v2-frontend-handlers'];
-				if (! empty($widget_data['script_deps'])) {
-					$script_deps = array_merge($script_deps, $widget_data['script_deps']);
-				}
+				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+			
 				wp_register_script(
 					$widget_data['script_handle'],
 					WCF_ADDONS_URL . $path,
-					$script_deps,
+					['elementor-v2-frontend-handlers'], // Required for @elementor/frontend-handlers register API
 					$version,
 					true
 				);
@@ -1209,16 +1200,52 @@ final class Atomic
 	}
 
 	/**
+	 * Enqueue the widget's script when that element type is actually rendered on the page.
+	 *
+	 * WHY THIS EXISTS:
+	 * Atomic_Widget_Base::before_render() is an intentionally empty override of
+	 * Widget_Base::before_render(). The parent's before_render() is the only place
+	 * enqueue_scripts() is triggered, so get_script_depends() is DEAD CODE for every
+	 * atomic widget. We instead hook into Element_Base::print_element() which fires
+	 * `elementor/frontend/before_render` for all elements including atomic widgets,
+	 * and enqueue the matching script handle here — once, on first encounter.
+	 *
+	 * @param \Elementor\Element_Base $element
+	 */
+	public function maybe_enqueue_widget_script( $element ): void {
+		if ( ! method_exists( $element, 'get_element_type' ) ) {
+			return;
+		}
+
+		$element_type = $element::get_element_type();	
+        // get widget settings condition css / js file load
+		//$widget_settings = $element->get_atomic_settings();
+		
+		foreach ( $this->get_available_widgets() as $slug => $data ) {
+
+			if ( ( 'e-' . $slug ) === $element_type ) {
+				if ( ! empty( $data['has_script'] ) ) {
+					wp_enqueue_script( $data['script_handle'] );
+				}
+				if ( ! empty( $data['style_handle'] ) ) {
+					wp_enqueue_style( $data['style_handle'] );
+				}
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Register frontend styles for active atomic widgets.
 	 */
-	public function register_atomic_styles()
+	public function register_atomic_styles( $_styles_manager = null, array $_post_ids = [] )
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
 				$path = $widget_data['style_path'];
-				if (! (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
-					$min_path = str_replace('.css', '.min.css', $path);
-					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+				if ( ! $this->is_dev_environment() ) {
+					$min_path = str_replace( '.css', '.min.css', $path );
+					if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 						$path = $min_path;
 					}
 				}
@@ -1232,6 +1259,38 @@ final class Atomic
 				);
 			}
 		}
+	}
+
+	/**
+	 * Return true when running in a dev / local environment.
+	 *
+	 * Minified assets are skipped when ANY of the following is true:
+	 *   - WordPress SCRIPT_DEBUG constant is set to true.
+	 *   - The HTTP_HOST header is 127.0.0.1, localhost, or a *.local / *.test domain.
+	 *   - The server's own IP address (SERVER_ADDR / LOCAL_ADDR) is 127.0.0.1.
+	 *
+	 * @return bool
+	 */
+	private function is_dev_environment(): bool {
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			return true;
+		}
+
+		$host = strtolower( $_SERVER['HTTP_HOST'] ?? '' );
+
+		if (
+			$host === '127.0.0.1' ||
+			$host === 'localhost' ||
+			str_ends_with( $host, '.local' ) ||
+			str_ends_with( $host, '.test' )
+		) {
+			return true;
+		}
+
+		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
+		$server_ip = $_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? '';
+
+		return $server_ip === '127.0.0.1';
 	}
 
 	/* =====================================================================
@@ -1419,35 +1478,43 @@ final class Atomic
 	}
 
 	/**
-	 * Seed default widget states on fresh installs, and enable any newly added
-	 * default widgets on existing installs (handles slug renames/additions).
+	 * On first activation (option does not exist), seed with defaults.
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		$current = get_option(self::OPTION_NAME);
+	$saved = get_option(self::OPTION_NAME);
 
-		if (false === $current) {
+		// First install: option doesn't exist yet, seed all defaults.
+		if (false === $saved) {
 			$defaults = [];
+
 			foreach ($this->widgets_registry as $slug => $def) {
 				if (! empty($def['default'])) {
 					$defaults[$slug] = true;
 				}
 			}
+
 			add_option(self::OPTION_NAME, $defaults, '', false);
 			return;
 		}
 
-		// Existing install — enable any new registry entries with 'default => true'.
-		$updated = false;
+		// Existing install: merge in any newly-added default widgets
+		// that aren't yet in the saved option. This allows new widgets
+		// (added in a plugin update) to auto-activate by default.
+		if (! is_array($saved)) {
+			$saved = [];
+		}
+
+		$changed = false;
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default']) && ! isset($current[$slug])) {
-				$current[$slug] = true;
-				$updated          = true;
+			if (! empty($def['default']) && ! isset($saved[$slug])) {
+				$saved[$slug] = true;
+				$changed = true;
 			}
 		}
 
-		if ($updated) {
-			update_option(self::OPTION_NAME, $current);
+		if ($changed) {
+			update_option(self::OPTION_NAME, $saved, false);
 		}
 	}
 
@@ -1469,6 +1536,30 @@ final class Atomic
 		}
 
 		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
+	}
+	/**
+	 * Enqueue global atomic editor scripts into the top-level window.
+	 */
+	public function enqueue_atomic_editor_scripts(): void
+	{
+		$suffix = $this->is_dev_environment() ? '' : '.min';
+		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
+		$file_path = WCF_ADDONS_PATH . $path;
+		$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+
+		wp_enqueue_script(
+			'aae-atomic-editor',
+			WCF_ADDONS_URL . $path,
+			[
+				'nested-elements',
+				'elementor-editor',
+				'elementor-common',
+				'wp-element',
+				'jquery',
+			],
+			$version,
+			true
+		);
 	}
 }
 

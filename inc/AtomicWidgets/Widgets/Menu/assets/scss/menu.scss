@@ -22,6 +22,12 @@
 	--aae-drawer-w: var(--aae-menu-drawer-width, 320px);
 	--t:           var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
 
+	/* Effect defaults — overridden by data-dropdown-effect / data-drawer-effect */
+	--aae-dd-from-transform: translateY(-6px) scale(0.97);
+	--aae-dd-to-transform:   translateY(0) scale(1);
+	--aae-drawer-from-transform: translateX(-100%);
+	--aae-drawer-to-transform:   translateX(0);
+
 	position: relative;
 	width: 100%;
 	color: var(--c);
@@ -32,6 +38,22 @@
 .aae-a-menu *,
 .aae-a-menu *::before,
 .aae-a-menu *::after { box-sizing: border-box; }
+
+/* Dropdown effect variants — set per-effect transform vars used by the
+   desktop hover transition. Mobile open/close animations are run from JS
+   (menu.js Web Animations API) so no CSS keyframes are needed here. */
+.aae-a-menu[data-dropdown-effect="slide"]      { --aae-dd-from-transform: translateY(-6px) scale(0.97);       --aae-dd-to-transform: translateY(0) scale(1); }
+.aae-a-menu[data-dropdown-effect="fade"]       { --aae-dd-from-transform: none;                               --aae-dd-to-transform: none; }
+.aae-a-menu[data-dropdown-effect="slide-fade"] { --aae-dd-from-transform: translateY(-14px);                  --aae-dd-to-transform: translateY(0); }
+.aae-a-menu[data-dropdown-effect="scale"]      { --aae-dd-from-transform: scale(0.85);                        --aae-dd-to-transform: scale(1); }
+.aae-a-menu[data-dropdown-effect="zoom"]       { --aae-dd-from-transform: scale(0.5);                         --aae-dd-to-transform: scale(1); }
+.aae-a-menu[data-dropdown-effect="flip"]       { --aae-dd-from-transform: perspective(600px) rotateX(-90deg); --aae-dd-to-transform: perspective(600px) rotateX(0deg); }
+
+.aae-a-menu[data-dropdown-effect="scale"] .aae-a-menu-list > li > .sub-menu,
+.aae-a-menu[data-dropdown-effect="zoom"]  .aae-a-menu-list > li > .sub-menu,
+.aae-a-menu[data-dropdown-effect="flip"]  .aae-a-menu-list > li > .sub-menu {
+	transform-origin: top center;
+}
 
 /* ============== NAV (desktop default) ============== */
 .aae-a-menu-nav {
@@ -77,6 +99,21 @@
 	color: var(--accent);
 	background: var(--bg-2);
 }
+
+/* Top-level menu items use the dedicated Item Hover Background.
+   Falls back to transparent so the drawer/page background shows through unless set. */
+.aae-a-menu-list > li > a:hover,
+.aae-a-menu-list > li > a:focus-visible {
+	background: var(--aae-menu-item-hover-bg, transparent);
+}
+
+/* Dropdown (sub-menu) items use their own Item Hover Text Color when set,
+   otherwise fall back to the global hover text color. */
+.aae-a-menu-list .sub-menu a:hover,
+.aae-a-menu-list .sub-menu a:focus-visible {
+	color: var(--aae-menu-dropdown-hover-text-color, var(--accent));
+}
+
 .aae-a-menu-list .current-menu-item > a,
 .aae-a-menu-list .current-menu-parent > a,
 .aae-a-menu-list .current-menu-ancestor > a {
@@ -140,7 +177,7 @@
 	z-index: 1000;
 	opacity: 0;
 	visibility: hidden;
-	transform: translateY(-6px) scale(0.97);
+	transform: var(--aae-dd-from-transform);
 	pointer-events: none;
 	transition: opacity var(--t), transform var(--t), visibility var(--t);
 }
@@ -179,7 +216,7 @@
 	.aae-a-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
 		opacity: 1;
 		visibility: visible;
-		transform: translateY(0) scale(1);
+		transform: var(--aae-dd-to-transform);
 		pointer-events: auto;
 	}
 	.aae-a-menu .sub-menu .menu-item-has-children:hover > .sub-menu,
@@ -203,7 +240,7 @@
 	background: transparent;
 	color: var(--ham-color);
 	cursor: pointer;
-	transition: background var(--t), border-color var(--t);
+	transition: background var(--t);
 }
 .aae-a-menu-toggle:hover { background: var(--bg-2); }
 .aae-a-menu-toggle-bars {
@@ -220,7 +257,6 @@
 	background: currentColor;
 	border-radius: 2px;
 	transition: transform var(--t), opacity var(--t);
-	transform-origin: center;
 }
 .aae-a-menu--open .aae-a-menu-toggle-bars span:nth-child(1) {
 	transform: translateY(6px) rotate(45deg);
@@ -298,16 +334,20 @@
 		z-index: 9995;
 		flex-direction: column;
 		overflow: hidden;
-		transform: translateX(-100%);
+		opacity: 0;
+		transform: var(--aae-drawer-from-transform);
 		visibility: hidden;
-		transition: transform var(--t), visibility var(--t);
+		transition: transform var(--t), opacity var(--t), visibility var(--t);
 		box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
-		will-change: transform;
 	}
 	.aae-a-menu[data-hamburger="true"].aae-a-menu--open .aae-a-menu-nav {
-		transform: translateX(0);
+		opacity: 1;
+		transform: var(--aae-drawer-to-transform);
 		visibility: visible;
 	}
+
+	/* Drawer effect (transform vars + per-effect nav positioning) is applied
+	   from JS — see DRAWER_EFFECTS / applyDrawerEffect in menu.js. */
 
 	/* Drawer header (title + close) */
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-nav-header {
@@ -357,7 +397,6 @@
 		height: 2px;
 		background: currentColor;
 		border-radius: 2px;
-		transform-origin: center;
 	}
 	.aae-a-menu-close-icon::before { transform: translateY(-50%) rotate(45deg); }
 	.aae-a-menu-close-icon::after  { transform: translateY(-50%) rotate(-45deg); }
@@ -368,7 +407,6 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		padding: 0.5rem 0.75rem 1.25rem;
-		-webkit-overflow-scrolling: touch;
 	}
 
 	/* Mobile list — full-width stack */
@@ -390,6 +428,7 @@
 		width: auto;
 		font-size: 15px;
 		border-radius: var(--aae-r);
+		flex: inherit;
 	}
 
 	/* Bigger, right-aligned tap target for chevron on mobile */
@@ -400,34 +439,30 @@
 		flex-shrink: 0;
 	}
 
-	/* Mobile sub-menu — collapsible via .aae-a-menu-item--open class */
+	/* Mobile sub-menu — closed = display:none, open = display:flex.
+	   The open/close visual effect is driven by menu.js (Web Animations API).
+	   Opened state explicitly resets the desktop-only hidden properties from
+	   the base rule (opacity / visibility / pointer-events / transform). */
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-list .sub-menu {
 		position: static;
+		display: none;
 		flex: 0 0 100%;
 		width: 100%;
 		min-width: 0;
 		padding: 0;
 		margin: 0;
-		background: transparent;
+		background: var(--aae-menu-dropdown-bg, transparent);
 		border: 0;
 		box-shadow: none;
 		border-radius: 0;
-		transform: none;
-		opacity: 0;
-		visibility: hidden;
-		pointer-events: none;
-		max-height: 0;
-		overflow: hidden;
-		transition:
-			max-height var(--t),
-			opacity calc(var(--t) * 0.8),
-			visibility var(--t);
 	}
 	.aae-a-menu[data-hamburger="true"] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+		display: flex;
+		flex-direction: column;
 		opacity: 1;
 		visibility: visible;
 		pointer-events: auto;
-		max-height: 2000px;
+		transform: none;
 	}
 
 	/* Indented nested levels */
@@ -443,12 +478,6 @@
 		padding-left: 4rem;
 	}
 
-	/* If hamburger explicitly disabled, hide drawer chrome */
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-toggle,
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-overlay,
-	.aae-a-menu[data-hamburger="false"] .aae-a-menu-nav-header {
-		display: none;
-	}
 }
 
 /* Prevent body scroll-shift when drawer is open */

@@ -11,10 +11,19 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder;
+
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -100,26 +109,107 @@ class AAE_A_Slider extends Atomic_Element_Base {
 
 		return [
 			'base' => Style_Definition::make()
-				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) ),
+				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) )	
 		];
 	}
 
 	protected function define_default_children() {
-		return [
+		$heading_id = \Elementor\Utils::generate_random_string();
+		$heading_class = 'e-' . $heading_id . '-' . \Elementor\Utils::generate_random_string();
+
+		$image_id = \Elementor\Utils::generate_random_string();
+		$image_class = 'e-' . $image_id . '-' . \Elementor\Utils::generate_random_string();
+
+		$heading_data = \Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make( 'e-heading' )
+			->settings( [
+				'classes' => [
+					'$$type' => 'classes',
+					'value' => [ $heading_class ],
+				],
+				'title' => [
+					'$$type' => 'html-v3',
+					'value' => [
+						'content' => [
+							'$$type' => 'string',
+							'value' => 'Slide 1 Heading',
+						],
+						'children' => [],
+					],
+				],
+			] )		
+			->build();
+
+		$heading_data['id'] = $heading_id;
+
+		$image_data = \Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make( 'e-image' )
+			->settings( [
+				'classes' => [
+					'$$type' => 'classes',
+					'value' => [ $image_class ],
+				],
+				'image' => [
+					'$$type' => 'image',
+					'value' => [
+						'src' => [
+							'$$type' => 'image-src',
+							'value' => [
+								'id' => null,
+								'url' => [
+									'$$type' => 'url',
+									'value' => \Elementor\Utils::get_placeholder_image_src(),
+								],
+							],
+						],
+					],
+				],
+			] )			
+			->build();
+
+		$image_data['id'] = $image_id;
+
+		$slides = [
 			AAE_A_Slide::generate()
 				->editor_settings( [ 'title' => 'Slide 1' ] )
+				->children( [
+					$heading_data,
+					$image_data,
+				] )
 				->build(),
 			AAE_A_Slide::generate()
 				->editor_settings( [ 'title' => 'Slide 2' ] )
+				->children( [
+					$heading_data,
+					$image_data,
+				] )
 				->build(),
 			AAE_A_Slide::generate()
 				->editor_settings( [ 'title' => 'Slide 3' ] )
+				->children( [
+					$heading_data,
+					$image_data,
+				] )
+				->build(),
+		];
+
+		return [
+			AAE_A_Slider_Track::generate()
+				->editor_settings( [ 'title' => 'Slider Track' ] )
+				->children( $slides )
+				->build(),
+			AAE_A_Slider_Nav_Prev::generate()
+				->editor_settings( [ 'title' => 'Prev Nav' ] )
+				->build(),
+			AAE_A_Slider_Nav_Next::generate()
+				->editor_settings( [ 'title' => 'Next Nav' ] )
+				->build(),
+			\Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make('e-aae-a-slider-pagination')
+				->editor_settings( [ 'title' => 'Pagination' ] )
 				->build(),
 		];
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-slide' ];
+		return [ 'e-aae-a-slider-track', 'e-aae-a-slider-nav-prev', 'e-aae-a-slider-nav-next', 'e-aae-a-slider-pagination' ];
 	}
 
 	protected function get_templates(): array {
@@ -128,7 +218,11 @@ class AAE_A_Slider extends Atomic_Element_Base {
 		];
 	}
 
+	public function get_style_depends(): array {
+		return [ 'aae-a-slider-css' ];
+	}
+
 	public function get_script_depends(): array {
-		return [ 'Draggable', 'aae-a-slider-js' ];
+		return [ 'aae-a-slider-js' ];
 	}
 }

@@ -1,6 +1,84 @@
 import { register } from '@elementor/frontend-handlers';
 
-/* AAE Atomic Menu — minimal vanilla JS. CSS does all transitions. */
+/* AAE Atomic Menu — vanilla JS. CSS handles transitions for desktop;
+   mobile sub-menu uses Web Animations API for guaranteed visible effect. */
+
+const DROPDOWN_EFFECT_KEYFRAMES = {
+	slide:        [{ opacity: 0, transform: 'translateY(-18px) scale(0.95)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }],
+	fade:         [{ opacity: 0 }, { opacity: 1 }],
+	'slide-fade': [{ opacity: 0, transform: 'translateY(-40px)' }, { opacity: 1, transform: 'translateY(0)' }],
+	scale:        [{ opacity: 0, transform: 'scale(0.55)' }, { opacity: 1, transform: 'scale(1)' }],
+	zoom:         [{ opacity: 0, transform: 'scale(0.2)' }, { opacity: 1, transform: 'scale(1)' }],
+	flip:         [{ opacity: 0, transform: 'perspective(800px) rotateX(-90deg)' }, { opacity: 1, transform: 'perspective(800px) rotateX(0deg)' }],
+};
+
+/* Drawer effects — applied as inline styles on the root + .aae-a-menu-nav.
+   from/to drive the CSS transition via the --aae-drawer-*-transform custom
+   props; navStyle handles per-effect anchor / dimensions (slide-top is full
+   width pinned to top, fade/zoom-in are centered, etc.). */
+const DRAWER_EFFECTS = {
+	'slide-left':   { from: 'translateX(-100%)', to: 'translateX(0)' },
+	'slide-right':  { from: 'translateX(100%)',  to: 'translateX(0)',  navStyle: { left: 'auto', right: '0', boxShadow: '-4px 0 32px rgba(0,0,0,0.18)' } },
+	'slide-top':    { from: 'translateY(-100%)', to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: '0', bottom: 'auto', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 4px 32px rgba(0,0,0,0.18)' } },
+	'slide-bottom': { from: 'translateY(100%)',  to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: 'auto', bottom: '0', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 -4px 32px rgba(0,0,0,0.18)' } },
+	fade:           { from: 'none', to: 'none', navStyle: { left: '50%', right: 'auto', top: '50%', bottom: 'auto', width: 'min(var(--aae-drawer-w),92vw)', height: 'min(80vh,600px)', margin: 'calc(-1 * min(80vh,600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w),92vw) / 2)', borderRadius: 'var(--aae-dd-r)', transformOrigin: 'center center' } },
+	scale:          { from: 'scale(0.7)', to: 'scale(1)', navStyle: { transformOrigin: 'left center' } },
+	'zoom-in':      { from: 'scale(0)',   to: 'scale(1)', navStyle: { left: '50%', right: 'auto', top: '50%', bottom: 'auto', width: 'min(var(--aae-drawer-w),92vw)', height: 'min(80vh,600px)', margin: 'calc(-1 * min(80vh,600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w),92vw) / 2)', borderRadius: 'var(--aae-dd-r)', transformOrigin: 'center center' } },
+	flip:           { from: 'perspective(1200px) rotateY(-90deg)', to: 'perspective(1200px) rotateY(0deg)', navStyle: { transformOrigin: 'left center' } },
+};
+
+// Inline-style keys we may write on the drawer nav per effect — used to
+// fully reset before applying a new effect (so switching effects in the
+// editor doesn't leave stale inline styles behind).
+const DRAWER_NAV_RESET_KEYS = ['left','right','top','bottom','width','maxWidth','height','maxHeight','margin','borderRadius','transformOrigin','boxShadow'];
+
+const applyDrawerEffect = (root, nav, effectName) => {
+	const eff = DRAWER_EFFECTS[effectName] || DRAWER_EFFECTS['slide-left'];
+	root.style.setProperty('--aae-drawer-from-transform', eff.from);
+	root.style.setProperty('--aae-drawer-to-transform', eff.to);
+	DRAWER_NAV_RESET_KEYS.forEach((k) => { nav.style[k] = ''; });
+	if (eff.navStyle) Object.assign(nav.style, eff.navStyle);
+};
+
+const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish) => {
+	const done = (cancelled) => { if (typeof onFinish === 'function') onFinish(cancelled === true); };
+	if (!subMenu || typeof subMenu.animate !== 'function') { done(); return; }
+	const baseFrames = DROPDOWN_EFFECT_KEYFRAMES[effectName] || DROPDOWN_EFFECT_KEYFRAMES.slide;
+	const frames = direction === 'close' ? [baseFrames[1], baseFrames[0]] : baseFrames;
+	const easing = direction === 'close' ? 'cubic-bezier(.4, 0, .2, 1)' : 'cubic-bezier(.2, .8, .2, 1)';
+
+	// Cancel any in-flight animation on this sub-menu so the new one starts clean
+	if (typeof subMenu.getAnimations === 'function') {
+		subMenu.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) {} });
+	}
+
+	subMenu.style.transformOrigin = 'top center';
+	subMenu.style.willChange = 'transform, opacity';
+
+	// Wait one frame so display:none → display:flex has been committed and the
+	// element has computed layout before the animation starts.
+	requestAnimationFrame(() => {
+		try {
+			const anim = subMenu.animate(frames, {
+				duration: durationMs,
+				easing: easing,
+				fill: 'both',
+			});
+			const cleanup = (cancelled) => {
+				subMenu.style.willChange = '';
+				done(cancelled);
+			};
+			if (anim && anim.finished && typeof anim.finished.then === 'function') {
+				anim.finished.then(() => cleanup(false), () => cleanup(true));
+			} else if (anim && typeof anim.addEventListener === 'function') {
+				anim.addEventListener('finish', () => cleanup(false));
+				anim.addEventListener('cancel', () => cleanup(true));
+			} else {
+				done();
+			}
+		} catch (e) { done(); }
+	});
+};
 
 const initMenu = (root) => {
 	if (root.dataset.aaeMenuInit === '1') return;
@@ -12,9 +90,21 @@ const initMenu = (root) => {
 	const closeBtn = root.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
-	const breakpoint  = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
-	const isHamburger = root.getAttribute('data-hamburger') === 'true';
-	const isMobile    = () => window.innerWidth <= breakpoint;
+	const breakpoint     = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
+	const isHamburger    = root.getAttribute('data-hamburger') === 'true';
+	const isMobile       = () => window.innerWidth <= breakpoint;
+	let   dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
+	const transitionMs   = (parseInt(root.style.getPropertyValue('--aae-menu-transition'), 10) || 250);
+
+	// Apply drawer effect (transform vars + per-effect nav positioning) on init,
+	// and keep it in sync when the editor changes the data-drawer-effect attribute.
+	applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
+	if (typeof MutationObserver !== 'undefined') {
+		new MutationObserver(() => {
+			applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
+			dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
+		}).observe(root, { attributes: true, attributeFilter: ['data-drawer-effect', 'data-dropdown-effect'] });
+	}
 
 	/* ---------- Dropdown arrows + click-to-toggle ---------- */
 	const buildDropdowns = () => {
@@ -39,18 +129,52 @@ const initMenu = (root) => {
 			arrow.addEventListener('click', (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				const open = item.classList.toggle('aae-a-menu-item--open');
-				arrow.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+				const wasOpen = item.classList.contains('aae-a-menu-item--open');
+				const duration = Math.round(transitionMs * 1.4);
+
+				if (wasOpen) {
+					// Closing — on mobile, play the reverse effect THEN remove the class
+					// so the close transition is visible. On desktop, remove immediately
+					// (CSS handles the desktop transition).
+					if (isMobile()) {
+						arrow.setAttribute('aria-expanded', 'false');
+						playSubMenuEffect(subMenu, dropdownEffect, duration, 'close', () => {
+							item.classList.remove('aae-a-menu-item--open');
+						});
+					} else {
+						item.classList.remove('aae-a-menu-item--open');
+						arrow.setAttribute('aria-expanded', 'false');
+					}
+					return;
+				}
+
+				// Opening
+				item.classList.add('aae-a-menu-item--open');
+				arrow.setAttribute('aria-expanded', 'true');
 
 				// Close siblings at the same level
-				if (open && item.parentElement) {
+				if (item.parentElement) {
 					Array.from(item.parentElement.children).forEach((sib) => {
 						if (sib !== item && sib.classList && sib.classList.contains('aae-a-menu-item--open')) {
-							sib.classList.remove('aae-a-menu-item--open');
 							const sArrow = sib.querySelector(':scope > .aae-a-menu-arrow');
+							const sSub   = sib.querySelector(':scope > .sub-menu');
+							sib.classList.remove('aae-a-menu-item--open');
 							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
+							if (isMobile() && sSub) {
+								// Sibling closes simultaneously — just cancel its animation;
+								// removing the class above hides it via CSS.
+								if (typeof sSub.getAnimations === 'function') {
+									sSub.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) {} });
+								}
+							}
 						}
 					});
+				}
+
+				// Mobile-only: play the picked dropdown effect via Web Animations API.
+				if (isMobile()) {
+					playSubMenuEffect(subMenu, dropdownEffect, duration, 'open');
 				}
 			});
 		});
@@ -146,10 +270,4 @@ register({
 	},
 });
 
-/* Fallback: also init on DOMContentLoaded for non-Elementor contexts */
-const initAll = () => document.querySelectorAll('.aae-a-menu').forEach(initMenu);
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initAll);
-} else {
-	initAll();
-}
+

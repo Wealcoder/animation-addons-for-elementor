@@ -7,7 +7,9 @@ const fs = require('fs');
 
 // Helper to automatically find all JS files inside AtomicWidgets/Widgets/*/assets/js/
 const getAtomicWidgetEntries = () => {
-  const entries = {};
+  const entries = {
+    "../atomic/js/atomic-editor": "./inc/AtomicWidgets/assets/js/atomic-editor.js"
+  };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {
     const widgets = fs.readdirSync(widgetsPath).filter((w) => !w.endsWith('-prev'));

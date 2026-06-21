@@ -1,0 +1,106 @@
+{% set classes = ['aae-a-image-compare', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set default_position = settings.default_position | default(50) %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-default-position="{{ default_position }}"
+    style="--aae-image-compare-position: {{ default_position }}%;"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    <style>
+        [data-id="{{ id }}"].aae-a-image-compare {
+            display: grid !important;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-before,
+        [data-id="{{ id }}"] .aae-a-image-compare-after {
+            grid-area: 1 / 1;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            display: block;
+            object-fit: cover !important;
+            object-position: 0 50%;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-before {
+            position: absolute !important;
+            inset: 0 auto auto 0;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 2;
+            clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
+            -webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-after {
+            position: relative !important;
+            height: auto !important;
+            z-index: 1;
+        }
+        [data-id="{{ id }}"] > .elementor-element-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            pointer-events: none;
+        }
+        [data-id="{{ id }}"] > .elementor-element-overlay .elementor-editor-element-settings {
+            pointer-events: auto;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-caption-before,
+        [data-id="{{ id }}"] .aae-a-image-compare-caption-after {
+            position: absolute !important;
+            top: 16px;
+            z-index: 12;
+            margin: 0 !important;
+            pointer-events: none;
+            line-height: 1;
+            transition: opacity 0.2s ease;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-caption-before {
+            left: 16px;
+            clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
+            -webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare-caption-after {
+            right: 16px;
+            text-align: right;
+        }
+        [data-id="{{ id }}"][data-before-label-hidden="true"] .aae-a-image-compare-caption-before,
+        [data-id="{{ id }}"][data-after-label-hidden="true"] .aae-a-image-compare-caption-after {
+            opacity: 0;
+        }
+    </style>
+
+    {{ children_placeholder | raw }}
+
+    {# Invisible range input — handles ALL drag/touch/keyboard interaction.
+       It sits above everything (z-index: 20) but is transparent. #}
+    <label class="aae-a-image-compare__label" for="aae-image-compare-range-{{ id }}">Move image comparison slider</label>
+    <input type="range"
+           min="0"
+           max="100"
+           value="{{ default_position }}"
+           class="aae-a-image-compare__range"
+           id="aae-image-compare-range-{{ id }}"
+           data-aae-compare-range>
+
+    {# Visual handle (draggable circle) — positioned by CSS based on range value #}
+    <div class="aae-a-image-compare__slider" data-aae-compare-slider aria-hidden="true">
+        <span class="aae-a-image-compare__thumb" data-aae-compare-thumb>
+            <svg class="aae-a-image-compare__thumb-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 18 10" fill="currentColor">
+                <path d="M12.121 4.703V.488c0-.302.384-.454.609-.24l4.42 4.214a.33.33 0 0 1 0 .481l-4.42 4.214c-.225.215-.609.063-.609-.24V4.703z"></path>
+                <path d="M5.879 4.703V.488c0-.302-.384-.454-.609-.24L.85 4.462a.33.33 0 0 0 0 .481l4.42 4.214c.225.215.609.063.609-.24V4.703z"></path>
+            </svg>
+        </span>
+    </div>
+</div>
