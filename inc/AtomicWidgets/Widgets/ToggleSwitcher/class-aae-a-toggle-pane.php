@@ -3,8 +3,12 @@ namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 
@@ -57,6 +61,36 @@ class AAE_A_Toggle_Pane extends Atomic_Element_Base {
 				->set_id( 'settings' )
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [] ),
+		];
+	}
+
+	protected function define_allowed_child_types(): array {
+		return [ 'widget', 'e-heading', 'e-paragraph', 'e-svg' ];
+	}
+
+	protected function define_default_children(): array {
+		return [
+			Atomic_Heading::generate()
+				->editor_settings( [ 'title' => 'Heading' ] )
+				->settings( [
+					'title' => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( 'Pane Title' ),
+						'children' => [],
+					] ),
+					'tag' => String_Prop_Type::generate( 'h3' ),
+				] )
+				->build(),
+
+			Atomic_Paragraph::generate()
+				->editor_settings( [ 'title' => 'Description' ] )
+				->settings( [
+					'paragraph' => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( 'Add your content here.' ),
+						'children' => [],
+					] ),
+					'tag' => String_Prop_Type::generate( 'p' ),
+				] )
+				->build(),
 		];
 	}
 
