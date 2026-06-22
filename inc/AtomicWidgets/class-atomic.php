@@ -166,6 +166,7 @@ final class Atomic
 			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-flip-box-face',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -878,6 +879,46 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-flip-box' => [
+				'label'        => 'Flip Box',
+				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
+				'icon'         => 'eicon-flip-box',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip',
+					'box',
+					'card',
+					'hover',
+					'atomic',
+					'animation',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-face' => [
+				'label'        => 'Flip Box Face (Internal)',
+				'description'  => 'Internal front/back face container for Flip Box.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip face',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1304,6 +1345,22 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-flip-box' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
+				'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
+				'script_handle' => 'aae-a-flip-box-js',
+				'script_path'   => '/assets/atomic/js/flip-box.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-flip-box-css',
+				'style_path'    => '/assets/atomic/js/flip-box.css',
+			],
+
+			'aae-a-flip-box-face' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
+				'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
 				'has_script' => false,
 			],
 
