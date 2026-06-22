@@ -22,6 +22,12 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Html_Tag_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
+use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -66,8 +72,8 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'item_title' => String_Prop_Type::make()->default( 'Accordion Title' ),
 			'is_active' => Boolean_Prop_Type::make()->default( false ),
 			'icon_position' => String_Prop_Type::make()->enum( [ 'left', 'right' ] )->default( 'right' ),
-			'expand_icon' => Svg_Src_Prop_Type::make(),
-			'collapse_icon' => Svg_Src_Prop_Type::make(),
+			'expand_icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg' ),
+			'collapse_icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg' ),
 			'title_html_tag' => String_Prop_Type::make()->enum( [ 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )->default( 'div' ),
 		];
 	}
@@ -78,41 +84,126 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 				->set_id( 'content' )
 				->set_label( __( 'Item Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					Text_Control::bind_to( 'item_title' )
-						->set_label( __( 'Title', 'animation-addons-for-elementor' ) ),
-					Html_Tag_Control::bind_to( 'title_html_tag' )
-						->set_label( __( 'Title HTML Tag', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'div', 'label' => 'div' ],
-							[ 'value' => 'h1', 'label' => 'H1' ],
-							[ 'value' => 'h2', 'label' => 'H2' ],
-							[ 'value' => 'h3', 'label' => 'H3' ],
-							[ 'value' => 'h4', 'label' => 'H4' ],
-							[ 'value' => 'h5', 'label' => 'H5' ],
-							[ 'value' => 'h6', 'label' => 'H6' ],
-						] ),
+					// Text_Control::bind_to( 'item_title' )
+					// 	->set_label( __( 'Title', 'animation-addons-for-elementor' ) ),
+					// Html_Tag_Control::bind_to( 'title_html_tag' )
+					// 	->set_label( __( 'Title HTML Tag', 'animation-addons-for-elementor' ) )
+					// 	->set_options( [
+					// 		[ 'value' => 'div', 'label' => 'div' ],
+					// 		[ 'value' => 'h1', 'label' => 'H1' ],
+					// 		[ 'value' => 'h2', 'label' => 'H2' ],
+					// 		[ 'value' => 'h3', 'label' => 'H3' ],
+					// 		[ 'value' => 'h4', 'label' => 'H4' ],
+					// 		[ 'value' => 'h5', 'label' => 'H5' ],
+					// 		[ 'value' => 'h6', 'label' => 'H6' ],
+					// 	] ),
 					Switch_Control::bind_to( 'is_active' )
 						->set_label( __( 'Active by Default', 'animation-addons-for-elementor' ) ),
 				] ),
 				
-			Section::make()
-				->set_id( 'icon_settings' )
-				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Toggle_Control::bind_to( 'icon_position' )
-						->set_label( __( 'Position', 'animation-addons-for-elementor' ) )
-						->add_options( [
-							'left'  => [ 'title' => __( 'Left', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
-							'right' => [ 'title' => __( 'Right', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
-						] )
-						->set_exclusive( true )
-						->set_convert_options( true ),
-					Svg_Control::bind_to( 'expand_icon' )
-						->set_label( __( 'Expand', 'animation-addons-for-elementor' ) ),
-					Svg_Control::bind_to( 'collapse_icon' )
-						->set_label( __( 'Collapse', 'animation-addons-for-elementor' ) ),
-				] ),
+			// Section::make()
+			// 	->set_id( 'icon_settings' )
+			// 	->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
+			// 	->set_items( [
+			// 		Toggle_Control::bind_to( 'icon_position' )
+			// 			->set_label( __( 'Position', 'animation-addons-for-elementor' ) )
+			// 			->add_options( [
+			// 				'left'  => [ 'title' => __( 'Left', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
+			// 				'right' => [ 'title' => __( 'Right', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
+			// 			] )
+			// 			->set_exclusive( true )
+			// 			->set_convert_options( true ),
+			// 		Svg_Control::bind_to( 'expand_icon' )
+			// 			->set_label( __( 'Expand', 'animation-addons-for-elementor' ) ),
+			// 		Svg_Control::bind_to( 'collapse_icon' )
+			// 			->set_label( __( 'Collapse', 'animation-addons-for-elementor' ) ),
+			// 	] ),
 		];
+	}
+
+	protected function define_default_children() {
+		// Header children: Title (Paragraph) + Icon (SVG)
+		$header_title = Atomic_Paragraph::generate()
+			->editor_settings( [ 'title' => 'Header Title' ] )
+			->settings( [
+				'classes'   => Classes_Prop_Type::generate( [ 'aae-header-title-element' ] ),
+				'paragraph' => Html_V3_Prop_Type::generate( [
+					'content'  => String_Prop_Type::generate( 'Accordion Title' ),
+					'children' => [],
+				] ),
+				'tag'       => String_Prop_Type::generate( 'span' ),
+			] )
+			->build();
+
+		$open_icon_url  = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg';
+		$close_icon_url = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg';
+
+		// Open icon — shown while the item is collapsed.
+		$header_icon_open = Atomic_Svg::generate()
+			->editor_settings( [ 'title' => 'Open Icon' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-open' ] ),
+				'svg'     => Svg_Src_Prop_Type::generate( [
+					'id'  => null,
+					'url' => Url_Prop_Type::generate( $open_icon_url ),
+				] ),
+			] )
+			->build();
+
+		// Close icon — shown while the item is expanded (active).
+		$header_icon_close = Atomic_Svg::generate()
+			->editor_settings( [ 'title' => 'Close Icon' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-close' ] ),
+				'svg'     => Svg_Src_Prop_Type::generate( [
+					'id'  => null,
+					'url' => Url_Prop_Type::generate( $close_icon_url ),
+				] ),
+			] )
+			->build();
+
+		// Content children: Text (Paragraph) + Image
+		$content_text = Atomic_Paragraph::generate()
+			->editor_settings( [ 'title' => 'Content Text' ] )
+			->settings( [
+				'classes'   => Classes_Prop_Type::generate( [ 'aae-content-text-element' ] ),
+				'paragraph' => Html_V3_Prop_Type::generate( [
+					'content'  => String_Prop_Type::generate( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' ),
+					'children' => [],
+				] ),
+			] )
+			->build();
+
+		$content_image = Atomic_Image::generate()
+			->editor_settings( [ 'title' => 'Content Image' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-content-image-element' ] ),
+			] )
+			->build();
+
+		// Header wrapper div
+		$header_div = Div_Block::generate()
+			->editor_settings( [ 'title' => 'Header' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-element' ] ),
+			] )
+			->children( [ $header_title, $header_icon_open, $header_icon_close ] )
+			->build();
+
+		// Content wrapper div
+		$content_div = Div_Block::generate()
+			->editor_settings( [ 'title' => 'Content' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-content-element' ] ),
+			] )
+			->children( [ $content_text, $content_image ] )
+			->build();
+
+		return [ $header_div, $content_div ];
+	}
+
+	protected function define_allowed_child_types() {
+		return [ 'widget', 'e-paragraph', 'e-svg', 'e-image', 'e-heading', 'e-button' ];
 	}
 
 	protected function define_atomic_style_states(): array {

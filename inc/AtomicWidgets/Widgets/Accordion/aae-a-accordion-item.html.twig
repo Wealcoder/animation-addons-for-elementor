@@ -1,5 +1,6 @@
 {% set is_active_class = settings.is_active ? 'active' : '' %}
 {% set classes = ['aae-a-accordion-item', 'e-con', 'e-atomic-element', base_styles.base, is_active_class] | merge(settings.classes | default([])) | join(' ') %}
+
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
@@ -16,26 +17,41 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
+
+    {# Hidden container for children injection by Elementor #}
+    <div class="aae-children-injector" style="display: none;">
+        {{ children_placeholder | raw }}
+    </div>
+
+    {# Header Div - Clickable area #}
     {% set heading_tag = settings.title_html_tag | default('div') %}
     <{{ heading_tag }} class="aae-accordion-title-wrapper" style="margin: 0; padding: 0;">
-        <button class="aae-accordion-header {{ base_styles.header | default('') }}" 
+        <button class="aae-accordion-header {{ base_styles.header | default('') }}"
+            type="button"
             aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
             aria-controls="aae-accordion-content-{{ id }}"
-            id="aae-accordion-header-{{ id }}">
-            <span class="aae-accordion-title">{{ settings.item_title | default('') }}</span>
-            <span class="aae-accordion-icon {{ base_styles.icon | default('') }}" style="display: flex; align-items: center; justify-content: center;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="aae-icon-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </span>
+            id="aae-accordion-header-{{ id }}"
+            style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 15px 20px; background: transparent; border: none; cursor: pointer;">
+
+            {# Header Div_Block (Title + Icon) injected here — the icon IS the toggle #}
+            <div class="aae-header-content" style="display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0;"></div>
         </button>
     </{{ heading_tag }}>
-    
+
+    {# Content Div #}
     <div id="aae-accordion-content-{{ id }}"
-         class="aae-accordion-content-wrapper" 
-         role="region" 
-         aria-labelledby="aae-accordion-header-{{ id }}">
-        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="min-height: 0; overflow: hidden;">
-            {{ children_placeholder | raw }}
-        </div>
+         class="aae-accordion-content-wrapper"
+         role="region"
+         aria-labelledby="aae-accordion-header-{{ id }}"
+         style="overflow: hidden;">
+        {# Content Div_Block (Text + Image) - injected here by JS #}
+        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="display: flex; flex-direction: column; gap: 15px;"></div>
     </div>
 </div>
+
+{# Child distribution (moving the Header/Content Div_Blocks out of the hidden
+   injector into their slots) is handled by the enqueued accordion.js bundle, so
+   it runs in both the editor preview and the frontend. An inline <script> here
+   would not run on the editor's client-side twig render — and it also prevented
+   the editor's twig compiler from emitting the static .aae-accordion-header
+   <button>, causing an editor/frontend design mismatch. #}
