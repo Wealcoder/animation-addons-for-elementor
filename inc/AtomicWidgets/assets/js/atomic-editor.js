@@ -26,7 +26,7 @@
 		}
 
 		state.initialized = true;
-		installRunWrapper();
+		//installRunWrapper();
 
 		console.log('AAE Atomic Slider Editor Bridge installed');
 	}
@@ -39,6 +39,20 @@
 		state.originalRun = window.$e.run.bind(window.$e);
 
 		function wrappedRun(command, args = {}, ...rest) {
+			// Suppress Elementor's re-render for any settings change on an
+			// accordion or anything nested inside it. Re-rendering rebuilds the
+			// accordion from the twig, flickers, and drops open/closed state. We
+			// force render off, then mirror the live-able settings onto the
+			// preview DOM so the change is visible without a render.
+			if (command === 'document/elements/settings') {
+				const handled = maybeHandleAccordionLiveSettings(args);
+				if (handled) {
+					const result = state.originalRun(command, args, ...rest);
+					applyAccordionLiveSettings(handled);
+					return result;
+				}
+			}
+
 			const shouldHandle = shouldHandleCommand(command);
 			const beforeContext = shouldHandle
 				? captureBeforeContext(command, args)
@@ -86,6 +100,163 @@
 			'document/elements/import',
 			'document/repeater/insert',
 		].includes(command);
+	}
+
+	/* ------------------------------------------------------------------ *
+	 * Accordion: suppress ALL settings-driven editor re-renders
+	 *
+	 * Re-rendering an accordion in the editor rebuilds it from the twig,
+	 * re-distributes its children, flickers, and drops open/closed state. We
+	 * don't want that while editing. For every settings change on the accordion
+	 * itself OR on any element nested inside it, we tell Elementor to persist
+	 * the value but skip rendering (render/renderUI off).
+	 *
+	 * Pure-presentation settings that the runtime reads from the DOM are also
+	 * mirrored onto the live preview so the change is visible without a render:
+	 *   - parent: default_state, max_items_expanded, gap
+	 *   - child item: is_active (open/closed state)
+	 * Other settings persist to the model and show on save/reload.
+	 * ------------------------------------------------------------------ */
+
+	// Parent (accordion) live settings -> how to apply to the accordion element.
+	// `attr` is the data-attribute the runtime reads; `style` patches inline style.
+	const ACCORDION_LIVE_SETTINGS = {
+		default_state:      { attr: 'data-default-state' },
+		max_items_expanded: { attr: 'data-max-items-expanded' },
+		gap:                { style: (el, v) => { el.style.gap = (parseFloat(v) || 0) + 'px'; } },
+	};
+
+	// Unwrap an atomic transformable envelope ({ $$type, value }) to its scalar.
+	function unwrapPropValue(raw) {
+		if (raw && typeof raw === 'object' && '$$type' in raw) {
+			return raw.value;
+		}
+		return raw;
+	}
+
+	// Walk up the container tree; return the nearest accordion container id, or
+	// null. Used so that editing ANY descendant of an accordion also skips the
+	// accordion's re-render.
+	function findAccordionAncestorId(container) {
+		let current = container;
+		let guard = 0;
+
+		while (current && guard < 100) {
+			if (getElementType(current) === ACCORDION_TYPE) {
+				return getContainerId(current);
+			}
+			current = getParentContainer(current);
+			guard += 1;
+		}
+
+		return null;
+	}
+
+	// If this settings command targets an accordion (or anything inside one),
+	// force render off and return a descriptor for the optional DOM patch.
+	// Returns null when the command is unrelated to any accordion.
+	function maybeHandleAccordionLiveSettings(args) {
+		const settings = args?.settings;
+		if (!settings || typeof settings !== 'object') {
+			return null;
+		}
+
+		const keys = Object.keys(settings);
+		if (!keys.length) {
+			return null;
+		}
+
+		const container = args?.container;
+		if (!container) {
+			return null;
+		}
+
+		const accordionId = findAccordionAncestorId(container);
+		if (!accordionId) {
+			return null;
+		}
+
+		// Persist the value but skip rendering for the whole accordion subtree.
+		args.options = Object.assign({}, args.options, {
+			render: false,
+			renderUI: false,
+		});
+
+		const containerType = getElementType(container);
+		const containerId = getContainerId(container);
+
+		// Accordion parent: collect the live-able presentation settings to mirror.
+		if (containerType === ACCORDION_TYPE) {
+			const values = {};
+			keys.forEach((key) => {
+				if (key in ACCORDION_LIVE_SETTINGS) {
+					values[key] = unwrapPropValue(settings[key]);
+				}
+			});
+			return { kind: 'parent', accordionId, values };
+		}
+
+		// Accordion item: mirror is_active (open/closed) to the live DOM.
+		if (containerType === ITEM_TYPE && 'is_active' in settings) {
+			return {
+				kind: 'item',
+				accordionId,
+				itemId: containerId,
+				isActive: !!unwrapPropValue(settings.is_active),
+			};
+		}
+
+		// Deeper descendant (header/content widget, title text, …): no DOM mirror
+		// available, but the render is still suppressed above.
+		return { kind: 'none', accordionId };
+	}
+
+	function applyAccordionLiveSettings(handled) {
+		const previewWindow = getPreviewWindow();
+		if (!previewWindow) {
+			return;
+		}
+
+		if (handled.kind === 'item') {
+			if (handled.itemId && previewWindow.AAEAccordion?.setItemActive) {
+				previewWindow.AAEAccordion.setItemActive(handled.itemId, handled.isActive);
+			}
+			return;
+		}
+
+		if (handled.kind !== 'parent') {
+			return;
+		}
+
+		const el = previewWindow.document.querySelector(
+			'.aae-a-accordion[data-id="' + handled.accordionId + '"]'
+		);
+		if (!el) {
+			return;
+		}
+
+		Object.keys(handled.values).forEach((key) => {
+			const def = ACCORDION_LIVE_SETTINGS[key];
+			const value = handled.values[key];
+			if (!def || value === undefined || value === null) {
+				return;
+			}
+			if (def.style) {
+				def.style(el, value);
+			} else if (def.attr) {
+				el.setAttribute(def.attr, String(value));
+			}
+		});
+
+		// default_state is consumed once (applyDefaultState guards with
+		// data-aae-state-applied). Re-arm it so the runtime re-seeds open/closed
+		// state from the new default on the next observer tick.
+		if ('default_state' in handled.values) {
+			el.removeAttribute('data-aae-state-applied');
+			if (previewWindow.AAEAccordion?.applyDefaultState) {
+				previewWindow.AAEAccordion.applyDefaultState(el);
+			}
+		}
 	}
 
 	function captureBeforeContext(command, args = {}) {

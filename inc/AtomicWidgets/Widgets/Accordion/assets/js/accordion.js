@@ -298,7 +298,7 @@ const initAccordion = (container) => {
     installDelegatedToggle(container.ownerDocument);
     distributeAll(container);
     applyDefaultState(container);
-    observeContainer(container);
+    serveContainer(container);
 };
 
 register({
@@ -329,3 +329,55 @@ const bootstrap = (doc) => {
 };
 
 bootstrap(document);
+
+/* ------------------------------------------------------------------ *
+ * Editor bridge control surface (window.AAEAccordion)
+ *
+ * The editor bridge (atomic-editor.js) suppresses Elementor's re-render for
+ * accordion settings and instead patches the preview DOM in place. These
+ * helpers let it re-seed / toggle live state without a re-render.
+ * ------------------------------------------------------------------ */
+
+const findItemById = (id) => {
+    if (!id) return null;
+    return document.querySelector('.aae-a-accordion-item[data-id="' + id + '"]');
+};
+
+// Re-seed open/closed state from the parent's `default_state` (used when the
+// parent setting changes). `applyDefaultState` guards with
+// `data-aae-state-applied`, so clear it first to force a fresh seed.
+const reseedDefaultState = (container) => {
+    if (!container) return;
+    delete container.dataset.aaeStateApplied;
+    // Forget remembered open state for THIS accordion's items only, so other
+    // accordions on the page keep their state.
+    container.querySelectorAll('.aae-a-accordion-item').forEach((item) => {
+        const id = itemId(item);
+        if (id) openItems.delete(id);
+    });
+    applyDefaultState(container);
+};
+
+// Set a single item active/inactive live (used when the child item's
+// `is_active` setting changes). Honours the parent's max_items_expanded so
+// turning one on closes siblings when only one may stay open.
+const setItemActiveById = (id, active) => {
+    const item = findItemById(id);
+    if (!item) return;
+
+    const accordion = item.closest('.aae-a-accordion');
+    const maxItemsExpanded = accordion ? (accordion.dataset.maxItemsExpanded || 'one') : 'one';
+
+    if (active && maxItemsExpanded === 'one' && accordion) {
+        accordion.querySelectorAll('.aae-a-accordion-item.active').forEach((other) => {
+            if (other !== item) setItemActive(other, false, true);
+        });
+    }
+
+    setItemActive(item, !!active, true);
+};
+
+// Published on the preview iframe's window so the editor bridge can reach it.
+window.AAEAccordion = window.AAEAccordion || {};
+window.AAEAccordion.applyDefaultState = reseedDefaultState;
+window.AAEAccordion.setItemActive = setItemActiveById;
