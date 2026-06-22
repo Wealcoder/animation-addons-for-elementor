@@ -184,7 +184,7 @@
 .elementor-editor-active {
     .aae-a-accordion-item .aae-content-element {
         opacity: 0;
-        height:0px;
+        display:none;
         transform: translateY(-8px);
         transition:
             opacity var(--aae-accordion-speed, 400ms) ease,
@@ -193,7 +193,7 @@
 
     .aae-a-accordion-item.active .aae-content-element {
         opacity: 1;
-    
+        display: block;
         transform: translateY(0);
     }
 }

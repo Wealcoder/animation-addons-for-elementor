@@ -168,11 +168,13 @@
    content Div_Block (.aae-content-element) based on the item's .active state. */
 .elementor-editor-active .aae-a-accordion-item .aae-content-element {
   opacity: 0;
+  display: none;
   transform: translateY(-8px);
   transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease;
 }
 .elementor-editor-active .aae-a-accordion-item.active .aae-content-element {
   opacity: 1;
+  display: block;
   transform: translateY(0);
 }
 /*# sourceMappingURL=accordion.css.map */
