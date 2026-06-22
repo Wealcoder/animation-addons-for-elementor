@@ -23,6 +23,7 @@
 		.before_label,
 		.after_label {
 			cursor: pointer;
+			color: var( --aae-ts-label-color );
 		}
 	}
 
@@ -42,8 +43,8 @@
 			display: inline-block;
 			width: var( --switcher-width );
 			height: 20px;
-			background-color: #999999;
-			border: var( --switcher-border-width ) solid #999999;
+			background-color: var( --aae-ts-switcher-bg, #999999 );
+			border: var( --switcher-border-width ) solid var( --aae-ts-switcher-bg, #999999 );
 			border-radius: 10px;
 			position: relative;
 			cursor: pointer;
@@ -55,7 +56,7 @@
 				left: 0;
 				width: var( --switcher-indicator-width );
 				height: var( --switcher-indicator-width );
-				background-color: #ffffff;
+				background-color: var( --aae-ts-indicator-color, #ffffff );
 				border-radius: 50%;
 				transition: transform 0.3s;
 				transform: translate( 0px, -50% );
@@ -63,8 +64,8 @@
 		}
 
 		input[type="checkbox"]:checked + .switcher {
-			background-color: #000;
-			border-color: #000;
+			background-color: var( --aae-ts-switcher-active-bg, #000 );
+			border-color: var( --aae-ts-switcher-active-bg, #000 );
 
 			&::before {
 				transform: translate(
@@ -94,7 +95,7 @@
 				position: absolute;
 				left: 0;
 				top: 0;
-				background-color: #000;
+				background-color: var( --aae-ts-label-active-bg, #000 );
 				z-index: -1;
 				opacity: 0;
 				visibility: hidden;
@@ -102,7 +103,7 @@
 			}
 
 			&.active {
-				color: #fff;
+				color: var( --aae-ts-label-active-color, #fff );
 
 				&::after {
 					opacity: 1;

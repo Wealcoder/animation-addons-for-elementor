@@ -49,11 +49,17 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
-			'classes'         => Classes_Prop_Type::make()->default( [] ),
-			'attributes'      => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'ts_style'        => String_Prop_Type::make()->enum( [ '1', '2' ] )->default( '1' ),
-			'ts_label_before' => String_Prop_Type::make()->default( 'Monthly' ),
-			'ts_label_after'  => String_Prop_Type::make()->default( 'Yearly' ),
+			'classes'               => Classes_Prop_Type::make()->default( [] ),
+			'attributes'            => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'ts_style'              => String_Prop_Type::make()->enum( [ '1', '2' ] )->default( '1' ),
+			'ts_label_before'       => String_Prop_Type::make()->default( 'Monthly' ),
+			'ts_label_after'        => String_Prop_Type::make()->default( 'Yearly' ),
+			'ts_label_color'        => String_Prop_Type::make()->default( '' ),
+			'ts_label_active_color' => String_Prop_Type::make()->default( '' ),
+			'ts_label_active_bg'    => String_Prop_Type::make()->default( '' ),
+			'ts_switcher_bg'        => String_Prop_Type::make()->default( '' ),
+			'ts_switcher_active_bg' => String_Prop_Type::make()->default( '' ),
+			'ts_indicator_color'    => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -75,6 +81,29 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 
 					Text_Control::bind_to( 'ts_label_after' )
 						->set_label( __( 'Label After', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'ts_colors' )
+				->set_label( __( 'Tab Button Colors', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Text_Control::bind_to( 'ts_label_color' )
+						->set_label( __( 'Label Color', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_label_active_color' )
+						->set_label( __( 'Active Label Color', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_label_active_bg' )
+						->set_label( __( 'Active Label Background', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_switcher_bg' )
+						->set_label( __( 'Switcher Background (Off)', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_switcher_active_bg' )
+						->set_label( __( 'Switcher Background (On)', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_indicator_color' )
+						->set_label( __( 'Switcher Indicator Color', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
