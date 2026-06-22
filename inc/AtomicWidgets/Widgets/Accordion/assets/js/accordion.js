@@ -220,9 +220,18 @@ const installDelegatedToggle = (doc) => {
             if (!item) return;
 
             if (isEditor(item)) {
-                // In the editor, ONLY the header element (title + icon) toggles,
-                // so the rest of the item stays clickable for selection/editing.
+                // In the editor, toggle ONLY on the bare header element area.
                 if (!e.target.closest('.aae-header-element')) return;
+
+                // …but ignore clicks that land on the inner child widgets
+                // (title paragraph, open/close icons) so those stay selectable
+                // and editable instead of toggling the item.
+                if (
+                    e.target.closest('.aae-header-title-element') ||
+                    e.target.closest('.aae-header-icon-element')
+                ) {
+                    return;
+                }
             } else {
                 // On the frontend, toggle on clicks anywhere in the item EXCEPT
                 // inside the content area — otherwise interacting with the open
