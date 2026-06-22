@@ -1261,8 +1261,6 @@ final class Atomic
 			'script_handle' => 'aae-a-countdown-js',
 			'script_path'   => '/assets/atomic/js/countdown.js',
 			'has_script'    => true,
-			// Layout, container, and unit styles all live in
-			// define_base_styles() / Twig inline <style>. No external CSS.
 		],
 		'aae-a-countdown-unit' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
