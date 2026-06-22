@@ -110,6 +110,14 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 						->set_label( __( 'FAQ Schema', 'animation-addons-for-elementor' ) ),
 				] ),
 
+			// "Items" section — a panel-side overview of the accordion's child
+			// items. The clickable child rows are injected by the editor bridge
+			// (atomic-editor.js); this section is the anchor it targets by label.
+			// Clicking a row opens the Structure panel and selects that child.
+			Section::make()
+				->set_id( 'items' )
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) ),
+
 			Section::make()
 				->set_id( 'behavior_settings' )
 				->set_label( __( 'Behavior', 'animation-addons-for-elementor' ) )

@@ -9,6 +9,27 @@ const openItems = new Set();
 
 const itemId = (item) => item.getAttribute('data-id') || item.id || '';
 
+// True when running inside the Elementor editor preview. Elementor toggles
+// between `elementor-editor-active` and `elementor-editor-preview` on the
+// preview body (e.g. when selecting an element), so accept either; also fall
+// back to detecting the editor's preview iframe.
+const isEditor = (node) => {
+    const doc = node?.ownerDocument || document;
+    const win = doc.defaultView || window;
+    const body = doc.body;
+    if (body && (
+        body.classList.contains('elementor-editor-active') ||
+        body.classList.contains('elementor-editor-preview')
+    )) {
+        return true;
+    }
+    try {
+        return win !== win.parent && !!win.parent.elementor;
+    } catch (e) {
+        return false;
+    }
+};
+
 // Measure the wrapper's natural (fully-expanded) pixel height reliably — even
 // in the editor where scrollHeight is flaky mid-render. We temporarily disable
 // the transition and un-clip max-height, read the layout height, then restore
@@ -198,10 +219,16 @@ const installDelegatedToggle = (doc) => {
             const item = e.target.closest('.aae-a-accordion-item');
             if (!item) return;
 
-            // Toggle on clicks anywhere in the item EXCEPT inside the content
-            // area — otherwise interacting with (or editing) the open content
-            // would collapse it.
-            if (e.target.closest('.aae-accordion-content-wrapper')) return;
+            if (isEditor(item)) {
+                // In the editor, ONLY the header element (title + icon) toggles,
+                // so the rest of the item stays clickable for selection/editing.
+                if (!e.target.closest('.aae-header-element')) return;
+            } else {
+                // On the frontend, toggle on clicks anywhere in the item EXCEPT
+                // inside the content area — otherwise interacting with the open
+                // content would collapse it.
+                if (e.target.closest('.aae-accordion-content-wrapper')) return;
+            }
 
             e.preventDefault();
             toggleItem(item);
