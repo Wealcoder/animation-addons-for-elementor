@@ -13,7 +13,15 @@
      {% endif %}
      {{ editor_attributes | default('') | raw }}>
 
-    <div class="slide-toggle-wrapper">
+    {% set ts_style_vars = '' %}
+    {% if settings.ts_label_color        is defined and settings.ts_label_color        is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-color:'        ~ settings.ts_label_color        ~ ';' %}{% endif %}
+    {% if settings.ts_label_active_color is defined and settings.ts_label_active_color is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-active-color:' ~ settings.ts_label_active_color ~ ';' %}{% endif %}
+    {% if settings.ts_label_active_bg    is defined and settings.ts_label_active_bg    is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-active-bg:'    ~ settings.ts_label_active_bg    ~ ';' %}{% endif %}
+    {% if settings.ts_switcher_bg        is defined and settings.ts_switcher_bg        is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-switcher-bg:'        ~ settings.ts_switcher_bg        ~ ';' %}{% endif %}
+    {% if settings.ts_switcher_active_bg is defined and settings.ts_switcher_active_bg is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-switcher-active-bg:' ~ settings.ts_switcher_active_bg ~ ';' %}{% endif %}
+    {% if settings.ts_indicator_color    is defined and settings.ts_indicator_color    is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-indicator-color:'    ~ settings.ts_indicator_color    ~ ';' %}{% endif %}
+
+    <div class="slide-toggle-wrapper"{% if ts_style_vars is not empty %} style="{{ ts_style_vars }}"{% endif %}>
         <label for="ts-{{ id }}" class="before_label active">
             {{ settings.ts_label_before | default('Monthly') | e }}
         </label>
