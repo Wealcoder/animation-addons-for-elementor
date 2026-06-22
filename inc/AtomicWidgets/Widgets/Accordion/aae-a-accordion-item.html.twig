@@ -49,60 +49,9 @@
     </div>
 </div>
 
-{# Script to distribute the two Div_Blocks into header and content #}
-<script>
-(function(){
-    function distributeChildren(item) {
-        if (!item || item.dataset.aaeDistributed === 'true') return;
-
-        const injector = item.querySelector(':scope > .aae-children-injector');
-        if (!injector) return;
-
-        const headerContent = item.querySelector('.aae-header-content');
-        const contentArea = item.querySelector('.aae-accordion-content');
-
-        if (!headerContent || !contentArea) return;
-
-        const children = Array.from(injector.children).filter(child =>
-            child.classList.contains('elementor-element') ||
-            child.classList.contains('e-con') ||
-            child.classList.contains('e-widget') ||
-            child.hasAttribute('data-element_type')
-        );
-
-        if (children.length === 0) return;
-
-        // children[0] = Header Div_Block, children[1] = Content Div_Block
-        children.forEach((child, index) => {
-            if (index === 0) {
-                headerContent.appendChild(child);
-            } else {
-                contentArea.appendChild(child);
-            }
-        });
-
-        item.dataset.aaeDistributed = 'true';
-    }
-
-    document.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
-
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                    if (node.classList?.contains('aae-a-accordion-item')) {
-                        distributeChildren(node);
-                    } else {
-                        const item = node.closest?.('.aae-a-accordion-item');
-                        if (item) distributeChildren(item);
-                    }
-                }
-            });
-        });
-    });
-
-    document.querySelectorAll('.aae-a-accordion').forEach(accordion => {
-        observer.observe(accordion, { childList: true, subtree: true });
-    });
-})();
-</script>
+{# Child distribution (moving the Header/Content Div_Blocks out of the hidden
+   injector into their slots) is handled by the enqueued accordion.js bundle, so
+   it runs in both the editor preview and the frontend. An inline <script> here
+   would not run on the editor's client-side twig render — and it also prevented
+   the editor's twig compiler from emitting the static .aae-accordion-header
+   <button>, causing an editor/frontend design mismatch. #}

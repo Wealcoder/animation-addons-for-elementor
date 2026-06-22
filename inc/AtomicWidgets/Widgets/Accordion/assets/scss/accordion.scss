@@ -48,9 +48,6 @@
         background: transparent;
         border: none;
         cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
         text-align: left;
         transition: background-color 0.3s ease;
 
@@ -184,16 +181,26 @@
 .elementor-editor-active {
     .aae-a-accordion-item .aae-content-element {
         opacity: 0;
-        display:none;
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
         transform: translateY(-8px);
         transition:
             opacity var(--aae-accordion-speed, 400ms) ease,
-            transform var(--aae-accordion-speed, 400ms) ease;
+            transform var(--aae-accordion-speed, 400ms) ease,
+            max-height var(--aae-accordion-speed, 400ms) ease,
+            visibility 0s linear var(--aae-accordion-speed, 400ms);
     }
 
     .aae-a-accordion-item.active .aae-content-element {
         opacity: 1;
-        display: block;
+        visibility: visible;
+        max-height: 1000px; // any value safely larger than your content
         transform: translateY(0);
+        transition:
+            opacity var(--aae-accordion-speed, 400ms) ease,
+            transform var(--aae-accordion-speed, 400ms) ease,
+            max-height var(--aae-accordion-speed, 400ms) ease,
+            visibility 0s;
     }
 }

@@ -30,6 +30,48 @@ const isEditor = (node) => {
     }
 };
 
+// Move the two injected Div_Blocks (Header, Content) out of the hidden
+// injector into their slots. This used to live in an inline <script> in the
+// item twig, but inline scripts don't run when Elementor compiles the twig
+// client-side in the editor — and that inline script also blocked the editor's
+// twig compiler from emitting the static markup (the .aae-accordion-header
+// <button> was missing in the editor). Running distribution from the enqueued
+// bundle fixes both: the template stays pure static markup, and distribution
+// works in the editor and on the frontend.
+const distributeChildren = (item) => {
+    if (!item || item.dataset.aaeDistributed === 'true') return;
+
+    const injector = item.querySelector(':scope > .aae-children-injector');
+    if (!injector) return;
+
+    const headerContent = item.querySelector('.aae-header-content');
+    const contentArea = item.querySelector('.aae-accordion-content');
+    if (!headerContent || !contentArea) return;
+
+    const children = Array.from(injector.children).filter((child) =>
+        child.classList.contains('elementor-element') ||
+        child.classList.contains('e-con') ||
+        child.classList.contains('e-widget') ||
+        child.hasAttribute('data-element_type')
+    );
+    if (children.length === 0) return;
+
+    // children[0] = Header Div_Block, children[1] = Content Div_Block
+    children.forEach((child, index) => {
+        if (index === 0) {
+            headerContent.appendChild(child);
+        } else {
+            contentArea.appendChild(child);
+        }
+    });
+
+    item.dataset.aaeDistributed = 'true';
+};
+
+const distributeAll = (container) => {
+    container.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
+};
+
 // Measure the wrapper's natural (fully-expanded) pixel height reliably — even
 // in the editor where scrollHeight is flaky mid-render. We temporarily disable
 // the transition and un-clip max-height, read the layout height, then restore
@@ -171,7 +213,12 @@ const observeContainer = (container) => {
     container.__aaeStateObserved = true;
 
     const win = container.ownerDocument.defaultView || window;
-    const observer = new win.MutationObserver(() => restoreState(container));
+    const observer = new win.MutationObserver(() => {
+        // A re-render rebuilds items from the twig and empties the slots, so
+        // re-distribute before restoring open state.
+        distributeAll(container);
+        restoreState(container);
+    });
     observer.observe(container, { childList: true, subtree: true });
 };
 
@@ -246,20 +293,39 @@ const installDelegatedToggle = (doc) => {
     );
 };
 
+const initAccordion = (container) => {
+    if (!container) return;
+    installDelegatedToggle(container.ownerDocument);
+    distributeAll(container);
+    applyDefaultState(container);
+    observeContainer(container);
+};
+
 register({
     elementType: 'e-aae-a-accordion',
     id: 'aae-a-accordion-handler',
     callback: ({ element }) => {
         const container = element.classList.contains('aae-a-accordion') ? element : element.querySelector('.aae-a-accordion');
-        if (!container) return;
-
-        installDelegatedToggle(container.ownerDocument);
-        applyDefaultState(container);
-        observeContainer(container);
+        initAccordion(container);
     }
 });
 
-// Fallback: ensure the delegated toggle is installed on this document even if
-// the frontend-handler callback above never runs (e.g. timing inside the
-// editor preview iframe). Delegation is idempotent via the document flag.
-installDelegatedToggle(document);
+// Fallback bootstrap for the editor preview, where the frontend-handler
+// callback may not fire. Initialise existing accordions and watch for ones
+// added later (idempotent — guarded per element/document).
+const bootstrap = (doc) => {
+    if (!doc) return;
+    installDelegatedToggle(doc);
+    doc.querySelectorAll('.aae-a-accordion').forEach(initAccordion);
+
+    if (doc.__aaeAccordionBootstrapped) return;
+    doc.__aaeAccordionBootstrapped = true;
+
+    const win = doc.defaultView || window;
+    const docObserver = new win.MutationObserver(() => {
+        doc.querySelectorAll('.aae-a-accordion').forEach(initAccordion);
+    });
+    docObserver.observe(doc.documentElement || doc.body, { childList: true, subtree: true });
+};
+
+bootstrap(document);
