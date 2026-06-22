@@ -1,130 +1,108 @@
-﻿import { register } from '@elementor/frontend-handlers';
+import { register } from '@elementor/frontend-handlers';
 
 /**
- * AAE Atomic Image Compare — simple version.
+ * AAE Atomic Image Compare — frontend handler.
  *
- * All drag/touch/keyboard interaction is handled by the native
- * <input type="range"> element. JS only:
- *   1. Listens for the range "input" event.
- *   2. Moves the slider line + thumb to the value%.
- *   3. Clips the "before" image via clip-path.
+ * The native <input type="range"> handles drag + touch + keyboard for free
+ * in both axes (writing-mode: vertical-lr rotates the control for vertical
+ * mode without changing its value semantics — top = min, bottom = max).
+ *
+ * This handler only:
+ *   1. Mirrors the range value into the `--aae-image-compare-position`
+ *      CSS variable. Everything visual — divider/thumb position AND the
+ *      clip-path direction on the Before image + Before label — reads
+ *      that variable through CSS rules scoped by `[data-direction]`, so
+ *      this handler never has to know which axis is active.
+ *   2. Toggles `data-{before,after}-label-hidden` when the handle reaches
+ *      the edges so labels fade out gracefully.
+ *   3. Suppresses track-clicks when `data-enable-click-move="no"` (drag
+ *      only — clicks revert to the pre-click value), using the right
+ *      axis for the drag-distance check.
+ *   4. Stops pointerdown from bubbling so the v4 editor's element-drag
+ *      layer doesn't intercept the slider drag inside the editor.
  */
+const CLICK_VS_DRAG_THRESHOLD_PX = 4;
+
 const initImageCompare = ( container ) => {
 	if ( container.dataset.aaeCompareReady === '1' ) return;
 	container.dataset.aaeCompareReady = '1';
 
-	const range  = container.querySelector( '[data-aae-compare-range]' );
-	const before = container.querySelector( '.aae-a-image-compare-before' );
-	const after  = container.querySelector( '.aae-a-image-compare-after' );
-	const slider = container.querySelector( '[data-aae-compare-slider]' );
-	const beforeCaption = container.querySelector( '.aae-a-image-compare-caption-before' );
-	const afterCaption = container.querySelector( '.aae-a-image-compare-caption-after' );
+	const range = container.querySelector( '[data-aae-compare-range]' );
 
 	if ( ! range ) return;
 
-	const setStyles = ( element, styles ) => {
-		if ( ! element ) return;
-		Object.entries( styles ).forEach( ( [ property, value ] ) => {
-			element.style[ property ] = value;
-		} );
-	};
-
-	setStyles( container, {
-		position: 'relative',
-		overflow: 'hidden',
-		width: '100%',
-		maxWidth: '100%',
-		display: 'grid',
-	} );
-
-	setStyles( after, {
-		gridArea: '1 / 1',
-		position: 'relative',
-		zIndex: '1',
-		width: '100%',
-		maxWidth: '100%',
-		height: 'auto',
-		display: 'block',
-		objectFit: 'cover',
-		objectPosition: '0 50%',
-		margin: '0',
-	} );
-
-	setStyles( before, {
-		gridArea: '1 / 1',
-		position: 'absolute',
-		top: '0',
-		left: '0',
-		zIndex: '2',
-		width: '100%',
-		maxWidth: '100%',
-		height: '100%',
-		display: 'block',
-		objectFit: 'cover',
-		objectPosition: '0 50%',
-		margin: '0',
-	} );
-
-	setStyles( slider, {
-		position: 'absolute',
-		top: '0',
-		height: '100%',
-	} );
-
-	setStyles( beforeCaption, {
-		position: 'absolute',
-		top: '16px',
-		left: '16px',
-		zIndex: '12',
-		margin: '0',
-		pointerEvents: 'none',
-		lineHeight: '1',
-	} );
-
-	setStyles( afterCaption, {
-		position: 'absolute',
-		top: '16px',
-		right: '16px',
-		zIndex: '12',
-		margin: '0',
-		pointerEvents: 'none',
-		lineHeight: '1',
-		textAlign: 'right',
-	} );
+	const isVertical = () => container.dataset.direction === 'vertical';
 
 	const getDefaultPosition = () => {
 		const fallback = Number( container.dataset.defaultPosition );
 		return Number.isFinite( fallback ) ? fallback : 50;
 	};
 
-	/* Initial state */
 	const update = () => {
 		const rawValue = range.value === '' ? getDefaultPosition() : Number( range.value );
-		const value = Math.min( 100, Math.max( 0, Number.isFinite( rawValue ) ? rawValue : getDefaultPosition() ) );
+		const value    = Math.min( 100, Math.max( 0, Number.isFinite( rawValue ) ? rawValue : getDefaultPosition() ) );
+
 		range.value = value;
 		container.style.setProperty( '--aae-image-compare-position', value + '%' );
 
-		if ( before ) {
-			before.style.clipPath = `inset(0 ${ 100 - value }% 0 0)`;
-			before.style.webkitClipPath = `inset(0 ${ 100 - value }% 0 0)`;
-		}
-
-		if ( beforeCaption ) {
-			beforeCaption.style.clipPath = `inset(0 ${ 100 - value }% 0 0)`;
-			beforeCaption.style.webkitClipPath = `inset(0 ${ 100 - value }% 0 0)`;
-		}
-
-		if ( slider ) {
-			slider.style.left = value + '%';
-		}
-
 		container.dataset.beforeLabelHidden = value < 12 ? 'true' : 'false';
-		container.dataset.afterLabelHidden = value > 88 ? 'true' : 'false';
+		container.dataset.afterLabelHidden  = value > 88 ? 'true' : 'false';
 	};
 
 	range.addEventListener( 'input', update );
 
-	/* Run once on load */
+	/* Click-to-move suppression. Native range fires `input` on both drag
+	   AND click — distinguish by tracking pointer movement on the relevant
+	   axis (X for horizontal, Y for vertical) between pointerdown and
+	   pointerup. Movement under the threshold → click → revert. */
+	let pointerStartCoord = null;
+	let pointerStartValue = null;
+	let pointerMoved      = false;
+
+	const getAxisCoord = ( event ) => isVertical() ? event.clientY : event.clientX;
+
+	range.addEventListener( 'pointerdown', ( event ) => {
+		pointerStartCoord = getAxisCoord( event );
+		pointerStartValue = range.value;
+		pointerMoved      = false;
+	} );
+
+	range.addEventListener( 'pointermove', ( event ) => {
+		if ( pointerStartCoord === null ) return;
+		if ( Math.abs( getAxisCoord( event ) - pointerStartCoord ) > CLICK_VS_DRAG_THRESHOLD_PX ) {
+			pointerMoved = true;
+		}
+	} );
+
+	const pointerEnd = () => {
+		if ( pointerStartCoord === null ) return;
+
+		const clickMoveDisabled = container.dataset.enableClickMove === 'no';
+		if ( clickMoveDisabled && ! pointerMoved ) {
+			range.value = pointerStartValue;
+			update();
+		}
+
+		pointerStartCoord = null;
+		pointerStartValue = null;
+		pointerMoved      = false;
+	};
+
+	range.addEventListener( 'pointerup', pointerEnd );
+	range.addEventListener( 'pointercancel', pointerEnd );
+
+	/* Editor preview: the v4 editor wraps every element with a drag layer
+	   that captures pointerdown to move the widget around the canvas. That
+	   layer eats the range input's drag, so the user ends up moving the
+	   whole widget instead of the slider. Stop pointer events from
+	   bubbling up — the range input still receives them, so drag / touch /
+	   keyboard interaction stays intact. */
+	const swallow = ( event ) => event.stopPropagation();
+	[ 'pointerdown', 'mousedown', 'touchstart', 'dragstart' ].forEach( ( eventName ) => {
+		range.addEventListener( eventName, swallow );
+	} );
+
+	/* Run once on load. */
 	update();
 };
 

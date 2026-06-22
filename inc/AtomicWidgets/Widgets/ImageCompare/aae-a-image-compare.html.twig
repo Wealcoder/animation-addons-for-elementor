@@ -1,5 +1,7 @@
 {% set classes = ['aae-a-image-compare', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
 {% set default_position = settings.default_position | default(50) %}
+{% set direction = settings.direction | default('horizontal') %}
+{% set click_move = (settings.enable_click_move is defined and settings.enable_click_move == false) ? 'no' : 'yes' %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -7,6 +9,8 @@
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
     data-default-position="{{ default_position }}"
+    data-direction="{{ direction }}"
+    data-enable-click-move="{{ click_move }}"
     style="--aae-image-compare-position: {{ default_position }}%;"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
@@ -16,37 +20,36 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
+    {#
+        The bulk of the per-element CSS now lives in PHP via
+        `define_base_styles()` compound selectors (one block per child class).
+        Only rules the v4 style schema can't carry remain here:
+            - `left: var(...)` for slider line + thumb (CSS-variable values)
+            - `transform: translate(...)` for the thumb (paired with the
+              sibling-combinator hover/active scale)
+            - sibling-combinator hover/active effects (`.range ~ .thumb`)
+            - `pointer-events`, `user-select`
+            - `cursor: ew-resize` (schema only allows `pointer`)
+            - vendor pseudo-elements (`::-webkit-slider-thumb`, `::-moz-range-thumb`)
+            - the `[data-*-label-hidden]` opacity toggles
+            - the editor element-overlay pass-through
+
+        Everything else (positioning, clip-path, dimensions, object-fit, …)
+        is emitted by the atomic styles pipeline.
+    #}
     <style>
         [data-id="{{ id }}"].aae-a-image-compare {
-            display: grid !important;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
+            user-select: none;
         }
-        [data-id="{{ id }}"] .aae-a-image-compare-before,
+
+        /* `height: auto` on the After image can't go through Size_Prop_Type
+           (no keyword support), so the rule lives here. The After image is
+           the height-defining child — `auto` lets it follow the natural
+           aspect ratio of whatever picture the user uploaded. */
         [data-id="{{ id }}"] .aae-a-image-compare-after {
-            grid-area: 1 / 1;
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            display: block;
-            object-fit: cover !important;
-            object-position: 0 50%;
+            height: auto;
         }
-        [data-id="{{ id }}"] .aae-a-image-compare-before {
-            position: absolute !important;
-            inset: 0 auto auto 0;
-            width: 100% !important;
-            height: 100% !important;
-            z-index: 2;
-            clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-            -webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-        }
-        [data-id="{{ id }}"] .aae-a-image-compare-after {
-            position: relative !important;
-            height: auto !important;
-            z-index: 1;
-        }
+
         [data-id="{{ id }}"] > .elementor-element-overlay {
             position: absolute;
             inset: 0;
@@ -56,35 +59,147 @@
         [data-id="{{ id }}"] > .elementor-element-overlay .elementor-editor-element-settings {
             pointer-events: auto;
         }
+
         [data-id="{{ id }}"] .aae-a-image-compare-caption-before,
         [data-id="{{ id }}"] .aae-a-image-compare-caption-after {
-            position: absolute !important;
-            top: 16px;
-            z-index: 12;
-            margin: 0 !important;
             pointer-events: none;
-            line-height: 1;
             transition: opacity 0.2s ease;
-        }
-        [data-id="{{ id }}"] .aae-a-image-compare-caption-before {
-            left: 16px;
-            clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-            -webkit-clip-path: inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0);
-        }
-        [data-id="{{ id }}"] .aae-a-image-compare-caption-after {
-            right: 16px;
-            text-align: right;
         }
         [data-id="{{ id }}"][data-before-label-hidden="true"] .aae-a-image-compare-caption-before,
         [data-id="{{ id }}"][data-after-label-hidden="true"] .aae-a-image-compare-caption-after {
             opacity: 0;
         }
+
+        /* ------ Horizontal direction (default) ------
+           Divider + thumb track on the X axis; clip-path crops the Before
+           image from the right. */
+        [data-id="{{ id }}"] .aae-a-image-compare-divider {
+            left: var(--aae-image-compare-position, 50%);
+            transform: translateX(-50%);
+            /* !important so the v4 editor's auto child-selection layer
+               can't re-enable pointer events on the divider / handle —
+               clicks on them must always fall through to the invisible
+               range input underneath, otherwise drag breaks in the
+               editor preview. Selection in editor: use Structure panel. */
+            pointer-events: none !important;
+        }
+
+        [data-id="{{ id }}"] .aae-a-image-compare-thumb {
+            left: var(--aae-image-compare-position, 50%);
+            transform: translate(-50%, -50%);
+            pointer-events: none !important;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        [data-id="{{ id }}"] .aae-a-image-compare__label {
+            font-size: 0;
+            line-height: 0;
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        [data-id="{{ id }}"] .aae-a-image-compare__range {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            border: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            outline: none;
+            cursor: ew-resize;
+            z-index: 20;
+            opacity: 0;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare__range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 40px;
+            height: 100%;
+            opacity: 0;
+            cursor: ew-resize;
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare__range::-moz-range-thumb {
+            width: 40px;
+            height: 100%;
+            opacity: 0;
+            border: none;
+            border-radius: 0;
+            cursor: ew-resize;
+        }
+
+        @media (hover: hover) {
+            [data-id="{{ id }}"] .aae-a-image-compare__range:hover ~ .aae-a-image-compare-thumb {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+        [data-id="{{ id }}"] .aae-a-image-compare__range:active ~ .aae-a-image-compare-thumb,
+        [data-id="{{ id }}"] .aae-a-image-compare__range:focus ~ .aae-a-image-compare-thumb {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        /* ------ Vertical direction overrides ------
+           Same `--aae-image-compare-position` variable now drives the Y
+           axis. Divider becomes a horizontal line, thumb moves up/down,
+           clip-path crops the Before image from the bottom, and the
+           native range input is rotated via `writing-mode: vertical-lr`
+           (top = min, bottom = max — matches `--position` semantics). */
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare-divider {
+            inset-block-start: var(--aae-image-compare-position, 50%);
+            inset-inline-start: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare-thumb {
+            inset-block-start: var(--aae-image-compare-position, 50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare-before,
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare-caption-before {
+            clip-path: inset(0 0 calc(100% - var(--aae-image-compare-position, 50%)) 0);
+            -webkit-clip-path: inset(0 0 calc(100% - var(--aae-image-compare-position, 50%)) 0);
+        }
+
+        /* After label sits at the bottom when stacked vertically so it
+           always anchors to the "after" side of the split. */
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare-caption-after {
+            inset-block-start: auto;
+            inset-block-end: 16px;
+            inset-inline-end: auto;
+            inset-inline-start: 16px;
+            text-align: start;
+        }
+
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare__range {
+            writing-mode: vertical-lr;
+            cursor: ns-resize;
+        }
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare__range::-webkit-slider-thumb {
+            width: 100%;
+            height: 40px;
+            cursor: ns-resize;
+        }
+        [data-id="{{ id }}"][data-direction="vertical"] .aae-a-image-compare__range::-moz-range-thumb {
+            width: 100%;
+            height: 40px;
+            cursor: ns-resize;
+        }
     </style>
 
-    {{ children_placeholder | raw }}
-
     {# Invisible range input — handles ALL drag/touch/keyboard interaction.
-       It sits above everything (z-index: 20) but is transparent. #}
+       Rendered BEFORE children_placeholder so the CSS sibling selector
+       `.range ~ .thumb` can power the hover/active effects on the
+       Atomic_Button thumb. #}
     <label class="aae-a-image-compare__label" for="aae-image-compare-range-{{ id }}">Move image comparison slider</label>
     <input type="range"
            min="0"
@@ -94,13 +209,5 @@
            id="aae-image-compare-range-{{ id }}"
            data-aae-compare-range>
 
-    {# Visual handle (draggable circle) — positioned by CSS based on range value #}
-    <div class="aae-a-image-compare__slider" data-aae-compare-slider aria-hidden="true">
-        <span class="aae-a-image-compare__thumb" data-aae-compare-thumb>
-            <svg class="aae-a-image-compare__thumb-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 18 10" fill="currentColor">
-                <path d="M12.121 4.703V.488c0-.302.384-.454.609-.24l4.42 4.214a.33.33 0 0 1 0 .481l-4.42 4.214c-.225.215-.609.063-.609-.24V4.703z"></path>
-                <path d="M5.879 4.703V.488c0-.302-.384-.454-.609-.24L.85 4.462a.33.33 0 0 0 0 .481l4.42 4.214c.225.215.609.063.609-.24V4.703z"></path>
-            </svg>
-        </span>
-    </div>
+    {{ children_placeholder | raw }}
 </div>

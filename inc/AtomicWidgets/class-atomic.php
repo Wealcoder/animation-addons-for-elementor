@@ -164,6 +164,7 @@ final class Atomic
 			'aae-a-counter-number',
 			'aae-a-accordion-item',
 			'aae-a-icon-list-item',
+			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
 		];
 		if (in_array($slug, $internal_widgets)) {
@@ -755,6 +756,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-countdown' => [
+				'label'        => 'Countdown',
+				'description'  => 'A composite countdown timer with four locked time units (days, hours, minutes, seconds) — each unit, digit, and label is an independent atomic child styleable from its own Style panel.',
+				'icon'         => 'eicon-countdown',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'countdown',
+					'timer',
+					'date',
+					'expire',
+					'atomic',
+					'composite',
+				],
+				'category'     => 'general',
+				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-countdown-unit' => [
+				'label'        => 'Countdown — Unit',
+				'description'  => 'Internal time-fragment sub-element used by Countdown (days, hours, minutes, seconds).',
+				'icon'         => 'eicon-clock-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'countdown',
+					'unit',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-button' => [
 				'label'        => 'Button',
 				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
@@ -1058,6 +1100,8 @@ final class Atomic
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
+		add_action('elementor/preview/enqueue_styles', [$this, 'enqueue_atomic_preview_styles']);
+		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_atomic_preview_scripts']);
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
 
 		// AJAX endpoints for Editor previews
@@ -1194,23 +1238,38 @@ final class Atomic
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-			'aae-a-icon-list-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
-				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
-				'has_script' => false,
-				'style_handle' => 'aae-a-icon-list-css',
-				'style_path' => '/assets/atomic/css/icon-list.css',
-			],
-			'aae-a-image-compare' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
-				'file'          => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
-				'script_handle' => 'aae-a-image-compare-js',
-				'script_path'   => '/assets/atomic/js/image-compare.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-image-compare-css',
-				'style_path'    => '/assets/atomic/css/image-compare.css',
-			],
-
+		'aae-a-icon-list-item' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+			'has_script' => false,
+			'style_handle' => 'aae-a-icon-list-css',
+			'style_path' => '/assets/atomic/css/icon-list.css',
+		],
+		'aae-a-image-compare' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+			'script_handle' => 'aae-a-image-compare-js',
+			'script_path' => '/assets/atomic/js/image-compare.js',
+			'has_script' => true,
+			// No external CSS: all per-element styles live in the widget's
+			// define_base_styles() (compound selectors) + the inline <style>
+			// block of the Twig template. No `style_handle`/`style_path`.
+		],
+		'aae-a-countdown' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
+			'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
+			'script_handle' => 'aae-a-countdown-js',
+			'script_path'   => '/assets/atomic/js/countdown.js',
+			'has_script'    => true,
+			// Layout, container, and unit styles all live in
+			// define_base_styles() / Twig inline <style>. No external CSS.
+		],
+		'aae-a-countdown-unit' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
+			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
+			'has_script' => false,
+		],
+		// Add new atomic widgets below...
 			'aae-a-button' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
 				'file'          => 'Widgets/Button/class-aae-a-button.php',
@@ -1383,6 +1442,50 @@ final class Atomic
 					[],
 					$version
 				);
+			}
+		}
+	}
+
+	/**
+	 * Enqueue every active atomic widget's stylesheet inside the editor
+	 * preview iframe.
+	 *
+	 * Why: `maybe_enqueue_widget_script()` rides on
+	 * `elementor/frontend/before_render`, which does not fire when the v4
+	 * editor renders atomic widgets through its client-side Element_Builder
+	 * pipeline. Without this hook, widgets like Image Compare whose slider
+	 * button / handle styles live only in the external CSS file render
+	 * unstyled inside the editor (frontend is unaffected).
+	 */
+	public function enqueue_atomic_preview_styles(): void {
+		$this->register_atomic_styles();
+
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['style_handle'] ) ) {
+				wp_enqueue_style( $widget_data['style_handle'] );
+			}
+		}
+	}
+
+	/**
+	 * Enqueue every active atomic widget's frontend-handlers script inside
+	 * the editor preview iframe.
+	 *
+	 * Why: The per-widget interactivity scripts (Image Compare drag,
+	 * Accordion toggle, NestedSlider, etc.) hook in via
+	 * `@elementor/frontend-handlers`. They're registered via
+	 * `elementor/atomic-widgets/frontend/loader/scripts/register` and only
+	 * `wp_enqueue_script()`'d by `maybe_enqueue_widget_script()` on the
+	 * frontend `before_render` event — that event doesn't fire for atomic
+	 * widgets rendered through the editor preview's Element_Builder
+	 * pipeline, leaving widgets unresponsive in the editor.
+	 */
+	public function enqueue_atomic_preview_scripts(): void {
+		$this->register_atomic_scripts( null );
+
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['has_script'] ) && ! empty( $widget_data['script_handle'] ) ) {
+				wp_enqueue_script( $widget_data['script_handle'] );
 			}
 		}
 	}
