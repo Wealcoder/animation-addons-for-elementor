@@ -12,7 +12,7 @@ const getSliderElementById = (id) => {
 	);
 };
 
-function read(el) {	
+function read(el) {
 	if (!el.classList.contains('aae-a-slider')) return null;
 	const cfg = configFor(el, MAP);
 
@@ -20,7 +20,7 @@ function read(el) {
 }
 
 function bind(container, config) {
-	console.log(config);
+
 	unbind(container);
 	if (!config) return;
 
@@ -29,7 +29,10 @@ function bind(container, config) {
 
 	const getSlides = () =>
 		Array.from(track.children).filter(
-			(el) => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT'
+			(el) =>
+				el.tagName !== 'STYLE' &&
+				el.tagName !== 'SCRIPT' &&
+				!el.classList.contains('elementor-element-overlay')
 		);
 
 	if (!getSlides().length) {
@@ -52,7 +55,12 @@ function bind(container, config) {
 		const effect = getEffect();
 		let spv = parseFloat(r('slidesPerView', 3));
 		const peek = getPeek();
-		if (peek > 0) {
+		// Peek shrinks each slide to reveal neighbours. When the user asks for a
+		// single centered slide it must fill the viewport and sit dead-center, so
+		// skip the peek widening in that case (otherwise the slide is narrower
+		// than the viewport and a sliver of the previous slide shows on the left).
+		const singleCentered = isCenterMode() && spv <= 1;
+		if (peek > 0 && !singleCentered) {
 			spv += (peek / 100) * 2;
 		}
 		const count = getSlides().length;
@@ -80,6 +88,7 @@ function bind(container, config) {
 		return getEffect() !== 'marquee' && (r('autoplay', false) === true || String(r('autoplay', false)) === 'true');
 	};
 	const getAutoplaySpeed = () => parseInt(r('autoplaySpeed', 3000));
+	const getAutoplayDelay = () => Math.max(0, parseInt(r('autoplayDelay', 0)) || 0);
 	const getAutoplayDirection = () => r('autoplayDirection', 'right') === 'left' ? -1 : 1;
 	const getPauseOnHover = () => r('pauseOnHover', true) !== false && String(r('pauseOnHover', true)) !== 'false';
 
@@ -163,9 +172,11 @@ function bind(container, config) {
 	let isPausedState = false;
 	let autoplayStartTime = null;
 	let autoplayProgressFrame = null;
+	let autoplayFirstStep = true;
 	let marqueeFrame = null;
 	let marqueeX = 0;
 	let lastTimestamp = null;
+	let roundTimer = null;
 
 	const localController = new AbortController();
 
@@ -173,6 +184,7 @@ function bind(container, config) {
 		localController.abort();
 		stopAutoplay();
 		stopMarquee();
+		clearTimeout(roundTimer);
 		clearTimeout(container._aaeSliderInitRetry);
 		clearTimeout(container._aaeSliderInitTimeout);
 		sliderDiv.style.perspective = '';
@@ -230,7 +242,7 @@ function bind(container, config) {
 			clonesMultiplier = 3;
 		}
 		const minClonesNeeded = (Math.max(1, Math.ceil(viewportWidth / actualOriginalWidth)) || 1) * clonesMultiplier;
-		
+
 		if (hasSeamlessLoop) {
 			// Prepend
 			for (let c = 0; c < minClonesNeeded; c++) {
@@ -284,6 +296,23 @@ function bind(container, config) {
 			}
 		}
 	}
+
+	// Editor center-mode fix: centering the active slide leaves a half-viewport
+	// gap on its left when we sit on slide 0 (no slide exists before it). The
+	// frontend hides this with seamless-loop clones, but those are off in the
+	// editor. Since the user duplicates slides for the editor preview, the
+	// natural resting slide is the second one so there is content filling the
+	// left of the centered slide. getRestIndex() is the single source of truth
+	// for this resting position — used both at init and by the Play Now round
+	// so they never fight each other.
+	const centersActiveSlide = () =>
+		isCenterMode() || ['coverflow', 'card', 'perspective'].includes(getEffect());
+	const getRestIndex = () => {
+		if (hasSeamlessLoop) return middleSetStart;
+		if (isEditorMode && centersActiveSlide() && getSlides().length > 1) return 1;
+		return 0;
+	};
+	currentIndex = getRestIndex();
 
 	// Selector elements
 	const prevBtns = sliderDiv.querySelectorAll('.aae-a-navigator-prev');
@@ -532,42 +561,42 @@ function bind(container, config) {
 		});
 
 		// Move track for non-marquee slides (including coverflow, card, perspective to center the active slide)
-			const step = getSlideWidth() + getActualGap();
-			let targetX = -(index * step);
+		const step = getSlideWidth() + getActualGap();
+		let targetX = -(index * step);
 
-			if (isCenterMode() || effect === 'coverflow' || effect === 'card' || effect === 'perspective') {
-				const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-				const offset = (viewportWidth - getSlideWidth()) / 2;
-				targetX += offset;
-			}
-			targetX = Math.round(targetX);
-			track.style.transform = `translate3d(${targetX}px, 0, 0)`;
+		if (isCenterMode() || effect === 'coverflow' || effect === 'card' || effect === 'perspective') {
+			const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
+			const offset = (viewportWidth - getSlideWidth()) / 2;
+			targetX += offset;
+		}
+		targetX = Math.round(targetX);
+		track.style.transform = `translate3d(${targetX}px, 0, 0)`;
 
-			if (hasSeamlessLoop) {
-				if (useTransition) {
-					const snapBack = (e) => {
-						if (e.target === track && e.propertyName.includes('transform')) {
-							track.removeEventListener('transitionend', snapBack);
-							if (currentIndex < middleSetStart || currentIndex >= middleSetStart + originalSlidesCount) {
-								const offset = currentIndex % originalSlidesCount;
-								currentIndex = middleSetStart + offset;
-								applyTransitions(currentIndex, false);
-								void track.offsetHeight; // Force synchronous reflow to prevent flash
-							}
-						}
-					};
-					track.addEventListener('transitionend', snapBack);
-				} else {
-					requestAnimationFrame(() => {
+		if (hasSeamlessLoop) {
+			if (useTransition) {
+				const snapBack = (e) => {
+					if (e.target === track && e.propertyName.includes('transform')) {
+						track.removeEventListener('transitionend', snapBack);
 						if (currentIndex < middleSetStart || currentIndex >= middleSetStart + originalSlidesCount) {
 							const offset = currentIndex % originalSlidesCount;
 							currentIndex = middleSetStart + offset;
 							applyTransitions(currentIndex, false);
 							void track.offsetHeight; // Force synchronous reflow to prevent flash
 						}
-					});
-				}
+					}
+				};
+				track.addEventListener('transitionend', snapBack);
+			} else {
+				requestAnimationFrame(() => {
+					if (currentIndex < middleSetStart || currentIndex >= middleSetStart + originalSlidesCount) {
+						const offset = currentIndex % originalSlidesCount;
+						currentIndex = middleSetStart + offset;
+						applyTransitions(currentIndex, false);
+						void track.offsetHeight; // Force synchronous reflow to prevent flash
+					}
+				});
 			}
+		}
 	};
 
 	const goToSlide = (index, useTransition = true) => {
@@ -597,7 +626,19 @@ function bind(container, config) {
 	const tickAutoplay = (timestamp) => {
 		if (!autoplayStartTime) autoplayStartTime = timestamp;
 		const elapsed = timestamp - autoplayStartTime;
-		const duration = getAutoplaySpeed();
+		// First step waits the configured Start Delay (0 = immediate); every
+		// step after that uses the normal autoplay speed.
+		const duration = autoplayFirstStep ? getAutoplayDelay() : getAutoplaySpeed();
+
+		// A zero-duration first step means "advance immediately" — skip the
+		// progress math (which would divide by zero) and move on this frame.
+		if (duration <= 0) {
+			autoplayFirstStep = false;
+			goToSlide(currentIndex + getAutoplayDirection());
+			startAutoplay();
+			return;
+		}
+
 		const pct = Math.min(1, elapsed / duration);
 
 		if (autoplayBarFill) {
@@ -616,6 +657,7 @@ function bind(container, config) {
 		if (pct < 1) {
 			autoplayProgressFrame = requestAnimationFrame(tickAutoplay);
 		} else {
+			autoplayFirstStep = false;
 			goToSlide(currentIndex + getAutoplayDirection());
 			startAutoplay();
 		}
@@ -698,6 +740,65 @@ function bind(container, config) {
 			startAutoplay();
 		}
 	};
+
+	// Editor "Play Now": run the slider through exactly one full round —
+	// advance through every slide, loop back to the first, then stop. Works
+	// regardless of the autoplay setting (autoplay only governs the live page,
+	// not this manual preview). Paced by the transition speed so each step is
+	// visible; a small settle gap is added on top.
+	const playOneRound = () => {
+		clearTimeout(roundTimer);
+		// Cancel bind()'s deferred re-center so it can't snap the position mid-round.
+		clearTimeout(container._aaeSliderInitTimeout);
+
+		if (getEffect() === 'marquee') {
+			// Marquee has no discrete slides — animate one full set width, then snap back.
+			stopMarquee();
+			const dir = getAutoplayDirection();
+			const speedSeconds = Math.max(0.1, getTransitionSpeed() / 1000);
+			const ease = easingsMap[getEasing()] || 'cubic-bezier(0.25, 1, 0.5, 1)';
+			const distance = dir === 1 ? -actualOriginalWidth : actualOriginalWidth;
+			track.style.transition = 'none';
+			track.style.transform = 'translate3d(0, 0, 0)';
+			void track.offsetHeight; // reflow so the next transition animates
+			track.style.transition = `transform ${speedSeconds}s ${ease}`;
+			track.style.transform = `translate3d(${distance}px, 0, 0)`;
+			roundTimer = setTimeout(() => {
+				track.style.transition = 'none';
+				track.style.transform = 'translate3d(0, 0, 0)';
+				marqueeX = 0;
+			}, speedSeconds * 1000 + 50);
+			return;
+		}
+
+		const slides = getSlides();
+		if (slides.length <= 1) return;
+
+		maxIndex = getMaxIndex();
+		// Start and end on the natural resting slide (index 1 in editor center
+		// mode, else 0) so the round leaves the center look exactly as it was.
+		const restIndex = getRestIndex();
+		const span = maxIndex + 1; // distinct positions 0..maxIndex
+		const stepMs = Math.max(getTransitionSpeed(), 300) + 120;
+		const wrap = (i) => ((i % span) + span) % span;
+
+		stopAutoplay();
+		goToSlide(restIndex, false); // jump to rest with no animation
+
+		// Advance one position per slide and wrap, so the final step lands back
+		// on restIndex having visited every slide once — a full circle.
+		let step = 0;
+		const stepOnce = () => {
+			step += 1;
+			goToSlide(wrap(restIndex + step), true);
+			if (step < span) {
+				roundTimer = setTimeout(stepOnce, stepMs);
+			}
+		};
+		roundTimer = setTimeout(stepOnce, stepMs);
+	};
+
+	sliderDiv._aaeSliderPlayRound = playOneRound;
 
 	// Play Pause Toggle
 	if (playPauseBtn) {
@@ -799,7 +900,7 @@ function bind(container, config) {
 		isDragging = true;
 		startDragX = e.clientX || e.touches?.[0]?.clientX || 0;
 		currentDragX = startDragX;
-		
+
 		if (getEffect() === 'marquee') {
 			stopMarquee();
 		} else {
@@ -945,11 +1046,19 @@ function bind(container, config) {
 		};
 
 		const observer = new MutationObserver((mutations) => {
-			const shouldRefresh = mutations.some((mutation) => mutation.type === 'childList');
+			const shouldRefresh = mutations.some(
+				(mutation) => mutation.type === 'childList' &&
+				[...mutation.addedNodes, ...mutation.removedNodes].some(
+					(n) => n.nodeType === 1 && !n.classList.contains('aae-slide-clone')
+				)
+			);
 			if (shouldRefresh) reInit();
 		});
 
-		observer.observe(container, { childList: true, subtree: true });
+		// Watch only the track's direct children (real slide add/remove).
+		// Avoids Elementor editor overlays (.elementor-element-overlay) inside
+		// slide content triggering a reinit on every select/deselect.
+		observer.observe(track, { childList: true });
 
 		sliderDiv._aaeSliderObserverCleanup = () => {
 			clearTimeout(debounceTimer);
@@ -976,22 +1085,41 @@ function bind(container, config) {
 }
 
 function unbind(el) {
-	if (el._aaeSliderCleanup) {
-		el._aaeSliderCleanup();
-		delete el._aaeSliderCleanup;
-	}
+	// Disconnect the MutationObserver FIRST so clone removal in _aaeSliderCleanup
+	// doesn't fire reInit on the outgoing observer before it is torn down.
 	if (el._aaeSliderObserverCleanup) {
 		el._aaeSliderObserverCleanup();
 		delete el._aaeSliderObserverCleanup;
 	}
+	if (el._aaeSliderCleanup) {
+		el._aaeSliderCleanup();
+		delete el._aaeSliderCleanup;
+	}
 	clearTimeout(el._aaeSliderInitRetry);
 	clearTimeout(el._aaeSliderInitTimeout);
+	clearTimeout(el._aaeSliderRoundKick);
 }
 
 function play(el, config) {
-	
+	// Editor "Play Now": rebind for a clean start, then run exactly one full
+	// round (advance through all slides, loop back to the first, stop) even
+	// when autoplay is off. The round driver is exposed by bind() on the
+	// slider element; bind() may defer init via a retry when slides aren't in
+	// the DOM yet, so poll briefly for the driver before giving up.
 	unbind(el);
 	bind(el, config);
+
+	let attempts = 0;
+	const startRound = () => {
+		if (typeof el._aaeSliderPlayRound === 'function') {
+			el._aaeSliderPlayRound();
+			return;
+		}
+		if (attempts++ < 20) {
+			el._aaeSliderRoundKick = setTimeout(startRound, 60);
+		}
+	};
+	requestAnimationFrame(startRound);
 }
 
 const refreshSliderById = (id, reason = 'manual') => {

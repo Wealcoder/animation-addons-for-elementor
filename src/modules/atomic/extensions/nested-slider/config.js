@@ -257,6 +257,16 @@ const config = {
 			live_change: true,
 		},
 		{
+			bind: 'autoplay_delay',
+			label: 'Start Delay (ms)',
+			control: 'number',
+			responsive: true,
+			defaultValue: 0,
+			when: showAutoplaySpeed,
+			play_group: 'aae_ns_',
+			live_change: true,
+		},
+		{
 			bind: 'autoplay_direction',
 			label: 'Autoplay Direction',
 			control: 'select',

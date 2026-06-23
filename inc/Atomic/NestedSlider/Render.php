@@ -46,6 +46,7 @@ final class Render {
 			'perspectiveOffset' => 18,
 			'autoplay'          => false,
 			'autoplaySpeed'     => 3000,
+			'autoplayDelay'     => 0,
 			'autoplayDirection' => 'right',
 			'transitionSpeed'   => 680,
 			'loop'              => false,
@@ -72,6 +73,7 @@ final class Render {
 		$this->emit_responsive( $config, $settings, Schema::NS_PERSPECTIVE_OFFSET, 'perspectiveOffset', 18, $extra_bps, static fn( $v ) => is_numeric($v) ? (float) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_AUTOPLAY, 'autoplay', false, $extra_bps, static fn( $v ) => (bool) $v );
 		$this->emit_responsive( $config, $settings, Schema::NS_AUTOPLAY_SPEED, 'autoplaySpeed', 3000, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
+		$this->emit_responsive( $config, $settings, Schema::NS_AUTOPLAY_DELAY, 'autoplayDelay', 0, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_AUTOPLAY_DIRECTION, 'autoplayDirection', 'right', $extra_bps, static fn( $v ) => is_string($v) ? $v : 'right' );
 		$this->emit_responsive( $config, $settings, Schema::NS_TRANSITION_SPEED, 'transitionSpeed', 680, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_LOOP, 'loop', false, $extra_bps, static fn( $v ) => (bool) $v );

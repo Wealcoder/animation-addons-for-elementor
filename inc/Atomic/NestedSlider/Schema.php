@@ -23,6 +23,7 @@ final class Schema {
 	const NS_PERSPECTIVE = 'aae_ns_perspective';
 	const NS_AUTOPLAY = 'aae_ns_autoplay';
 	const NS_AUTOPLAY_SPEED = 'aae_ns_autoplay_speed';
+	const NS_AUTOPLAY_DELAY = 'aae_ns_autoplay_delay';
 	const NS_AUTOPLAY_DIRECTION = 'aae_ns_autoplay_direction';
 	const NS_TRANSITION_SPEED = 'aae_ns_transition_speed';
 	const NS_LOOP = 'aae_ns_loop';
@@ -57,6 +58,7 @@ final class Schema {
 		$schema[ self::NS_PERSPECTIVE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 1200 ]);
 		$schema[ self::NS_AUTOPLAY ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => false ]);
 		$schema[ self::NS_AUTOPLAY_SPEED ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 3000 ]);
+		$schema[ self::NS_AUTOPLAY_DELAY ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0 ]);
 		$schema[ self::NS_AUTOPLAY_DIRECTION ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 'right' ]);
 		$schema[ self::NS_TRANSITION_SPEED ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 680 ]);
 		$schema[ self::NS_LOOP ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => false ]);
