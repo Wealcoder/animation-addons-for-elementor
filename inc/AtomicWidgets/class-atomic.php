@@ -166,6 +166,7 @@ final class Atomic
 			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-offcanvas-panel',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -878,6 +879,45 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-offcanvas' => [
+				'label'        => 'Offcanvas',
+				'description'  => 'Animated offcanvas drawer with trigger button and panel — vanilla JS, no GSAP.',
+				'icon'         => 'eicon-sidebar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'offcanvas',
+					'drawer',
+					'sidebar',
+					'panel',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-offcanvas-panel' => [
+				'label'        => 'Offcanvas Panel (Internal)',
+				'description'  => 'Internal locked panel container for Offcanvas.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'offcanvas panel',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1303,6 +1343,20 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-offcanvas' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
+				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
+				'script_handle' => 'aae-a-offcanvas-js',
+				'script_path'   => '/assets/atomic/js/offcanvas.js',
+				'has_script'    => true,
+			],
+
+			'aae-a-offcanvas-panel' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
 				'has_script' => false,
 			],
 
