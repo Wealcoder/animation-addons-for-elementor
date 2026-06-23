@@ -1,0 +1,40 @@
+{% set classes = ['aae-a-timeline-item', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {#
+        Pieces the v4 atomic style schema can't carry cleanly. Everything
+        else (positioning, dimensions, colors, typography) is emitted by
+        `define_base_styles()` in the PHP class.
+
+        Specifically here:
+          - `border-inline-start` shorthand for the spine (color + style +
+            width as a single CSS shorthand).
+          - The marker's absolute positioning with a NEGATIVE
+            `inset-inline-start` offset onto the spine line.
+    #}
+    <style>
+        [data-id="{{ id }}"].aae-a-timeline-item {
+            border-inline-start: 2px solid #e2e8f0;
+        }
+
+        [data-id="{{ id }}"] .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: -11px;
+        }
+    </style>
+
+    {{ children_placeholder | raw }}
+</div>
