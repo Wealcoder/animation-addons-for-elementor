@@ -3,27 +3,32 @@ namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder;
+
 
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -61,39 +66,18 @@ class AAE_A_Slider extends Atomic_Element_Base {
 		return [
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'slides_per_view' => Number_Prop_Type::make()->default( 3 ),
-			'gap' => Number_Prop_Type::make()->default( 20 ),
-			'speed' => Number_Prop_Type::make()->default( 1000 ),
-			'center_mode' => Boolean_Prop_Type::make()->default( false ),
-			'enable_3d' => Boolean_Prop_Type::make()->default( false ),
-			'perspective' => Number_Prop_Type::make()->default( 1000 ),
 		];
 	}
 
-	protected function define_atomic_controls(): array {
-		return [
+    protected function define_atomic_controls(): array {
+		return [			
 			Section::make()
-				->set_label( __( 'Slider Settings', 'animation-addons-for-elementor' ) )
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'settings' )
 				->set_items( [
-					Number_Control::bind_to( 'slides_per_view' )
-						->set_label( __( 'Slides Per View', 'animation-addons-for-elementor' ) )
-						->set_min( 1 )
-						->set_max( 10 ),
-					Number_Control::bind_to( 'gap' )
-						->set_label( __( 'Slide Gap (px)', 'animation-addons-for-elementor' ) )
-						->set_min( 0 )
-						->set_max( 100 ),
-					Number_Control::bind_to( 'speed' )
-						->set_label( __( 'Speed (ms)', 'animation-addons-for-elementor' ) )
-						->set_min( 100 ),
-					Switch_Control::bind_to( 'center_mode' )
-						->set_label( __( 'Center Mode', 'animation-addons-for-elementor' ) ),
-					Switch_Control::bind_to( 'enable_3d' )
-						->set_label( __( 'Enable 3D Effect', 'animation-addons-for-elementor' ) ),
-					Number_Control::bind_to( 'perspective' )
-						->set_label( __( '3D Perspective', 'animation-addons-for-elementor' ) )
-						->set_min( 100 )
-						->set_max( 3000 ),
+					Text_Control::bind_to( '_cssid' )
+						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
+						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
 		];
 	}
@@ -202,14 +186,41 @@ class AAE_A_Slider extends Atomic_Element_Base {
 			AAE_A_Slider_Nav_Next::generate()
 				->editor_settings( [ 'title' => 'Next Nav' ] )
 				->build(),
-			\Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make('e-aae-a-slider-pagination')
+			AAE_A_Slider_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
+				->build(),
+			AAE_A_Slider_Indicators::generate()
+				->editor_settings( [ 'title' => 'Indicators' ] )
+				->children( [
+					AAE_A_Slider_Counter::generate()
+						->editor_settings( [ 'title' => 'Slide Counter' ] )
+						->build(),
+					AAE_A_Slider_Progress::generate()
+						->editor_settings( [ 'title' => 'Progress Line' ] )
+						->build(),
+					AAE_A_Slider_Percentage::generate()
+						->editor_settings( [ 'title' => 'Progress %' ] )
+						->build(),
+				] )
 				->build(),
 		];
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-slider-track', 'e-aae-a-slider-nav-prev', 'e-aae-a-slider-nav-next', 'e-aae-a-slider-pagination' ];
+		return [
+			'e-aae-a-slider-track',
+			'e-aae-a-slider-nav-prev',
+			'e-aae-a-slider-nav-next',
+			'e-aae-a-slider-pagination',
+			'e-aae-a-slider-current',
+			'e-aae-a-slider-total',
+			'e-aae-a-slider-progress',
+			'e-aae-a-slider-percentage',
+			'e-aae-a-slider-indicators',
+			'e-aae-a-slider-counter',
+			'e-aae-a-slider-divider',
+			'e-aae-a-slider-progress-fill',
+		];
 	}
 
 	protected function get_templates(): array {
@@ -220,9 +231,5 @@ class AAE_A_Slider extends Atomic_Element_Base {
 
 	public function get_style_depends(): array {
 		return [ 'aae-a-slider-css' ];
-	}
-
-	public function get_script_depends(): array {
-		return [ 'aae-a-slider-js' ];
-	}
+	}	
 }

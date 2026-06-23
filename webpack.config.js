@@ -63,6 +63,7 @@ module.exports = {
     "modules/atomic/editor-bridge": "./src/modules/atomic/editor-bridge.js",
     // Per-effect bundles. Each is loaded conditionally by Render.php only
     // when a widget on the page actually uses that effect.
+    "modules/atomic/effects/nested-slider": "./src/modules/atomic/effects/nested-slider/index.js",
     "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation/index.js",
     "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
     "modules/atomic/effects/image-hover": "./src/modules/atomic/effects/image-hover/index.js",

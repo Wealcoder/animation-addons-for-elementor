@@ -1140,6 +1140,71 @@ function buildCustomCssConfig(settings) {
 	return cfg;
 }
 
+/* =====================================================================
+ * Nested Slider feature
+ * =================================================================== */
+
+const SLIDER_RESPONSIVE = {
+	aae_ns_effect: { configKey: 'effect', default: 'slide' },
+	aae_ns_slides_per_view: { configKey: 'slidesPerView', default: 3 },
+	aae_ns_peek: { configKey: 'peek', default: 8 },
+	aae_ns_cf_rotate: { configKey: 'cfRotate', default: 45 },
+	aae_ns_cf_depth: { configKey: 'cfDepth', default: 100 },
+	aae_ns_gap: { configKey: 'gap', default: 0 },
+	aae_ns_easing: { configKey: 'easing', default: 'power' },
+	aae_ns_center_mode: { configKey: 'centerMode', default: false },
+	aae_ns_center_scale: { configKey: 'centerScale', default: 0.85 },
+	aae_ns_enable_3d: { configKey: 'enable3d', default: false },
+	aae_ns_perspective: { configKey: 'perspective', default: 1200 },
+	aae_ns_autoplay: { configKey: 'autoplay', default: false },
+	aae_ns_autoplay_speed: { configKey: 'autoplaySpeed', default: 3000 },
+	aae_ns_autoplay_delay: { configKey: 'autoplayDelay', default: 0 },
+	aae_ns_autoplay_direction: { configKey: 'autoplayDirection', default: 'right' },
+	aae_ns_transition_speed: { configKey: 'transitionSpeed', default: 680 },
+	aae_ns_loop: { configKey: 'loop', default: false },
+	aae_ns_pause_on_hover: { configKey: 'pauseOnHover', default: true },
+	aae_ns_card_scale: { configKey: 'cardScale', default: 0.88 },
+	aae_ns_card_tilt: { configKey: 'cardTilt', default: 20 },
+	aae_ns_perspective_rotate: { configKey: 'perspectiveRotate', default: 50 },
+	aae_ns_perspective_depth: { configKey: 'perspectiveDepth', default: 250 },
+	aae_ns_perspective_offset: { configKey: 'perspectiveOffset', default: 18 },
+};
+
+function buildSliderConfig(settings) {
+	const cfg = {
+		effect: readAt(settings, 'aae_ns_effect', 'desktop', 'slide'),
+		slidesPerView: readAt(settings, 'aae_ns_slides_per_view', 'desktop', 3),
+		peek: readAt(settings, 'aae_ns_peek', 'desktop', 8),
+		cfRotate: readAt(settings, 'aae_ns_cf_rotate', 'desktop', 45),
+		cfDepth: readAt(settings, 'aae_ns_cf_depth', 'desktop', 100),
+		gap: readAt(settings, 'aae_ns_gap', 'desktop', 0),
+		easing: readAt(settings, 'aae_ns_easing', 'desktop', 'power'),
+		centerMode: readAt(settings, 'aae_ns_center_mode', 'desktop', false),
+		centerScale: readAt(settings, 'aae_ns_center_scale', 'desktop', 0.85),
+		enable3d: readAt(settings, 'aae_ns_enable_3d', 'desktop', false),
+		perspective: readAt(settings, 'aae_ns_perspective', 'desktop', 1200),
+		autoplay: readAt(settings, 'aae_ns_autoplay', 'desktop', false),
+		autoplaySpeed: readAt(settings, 'aae_ns_autoplay_speed', 'desktop', 3000),
+		autoplayDelay: readAt(settings, 'aae_ns_autoplay_delay', 'desktop', 0),
+		autoplayDirection: readAt(settings, 'aae_ns_autoplay_direction', 'desktop', 'right'),
+		transitionSpeed: readAt(settings, 'aae_ns_transition_speed', 'desktop', 680),
+		loop: readAt(settings, 'aae_ns_loop', 'desktop', false),
+		pauseOnHover: readAt(settings, 'aae_ns_pause_on_hover', 'desktop', true),
+		cardScale: readAt(settings, 'aae_ns_card_scale', 'desktop', 0.88),
+		cardTilt: readAt(settings, 'aae_ns_card_tilt', 'desktop', 20),
+		perspectiveRotate: readAt(settings, 'aae_ns_perspective_rotate', 'desktop', 50),
+		perspectiveDepth: readAt(settings, 'aae_ns_perspective_depth', 'desktop', 250),
+		perspectiveOffset: readAt(settings, 'aae_ns_perspective_offset', 'desktop', 18),
+	};
+
+	emitResponsive(cfg, settings, SLIDER_RESPONSIVE);
+
+	cfg.enabled = true;
+	cfg.enableEditor = true;
+
+	return cfg;
+}
+
 export const FEATURES = [
 	{
 		name: 'mouse-move-effect',
@@ -1256,6 +1321,15 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_custom_css_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',
 		buildConfig: buildCustomCssConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'nested-slider',
+		widgetTypes: ['e-aae-a-slider'],
+		enableSetting: null,
+		autoReplaySetting: null,
+		mapName: 'AAE_INTERACTIONS_NS',
+		buildConfig: buildSliderConfig,
 		findTarget: findByInteractionId,
 	},
 ];

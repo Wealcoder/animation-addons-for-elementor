@@ -61,6 +61,7 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_advance_tooltip_' && featureName === 'advance-tooltip') return true;
 	if (group === 'aae_tilt_' && featureName === 'tilt') return true;
 	if (group === 'aae_custom_css_' && featureName === 'custom-css') return true;
+	if (group === 'aae_ns_' && featureName === 'nested-slider') return true;
 	return false;
 }
 
