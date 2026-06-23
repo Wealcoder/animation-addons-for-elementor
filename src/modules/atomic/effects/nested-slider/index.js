@@ -26,12 +26,14 @@ function bind(container, config) {
 	const track = container.querySelector('.aae-slider-track');
 	if (!track) return;
 
+	// Real slides only. Match the slide class positively (rather than excluding
+	// known noise) so editor artifacts — element overlays, the empty-view
+	// placeholder, drag placeholders, injected <style>/<script> — are never
+	// miscounted. Loop clones are cloneNode(true) copies, so they keep the
+	// 'aae-a-slide' class and are still included on the frontend.
 	const getSlides = () =>
-		Array.from(track.children).filter(
-			(el) =>
-				el.tagName !== 'STYLE' &&
-				el.tagName !== 'SCRIPT' &&
-				!el.classList.contains('elementor-element-overlay')
+		Array.from(track.children).filter((el) =>
+			el.classList && el.classList.contains('aae-a-slide')
 		);
 
 	if (!getSlides().length) {
@@ -389,7 +391,21 @@ function bind(container, config) {
 		if (isEditorMode && centersActiveSlide() && getSlides().length > 1) return 1;
 		return 0;
 	};
-	currentIndex = getRestIndex();
+	// In the editor a re-bind happens whenever a slide re-renders (e.g. you drop
+	// content into a slide). Resetting to getRestIndex() would jump the slider
+	// away from the slide you're editing — and make the next drop target the
+	// wrong slide. Preserve the slide you were on if it's still valid.
+	const stashedIndex = sliderDiv._aaeSliderLastIndex;
+	if (
+		isEditorMode &&
+		typeof stashedIndex === 'number' &&
+		stashedIndex >= 0 &&
+		stashedIndex < getSlides().length
+	) {
+		currentIndex = stashedIndex;
+	} else {
+		currentIndex = getRestIndex();
+	}
 
 	// Selector elements
 	const prevBtns = sliderDiv.querySelectorAll('.aae-a-navigator-prev');
@@ -587,8 +603,29 @@ function bind(container, config) {
 		slides.forEach((slide, i) => {
 			const offset = i - index;
 			const absOffset = Math.abs(offset);
-			const zIndexVal = slides.length - absOffset;
-			slide.style.zIndex = zIndexVal;
+
+			// z-index only matters when slides physically overlap (center / 3D
+			// effects). For the flat 'slide' effect they sit side by side, so a
+			// stacking order here does nothing useful — and in the editor it makes
+			// the active slide sit on top, which can steal a drop meant for the
+			// slide under the cursor (this is why a drop sometimes landed in the
+			// last slide). Keep it for overlapping effects; clear it otherwise.
+			if (effectCenters()) {
+				slide.style.zIndex = slides.length - absOffset;
+			} else {
+				slide.style.zIndex = '';
+			}
+
+			// Editor-only: in centered/3D effects slides physically overlap, and a
+			// drop is hit-tested by stacking — so a dropped widget can land in the
+			// wrong (top-most / last) slide instead of the active one. Make only the
+			// active slide accept pointer/drop events. Skipped for the flat 'slide'
+			// effect where slides sit side by side and every visible slide must stay
+			// droppable; and never on the frontend (links inside non-active slides
+			// must keep working as the slider rotates).
+			if (isEditorMode && effectCenters()) {
+				slide.style.pointerEvents = offset === 0 ? 'auto' : 'none';
+			}
 
 			if (effect === 'coverflow') {
 				const p = getPerspective();
@@ -690,8 +727,27 @@ function bind(container, config) {
 		}
 
 		currentIndex = index;
+		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
+	};
+
+	// Editor-only: bring a specific slide fully into view for EDITING. Unlike
+	// goToSlide(), this bypasses the navigation maxIndex clamp — in a flat
+	// multi-slidesPerView layout goToSlide(lastIndex) would clamp short (you
+	// can't scroll past the end), leaving the last slide half-off-screen and
+	// undroppable. computeTargetX() left-aligns the requested slide, so even the
+	// last one is fully revealed (a little blank space on the right is fine in
+	// the editor). Counter/indicators follow the real index so they stay in sync.
+	const revealSlide = (index) => {
+		if (getEffect() === 'marquee') return;
+		const slides = getSlides();
+		if (!slides.length) return;
+		index = Math.max(0, Math.min(index, slides.length - 1));
+		currentIndex = index;
+		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
+		updateNavigationIndicators(index);
+		applyTransitions(index, true);
 	};
 
 	// Autoplay Anim Loop
@@ -736,6 +792,10 @@ function bind(container, config) {
 	};
 
 	const startAutoplay = () => {
+		// Never auto-advance inside the editor: the slide would move out from
+		// under the user while they're placing/editing content (this is what made
+		// "the slider runs when I drop something" happen on every re-bind).
+		if (isEditorMode) return;
 		if (!getAutoplay() || isPausedState) return;
 		stopAutoplay();
 		autoplayStartTime = null;
@@ -1084,6 +1144,30 @@ function bind(container, config) {
 		};
 	}
 
+	// Editor affordance: the panel's "Slides" list calls this to bring a slide
+	// into view when the user clicks a row (so the selected slide is reachable
+	// for editing). Uses revealSlide() — NOT goToSlide() — so the last slide in
+	// a multi-slidesPerView layout is fully shown instead of clamped short.
+	// Seamless loop is always off in the editor, so no middle-set remap here.
+	sliderDiv._aaeGoTo = (i) => {
+		if (getEffect() === 'marquee') return;
+		revealSlide(i);
+	};
+
+	// Belt-and-braces: the panel also broadcasts this event in case the node
+	// reference is stale (e.g. just after a re-render). Same effect as _aaeGoTo.
+	const onEditSlide = (e) => {
+		if (!e.detail || e.detail.sliderId !== (sliderDiv.dataset.id || sliderDiv.id)) return;
+		if (typeof sliderDiv._aaeGoTo === 'function') sliderDiv._aaeGoTo(e.detail.index);
+	};
+	window.addEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
+	const prevEditCleanup = sliderDiv._aaeSliderEditCleanup;
+	sliderDiv._aaeSliderEditCleanup = () => {
+		window.removeEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
+		delete sliderDiv._aaeGoTo;
+	};
+	if (typeof prevEditCleanup === 'function') prevEditCleanup();
+
 	if (getEffect() === 'marquee') {
 		track.style.transition = 'none';
 		track.style.transform = 'translate3d(0, 0, 0)';
@@ -1123,6 +1207,10 @@ function unbind(el) {
 	if (el._aaeSliderCleanup) {
 		el._aaeSliderCleanup();
 		delete el._aaeSliderCleanup;
+	}
+	if (el._aaeSliderEditCleanup) {
+		el._aaeSliderEditCleanup();
+		delete el._aaeSliderEditCleanup;
 	}
 	clearTimeout(el._aaeSliderInitRetry);
 	clearTimeout(el._aaeSliderInitTimeout);

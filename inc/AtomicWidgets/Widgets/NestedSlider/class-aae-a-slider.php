@@ -18,6 +18,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide;
+use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slides_Control;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
@@ -70,7 +71,17 @@ class AAE_A_Slider extends Atomic_Element_Base {
 	}
 
     protected function define_atomic_controls(): array {
-		return [			
+		require_once __DIR__ . '/class-aae-a-slides-control.php';
+
+		return [
+			Section::make()
+				->set_label( __( 'Slides', 'animation-addons-for-elementor' ) )
+				->set_id( 'slides' )
+				->set_items( [
+					AAE_A_Slides_Control::make()
+						->set_label( __( 'Slides', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
@@ -98,82 +109,13 @@ class AAE_A_Slider extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		$heading_id = \Elementor\Utils::generate_random_string();
-		$heading_class = 'e-' . $heading_id . '-' . \Elementor\Utils::generate_random_string();
-
-		$image_id = \Elementor\Utils::generate_random_string();
-		$image_class = 'e-' . $image_id . '-' . \Elementor\Utils::generate_random_string();
-
-		$heading_data = \Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make( 'e-heading' )
-			->settings( [
-				'classes' => [
-					'$$type' => 'classes',
-					'value' => [ $heading_class ],
-				],
-				'title' => [
-					'$$type' => 'html-v3',
-					'value' => [
-						'content' => [
-							'$$type' => 'string',
-							'value' => 'Slide 1 Heading',
-						],
-						'children' => [],
-					],
-				],
-			] )		
-			->build();
-
-		$heading_data['id'] = $heading_id;
-
-		$image_data = \Elementor\Modules\AtomicWidgets\Elements\Base\Widget_Builder::make( 'e-image' )
-			->settings( [
-				'classes' => [
-					'$$type' => 'classes',
-					'value' => [ $image_class ],
-				],
-				'image' => [
-					'$$type' => 'image',
-					'value' => [
-						'src' => [
-							'$$type' => 'image-src',
-							'value' => [
-								'id' => null,
-								'url' => [
-									'$$type' => 'url',
-									'value' => \Elementor\Utils::get_placeholder_image_src(),
-								],
-							],
-						],
-					],
-				],
-			] )			
-			->build();
-
-		$image_data['id'] = $image_id;
-
-		$slides = [
-			AAE_A_Slide::generate()
-				->editor_settings( [ 'title' => 'Slide 1' ] )
-				->children( [
-					$heading_data,
-					$image_data,
-				] )
-				->build(),
-			AAE_A_Slide::generate()
-				->editor_settings( [ 'title' => 'Slide 2' ] )
-				->children( [
-					$heading_data,
-					$image_data,
-				] )
-				->build(),
-			AAE_A_Slide::generate()
-				->editor_settings( [ 'title' => 'Slide 3' ] )
-				->children( [
-					$heading_data,
-					$image_data,
-				] )
-				->build(),
-		];
+		// Start with 5 empty slides; the user fills each one.
+		$slides = [];
+		for ( $i = 1; $i <= 5; $i++ ) {
+			$slides[] = AAE_A_Slide::generate()
+				->editor_settings( [ 'title' => 'Slide ' . $i ] )
+				->build();
+		}
 
 		return [
 			AAE_A_Slider_Track::generate()

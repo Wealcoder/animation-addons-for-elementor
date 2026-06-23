@@ -236,7 +236,7 @@ const config = {
 		{
 			tab: 'advanced',
 			bind: 'cf_rotate',
-			label: 'CF Rotate (deg)',
+			label: 'Rotate (deg)',
 			control: 'slider',
 			responsive: true,
 			defaultValue: 45,
@@ -250,7 +250,7 @@ const config = {
 		{
 			tab: 'advanced',
 			bind: 'cf_depth',
-			label: 'CF Depth (px)',
+			label: 'Depth (px)',
 			control: 'slider',
 			responsive: true,
 			defaultValue: 100,

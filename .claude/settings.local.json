@@ -16,7 +16,21 @@
       "Bash(node --check assets/build/modules/atomic/effects/nested-slider.js)",
       "Bash(node --check src/modules/atomic/effects/nested-slider/index.js)",
       "Bash(find inc/AtomicWidgets/Widgets/NestedSlider/assets -name \"*.css\")",
-      "Bash(grep -rl \"aae-slide-height\" inc/AtomicWidgets/Widgets/NestedSlider/assets/)"
+      "Bash(grep -rl \"aae-slide-height\" inc/AtomicWidgets/Widgets/NestedSlider/assets/)",
+      "Bash(xargs grep -ln \"elementorFrontend\\\\|window.parent\\\\|getPreviewWindow\\\\|preview\")",
+      "Bash(npx wp-scripts *)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(php -l inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slides-control.php)",
+      "Bash(php -l inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider.php)",
+      "Bash(php -l inc/Atomic/Assets.php)",
+      "Bash(find assets/build -path \"*nested-slider*\" -name \"*.js\")",
+      "Bash(grep -rl \"_aaeGoTo\" assets/build)",
+      "Bash(git check-ignore *)",
+      "Bash(xargs grep -ln \"deselectRecursive\")",
+      "Bash(xargs grep -n \"elements\\\\|build\\\\|elType\\\\|settings\")",
+      "Bash(xargs sed -n '40,75p')",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -ln \"localize\\\\|get_init_settings\\\\|'urls'\\\\|\\\\\"urls\\\\\"\")"
     ]
   }
 }
