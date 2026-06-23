@@ -58,12 +58,11 @@
   }
 }
 .aae-a-accordion {
-  /* Icon position */
+  /* Icon position - affects header layout.
+     Title + Icon live inside the injected .aae-header-element. */
 }
-.aae-a-accordion .aae-a-accordion-item[data-icon-pos=left] .aae-accordion-header {
+.aae-a-accordion .aae-a-accordion-item[data-icon-pos=left] .aae-header-element {
   flex-direction: row-reverse;
-  justify-content: flex-end;
-  gap: 10px;
 }
 .aae-a-accordion .aae-accordion-header {
   display: flex;
@@ -74,9 +73,6 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
   text-align: left;
   transition: background-color 0.3s ease;
 }
@@ -86,72 +82,64 @@
 .aae-a-accordion .aae-accordion-header:focus {
   outline: none;
 }
-.aae-a-accordion .aae-accordion-icon {
+.aae-a-accordion .aae-accordion-header .aae-header-content {
   display: flex;
   align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.aae-a-accordion .aae-accordion-header .aae-header-element {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 10px;
+  min-width: 0;
+}
+.aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-title-element {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
 }
-.aae-a-accordion .aae-accordion-icon svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+.aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element svg {
+  width: 100%;
+  height: 100%;
 }
-.aae-a-accordion .aae-accordion-icon svg.aae-icon-minus {
+.aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-close {
   display: none;
 }
 .aae-a-accordion {
-  /* Custom Icons via CSS Mask */
-}
-.aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus {
-  background-color: currentColor;
-  -webkit-mask-image: var(--aae-custom-expand);
-          mask-image: var(--aae-custom-expand);
-  -webkit-mask-size: contain;
-          mask-size: contain;
-  -webkit-mask-position: center;
-          mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-}
-.aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus line, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus path, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus polygon, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus polyline, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus circle, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-expand"] .aae-icon-plus rect {
-  display: none;
-}
-.aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus {
-  background-color: currentColor;
-  -webkit-mask-image: var(--aae-custom-collapse);
-          mask-image: var(--aae-custom-collapse);
-  -webkit-mask-size: contain;
-          mask-size: contain;
-  -webkit-mask-position: center;
-          mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-}
-.aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus line, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus path, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus polygon, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus polyline, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus circle, .aae-a-accordion .aae-a-accordion-item[style*="--aae-custom-collapse"] .aae-icon-minus rect {
-  display: none;
+  /* Collapsed by default. Height is animated via max-height, driven by JS
+     (it sets an explicit px target so the transition is smooth, then settles
+     to `none` when fully open). overflow:hidden keeps content clipped while
+     collapsing. Works the same in the editor and on the frontend. */
 }
 .aae-a-accordion .aae-accordion-content-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
+  max-height: 0;
   overflow: hidden;
-  transition: grid-template-rows var(--aae-accordion-speed, 400ms) ease;
+  transition: max-height var(--aae-accordion-speed, 400ms) ease;
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content-wrapper {
-  grid-template-rows: 1fr !important;
+.aae-a-accordion {
+  /* ---------- OPEN STATE ---------- */
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-icon .aae-icon-plus {
+.aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-open {
   display: none;
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-icon .aae-icon-minus {
-  display: block;
+.aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-close {
+  display: inline-flex;
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-accordion-header {
   background: #f1f1f1;
-}
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content {
-  padding: 20px;
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content.e-con {
   --padding-top: 20px;
@@ -160,7 +148,7 @@
 .aae-a-accordion .aae-accordion-content {
   padding: 0 20px;
   transition: padding var(--aae-accordion-speed, 400ms) ease;
-  /* Inner container padding can be overridden by Elementor, but we give a default */
+  /* Inner container padding can be overridden by Elementor */
 }
 .aae-a-accordion .aae-accordion-content.e-con {
   --padding-top: 0px;
@@ -169,5 +157,25 @@
   --padding-right: 20px;
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
+}
+
+/* ---------- EDITOR ONLY ----------
+   Scoped to Elementor's editor preview (body.elementor-editor-active); these
+   rules do not apply on the published page. Smoothly reveal/hide the injected
+   content Div_Block (.aae-content-element) based on the item's .active state. */
+.elementor-editor-active .aae-a-accordion-item .aae-content-element {
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s linear var(--aae-accordion-speed, 400ms);
+}
+.elementor-editor-active .aae-a-accordion-item.active .aae-content-element {
+  opacity: 1;
+  visibility: visible;
+  max-height: 1000px;
+  transform: translateY(0);
+  transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s;
 }
 /*# sourceMappingURL=accordion.css.map */

@@ -1,0 +1,34 @@
+{% set classes = ['aae-a-offcanvas-panel', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    <style>
+        [data-id="{{ id }}"] .aae-offcanvas-close img,
+        [data-id="{{ id }}"] .aae-offcanvas-close svg {
+            display: block;
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+
+    {% set close_icon_url = settings.close_icon.url | default('') %}
+    <button class="aae-offcanvas-close" type="button" aria-label="Close panel" style="display: block; cursor: pointer; background: transparent; border: 0; color: inherit; line-height: 1; padding: 0; margin: 0 0 16px auto;">
+        {% if close_icon_url is not empty %}
+            <img src="{{ close_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
+        {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        {% endif %}
+    </button>
+
+    <div class="aae-offcanvas-panel-content e-con">
+        {{ children_placeholder | raw }}
+    </div>
+</div>
