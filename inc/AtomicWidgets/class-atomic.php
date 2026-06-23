@@ -176,6 +176,7 @@ final class Atomic
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
 			'aae-a-offcanvas-panel',
+			'aae-a-timeline-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -807,6 +808,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-timeline' => [
+				'label'        => 'Timeline',
+				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
+				'icon'         => 'eicon-time-line',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'history',
+					'roadmap',
+					'atomic',
+					'composite',
+				],
+				'category'     => 'general',
+				'order'        => 13,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline-item' => [
+				'label'        => 'Timeline — Item',
+				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'item',
+					'event',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-button' => [
 				'label'        => 'Button',
 				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
@@ -1358,6 +1400,20 @@ final class Atomic
 		'aae-a-countdown-unit' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
 			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
+			'has_script' => false,
+		],
+		'aae-a-timeline' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline',
+			'file'       => 'Widgets/Timeline/class-aae-a-timeline.php',
+			'has_script' => false,
+			// No external CSS: all per-element styles live in the widget's
+			// define_base_styles() (compound selectors) + a tiny inline
+			// <style> in the item Twig for the spine shorthand + the
+			// marker's negative-inset positioning. No `style_handle`.
+		],
+		'aae-a-timeline-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
+			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...

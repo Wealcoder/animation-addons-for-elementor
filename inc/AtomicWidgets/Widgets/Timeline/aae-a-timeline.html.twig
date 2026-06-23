@@ -1,0 +1,481 @@
+{% set classes = ['aae-a-timeline', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set preset = settings.preset | default('editorial-rail') %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-preset="{{ preset | e('html_attr') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {#
+        Preset bank — each block is scoped via [data-preset="<slug>"] so
+        only one set applies at a time. `editorial-rail` is the default and
+        needs NO overrides (it matches define_base_styles()). Per-child
+        styling from the user's Style panel always wins (inline styles
+        have higher specificity than these descendant rules).
+    #}
+    <style>
+        /* ─── HERITAGE SPLIT — warm orange ─── */
+        [data-id="{{ id }}"][data-preset="heritage-split"] {
+            max-width: 720px;
+            padding: 32px 28px;
+            background: linear-gradient(180deg, #fef9f4, #fff5e9);
+            border: 1px solid #f4ae88;
+            border-radius: 14px;
+            box-shadow: 0 18px 50px rgba(120,46,16,.10);
+        }
+        [data-id="{{ id }}"][data-preset="heritage-split"] .aae-a-timeline-item {
+            border-inline-start: 3px solid #f4ae88;
+            padding-inline-start: 42px;
+        }
+        [data-id="{{ id }}"][data-preset="heritage-split"] .aae-a-timeline-item-marker {
+            width: 36px; height: 36px;
+            inset-inline-start: -18px;
+            background: #c0502a;
+            box-shadow: 0 0 0 6px #fef9f4, 0 8px 20px rgba(192,80,42,.30);
+            font-size: 12px;
+        }
+        [data-id="{{ id }}"][data-preset="heritage-split"] .aae-a-timeline-item-date  { color: #c0502a; }
+        [data-id="{{ id }}"][data-preset="heritage-split"] .aae-a-timeline-item-title { color: #7c2d12; }
+        [data-id="{{ id }}"][data-preset="heritage-split"] .aae-a-timeline-item-desc  { color: #92400e; }
+
+        /* ─── ROADMAP TRACK — purple horizontal grid ─── */
+        [data-id="{{ id }}"][data-preset="roadmap-track"] {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1120px;
+            background: #fff;
+            border: 1px solid #ddd6fe;
+            border-radius: 14px;
+            padding: 32px 28px;
+            box-shadow: 0 28px 80px rgba(88,28,220,.10);
+        }
+        [data-id="{{ id }}"][data-preset="roadmap-track"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding-inline-start: 0;
+            padding-block-end: 0;
+            gap: 10px;
+        }
+        [data-id="{{ id }}"][data-preset="roadmap-track"] .aae-a-timeline-item-marker {
+            position: relative;
+            inset-block-start: auto;
+            inset-inline-start: auto;
+            background: #6d28d9;
+            box-shadow: 0 0 0 7px #ede9fe;
+            margin-bottom: 6px;
+        }
+        [data-id="{{ id }}"][data-preset="roadmap-track"] .aae-a-timeline-item-date  { color: #6d28d9; }
+        [data-id="{{ id }}"][data-preset="roadmap-track"] .aae-a-timeline-item-title { color: #2e1065; font-size: 18px; }
+        [data-id="{{ id }}"][data-preset="roadmap-track"] .aae-a-timeline-item-desc  { color: #4c1d95; }
+
+        /* ─── MILESTONE TILES — blue 2-col tile grid ─── */
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1120px;
+            background: transparent;
+        }
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding: 88px 22px 22px;
+            background: #fff;
+            border: 1px solid #bfdbfe;
+            border-top: 64px solid #1d4ed8;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(29,78,216,.13);
+            overflow: hidden;
+        }
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] .aae-a-timeline-item-marker {
+            inset-block-start: -52px;
+            inset-inline-start: auto;
+            inset-inline-end: 18px;
+            width: 44px; height: 44px;
+            background: #fff;
+            color: #1d4ed8;
+            box-shadow: 0 6px 16px rgba(29,78,216,.30);
+        }
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] .aae-a-timeline-item-date  {
+            color: #1d4ed8;
+            background: #dbeafe;
+            padding: 6px 12px;
+            border-radius: 999px;
+            align-self: start;
+        }
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] .aae-a-timeline-item-title { color: #0f172a; }
+        [data-id="{{ id }}"][data-preset="milestone-tiles"] .aae-a-timeline-item-desc  { color: #475569; }
+
+        /* ─── SIGNAL BOARD — dark dashboard 4-col ─── */
+        [data-id="{{ id }}"][data-preset="signal-board"] {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 1120px;
+            background: #070a10;
+            padding: 24px;
+            border-radius: 12px;
+        }
+        [data-id="{{ id }}"][data-preset="signal-board"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding: 20px;
+            background: #0d1520;
+            border: 1px solid #1a2840;
+            border-radius: 10px;
+            gap: 8px;
+        }
+        [data-id="{{ id }}"][data-preset="signal-board"] .aae-a-timeline-item-marker {
+            position: relative;
+            inset-block-start: auto;
+            inset-inline-start: auto;
+            width: 44px; height: 44px;
+            background: #2dd4bf;
+            color: #070a10;
+            box-shadow: 0 0 22px rgba(45,212,191,.30);
+            margin-bottom: 6px;
+        }
+        [data-id="{{ id }}"][data-preset="signal-board"] .aae-a-timeline-item-date  { color: #2dd4bf; }
+        [data-id="{{ id }}"][data-preset="signal-board"] .aae-a-timeline-item-title { color: #e0eaf5; font-size: 17px; }
+        [data-id="{{ id }}"][data-preset="signal-board"] .aae-a-timeline-item-desc  { color: #7a8fa3; font-size: 13px; }
+
+        /* ─── ARCHIVE BANDS — warm date-led, big year ─── */
+        [data-id="{{ id }}"][data-preset="archive-bands"] {
+            max-width: 720px;
+            background: #fdf4e7;
+            padding: 16px 22px;
+            border-radius: 10px;
+            border: 1px solid #e6d0ac;
+        }
+        [data-id="{{ id }}"][data-preset="archive-bands"] .aae-a-timeline-item {
+            border-inline-start: 2px solid #d3b07a;
+            padding-inline-start: 42px;
+            padding-block: 18px;
+            padding-block-end: 18px;
+        }
+        [data-id="{{ id }}"][data-preset="archive-bands"] .aae-a-timeline-item-marker {
+            width: 36px; height: 36px;
+            inset-inline-start: -18px;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1.5px solid #d1a040;
+            box-shadow: 0 6px 14px rgba(139,69,19,.18);
+        }
+        [data-id="{{ id }}"][data-preset="archive-bands"] .aae-a-timeline-item-date  {
+            color: #92400e;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -.04em;
+            text-transform: none;
+        }
+        [data-id="{{ id }}"][data-preset="archive-bands"] .aae-a-timeline-item-title { color: #44180a; }
+        [data-id="{{ id }}"][data-preset="archive-bands"] .aae-a-timeline-item-desc  { color: #6b5132; }
+
+        /* ─── CASE STUDY STEPS — bold navy, square marker ─── */
+        [data-id="{{ id }}"][data-preset="case-study"] {
+            max-width: 720px;
+            gap: 18px;
+        }
+        [data-id="{{ id }}"][data-preset="case-study"] .aae-a-timeline-item {
+            border-inline-start: 4px solid #0f172a;
+            padding-inline-start: 48px;
+            padding-block-end: 28px;
+        }
+        [data-id="{{ id }}"][data-preset="case-study"] .aae-a-timeline-item-marker {
+            width: 48px; height: 48px;
+            inset-inline-start: -24px;
+            background: #0f172a;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(15,23,42,.22);
+            font-size: 15px;
+        }
+        [data-id="{{ id }}"][data-preset="case-study"] .aae-a-timeline-item-date {
+            color: #fff;
+            background: #0f172a;
+            padding: 6px 12px;
+            border-radius: 999px;
+            align-self: start;
+        }
+        [data-id="{{ id }}"][data-preset="case-study"] .aae-a-timeline-item-title { color: #0f172a; font-size: 22px; }
+        [data-id="{{ id }}"][data-preset="case-study"] .aae-a-timeline-item-desc  { color: #475569; }
+
+        /* ─── DUSK — dark luxury amber glow ─── */
+        [data-id="{{ id }}"][data-preset="dusk"] {
+            max-width: 720px;
+            background: linear-gradient(180deg, #07101c, #050b14);
+            padding: 28px 24px;
+            border-radius: 14px;
+            border: 1px solid #16304c;
+        }
+        [data-id="{{ id }}"][data-preset="dusk"] .aae-a-timeline-item {
+            border-inline-start: 2px solid #1a3553;
+            padding-inline-start: 42px;
+        }
+        [data-id="{{ id }}"][data-preset="dusk"] .aae-a-timeline-item-marker {
+            width: 36px; height: 36px;
+            inset-inline-start: -18px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #1a0a00;
+            box-shadow: 0 0 0 4px #07101c, 0 0 22px rgba(245,158,11,.40);
+            font-size: 12px;
+        }
+        [data-id="{{ id }}"][data-preset="dusk"] .aae-a-timeline-item-date  { color: #fbbf24; }
+        [data-id="{{ id }}"][data-preset="dusk"] .aae-a-timeline-item-title { color: #f8fafc; }
+        [data-id="{{ id }}"][data-preset="dusk"] .aae-a-timeline-item-desc  { color: #6b8aa6; }
+
+        /* ─── AURORA — soft pastel gradient ─── */
+        [data-id="{{ id }}"][data-preset="aurora"] {
+            max-width: 720px;
+            background:
+                radial-gradient(500px 380px at 0% 0%, #fce7f3 0%, transparent 60%),
+                radial-gradient(500px 380px at 100% 100%, #dbeafe 0%, transparent 60%),
+                #fafaff;
+            padding: 28px 24px;
+            border-radius: 14px;
+        }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item {
+            border-inline-start: 3px solid transparent;
+            background: linear-gradient(180deg, #a78bfa, #f472b6, #fb923c) border-box;
+            border-image: linear-gradient(180deg, #a78bfa, #f472b6, #fb923c) 1;
+            padding-inline-start: 42px;
+        }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item-marker {
+            width: 40px; height: 40px;
+            inset-inline-start: -20px;
+            background: linear-gradient(135deg, #a78bfa, #f472b6);
+            box-shadow: 0 0 0 5px #fafaff, 0 12px 24px rgba(167,139,250,.40);
+        }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item:nth-child(2) .aae-a-timeline-item-marker { background: linear-gradient(135deg, #f472b6, #fb7185); box-shadow: 0 0 0 5px #fafaff, 0 12px 24px rgba(244,114,182,.40); }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-marker { background: linear-gradient(135deg, #fb923c, #f59e0b); box-shadow: 0 0 0 5px #fafaff, 0 12px 24px rgba(251,146,60,.40); }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item:nth-child(4) .aae-a-timeline-item-marker { background: linear-gradient(135deg, #34d399, #06b6d4); box-shadow: 0 0 0 5px #fafaff, 0 12px 24px rgba(52,211,153,.40); }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item-date  { color: #6d28d9; }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item-title { color: #1e1b4b; }
+        [data-id="{{ id }}"][data-preset="aurora"] .aae-a-timeline-item-desc  { color: #4c1d95; }
+
+        /* ─── STRATUM — vibrant 2-col gradient grid ─── */
+        [data-id="{{ id }}"][data-preset="stratum"] {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1120px;
+            background: linear-gradient(180deg, #f4f7fb, #eef2f9);
+            padding: 24px;
+            border-radius: 14px;
+        }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding: 80px 22px 22px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-top: 56px solid;
+            border-image: linear-gradient(135deg, #2563eb, #7c3aed) 1;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15,23,42,.10);
+        }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(2) { border-image: linear-gradient(135deg, #0ea5e9, #06b6d4) 1; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(3) { border-image: linear-gradient(135deg, #f43f5e, #f97316) 1; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(4) { border-image: linear-gradient(135deg, #059669, #14b8a6) 1; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item-marker {
+            width: 44px; height: 44px;
+            inset-block-start: -50px;
+            inset-inline-start: auto;
+            inset-inline-end: 22px;
+            background: #fff;
+            color: #2563eb;
+            box-shadow: 0 6px 16px rgba(0,0,0,.20);
+        }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(2) .aae-a-timeline-item-marker { color: #0e7490; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-marker { color: #be123c; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(4) .aae-a-timeline-item-marker { color: #047857; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item-date  { color: #2563eb; background: #dbeafe; padding: 6px 12px; border-radius: 999px; align-self: start; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(2) .aae-a-timeline-item-date { color: #0e7490; background: #cffafe; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-date { color: #be123c; background: #ffe4e6; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item:nth-child(4) .aae-a-timeline-item-date { color: #047857; background: #d1fae5; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item-title { color: #0f172a; }
+        [data-id="{{ id }}"][data-preset="stratum"] .aae-a-timeline-item-desc  { color: #475569; }
+
+        /* ─── VELVET — 2-col dark jewel tiles ─── */
+        [data-id="{{ id }}"][data-preset="velvet"] {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            max-width: 1120px;
+            background:
+                radial-gradient(600px 400px at 20% 0%, rgba(120,70,180,.25), transparent 60%),
+                #0a0712;
+            padding: 28px 24px;
+            border-radius: 14px;
+        }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding: 80px 22px 22px;
+            background: linear-gradient(160deg, #1c1428, #100a1a);
+            border: 1px solid #2a1f3a;
+            border-top: 56px solid;
+            border-image: linear-gradient(135deg, #064e3b, #022c22) 1;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 28px 70px rgba(0,0,0,.45);
+        }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item:nth-child(2) { border-image: linear-gradient(135deg, #7c2d12, #431407) 1; }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item:nth-child(3) { border-image: linear-gradient(135deg, #1e3a8a, #0c1e4d) 1; }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item:nth-child(4) { border-image: linear-gradient(135deg, #581c87, #2e0a4a) 1; }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item-marker {
+            width: 44px; height: 44px;
+            inset-block-start: -50px;
+            inset-inline-start: auto;
+            inset-inline-end: 22px;
+            background: linear-gradient(135deg, #fde68a, #d4af37);
+            color: #1a1208;
+            box-shadow: 0 8px 20px rgba(0,0,0,.40);
+        }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item-date  { color: #d4af37; background: rgba(212,175,55,.10); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(212,175,55,.28); align-self: start; }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item-title { color: #f5e7d0; }
+        [data-id="{{ id }}"][data-preset="velvet"] .aae-a-timeline-item-desc  { color: #8c7e95; }
+
+        /* ─── MONO — minimal black & white ─── */
+        [data-id="{{ id }}"][data-preset="mono"] {
+            max-width: 720px;
+            background: #fafaf9;
+            padding: 8px 0;
+        }
+        [data-id="{{ id }}"][data-preset="mono"] .aae-a-timeline-item {
+            border-inline-start: 1px dotted #d1d5db;
+            padding-inline-start: 40px;
+            padding-block-end: 44px;
+            gap: 6px;
+        }
+        [data-id="{{ id }}"][data-preset="mono"] .aae-a-timeline-item-marker {
+            width: 14px; height: 14px;
+            inset-inline-start: -7px;
+            background: #0a0a0a;
+            color: transparent;
+            font-size: 0;
+            box-shadow: 0 0 0 4px #fafaf9, 0 0 0 5px #0a0a0a;
+        }
+        [data-id="{{ id }}"][data-preset="mono"] .aae-a-timeline-item-date {
+            color: #9ca3af;
+            font-size: 11px;
+            letter-spacing: .12em;
+        }
+        [data-id="{{ id }}"][data-preset="mono"] .aae-a-timeline-item-title {
+            color: #0a0a0a;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.035em;
+        }
+        [data-id="{{ id }}"][data-preset="mono"] .aae-a-timeline-item-desc {
+            color: #525252;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ─── PAPER — vintage sepia archive ─── */
+        [data-id="{{ id }}"][data-preset="paper"] {
+            max-width: 720px;
+            background: linear-gradient(180deg, #fdf6e3, #f6ecd5);
+            padding: 22px 24px;
+            border-radius: 10px;
+            border: 1px solid #e6d0ac;
+        }
+        [data-id="{{ id }}"][data-preset="paper"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            padding-inline-start: 42px;
+            padding-block: 22px;
+            border-bottom: 1px dashed #c9a878;
+        }
+        [data-id="{{ id }}"][data-preset="paper"] .aae-a-timeline-item-marker {
+            width: 38px; height: 38px;
+            inset-inline-start: -19px;
+            background: #fdf6e3;
+            color: #8b4513;
+            border: 2px solid #8b4513;
+            box-shadow:
+                inset 0 0 0 3px #fdf6e3,
+                inset 0 0 0 4px #c9a878,
+                0 6px 14px rgba(139,69,19,.18);
+            font-family: Georgia, 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 13px;
+        }
+        [data-id="{{ id }}"][data-preset="paper"] .aae-a-timeline-item-date {
+            color: #8b4513;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -.04em;
+            text-transform: none;
+        }
+        [data-id="{{ id }}"][data-preset="paper"] .aae-a-timeline-item-title {
+            color: #3d2914;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 22px;
+            letter-spacing: -.01em;
+        }
+        [data-id="{{ id }}"][data-preset="paper"] .aae-a-timeline-item-desc {
+            color: #6b5132;
+        }
+
+        /* ─── BAUHAUS — brutalist primary 2-col grid ─── */
+        [data-id="{{ id }}"][data-preset="bauhaus"] {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1120px;
+            background: #f0ece1;
+            padding: 24px;
+        }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item {
+            border-inline-start: 0;
+            border: 3px solid #0a0a0a;
+            border-top: 64px solid #dc2626;
+            border-radius: 0;
+            padding: 80px 22px 22px;
+            background: #fff;
+            box-shadow: 8px 8px 0 #0a0a0a;
+        }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item:nth-child(2) { border-top-color: #2563eb; }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item:nth-child(3) { border-top-color: #facc15; }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item:nth-child(4) { border-top-color: #0a0a0a; }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item-marker {
+            width: 48px; height: 48px;
+            inset-block-start: -56px;
+            inset-inline-start: auto;
+            inset-inline-end: 18px;
+            background: #fff;
+            color: #0a0a0a;
+            border: 3px solid #0a0a0a;
+            border-radius: 0;
+            font-size: 16px;
+            box-shadow: none;
+        }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item-date {
+            color: #fff;
+            background: #0a0a0a;
+            padding: 6px 12px;
+            border-radius: 0;
+            align-self: start;
+        }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item:nth-child(2) .aae-a-timeline-item-date { background: #2563eb; }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-date { background: #facc15; color: #0a0a0a; }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item-title {
+            color: #0a0a0a;
+            font-size: 22px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -.02em;
+        }
+        [data-id="{{ id }}"][data-preset="bauhaus"] .aae-a-timeline-item-desc { color: #404040; }
+    </style>
+
+    {{ children_placeholder | raw }}
+</div>
