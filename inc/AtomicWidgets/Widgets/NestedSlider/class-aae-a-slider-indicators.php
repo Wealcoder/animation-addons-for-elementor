@@ -22,40 +22,40 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Slider_Pagination extends Atomic_Element_Base {
+class AAE_A_Slider_Indicators extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Dot pagination for the nested slider.';
-
-	public function should_show_in_panel() {
-		return false;
-	}
+	public static $widget_description = 'Wrapper for slide count and progress indicators.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
 		$this->meta( 'is_container', true );
 	}
 
+	public function should_show_in_panel() {
+		return false;
+	}
+
 	public static function get_type() {
-		return 'e-aae-a-slider-pagination';
+		return 'e-aae-a-slider-indicators';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-slider-pagination';
+		return 'e-aae-a-slider-indicators';
 	}
 
 	public function get_title() {
-		return esc_html__( 'Slider Pagination', 'animation-addons-for-elementor' );
+		return esc_html__( 'Slider Indicators', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
-		return 'eicon-ellipsis-h';
+		return 'eicon-info-circle';
 	}
 
 	public function get_keywords() {
-		return [ 'slider', 'pagination', 'dots', 'atomic' ];
+		return [ 'slider', 'indicators', 'counter', 'progress', 'atomic' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -80,15 +80,16 @@ class AAE_A_Slider_Pagination extends Atomic_Element_Base {
 
 	protected function define_base_styles(): array {
 		$styles = [
-			// 'position'        => String_Prop_Type::generate( 'absolute' ),
-			// 'bottom'          => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
-			// 'left'            => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-			'width'           => String_Prop_Type::generate( '100%' ),
-			'display'         => String_Prop_Type::generate( 'flex' ),
-			'justify-content' => String_Prop_Type::generate( 'center' ),
-			'align-items'     => String_Prop_Type::generate( 'center' ),
-			'gap'             => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-			'z-index'         => Number_Prop_Type::generate( 10 ),
+			// 'position'    => String_Prop_Type::generate( 'absolute' ),
+			// 'bottom'      => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+			// 'left'        => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			'width'       => String_Prop_Type::generate( '100%' ),
+			'display'     => String_Prop_Type::generate( 'flex' ),
+			'justify-content' => String_Prop_Type::generate( 'end' ),
+			'gap'         => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
+			'padding'     => String_Prop_Type::generate( '0 20px' ),
+			'z-index'     => Number_Prop_Type::generate( 10 ),
+			'box-sizing'  => String_Prop_Type::generate( 'border-box' ),
 		];
 
 		return [
@@ -97,21 +98,20 @@ class AAE_A_Slider_Pagination extends Atomic_Element_Base {
 		];
 	}
 
-	protected function define_default_children() {
+	protected function define_allowed_child_types(): array {
 		return [
-			AAE_A_Slider_Dot::generate()
-				->editor_settings( [ 'title' => 'Dot' ] )
-				->build(),
+			'e-aae-a-slider-counter',
+			'e-aae-a-slider-current',
+			'e-aae-a-slider-divider',
+			'e-aae-a-slider-total',
+			'e-aae-a-slider-progress',
+			'e-aae-a-slider-percentage',
 		];
-	}
-
-	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-slider-dot' ];
 	}
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-slider-pagination' => __DIR__ . '/aae-a-slider-pagination.html.twig',
+			'elementor/elements/aae-a-slider-indicators' => __DIR__ . '/aae-a-slider-indicators.html.twig',
 		];
 	}
 }

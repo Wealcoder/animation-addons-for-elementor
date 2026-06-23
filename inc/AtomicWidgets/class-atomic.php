@@ -156,13 +156,22 @@ final class Atomic
 	{
 		// Force internal child widgets to be active always
 		$internal_widgets = [
-			'aae-a-slide', 
+			'aae-a-slide',
 			'aae-a-slider-track',
 			'aae-a-slider-nav-prev',
-			'aae-a-slider-nav-next', 
+			'aae-a-slider-nav-next',
 			'aae-a-slider-pagination',
+			'aae-a-slider-dot',
+			'aae-a-slider-indicators',
+			'aae-a-slider-current',
+			'aae-a-slider-total',
+			'aae-a-slider-percentage',
+			'aae-a-slider-progress',
+			'aae-a-slider-counter',
+			'aae-a-slider-divider',
+			'aae-a-slider-progress-fill',
 			'aae-a-counter-number',
-			'aae-a-accordion-item', 
+			'aae-a-accordion-item',
 			'aae-a-icon-list-item'
 		];
 		if (in_array($slug, $internal_widgets)) {
@@ -1021,12 +1030,10 @@ final class Atomic
 			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
-				'script_handle' => 'aae-a-slider-js',
-				'script_path' => '/assets/atomic/js/nestedslider.js',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',				
 				'style_handle' => 'aae-a-slider-css',
 				'style_path' => '/assets/atomic/css/nestedslider.css',
-				'has_script' => true,
+				'has_script' => false,
 			],
 			'aae-a-slide' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
@@ -1046,6 +1053,51 @@ final class Atomic
 			'aae-a-slider-nav-next' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-dot' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-dot.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-indicators' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-indicators.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-current' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-current.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-total' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-total.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-percentage' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-percentage.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-progress' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-progress-fill' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress-fill.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-counter' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-counter.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-divider' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-divider.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-pagination' => [

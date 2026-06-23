@@ -96,6 +96,11 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
+		// Nested Slider
+		( new \WCF_ADDONS\Atomic\NestedSlider\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\NestedSlider\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\NestedSlider\Render() )->register();
+
 		// Style Manager
 		// ( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
 

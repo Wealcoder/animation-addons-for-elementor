@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs grep -l \"settings\\\\|change\")"
+      "Bash(xargs grep -l \"settings\\\\|change\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('assets/build/modules/atomic/effects/nested-slider.js','utf8'\\); console.log\\(c.includes\\('perspective\\(\\\\${getPerspective\\(\\)}px\\) translateZ\\(\\\\${depth}px\\)'\\) || c.includes\\('perspective\\(\\\\\".concat'\\) || c.includes\\('\\\\\"perspective\\(\\\\\"'\\) ? 'FIX PRESENT' : 'NOT FOUND'\\); const m=c.match\\(/perspective\\\\\\([^\\)]+\\\\\\) translateZ/g\\); console.log\\(m\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('assets/build/modules/atomic/effects/nested-slider.js','utf8'\\); const idx=c.indexOf\\('coverflow'\\); console.log\\(c.substring\\(idx, idx+300\\)\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('assets/build/modules/atomic/effects/nested-slider.js','utf8'\\); const idx=c.indexOf\\('==='coverflow\\\\\"'\\); console.log\\(idx\\); const idx2=c.indexOf\\('\\\\\"coverflow\\\\\"===e'\\); console.log\\(idx2\\); const idx3=c.indexOf\\('coverflow'\\); const sub=c.substring\\(idx3+200, idx3+600\\); console.log\\(sub\\);\")",
+      "Bash(node -e \"var fs=require\\('fs'\\); var c=fs.readFileSync\\('assets/build/modules/atomic/effects/nested-slider.js','utf8'\\); var all=[]; var idx=0; while\\(\\(idx=c.indexOf\\('coverflow',idx\\)\\)!==-1\\){all.push\\(idx\\);idx++;} console.log\\('occurrences:',all.length\\); var last=all[all.length-1]; console.log\\(c.substring\\(last-50,last+400\\)\\);\")",
+      "Bash(node -e \"var fs=require\\('fs'\\); var c=fs.readFileSync\\('assets/build/modules/atomic/effects/nested-slider.js','utf8'\\); var idx=c.indexOf\\('rotateY'\\); while\\(idx!==-1\\){console.log\\(c.substring\\(idx-100,idx+80\\)\\); console.log\\('---'\\); idx=c.indexOf\\('rotateY',idx+1\\);}\")",
+      "Bash(npx webpack *)"
     ]
   }
 }

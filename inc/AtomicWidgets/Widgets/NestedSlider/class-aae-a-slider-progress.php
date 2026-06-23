@@ -18,44 +18,45 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Slider_Pagination extends Atomic_Element_Base {
+class AAE_A_Slider_Progress extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Dot pagination for the nested slider.';
-
-	public function should_show_in_panel() {
-		return false;
-	}
+	public static $widget_description = 'Shows a progress bar that fills as slides advance.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
 		$this->meta( 'is_container', true );
 	}
 
+	public function should_show_in_panel() {
+		return false;
+	}
+
 	public static function get_type() {
-		return 'e-aae-a-slider-pagination';
+		return 'e-aae-a-slider-progress';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-slider-pagination';
+		return 'e-aae-a-slider-progress';
 	}
 
 	public function get_title() {
-		return esc_html__( 'Slider Pagination', 'animation-addons-for-elementor' );
+		return esc_html__( 'Slider Progress', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
-		return 'eicon-ellipsis-h';
+		return 'eicon-slider-full-screen';
 	}
 
 	public function get_keywords() {
-		return [ 'slider', 'pagination', 'dots', 'atomic' ];
+		return [ 'slider', 'progress', 'bar', 'atomic' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -79,39 +80,38 @@ class AAE_A_Slider_Pagination extends Atomic_Element_Base {
 	}
 
 	protected function define_base_styles(): array {
-		$styles = [
-			// 'position'        => String_Prop_Type::generate( 'absolute' ),
-			// 'bottom'          => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
-			// 'left'            => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-			'width'           => String_Prop_Type::generate( '100%' ),
-			'display'         => String_Prop_Type::generate( 'flex' ),
-			'justify-content' => String_Prop_Type::generate( 'center' ),
-			'align-items'     => String_Prop_Type::generate( 'center' ),
-			'gap'             => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-			'z-index'         => Number_Prop_Type::generate( 10 ),
+		$track_styles = [
+			'position'      => String_Prop_Type::generate( 'relative' ),
+			'width'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+			'height'        => Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ),
+			'background'    => Background_Prop_Type::generate( [
+				'color' => Color_Prop_Type::generate( 'rgba(255,255,255,0.15)' ),
+			] ),
+			'border-radius' => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
+			'overflow'      => String_Prop_Type::generate( 'hidden' ),
 		];
 
 		return [
-			self::BASE_STYLE_KEY => Style_Definition::make()
-				->add_variant( Style_Variant::make()->add_props( $styles ) ),
+			'base' => Style_Definition::make()
+				->add_variant( Style_Variant::make()->add_props( $track_styles ) ),
 		];
 	}
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Slider_Dot::generate()
-				->editor_settings( [ 'title' => 'Dot' ] )
+			AAE_A_Slider_Progress_Fill::generate()
+				->editor_settings( [ 'title' => 'Progress Fill' ] )
 				->build(),
 		];
 	}
 
-	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-slider-dot' ];
+	protected function define_allowed_child_types(): array {
+		return [ 'e-aae-a-slider-progress-fill' ];
 	}
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-slider-pagination' => __DIR__ . '/aae-a-slider-pagination.html.twig',
+			'elementor/elements/aae-a-slider-progress' => __DIR__ . '/aae-a-slider-progress.html.twig',
 		];
 	}
 }

@@ -7,6 +7,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -56,7 +57,11 @@ class AAE_A_Slide extends Atomic_Element_Base {
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
-				->set_items( [] ),
+				->set_items( [
+					Text_Control::bind_to( '_cssid' )
+						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
+						->set_meta( $this->get_css_id_control_meta() ),
+				] ),
 		];
 	}
 

@@ -27,8 +27,6 @@
 
 		state.initialized = true;
 		installRunWrapper();
-
-		console.log('AAE Atomic Slider Editor Bridge installed');
 	}
 
 	function installRunWrapper() {
@@ -297,7 +295,7 @@
 
 	function refreshSliderInPreview(sliderId, reason) {
 		const previewWindow = getPreviewWindow();
-
+	
 		if (!previewWindow) {
 			console.warn('AAE Slider Bridge: preview window not found', {
 				sliderId,
@@ -307,19 +305,16 @@
 			return;
 		}
 
-		console.log('AAE Slider Bridge refresh preview slider', {
-			sliderId,
-			reason,
-		});
 
-		if (previewWindow.AAEAtomicSlider?.refreshById) {
-			previewWindow.AAEAtomicSlider.refreshById(sliderId, reason);
-			return;
-		}
+		// if (previewWindow.AAEAtomicSlider?.refreshById) {
+		// 	previewWindow.AAEAtomicSlider.refreshById(sliderId, reason);
+		// 	return;
+		// }
 
 		/**
 		 * Fallback custom event.
 		 */
+		
 		previewWindow.dispatchEvent(
 			new previewWindow.CustomEvent('aae:slider:refresh', {
 				detail: {
