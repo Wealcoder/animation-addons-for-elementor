@@ -1,0 +1,26 @@
+{% set vm_classes = ['aae-a-video-mask', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'vm-shape-' ~ (settings.vm_mask_shape | default('circle'))] | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ vm_classes }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-element_type="{{ type }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+
+    {{- children_placeholder | raw -}}
+
+    <div class="vm-video-wrapper" data-shape="{{ settings.vm_mask_shape | default('circle') }}">
+        <video width="100%"
+               {% if settings.vm_video_link is defined and settings.vm_video_link is not empty %}src="{{ settings.vm_video_link | e('html_attr') }}"{% endif %}
+               {% if settings.vm_video_autoplay is defined and settings.vm_video_autoplay %}autoplay{% endif %}
+               {% if settings.vm_video_mute is defined and settings.vm_video_mute %}muted{% endif %}
+               {% if settings.vm_video_playsinline is defined and settings.vm_video_playsinline %}playsinline{% endif %}
+               {% if settings.vm_video_loop is defined and settings.vm_video_loop %}loop{% endif %}></video>
+    </div>
+</div>

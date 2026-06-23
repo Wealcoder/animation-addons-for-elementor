@@ -162,6 +162,7 @@ final class Atomic
 			'aae-a-slider-nav-next',
 			'aae-a-slider-pagination',
 			'aae-a-counter-number',
+			'aae-a-video-mask-btn',
 			'aae-a-accordion-item',
 			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
@@ -956,6 +957,42 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-video-mask' => [
+				'label'        => 'Video Mask',
+				'description'  => 'A click-triggered masked video player with a customisable toggle button — icon and label are independent atomic children.',
+				'icon'         => 'eicon-youtube',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'video',
+					'mask',
+					'play',
+					'atomic',
+					'shape',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-mask-btn' => [
+				'label'        => 'Video Mask Button (Internal)',
+				'description'  => 'Internal button container for Video Mask. Positioned via the native Style panel.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'video mask button', 'internal' ],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1412,6 +1449,22 @@ final class Atomic
 				'has_script'   => false,
 				'style_handle' => 'aae-a-site-logo-css',
 				'style_path'   => '/assets/atomic/css/site-logo.css',
+			],
+
+			'aae-a-video-mask' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask',
+				'file'          => 'Widgets/VideoMask/class-aae-a-video-mask.php',
+				'script_handle' => 'aae-a-video-mask-js',
+				'script_path'   => '/assets/atomic/js/video-mask.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-video-mask-css',
+				'style_path'    => '/assets/atomic/js/video-mask.css',
+			],
+
+			'aae-a-video-mask-btn' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
+				'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
+				'has_script' => false,
 			],
 
 			// Add new atomic widgets below...
