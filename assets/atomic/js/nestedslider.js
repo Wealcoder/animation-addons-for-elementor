@@ -1,1 +1,396 @@
-!function(){"use strict";var e=elementorV2.frontendHandlers;const t=new Map,a=["data-slides-per-view","data-center-mode","data-enable-3d","data-autoplay","data-autoplay-speed","data-transition-speed","data-loop","data-center-scale","data-pause-on-hover","data-autoplay-direction"],r=e=>e?.getAttribute?.("data-id")||e?.getAttribute?.("data-element-id")||e?.id||null,n=(e,t)=>{const a=e.querySelector(".aae-slider-track");if(!a)return;const s=()=>Array.from(a.children).filter(e=>"STYLE"!==e.tagName&&"SCRIPT"!==e.tagName);if(!s().length){const a=setTimeout(()=>n(e,t),100);return void(t&&t.addEventListener("abort",()=>clearTimeout(a),{once:!0}))}const i=e.classList.contains("aae-a-slider")?e:e.querySelector(".aae-a-slider");if(!i)return;i._aaeSliderCleanup&&i._aaeSliderCleanup();const o=()=>parseInt(i.getAttribute("data-slides-per-view"))||2,l=()=>"true"===i.getAttribute("data-center-mode"),d=()=>"true"===i.getAttribute("data-enable-3d"),c=()=>"false"!==i.getAttribute("data-pause-on-hover");let u=0,m=null;const f=new AbortController;i._aaeSliderCleanup=()=>{f.abort(),clearInterval(m)},t&&t.addEventListener("abort",i._aaeSliderCleanup,{once:!0});const p={signal:f.signal},g=()=>s()[0]?.offsetWidth||0;let v=Math.max(0,s().length-o());const y=i.querySelector(".e-aae-a-slider-pagination");let b=[];if(y){y.innerHTML="";for(let e=0;e<=v;e++){const t=document.createElement("div");t.className="aae-a-pagination-dot",t.addEventListener("click",()=>{h(e),E()},p),y.appendChild(t),b.push(t)}}const h=(e,t=!0)=>{const r=s();if(!r.length)return;v=Math.max(0,r.length-o()),"true"===i.getAttribute("data-loop")?(e<0&&(e=v),e>v&&(e=0)):(e<0&&(e=0),e>v&&(e=v)),u=e,(e=>{b.forEach((t,a)=>{a===e?t.classList.add("e-state-active"):t.classList.remove("e-state-active")})})(e);let n=-e*(g()+(parseFloat(window.getComputedStyle(a).gap)||0));if(l()&&(n+=(i.offsetWidth-g())/2),t){const e=(parseInt(i.getAttribute("data-transition-speed"))||500)/1e3;a.style.transition=`transform ${e}s ease-out`,r.forEach(t=>{t.style.transition=`transform ${e}s ease-out`})}else a.style.transition="none",r.forEach(e=>{e.style.transition="none"});a.style.transform=`translateX(${n}px)`,a.dataset.currentX=n,(()=>{const e=s();if(!l()&&!d())return void e.forEach(e=>{e.style.transform=""});const t=parseFloat(a.dataset.currentX||0),r=i.offsetWidth/2,n=parseFloat(i.getAttribute("data-center-scale"))||.85;e.forEach(e=>{const a=(e.offsetLeft+t+e.offsetWidth/2-r)/r,s=Math.max(n,1-Math.abs(a)*(1-n));if(d()){const t=-35*a,r=-Math.abs(150*a);e.style.transformOrigin="center center",e.style.transform=`translateZ(${r}px) rotateY(${t}deg) scale(${s})`}else l()&&(e.style.transformOrigin="center center",e.style.transform=`scale(${s})`)})})()},A=()=>{clearInterval(m)},E=()=>{"true"===i.getAttribute("data-autoplay")&&(A(),m=setInterval(()=>{h(u+("left"===i.getAttribute("data-autoplay-direction")?-1:1))},parseInt(i.getAttribute("data-autoplay-speed"))||3e3))};h(0,!1),E(),i.addEventListener("mouseenter",()=>{c()&&A()},p),i.addEventListener("mouseleave",()=>{c()&&E()},p);const L=i.querySelector(".aae-a-navigator-prev"),S=i.querySelector(".aae-a-navigator-next");L&&L.addEventListener("click",()=>{h(u-1),E()},p),S&&S.addEventListener("click",()=>{h(u+1),E()},p),window.addEventListener("resize",()=>{h(u,!1)},p),console.log("slider render",{id:r(e),container:e})},s=(e,a="manual")=>{const r=(e=>e?document.querySelector(`[data-id="${e}"]`)||document.querySelector(`[data-element-id="${e}"]`)||document.getElementById(e):null)(e);if(!r)return void console.warn("AAE slider refresh failed: element not found",{id:e,reason:a});const s=t.get(e),i=s?.signal;requestAnimationFrame(()=>{requestAnimationFrame(()=>{console.log("AAE slider refresh by id",{id:e,reason:a,element:r}),n(r,i)})})};window.AAEAtomicSlider={refreshById:s},window.addEventListener("aae:slider:refresh",e=>{const t=e.detail?.id,a=e.detail?.reason||"custom-event";s(t,a)}),(0,e.register)({elementType:"e-aae-a-slider",id:"aae-a-slider-handler",callback:({element:e,signal:s})=>{const i=r(e);if(console.log("Slider run"),i&&t.set(i,{element:e,signal:s}),n(e,s),!document.body.classList.contains("elementor-editor-active"))return;let o=null;const l=new MutationObserver(t=>{t.some(e=>"attributes"===e.type?a.includes(e.attributeName):"childList"===e.type)&&(clearTimeout(o),o=setTimeout(()=>{n(e,s)},150),console.log("AAE slider reinit queued from iframe",{id:i,element:e}))});l.observe(e,{attributes:!0,attributeFilter:a,childList:!0,subtree:!0}),s&&s.addEventListener("abort",()=>{clearTimeout(o),l.disconnect(),i&&t.delete(i)},{once:!0})}})}();
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "@elementor/frontend-handlers":
+/*!***************************************************!*\
+  !*** external ["elementorV2","frontendHandlers"] ***!
+  \***************************************************/
+/***/ (function(module) {
+
+module.exports = elementorV2.frontendHandlers;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Check if module exists (development only)
+/******/ 		if (__webpack_modules__[moduleId] === undefined) {
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+!function() {
+/*!**************************************************************************!*\
+  !*** ./inc/AtomicWidgets/Widgets/NestedSlider/assets/js/nestedslider.js ***!
+  \**************************************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
+/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
+
+const sliderRegistry = new Map();
+const configAttributes = ['data-slides-per-view', 'data-center-mode', 'data-enable-3d', 'data-autoplay', 'data-autoplay-speed', 'data-transition-speed', 'data-loop', 'data-center-scale', 'data-pause-on-hover', 'data-autoplay-direction'];
+const getElementId = element => {
+  return element?.getAttribute?.('data-id') || element?.getAttribute?.('data-element-id') || element?.id || null;
+};
+const getSliderElementById = id => {
+  if (!id) return null;
+  return document.querySelector(`[data-id="${id}"]`) || document.querySelector(`[data-element-id="${id}"]`) || document.getElementById(id);
+};
+const initSlider = (container, signal) => {
+  const track = container.querySelector('.aae-slider-track');
+  if (!track) return;
+  const getSlides = () => Array.from(track.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT');
+  if (!getSlides().length) {
+    const retryTimeout = setTimeout(() => initSlider(container, signal), 100);
+    if (signal) {
+      signal.addEventListener('abort', () => clearTimeout(retryTimeout), {
+        once: true
+      });
+    }
+    return;
+  }
+  const sliderDiv = container.classList.contains('aae-a-slider') ? container : container.querySelector('.aae-a-slider');
+  if (!sliderDiv) return;
+
+  // Safely clean up previous instance listeners/timers if initSlider is called again.
+  if (sliderDiv._aaeSliderCleanup) {
+    sliderDiv._aaeSliderCleanup();
+  }
+
+  // Configuration getters
+  const getSlidesPerView = () => parseInt(sliderDiv.getAttribute('data-slides-per-view')) || 2;
+  const isCenterMode = () => sliderDiv.getAttribute('data-center-mode') === 'true';
+  const is3DEnabled = () => sliderDiv.getAttribute('data-enable-3d') === 'true';
+  const getAutoplay = () => sliderDiv.getAttribute('data-autoplay') === 'true';
+  const getAutoplaySpeed = () => parseInt(sliderDiv.getAttribute('data-autoplay-speed')) || 3000;
+  const getTransitionSpeed = () => parseInt(sliderDiv.getAttribute('data-transition-speed')) || 500;
+  const getLoop = () => sliderDiv.getAttribute('data-loop') === 'true';
+  const getCenterScale = () => parseFloat(sliderDiv.getAttribute('data-center-scale')) || 0.85;
+  const getPauseOnHover = () => sliderDiv.getAttribute('data-pause-on-hover') !== 'false';
+  const getAutoplayDirection = () => sliderDiv.getAttribute('data-autoplay-direction') === 'left' ? -1 : 1;
+  let currentIndex = 0;
+  let autoplayTimer = null;
+  const localController = new AbortController();
+  sliderDiv._aaeSliderCleanup = () => {
+    localController.abort();
+    clearInterval(autoplayTimer);
+  };
+  if (signal) {
+    signal.addEventListener('abort', sliderDiv._aaeSliderCleanup, {
+      once: true
+    });
+  }
+  const evtOpts = {
+    signal: localController.signal
+  };
+  const getSlideWidth = () => getSlides()[0]?.offsetWidth || 0;
+  const getGap = () => parseFloat(window.getComputedStyle(track).gap) || 0;
+  let maxIndex = Math.max(0, getSlides().length - getSlidesPerView());
+  const paginationContainer = sliderDiv.querySelector('.e-aae-a-slider-pagination');
+  let dots = [];
+  if (paginationContainer) {
+    paginationContainer.innerHTML = '';
+    for (let i = 0; i <= maxIndex; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'aae-a-pagination-dot';
+      dot.addEventListener('click', () => {
+        goToSlide(i);
+        startAutoplay();
+      }, evtOpts);
+      paginationContainer.appendChild(dot);
+      dots.push(dot);
+    }
+  }
+  const updatePagination = index => {
+    dots.forEach((dot, i) => {
+      if (i === index) {
+        dot.classList.add('e-state-active');
+      } else {
+        dot.classList.remove('e-state-active');
+      }
+    });
+  };
+  const applyCenterStyles = () => {
+    const slides = getSlides();
+    if (!isCenterMode() && !is3DEnabled()) {
+      slides.forEach(slide => {
+        slide.style.transform = '';
+      });
+      return;
+    }
+    const trackX = parseFloat(track.dataset.currentX || 0);
+    const containerCenter = sliderDiv.offsetWidth / 2;
+    const centerScale = getCenterScale();
+    slides.forEach(slide => {
+      const slideCenter = slide.offsetLeft + trackX + slide.offsetWidth / 2;
+      const distanceFromCenter = slideCenter - containerCenter;
+      const normalizedDistance = distanceFromCenter / containerCenter;
+      const scale = Math.max(centerScale, 1 - Math.abs(normalizedDistance) * (1 - centerScale));
+      if (is3DEnabled()) {
+        const rotateY = normalizedDistance * -35;
+        const translateZ = -Math.abs(normalizedDistance * 150);
+        slide.style.transformOrigin = 'center center';
+        slide.style.transform = `translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+      } else if (isCenterMode()) {
+        slide.style.transformOrigin = 'center center';
+        slide.style.transform = `scale(${scale})`;
+      }
+    });
+  };
+  const goToSlide = (index, useTransition = true) => {
+    const slides = getSlides();
+    if (!slides.length) return;
+    maxIndex = Math.max(0, slides.length - getSlidesPerView());
+    if (getLoop()) {
+      if (index < 0) index = maxIndex;
+      if (index > maxIndex) index = 0;
+    } else {
+      if (index < 0) index = 0;
+      if (index > maxIndex) index = maxIndex;
+    }
+    currentIndex = index;
+    updatePagination(index);
+    const step = getSlideWidth() + getGap();
+    let targetX = -(index * step);
+    if (isCenterMode()) {
+      const trackWidth = sliderDiv.offsetWidth;
+      const offset = (trackWidth - getSlideWidth()) / 2;
+      targetX += offset;
+    }
+    if (useTransition) {
+      const speedSeconds = getTransitionSpeed() / 1000;
+      track.style.transition = `transform ${speedSeconds}s ease-out`;
+      slides.forEach(slide => {
+        slide.style.transition = `transform ${speedSeconds}s ease-out`;
+      });
+    } else {
+      track.style.transition = 'none';
+      slides.forEach(slide => {
+        slide.style.transition = 'none';
+      });
+    }
+    track.style.transform = `translateX(${targetX}px)`;
+    track.dataset.currentX = targetX;
+    applyCenterStyles();
+  };
+  const stopAutoplay = () => {
+    clearInterval(autoplayTimer);
+  };
+  const startAutoplay = () => {
+    if (!getAutoplay()) return;
+    stopAutoplay();
+    autoplayTimer = setInterval(() => {
+      goToSlide(currentIndex + getAutoplayDirection());
+    }, getAutoplaySpeed());
+  };
+  goToSlide(0, false);
+  startAutoplay();
+  sliderDiv.addEventListener('mouseenter', () => {
+    if (getPauseOnHover()) stopAutoplay();
+  }, evtOpts);
+  sliderDiv.addEventListener('mouseleave', () => {
+    if (getPauseOnHover()) startAutoplay();
+  }, evtOpts);
+  const prevBtn = sliderDiv.querySelector('.aae-a-navigator-prev');
+  const nextBtn = sliderDiv.querySelector('.aae-a-navigator-next');
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      goToSlide(currentIndex - 1);
+      startAutoplay();
+    }, evtOpts);
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      goToSlide(currentIndex + 1);
+      startAutoplay();
+    }, evtOpts);
+  }
+  window.addEventListener('resize', () => {
+    goToSlide(currentIndex, false);
+  }, evtOpts);
+  console.log('slider render', {
+    id: getElementId(container),
+    container
+  });
+};
+const refreshSliderById = (id, reason = 'manual') => {
+  const element = getSliderElementById(id);
+  if (!element) {
+    console.warn('AAE slider refresh failed: element not found', {
+      id,
+      reason
+    });
+    return;
+  }
+  const entry = sliderRegistry.get(id);
+  const signal = entry?.signal;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      console.log('AAE slider refresh by id', {
+        id,
+        reason,
+        element
+      });
+      initSlider(element, signal);
+    });
+  });
+};
+
+/**
+ * Expose refresh API inside preview iframe.
+ * Parent editor JS can call this through iframe.contentWindow.
+ */
+window.AAEAtomicSlider = {
+  refreshById: refreshSliderById
+};
+
+/**
+ * Custom bridge event from parent editor window.
+ */
+window.addEventListener('aae:slider:refresh', event => {
+  const id = event.detail?.id;
+  const reason = event.detail?.reason || 'custom-event';
+  refreshSliderById(id, reason);
+});
+(0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
+  elementType: 'e-aae-a-slider',
+  id: 'aae-a-slider-handler',
+  callback: ({
+    element,
+    signal
+  }) => {
+    const id = getElementId(element);
+    console.log("Slider run");
+    if (id) {
+      sliderRegistry.set(id, {
+        element,
+        signal
+      });
+    }
+    initSlider(element, signal);
+    const isEditMode = document.body.classList.contains('elementor-editor-active');
+    if (!isEditMode) {
+      return;
+    }
+    let debounceTimer = null;
+    const reInit = (reason = 'observer') => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        initSlider(element, signal);
+      }, 150);
+      console.log('AAE slider reinit queued from iframe', {
+        id,
+        element
+      });
+    };
+
+    /**
+     * This catches attribute changes and DOM child changes inside the slider.
+     * Important for slide add/delete/duplicate after Elementor updates preview DOM.
+     */
+    const observer = new MutationObserver(mutations => {
+      const shouldRefresh = mutations.some(mutation => {
+        if (mutation.type === 'attributes') {
+          return configAttributes.includes(mutation.attributeName);
+        }
+        if (mutation.type === 'childList') {
+          return true;
+        }
+        return false;
+      });
+      if (shouldRefresh) {
+        reInit('mutation-observer');
+      }
+    });
+    observer.observe(element, {
+      attributes: true,
+      attributeFilter: configAttributes,
+      childList: true,
+      subtree: true
+    });
+    if (signal) {
+      signal.addEventListener('abort', () => {
+        clearTimeout(debounceTimer);
+        observer.disconnect();
+        if (id) {
+          sliderRegistry.delete(id);
+        }
+      }, {
+        once: true
+      });
+    }
+  }
+});
+}();
+/******/ })()
+;
+//# sourceMappingURL=nestedslider.js.map

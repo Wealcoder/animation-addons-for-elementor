@@ -7,6 +7,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Image_Attachment_Id_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
@@ -54,6 +55,15 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 	}
 
 	protected static function define_props_schema(): array {
+		$is_custom_logo = Dependency_Manager::make()
+			->where( [
+				'operator' => 'nin',
+				'path'     => [ 'sl_logo_to' ],
+				'value'    => [ 'custom' ],
+				'effect'   => 'hide',
+			] )
+			->get();
+
 		$is_custom_link = Dependency_Manager::make()
 			->where( [
 				'operator' => 'nin',
@@ -73,22 +83,42 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 			->get();
 
 		return [
-			'classes'          => Classes_Prop_Type::make()->default( [] ),
-			'attributes'       => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'sl_link_to'       => String_Prop_Type::make()
+			'classes'           => Classes_Prop_Type::make()->default( [] ),
+			'attributes'        => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+
+			// Image source mode
+			'sl_logo_to'        => String_Prop_Type::make()
+				->enum( [ 'site_logo', 'custom' ] )
+				->default( 'site_logo' ),
+
+			// Custom image URL — only active in 'custom' mode; updated dynamically for 'site_logo' mode
+			'sl_custom_img_url' => String_Prop_Type::make()
+				->default( '' )
+				->set_dependencies( $is_custom_logo ),
+
+			// Computed at render time by get_atomic_settings(); no panel control.
+			// In 'site_logo' mode: current WP custom logo URL.
+			// In 'custom' mode: empty (children_placeholder handles rendering).
+			'sl_site_logo_url'  => String_Prop_Type::make()->default( '' ),
+			'sl_site_logo_alt'  => String_Prop_Type::make()->default( '' ),
+
+			// Link controls
+			'sl_link_to'        => String_Prop_Type::make()
 				->enum( [ 'none', 'site_url', 'custom' ] )
 				->default( 'site_url' ),
-			'sl_link_url'      => String_Prop_Type::make()
+			'sl_link_url'       => String_Prop_Type::make()
 				->default( '' )
 				->set_dependencies( $is_custom_link ),
-			'sl_link_target'   => String_Prop_Type::make()
+			'sl_link_target'    => String_Prop_Type::make()
 				->enum( [ '_self', '_blank' ] )
 				->default( '_self' )
 				->set_dependencies( $has_link ),
-			'sl_link_nofollow' => Boolean_Prop_Type::make()
+			'sl_link_nofollow'  => Boolean_Prop_Type::make()
 				->default( false )
 				->set_dependencies( $has_link ),
-			'sl_resolved_href' => String_Prop_Type::make()->default( '' ),
+
+			// Resolved href computed by get_atomic_settings(); no panel control.
+			'sl_resolved_href'  => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -98,6 +128,13 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 				->set_id( 'content' )
 				->set_label( __( 'Site Logo', 'animation-addons-for-elementor' ) )
 				->set_items( [
+					Select_Control::bind_to( 'sl_logo_to' )
+						->set_label( __( 'Logo', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'site_logo', 'label' => __( 'Site Logo (WordPress)',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'custom',    'label' => __( 'Custom (Child Image)',   'animation-addons-for-elementor' ) ],
+						] ),
+
 					Select_Control::bind_to( 'sl_link_to' )
 						->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
 						->set_options( [
@@ -143,11 +180,19 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Default child: native Atomic_Image used in 'custom' logo mode.
+	 * In 'site_logo' mode this child is still present in the tree but the
+	 * template bypasses children_placeholder and renders the WP logo directly.
+	 */
 	protected function define_default_children(): array {
 		$custom_logo_id = (int) get_theme_mod( 'custom_logo' );
 
 		if ( $custom_logo_id > 0 ) {
-			$img_src = Image_Src_Prop_Type::generate( [ 'id' => $custom_logo_id ] );
+			$img_src = Image_Src_Prop_Type::generate( [
+				'id'  => Image_Attachment_Id_Prop_Type::generate( $custom_logo_id ),
+				'url' => null,
+			] );
 		} else {
 			$img_src = Image_Src_Prop_Type::generate( [
 				'id'  => null,
@@ -168,16 +213,40 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'e-image', 'e-svg', 'e-paragraph' ];
+		return [ 'e-image', 'e-svg' ];
 	}
 
 	protected function define_default_html_tag(): string {
 		return 'a';
 	}
 
+	/**
+	 * Inject two sets of dynamic values before the template renders:
+	 *
+	 * 1. sl_site_logo_url / sl_site_logo_alt — always the current WP custom logo,
+	 *    resolved fresh on every request so logo changes in the Customizer are
+	 *    instantly reflected without re-saving the page.
+	 *
+	 * 2. sl_resolved_href — the actual href value derived from sl_link_to,
+	 *    because Twig cannot call home_url() directly.
+	 */
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 
+		// --- WP custom logo (always injected, template uses it in site_logo mode) ---
+		$custom_logo_id = (int) get_theme_mod( 'custom_logo' );
+
+		if ( $custom_logo_id > 0 ) {
+			$logo_src = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+			$settings['sl_site_logo_url'] = $logo_src ? esc_url( $logo_src[0] ) : '';
+			$settings['sl_site_logo_alt'] = get_post_meta( $custom_logo_id, '_wp_attachment_image_alt', true )
+				?: get_bloginfo( 'name' );
+		} else {
+			$settings['sl_site_logo_url'] = esc_url( \Elementor\Utils::get_placeholder_image_src() );
+			$settings['sl_site_logo_alt'] = get_bloginfo( 'name' );
+		}
+
+		// --- Resolved link href ---
 		switch ( $settings['sl_link_to'] ?? 'site_url' ) {
 			case 'site_url':
 				$settings['sl_resolved_href'] = esc_url( home_url( '/' ) );
