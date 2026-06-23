@@ -20,7 +20,6 @@ function read(el) {
 }
 
 function bind(container, config) {
-
 	unbind(container);
 	if (!config) return;
 
@@ -187,6 +186,10 @@ function bind(container, config) {
 		clearTimeout(roundTimer);
 		clearTimeout(container._aaeSliderInitRetry);
 		clearTimeout(container._aaeSliderInitTimeout);
+		if (sliderDiv._aaeSliderResizeCleanup) {
+			sliderDiv._aaeSliderResizeCleanup();
+			delete sliderDiv._aaeSliderResizeCleanup;
+		}
 		sliderDiv.style.perspective = '';
 		sliderDiv.style.transformStyle = '';
 		sliderDiv.style.overflow = '';
@@ -205,6 +208,77 @@ function bind(container, config) {
 
 	const getSlideWidth = () => getSlides()[0]?.offsetWidth || 0;
 	const getActualGap = () => parseFloat(window.getComputedStyle(track).gap) || 0;
+	// Centering reference must be the exact box the slides are laid out in: the
+	// track's CONTENT width (clientWidth minus its own horizontal padding).
+	// Slides are `100% / slidesPerView` of that content box, so this width and
+	// the slide width agree — making the centering offset land symmetrically.
+	// Using offsetWidth here would include the track's padding (and using the
+	// slider would add its padding too), making the reference wider than the
+	// slides and pushing the centered slide off to one side.
+	const getViewportWidth = () => {
+		const vp = sliderDiv.querySelector('.aae-slider__viewport');
+		if (vp) return vp.getBoundingClientRect().width || vp.offsetWidth || 1000;
+		// Sub-pixel content width: the rect width minus the track's own padding.
+		// Using the fractional rect (not integer clientWidth) lets the centering
+		// offset cancel exactly against the slide's fractional width.
+		const cs = window.getComputedStyle(track);
+		const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+		return (track.getBoundingClientRect().width - padX) || track.offsetWidth || 1000;
+	};
+
+	const effectCenters = () => {
+		const e = getEffect();
+		return isCenterMode() || e === 'coverflow' || e === 'card' || e === 'perspective';
+	};
+
+	// THE canonical track position for a given slide index. Single source of
+	// truth shared by applyTransitions() and the drag handler so they can never
+	// drift apart. Positions from the slide's real layout geometry (offsetLeft /
+	// computed width) — transform-independent, so center mode's scale() and the
+	// 3D effects don't skew it, and exact for any slidesPerView / gap / peek.
+	// Read the track's current translateX from its transform matrix.
+	const getCurrentTranslateX = () => {
+		const t = window.getComputedStyle(track).transform;
+		if (!t || t === 'none') return 0;
+		// matrix(a,b,c,d,tx,ty) or matrix3d(...,tx,...) — tx is index 4 / 12.
+		const m = t.match(/matrix3d\((.+)\)/);
+		if (m) return parseFloat(m[1].split(',')[12]) || 0;
+		const m2 = t.match(/matrix\((.+)\)/);
+		if (m2) return parseFloat(m2[1].split(',')[4]) || 0;
+		return 0;
+	};
+
+	const computeTargetX = (idx) => {
+		const slide = getSlides()[idx];
+		if (!slide) {
+			return -(idx * (getSlideWidth() + getActualGap()));
+		}
+		// Work entirely in rendered viewport pixels and self-correct from the
+		// slide's CURRENT on-screen position. This is immune to the track's vs
+		// slider's padding/coordinate differences (offsetLeft is padding-box
+		// relative while content widths are not — mixing them left a constant
+		// ~20px skew). We compute the delta from where the slide is now to where
+		// we want it, then fold it into the current translate.
+		const sRect = slide.getBoundingClientRect();
+		const vRect = sliderDiv.getBoundingClientRect();
+		const csV = window.getComputedStyle(sliderDiv);
+		const padL = parseFloat(csV.paddingLeft) || 0;
+		const padR = parseFloat(csV.paddingRight) || 0;
+		// Slider CONTENT box edges in viewport space.
+		const contentLeft = vRect.left + padL;
+		const contentRight = vRect.right - padR;
+		const curTx = getCurrentTranslateX();
+
+		let desiredCenter;
+		if (effectCenters()) {
+			// Active slide centred in the slider content box.
+			desiredCenter = (contentLeft + contentRight) / 2;
+			const curCenter = sRect.left + sRect.width / 2;
+			return curTx + (desiredCenter - curCenter);
+		}
+		// Left-align: active slide's left edge at the content box's left edge.
+		return curTx + (contentLeft - sRect.left);
+	};
 
 	const originalSlides = getSlides();
 	const originalSlidesCount = originalSlides.length;
@@ -225,7 +299,7 @@ function bind(container, config) {
 
 	let maxIndex = getMaxIndex();
 
-	const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth || 1000;
+	const viewportWidth = getViewportWidth();
 	const spv = getSlidesPerView();
 	const gapVal = getGap();
 	const estimatedSlideWidth = (viewportWidth - (gapVal * (spv - 1))) / spv;
@@ -560,16 +634,11 @@ function bind(container, config) {
 			}
 		});
 
-		// Move track for non-marquee slides (including coverflow, card, perspective to center the active slide)
-		const step = getSlideWidth() + getActualGap();
-		let targetX = -(index * step);
-
-		if (isCenterMode() || effect === 'coverflow' || effect === 'card' || effect === 'perspective') {
-			const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-			const offset = (viewportWidth - getSlideWidth()) / 2;
-			targetX += offset;
-		}
-		targetX = Math.round(targetX);
+		// Position the track from the active slide's real layout geometry.
+		// offsetParent must be the track for offsetLeft (used by computeTargetX)
+		// to be track-relative.
+		track.style.position = 'relative';
+		const targetX = computeTargetX(index);
 		track.style.transform = `translate3d(${targetX}px, 0, 0)`;
 
 		if (hasSeamlessLoop) {
@@ -928,32 +997,19 @@ function bind(container, config) {
 			}
 			track.style.transform = `translate3d(${newX}px, 0, 0)`;
 		} else if (['slide', 'coverflow', 'card', 'perspective'].includes(getEffect())) {
-			const step = getSlideWidth() + getActualGap();
-			let baseTargetX = -(currentIndex * step);
-			let minScrollX = 0;
-			let maxScrollX = -(maxIndex * step);
-
-			if (isCenterMode() || getEffect() === 'coverflow' || getEffect() === 'card' || getEffect() === 'perspective') {
-				const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-				const offset = (viewportWidth - getSlideWidth()) / 2;
-				baseTargetX += offset;
-				minScrollX += offset;
-				maxScrollX += offset;
-			}
+			// Drag bounds come from the SAME canonical positioner as the snapped
+			// layout, so dragging never jumps relative to where slides settle.
+			let baseTargetX = computeTargetX(currentIndex);
+			const minScrollX = computeTargetX(0);
+			const maxScrollX = computeTargetX(maxIndex);
 
 			let newX = baseTargetX + diff;
 
 			if (hasSeamlessLoop) {
-				const singleSetWidth = originalSlidesCount * step;
-				let middleMinScrollX = -(middleSetStart * step);
-				let middleMaxScrollX = -((middleSetStart + originalSlidesCount - 1) * step);
-
-				if (isCenterMode() || getEffect() === 'coverflow' || getEffect() === 'card' || getEffect() === 'perspective') {
-					const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-					const offset = (viewportWidth - getSlideWidth()) / 2;
-					middleMinScrollX += offset;
-					middleMaxScrollX += offset;
-				}
+				// One full clone set is N equal-width slides — an exact step delta.
+				const singleSetWidth = originalSlidesCount * (getSlideWidth() + getActualGap());
+				const middleMinScrollX = computeTargetX(middleSetStart);
+				const middleMaxScrollX = computeTargetX(middleSetStart + originalSlidesCount - 1);
 
 				if (newX > middleMinScrollX) {
 					currentIndex += originalSlidesCount;
@@ -1034,6 +1090,24 @@ function bind(container, config) {
 		evtOpts
 	);
 
+	// Re-center when the track's box actually changes size. Elementor can apply
+	// the slide/.e-con padding and final width a tick or two after render, which
+	// would otherwise leave the first paint off-center until the user navigates.
+	// Transform changes don't alter size, so re-centering here can't loop.
+	if (typeof ResizeObserver !== 'undefined' && getEffect() !== 'marquee') {
+		let lastTrackW = track.clientWidth;
+		const ro = new ResizeObserver(() => {
+			if (isDragging) return;
+			const w = track.clientWidth;
+			if (w !== lastTrackW) {
+				lastTrackW = w;
+				goToSlide(currentIndex, false);
+			}
+		});
+		ro.observe(track);
+		sliderDiv._aaeSliderResizeCleanup = () => ro.disconnect();
+	}
+
 	// Mutation Observer for added/removed slides in Editor
 	const isEditMode = document.body.classList.contains('elementor-editor-active');
 	if (isEditMode) {
@@ -1075,7 +1149,18 @@ function bind(container, config) {
 		});
 		startMarquee();
 	} else {
+		// First paint: place immediately, then re-place once layout settles.
+		// In the editor the track's padding / .e-con sizing isn't final on the
+		// synchronous pass, so getViewportWidth() (track content width) can read
+		// stale and the centered slide lands off — fixed only after the first
+		// nav. Re-run after a double rAF (post-layout) and again at 50ms so the
+		// initial centering matches the post-interaction centering.
 		goToSlide(currentIndex, false);
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				goToSlide(currentIndex, false);
+			});
+		});
 		const initTimeout = setTimeout(() => {
 			goToSlide(currentIndex, false);
 		}, 50);
