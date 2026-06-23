@@ -167,6 +167,7 @@ final class Atomic
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
 			'aae-a-flip-box-face',
+			'aae-a-post-card',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -446,12 +447,12 @@ final class Atomic
 
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
-				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
+				'description'  => 'A dynamic grid of recent posts with stagger animations.',
 				'icon'         => 'eicon-posts-grid',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
-				'default'      => false,
+				'default'      => true,
 				'keywords'     => [
 					'posts',
 					'grid',
@@ -459,6 +460,21 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-card' => [
+				'label'        => 'Post Card (Internal)',
+				'description'  => 'Internal child card for the Posts Grid widget.',
+				'icon'         => 'eicon-post-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'post card', 'internal' ],
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
@@ -1269,13 +1285,19 @@ final class Atomic
 			],
 
 			'aae-a-posts' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
-				'file' => 'Widgets/Posts/class-aae-a-posts.php',
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
+				'file'          => 'Widgets/Posts/class-aae-a-posts.php',
 				'script_handle' => 'aae-a-posts-js',
-				'script_path' => '/assets/atomic/js/posts.js',
-				'has_script' => true,
-				'style_handle' => 'aae-a-posts-css',
-				'style_path' => '/assets/atomic/css/posts.css',
+				'script_path'   => '/assets/atomic/js/posts.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-posts-css',
+				'style_path'    => '/assets/atomic/css/posts.css',
+			],
+
+			'aae-a-post-card' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Post_Card',
+				'file'       => 'Widgets/Posts/class-aae-a-post-card.php',
+				'has_script' => false,
 			],
 
 			'aae-a-accordion' => [
