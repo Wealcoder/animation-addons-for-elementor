@@ -919,6 +919,27 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-site-logo' => [
+				'label'        => 'Site Logo',
+				'description'  => 'Displays the site logo with a configurable link — wraps a native Elementor image child so each piece is independently styleable.',
+				'icon'         => 'eicon-site-logo',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'site logo',
+					'logo',
+					'branding',
+					'atomic',
+					'header',
+				],
+				'category'     => 'header-footer',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1362,6 +1383,14 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
 				'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
 				'has_script' => false,
+			],
+
+			'aae-a-site-logo' => [
+				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
+				'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
+				'has_script'   => false,
+				'style_handle' => 'aae-a-site-logo-css',
+				'style_path'   => '/assets/atomic/css/site-logo.css',
 			],
 
 			// Add new atomic widgets below...
