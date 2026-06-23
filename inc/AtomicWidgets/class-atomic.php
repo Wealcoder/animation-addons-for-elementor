@@ -920,26 +920,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-site-logo' => [
-				'label'        => 'Site Logo',
-				'description'  => 'Displays the site logo with a configurable link — wraps a native Elementor image child so each piece is independently styleable.',
-				'icon'         => 'eicon-site-logo',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'site logo',
-					'logo',
-					'branding',
-					'atomic',
-					'header',
-				],
-				'category'     => 'header-footer',
-				'order'        => 17,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
 		];
 	}
 
@@ -1301,36 +1281,36 @@ final class Atomic
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-		'aae-a-icon-list-item' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
-			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
-			'has_script' => false,
-			'style_handle' => 'aae-a-icon-list-css',
-			'style_path' => '/assets/atomic/css/icon-list.css',
-		],
-		'aae-a-image-compare' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
-			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
-			'script_handle' => 'aae-a-image-compare-js',
-			'script_path' => '/assets/atomic/js/image-compare.js',
-			'has_script' => true,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + the inline <style>
-			// block of the Twig template. No `style_handle`/`style_path`.
-		],
-		'aae-a-countdown' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
-			'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
-			'script_handle' => 'aae-a-countdown-js',
-			'script_path'   => '/assets/atomic/js/countdown.js',
-			'has_script'    => true,
-		],
-		'aae-a-countdown-unit' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
-			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
-			'has_script' => false,
-		],
-		// Add new atomic widgets below...
+			'aae-a-icon-list-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-icon-list-css',
+				'style_path' => '/assets/atomic/css/icon-list.css',
+			],
+			'aae-a-image-compare' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+				'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+				'script_handle' => 'aae-a-image-compare-js',
+				'script_path' => '/assets/atomic/js/image-compare.js',
+				'has_script' => true,
+				// No external CSS: all per-element styles live in the widget's
+				// define_base_styles() (compound selectors) + the inline <style>
+				// block of the Twig template. No `style_handle`/`style_path`.
+			],
+			'aae-a-countdown' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
+				'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
+				'script_handle' => 'aae-a-countdown-js',
+				'script_path'   => '/assets/atomic/js/countdown.js',
+				'has_script'    => true,
+			],
+			'aae-a-countdown-unit' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
+				'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
+				'has_script' => false,
+			],
+			// Add new atomic widgets below...
 			'aae-a-button' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
 				'file'          => 'Widgets/Button/class-aae-a-button.php',
@@ -1382,14 +1362,6 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
 				'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
 				'has_script' => false,
-			],
-
-			'aae-a-site-logo' => [
-				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
-				'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
-				'has_script'   => false,
-				'style_handle' => 'aae-a-site-logo-css',
-				'style_path'   => '/assets/atomic/css/site-logo.css',
 			],
 
 			// Add new atomic widgets below...
@@ -1453,9 +1425,9 @@ final class Atomic
 				$file_path = WCF_ADDONS_PATH . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 
-				$deps = [ 'elementor-v2-frontend-handlers' ]; // Required for @elementor/frontend-handlers register API
-				if ( ! empty( $widget_data['script_deps'] ) ) {
-					$deps = array_merge( $deps, (array) $widget_data['script_deps'] );
+				$deps = ['elementor-v2-frontend-handlers']; // Required for @elementor/frontend-handlers register API
+				if (! empty($widget_data['script_deps'])) {
+					$deps = array_merge($deps, (array) $widget_data['script_deps']);
 				}
 				wp_register_script(
 					$widget_data['script_handle'],
@@ -1519,51 +1491,52 @@ final class Atomic
 	 * effect bundles are blanket-enqueued for the preview. The styles matter for
 	 * editor-only CSS (e.g. body.elementor-editor-active rules) to take effect.
 	 */
-	public function enqueue_widget_scripts_in_preview(): void {
-		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( ! $this->is_widget_active( $widget_id ) ) {
+	public function enqueue_widget_scripts_in_preview(): void
+	{
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if (! $this->is_widget_active($widget_id)) {
 				continue;
 			}
 
-			if ( ! empty( $widget_data['has_script'] ) ) {
+			if (! empty($widget_data['has_script'])) {
 				// The atomic frontend loader's register hook may not have run in
 				// the preview context, so register the handle here if missing.
-				if ( ! wp_script_is( $widget_data['script_handle'], 'registered' ) ) {
+				if (! wp_script_is($widget_data['script_handle'], 'registered')) {
 					$path = $widget_data['script_path'];
-					if ( ! $this->is_dev_environment() ) {
-						$min_path = str_replace( '.js', '.min.js', $path );
-						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+					if (! $this->is_dev_environment()) {
+						$min_path = str_replace('.js', '.min.js', $path);
+						if (file_exists(WCF_ADDONS_PATH . $min_path)) {
 							$path = $min_path;
 						}
 					}
 					$file_path = WCF_ADDONS_PATH . $path;
-					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+					$version   = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 
 					wp_register_script(
 						$widget_data['script_handle'],
 						WCF_ADDONS_URL . $path,
-						[ 'elementor-v2-frontend-handlers' ],
+						['elementor-v2-frontend-handlers'],
 						$version,
 						true
 					);
 				}
 
-				wp_enqueue_script( $widget_data['script_handle'] );
+				wp_enqueue_script($widget_data['script_handle']);
 			}
 
-			if ( ! empty( $widget_data['style_handle'] ) ) {
+			if (! empty($widget_data['style_handle'])) {
 				// Register the style handle on the spot if the styles/register
 				// hook hasn't run in the preview context.
-				if ( ! wp_style_is( $widget_data['style_handle'], 'registered' ) && ! empty( $widget_data['style_path'] ) ) {
+				if (! wp_style_is($widget_data['style_handle'], 'registered') && ! empty($widget_data['style_path'])) {
 					$style_path = $widget_data['style_path'];
-					if ( ! $this->is_dev_environment() ) {
-						$min_path = str_replace( '.css', '.min.css', $style_path );
-						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+					if (! $this->is_dev_environment()) {
+						$min_path = str_replace('.css', '.min.css', $style_path);
+						if (file_exists(WCF_ADDONS_PATH . $min_path)) {
 							$style_path = $min_path;
 						}
 					}
 					$style_file = WCF_ADDONS_PATH . $style_path;
-					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : WCF_ADDONS_VERSION;
+					$style_ver  = file_exists($style_file) ? filemtime($style_file) : WCF_ADDONS_VERSION;
 
 					wp_register_style(
 						$widget_data['style_handle'],
@@ -1573,7 +1546,7 @@ final class Atomic
 					);
 				}
 
-				wp_enqueue_style( $widget_data['style_handle'] );
+				wp_enqueue_style($widget_data['style_handle']);
 			}
 		}
 	}
@@ -1615,12 +1588,13 @@ final class Atomic
 	 * button / handle styles live only in the external CSS file render
 	 * unstyled inside the editor (frontend is unaffected).
 	 */
-	public function enqueue_atomic_preview_styles(): void {
+	public function enqueue_atomic_preview_styles(): void
+	{
 		$this->register_atomic_styles();
 
-		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['style_handle'] ) ) {
-				wp_enqueue_style( $widget_data['style_handle'] );
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id) && ! empty($widget_data['style_handle'])) {
+				wp_enqueue_style($widget_data['style_handle']);
 			}
 		}
 	}
@@ -1638,12 +1612,13 @@ final class Atomic
 	 * widgets rendered through the editor preview's Element_Builder
 	 * pipeline, leaving widgets unresponsive in the editor.
 	 */
-	public function enqueue_atomic_preview_scripts(): void {
-		$this->register_atomic_scripts( null );
+	public function enqueue_atomic_preview_scripts(): void
+	{
+		$this->register_atomic_scripts(null);
 
-		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['has_script'] ) && ! empty( $widget_data['script_handle'] ) ) {
-				wp_enqueue_script( $widget_data['script_handle'] );
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if ($this->is_widget_active($widget_id) && ! empty($widget_data['has_script']) && ! empty($widget_data['script_handle'])) {
+				wp_enqueue_script($widget_data['script_handle']);
 			}
 		}
 	}
