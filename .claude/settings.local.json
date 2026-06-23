@@ -12,7 +12,11 @@
       "Bash(grep -c \"centersActiveSlide\" assets/atomic/js/nestedslider.js)",
       "Bash(echo \"exit:$?\")",
       "Bash(grep -oE \".{0,40}>1\\\\\\)[^;{]*=1\" assets/build/modules/atomic/effects/nested-slider.js)",
-      "Bash(grep -oE \"j&&[^;]{0,80}\" assets/build/modules/atomic/effects/nested-slider.js)"
+      "Bash(grep -oE \"j&&[^;]{0,80}\" assets/build/modules/atomic/effects/nested-slider.js)",
+      "Bash(node --check assets/build/modules/atomic/effects/nested-slider.js)",
+      "Bash(node --check src/modules/atomic/effects/nested-slider/index.js)",
+      "Bash(find inc/AtomicWidgets/Widgets/NestedSlider/assets -name \"*.css\")",
+      "Bash(grep -rl \"aae-slide-height\" inc/AtomicWidgets/Widgets/NestedSlider/assets/)"
     ]
   }
 }

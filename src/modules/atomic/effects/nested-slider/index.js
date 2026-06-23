@@ -71,6 +71,7 @@ function bind(container, config) {
 	const getCfRotate = () => parseInt(r('cfRotate', 45));
 	const getCfDepth = () => parseInt(r('cfDepth', 100));
 	const getGap = () => parseInt(r('gap', 0));
+	const getSlideHeight = () => Math.max(0, parseInt(r('slideHeight', 0)) || 0); // 0 = auto (aspect ratio)
 	const getEasing = () => r('easing', 'power');
 	const isCenterMode = () => r('centerMode', false) === true || String(r('centerMode', false)) === 'true';
 	const getCenterScale = () => parseFloat(r('centerScale', 0.85));
@@ -134,6 +135,10 @@ function bind(container, config) {
 		sliderDiv.style.setProperty('--aae-perspective', `${getPerspective()}px`);
 		sliderDiv.style.setProperty('--aae-slide-speed', `${getTransitionSpeed()}ms`);
 		sliderDiv.style.setProperty('--aae-side-peek', `${getPeek()}%`);
+		// Fixed slide height keeps the slide/image from shrinking as more slides
+		// fit per view. 0 = auto (content/aspect-ratio drives height, the default).
+		const slideH = getSlideHeight();
+		sliderDiv.style.setProperty('--aae-slide-height', slideH > 0 ? `${slideH}px` : 'auto');
 		sliderDiv.style.setProperty('--aae-easing', easingsMap[getEasing()] || 'cubic-bezier(0.25, 1, 0.5, 1)');
 
 		// coverflow and perspective both use per-slide perspective() — no container perspective
@@ -175,7 +180,6 @@ function bind(container, config) {
 	let marqueeFrame = null;
 	let marqueeX = 0;
 	let lastTimestamp = null;
-	let roundTimer = null;
 
 	const localController = new AbortController();
 
@@ -183,7 +187,6 @@ function bind(container, config) {
 		localController.abort();
 		stopAutoplay();
 		stopMarquee();
-		clearTimeout(roundTimer);
 		clearTimeout(container._aaeSliderInitRetry);
 		clearTimeout(container._aaeSliderInitTimeout);
 		if (sliderDiv._aaeSliderResizeCleanup) {
@@ -810,65 +813,6 @@ function bind(container, config) {
 		}
 	};
 
-	// Editor "Play Now": run the slider through exactly one full round —
-	// advance through every slide, loop back to the first, then stop. Works
-	// regardless of the autoplay setting (autoplay only governs the live page,
-	// not this manual preview). Paced by the transition speed so each step is
-	// visible; a small settle gap is added on top.
-	const playOneRound = () => {
-		clearTimeout(roundTimer);
-		// Cancel bind()'s deferred re-center so it can't snap the position mid-round.
-		clearTimeout(container._aaeSliderInitTimeout);
-
-		if (getEffect() === 'marquee') {
-			// Marquee has no discrete slides — animate one full set width, then snap back.
-			stopMarquee();
-			const dir = getAutoplayDirection();
-			const speedSeconds = Math.max(0.1, getTransitionSpeed() / 1000);
-			const ease = easingsMap[getEasing()] || 'cubic-bezier(0.25, 1, 0.5, 1)';
-			const distance = dir === 1 ? -actualOriginalWidth : actualOriginalWidth;
-			track.style.transition = 'none';
-			track.style.transform = 'translate3d(0, 0, 0)';
-			void track.offsetHeight; // reflow so the next transition animates
-			track.style.transition = `transform ${speedSeconds}s ${ease}`;
-			track.style.transform = `translate3d(${distance}px, 0, 0)`;
-			roundTimer = setTimeout(() => {
-				track.style.transition = 'none';
-				track.style.transform = 'translate3d(0, 0, 0)';
-				marqueeX = 0;
-			}, speedSeconds * 1000 + 50);
-			return;
-		}
-
-		const slides = getSlides();
-		if (slides.length <= 1) return;
-
-		maxIndex = getMaxIndex();
-		// Start and end on the natural resting slide (index 1 in editor center
-		// mode, else 0) so the round leaves the center look exactly as it was.
-		const restIndex = getRestIndex();
-		const span = maxIndex + 1; // distinct positions 0..maxIndex
-		const stepMs = Math.max(getTransitionSpeed(), 300) + 120;
-		const wrap = (i) => ((i % span) + span) % span;
-
-		stopAutoplay();
-		goToSlide(restIndex, false); // jump to rest with no animation
-
-		// Advance one position per slide and wrap, so the final step lands back
-		// on restIndex having visited every slide once — a full circle.
-		let step = 0;
-		const stepOnce = () => {
-			step += 1;
-			goToSlide(wrap(restIndex + step), true);
-			if (step < span) {
-				roundTimer = setTimeout(stepOnce, stepMs);
-			}
-		};
-		roundTimer = setTimeout(stepOnce, stepMs);
-	};
-
-	sliderDiv._aaeSliderPlayRound = playOneRound;
-
 	// Play Pause Toggle
 	if (playPauseBtn) {
 		playPauseBtn.addEventListener('click', () => {
@@ -1182,29 +1126,15 @@ function unbind(el) {
 	}
 	clearTimeout(el._aaeSliderInitRetry);
 	clearTimeout(el._aaeSliderInitTimeout);
-	clearTimeout(el._aaeSliderRoundKick);
 }
 
+// Invoked by the editor live-change dispatcher (play_group "aae_ns_") whenever a
+// slider setting changes. A slider is an ongoing interactive component, not a
+// one-shot entrance animation, so there's no "play once" — we just re-bind so
+// the new settings take effect (and autoplay/marquee resume via bind()).
 function play(el, config) {
-	// Editor "Play Now": rebind for a clean start, then run exactly one full
-	// round (advance through all slides, loop back to the first, stop) even
-	// when autoplay is off. The round driver is exposed by bind() on the
-	// slider element; bind() may defer init via a retry when slides aren't in
-	// the DOM yet, so poll briefly for the driver before giving up.
 	unbind(el);
 	bind(el, config);
-
-	let attempts = 0;
-	const startRound = () => {
-		if (typeof el._aaeSliderPlayRound === 'function') {
-			el._aaeSliderPlayRound();
-			return;
-		}
-		if (attempts++ < 20) {
-			el._aaeSliderRoundKick = setTimeout(startRound, 60);
-		}
-	};
-	requestAnimationFrame(startRound);
 }
 
 const refreshSliderById = (id, reason = 'manual') => {
@@ -1222,8 +1152,6 @@ const refreshSliderById = (id, reason = 'manual') => {
 		});
 	});
 };
-
-
 
 /**
  * Custom bridge event from parent editor window.

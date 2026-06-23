@@ -36,6 +36,7 @@ final class Render {
 			'cfRotate'          => 45,
 			'cfDepth'           => 100,
 			'gap'               => 0,
+			'slideHeight'       => 0,
 			'easing'            => 'power',
 			'centerMode'        => false,
 			'centerScale'       => 0.85,
@@ -63,6 +64,7 @@ final class Render {
 		$this->emit_responsive( $config, $settings, Schema::NS_CF_ROTATE, 'cfRotate', 45, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_CF_DEPTH, 'cfDepth', 100, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_GAP, 'gap', 0, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
+		$this->emit_responsive( $config, $settings, Schema::NS_SLIDE_HEIGHT, 'slideHeight', 0, $extra_bps, static fn( $v ) => is_numeric($v) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_EASING, 'easing', 'power', $extra_bps, static fn( $v ) => is_string($v) ? $v : 'power' );
 		$this->emit_responsive( $config, $settings, Schema::NS_CENTER_MODE, 'centerMode', false, $extra_bps, static fn( $v ) => (bool) $v );
 		$this->emit_responsive( $config, $settings, Schema::NS_CENTER_SCALE, 'centerScale', 0.85, $extra_bps, static fn( $v ) => is_numeric($v) ? (float) $v : null );
