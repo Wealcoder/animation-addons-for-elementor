@@ -11,7 +11,6 @@
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
-
 /***/ }),
 
 /***/ "@elementor/frontend-handlers":
@@ -108,8 +107,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _scss_toggle_switcher_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/toggle-switcher.scss */ "./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss");
-
-
 
 // Persists toggle state across editor re-initializations, keyed by element data-id.
 const toggleState = new Map();
