@@ -13,10 +13,10 @@ $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 	display: grid;
 	position: relative;
 
-	// ── Button: same grid cell, centered, above video (z-index works on grid items)
+	// ── Button: same grid cell, top-left, above video (z-index works on grid items)
 	> .aae-a-video-mask-btn {
 		grid-area: 1 / 1;
-		place-self: center;
+		place-self: start;
 		width: max-content;
 		height: max-content;
 		z-index: 1;

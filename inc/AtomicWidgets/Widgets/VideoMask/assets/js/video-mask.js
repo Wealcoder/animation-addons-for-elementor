@@ -25,6 +25,33 @@ const applyMaskShape = ( container ) => {
 	wrapper.style.maskImage       = `url(${ url })`;
 };
 
+// Center the mask on the button — no matter where the button is placed.
+// mask-position is the top-left corner of the mask image, so we offset by
+// half the mask dimensions to land its centre exactly on the button's centre.
+const syncMaskToBtn = ( container ) => {
+	const btn     = container.querySelector( '[data-element_type="e-aae-a-video-mask-btn"]' );
+	const wrapper = container.querySelector( '.vm-video-wrapper' );
+	if ( ! btn || ! wrapper ) return;
+
+	const containerRect = container.getBoundingClientRect();
+	const btnRect       = btn.getBoundingClientRect();
+
+	const cx = btnRect.left - containerRect.left + btnRect.width  / 2;
+	const cy = btnRect.top  - containerRect.top  + btnRect.height / 2;
+
+	// Read current mask-size so position stays correct even if the user changes it.
+	const cs          = getComputedStyle( wrapper );
+	const maskSizeRaw = cs.getPropertyValue( 'mask-size' )
+	                 || cs.getPropertyValue( '-webkit-mask-size' )
+	                 || '200px';
+	const parts = maskSizeRaw.trim().split( /\s+/ );
+	const mw    = parseFloat( parts[ 0 ] ) || 200;
+	const mh    = parseFloat( parts.length > 1 ? parts[ 1 ] : parts[ 0 ] ) || mw;
+
+	wrapper.style.webkitMaskPosition = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
+	wrapper.style.maskPosition       = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
+};
+
 const initVideoMask = ( container, signal ) => {
 	// The click-trigger is the inner AAE_A_Video_Mask_Btn atomic element.
 	// Using data-element_type to find it is robust against class-name changes.
@@ -32,8 +59,9 @@ const initVideoMask = ( container, signal ) => {
 	const video = container.querySelector( 'video' );
 	if ( ! btn || ! video ) return;
 
-	// Idle state: apply the shape mask — circle appears centered over the button.
+	// Apply shape and align mask to the button's initial position.
 	applyMaskShape( container );
+	syncMaskToBtn( container );
 
 	const opts = signal ? { signal } : {};
 
@@ -44,18 +72,17 @@ const initVideoMask = ( container, signal ) => {
 			// CSS removes mask via .mask-open .vm-video-wrapper { mask-image: none !important }
 			// → video expands to its full rectangular (tetragon) area.
 			video.play().catch( () => {} );
-		} else {
-			// Removing .mask-open lets the JS inline mask-image take effect again
-			// → restores the idle circle shape.
-			video.pause();
-			video.currentTime = 0;
 		}
+		// On minimize: just restore the mask shape — video keeps playing in the background.
 	}, opts );
 
 	// When a non-looping video ends, restore the idle masked state automatically.
 	video.addEventListener( 'ended', () => {
 		container.classList.remove( 'mask-open' );
 	}, opts );
+
+	// Re-sync mask position if the layout shifts (e.g. window resize).
+	window.addEventListener( 'resize', () => syncMaskToBtn( container ), opts );
 };
 
 register( {
