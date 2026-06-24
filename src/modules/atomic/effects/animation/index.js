@@ -16,9 +16,8 @@
  * regular effect for legacy CSS). register() is idempotent (dedupe by name).
  */
 
-import { readRegular, playRegular, bindRegular, resetRegular, REGULAR_PLAYED, ANIM_MAP } from './regular';
-import { readText, playText, bindText, resetText, TEXT_PLAYED, TEXT_MAP } from './text';
-import { cleanupTriggerOn } from './triggers';
+import { readRegular, playRegular, playRegularRow, bindRegular, resetRegular, REGULAR_PLAYED, ANIM_MAP } from './regular';
+import { readText, playText, playTextRow, bindText, resetText, TEXT_PLAYED, TEXT_MAP } from './text';
 
 window.AAEADDON.register({
 	name: 'text',
@@ -27,8 +26,11 @@ window.AAEADDON.register({
 	playedKey: TEXT_PLAYED,
 	read:       readText,
 	play: playText,
+	playRow: playTextRow,
 	bind: bindText,
-	unbind: cleanupTriggerOn,
+	// resetText tears down every row's tween + the shared split (per-row
+	// state lives in el.__aaeTextRows, not the single DISPOSE_KEY).
+	unbind: resetText,
 	reset: resetText,
 });
 
@@ -39,7 +41,11 @@ window.AAEADDON.register({
 	playedKey: REGULAR_PLAYED,
 	read: readRegular,
 	play: playRegular,
+	playRow: playRegularRow,
 	bind: bindRegular,
-	unbind: cleanupTriggerOn,
+	// resetRegular tears down EVERY row's tween + trigger disposer (the
+	// repeater stores per-row state in el.__aaeAnimRows, not the single
+	// DISPOSE_KEY cleanupTriggerOn reads). So unbind === reset here.
+	unbind: resetRegular,
 	reset: resetRegular,
 });

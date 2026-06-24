@@ -56,6 +56,7 @@ function InnerTabsGroup({ fields, settings, activeBp, element, bindPrefix }) {
 							cells={field.cells}
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}
+							rowFields={field.rowFields}
 							defaultValue={field.defaultValue}
 							responsive={field.responsive !== false}
 							propValue={fullBind ? (settings[fullBind] ?? null) : null}
@@ -176,6 +177,7 @@ export function ResponsiveSection({ config }) {
 						cells={field.cells}
 						addLabel={field.addLabel}
 						rowDefaults={field.rowDefaults}
+						rowFields={field.rowFields}
 						defaultValue={field.defaultValue}
 						responsive={field.responsive !== false}
 						propValue={fullBind ? (settings[fullBind] ?? null) : null}

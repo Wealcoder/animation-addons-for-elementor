@@ -49,18 +49,29 @@ export function modeFor(trigger) {
 	return TRIGGER_MODES[trigger] || 'in-view';
 }
 
-export function resolveTriggerEl(mode, selector, config) {
+/**
+ * Resolve the element a hover/click trigger should listen on.
+ *
+ * Rule: for click / hover, an empty Trigger Selector means the element
+ * itself (self). A non-empty selector resolves via querySelector; if it
+ * matches nothing we fall back to the element so the interaction never goes
+ * dead. Non-interactive modes (scroll / page-load) return undefined — they
+ * don't use a listen target.
+ *
+ * `el` is the animated element; `config.triggerSelector` is the user value.
+ * The legacy `selector` second arg is ignored (kept for call-site compat).
+ */
+export function resolveTriggerEl(mode, el, config) {
+	if (mode !== 'hover' && mode !== 'click') return undefined;
 
-	if (mode === 'hover' || mode === 'click') {
-		if (config.triggerSelector && config.triggerSelector !== '') {
-			selector = config.triggerSelector;
-		}
+	const sel = config && config.triggerSelector;
+	// Empty → self element.
+	if (!sel || sel === '') {
+		return el instanceof HTMLElement ? el : undefined;
 	}
-
-	if ((mode !== 'hover' && mode !== 'click') || !selector) return undefined;
-	// check selectoor is html element or not
-	if (selector instanceof HTMLElement) return selector;
-	return document.querySelector(selector) || undefined;
+	if (sel instanceof HTMLElement) return sel;
+	// Non-empty selector → match, else fall back to self.
+	return document.querySelector(sel) || (el instanceof HTMLElement ? el : undefined);
 }
 
 /**
@@ -79,20 +90,36 @@ export function cleanupTriggerOn(el) {
 	el[DISPOSE_KEY] = null;
 }
 
-export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerEl, markers, config }) {
+/**
+ * Wire a trigger. Returns a disposer function that tears down whatever this
+ * call installed (listener / ScrollTrigger / observer). For single-config
+ * kinds the disposer is ALSO stored on el[DISPOSE_KEY] (so the legacy
+ * cleanupTriggerOn(el) path keeps working). Multi-row kinds pass
+ * `skipCleanup: true` and `skipGlobalKey: true` so stacked rows don't clobber
+ * each other's disposer — they collect the returned disposers themselves.
+ */
+export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerEl, markers, config, skipCleanup, skipGlobalKey }) {
 	// Always clean up the previous wiring first — in the editor, settings
 	// changes fire rebind() which can re-call us on the same element many
-	
-	cleanupTriggerOn({ el, mode, play, buildScrubbed, triggerEl, markers, config });
-	if (config == undefined) {
-		return;
+	// times. Multi-row kinds skip this (they manage their own disposer list).
+	if (!skipCleanup) {
+		cleanupTriggerOn(el);
 	}
+	if (config == undefined) {
+		return () => {};
+	}
+
+	// Store the disposer on the global key only for single-config kinds.
+	const setDisposer = (fn) => {
+		if (!skipGlobalKey) el[DISPOSE_KEY] = fn;
+		return fn;
+	};
 
 	if (mode === 'page-load') {
 		play();
 		// page-load has nothing to dispose — the tween itself is tracked
 		// by the kind's playedKey and killed on rebind by common.js.
-		return;
+		return () => {};
 	}
 
 	// hover / click can listen on a separate element when the kind has
@@ -100,17 +127,15 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 	if (mode === 'hover') {
 		const target = triggerEl || el;
 		target.addEventListener('mouseenter', play);
-		el[DISPOSE_KEY] = () => target.removeEventListener('mouseenter', play);
-		return;
+		return setDisposer(() => target.removeEventListener('mouseenter', play));
 	}
 
 	if (mode === 'click') {
 		// Warn once per element — in the editor, rebind() fires on every
-		// settings change, so a per-call warn() would spam the console.			
+		// settings change, so a per-call warn() would spam the console.
 		const target = triggerEl || el;
 		target.addEventListener('click', play);
-		el[DISPOSE_KEY] = () => target.removeEventListener('click', play);
-		return;
+		return setDisposer(() => target.removeEventListener('click', play));
 	}
 
 	const ScrollTrigger = getScrollTrigger();
@@ -145,7 +170,7 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 	
 	if (mode === 'scrub' && ScrollTrigger && typeof buildScrubbed === 'function') {
 		const tween = buildScrubbed();
-		if (!tween) return;
+		if (!tween) return () => {};
 
 		const stConfig = {
 			trigger: triggerSelector,
@@ -156,21 +181,20 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 			invalidateOnRefresh: true,
 			markers: markers,
 		};
-	
+
 		if (endTrigger) stConfig.endTrigger = endTrigger;
-	
+
 		const st = ScrollTrigger.create(stConfig);
 
 		// `st.kill(true)` reverts — removes the marker <div> nodes
 		// ScrollTrigger appended to <body>. Plain `kill()` leaves them
 		// behind, which is what makes stale markers appear in the editor.
-		el[DISPOSE_KEY] = () => { st.kill(true); tween.kill?.(); };
-		return;
+		return setDisposer(() => { st.kill(true); tween.kill?.(); });
 	}
 
 	if (mode === 'scroll-tied' && ScrollTrigger) {
 		// times. Without this, listeners and ScrollTriggers stack up.
-	
+
 		const stConfig = {
 			trigger: triggerSelector,
 			start: start,
@@ -178,7 +202,7 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 			toggleActions: toggleActions,
 			markers: markers,
 		};
-		
+
 		if (animation) {
 			stConfig.animation = animation;
 		} else {
@@ -189,12 +213,11 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 				play();
 			};
 		}
-		
+
 		if (endTrigger) stConfig.endTrigger = endTrigger;
 
 		const st = ScrollTrigger.create(stConfig);
-		el[DISPOSE_KEY] = () => st.kill(true);
-		return;
+		return setDisposer(() => st.kill(true));
 	}
 
 	// Default: in-view, play once when the element scrolls into view.
@@ -227,8 +250,7 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 		if (endTrigger) stConfig.endTrigger = endTrigger;
 
 		const st = ScrollTrigger.create(stConfig);
-		el[DISPOSE_KEY] = () => st.kill(true);
-		return;
+		return setDisposer(() => st.kill(true));
 	}
 
 	const observer = new IntersectionObserver((entries) => {
@@ -239,5 +261,5 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 		});
 	}, { threshold: 0.15 });
 	observer.observe(triggerSelector instanceof HTMLElement ? triggerSelector : el);
-	el[DISPOSE_KEY] = () => observer.disconnect();
+	return setDisposer(() => observer.disconnect());
 }
