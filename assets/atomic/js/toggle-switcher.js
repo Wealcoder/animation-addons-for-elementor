@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -206,3 +207,6 @@ const initToggleSwitcher = (container, signal) => {
 /******/ })()
 ;
 //# sourceMappingURL=toggle-switcher.js.map
+=======
+!function(){"use strict";var e=elementorV2.frontendHandlers;const t=new Map;(0,e.register)({elementType:"e-aae-a-toggle-switcher",id:"aae-a-toggle-switcher-handler",callback:({element:e,signal:r})=>{const a=e.classList.contains("aae-a-toggle-switcher")?e:e.querySelector(".aae-a-toggle-switcher");a&&((e,r)=>{const a=e.querySelector('input[type="checkbox"]'),l=e.querySelector(".before_label"),c=e.querySelector(".after_label"),n=e.querySelector("label.switcher");if(!a)return;const s=e.dataset.id||"",o=r=>{s&&t.set(s,r),a.checked=r;const l=e.querySelectorAll(".aae-a-toggle-pane"),c=e.querySelectorAll(".before_label, .after_label");l.forEach((e,t)=>{const a=r?1===t:0===t;e.classList.toggle("show",a),a?e.style.removeProperty("display"):e.style.setProperty("display","none","important")}),c.forEach((e,t)=>e.classList.toggle("active",r?1===t:0===t))},i=r?{signal:r,capture:!0}:{capture:!0};l?.addEventListener("click",e=>{e.preventDefault(),o(!1)},i),c?.addEventListener("click",e=>{e.preventDefault(),o(!0)},i),n?.addEventListener("click",e=>{e.preventDefault(),o(!a.checked)},i);const d=()=>{var r;if(!e.querySelectorAll(".aae-a-toggle-pane").length)return!1;const a=!!s&&null!==(r=t.get(s))&&void 0!==r&&r;return o(a),!0};if(!d()){const t=new MutationObserver(()=>{d()&&t.disconnect()});t.observe(e,{childList:!0,subtree:!0}),r&&r.addEventListener("abort",()=>t.disconnect(),{once:!0})}})(a,r)}})}();
+>>>>>>> origin/atomic4

@@ -366,7 +366,7 @@ function ResponsiveCellRow({
     }
 
     if (live_change && play_group) {
-      console.log(newVal, play_group);
+    
       setTimeout(() => triggerAnimationReplay(play_group), 50);
     }
   };

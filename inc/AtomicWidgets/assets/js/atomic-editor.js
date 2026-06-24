@@ -26,9 +26,8 @@
 		}
 
 		state.initialized = true;
+		installRunWrapper();
 		//installRunWrapper();
-
-		console.log('AAE Atomic Slider Editor Bridge installed');
 	}
 
 	function installRunWrapper() {
@@ -56,15 +55,7 @@
 			const shouldHandle = shouldHandleCommand(command);
 			const beforeContext = shouldHandle
 				? captureBeforeContext(command, args)
-				: null;
-
-			if (shouldHandle) {
-				console.log('AAE Slider Bridge BEFORE:', {
-					command,
-					args,
-					beforeContext,
-				});
-			}
+				: null;			
 
 			const result = state.originalRun(command, args, ...rest);
 
@@ -332,13 +323,7 @@
 		};
 	}
 
-	function handleAfterCommand(command, args, result, context) {
-		console.log('AAE Slider Bridge AFTER:', {
-			command,
-			args,
-			result,
-			context,
-		});
+	function handleAfterCommand(command, args, result, context) {		
 
 		if (command === 'document/elements/delete') {
 			handleDelete(context);
@@ -460,37 +445,26 @@
 
 		state.timers.set(sliderId, timer);
 
-		console.log('AAE Slider Bridge queued refresh', {
-			sliderId,
-			reason,
-		});
 	}
 
 	function refreshSliderInPreview(sliderId, reason) {
 		const previewWindow = getPreviewWindow();
-
-		if (!previewWindow) {
-			console.warn('AAE Slider Bridge: preview window not found', {
-				sliderId,
-				reason,
-			});
+	
+		if (!previewWindow) {		
 
 			return;
 		}
 
-		console.log('AAE Slider Bridge refresh preview slider', {
-			sliderId,
-			reason,
-		});
 
-		if (previewWindow.AAEAtomicSlider?.refreshById) {
-			previewWindow.AAEAtomicSlider.refreshById(sliderId, reason);
-			return;
-		}
+		// if (previewWindow.AAEAtomicSlider?.refreshById) {
+		// 	previewWindow.AAEAtomicSlider.refreshById(sliderId, reason);
+		// 	return;
+		// }
 
 		/**
 		 * Fallback custom event.
 		 */
+		
 		previewWindow.dispatchEvent(
 			new previewWindow.CustomEvent('aae:slider:refresh', {
 				detail: {

@@ -343,7 +343,8 @@ function isKindInPlayGroup(kindName, playGroup) {
 		'aae_advance_tooltip_': 'advance-tooltip',
 		'aae_tilt_': 'tilt',
 		'aae_wrapper_link_': 'wrapper-link',
-		'aae_custom_css_': 'custom-css'
+		'aae_custom_css_': 'custom-css',
+		'aae_ns_': 'nested-slider',
 	};
 	return groupMap[group] === kindName;
 }

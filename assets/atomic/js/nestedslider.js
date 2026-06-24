@@ -108,7 +108,7 @@ const getSliderElementById = id => {
 const initSlider = (container, signal) => {
   const track = container.querySelector('.aae-slider-track');
   if (!track) return;
-  const getSlides = () => Array.from(track.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT');
+  const getSlides = () => Array.from(track.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT' && !el.classList.contains('elementor-element-overlay'));
   if (!getSlides().length) {
     const retryTimeout = setTimeout(() => initSlider(container, signal), 100);
     if (signal) {
@@ -184,6 +184,7 @@ const initSlider = (container, signal) => {
     if (!isCenterMode() && !is3DEnabled()) {
       slides.forEach(slide => {
         slide.style.transform = '';
+        slide.style.opacity = '';
       });
       return;
     }
@@ -200,9 +201,11 @@ const initSlider = (container, signal) => {
         const translateZ = -Math.abs(normalizedDistance * 150);
         slide.style.transformOrigin = 'center center';
         slide.style.transform = `translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+        slide.style.opacity = '';
       } else if (isCenterMode()) {
         slide.style.transformOrigin = 'center center';
         slide.style.transform = `scale(${scale})`;
+        slide.style.opacity = scale >= 0.999 ? '1' : '0.5';
       }
     });
   };
@@ -230,7 +233,7 @@ const initSlider = (container, signal) => {
       const speedSeconds = getTransitionSpeed() / 1000;
       track.style.transition = `transform ${speedSeconds}s ease-out`;
       slides.forEach(slide => {
-        slide.style.transition = `transform ${speedSeconds}s ease-out`;
+        slide.style.transition = `transform ${speedSeconds}s ease-out, opacity ${speedSeconds}s ease-out`;
       });
     } else {
       track.style.transition = 'none';
@@ -252,8 +255,13 @@ const initSlider = (container, signal) => {
       goToSlide(currentIndex + getAutoplayDirection());
     }, getAutoplaySpeed());
   };
-  goToSlide(0, false);
-  startAutoplay();
+
+  // Defer first render until after layout so offsetWidth is real.
+  // This is the only goToSlide call needed at init — no synchronous call first.
+  requestAnimationFrame(() => {
+    goToSlide(0, false);
+    startAutoplay();
+  });
   sliderDiv.addEventListener('mouseenter', () => {
     if (getPauseOnHover()) stopAutoplay();
   }, evtOpts);
@@ -371,12 +379,21 @@ window.addEventListener('aae:slider:refresh', event => {
         reInit('mutation-observer');
       }
     });
+
+    // Watch slider element for config attribute changes only.
     observer.observe(element, {
       attributes: true,
-      attributeFilter: configAttributes,
-      childList: true,
-      subtree: true
+      attributeFilter: configAttributes
     });
+
+    // Watch track's direct children for slide add/remove.
+    // Avoids Elementor editor overlays triggering reinit on every select/deselect.
+    const sliderTrack = element.querySelector('.aae-slider-track');
+    if (sliderTrack) {
+      observer.observe(sliderTrack, {
+        childList: true
+      });
+    }
     if (signal) {
       signal.addEventListener('abort', () => {
         clearTimeout(debounceTimer);
