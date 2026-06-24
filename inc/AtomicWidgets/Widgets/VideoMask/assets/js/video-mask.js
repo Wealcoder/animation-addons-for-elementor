@@ -48,8 +48,14 @@ const syncMaskToBtn = ( container ) => {
 	const mw    = parseFloat( parts[ 0 ] ) || 200;
 	const mh    = parseFloat( parts.length > 1 ? parts[ 1 ] : parts[ 0 ] ) || mw;
 
-	wrapper.style.webkitMaskPosition = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
-	wrapper.style.maskPosition       = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
+	// Clamp so the full mask shape is never cropped by the container edge.
+	const maxX = Math.max( 0, containerRect.width  - mw );
+	const maxY = Math.max( 0, containerRect.height - mh );
+	const posX = Math.max( 0, Math.min( cx - mw / 2, maxX ) );
+	const posY = Math.max( 0, Math.min( cy - mh / 2, maxY ) );
+
+	wrapper.style.webkitMaskPosition = `${ posX }px ${ posY }px`;
+	wrapper.style.maskPosition       = `${ posX }px ${ posY }px`;
 };
 
 const initVideoMask = ( container, signal ) => {
