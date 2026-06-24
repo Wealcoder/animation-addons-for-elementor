@@ -161,12 +161,29 @@ final class Atomic
 			'aae-a-slider-nav-prev',
 			'aae-a-slider-nav-next',
 			'aae-a-slider-pagination',
+			'aae-a-slider-dot',
+			'aae-a-slider-indicators',
+			'aae-a-slider-current',
+			'aae-a-slider-total',
+			'aae-a-slider-percentage',
+			'aae-a-slider-progress',
+			'aae-a-slider-counter',
+			'aae-a-slider-divider',
+			'aae-a-slider-progress-fill',
 			'aae-a-counter-number',
+			'aae-a-video-mask-btn',
 			'aae-a-accordion-item',
-			'aae-a-icon-list-item',
+			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+<<<<<<< HEAD
 			'aae-a-flip-box-face',
+			'aae-a-post-card',
+=======
+			'aae-a-offcanvas-panel',
+			'aae-a-timeline-item',
+			'aae-a-social-share-item',
+>>>>>>> origin/atomic4
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -446,12 +463,12 @@ final class Atomic
 
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
-				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
+				'description'  => 'A dynamic grid of recent posts with stagger animations.',
 				'icon'         => 'eicon-posts-grid',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
-				'default'      => false,
+				'default'      => true,
 				'keywords'     => [
 					'posts',
 					'grid',
@@ -459,6 +476,21 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-card' => [
+				'label'        => 'Post Card (Internal)',
+				'description'  => 'Internal child card for the Posts Grid widget.',
+				'icon'         => 'eicon-post-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'post card', 'internal' ],
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
@@ -735,6 +767,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-social-share' => [
+				'label'        => 'Social Share',
+				'description'  => 'Atomic post social share widget with multiple vendors and AJAX share counts.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'post',
+					'atomic',
+					'aae',
+				],
+				'category'     => 'general',
+				'order'        => 10,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item' => [
+				'label'        => 'Social Share Item',
+				'description'  => 'Internal child item for Social Share.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-image-compare' => [
 				'label'        => 'Image Compare',
 				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
@@ -794,6 +867,47 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline' => [
+				'label'        => 'Timeline',
+				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
+				'icon'         => 'eicon-time-line',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'history',
+					'roadmap',
+					'atomic',
+					'composite',
+				],
+				'category'     => 'general',
+				'order'        => 13,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline-item' => [
+				'label'        => 'Timeline — Item',
+				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'item',
+					'event',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -880,21 +994,36 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+<<<<<<< HEAD
 			'aae-a-flip-box' => [
 				'label'        => 'Flip Box',
 				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
 				'icon'         => 'eicon-flip-box',
+=======
+			'aae-a-offcanvas' => [
+				'label'        => 'Offcanvas',
+				'description'  => 'Animated offcanvas drawer with trigger button and panel — vanilla JS, no GSAP.',
+				'icon'         => 'eicon-sidebar',
+>>>>>>> origin/atomic4
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [
+<<<<<<< HEAD
 					'flip',
 					'box',
 					'card',
 					'hover',
 					'atomic',
 					'animation',
+=======
+					'offcanvas',
+					'drawer',
+					'sidebar',
+					'panel',
+					'atomic',
+>>>>>>> origin/atomic4
 				],
 				'category'     => 'general',
 				'order'        => 15,
@@ -902,16 +1031,26 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+<<<<<<< HEAD
 			'aae-a-flip-box-face' => [
 				'label'        => 'Flip Box Face (Internal)',
 				'description'  => 'Internal front/back face container for Flip Box.',
+=======
+			'aae-a-offcanvas-panel' => [
+				'label'        => 'Offcanvas Panel (Internal)',
+				'description'  => 'Internal locked panel container for Offcanvas.',
+>>>>>>> origin/atomic4
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [
+<<<<<<< HEAD
 					'flip face',
+=======
+					'offcanvas panel',
+>>>>>>> origin/atomic4
 					'internal',
 				],
 				'category'     => 'general',
@@ -919,7 +1058,66 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+<<<<<<< HEAD
 
+			'aae-a-site-logo' => [
+				'label'        => 'Site Logo',
+				'description'  => 'Displays the site logo with a configurable link — wraps a native Elementor image child so each piece is independently styleable.',
+				'icon'         => 'eicon-site-logo',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'site logo',
+					'logo',
+					'branding',
+					'atomic',
+					'header',
+				],
+				'category'     => 'header-footer',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-mask' => [
+				'label'        => 'Video Mask',
+				'description'  => 'A click-triggered masked video player with a customisable toggle button — icon and label are independent atomic children.',
+				'icon'         => 'eicon-youtube',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'video',
+					'mask',
+					'play',
+					'atomic',
+					'shape',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-mask-btn' => [
+				'label'        => 'Video Mask Button (Internal)',
+				'description'  => 'Internal button container for Video Mask. Positioned via the native Style panel.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'video mask button', 'internal' ],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+=======
+>>>>>>> origin/atomic4
 		];
 	}
 
@@ -1191,12 +1389,10 @@ final class Atomic
 			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
-				'script_handle' => 'aae-a-slider-js',
-				'script_path' => '/assets/atomic/js/nestedslider.js',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',				
 				'style_handle' => 'aae-a-slider-css',
 				'style_path' => '/assets/atomic/css/nestedslider.css',
-				'has_script' => true,
+				'has_script' => false,
 			],
 			'aae-a-slide' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
@@ -1216,6 +1412,51 @@ final class Atomic
 			'aae-a-slider-nav-next' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-dot' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-dot.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-indicators' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-indicators.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-current' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-current.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-total' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-total.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-percentage' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-percentage.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-progress' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-progress-fill' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress-fill.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-counter' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-counter.php',
+				'has_script' => false,
+			],
+			'aae-a-slider-divider' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider-divider.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-pagination' => [
@@ -1249,13 +1490,19 @@ final class Atomic
 			],
 
 			'aae-a-posts' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
-				'file' => 'Widgets/Posts/class-aae-a-posts.php',
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
+				'file'          => 'Widgets/Posts/class-aae-a-posts.php',
 				'script_handle' => 'aae-a-posts-js',
-				'script_path' => '/assets/atomic/js/posts.js',
-				'has_script' => true,
-				'style_handle' => 'aae-a-posts-css',
-				'style_path' => '/assets/atomic/css/posts.css',
+				'script_path'   => '/assets/atomic/js/posts.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-posts-css',
+				'style_path'    => '/assets/atomic/css/posts.css',
+			],
+
+			'aae-a-post-card' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Post_Card',
+				'file'       => 'Widgets/Posts/class-aae-a-post-card.php',
+				'has_script' => false,
 			],
 
 			'aae-a-accordion' => [
@@ -1281,36 +1528,63 @@ final class Atomic
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
-			'aae-a-icon-list-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
-				'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
-				'has_script' => false,
-				'style_handle' => 'aae-a-icon-list-css',
-				'style_path' => '/assets/atomic/css/icon-list.css',
-			],
-			'aae-a-image-compare' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
-				'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
-				'script_handle' => 'aae-a-image-compare-js',
-				'script_path' => '/assets/atomic/js/image-compare.js',
-				'has_script' => true,
-				// No external CSS: all per-element styles live in the widget's
-				// define_base_styles() (compound selectors) + the inline <style>
-				// block of the Twig template. No `style_handle`/`style_path`.
-			],
-			'aae-a-countdown' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
-				'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
-				'script_handle' => 'aae-a-countdown-js',
-				'script_path'   => '/assets/atomic/js/countdown.js',
-				'has_script'    => true,
-			],
-			'aae-a-countdown-unit' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
-				'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
-				'has_script' => false,
-			],
-			// Add new atomic widgets below...
+		'aae-a-icon-list-item' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
+			'has_script' => false,
+			'style_handle' => 'aae-a-icon-list-css',
+			'style_path' => '/assets/atomic/css/icon-list.css',
+		],
+
+		'aae-a-social-share' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
+			'file'          => 'Widgets/SocialShare/class-aae-a-social-share.php',
+			'script_handle' => 'aae-a-social-share-js',
+			'script_path'   => '/assets/atomic/js/social-share.js',
+			'has_script'    => true,
+		],
+		'aae-a-social-share-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
+			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-image-compare' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+			'script_handle' => 'aae-a-image-compare-js',
+			'script_path' => '/assets/atomic/js/image-compare.js',
+			'has_script' => true,
+			// No external CSS: all per-element styles live in the widget's
+			// define_base_styles() (compound selectors) + the inline <style>
+			// block of the Twig template. No `style_handle`/`style_path`.
+		],
+		'aae-a-countdown' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
+			'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
+			'script_handle' => 'aae-a-countdown-js',
+			'script_path'   => '/assets/atomic/js/countdown.js',
+			'has_script'    => true,
+		],
+		'aae-a-countdown-unit' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
+			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
+			'has_script' => false,
+		],
+		'aae-a-timeline' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline',
+			'file'       => 'Widgets/Timeline/class-aae-a-timeline.php',
+			'has_script' => false,
+			// No external CSS: all per-element styles live in the widget's
+			// define_base_styles() (compound selectors) + a tiny inline
+			// <style> in the item Twig for the spine shorthand + the
+			// marker's negative-inset positioning. No `style_handle`.
+		],
+		'aae-a-timeline-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
+			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
+			'has_script' => false,
+		],
+		// Add new atomic widgets below...
 			'aae-a-button' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
 				'file'          => 'Widgets/Button/class-aae-a-button.php',
@@ -1348,6 +1622,7 @@ final class Atomic
 				'has_script' => false,
 			],
 
+<<<<<<< HEAD
 			'aae-a-flip-box' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
 				'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
@@ -1361,6 +1636,43 @@ final class Atomic
 			'aae-a-flip-box-face' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
 				'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
+				'has_script' => false,
+			],
+
+			'aae-a-site-logo' => [
+				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
+				'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
+				'has_script'   => false,
+				'style_handle' => 'aae-a-site-logo-css',
+				'style_path'   => '/assets/atomic/css/site-logo.css',
+			],
+
+			'aae-a-video-mask' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask',
+				'file'          => 'Widgets/VideoMask/class-aae-a-video-mask.php',
+				'script_handle' => 'aae-a-video-mask-js',
+				'script_path'   => '/assets/atomic/js/video-mask.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-video-mask-css',
+				'style_path'    => '/assets/atomic/js/video-mask.css',
+			],
+
+			'aae-a-video-mask-btn' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
+				'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
+=======
+			'aae-a-offcanvas' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
+				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
+				'script_handle' => 'aae-a-offcanvas-js',
+				'script_path'   => '/assets/atomic/js/offcanvas.js',
+				'has_script'    => true,
+			],
+
+			'aae-a-offcanvas-panel' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
+>>>>>>> origin/atomic4
 				'has_script' => false,
 			],
 
@@ -1425,9 +1737,9 @@ final class Atomic
 				$file_path = WCF_ADDONS_PATH . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 
-				$deps = ['elementor-v2-frontend-handlers']; // Required for @elementor/frontend-handlers register API
-				if (! empty($widget_data['script_deps'])) {
-					$deps = array_merge($deps, (array) $widget_data['script_deps']);
+				$deps = [ 'elementor-v2-frontend-handlers' ]; // Required for @elementor/frontend-handlers register API
+				if ( ! empty( $widget_data['script_deps'] ) ) {
+					$deps = array_merge( $deps, (array) $widget_data['script_deps'] );
 				}
 				wp_register_script(
 					$widget_data['script_handle'],
@@ -1491,52 +1803,51 @@ final class Atomic
 	 * effect bundles are blanket-enqueued for the preview. The styles matter for
 	 * editor-only CSS (e.g. body.elementor-editor-active rules) to take effect.
 	 */
-	public function enqueue_widget_scripts_in_preview(): void
-	{
-		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
-			if (! $this->is_widget_active($widget_id)) {
+	public function enqueue_widget_scripts_in_preview(): void {
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( ! $this->is_widget_active( $widget_id ) ) {
 				continue;
 			}
 
-			if (! empty($widget_data['has_script'])) {
+			if ( ! empty( $widget_data['has_script'] ) ) {
 				// The atomic frontend loader's register hook may not have run in
 				// the preview context, so register the handle here if missing.
-				if (! wp_script_is($widget_data['script_handle'], 'registered')) {
+				if ( ! wp_script_is( $widget_data['script_handle'], 'registered' ) ) {
 					$path = $widget_data['script_path'];
-					if (! $this->is_dev_environment()) {
-						$min_path = str_replace('.js', '.min.js', $path);
-						if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+					if ( ! $this->is_dev_environment() ) {
+						$min_path = str_replace( '.js', '.min.js', $path );
+						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 							$path = $min_path;
 						}
 					}
 					$file_path = WCF_ADDONS_PATH . $path;
-					$version   = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
 
 					wp_register_script(
 						$widget_data['script_handle'],
 						WCF_ADDONS_URL . $path,
-						['elementor-v2-frontend-handlers'],
+						[ 'elementor-v2-frontend-handlers' ],
 						$version,
 						true
 					);
 				}
 
-				wp_enqueue_script($widget_data['script_handle']);
+				wp_enqueue_script( $widget_data['script_handle'] );
 			}
 
-			if (! empty($widget_data['style_handle'])) {
+			if ( ! empty( $widget_data['style_handle'] ) ) {
 				// Register the style handle on the spot if the styles/register
 				// hook hasn't run in the preview context.
-				if (! wp_style_is($widget_data['style_handle'], 'registered') && ! empty($widget_data['style_path'])) {
+				if ( ! wp_style_is( $widget_data['style_handle'], 'registered' ) && ! empty( $widget_data['style_path'] ) ) {
 					$style_path = $widget_data['style_path'];
-					if (! $this->is_dev_environment()) {
-						$min_path = str_replace('.css', '.min.css', $style_path);
-						if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+					if ( ! $this->is_dev_environment() ) {
+						$min_path = str_replace( '.css', '.min.css', $style_path );
+						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
 							$style_path = $min_path;
 						}
 					}
 					$style_file = WCF_ADDONS_PATH . $style_path;
-					$style_ver  = file_exists($style_file) ? filemtime($style_file) : WCF_ADDONS_VERSION;
+					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : WCF_ADDONS_VERSION;
 
 					wp_register_style(
 						$widget_data['style_handle'],
@@ -1546,7 +1857,7 @@ final class Atomic
 					);
 				}
 
-				wp_enqueue_style($widget_data['style_handle']);
+				wp_enqueue_style( $widget_data['style_handle'] );
 			}
 		}
 	}
@@ -1588,13 +1899,12 @@ final class Atomic
 	 * button / handle styles live only in the external CSS file render
 	 * unstyled inside the editor (frontend is unaffected).
 	 */
-	public function enqueue_atomic_preview_styles(): void
-	{
+	public function enqueue_atomic_preview_styles(): void {
 		$this->register_atomic_styles();
 
-		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
-			if ($this->is_widget_active($widget_id) && ! empty($widget_data['style_handle'])) {
-				wp_enqueue_style($widget_data['style_handle']);
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['style_handle'] ) ) {
+				wp_enqueue_style( $widget_data['style_handle'] );
 			}
 		}
 	}
@@ -1612,13 +1922,12 @@ final class Atomic
 	 * widgets rendered through the editor preview's Element_Builder
 	 * pipeline, leaving widgets unresponsive in the editor.
 	 */
-	public function enqueue_atomic_preview_scripts(): void
-	{
-		$this->register_atomic_scripts(null);
+	public function enqueue_atomic_preview_scripts(): void {
+		$this->register_atomic_scripts( null );
 
-		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
-			if ($this->is_widget_active($widget_id) && ! empty($widget_data['has_script']) && ! empty($widget_data['script_handle'])) {
-				wp_enqueue_script($widget_data['script_handle']);
+		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
+			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['has_script'] ) && ! empty( $widget_data['script_handle'] ) ) {
+				wp_enqueue_script( $widget_data['script_handle'] );
 			}
 		}
 	}

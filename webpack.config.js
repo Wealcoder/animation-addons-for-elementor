@@ -12,7 +12,7 @@ const getAtomicWidgetEntries = () => {
   };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {
-    const widgets = fs.readdirSync(widgetsPath).filter((w) => !w.endsWith('-prev'));
+    const widgets = fs.readdirSync(widgetsPath).filter((w) => !w.endsWith('-prev') && !w.endsWith('_prev'));
     widgets.forEach((widget) => {
       const jsDir = path.join(widgetsPath, widget, "assets/js");
       if (fs.existsSync(jsDir)) {
@@ -36,6 +36,7 @@ module.exports = {
     // share the same instance Elementor's editor uses (so registry calls like
     // registerControlReplacement land in the registry the panel actually reads).
     "@elementor/editor-controls":   ["elementorV2", "editorControls"],
+    "@elementor/editor-editing-panel": ["elementorV2", "editorEditingPanel"],
     "@elementor/editor-elements":   ["elementorV2", "editorElements"],
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
@@ -63,6 +64,7 @@ module.exports = {
     "modules/atomic/editor-bridge": "./src/modules/atomic/editor-bridge.js",
     // Per-effect bundles. Each is loaded conditionally by Render.php only
     // when a widget on the page actually uses that effect.
+    "modules/atomic/effects/nested-slider": "./src/modules/atomic/effects/nested-slider/index.js",
     "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation/index.js",
     "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
     "modules/atomic/effects/image-hover": "./src/modules/atomic/effects/image-hover/index.js",

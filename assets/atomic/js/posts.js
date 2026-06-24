@@ -96,45 +96,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
 /* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
 
-const initPosts = grid => {
-  const cards = grid.querySelectorAll('.aae-a-post-card');
+function initPosts(wrapper) {
+  const cards = wrapper.querySelectorAll('.aae-a-post-card');
   if (!cards.length) return;
-  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-    cards.forEach(card => {
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
+  cards.forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+          io.unobserve(card);
+        }
+      });
+    }, {
+      threshold: 0.1
     });
-    return;
-  }
-  gsap.fromTo(cards, {
-    opacity: 0,
-    y: 30
-  }, {
-    opacity: 1,
-    y: 0,
-    duration: 1.2,
-    stagger: 0.2,
-    ease: "power2.out",
-    scrollTrigger: {
-      trigger: grid,
-      start: "top 85%",
-      // Start animation when grid is 85% in viewport
-      toggleActions: "play none none none"
-    }
+    io.observe(card);
   });
-};
+}
 (0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
   elementType: 'e-aae-a-posts',
   id: 'aae-a-posts-handler',
   callback: ({
     element
-  }) => {
-    // Element is either the grid itself, or a wrapper containing the grid
-    const grid = element.classList.contains('aae-a-posts-grid') ? element : element.querySelector('.aae-a-posts-grid');
-    if (grid) {
-      initPosts(grid);
-    }
-  }
+  }) => initPosts(element)
 });
 }();
 /******/ })()

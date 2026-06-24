@@ -1,0 +1,23 @@
+{% set classes = ['aae-a-post-card', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) %}
+
+<article class="{{ classes | join(' ') }} {{ editor_classes | default('') }}"
+         data-id="{{ id }}"
+         data-element_type="{{ type }}"
+         data-e-type="{{ type }}"
+         data-interaction-id="{{ interaction_id | default('') }}"
+         {% if settings.attributes is defined and settings.attributes is not empty %}
+             {{ settings.attributes | raw }}
+         {% endif %}
+         {{ editor_attributes | default('') | raw }}>
+
+    {{- /*
+        children_placeholder renders:
+          [0] Atomic_Svg  → thumbnail placeholder (wrapped in .aae-post-thumb-wrap by JS)
+          [1] Atomic_Heading → post title
+          [2] Atomic_Paragraph → post excerpt
+          [3] Atomic_Paragraph → read-more link
+        JS targets them by slot index and injects real post data.
+    */ -}}
+    {{ children_placeholder | raw }}
+
+</article>

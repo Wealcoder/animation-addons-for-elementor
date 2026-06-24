@@ -18,6 +18,10 @@ class AAE_A_Slider_Track extends Atomic_Element_Base {
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
 		$this->meta( 'is_container', true );
+		$this->meta( 'permanently_locked', true );
+	}
+	public static function generate() {
+		return parent::generate()->is_locked( true );
 	}
 
 	public static function get_type() {
