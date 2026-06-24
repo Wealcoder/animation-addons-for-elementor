@@ -161,29 +161,14 @@ final class Atomic
 			'aae-a-slider-nav-prev',
 			'aae-a-slider-nav-next',
 			'aae-a-slider-pagination',
-			'aae-a-slider-dot',
-			'aae-a-slider-indicators',
-			'aae-a-slider-current',
-			'aae-a-slider-total',
-			'aae-a-slider-percentage',
-			'aae-a-slider-progress',
-			'aae-a-slider-counter',
-			'aae-a-slider-divider',
-			'aae-a-slider-progress-fill',
 			'aae-a-counter-number',
 			'aae-a-video-mask-btn',
 			'aae-a-accordion-item',
-			'aae-a-icon-list-item',	
+			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
-<<<<<<< HEAD
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
-=======
-			'aae-a-offcanvas-panel',
-			'aae-a-timeline-item',
-			'aae-a-social-share-item',
->>>>>>> origin/atomic4
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -767,47 +752,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-social-share' => [
-				'label'        => 'Social Share',
-				'description'  => 'Atomic post social share widget with multiple vendors and AJAX share counts.',
-				'icon'         => 'eicon-share',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'social',
-					'share',
-					'post',
-					'atomic',
-					'aae',
-				],
-				'category'     => 'general',
-				'order'        => 10,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-social-share-item' => [
-				'label'        => 'Social Share Item',
-				'description'  => 'Internal child item for Social Share.',
-				'icon'         => 'eicon-share',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'social',
-					'share',
-					'item',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 11,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-image-compare' => [
 				'label'        => 'Image Compare',
 				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
@@ -867,47 +811,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 12,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-timeline' => [
-				'label'        => 'Timeline',
-				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
-				'icon'         => 'eicon-time-line',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'history',
-					'roadmap',
-					'atomic',
-					'composite',
-				],
-				'category'     => 'general',
-				'order'        => 13,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-timeline-item' => [
-				'label'        => 'Timeline — Item',
-				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
-				'icon'         => 'eicon-bullet-list',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'item',
-					'event',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -994,36 +897,21 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-<<<<<<< HEAD
 			'aae-a-flip-box' => [
 				'label'        => 'Flip Box',
 				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
 				'icon'         => 'eicon-flip-box',
-=======
-			'aae-a-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Animated offcanvas drawer with trigger button and panel — vanilla JS, no GSAP.',
-				'icon'         => 'eicon-sidebar',
->>>>>>> origin/atomic4
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [
-<<<<<<< HEAD
 					'flip',
 					'box',
 					'card',
 					'hover',
 					'atomic',
 					'animation',
-=======
-					'offcanvas',
-					'drawer',
-					'sidebar',
-					'panel',
-					'atomic',
->>>>>>> origin/atomic4
 				],
 				'category'     => 'general',
 				'order'        => 15,
@@ -1031,26 +919,16 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-<<<<<<< HEAD
 			'aae-a-flip-box-face' => [
 				'label'        => 'Flip Box Face (Internal)',
 				'description'  => 'Internal front/back face container for Flip Box.',
-=======
-			'aae-a-offcanvas-panel' => [
-				'label'        => 'Offcanvas Panel (Internal)',
-				'description'  => 'Internal locked panel container for Offcanvas.',
->>>>>>> origin/atomic4
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [
-<<<<<<< HEAD
 					'flip face',
-=======
-					'offcanvas panel',
->>>>>>> origin/atomic4
 					'internal',
 				],
 				'category'     => 'general',
@@ -1058,7 +936,6 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
-<<<<<<< HEAD
 
 			'aae-a-site-logo' => [
 				'label'        => 'Site Logo',
@@ -1116,8 +993,6 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
-=======
->>>>>>> origin/atomic4
 		];
 	}
 
@@ -1389,10 +1264,12 @@ final class Atomic
 			],
 			'aae-a-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',				
+				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',
+				'script_handle' => 'aae-a-slider-js',
+				'script_path' => '/assets/atomic/js/nestedslider.js',
 				'style_handle' => 'aae-a-slider-css',
 				'style_path' => '/assets/atomic/css/nestedslider.css',
-				'has_script' => false,
+				'has_script' => true,
 			],
 			'aae-a-slide' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
@@ -1412,51 +1289,6 @@ final class Atomic
 			'aae-a-slider-nav-next' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-dot' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-dot.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-indicators' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-indicators.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-current' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-current.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-total' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-total.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-percentage' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-percentage.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-progress' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-progress-fill' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress-fill.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-counter' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-counter.php',
-				'has_script' => false,
-			],
-			'aae-a-slider-divider' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
-				'file' => 'Widgets/NestedSlider/class-aae-a-slider-divider.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-pagination' => [
@@ -1535,19 +1367,6 @@ final class Atomic
 			'style_handle' => 'aae-a-icon-list-css',
 			'style_path' => '/assets/atomic/css/icon-list.css',
 		],
-
-		'aae-a-social-share' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
-			'file'          => 'Widgets/SocialShare/class-aae-a-social-share.php',
-			'script_handle' => 'aae-a-social-share-js',
-			'script_path'   => '/assets/atomic/js/social-share.js',
-			'has_script'    => true,
-		],
-		'aae-a-social-share-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
-			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
-			'has_script' => false,
-		],
 		'aae-a-image-compare' => [
 			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
 			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
@@ -1568,20 +1387,6 @@ final class Atomic
 		'aae-a-countdown-unit' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
 			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
-			'has_script' => false,
-		],
-		'aae-a-timeline' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline',
-			'file'       => 'Widgets/Timeline/class-aae-a-timeline.php',
-			'has_script' => false,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + a tiny inline
-			// <style> in the item Twig for the spine shorthand + the
-			// marker's negative-inset positioning. No `style_handle`.
-		],
-		'aae-a-timeline-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
-			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
@@ -1622,7 +1427,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-<<<<<<< HEAD
 			'aae-a-flip-box' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
 				'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
@@ -1660,19 +1464,6 @@ final class Atomic
 			'aae-a-video-mask-btn' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 				'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
-=======
-			'aae-a-offcanvas' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
-				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
-				'script_handle' => 'aae-a-offcanvas-js',
-				'script_path'   => '/assets/atomic/js/offcanvas.js',
-				'has_script'    => true,
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
->>>>>>> origin/atomic4
 				'has_script' => false,
 			],
 
