@@ -96,9 +96,10 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
-		// Nested Slider
+		// Nested Slider. (No Controls class — the slider's panel section is built
+		// directly in AAE_A_Slider::define_atomic_controls(), so there's nothing
+		// to inject via the controls filter.)
 		( new \WCF_ADDONS\Atomic\NestedSlider\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\NestedSlider\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\NestedSlider\Render() )->register();
 
 		// Style Manager

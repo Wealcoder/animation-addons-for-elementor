@@ -37,10 +37,21 @@ function bind(container, config) {
 		);
 
 	if (!getSlides().length) {
+		// Slides may not be in the DOM yet (async render). Retry briefly, but cap
+		// it so a slider that never gets slides can't busy-wait forever (~5s).
+		const attempts = (container._aaeSliderInitRetryCount || 0) + 1;
+		if (attempts > 50) {
+			container._aaeSliderInitRetryCount = 0;
+			return;
+		}
+		container._aaeSliderInitRetryCount = attempts;
 		const retryTimeout = setTimeout(() => bind(container, config), 100);
 		container._aaeSliderInitRetry = retryTimeout;
 		return;
 	}
+
+	// Slides present — reset the retry counter for any future re-bind.
+	container._aaeSliderInitRetryCount = 0;
 
 	const sliderDiv = container;
 
@@ -74,7 +85,7 @@ function bind(container, config) {
 	const getCfDepth = () => parseInt(r('cfDepth', 100));
 	const getGap = () => parseInt(r('gap', 0));
 	const getSlideHeight = () => Math.max(0, parseInt(r('slideHeight', 0)) || 0); // 0 = auto (aspect ratio)
-	const getEasing = () => r('easing', 'power');
+	const getEasing = () => r('easing', 'power2');
 	const isCenterMode = () => r('centerMode', false) === true || String(r('centerMode', false)) === 'true';
 	const getCenterScale = () => parseFloat(r('centerScale', 0.85));
 	const getLoop = () => r('loop', false) === true || String(r('loop', false)) === 'true';
@@ -185,10 +196,26 @@ function bind(container, config) {
 
 	const localController = new AbortController();
 
+	// One-shot rAFs (init re-center, seamless snap-back) tracked here so a
+	// re-bind/unbind cancels any still-pending frame — otherwise their stale
+	// closures run against a track the new bind has already reset (editor
+	// flicker / mis-center). Cleared in _aaeSliderCleanup.
+	const pendingRafs = new Set();
+	const trackedRaf = (fn) => {
+		const id = requestAnimationFrame((t) => {
+			pendingRafs.delete(id);
+			fn(t);
+		});
+		pendingRafs.add(id);
+		return id;
+	};
+
 	sliderDiv._aaeSliderCleanup = () => {
 		localController.abort();
 		stopAutoplay();
 		stopMarquee();
+		pendingRafs.forEach((id) => cancelAnimationFrame(id));
+		pendingRafs.clear();
 		clearTimeout(container._aaeSliderInitRetry);
 		clearTimeout(container._aaeSliderInitTimeout);
 		if (sliderDiv._aaeSliderResizeCleanup) {
@@ -683,6 +710,9 @@ function bind(container, config) {
 
 		if (hasSeamlessLoop) {
 			if (useTransition) {
+				// Bound to localController.signal so an interrupted transition (drag,
+				// nav, autoplay firing first) doesn't orphan the listener on cleanup —
+				// otherwise these accumulate over a long autoplay session.
 				const snapBack = (e) => {
 					if (e.target === track && e.propertyName.includes('transform')) {
 						track.removeEventListener('transitionend', snapBack);
@@ -694,9 +724,9 @@ function bind(container, config) {
 						}
 					}
 				};
-				track.addEventListener('transitionend', snapBack);
+				track.addEventListener('transitionend', snapBack, { signal: localController.signal });
 			} else {
-				requestAnimationFrame(() => {
+				trackedRaf(() => {
 					if (currentIndex < middleSetStart || currentIndex >= middleSetStart + originalSlidesCount) {
 						const offset = currentIndex % originalSlidesCount;
 						currentIndex = middleSetStart + offset;
@@ -1184,8 +1214,8 @@ function bind(container, config) {
 		// nav. Re-run after a double rAF (post-layout) and again at 50ms so the
 		// initial centering matches the post-interaction centering.
 		goToSlide(currentIndex, false);
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
+		trackedRaf(() => {
+			trackedRaf(() => {
 				goToSlide(currentIndex, false);
 			});
 		});

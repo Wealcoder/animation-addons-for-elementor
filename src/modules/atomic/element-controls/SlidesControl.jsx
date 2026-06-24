@@ -40,7 +40,6 @@ import {
 import { useElement } from '@elementor/editor-editing-panel';
 import { ControlFormLabel, Stack, TextField } from '@elementor/ui';
 
-const SLIDER_TYPE = 'e-aae-a-slider';
 const TRACK_TYPE = 'e-aae-a-slider-track';
 const SLIDE_TYPE = 'e-aae-a-slide';
 
@@ -200,7 +199,10 @@ export function SlidesControl( { label } ) {
 			const { from, to } = action.payload;
 			const movedId = slides?.[ from ]?.id;
 			const movedElement = movedId ? getContainer( movedId ) : null;
-			if ( movedElement ) {
+			// Guard against a stale index (a concurrent create/delete between
+			// render and drop): only move if the resolved slide is still a child
+			// of this track.
+			if ( movedElement && movedElement.parent?.id === track.id ) {
 				moveElements( {
 					title: 'Slide',
 					subtitle: 'Slide reordered',
@@ -217,10 +219,19 @@ export function SlidesControl( { label } ) {
 	};
 
 	// Row click: select the slide in the editor AND move the preview to it.
+	// The Repeater fires onPopoverOpen twice for a single click (once from the
+	// tag's onClick, once from the popover's open handler), so dedupe by id +
+	// time to avoid a doubled select command and a double preview nav pulse.
+	const lastNav = React.useRef( { id: null, t: 0 } );
 	const onPopoverOpen = ( value ) => {
 		if ( ! value?.id ) {
 			return;
 		}
+		const now = Date.now();
+		if ( lastNav.current.id === value.id && now - lastNav.current.t < 300 ) {
+			return;
+		}
+		lastNav.current = { id: value.id, t: now };
 		selectElement( value.id );
 		navigatePreviewToSlide( sliderId, value.id, value.index );
 	};
