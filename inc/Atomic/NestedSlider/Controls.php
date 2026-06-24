@@ -2,7 +2,6 @@
 namespace WCF_ADDONS\Atomic\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,19 +24,11 @@ final class Controls {
 			return $controls;
 		}
 
-		// Apply the slider settings section specifically to the nested slider widget.
-		if ( 'e-aae-a-slider' === $element->get_element_type() ) {
-			$controls[] = $this->build_slider_section();
-		}
+		// The "Slider Settings" section (anchor control + ID field) is now built
+		// directly in AAE_A_Slider::define_atomic_controls() so the ID control can
+		// use the widget's protected get_css_id_control_meta() and sit in the same
+		// section. Nothing to inject here for the slider.
 
 		return $controls;
-	}
-
-	private function build_slider_section(): Section {
-		return Section::make()
-			->set_label( __( 'Slider Settings', self::TD ) )
-			->set_items( [
-				Text_Control::bind_to( Schema::SLIDER_SECTION_ANCHOR ),
-			] );
 	}
 }

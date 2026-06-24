@@ -82,10 +82,16 @@ class AAE_A_Slider extends Atomic_Element_Base {
 						->set_label( __( 'Slides', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
+			// "Slider Settings": the anchor control is replaced in the editor by the
+			// ResponsiveSection (General/Advanced tabs); the ID field lives in the
+			// same section right after it, so there's one combined section instead
+			// of a separate "Settings". Built here (not via Controls.php's filter)
+			// because the ID control needs the protected get_css_id_control_meta().
 			Section::make()
-				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
-				->set_id( 'settings' )
+				->set_label( __( 'Slider Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'slider_settings' )
 				->set_items( [
+					Text_Control::bind_to( \WCF_ADDONS\Atomic\NestedSlider\Schema::SLIDER_SECTION_ANCHOR ),
 					Text_Control::bind_to( '_cssid' )
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
 						->set_meta( $this->get_css_id_control_meta() ),

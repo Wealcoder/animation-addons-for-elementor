@@ -38,7 +38,8 @@ class AAE_A_Slider_Total extends Atomic_Widget_Base {
 		return parent::generate()->is_locked( true );
 	}
 	
-	public function should_show_in_panel() {
+	// Atomic_Widget_Base reads show_in_panel(), not should_show_in_panel().
+	public function show_in_panel() {
 		return false;
 	}
 

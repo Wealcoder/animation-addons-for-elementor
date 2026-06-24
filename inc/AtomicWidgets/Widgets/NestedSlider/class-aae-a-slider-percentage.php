@@ -28,14 +28,15 @@ class AAE_A_Slider_Percentage extends Atomic_Widget_Base {
 
 	public static $widget_description = 'Shows the current slide progress as a percentage.';
 
-	public function should_show_in_panel() {
+	// Atomic_Widget_Base reads show_in_panel(), not should_show_in_panel().
+	public function show_in_panel() {
 		return false;
 	}
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-slider-percentage';
 	}
-
+	
 	public function get_title() {
 		return esc_html__( 'Slider Percentage', 'animation-addons-for-elementor' );
 	}
