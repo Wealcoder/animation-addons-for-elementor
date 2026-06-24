@@ -1,0 +1,102 @@
+{% set preset          = settings.preset | default('classic') %}
+{% set position        = settings.search_position | default('left') %}
+{% set ajax_class      = settings.enable_ajax_search ? 'search-field' : '' %}
+{% set filter_class    = settings.show_search_filter ? 'active-filter' : '' %}
+{% set widget_id       = settings.widget_id | default(id) %}
+{% set home_url        = settings.home_url | default('/') %}
+{% set search_val      = settings.current_search_query | default('') %}
+
+{% set wrapper_classes = [
+    'aae-a-search-form', 'e-con', 'e-atomic-element',
+    base_styles.base | default(''),
+    'search--wrapper',
+    'style-' ~ preset,
+] | merge(settings.classes | default([])) | join(' ') %}
+
+{# Inline SVG icons for the toggle open / close buttons #}
+{% set svg_search %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+{% endset %}
+{% set svg_close %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+{% endset %}
+
+<div class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-element_type="{{ type }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     data-enable-ajax-search="{{ settings.enable_ajax_search ? 'search-field' : '' }}"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+
+    {# ── Toggle button ── Only for dropdown and full-screen presets #}
+    {% if preset == 'dropdown' or preset == 'full-screen' %}
+    <div class="wcf-search-toggle" role="button" tabindex="0">
+        <div class="toggle--open">
+            {{ svg_search | raw }}
+            <span class="elementor-screen-only">Search</span>
+        </div>
+        {# Dropdown keeps its close icon inside the toggle; full-screen puts it inside the overlay #}
+        {% if preset == 'dropdown' %}
+        <div class="toggle--close">
+            {{ svg_close | raw }}
+            <span class="elementor-screen-only">Close search</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# ── Search container ── Floating panel (dropdown) or full-screen overlay #}
+    {% if preset == 'dropdown' %}
+    <div class="wcf-search-container search-position-{{ position }}">
+    {% elseif preset == 'full-screen' %}
+    <div class="wcf-search-container{{ settings.show_search_filter ? ' ajax-fs-wrap' : '' }}">
+        <div class="toggle--close" role="button" tabindex="0">
+            {{ svg_close | raw }}
+            <span class="elementor-screen-only">Close search</span>
+        </div>
+    {% endif %}
+
+        {# ── Search form ── Same structure for all three presets #}
+        <form class="wcf-search-form{{ filter_class ? ' ' ~ filter_class : '' }}"
+              action="{{ home_url }}"
+              method="get"
+              role="search">
+
+            <label class="elementor-screen-only"
+                   for="wcf-sf-{{ widget_id }}">Search</label>
+
+            <input id="wcf-sf-{{ widget_id }}"
+                   type="search"
+                   name="s"
+                   class="wcf-search-form__input{{ ajax_class ? ' ' ~ ajax_class : '' }}"
+                   placeholder="{{ settings.placeholder | default('Search...') }}"
+                   value="{{ search_val }}"
+                   autocomplete="{{ settings.autocomplete | default('off') }}">
+
+            {# Filter bar — rendered server-side and injected via get_atomic_settings() #}
+            {% if settings.show_search_filter and settings.filter_html is defined %}
+                {{ settings.filter_html | raw }}
+            {% endif %}
+
+            {# Submit button — rendered by the AAE_A_Search_Form_Btn child element (SVG icon + text label) #}
+            {{ children_placeholder | raw }}
+        </form>
+
+        <div class="selected-category-display"></div>
+
+    {# Close the search container div for dropdown and full-screen #}
+    {% if preset == 'dropdown' or preset == 'full-screen' %}
+    </div>
+    {% endif %}
+
+    {# Live ajax search results panel #}
+    <div class="aae--live-search-results"></div>
+
+</div>

@@ -163,6 +163,7 @@ final class Atomic
 			'aae-a-slider-pagination',
 			'aae-a-counter-number',
 			'aae-a-video-mask-btn',
+			'aae-a-search-form-btn',
 			'aae-a-accordion-item',
 			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
@@ -993,6 +994,36 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-search-form' => [
+				'label'        => 'Search Form',
+				'description'  => 'Atomic search form with classic, dropdown, and full-screen presets, ajax live search, and date/category filtering.',
+				'icon'         => 'eicon-search',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'search', 'form', 'search form', 'atomic', 'ajax', 'filter' ],
+				'category'     => 'general',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-search-form-btn' => [
+				'label'        => 'Search Form Button (Internal)',
+				'description'  => 'Internal submit button container for Search Form. Contains SVG icon + text label children.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'search', 'button', 'submit', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 21,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1464,6 +1495,22 @@ final class Atomic
 			'aae-a-video-mask-btn' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 				'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
+				'has_script' => false,
+			],
+
+			'aae-a-search-form' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'file'          => 'Widgets/SearchForm/class-aae-a-search-form.php',
+				'has_script'    => true,
+				'script_handle' => 'aae-a-search-form-js',
+				'script_path'   => '/assets/atomic/js/search.js',
+				'style_handle'  => 'aae-a-search-form-css',
+				'style_path'    => '/assets/atomic/js/search.css',
+			],
+
+			'aae-a-search-form-btn' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form_Btn',
+				'file'       => 'Widgets/SearchForm/class-aae-a-search-form-btn.php',
 				'has_script' => false,
 			],
 
