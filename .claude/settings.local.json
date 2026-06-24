@@ -12,7 +12,30 @@
       "Bash(grep -c \"centersActiveSlide\" assets/atomic/js/nestedslider.js)",
       "Bash(echo \"exit:$?\")",
       "Bash(grep -oE \".{0,40}>1\\\\\\)[^;{]*=1\" assets/build/modules/atomic/effects/nested-slider.js)",
-      "Bash(grep -oE \"j&&[^;]{0,80}\" assets/build/modules/atomic/effects/nested-slider.js)"
+      "Bash(grep -oE \"j&&[^;]{0,80}\" assets/build/modules/atomic/effects/nested-slider.js)",
+      "Bash(node --check assets/build/modules/atomic/effects/nested-slider.js)",
+      "Bash(node --check src/modules/atomic/effects/nested-slider/index.js)",
+      "Bash(find inc/AtomicWidgets/Widgets/NestedSlider/assets -name \"*.css\")",
+      "Bash(grep -rl \"aae-slide-height\" inc/AtomicWidgets/Widgets/NestedSlider/assets/)",
+      "Bash(xargs grep -ln \"elementorFrontend\\\\|window.parent\\\\|getPreviewWindow\\\\|preview\")",
+      "Bash(npx wp-scripts *)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(php -l inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slides-control.php)",
+      "Bash(php -l inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider.php)",
+      "Bash(php -l inc/Atomic/Assets.php)",
+      "Bash(find assets/build -path \"*nested-slider*\" -name \"*.js\")",
+      "Bash(grep -rl \"_aaeGoTo\" assets/build)",
+      "Bash(git check-ignore *)",
+      "Bash(xargs grep -ln \"deselectRecursive\")",
+      "Bash(xargs grep -n \"elements\\\\|build\\\\|elType\\\\|settings\")",
+      "Bash(xargs sed -n '40,75p')",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -ln \"localize\\\\|get_init_settings\\\\|'urls'\\\\|\\\\\"urls\\\\\"\")",
+      "Bash(xargs grep -n 'function get_id\\\\|function set_id\\\\|private $id\\\\|protected $id\\\\|$id')",
+      "Bash(php -l inc/Atomic/NestedSlider/Controls.php)",
+      "Bash(grep -oE \"title:[a-z]\\\\.label[^}]{0,120}defaultExpanded\" editor-editing-panel.min.js)",
+      "Bash(grep -oE \"defaultExpanded:[a-z\\(][^,]{0,40}\" editor-editing-panel.min.js)",
+      "Bash(grep -oE \"defaultSectionsExpanded:\\\\{settings:\\\\[[^]]*\\\\],style:\\\\[[^]]*\\\\]\\\\},defaultTab:\\\\\"[a-z]*\\\\\"\" editor-editing-panel.min.js)"
     ]
   }
 }

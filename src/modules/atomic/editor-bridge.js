@@ -3,6 +3,7 @@
 import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { registerResponsiveSection } from './responsive-section';
+import { registerAaeElementControls } from './element-controls';
 import regularAnimationSection from './extensions/regular-animation/config';
 import textAnimationSection from './extensions/text-animation/config';
 import parallaxSection from './extensions/parallax/config';
@@ -52,6 +53,11 @@ registerResponsiveSection( scrollTo );
 registerResponsiveSection( wrapperLinkSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
+
+// Native Elementor element-controls (e.g. the slider's "Slides" list). These
+// register into Elementor's shared controlsRegistry, separate from the
+// ResponsiveSection mechanism above.
+registerAaeElementControls();
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *

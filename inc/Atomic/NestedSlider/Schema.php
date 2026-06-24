@@ -16,6 +16,7 @@ final class Schema {
 	const NS_CF_ROTATE = 'aae_ns_cf_rotate';
 	const NS_CF_DEPTH = 'aae_ns_cf_depth';
 	const NS_GAP = 'aae_ns_gap';
+	const NS_SLIDE_HEIGHT = 'aae_ns_slide_height';
 	const NS_EASING = 'aae_ns_easing';
 	const NS_CENTER_MODE = 'aae_ns_center_mode';
 	const NS_CENTER_SCALE = 'aae_ns_center_scale';
@@ -51,6 +52,7 @@ final class Schema {
 		$schema[ self::NS_CF_ROTATE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 45 ]);
 		$schema[ self::NS_CF_DEPTH ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 100 ]);
 		$schema[ self::NS_GAP ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0 ]);
+		$schema[ self::NS_SLIDE_HEIGHT ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0 ]);
 		$schema[ self::NS_EASING ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 'power2' ]);
 		$schema[ self::NS_CENTER_MODE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => false ]);
 		$schema[ self::NS_CENTER_SCALE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0.85 ]);

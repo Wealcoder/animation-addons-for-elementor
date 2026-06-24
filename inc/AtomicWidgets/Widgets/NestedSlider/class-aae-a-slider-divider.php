@@ -29,7 +29,11 @@ class AAE_A_Slider_Divider extends Atomic_Widget_Base {
 	public static $widget_description = 'Slash separator between current and total slide numbers.';
 	
 	
-	public function should_show_in_panel() {
+	// Atomic_Widget_Base extends V3 Widget_Base, whose panel visibility is read
+	// from show_in_panel() — NOT should_show_in_panel() (that's the
+	// Atomic_Element_Base name). Use the correct method so this sub-widget stays
+	// hidden from the widget panel (it's only inserted inside the slider).
+	public function show_in_panel() {
 		return false;
 	}
 

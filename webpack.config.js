@@ -36,6 +36,7 @@ module.exports = {
     // share the same instance Elementor's editor uses (so registry calls like
     // registerControlReplacement land in the registry the panel actually reads).
     "@elementor/editor-controls":   ["elementorV2", "editorControls"],
+    "@elementor/editor-editing-panel": ["elementorV2", "editorEditingPanel"],
     "@elementor/editor-elements":   ["elementorV2", "editorElements"],
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],

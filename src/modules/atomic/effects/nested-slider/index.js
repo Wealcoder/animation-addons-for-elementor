@@ -20,26 +20,38 @@ function read(el) {
 }
 
 function bind(container, config) {
-
 	unbind(container);
 	if (!config) return;
 
 	const track = container.querySelector('.aae-slider-track');
 	if (!track) return;
 
+	// Real slides only. Match the slide class positively (rather than excluding
+	// known noise) so editor artifacts — element overlays, the empty-view
+	// placeholder, drag placeholders, injected <style>/<script> — are never
+	// miscounted. Loop clones are cloneNode(true) copies, so they keep the
+	// 'aae-a-slide' class and are still included on the frontend.
 	const getSlides = () =>
-		Array.from(track.children).filter(
-			(el) =>
-				el.tagName !== 'STYLE' &&
-				el.tagName !== 'SCRIPT' &&
-				!el.classList.contains('elementor-element-overlay')
+		Array.from(track.children).filter((el) =>
+			el.classList && el.classList.contains('aae-a-slide')
 		);
 
 	if (!getSlides().length) {
+		// Slides may not be in the DOM yet (async render). Retry briefly, but cap
+		// it so a slider that never gets slides can't busy-wait forever (~5s).
+		const attempts = (container._aaeSliderInitRetryCount || 0) + 1;
+		if (attempts > 50) {
+			container._aaeSliderInitRetryCount = 0;
+			return;
+		}
+		container._aaeSliderInitRetryCount = attempts;
 		const retryTimeout = setTimeout(() => bind(container, config), 100);
 		container._aaeSliderInitRetry = retryTimeout;
 		return;
 	}
+
+	// Slides present — reset the retry counter for any future re-bind.
+	container._aaeSliderInitRetryCount = 0;
 
 	const sliderDiv = container;
 
@@ -72,7 +84,8 @@ function bind(container, config) {
 	const getCfRotate = () => parseInt(r('cfRotate', 45));
 	const getCfDepth = () => parseInt(r('cfDepth', 100));
 	const getGap = () => parseInt(r('gap', 0));
-	const getEasing = () => r('easing', 'power');
+	const getSlideHeight = () => Math.max(0, parseInt(r('slideHeight', 0)) || 0); // 0 = auto (aspect ratio)
+	const getEasing = () => r('easing', 'power2');
 	const isCenterMode = () => r('centerMode', false) === true || String(r('centerMode', false)) === 'true';
 	const getCenterScale = () => parseFloat(r('centerScale', 0.85));
 	const getLoop = () => r('loop', false) === true || String(r('loop', false)) === 'true';
@@ -135,6 +148,10 @@ function bind(container, config) {
 		sliderDiv.style.setProperty('--aae-perspective', `${getPerspective()}px`);
 		sliderDiv.style.setProperty('--aae-slide-speed', `${getTransitionSpeed()}ms`);
 		sliderDiv.style.setProperty('--aae-side-peek', `${getPeek()}%`);
+		// Fixed slide height keeps the slide/image from shrinking as more slides
+		// fit per view. 0 = auto (content/aspect-ratio drives height, the default).
+		const slideH = getSlideHeight();
+		sliderDiv.style.setProperty('--aae-slide-height', slideH > 0 ? `${slideH}px` : 'auto');
 		sliderDiv.style.setProperty('--aae-easing', easingsMap[getEasing()] || 'cubic-bezier(0.25, 1, 0.5, 1)');
 
 		// coverflow and perspective both use per-slide perspective() — no container perspective
@@ -176,17 +193,35 @@ function bind(container, config) {
 	let marqueeFrame = null;
 	let marqueeX = 0;
 	let lastTimestamp = null;
-	let roundTimer = null;
 
 	const localController = new AbortController();
+
+	// One-shot rAFs (init re-center, seamless snap-back) tracked here so a
+	// re-bind/unbind cancels any still-pending frame — otherwise their stale
+	// closures run against a track the new bind has already reset (editor
+	// flicker / mis-center). Cleared in _aaeSliderCleanup.
+	const pendingRafs = new Set();
+	const trackedRaf = (fn) => {
+		const id = requestAnimationFrame((t) => {
+			pendingRafs.delete(id);
+			fn(t);
+		});
+		pendingRafs.add(id);
+		return id;
+	};
 
 	sliderDiv._aaeSliderCleanup = () => {
 		localController.abort();
 		stopAutoplay();
 		stopMarquee();
-		clearTimeout(roundTimer);
+		pendingRafs.forEach((id) => cancelAnimationFrame(id));
+		pendingRafs.clear();
 		clearTimeout(container._aaeSliderInitRetry);
 		clearTimeout(container._aaeSliderInitTimeout);
+		if (sliderDiv._aaeSliderResizeCleanup) {
+			sliderDiv._aaeSliderResizeCleanup();
+			delete sliderDiv._aaeSliderResizeCleanup;
+		}
 		sliderDiv.style.perspective = '';
 		sliderDiv.style.transformStyle = '';
 		sliderDiv.style.overflow = '';
@@ -205,6 +240,77 @@ function bind(container, config) {
 
 	const getSlideWidth = () => getSlides()[0]?.offsetWidth || 0;
 	const getActualGap = () => parseFloat(window.getComputedStyle(track).gap) || 0;
+	// Centering reference must be the exact box the slides are laid out in: the
+	// track's CONTENT width (clientWidth minus its own horizontal padding).
+	// Slides are `100% / slidesPerView` of that content box, so this width and
+	// the slide width agree — making the centering offset land symmetrically.
+	// Using offsetWidth here would include the track's padding (and using the
+	// slider would add its padding too), making the reference wider than the
+	// slides and pushing the centered slide off to one side.
+	const getViewportWidth = () => {
+		const vp = sliderDiv.querySelector('.aae-slider__viewport');
+		if (vp) return vp.getBoundingClientRect().width || vp.offsetWidth || 1000;
+		// Sub-pixel content width: the rect width minus the track's own padding.
+		// Using the fractional rect (not integer clientWidth) lets the centering
+		// offset cancel exactly against the slide's fractional width.
+		const cs = window.getComputedStyle(track);
+		const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+		return (track.getBoundingClientRect().width - padX) || track.offsetWidth || 1000;
+	};
+
+	const effectCenters = () => {
+		const e = getEffect();
+		return isCenterMode() || e === 'coverflow' || e === 'card' || e === 'perspective';
+	};
+
+	// THE canonical track position for a given slide index. Single source of
+	// truth shared by applyTransitions() and the drag handler so they can never
+	// drift apart. Positions from the slide's real layout geometry (offsetLeft /
+	// computed width) — transform-independent, so center mode's scale() and the
+	// 3D effects don't skew it, and exact for any slidesPerView / gap / peek.
+	// Read the track's current translateX from its transform matrix.
+	const getCurrentTranslateX = () => {
+		const t = window.getComputedStyle(track).transform;
+		if (!t || t === 'none') return 0;
+		// matrix(a,b,c,d,tx,ty) or matrix3d(...,tx,...) — tx is index 4 / 12.
+		const m = t.match(/matrix3d\((.+)\)/);
+		if (m) return parseFloat(m[1].split(',')[12]) || 0;
+		const m2 = t.match(/matrix\((.+)\)/);
+		if (m2) return parseFloat(m2[1].split(',')[4]) || 0;
+		return 0;
+	};
+
+	const computeTargetX = (idx) => {
+		const slide = getSlides()[idx];
+		if (!slide) {
+			return -(idx * (getSlideWidth() + getActualGap()));
+		}
+		// Work entirely in rendered viewport pixels and self-correct from the
+		// slide's CURRENT on-screen position. This is immune to the track's vs
+		// slider's padding/coordinate differences (offsetLeft is padding-box
+		// relative while content widths are not — mixing them left a constant
+		// ~20px skew). We compute the delta from where the slide is now to where
+		// we want it, then fold it into the current translate.
+		const sRect = slide.getBoundingClientRect();
+		const vRect = sliderDiv.getBoundingClientRect();
+		const csV = window.getComputedStyle(sliderDiv);
+		const padL = parseFloat(csV.paddingLeft) || 0;
+		const padR = parseFloat(csV.paddingRight) || 0;
+		// Slider CONTENT box edges in viewport space.
+		const contentLeft = vRect.left + padL;
+		const contentRight = vRect.right - padR;
+		const curTx = getCurrentTranslateX();
+
+		let desiredCenter;
+		if (effectCenters()) {
+			// Active slide centred in the slider content box.
+			desiredCenter = (contentLeft + contentRight) / 2;
+			const curCenter = sRect.left + sRect.width / 2;
+			return curTx + (desiredCenter - curCenter);
+		}
+		// Left-align: active slide's left edge at the content box's left edge.
+		return curTx + (contentLeft - sRect.left);
+	};
 
 	const originalSlides = getSlides();
 	const originalSlidesCount = originalSlides.length;
@@ -225,7 +331,7 @@ function bind(container, config) {
 
 	let maxIndex = getMaxIndex();
 
-	const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth || 1000;
+	const viewportWidth = getViewportWidth();
 	const spv = getSlidesPerView();
 	const gapVal = getGap();
 	const estimatedSlideWidth = (viewportWidth - (gapVal * (spv - 1))) / spv;
@@ -312,7 +418,21 @@ function bind(container, config) {
 		if (isEditorMode && centersActiveSlide() && getSlides().length > 1) return 1;
 		return 0;
 	};
-	currentIndex = getRestIndex();
+	// In the editor a re-bind happens whenever a slide re-renders (e.g. you drop
+	// content into a slide). Resetting to getRestIndex() would jump the slider
+	// away from the slide you're editing — and make the next drop target the
+	// wrong slide. Preserve the slide you were on if it's still valid.
+	const stashedIndex = sliderDiv._aaeSliderLastIndex;
+	if (
+		isEditorMode &&
+		typeof stashedIndex === 'number' &&
+		stashedIndex >= 0 &&
+		stashedIndex < getSlides().length
+	) {
+		currentIndex = stashedIndex;
+	} else {
+		currentIndex = getRestIndex();
+	}
 
 	// Selector elements
 	const prevBtns = sliderDiv.querySelectorAll('.aae-a-navigator-prev');
@@ -510,8 +630,29 @@ function bind(container, config) {
 		slides.forEach((slide, i) => {
 			const offset = i - index;
 			const absOffset = Math.abs(offset);
-			const zIndexVal = slides.length - absOffset;
-			slide.style.zIndex = zIndexVal;
+
+			// z-index only matters when slides physically overlap (center / 3D
+			// effects). For the flat 'slide' effect they sit side by side, so a
+			// stacking order here does nothing useful — and in the editor it makes
+			// the active slide sit on top, which can steal a drop meant for the
+			// slide under the cursor (this is why a drop sometimes landed in the
+			// last slide). Keep it for overlapping effects; clear it otherwise.
+			if (effectCenters()) {
+				slide.style.zIndex = slides.length - absOffset;
+			} else {
+				slide.style.zIndex = '';
+			}
+
+			// Editor-only: in centered/3D effects slides physically overlap, and a
+			// drop is hit-tested by stacking — so a dropped widget can land in the
+			// wrong (top-most / last) slide instead of the active one. Make only the
+			// active slide accept pointer/drop events. Skipped for the flat 'slide'
+			// effect where slides sit side by side and every visible slide must stay
+			// droppable; and never on the frontend (links inside non-active slides
+			// must keep working as the slider rotates).
+			if (isEditorMode && effectCenters()) {
+				slide.style.pointerEvents = offset === 0 ? 'auto' : 'none';
+			}
 
 			if (effect === 'coverflow') {
 				const p = getPerspective();
@@ -560,20 +701,18 @@ function bind(container, config) {
 			}
 		});
 
-		// Move track for non-marquee slides (including coverflow, card, perspective to center the active slide)
-		const step = getSlideWidth() + getActualGap();
-		let targetX = -(index * step);
-
-		if (isCenterMode() || effect === 'coverflow' || effect === 'card' || effect === 'perspective') {
-			const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-			const offset = (viewportWidth - getSlideWidth()) / 2;
-			targetX += offset;
-		}
-		targetX = Math.round(targetX);
+		// Position the track from the active slide's real layout geometry.
+		// offsetParent must be the track for offsetLeft (used by computeTargetX)
+		// to be track-relative.
+		track.style.position = 'relative';
+		const targetX = computeTargetX(index);
 		track.style.transform = `translate3d(${targetX}px, 0, 0)`;
 
 		if (hasSeamlessLoop) {
 			if (useTransition) {
+				// Bound to localController.signal so an interrupted transition (drag,
+				// nav, autoplay firing first) doesn't orphan the listener on cleanup —
+				// otherwise these accumulate over a long autoplay session.
 				const snapBack = (e) => {
 					if (e.target === track && e.propertyName.includes('transform')) {
 						track.removeEventListener('transitionend', snapBack);
@@ -585,9 +724,9 @@ function bind(container, config) {
 						}
 					}
 				};
-				track.addEventListener('transitionend', snapBack);
+				track.addEventListener('transitionend', snapBack, { signal: localController.signal });
 			} else {
-				requestAnimationFrame(() => {
+				trackedRaf(() => {
 					if (currentIndex < middleSetStart || currentIndex >= middleSetStart + originalSlidesCount) {
 						const offset = currentIndex % originalSlidesCount;
 						currentIndex = middleSetStart + offset;
@@ -618,8 +757,27 @@ function bind(container, config) {
 		}
 
 		currentIndex = index;
+		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
+	};
+
+	// Editor-only: bring a specific slide fully into view for EDITING. Unlike
+	// goToSlide(), this bypasses the navigation maxIndex clamp — in a flat
+	// multi-slidesPerView layout goToSlide(lastIndex) would clamp short (you
+	// can't scroll past the end), leaving the last slide half-off-screen and
+	// undroppable. computeTargetX() left-aligns the requested slide, so even the
+	// last one is fully revealed (a little blank space on the right is fine in
+	// the editor). Counter/indicators follow the real index so they stay in sync.
+	const revealSlide = (index) => {
+		if (getEffect() === 'marquee') return;
+		const slides = getSlides();
+		if (!slides.length) return;
+		index = Math.max(0, Math.min(index, slides.length - 1));
+		currentIndex = index;
+		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
+		updateNavigationIndicators(index);
+		applyTransitions(index, true);
 	};
 
 	// Autoplay Anim Loop
@@ -664,6 +822,10 @@ function bind(container, config) {
 	};
 
 	const startAutoplay = () => {
+		// Never auto-advance inside the editor: the slide would move out from
+		// under the user while they're placing/editing content (this is what made
+		// "the slider runs when I drop something" happen on every re-bind).
+		if (isEditorMode) return;
 		if (!getAutoplay() || isPausedState) return;
 		stopAutoplay();
 		autoplayStartTime = null;
@@ -740,65 +902,6 @@ function bind(container, config) {
 			startAutoplay();
 		}
 	};
-
-	// Editor "Play Now": run the slider through exactly one full round —
-	// advance through every slide, loop back to the first, then stop. Works
-	// regardless of the autoplay setting (autoplay only governs the live page,
-	// not this manual preview). Paced by the transition speed so each step is
-	// visible; a small settle gap is added on top.
-	const playOneRound = () => {
-		clearTimeout(roundTimer);
-		// Cancel bind()'s deferred re-center so it can't snap the position mid-round.
-		clearTimeout(container._aaeSliderInitTimeout);
-
-		if (getEffect() === 'marquee') {
-			// Marquee has no discrete slides — animate one full set width, then snap back.
-			stopMarquee();
-			const dir = getAutoplayDirection();
-			const speedSeconds = Math.max(0.1, getTransitionSpeed() / 1000);
-			const ease = easingsMap[getEasing()] || 'cubic-bezier(0.25, 1, 0.5, 1)';
-			const distance = dir === 1 ? -actualOriginalWidth : actualOriginalWidth;
-			track.style.transition = 'none';
-			track.style.transform = 'translate3d(0, 0, 0)';
-			void track.offsetHeight; // reflow so the next transition animates
-			track.style.transition = `transform ${speedSeconds}s ${ease}`;
-			track.style.transform = `translate3d(${distance}px, 0, 0)`;
-			roundTimer = setTimeout(() => {
-				track.style.transition = 'none';
-				track.style.transform = 'translate3d(0, 0, 0)';
-				marqueeX = 0;
-			}, speedSeconds * 1000 + 50);
-			return;
-		}
-
-		const slides = getSlides();
-		if (slides.length <= 1) return;
-
-		maxIndex = getMaxIndex();
-		// Start and end on the natural resting slide (index 1 in editor center
-		// mode, else 0) so the round leaves the center look exactly as it was.
-		const restIndex = getRestIndex();
-		const span = maxIndex + 1; // distinct positions 0..maxIndex
-		const stepMs = Math.max(getTransitionSpeed(), 300) + 120;
-		const wrap = (i) => ((i % span) + span) % span;
-
-		stopAutoplay();
-		goToSlide(restIndex, false); // jump to rest with no animation
-
-		// Advance one position per slide and wrap, so the final step lands back
-		// on restIndex having visited every slide once — a full circle.
-		let step = 0;
-		const stepOnce = () => {
-			step += 1;
-			goToSlide(wrap(restIndex + step), true);
-			if (step < span) {
-				roundTimer = setTimeout(stepOnce, stepMs);
-			}
-		};
-		roundTimer = setTimeout(stepOnce, stepMs);
-	};
-
-	sliderDiv._aaeSliderPlayRound = playOneRound;
 
 	// Play Pause Toggle
 	if (playPauseBtn) {
@@ -928,32 +1031,19 @@ function bind(container, config) {
 			}
 			track.style.transform = `translate3d(${newX}px, 0, 0)`;
 		} else if (['slide', 'coverflow', 'card', 'perspective'].includes(getEffect())) {
-			const step = getSlideWidth() + getActualGap();
-			let baseTargetX = -(currentIndex * step);
-			let minScrollX = 0;
-			let maxScrollX = -(maxIndex * step);
-
-			if (isCenterMode() || getEffect() === 'coverflow' || getEffect() === 'card' || getEffect() === 'perspective') {
-				const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-				const offset = (viewportWidth - getSlideWidth()) / 2;
-				baseTargetX += offset;
-				minScrollX += offset;
-				maxScrollX += offset;
-			}
+			// Drag bounds come from the SAME canonical positioner as the snapped
+			// layout, so dragging never jumps relative to where slides settle.
+			let baseTargetX = computeTargetX(currentIndex);
+			const minScrollX = computeTargetX(0);
+			const maxScrollX = computeTargetX(maxIndex);
 
 			let newX = baseTargetX + diff;
 
 			if (hasSeamlessLoop) {
-				const singleSetWidth = originalSlidesCount * step;
-				let middleMinScrollX = -(middleSetStart * step);
-				let middleMaxScrollX = -((middleSetStart + originalSlidesCount - 1) * step);
-
-				if (isCenterMode() || getEffect() === 'coverflow' || getEffect() === 'card' || getEffect() === 'perspective') {
-					const viewportWidth = (sliderDiv.querySelector('.aae-slider__viewport') || sliderDiv).offsetWidth;
-					const offset = (viewportWidth - getSlideWidth()) / 2;
-					middleMinScrollX += offset;
-					middleMaxScrollX += offset;
-				}
+				// One full clone set is N equal-width slides — an exact step delta.
+				const singleSetWidth = originalSlidesCount * (getSlideWidth() + getActualGap());
+				const middleMinScrollX = computeTargetX(middleSetStart);
+				const middleMaxScrollX = computeTargetX(middleSetStart + originalSlidesCount - 1);
 
 				if (newX > middleMinScrollX) {
 					currentIndex += originalSlidesCount;
@@ -1034,6 +1124,24 @@ function bind(container, config) {
 		evtOpts
 	);
 
+	// Re-center when the track's box actually changes size. Elementor can apply
+	// the slide/.e-con padding and final width a tick or two after render, which
+	// would otherwise leave the first paint off-center until the user navigates.
+	// Transform changes don't alter size, so re-centering here can't loop.
+	if (typeof ResizeObserver !== 'undefined' && getEffect() !== 'marquee') {
+		let lastTrackW = track.clientWidth;
+		const ro = new ResizeObserver(() => {
+			if (isDragging) return;
+			const w = track.clientWidth;
+			if (w !== lastTrackW) {
+				lastTrackW = w;
+				goToSlide(currentIndex, false);
+			}
+		});
+		ro.observe(track);
+		sliderDiv._aaeSliderResizeCleanup = () => ro.disconnect();
+	}
+
 	// Mutation Observer for added/removed slides in Editor
 	const isEditMode = document.body.classList.contains('elementor-editor-active');
 	if (isEditMode) {
@@ -1066,6 +1174,30 @@ function bind(container, config) {
 		};
 	}
 
+	// Editor affordance: the panel's "Slides" list calls this to bring a slide
+	// into view when the user clicks a row (so the selected slide is reachable
+	// for editing). Uses revealSlide() — NOT goToSlide() — so the last slide in
+	// a multi-slidesPerView layout is fully shown instead of clamped short.
+	// Seamless loop is always off in the editor, so no middle-set remap here.
+	sliderDiv._aaeGoTo = (i) => {
+		if (getEffect() === 'marquee') return;
+		revealSlide(i);
+	};
+
+	// Belt-and-braces: the panel also broadcasts this event in case the node
+	// reference is stale (e.g. just after a re-render). Same effect as _aaeGoTo.
+	const onEditSlide = (e) => {
+		if (!e.detail || e.detail.sliderId !== (sliderDiv.dataset.id || sliderDiv.id)) return;
+		if (typeof sliderDiv._aaeGoTo === 'function') sliderDiv._aaeGoTo(e.detail.index);
+	};
+	window.addEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
+	const prevEditCleanup = sliderDiv._aaeSliderEditCleanup;
+	sliderDiv._aaeSliderEditCleanup = () => {
+		window.removeEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
+		delete sliderDiv._aaeGoTo;
+	};
+	if (typeof prevEditCleanup === 'function') prevEditCleanup();
+
 	if (getEffect() === 'marquee') {
 		track.style.transition = 'none';
 		track.style.transform = 'translate3d(0, 0, 0)';
@@ -1075,7 +1207,18 @@ function bind(container, config) {
 		});
 		startMarquee();
 	} else {
+		// First paint: place immediately, then re-place once layout settles.
+		// In the editor the track's padding / .e-con sizing isn't final on the
+		// synchronous pass, so getViewportWidth() (track content width) can read
+		// stale and the centered slide lands off — fixed only after the first
+		// nav. Re-run after a double rAF (post-layout) and again at 50ms so the
+		// initial centering matches the post-interaction centering.
 		goToSlide(currentIndex, false);
+		trackedRaf(() => {
+			trackedRaf(() => {
+				goToSlide(currentIndex, false);
+			});
+		});
 		const initTimeout = setTimeout(() => {
 			goToSlide(currentIndex, false);
 		}, 50);
@@ -1095,31 +1238,21 @@ function unbind(el) {
 		el._aaeSliderCleanup();
 		delete el._aaeSliderCleanup;
 	}
+	if (el._aaeSliderEditCleanup) {
+		el._aaeSliderEditCleanup();
+		delete el._aaeSliderEditCleanup;
+	}
 	clearTimeout(el._aaeSliderInitRetry);
 	clearTimeout(el._aaeSliderInitTimeout);
-	clearTimeout(el._aaeSliderRoundKick);
 }
 
+// Invoked by the editor live-change dispatcher (play_group "aae_ns_") whenever a
+// slider setting changes. A slider is an ongoing interactive component, not a
+// one-shot entrance animation, so there's no "play once" — we just re-bind so
+// the new settings take effect (and autoplay/marquee resume via bind()).
 function play(el, config) {
-	// Editor "Play Now": rebind for a clean start, then run exactly one full
-	// round (advance through all slides, loop back to the first, stop) even
-	// when autoplay is off. The round driver is exposed by bind() on the
-	// slider element; bind() may defer init via a retry when slides aren't in
-	// the DOM yet, so poll briefly for the driver before giving up.
 	unbind(el);
 	bind(el, config);
-
-	let attempts = 0;
-	const startRound = () => {
-		if (typeof el._aaeSliderPlayRound === 'function') {
-			el._aaeSliderPlayRound();
-			return;
-		}
-		if (attempts++ < 20) {
-			el._aaeSliderRoundKick = setTimeout(startRound, 60);
-		}
-	};
-	requestAnimationFrame(startRound);
 }
 
 const refreshSliderById = (id, reason = 'manual') => {
@@ -1137,8 +1270,6 @@ const refreshSliderById = (id, reason = 'manual') => {
 		});
 	});
 };
-
-
 
 /**
  * Custom bridge event from parent editor window.

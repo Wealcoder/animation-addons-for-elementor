@@ -41,7 +41,7 @@ class AAE_A_Slider_Progress extends Atomic_Element_Base {
 
 	public static function get_type() {
 		return 'e-aae-a-slider-progress';
-	}
+	}	
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-slider-progress';
