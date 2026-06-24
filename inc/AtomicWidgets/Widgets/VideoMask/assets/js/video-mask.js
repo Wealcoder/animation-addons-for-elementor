@@ -26,18 +26,19 @@ const applyMaskShape = ( container ) => {
 };
 
 // Center the mask on the button — no matter where the button is placed.
-// mask-position is the top-left corner of the mask image, so we offset by
-// half the mask dimensions to land its centre exactly on the button's centre.
+// mask-position is relative to the wrapper element's own box, so we compute
+// the button centre against wrapperRect (not containerRect) for accuracy.
 const syncMaskToBtn = ( container ) => {
 	const btn     = container.querySelector( '[data-element_type="e-aae-a-video-mask-btn"]' );
 	const wrapper = container.querySelector( '.vm-video-wrapper' );
 	if ( ! btn || ! wrapper ) return;
 
-	const containerRect = container.getBoundingClientRect();
-	const btnRect       = btn.getBoundingClientRect();
+	const wrapperRect = wrapper.getBoundingClientRect();
+	const btnRect     = btn.getBoundingClientRect();
 
-	const cx = btnRect.left - containerRect.left + btnRect.width  / 2;
-	const cy = btnRect.top  - containerRect.top  + btnRect.height / 2;
+	// Button centre expressed in the wrapper's own coordinate space.
+	const cx = btnRect.left - wrapperRect.left + btnRect.width  / 2;
+	const cy = btnRect.top  - wrapperRect.top  + btnRect.height / 2;
 
 	// Read current mask-size so position stays correct even if the user changes it.
 	const cs          = getComputedStyle( wrapper );
@@ -48,14 +49,8 @@ const syncMaskToBtn = ( container ) => {
 	const mw    = parseFloat( parts[ 0 ] ) || 200;
 	const mh    = parseFloat( parts.length > 1 ? parts[ 1 ] : parts[ 0 ] ) || mw;
 
-	// Clamp so the full mask shape is never cropped by the container edge.
-	const maxX = Math.max( 0, containerRect.width  - mw );
-	const maxY = Math.max( 0, containerRect.height - mh );
-	const posX = Math.max( 0, Math.min( cx - mw / 2, maxX ) );
-	const posY = Math.max( 0, Math.min( cy - mh / 2, maxY ) );
-
-	wrapper.style.webkitMaskPosition = `${ posX }px ${ posY }px`;
-	wrapper.style.maskPosition       = `${ posX }px ${ posY }px`;
+	wrapper.style.webkitMaskPosition = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
+	wrapper.style.maskPosition       = `${ cx - mw / 2 }px ${ cy - mh / 2 }px`;
 };
 
 const initVideoMask = ( container, signal ) => {
@@ -65,11 +60,30 @@ const initVideoMask = ( container, signal ) => {
 	const video = container.querySelector( 'video' );
 	if ( ! btn || ! video ) return;
 
-	// Apply shape and align mask to the button's initial position.
 	applyMaskShape( container );
-	syncMaskToBtn( container );
 
-	const opts = signal ? { signal } : {};
+	const opts   = signal ? { signal } : {};
+	const doSync = () => syncMaskToBtn( container );
+
+	// Defer the initial sync two frames: the first frame lets the browser apply
+	// all stylesheets; the second lets it finish layout (incl. video dimensions).
+	// This is needed on both frontend (video height unknown at parse time) and
+	// editor (Elementor applies user styles after mount).
+	requestAnimationFrame( () => requestAnimationFrame( doSync ) );
+
+	// Safety net: re-sync once the video knows its natural size.
+	video.addEventListener( 'loadedmetadata', doSync, { once: true, ...opts } );
+
+	// Re-sync when the viewport resizes (button position may shift).
+	window.addEventListener( 'resize', doSync, opts );
+
+	// In the editor, re-sync whenever Elementor writes a new style rule
+	// (fires each time the user moves or resizes the button in the Style panel).
+	if ( window.elementorFrontend?.isEditMode?.() ) {
+		const observer = new MutationObserver( () => requestAnimationFrame( doSync ) );
+		observer.observe( document.head, { childList: true, subtree: true, characterData: true } );
+		if ( signal ) signal.addEventListener( 'abort', () => observer.disconnect() );
+	}
 
 	btn.addEventListener( 'click', () => {
 		const isOpen = container.classList.toggle( 'mask-open' );
@@ -86,9 +100,6 @@ const initVideoMask = ( container, signal ) => {
 	video.addEventListener( 'ended', () => {
 		container.classList.remove( 'mask-open' );
 	}, opts );
-
-	// Re-sync mask position if the layout shifts (e.g. window resize).
-	window.addEventListener( 'resize', () => syncMaskToBtn( container ), opts );
 };
 
 register( {

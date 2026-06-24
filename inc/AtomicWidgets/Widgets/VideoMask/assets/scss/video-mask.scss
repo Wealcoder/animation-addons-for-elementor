@@ -13,12 +13,10 @@ $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 	display: grid;
 	position: relative;
 
-	// ── Button: absolutely positioned so JS can centre it on the mask shape.
-	// top/left default to 0 0 and are overridden by JS on every sync.
+	// ── Button: same grid cell, centred by default; user overrides from Style panel.
 	> .aae-a-video-mask-btn {
-		position: absolute;
-		top: 0;
-		left: 0;
+		grid-area: 1 / 1;
+		place-self: center;
 		width: max-content;
 		height: max-content;
 		z-index: 1;
