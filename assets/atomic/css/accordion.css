@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .aae-a-accordion .aae-a-accordion-item {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -115,7 +116,14 @@
   width: 100%;
   height: 100%;
 }
-.aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-close {
+.aae-a-accordion {
+  /* Collapsed (default) state: show the open (expand) icon, hide the close
+     icon. Scoped only by the icon's own class — not by the header ancestry —
+     so it holds the moment the item is dropped in the editor, before the
+     header Div_Block is distributed into its slot and regardless of where the
+     icon currently sits in the DOM. The `.active` rule below overrides it. */
+}
+.aae-a-accordion .aae-a-accordion-item .aae-header-icon-close {
   display: none;
 }
 .aae-a-accordion {

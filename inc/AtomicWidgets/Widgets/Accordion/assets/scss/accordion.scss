@@ -100,11 +100,16 @@
                 }
             }
 
-            // Collapsed state: show the open (expand) icon, hide the close icon
-            .aae-header-icon-close {
-                display: none;
-            }
         }
+    }
+
+    /* Collapsed (default) state: show the open (expand) icon, hide the close
+       icon. Scoped only by the icon's own class — not by the header ancestry —
+       so it holds the moment the item is dropped in the editor, before the
+       header Div_Block is distributed into its slot and regardless of where the
+       icon currently sits in the DOM. The `.active` rule below overrides it. */
+    .aae-a-accordion-item .aae-header-icon-close {
+        display: none;
     }
 
     /* Collapsed by default. Height is animated via max-height, driven by JS
