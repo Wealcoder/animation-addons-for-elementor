@@ -205,17 +205,33 @@ function killAllRows(el) {
 	const gsap = getGsap();
 	const state = getRowState(el);
 	const image = findMedia(el);
+	const wrap = image && image.closest ? (image.closest('.aae-img-reveal-wrap') || (image.parentElement || el)) : el;
+
 	for (const entry of state) {
 		try { entry.dispose && entry.dispose(); } catch (_) {}
+		// DON'T revert() — for `from`-based effects (reveal timeline, 3D
+		// presets) revert() returns the element to the tween's PRE state, i.e.
+		// the hidden / clipped / rotated start, leaving the image stuck. Just
+		// kill the tween and clear the props it touched (below) so we land on
+		// the natural resting state instead.
 		if (entry.tween) {
-			try { entry.tween.revert?.(); } catch (_) {}
 			try { entry.tween.kill?.(); } catch (_) {}
 		}
 	}
 	el[ROWS_KEY] = [];
 	delete el[IMG_PLAYED];
+
 	if (gsap) {
-		try { gsap.killTweensOf(el); gsap.killTweensOf(image); } catch (_) {}
+		try {
+			gsap.killTweensOf(el);
+			gsap.killTweensOf(image);
+			// Clear everything our effects can set on the image + reveal wrap,
+			// returning the element to its natural (CSS-defined) appearance.
+			gsap.set(image, { clearProps: 'transform,opacity,visibility,clipPath,width,borderRadius,filter,scale' });
+			if (wrap && wrap !== image) {
+				gsap.set(wrap, { clearProps: 'clipPath,opacity,visibility,overflow' });
+			}
+		} catch (_) {}
 	}
 }
 
