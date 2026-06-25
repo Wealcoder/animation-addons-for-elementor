@@ -993,6 +993,28 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-button-pro' => [
+				'label'        => 'Button Pro',
+				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
+				'icon'         => 'wcf-icon-Button',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => [
+					'button pro',
+					'cta',
+					'gsap',
+					'hover',
+					'ripple',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1465,6 +1487,17 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 				'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
 				'has_script' => false,
+			],
+
+			'aae-a-button-pro' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ButtonPro\AAE_A_Button_Pro',
+				'file'          => 'Widgets/ButtonPro/class-aae-a-button-pro.php',
+				'script_handle' => 'aae-a-button-pro-js',
+				'script_path'   => '/assets/atomic/js/button-pro.js',
+				'script_deps'   => [ 'gsap' ],
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-button-pro-css',
+				'style_path'    => '/assets/atomic/css/button-pro.css',
 			],
 
 			// Add new atomic widgets below...
