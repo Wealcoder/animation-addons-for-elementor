@@ -145,10 +145,9 @@ function revertSharedSplit(el) {
 	}
 	delete el[SPLIT_KEY];
 
-	// Strip the invert-only parent class + its CSS var, and any element-level
-	// inline styles effects set (perspective for move/premium). Without this,
-	// an invert/premium row leaves a gradient / 3D context behind that bleeds
-	// onto whatever the next effect shows.
+	// Clear element-level inline state that move / premium effects set
+	// (perspective). Also defensively strip the invert parent class + CSS var in
+	// case any stale state lingers (invert now owns these via revertInvertSplit).
 	el.classList.remove(PARENT_CLASS);
 	try { el.style.removeProperty('--text-color'); } catch (_) {}
 	const gsap = getGsap();

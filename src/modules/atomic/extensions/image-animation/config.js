@@ -90,6 +90,13 @@ const rowIsAnimated = (r) => rowEffect(r) !== 'none';
 const rowTrigger = (r) => r?.trigger || 'on_scroll';
 const rowIsScroll = (r) => SCROLL_TRIGGERS.includes(rowTrigger(r));
 const rowIsSelector = (r) => SELECTOR_TRIGGERS.includes(rowTrigger(r));
+const rowWrapperCustom = (r) => r?.wrapper === 'custom';
+
+// Trigger anchor mode: "Custom" exposes Start/End Trigger Selector.
+const WRAPPER_OPTIONS = [
+	{ value: 'default', label: 'Default' },
+	{ value: 'custom', label: 'Custom' },
+];
 
 const rowIsReveal = (r) => rowEffect(r) === 'reveal';
 const rowIsScale = (r) => rowEffect(r) === 'scale';
@@ -120,6 +127,20 @@ const ROW_FIELDS = [
 	{
 		bind: 'trigger_selector', label: 'Trigger Selector', control: 'text', placeholder: '.my-class',
 		when: (r) => rowIsAnimated(r) && rowIsSelector(r),
+	},
+	// Wrapper = Custom exposes Start/End Trigger Selector (tie the ScrollTrigger
+	// to other elements). Scroll triggers only. Mirrors regular animation.
+	{
+		bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+	},
+	{
+		bind: 'start_trigger', label: 'Start Trigger Selector', control: 'text', placeholder: '.my-start-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
+	},
+	{
+		bind: 'end_trigger', label: 'End Trigger Selector', control: 'text', placeholder: '.my-end-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
 	},
 	{
 		bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
@@ -172,6 +193,7 @@ const ROW_DEFAULTS = {
 	ease: 'power2.out',
 	start_position: 'top center',
 	end_position: 'bottom bottom',
+	wrapper: 'default',
 	custom_props: [],
 	custom_props_to: [],
 };

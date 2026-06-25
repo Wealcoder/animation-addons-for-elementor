@@ -108,6 +108,14 @@ const rowIsTranslate = (r) => TRANSLATE_EFFECTS.includes(rowEffect(r));
 const rowIsMove = (r) => rowEffect(r) === 'text_move';
 const rowIsInvert = (r) => rowEffect(r) === 'text_invert';
 const rowIsScale = (r) => rowEffect(r) === 'text_scale';
+const rowWrapperCustom = (r) => r?.wrapper === 'custom';
+
+// Trigger anchor mode: "Custom" exposes Start/End Trigger Selector (tie the
+// ScrollTrigger to other elements). Mirrors regular animation.
+const WRAPPER_OPTIONS = [
+	{ value: 'default', label: 'Default' },
+	{ value: 'custom', label: 'Custom' },
+];
 
 /* ---------- per-row field schema ---------- */
 
@@ -123,6 +131,21 @@ const ROW_FIELDS = [
 	{
 		bind: 'trigger_selector', label: 'Trigger Selector', control: 'text', placeholder: '.my-class',
 		when: (r) => rowIsAnimated(r) && rowIsSelector(r),
+	},
+	// Wrapper = Custom exposes Start/End Trigger Selector (tie the ScrollTrigger
+	// to other elements). Scroll triggers only (not invert — it has per-line
+	// triggers). Mirrors regular animation.
+	{
+		bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && !rowIsInvert(r),
+	},
+	{
+		bind: 'start_trigger', label: 'Start Trigger Selector', control: 'text', placeholder: '.my-start-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && !rowIsInvert(r) && rowWrapperCustom(r),
+	},
+	{
+		bind: 'end_trigger', label: 'End Trigger Selector', control: 'text', placeholder: '.my-end-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && !rowIsInvert(r) && rowWrapperCustom(r),
 	},
 	{
 		bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
@@ -172,6 +195,7 @@ const ROW_DEFAULTS = {
 	translate_y: 0,
 	start_position: 'top 85%',
 	end_position: 'bottom 30%',
+	wrapper: 'default',
 };
 
 /* ---------- the section table ---------- */
