@@ -3,11 +3,18 @@
 /**
  * SlidesControl — the "Slides" element-control for the AAE Nested Slider.
  *
- * This is the native Elementor element-control pattern (the same one the core
- * atomic Tabs widget uses for its "Menu items" list), NOT the AAE
- * ResponsiveSection. It is registered into Elementor's shared controlsRegistry
- * under the type id 'aae-slides' (see ./index.js) and rendered by the editing
- * panel wherever the PHP side places an AAE_A_Slides_Control.
+ * Registered into Elementor's shared controlsRegistry under the type id
+ * 'aae-slides' (see ./index.js) and rendered by the editing panel wherever the
+ * PHP side places an AAE_A_Slides_Control.
+ *
+ * This is a CUSTOM accordion list, not Elementor's <Repeater>. The Repeater's
+ * row click opens a popover that internally resolves the row's element and
+ * needs it to be the selected element — selecting the slide swapped the editing
+ * panel over to that slide's settings (unwanted), and NOT selecting it crashed
+ * the popover render with React #130. A self-owned accordion sidesteps both:
+ * clicking a row expands it inline (showing a rename field) and drives the
+ * preview to that slide, without ever touching the editor's selection — so the
+ * panel stays on the slider and nothing flickers.
  *
  * The list is a LIVE PROJECTION of the slider's real child elements — one row
  * per <e-aae-a-slide> under the slider's <e-aae-a-slider-track>. There is no
@@ -15,33 +22,37 @@
  * create/delete/move so the rows always match reality.
  *
  * Interactions:
- *   - Click a row  → select that slide element (panel + navigator highlight,
- *                    scroll-into-view) AND drive the preview slider to it so
- *                    the slide becomes visible for editing.
- *   - "Add Item"   → append a new slide (heading + image) to the track.
- *   - Remove (×)   → delete that slide.
- *   - Rename       → the row popover exposes a "Slide name" field that writes
- *                    the child's editor_settings.title (what the row shows).
+ *   - Click a row  → expand it (rename field) AND drive the preview slider to it.
+ *   - "Add Slide"  → append a new empty slide to the track.
+ *   - Duplicate    → clone that slide.
+ *   - Remove (×)   → delete that slide (hidden when only one remains).
+ *   - Drag a row   → reorder slides (HTML5 native drag).
  */
 
-import * as React from 'react';
-import { Repeater } from '@elementor/editor-controls';
+import * as React from "react";
 import {
-	createElements,
-	duplicateElements,
-	getContainer,
-	moveElements,
-	removeElements,
-	selectElement,
-	updateElementEditorSettings,
-	useElementChildren,
-	useElementEditorSettings,
-} from '@elementor/editor-elements';
-import { useElement } from '@elementor/editor-editing-panel';
-import { ControlFormLabel, Stack, TextField } from '@elementor/ui';
+  createElements,
+  duplicateElements,
+  getContainer,
+  moveElements,
+  removeElements,
+  updateElementEditorSettings,
+  useElementChildren,
+  useElementEditorSettings,
+} from "@elementor/editor-elements";
+import { useElement } from "@elementor/editor-editing-panel";
+import {
+  Box,
+  Collapse,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@elementor/ui";
 
-const TRACK_TYPE = 'e-aae-a-slider-track';
-const SLIDE_TYPE = 'e-aae-a-slide';
+const TRACK_TYPE = "e-aae-a-slider-track";
+const SLIDE_TYPE = "e-aae-a-slide";
 
 /**
  * Build the model for a fresh, EMPTY slide (no heading/image — the user fills
@@ -53,12 +64,12 @@ const SLIDE_TYPE = 'e-aae-a-slide';
  * descendant — an undefined `elements` collection throws. An empty array is a
  * valid (iterable) collection, so an empty slide deletes cleanly.
  */
-function buildSlideModel( position ) {
-	return {
-		elType: SLIDE_TYPE,
-		editor_settings: { title: `Slide ${ position }` },
-		elements: [],
-	};
+function buildSlideModel(position) {
+  return {
+    elType: SLIDE_TYPE,
+    editor_settings: { title: `Slide ${position}` },
+    elements: [],
+  };
 }
 
 /**
@@ -66,27 +77,27 @@ function buildSlideModel( position ) {
  * The slider keeps the track as a direct child; we walk one level using the
  * V1 container model so we don't depend on rendered DOM.
  */
-function findChildContainerByType( parentId, type ) {
-	const elementor = window.elementor;
-	const parent = elementor?.getContainer?.( parentId );
-	const model = parent?.model;
-	const children = model?.get?.( 'elements' );
+function findChildContainerByType(parentId, type) {
+  const elementor = window.elementor;
+  const parent = elementor?.getContainer?.(parentId);
+  const model = parent?.model;
+  const children = model?.get?.("elements");
 
-	if ( ! children ) {
-		return null;
-	}
+  if (!children) {
+    return null;
+  }
 
-	let found = null;
-	children.each?.( ( childModel ) => {
-		if ( found ) {
-			return;
-		}
-		if ( childModel.get( 'elType' ) === type ) {
-			found = childModel.get( 'id' );
-		}
-	} );
+  let found = null;
+  children.each?.((childModel) => {
+    if (found) {
+      return;
+    }
+    if (childModel.get("elType") === type) {
+      found = childModel.get("id");
+    }
+  });
 
-	return found ? elementor?.getContainer?.( found ) : null;
+  return found ? elementor?.getContainer?.(found) : null;
 }
 
 /**
@@ -95,216 +106,253 @@ function findChildContainerByType( parentId, type ) {
  * window CustomEvent the core Tabs widget listens to, as a belt-and-braces
  * fallback for runtimes that wire navigation off the navigator event.
  */
-function navigatePreviewToSlide( sliderId, slideId, index ) {
-	try {
-		const previewWin =
-			window.elementor?.$preview?.[ 0 ]?.contentWindow || null;
+function navigatePreviewToSlide(sliderId, slideId, index) {
+  try {
+    const previewWin = window.elementor?.$preview?.[0]?.contentWindow || null;
 
-		if ( ! previewWin ) {
-			return;
-		}
+    if (!previewWin) {
+      return;
+    }
 
-		const sliderNode =
-			previewWin.document.querySelector( `[data-id="${ sliderId }"]` ) ||
-			previewWin.document.getElementById( sliderId );
+    const sliderNode =
+      previewWin.document.querySelector(`[data-id="${sliderId}"]`) ||
+      previewWin.document.getElementById(sliderId);
 
-		if ( sliderNode && typeof sliderNode._aaeGoTo === 'function' ) {
-			sliderNode._aaeGoTo( index );
-		}
+    if (sliderNode && typeof sliderNode._aaeGoTo === "function") {
+      sliderNode._aaeGoTo(index);
+    }
 
-		// Fallback: broadcast a navigator-style click the runtime can also act on.
-		previewWin.dispatchEvent(
-			new previewWin.CustomEvent( 'aae/slider/edit-slide', {
-				detail: { sliderId, slideId, index },
-			} )
-		);
-	} catch ( _e ) {
-		/* preview not ready — ignore */
-	}
+    // Fallback: broadcast a navigator-style click the runtime can also act on.
+    previewWin.dispatchEvent(
+      new previewWin.CustomEvent("aae/slider/edit-slide", {
+        detail: { sliderId, slideId, index },
+      }),
+    );
+  } catch (_e) {
+    /* preview not ready — ignore */
+  }
 }
 
-export function SlidesControl( { label } ) {
-	const { element } = useElement();
-	const sliderId = element.id;
+export function SlidesControl({ label }) {
+  const { element } = useElement();
+  const sliderId = element.id;
 
-	// One row per real slide under the track.
-	const { [ SLIDE_TYPE ]: slides } = useElementChildren( sliderId, {
-		[ TRACK_TYPE ]: SLIDE_TYPE,
-	} );
+  // One row per real slide under the track.
+  const { [SLIDE_TYPE]: slides } = useElementChildren(sliderId, {
+    [TRACK_TYPE]: SLIDE_TYPE,
+  });
 
-	const repeaterValues = ( slides || [] ).map( ( slide, index ) => ( {
-		id: slide.id,
-		title: slide.editorSettings?.title || `Slide ${ index + 1 }`,
-		index,
-	} ) );
+  const rows = (slides || []).map((slide, index) => ({
+    id: slide.id,
+    title: slide.editorSettings?.title || `Slide ${index + 1}`,
+    index,
+  }));
 
-	const setValues = ( _newValues, _options, meta ) => {
-		const action = meta?.action;
-		if ( ! action ) {
-			return;
-		}
+  const [expandedId, setExpandedId] = React.useState(null);
+  const [dragFrom, setDragFrom] = React.useState(null);
+  const [dragOver, setDragOver] = React.useState(null);
 
-		const track = findChildContainerByType( sliderId, TRACK_TYPE );
-		if ( ! track ) {
-			return;
-		}
+  const getTrack = () => findChildContainerByType(sliderId, TRACK_TYPE);
 
-		if ( action.type === 'add' ) {
-			action.payload.forEach( ( { index } ) => {
-				const position = index + 1;
-				createElements( {
-					title: 'Slide',
-					subtitle: 'Slide added',
-					elements: [
-						{
-							container: track,
-							model: buildSlideModel( position ),
-							options: { at: index },
-						},
-					],
-				} );
-			} );
-			return;
-		}
+  const handleRowClick = (row) => {
+    setExpandedId((cur) => (cur === row.id ? null : row.id));
+    navigatePreviewToSlide(sliderId, row.id, row.index);
+  };
 
-		if ( action.type === 'remove' ) {
-			const ids = action.payload
-				.map( ( { item } ) => item?.id )
-				.filter( Boolean );
-			if ( ids.length ) {
-				removeElements( {
-					elementIds: ids,
-					title: 'Slide',
-					subtitle: 'Slide removed',
-				} );
-			}
-			return;
-		}
+  const handleAdd = () => {
+    const track = getTrack();
+    if (!track) {
+      return;
+    }
+    const position = rows.length + 1;
+    createElements({
+      title: "Slide",
+      subtitle: "Slide added",
+      elements: [
+        {
+          container: track,
+          model: buildSlideModel(position),
+          options: { at: rows.length },
+        },
+      ],
+    });
+  };
 
-		if ( action.type === 'duplicate' ) {
-			const ids = action.payload
-				.map( ( { item } ) => item?.id )
-				.filter( Boolean );
-			if ( ids.length ) {
-				duplicateElements( {
-					elementIds: ids,
-					title: 'Slide',
-					subtitle: 'Slide duplicated',
-				} );
-			}
-			return;
-		}
+  const handleDuplicate = (row) => {
+    duplicateElements({
+      elementIds: [row.id],
+      title: "Slide",
+      subtitle: "Slide duplicated",
+    });
+  };
 
-		if ( action.type === 'reorder' ) {
-			const { from, to } = action.payload;
-			const movedId = slides?.[ from ]?.id;
-			const movedElement = movedId ? getContainer( movedId ) : null;
-			// Guard against a stale index (a concurrent create/delete between
-			// render and drop): only move if the resolved slide is still a child
-			// of this track.
-			if ( movedElement && movedElement.parent?.id === track.id ) {
-				moveElements( {
-					title: 'Slide',
-					subtitle: 'Slide reordered',
-					moves: [
-						{
-							element: movedElement,
-							targetContainer: track,
-							options: { at: to },
-						},
-					],
-				} );
-			}
-		}
-	};
+  const handleRemove = (row) => {
+    removeElements({
+      elementIds: [row.id],
+      title: "Slide",
+      subtitle: "Slide removed",
+    });
+    if (expandedId === row.id) {
+      setExpandedId(null);
+    }
+  };
 
-	// Row click: select the slide in the editor AND move the preview to it.
-	// The Repeater fires onPopoverOpen twice for a single click (once from the
-	// tag's onClick, once from the popover's open handler), so dedupe by id +
-	// time to avoid a doubled select command and a double preview nav pulse.
-	const lastNav = React.useRef( { id: null, t: 0 } );
-	const onPopoverOpen = ( value ) => {
-		if ( ! value?.id ) {
-			return;
-		}
-		const now = Date.now();
-		if ( lastNav.current.id === value.id && now - lastNav.current.t < 300 ) {
-			return;
-		}
-		lastNav.current = { id: value.id, t: now };
-		// The Repeater's popover render needs a valid selected element — removing
-		// the select entirely (or selecting the slider here) crashes it with React
-		// #130. So we DO select the slide to keep the popover happy, then snap the
-		// editing panel straight back to the slider on the next tick. Net effect:
-		// the slide's settings panel never sticks, but the preview navigates to it.
-		selectElement( value.id );
-		navigatePreviewToSlide( sliderId, value.id, value.index );
-		// Snap the panel back to the slider in a MICROTASK (before paint) rather
-		// than a rAF (after a frame). A rAF lets the selected slide's overlay paint
-		// once and then get removed when we re-select the slider — that one-frame
-		// in/out is the visible "jitter". A microtask reverts the selection before
-		// the browser paints, so the slide overlay never shows and nothing flickers.
-		Promise.resolve().then( () => {
-			selectElement( sliderId );
-		} );
-	};
+  const handleDrop = (toIndex) => {
+    const from = dragFrom;
+    setDragFrom(null);
+    setDragOver(null);
+    if (from == null || from === toIndex) {
+      return;
+    }
+    const track = getTrack();
+    const movedId = rows[from]?.id;
+    const movedElement = movedId ? getContainer(movedId) : null;
+    // Guard against a stale index (a concurrent create/delete between render and
+    // drop): only move if the resolved slide is still a child of this track.
+    if (track && movedElement && movedElement.parent?.id === track.id) {
+      moveElements({
+        title: "Slide",
+        subtitle: "Slide reordered",
+        moves: [
+          {
+            element: movedElement,
+            targetContainer: track,
+            options: { at: toIndex },
+          },
+        ],
+      });
+    }
+  };
 
-	return (
-		<Repeater
-			showToggle={ false }
-			showDuplicate={ true }
-			values={ repeaterValues }
-			setValues={ setValues }
-			showRemove={ repeaterValues.length > 1 }
-			label={ label }
-			itemSettings={ {
-				getId: ( { item } ) => item.id,
-				initialValues: { id: '', title: 'Slide' },
-				Label: SlideRowLabel,
-				Content: SlideRowContent,
-				Icon: () => null,
-				onPopoverOpen,
-			} }
-		/>
-	);
+  return (
+    <Stack gap={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography variant="caption" sx={{ fontWeight: 500, color: "text.secondary" }}>
+          {label}
+        </Typography>
+        <Tooltip title="Add Slide">
+          <IconButton size="tiny" onClick={handleAdd} aria-label="Add Slide">
+            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+          </IconButton>
+        </Tooltip>
+      </Stack>
+
+      <Stack gap={0.5}>
+        {rows.map((row) => {
+          const isExpanded = expandedId === row.id;
+          const isDragOver = dragOver === row.index && dragFrom !== row.index;
+          return (
+            <Box
+              key={row.id}
+              draggable
+              onDragStart={() => setDragFrom(row.index)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(row.index);
+              }}
+              onDrop={() => handleDrop(row.index)}
+              onDragEnd={() => {
+                setDragFrom(null);
+                setDragOver(null);
+              }}
+              sx={{
+                border: "1px solid",
+                borderColor: isDragOver ? "primary.main" : "divider",
+                borderRadius: 1,
+                overflow: "hidden",
+                bgcolor: "background.default",
+              }}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={0.5}
+                onClick={() => handleRowClick(row)}
+                sx={{
+                  px: 1,
+                  py: 0.75,
+                  cursor: "pointer",
+                  userSelect: "none",
+                  "&:hover": { bgcolor: "action.hover" },
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{ color: "text.tertiary", cursor: "grab", fontSize: 14, lineHeight: 1 }}
+                  aria-hidden
+                >
+                  ⠿
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{ flex: 1, fontWeight: isExpanded ? 600 : 400 }}
+                >
+                  {row.title}
+                </Typography>
+                <Tooltip title="Duplicate">
+                  <IconButton
+                    size="tiny"
+                    aria-label="Duplicate slide"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDuplicate(row);
+                    }}
+                  >
+                    <span style={{ fontSize: 13, lineHeight: 1 }}>⧉</span>
+                  </IconButton>
+                </Tooltip>
+                {rows.length > 1 && (
+                  <Tooltip title="Remove">
+                    <IconButton
+                      size="tiny"
+                      aria-label="Remove slide"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(row);
+                      }}
+                    >
+                      <span style={{ fontSize: 14, lineHeight: 1 }}>×</span>
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Stack>
+
+              <Collapse in={isExpanded} unmountOnExit>
+                <Box sx={{ px: 1.5, py: 1.5, borderTop: "1px solid", borderColor: "divider" }}>
+                  <SlideNameField elementId={row.id} />
+                </Box>
+              </Collapse>
+            </Box>
+          );
+        })}
+      </Stack>
+    </Stack>
+  );
 }
 
-function SlideRowLabel( { value } ) {
-	return (
-		<Stack sx={ { minHeight: 20 } } direction="row" alignItems="center" gap={ 1.5 }>
-			<span>{ value?.title }</span>
-		</Stack>
-	);
-}
+function SlideNameField({ elementId }) {
+  const editorSettings = useElementEditorSettings(elementId);
+  const label = editorSettings?.title ?? "";
 
-function SlideRowContent( { value } ) {
-	if ( ! value?.id ) {
-		return null;
-	}
-	return (
-		<Stack p={ 2 } gap={ 1.5 }>
-			<SlideNameField elementId={ value.id } />
-		</Stack>
-	);
-}
-
-function SlideNameField( { elementId } ) {
-	const editorSettings = useElementEditorSettings( elementId );
-	const label = editorSettings?.title ?? '';
-
-	return (
-		<Stack gap={ 1 }>
-			<ControlFormLabel>{ 'Slide name' }</ControlFormLabel>
-			<TextField
-				size="tiny"
-				value={ label }
-				onChange={ ( { target } ) =>
-					updateElementEditorSettings( {
-						elementId,
-						settings: { title: target.value },
-					} )
-				}
-			/>
-		</Stack>
-	);
+  return (
+    <Stack gap={1}>
+      <Typography variant="caption" sx={{ fontWeight: 500, color: "text.secondary" }}>
+        {"Slide name"}
+      </Typography>
+      <TextField
+        size="tiny"
+        value={label}
+        onChange={({ target }) =>
+          updateElementEditorSettings({
+            elementId,
+            settings: { title: target.value },
+          })
+        }
+      />
+    </Stack>
+  );
 }
