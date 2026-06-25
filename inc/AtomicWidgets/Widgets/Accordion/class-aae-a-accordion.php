@@ -18,7 +18,9 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-accordion-item.php';
+require_once __DIR__ . '/class-aae-a-items-control.php';
 use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -69,6 +71,20 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [
+			// "Items": a live projection of the accordion's real
+			// <e-aae-a-accordion-item> children — one repeater row each, with
+			// drag-reorder, duplicate, remove and rename. Mirrors the Nested
+			// Slider's "Slides" element-control. Rendered by the React component
+			// registered under 'aae-items' (src/modules/atomic/element-controls).
+			Section::make()
+				->set_id( 'items' )
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					AAE_A_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			Section::make()
 				->set_id( 'content' )
 				->set_label( __( 'Accordion Settings', 'animation-addons-for-elementor' ) )
