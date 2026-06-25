@@ -423,7 +423,7 @@ export function bindText(el, mapConfig, forcePreview = false) {
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
 
-		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			// Skip auto-firing modes in the editor — keep the text intact.
 			state.push({ config, tween: null, dispose: null });
 			continue;

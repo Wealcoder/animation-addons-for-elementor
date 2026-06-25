@@ -248,6 +248,14 @@ final class Assets
 			$asset['version'],
 			true
 		);
+
+		wp_localize_script(
+			self::HANDLE . '-editor-bridge',
+			'aaeAtomicBridge',
+			[
+				'is_pro' => defined( 'WCF_ADDONS_PRO_FILE' ),
+			]
+		);
 	}
 
 	private function load_asset(string $entry, array $manual_deps = []): array

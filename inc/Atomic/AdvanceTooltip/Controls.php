@@ -52,7 +52,7 @@ final class Controls
         return Section::make()
 
             ->set_label(
-                'Tooltip'
+                Bootstrap::get_label( __( 'Advance Tooltip', 'animation-addons-for-elementor' ) )
             )
 
             ->set_items([

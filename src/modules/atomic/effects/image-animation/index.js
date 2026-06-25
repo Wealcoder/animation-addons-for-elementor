@@ -172,6 +172,11 @@ function buildCustomTween(el, config, paused, scrub) {
 		paused: !!paused,
 	};
 
+	if (config.method === 'set') {
+		// Instant state — no tween/duration. Returns a zero-duration tween so
+		// the row's playedKey / replay bookkeeping still works.
+		return gsap.set(image, { ...from });
+	}
 	if (config.method === 'to') {
 		return gsap.to(image, { ...from, ...timing });
 	}
@@ -299,7 +304,7 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
 
-		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			state.push({ config, tween: null, dispose: null });
 			continue;
 		}
@@ -308,6 +313,13 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 		state.push(entry);
 
 		const play = () => {
+			// `set` is instant — re-apply each time the trigger fires.
+			if (config.method === 'set') {
+				const live = buildRowTween(el, config, false, false);
+				entry.tween = live;
+				if (live) el[IMG_PLAYED] = live;
+				return;
+			}
 			if (entry.tween) {
 				if (entry.tween.paused()) {
 					entry.tween.play();

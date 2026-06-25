@@ -44,7 +44,7 @@ final class Controls
     private function build_section(): Section
     {
         return Section::make()
-            ->set_label('Custom CSS (AAE)')
+            ->set_label( Bootstrap::get_label( 'Custom CSS (AAE)' ) )
             ->set_items([
                 Text_Control::bind_to(
                     Schema::SECTION_ANCHOR

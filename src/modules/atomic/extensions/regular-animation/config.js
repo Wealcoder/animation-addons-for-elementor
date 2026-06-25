@@ -56,6 +56,12 @@ const METHOD_OPTIONS = [
 	{ value: 'to', label: 'To' },
 	{ value: 'fromTo', label: 'From To' },
 ];
+// "Set" (instant state) is only meaningful for a custom animation — presets
+// carry their own from/to, so an instant set makes no sense there. Offer it
+// only when effect === 'custom'.
+const SET_METHOD_OPTION = { value: 'set', label: 'Set' };
+const methodOptionsFor = (r) =>
+	(r?.effect === 'custom') ? [...METHOD_OPTIONS, SET_METHOD_OPTION] : METHOD_OPTIONS;
 
 const TRIGGER_OPTIONS = [
 	{ value: 'on_scroll', label: 'On Scroll' },
@@ -63,6 +69,7 @@ const TRIGGER_OPTIONS = [
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
 	{ value: 'mouseover', label: 'On Hover' },
 	{ value: 'click', label: 'On Click' },
+	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
 const WRAPPER_OPTIONS = [
@@ -186,7 +193,7 @@ const rowWrapperCustom = (r) => r?.wrapper === 'custom';
 
 const SCROLL_DATALIST = SCROLL_POSITION_OPTIONS;
 
-const CUSTOM_PROPS_CELLS = [
+export const CUSTOM_PROPS_CELLS = [
 	{
 		bind: 'property', type: 'select', placeholder: 'Property',
 		options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true,
@@ -201,7 +208,7 @@ const ROW_FIELDS = [
 		// method='fromTo'. 'custom' / unknown returns null → no auto-fill.
 		onSet: (_row, val) => presetRowPatch(val),
 	},
-	{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'fromTo', when: rowIsAnimated },
+	{ bind: 'method', label: 'Method', control: 'select', options: methodOptionsFor, defaultValue: 'fromTo', when: rowIsAnimated },
 	{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: rowIsAnimated },
 
 	{
@@ -235,7 +242,7 @@ const ROW_FIELDS = [
 
 	{
 		bind: 'custom_props',
-		label: (r) => (r?.method === 'fromTo' ? 'From Properties' : 'Custom Properties'),
+		label: (r) => (r?.method === 'fromTo' ? 'From Properties' : (r?.method === 'set' ? 'Set Properties' : 'Custom Properties')),
 		control: 'repeater', addLabel: 'Add Property',
 		rowDefaults: { property: '', value: '' },
 		cells: CUSTOM_PROPS_CELLS,

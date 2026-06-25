@@ -1,6 +1,8 @@
 <?php
 namespace WCF_ADDONS\Atomic\TextAnimation;
 
+use WCF_ADDONS\Atomic\Bootstrap;
+
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -56,7 +58,7 @@ final class Controls {
 
 	private function build_text_animation_section(): Section {
 		return Section::make()
-			->set_label( __( 'Text Animation', self::TD ) )
+			->set_label( Bootstrap::get_label( __( 'Text Animation', self::TD ) ) )
 			->set_items( [
 				// Anchor — React replacement renders the full responsive section here.
 				Text_Control::bind_to( Schema::TEXT_SECTION_ANCHOR ),		

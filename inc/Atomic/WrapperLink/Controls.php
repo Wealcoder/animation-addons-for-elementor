@@ -54,7 +54,7 @@ final class Controls
     {
         return Section::make()
             ->set_label(
-                'Wrapper Link'
+                Bootstrap::get_label( __( 'Wrapper Link', 'animation-addons-for-elementor' ) )
             )
             ->set_items([
                 Text_Control::bind_to(

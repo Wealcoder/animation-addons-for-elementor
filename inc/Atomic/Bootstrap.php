@@ -9,6 +9,10 @@ final class Bootstrap {
 
 	const MIN_ELEMENTOR_VERSION = '4.0.0';
 
+	public static function get_label( $text ) {
+		return $text;
+	}
+
 	public static function init(): void {
 		if ( ! defined( 'ELEMENTOR_VERSION' ) ) {
 			return;
