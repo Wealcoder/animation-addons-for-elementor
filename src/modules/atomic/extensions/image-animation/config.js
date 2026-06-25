@@ -26,10 +26,10 @@ const PRESET_EFFECT_OPTIONS = Object.keys(PRESETS)
 
 const EFFECT_OPTIONS = [
 	{ value: 'none', label: 'None' },
+	{ value: 'custom', label: 'Custom Animation' },
 	{ value: 'reveal', label: 'Reveal' },
 	{ value: 'scale', label: 'Scale' },
 	{ value: 'stretch', label: 'Stretch' },
-	{ value: 'custom', label: 'Custom Animation' },
 	...PRESET_EFFECT_OPTIONS,
 ];
 
@@ -42,6 +42,7 @@ const TRIGGER_OPTIONS = [
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
 	{ value: 'click', label: 'On Click' },
 	{ value: 'mouseover', label: 'On Hover' },
+	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
 const START_FROM_OPTIONS = [
@@ -56,6 +57,11 @@ const METHOD_OPTIONS = [
 	{ value: 'to', label: 'To' },
 	{ value: 'fromTo', label: 'From To' },
 ];
+// "Set" (instant state) only for a custom animation — premium presets carry
+// their own from/to, so instant set is meaningless there.
+const SET_METHOD_OPTION = { value: 'set', label: 'Set' };
+const methodOptionsFor = (r) =>
+	(rowEffect(r) === 'custom') ? [...METHOD_OPTIONS, SET_METHOD_OPTION] : METHOD_OPTIONS;
 
 const EASE_OPTIONS = [
 	{ value: 'power2.out', label: 'Power2.out' },
@@ -133,7 +139,7 @@ const ROW_FIELDS = [
 
 	// Custom + preset effects: method + removable props repeaters. Preset
 	// effects fill these on select; the user can still tweak / remove rows.
-	{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: rowUsesProps },
+	{ bind: 'method', label: 'Method', control: 'select', options: methodOptionsFor, defaultValue: 'from', when: rowUsesProps },
 	{
 		bind: 'custom_props',
 		label: (r) => (r?.method === 'fromTo' ? 'From Properties' : 'Custom Properties'),

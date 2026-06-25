@@ -62,7 +62,7 @@ final class Controls {
 		return Section::make()
 
 			->set_label(
-				__( 'Cursor Hover Effect', self::TD )
+				Bootstrap::get_label( __( 'Cursor Hover Effect', self::TD ) )
 			)
 
 			->set_items([

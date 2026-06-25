@@ -81,7 +81,7 @@ class WCFAddon_BlackList_Notice {
 	}
 
 	private static function pro_label( $text ) {
-		return sprintf( '<i class="wcf-logo"></i> %s <span class="wcfpro_text aae-icon-lock"><span>', $text );
+		return sprintf( '<i class="wcf-logo"></i> %s <a href="https://try.animation-addons.com" target="_blank" class="wcfpro_text aae-icon-lock" style="font-size: 9px; font-weight: normal; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">Try</a>', $text );
 	}
 
 	/* =====================================================================

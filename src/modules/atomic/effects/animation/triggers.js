@@ -43,6 +43,7 @@ const TRIGGER_MODES = {
 	on_page_load: 'page-load',
 	mouseover: 'hover',
 	click: 'click',
+	on_slide_change: 'slide-change',
 };
 
 export function modeFor(trigger) {
@@ -167,6 +168,23 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 		const evtName = isEdit ? 'pointerdown' : 'click';
 		target.addEventListener(evtName, play);
 		return setDisposer(() => target.removeEventListener(evtName, play));
+	}
+
+	// slide-change: replay whenever the AAE nested slider this element lives in
+	// switches to a slide that contains `el`. The slider runtime dispatches
+	// 'aae:slide:change' on its root (.aae-a-slider) from goToSlide(), carrying
+	// the now-active slide in detail.activeSlide. Fires every time (re-runs on
+	// every entry), per the chosen "always replay" behaviour.
+	if (mode === 'slide-change') {
+		const slider = el.closest && el.closest('.aae-a-slider');
+		if (!slider) return setDisposer(() => {});
+		const onSlide = (e) => {
+			const active = e.detail && e.detail.activeSlide;
+			// No activeSlide (edge) → replay to be safe; else only when el is inside it.
+			if (!active || (active.contains && active.contains(el))) play();
+		};
+		slider.addEventListener('aae:slide:change', onSlide);
+		return setDisposer(() => slider.removeEventListener('aae:slide:change', onSlide));
 	}
 
 	const ScrollTrigger = getScrollTrigger();

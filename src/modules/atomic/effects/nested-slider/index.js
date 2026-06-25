@@ -760,6 +760,22 @@ function bind(container, config) {
 		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
+		emitSlideChange(index);
+	};
+
+	// Broadcast a slide-change so the animation runtime can replay the
+	// interactions whose trigger is "on_slide_change" on elements inside the
+	// now-active slide. One event per goToSlide() (which every nav path — arrows,
+	// dots, drag, keyboard, autoplay, scrollbar — funnels through), so it fires
+	// every time the active slide changes. The animation kind matches `el` against
+	// detail.activeSlide.contains(el), so only the entered slide's elements run.
+	const emitSlideChange = (index) => {
+		const realIndex = hasSeamlessLoop ? (index % originalSlidesCount) : index;
+		const activeSlide = getSlides()[index] || null;
+		sliderDiv.dispatchEvent(new CustomEvent('aae:slide:change', {
+			bubbles: true,
+			detail: { index: realIndex, activeSlide, slider: sliderDiv },
+		}));
 	};
 
 	// Editor-only: bring a specific slide fully into view for EDITING. Unlike

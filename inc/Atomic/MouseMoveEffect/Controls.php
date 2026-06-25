@@ -62,7 +62,7 @@ final class Controls {
 		return Section::make()
 
 			->set_label(
-				__( 'Mouse Move Effect', self::TD )
+				Bootstrap::get_label( __( 'Mouse Move Effect', self::TD ) )
 			)
 
 			->set_items([
