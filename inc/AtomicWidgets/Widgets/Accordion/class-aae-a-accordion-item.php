@@ -138,11 +138,22 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$open_icon_url  = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg';
 		$close_icon_url = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg';
 
-		// Open icon — shown while the item is collapsed.
+		// Default icon visibility ships as v4 local styles attached to each SVG
+		// element, not just the enqueued stylesheet. A local style's `id` is
+		// emitted as the CSS class `.{id}` and the element references it by
+		// carrying that same id in its `classes`. This guarantees the resting
+		// state the instant the item is dropped in the editor — the open icon
+		// shows, the close icon is hidden — independent of stylesheet load order
+		// or where the icon currently sits in the DOM. The item's `.active`
+		// state (in accordion.scss) overrides these to swap the pair.
+		$open_style_id  = 'e-aae-acc-icon-open';
+		$close_style_id = 'e-aae-acc-icon-close';
+
+		// Open icon — shown while the item is collapsed (default resting state).
 		$header_icon_open = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Open Icon' ] )
 			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-open' ] ),
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-open', $open_style_id ] ),
 				'svg'     => Svg_Src_Prop_Type::generate( [
 					'id'  => null,
 					'url' => Url_Prop_Type::generate( $open_icon_url ),
@@ -150,17 +161,35 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		// Close icon — shown while the item is expanded (active).
+		$header_icon_open['styles'] = [
+			$open_style_id => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'display', String_Prop_Type::generate( 'inline-flex' ) )
+				)
+				->build( $open_style_id ),
+		];
+
+		// Close icon — hidden by default; shown only while the item is active.
 		$header_icon_close = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Close Icon' ] )
 			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-close' ] ),
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-close', $close_style_id ] ),
 				'svg'     => Svg_Src_Prop_Type::generate( [
 					'id'  => null,
 					'url' => Url_Prop_Type::generate( $close_icon_url ),
 				] ),
 			] )
 			->build();
+
+		$header_icon_close['styles'] = [
+			$close_style_id => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'display', String_Prop_Type::generate( 'none' ) )
+				)
+				->build( $close_style_id ),
+		];
 
 		// Content children: Text (Paragraph) + Image
 		$content_text = Atomic_Paragraph::generate()
