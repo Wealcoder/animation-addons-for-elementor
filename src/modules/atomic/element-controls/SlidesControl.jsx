@@ -232,8 +232,21 @@ export function SlidesControl( { label } ) {
 			return;
 		}
 		lastNav.current = { id: value.id, t: now };
+		// The Repeater's popover render needs a valid selected element — removing
+		// the select entirely (or selecting the slider here) crashes it with React
+		// #130. So we DO select the slide to keep the popover happy, then snap the
+		// editing panel straight back to the slider on the next tick. Net effect:
+		// the slide's settings panel never sticks, but the preview navigates to it.
 		selectElement( value.id );
 		navigatePreviewToSlide( sliderId, value.id, value.index );
+		// Snap the panel back to the slider in a MICROTASK (before paint) rather
+		// than a rAF (after a frame). A rAF lets the selected slide's overlay paint
+		// once and then get removed when we re-select the slider — that one-frame
+		// in/out is the visible "jitter". A microtask reverts the selection before
+		// the browser paints, so the slide overlay never shows and nothing flickers.
+		Promise.resolve().then( () => {
+			selectElement( sliderId );
+		} );
 	};
 
 	return (
