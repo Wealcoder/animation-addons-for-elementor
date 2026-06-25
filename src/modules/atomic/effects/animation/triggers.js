@@ -184,6 +184,18 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 			if (!active || (active.contains && active.contains(el))) play();
 		};
 		slider.addEventListener('aae:slide:change', onSlide);
+
+		// Bind-time catch-up for the FIRST slide. The slider emits its initial
+		// slide-change during init — but the runtime may bind this listener a hair
+		// later (microtask scan), so that first event is missed and the resting
+		// slide never animates until the user navigates. The slider also marks the
+		// active slide with [data-aae-slide-active]; if el is inside it right now,
+		// the entry already happened, so play once to make up for the missed event.
+		const activeNow = el.closest && el.closest('.aae-a-slide[data-aae-slide-active]');
+		if (activeNow && slider.contains(activeNow)) {
+			play();
+		}
+
 		return setDisposer(() => slider.removeEventListener('aae:slide:change', onSlide));
 	}
 

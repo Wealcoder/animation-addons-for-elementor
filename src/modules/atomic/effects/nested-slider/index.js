@@ -771,7 +771,24 @@ function bind(container, config) {
 	// detail.activeSlide.contains(el), so only the entered slide's elements run.
 	const emitSlideChange = (index) => {
 		const realIndex = hasSeamlessLoop ? (index % originalSlidesCount) : index;
-		const activeSlide = getSlides()[index] || null;
+		// In a seamless loop the visible slide is often a CLONE (cloneNode copies
+		// that had their data-id / data-interaction-id stripped). The animation
+		// runtime's `el` lives in the ORIGINAL slide, so matching against a clone's
+		// .contains(el) always fails — which is why the looped first slide (and
+		// every clone-set slide from the 2nd loop on) never animated. Always resolve
+		// the active slide to its ORIGINAL counterpart by real index so the runtime
+		// match and the catch-up attribute land on the node that actually holds el.
+		const activeSlide = hasSeamlessLoop
+			? (originalSlides[realIndex] || null)
+			: (getSlides()[index] || null);
+		// Mark the active slide in the DOM so the animation runtime can do a
+		// bind-time catch-up: an element whose on_slide_change listener binds
+		// AFTER this event already fired (the page-load race on the first slide)
+		// reads this attribute and plays once, instead of missing the entry.
+		if (activeSlide) {
+			getSlides().forEach((s) => s.removeAttribute('data-aae-slide-active'));
+			activeSlide.setAttribute('data-aae-slide-active', '');
+		}
 		sliderDiv.dispatchEvent(new CustomEvent('aae:slide:change', {
 			bubbles: true,
 			detail: { index: realIndex, activeSlide, slider: sliderDiv },
