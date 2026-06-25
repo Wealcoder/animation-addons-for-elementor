@@ -112,6 +112,53 @@ const textFlipSetup = ( container ) => {
 };
 
 /* -------------------------------------------------------------------------
+ * Styles 9 & 10 — Hover Fill from cursor point (Oval / Circle)
+ * Ensures .aae-btn-fill-el exists, then tracks mouseenter/leave position so
+ * the expanding circle originates from the cursor entry/exit point rather
+ * than always from the centre. Idempotent via data-aae-fill-bound flag.
+ * ------------------------------------------------------------------------- */
+const hoverFillSetup = ( container ) => {
+	let fill = container.querySelector( '.aae-btn-fill-el' );
+	if ( ! fill ) {
+		fill = document.createElement( 'span' );
+		fill.classList.add( 'aae-btn-fill-el' );
+		container.append( fill );
+	}
+	if ( container.dataset.aaeFillBound ) return;
+	container.dataset.aaeFillBound = '1';
+	const updatePos = ( e ) => {
+		const rect = container.getBoundingClientRect();
+		fill.style.left = ( e.clientX - rect.left ) + 'px';
+		fill.style.top  = ( e.clientY - rect.top  ) + 'px';
+	};
+	container.addEventListener( 'mouseenter', updatePos );
+	container.addEventListener( 'mouseleave', updatePos );
+};
+
+/* -------------------------------------------------------------------------
+ * Styles 9 & 10 — Magnetic movement (Oval / Circle)
+ * Mirrors the v3 btn-wrapper + btn-item parallax: button physically follows
+ * the cursor within its bounds, then snaps back on leave.
+ * Requires GSAP (loaded as a dependency). Idempotent via data attr.
+ * ------------------------------------------------------------------------- */
+const magneticSetup = ( container ) => {
+	if ( container.dataset.aaeMagneticBound || typeof gsap === 'undefined' ) return;
+	container.dataset.aaeMagneticBound = '1';
+	container.addEventListener( 'mousemove', ( e ) => {
+		const rect = container.getBoundingClientRect();
+		gsap.to( container, {
+			duration: 0.5,
+			x: ( ( e.clientX - rect.left - rect.width  / 2 ) / rect.width  ) * 80,
+			y: ( ( e.clientY - rect.top  - rect.height / 2 ) / rect.height ) * 80,
+			ease: 'power2.out',
+		} );
+	} );
+	container.addEventListener( 'mouseleave', () => {
+		gsap.to( container, { duration: 0.5, x: 0, y: 0, ease: 'power2.out' } );
+	} );
+};
+
+/* -------------------------------------------------------------------------
  * Register handler with Elementor v2 atomic frontend loader
  * ------------------------------------------------------------------------- */
 register( {
@@ -126,6 +173,12 @@ register( {
 			borderDivideSetup( element );
 		} else if ( element.classList.contains( 'btn-text-flip' ) ) {
 			textFlipSetup( element );
+		} else if (
+			element.classList.contains( 'aae-btn-oval' ) ||
+			element.classList.contains( 'aae-btn-circle' )
+		) {
+			hoverFillSetup( element );
+			magneticSetup( element );
 		}
 	},
 } );

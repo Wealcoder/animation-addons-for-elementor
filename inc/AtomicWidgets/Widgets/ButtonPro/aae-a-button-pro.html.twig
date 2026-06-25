@@ -9,6 +9,12 @@
     {% set style_extra = 'btn-hover' %}
 {% elseif style_num in ['5', '6'] %}
     {% set style_extra = 'aae-btn-pro-group' %}
+{% elseif style_num == '9' %}
+    {% set style_extra = 'aae-btn-oval' %}
+{% elseif style_num == '10' %}
+    {% set style_extra = 'aae-btn-circle' %}
+{% elseif style_num == '11' %}
+    {% set style_extra = 'aae-btn-ellipse' %}
 {% else %}
     {% set style_extra = '' %}
 {% endif %}
@@ -45,6 +51,9 @@
 {% if style_num == '7' and settings.btn_outline_gap is defined %}
     {% set inline_style = inline_style ~ '--outline-gap:' ~ settings.btn_outline_gap ~ 'px;' %}
 {% endif %}
+{% if style_num == '10' and settings.btn_circle_size is defined and settings.btn_circle_size is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-size:' ~ settings.btn_circle_size ~ 'px;' %}
+{% endif %}
 
 <a class="{{ btn_classes | join(' ') }} {{ editor_classes | default('') }}"
    href="{{ settings.btn_url | default('#') | e('html_attr') }}"
@@ -65,6 +74,9 @@
 
     {# Style 4 — ripple span positioned by GSAP on mouseenter/leave #}
     {% if style_num == '4' %}<span class="aae-ripple-el"></span>{% endif %}
+
+    {# Styles 9 & 10 — expanding fill circle for hover background #}
+    {% if style_num in ['9', '10'] %}<span class="aae-btn-fill-el"></span>{% endif %}
 
     {{ children_placeholder | raw }}
 
