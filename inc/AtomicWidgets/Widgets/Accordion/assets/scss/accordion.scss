@@ -85,31 +85,45 @@
                 white-space: nowrap;
             }
 
-            // Header Icons (SVG) — open/close indicators
+            // Header Icons (SVG) — open/close indicators. Box only; per-icon
+            // show/hide lives in the dedicated rules below. Size is forced with
+            // !important so the Atomic_Svg element's own base width/height
+            // (65px) can't leak through and make the two icons different sizes.
             .aae-header-icon-element {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                width: 24px;
-                height: 24px;
+                width: 24px !important;
+                height: 24px !important;
 
                 svg {
-                    width: 100%;
-                    height: 100%;
+                    width: 100% !important;
+                    height: 100% !important;
                 }
             }
 
         }
     }
 
-    /* Collapsed (default) state: show the open (expand) icon, hide the close
-       icon. Scoped only by the icon's own class — not by the header ancestry —
-       so it holds the moment the item is dropped in the editor, before the
-       header Div_Block is distributed into its slot and regardless of where the
-       icon currently sits in the DOM. The `.active` rule below overrides it. */
-    .aae-a-accordion-item .aae-header-icon-close {
-        display: none;
+    /* ---------- ICON VISIBILITY (single source of truth) ----------
+       Collapsed (default) state: only the open (+) icon shows; hide the close
+       icon. The `.active` rules below invert this for the open item.
+
+       The open icon is visible by default via `.aae-header-icon-element`
+       (display: inline-flex above) — no per-icon "show" rule, so the editor
+       always has a visible icon the instant the item is dropped, never a blank.
+
+       The hide/show selectors are scoped as
+       `.aae-a-accordion-item .aae-header-icon-element.aae-header-icon-{open|close}`
+       (specificity 0,3,0) — NOT through the `.aae-accordion-header
+       .aae-header-element` path. In the editor the icon is sometimes still
+       inside the hidden children-injector (before distribution) or wrapped by
+       an extra `.elementor-element`, so the header path can fail to match and
+       both icons render. The item + dual-class path always matches wherever the
+       icon sits, and !important beats the Atomic_Svg base `display`. */
+    .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
+        display: none !important;
     }
 
     /* Collapsed by default. Height is animated via max-height, driven by JS
@@ -123,16 +137,18 @@
     }
 
     /* ---------- OPEN STATE ---------- */
+    // Active item: hide the open icon, show the close icon. Same item +
+    // dual-class path as the collapsed rule (+ the .active class for higher
+    // specificity), so it matches wherever the icon sits in the editor DOM.
+    .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-open {
+        display: none !important;
+    }
+
+    .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-close {
+        display: inline-flex !important;
+    }
+
     .aae-a-accordion-item.active {
-        // Active state: hide the open (expand) icon, show the close icon
-        .aae-header-icon-open {
-            display: none;
-        }
-
-        .aae-header-icon-close {
-            display: inline-flex;
-        }
-
         .aae-accordion-header {
             background: #f1f1f1;
         }
