@@ -1,372 +1,354 @@
 /* eslint-env browser */
 
-const {
-	getGsap,
-	getScrollTrigger,
-	configFor,
-	pickConfigResponsive
-} = window.AAEADDON;
+/**
+ * Image Animation — REPEATER runtime.
+ *
+ * Config: { rows: [ <interaction>, ... ], rows_<bp>: [...] }. Each row is one
+ * independent image interaction (effect + trigger + config). Effects:
+ *   - reveal  : clip-path wipe (preset)
+ *   - scale   : scale from→to (preset)
+ *   - stretch : width/border-radius grow (preset)
+ *   - custom  : user GSAP from/to props (like regular animation)
+ *   - glass_broken : shard-shatter reveal (new)
+ *
+ * Every row drives through the shared trigger dispatcher (wireTrigger), so
+ * trigger is now a per-row choice (page-load / scroll / play-scroll / click /
+ * hover) instead of being hardcoded per effect.
+ */
+
+import { wireTrigger, modeFor, resolveTriggerEl } from '../animation/triggers';
+
+const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
 
 export const IMG_MAP = 'AAE_INTERACTIONS_IMG';
 export const IMG_PLAYED = '__aaeImgPlayed';
-const IMG_DISPOSE_KEY = '__aaeImgDispose';
+const ROWS_KEY = '__aaeImgRows';
 
-/* =========================
- * CONFIG
- * ========================= */
-
-function r(cfg, key, fallback) {
-	const v = pickConfigResponsive(cfg, key);
-	return (v === undefined || v === '') ? fallback : v;
+function camelize(s) {
+	const str = String(s).trim();
+	const c = str.replace(/[-_ ]+([a-zA-Z])/g, (_, l) => l.toUpperCase());
+	return c.charAt(0).toLowerCase() + c.slice(1);
 }
+function normalizeProps(arr) {
+	if (!Array.isArray(arr)) return [];
+	return arr.map((p) => (p && p.k ? { ...p, k: camelize(p.k) } : p));
+}
+
+/* ---------- read ---------- */
 
 export function readImg(el) {
 	const cfg = configFor(el, IMG_MAP);
 	if (!cfg) return null;
 
-	const effect = pickConfigResponsive(cfg, 'effect');
+	const rows = pickConfigResponsive(cfg, 'rows');
+	if (!Array.isArray(rows) || rows.length === 0) return null;
+
+	const rowConfigs = rows.map((row) => normalizeRow(row)).filter(Boolean);
+	if (!rowConfigs.length) return null;
+	return { rows: rowConfigs };
+}
+
+function normalizeRow(row) {
+	if (!row || typeof row !== 'object') return null;
+	const effect = row.effect;
 	if (!effect || effect === 'none') return null;
 
 	return {
 		effect,
-		startFrom: r(cfg, 'startFrom', 'right'),
-		ease: r(cfg, 'ease', 'power2.out'),
-		scaleStart: Number(r(cfg, 'scaleStart', 0.5)),
-		scaleEnd: Number(r(cfg, 'scaleEnd', 1)),
-		startPos: r(cfg, 'startPos', 'top center'),
-		customStart: r(cfg, 'customStart', 'top 10%'),
-		endPos: r(cfg, 'endPos', 'bottom bottom+=10'),
-		enableMarker: !!pickConfigResponsive(cfg, 'enableMarker'),
+		trigger: row.trigger || 'on_scroll',
+		triggerSelector: row.triggerSelector || '',
+		start: row.startPosition || 'top center',
+		end: row.endPosition || 'bottom bottom',
+		startPosition: row.startPosition || 'top center',
+		endPosition: row.endPosition || 'bottom bottom',
+		markers: !!row.markers,
+		duration: Number(row.duration ?? 1.5),
+		delay: Number(row.delay ?? 0),
+		ease: row.ease || 'power2.out',
+		method: row.method || 'from',
+		// reveal
+		startFrom: row.startFrom || 'right',
+		// scale
+		scaleStart: Number(row.scaleStart ?? 0.5),
+		scaleEnd: Number(row.scaleEnd ?? 1),
+		// custom / preset props
+		customProps: normalizeProps(row.customProps),
+		customPropsTo: normalizeProps(row.customPropsTo),
 	};
 }
 
-/* =========================
- * HELPERS
- * ========================= */
-
-function resolveStart(config) {
-	return config.startPos === 'custom'
-		? config.customStart
-		: config.startPos;
-}
-
-function resolveEnd(config) {
-	if (!config.endPos) return undefined;
-	return config.endPos === 'custom'
-		? config.customEnd
-		: config.endPos;
-}
+/* ---------- media target ---------- */
 
 function findMedia(el) {
 	return el.querySelector('img, svg') || el;
 }
 
-function cleanupImg(el) {
+/* ---------- per-effect tween builders ----------
+ * Each returns a GSAP tween/timeline (paused when `paused` true) that the
+ * trigger dispatcher plays. They DON'T create their own ScrollTrigger — the
+ * shared wireTrigger owns that.
+ */
+
+function buildRevealTween(el, config, paused) {
 	const gsap = getGsap();
-	const dispose = el[IMG_DISPOSE_KEY];
-
-	if (typeof dispose === 'function') {
-		try { dispose(); } catch (_) {}
-	}
-
-	el[IMG_DISPOSE_KEY] = null;
-
-	if (el[IMG_PLAYED]) {
-		try { el[IMG_PLAYED].kill?.(); } catch (_) {}
-		delete el[IMG_PLAYED];
-	}
-
-	if (gsap) {
-		try {
-			gsap.killTweensOf(el);
-			gsap.killTweensOf(findMedia(el));
-		} catch (_) {}
-	}
-}
-
-/* =========================
- * REVEAL
- * ========================= */
-
-function bindReveal(el, config, preview = false) {
-	const gsap = getGsap();
-	if (!gsap) return;
-
+	if (!gsap) return null;
 	const image = findMedia(el);
 	const wrap = image.closest('.aae-img-reveal-wrap') || el;
 
-	// IMPORTANT: prevent stuck hidden state during switching
 	gsap.killTweensOf([wrap, image]);
 	gsap.set([wrap, image], { clearProps: 'all' });
 
-	const contentAnim = {
-		duration: 1.5,
-		ease: config.ease,
-	};
+	const clip = {
+		left: 'inset(0 0 0 100%)',
+		right: 'inset(0 100% 0 0)',
+		top: 'inset(100% 0 0 0)',
+		bottom: 'inset(0 0 100% 0)',
+	}[config.startFrom] || 'inset(0 100% 0 0)';
 
-	const imageAnim = {
-		duration: 1.5,
-		scale: 1,
-		ease: config.ease,
-	};
-
-	switch (config.startFrom) {
-		case 'left':
-			contentAnim.clipPath = 'inset(0 0 0 100%)';
-			break;
-		case 'right':
-			contentAnim.clipPath = 'inset(0 100% 0 0)';
-			break;
-		case 'top':
-			contentAnim.clipPath = 'inset(100% 0 0 0)';
-			break;
-		default:
-			contentAnim.clipPath = 'inset(0 0 100% 0)';
-	}
-
-	// ✅ FIX: GSAP controls visibility (no CSS visibility hacks)
-		gsap.set(wrap, { autoAlpha: 0 });
-
-		const tl = gsap.timeline({
-			scrollTrigger: {
-				trigger: wrap,
-				start: resolveStart(config),
-				//end: resolveEnd(config),
-				//scrub: true,
-				invalidateOnRefresh: true,
-			}
-		});
-
-		if (preview) {
-			tl.set(wrap, { autoAlpha: 1 });
-			tl.from(wrap, contentAnim);
-			tl.from(image, imageAnim);
-		} else {
-			tl.set(wrap, { autoAlpha: 1 });
-			tl.from(wrap, contentAnim, 0);
-			tl.from(image, imageAnim, 0);
-		}
-
-	el[IMG_PLAYED] = tl;
-
-	el[IMG_DISPOSE_KEY] = () => {
-		tl.scrollTrigger?.kill?.();
-		tl.kill();
-
-		gsap.set(wrap, {
-			clearProps: 'overflow,visibility,display,opacity'
-		});
-
-		gsap.set(image, {
-			clearProps: 'transform'
-		});
-	};
+	const tl = gsap.timeline({ paused: !!paused });
+	tl.set(wrap, { autoAlpha: 1 });
+	tl.from(wrap, { clipPath: clip, duration: config.duration, ease: config.ease }, 0);
+	tl.from(image, { scale: 1.0, duration: config.duration, ease: config.ease }, 0);
+	return tl;
 }
 
-/* =========================
- * SCALE
- * ========================= */
-
-function bindScale(el, config, preview = false) {
+function buildScaleTween(el, config, paused, scrub) {
 	const gsap = getGsap();
-	const ScrollTrigger = getScrollTrigger();
-	if (!gsap || !ScrollTrigger) return;
-
+	if (!gsap) return null;
 	const image = findMedia(el);
-
-	// Always clean previous state
 	gsap.killTweensOf(image);
 	gsap.set(image, { clearProps: 'transform' });
+	if (image.parentElement) image.parentElement.style.overflow = 'hidden';
 
-	/* =========================
-	 * PREVIEW MODE (Editor Play)
-	 * ========================= */
-	if (preview) {
-		const tl = gsap.timeline();
-
-		tl.fromTo(
-			image,
-			{ scale: config.scaleStart },
-			{
-				scale: config.scaleEnd,
-				duration: 1.5,
-				ease: 'power2.out',
-			}
-		);
-
-		let markerST = null;
-
-		// if (config.enableMarker) {
-		// 	tl.call(() => {
-		// 		markerST?.kill();
-		// 		markerST = ScrollTrigger.create({
-		// 			trigger: image.parentElement || el,
-		// 			start: resolveStart(config),
-		// 			end: resolveEnd(config),
-		// 			markers: true,
-		// 			invalidateOnRefresh: true,
-		// 		});
-		// 		ScrollTrigger.refresh();
-		// 	});
-		// }
-
-		el[IMG_PLAYED] = tl;
-
-		el[IMG_DISPOSE_KEY] = () => {
-			tl.kill();
-			markerST?.kill();
-			gsap.set(image, { clearProps: 'transform' });
-		};
-
-		return tl;
-	}
-
-	/* =========================
-	 * FRONTEND MODE (Scroll)
-	 * ========================= */
-
-	const tween = gsap.fromTo(
+	return gsap.fromTo(
 		image,
 		{ scale: config.scaleStart },
 		{
 			scale: config.scaleEnd,
-			ease: 'none',
+			duration: config.duration,
+			ease: scrub ? 'none' : config.ease,
+			paused: !!paused,
 		}
 	);
-
-	const st = ScrollTrigger.create({
-		trigger: image.parentElement || el,
-		start: resolveStart(config),
-		end: resolveEnd(config),
-		scrub: true,
-		animation: tween,
-		invalidateOnRefresh: true,
-		markers: !!config.enableMarker, // ✅ correct usage
-	});
-
-	requestAnimationFrame(() => ScrollTrigger.refresh());
-
-	if (image.parentElement) {
-		image.parentElement.style.overflow = 'hidden';
-	}
-
-	el[IMG_PLAYED] = tween;
-
-	el[IMG_DISPOSE_KEY] = () => {
-		st.kill();
-		tween.kill();
-		gsap.set(image, { clearProps: 'transform' });
-	};
 }
 
-/* =========================
- * STRETCH
- * ========================= */
-
-function bindStretch(el, config, preview = false) {
+function buildStretchTween(el, config, paused, scrub) {
 	const gsap = getGsap();
-	const ScrollTrigger = getScrollTrigger();
-	if (!gsap || !ScrollTrigger) return;
-
+	if (!gsap) return null;
 	const image = findMedia(el);
-	const wrap = image.parentElement || el;
-
 	gsap.killTweensOf(image);
-
-	wrap.style.paddingBottom = r(config, 'paddingBottom', '395px');
-	wrap.style.transition = 'none';
-
-	if (preview) {
-		const tl = gsap.timeline();
-
-		tl.to(image, {
-			width: '100%',
-			borderRadius: '0px',
-			duration: 1.5,
-			ease: r(config, 'ease', 'power2.out')
-		});
-
-		el[IMG_PLAYED] = tl;
-
-		el[IMG_DISPOSE_KEY] = () => {
-			tl.kill();
-			gsap.set(image, {
-				clearProps: 'width,borderRadius'
-			});
-		};
-
-		return tl;
-	}
-
-	const tween = gsap.to(image, {
+	return gsap.to(image, {
 		width: '100%',
 		borderRadius: '0px',
-		ease: 'none'
+		duration: config.duration,
+		ease: scrub ? 'none' : config.ease,
+		paused: !!paused,
 	});
-
-	const st = ScrollTrigger.create({
-		trigger: wrap,
-		start: 'top top',
-		end: 'bottom bottom+=100',
-		scrub: 1,
-		pin: true,
-		pinSpacing: false,
-		animation: tween,
-		invalidateOnRefresh: true
-	});
-
-	el[IMG_PLAYED] = tween;
-
-	el[IMG_DISPOSE_KEY] = () => {
-		st.kill();
-		tween.kill();
-
-		gsap.set(image, {
-			clearProps: 'width,borderRadius'
-		});
-
-		gsap.set(wrap, {
-			clearProps: 'paddingBottom,transition'
-		});
-	};
 }
 
-/* =========================
- * PLAY ENGINE
- * ========================= */
+/** custom GSAP from/to props (mirrors regular.js). */
+function buildCustomTween(el, config, paused, scrub) {
+	const gsap = getGsap();
+	if (!gsap) return null;
+	const image = findMedia(el);
 
-export function playImg(el, config) {
-	cleanupImg(el);
+	const toTarget = (pairs) => {
+		const out = {};
+		for (const { k, v } of pairs || []) {
+			if (!k) continue;
+			if (v === '' || v === null || v === undefined) continue;
+			const num = Number(v);
+			out[k] = Number.isFinite(num) ? num : v;
+		}
+		return out;
+	};
+	const from = toTarget(config.customProps);
+	const to = toTarget(config.customPropsTo);
 
+	const timing = {
+		duration: config.duration,
+		delay: config.delay,
+		ease: scrub ? 'none' : config.ease,
+		paused: !!paused,
+	};
+
+	if (config.method === 'to') {
+		return gsap.to(image, { ...from, ...timing });
+	}
+	if (config.method === 'fromTo') {
+		return gsap.fromTo(image, from, { ...to, ...timing });
+	}
+	return gsap.from(image, { ...from, ...timing });
+}
+
+/** Build one row's tween for the given effect. reveal/scale/stretch are
+ *  built-in presets with bespoke logic; everything else (custom + premium
+ *  presets like fadeUp/blurReveal) runs through the custom-props tween — the
+ *  editor fills custom_props from the preset table, so they're identical at
+ *  runtime. */
+function buildRowTween(el, config, paused, scrub) {
 	switch (config.effect) {
-		case 'reveal':  return bindReveal(el, config, true);
-		case 'scale':   return bindScale(el, config, true);
-		case 'stretch': return bindStretch(el, config, true);
-		default:        return bindImg(el, config);
+		case 'reveal':  return buildRevealTween(el, config, paused);
+		case 'scale':   return buildScaleTween(el, config, paused, scrub);
+		case 'stretch': return buildStretchTween(el, config, paused, scrub);
+		default:        return buildCustomTween(el, config, paused, scrub);
 	}
 }
 
-/* =========================
- * BIND FRONTEND
- * ========================= */
+/* ---------- per-element row state ---------- */
 
-export function bindImg(el, config) {
-	if (config.effect === 'reveal') return bindReveal(el, config, false);
-	if (config.effect === 'scale') return bindScale(el, config, false);
-	if (config.effect === 'stretch') return bindStretch(el, config, false);
+function getRowState(el) {
+	return Array.isArray(el[ROWS_KEY]) ? el[ROWS_KEY] : [];
 }
 
-/* =========================
- * RESET
- * ========================= */
+function killAllRows(el) {
+	const gsap = getGsap();
+	const state = getRowState(el);
+	const image = findMedia(el);
+	const wrap = image && image.closest ? (image.closest('.aae-img-reveal-wrap') || (image.parentElement || el)) : el;
+
+	for (const entry of state) {
+		try { entry.dispose && entry.dispose(); } catch (_) {}
+		// DON'T revert() — for `from`-based effects (reveal timeline, 3D
+		// presets) revert() returns the element to the tween's PRE state, i.e.
+		// the hidden / clipped / rotated start, leaving the image stuck. Just
+		// kill the tween and clear the props it touched (below) so we land on
+		// the natural resting state instead.
+		if (entry.tween) {
+			try { entry.tween.kill?.(); } catch (_) {}
+		}
+	}
+	el[ROWS_KEY] = [];
+	delete el[IMG_PLAYED];
+
+	if (gsap) {
+		try {
+			gsap.killTweensOf(el);
+			gsap.killTweensOf(image);
+			// Clear everything our effects can set on the image + reveal wrap,
+			// returning the element to its natural (CSS-defined) appearance.
+			gsap.set(image, { clearProps: 'transform,opacity,visibility,clipPath,width,borderRadius,filter,scale' });
+			if (wrap && wrap !== image) {
+				gsap.set(wrap, { clearProps: 'clipPath,opacity,visibility,overflow' });
+			}
+		} catch (_) {}
+	}
+}
+
+/* ---------- kind interface ---------- */
 
 export function resetImg(el) {
-	cleanupImg(el);
+	killAllRows(el);
 }
 
-/* =========================
- * REGISTER
- * ========================= */
+export function playImg(el, mapConfig) {
+	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
+	killAllRows(el);
+
+	const state = [];
+	for (const rowCfg of rows) {
+		const tween = buildRowTween(el, rowCfg, false, false);
+		state.push({ config: rowCfg, tween, dispose: null });
+		if (tween) el[IMG_PLAYED] = tween;
+	}
+	el[ROWS_KEY] = state;
+}
+
+const SCROLL_MODES = ['scroll-tied', 'scrub', 'in-view'];
+
+/** Editor-only: play ONE row in isolation (per-row play icon). Scroll-style
+ *  rows bind their real ScrollTrigger (with markers); others play once. */
+export function playImgRow(el, mapConfig, rowIndex = 0, explicitRow = null) {
+	let rowCfg = null;
+	if (explicitRow && typeof explicitRow === 'object') {
+		rowCfg = normalizeRow(explicitRow);
+	}
+	if (!rowCfg) {
+		const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
+		rowCfg = rows[rowIndex];
+	}
+	if (!rowCfg) return;
+
+	killAllRows(el);
+
+	const mode = modeFor(rowCfg.trigger);
+	if (SCROLL_MODES.includes(mode)) {
+		bindImg(el, { rows: [rowCfg] }, true);
+		return;
+	}
+
+	const tween = buildRowTween(el, rowCfg, false, false);
+	el[ROWS_KEY] = [{ config: rowCfg, tween, dispose: null }];
+	if (tween) el[IMG_PLAYED] = tween;
+}
+
+export function bindImg(el, mapConfig, forcePreview = false) {
+	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
+	killAllRows(el);
+
+	// Editor: don't auto-fire scroll / page-load / scrub rows on load — keep
+	// the canvas resting. Only click / hover bind; the rest preview via ▶.
+	// forcePreview overrides so a single scroll row previews with markers.
+	const isEditMode = !forcePreview && !!(window.elementorFrontend
+		&& window.elementorFrontend.isEditMode
+		&& window.elementorFrontend.isEditMode());
+
+	const state = [];
+
+	for (const config of rows) {
+		const mode = modeFor(config.trigger);
+
+		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+			state.push({ config, tween: null, dispose: null });
+			continue;
+		}
+
+		const entry = { config, tween: null, dispose: null };
+		state.push(entry);
+
+		const play = () => {
+			if (entry.tween) {
+				if (entry.tween.paused()) {
+					entry.tween.play();
+				} else {
+					entry.tween.restart(true);
+				}
+			} else {
+				const live = buildRowTween(el, config, false, false);
+				entry.tween = live;
+				if (live) el[IMG_PLAYED] = live;
+			}
+		};
+
+		const dispose = wireTrigger({
+			el,
+			mode,
+			// click/hover: empty Trigger Selector → self element; else querySelector.
+			triggerEl: resolveTriggerEl(mode, el, config),
+			markers: config.markers,
+			play,
+			buildScrubbed: () => {
+				const t = buildRowTween(el, config, false, true);
+				entry.tween = t;
+				if (t) el[IMG_PLAYED] = t;
+				return t;
+			},
+			config: {
+				...config,
+				start: config.startPosition || config.start,
+				end: config.endPosition || config.end,
+			},
+			skipCleanup: true,
+			skipGlobalKey: true,
+		});
+
+		entry.dispose = dispose;
+	}
+
+	el[ROWS_KEY] = state;
+}
+
+/* ---------- register ---------- */
 
 window.AAEADDON.register({
 	name: 'image-animation',
@@ -375,7 +357,8 @@ window.AAEADDON.register({
 	playedKey: IMG_PLAYED,
 	read: readImg,
 	play: playImg,
+	playRow: playImgRow,
 	bind: bindImg,
-	unbind: cleanupImg,
+	unbind: resetImg,
 	reset: resetImg,
 });

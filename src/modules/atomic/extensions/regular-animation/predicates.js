@@ -1,73 +1,39 @@
 /* eslint-env browser */
 
-import { valueAt, valueEq, valueIn } from '../../responsive-section/helpers';
-
 /**
- * Predicate helpers for RegularAnimation field visibility. Each takes
- * (settings, activeBp) and resolves the responsive prop's value at the
- * active breakpoint (with cascade) before comparing. Names match the
- * conceptual gates in the v3 / pre-section Schema, so a reader who knows
- * the old code can map directly to the new declarative table.
+ * Predicate helpers for RegularAnimation. Post-repeater, the section is a
+ * single `interactions` repeater — per-row field visibility lives inside the
+ * row schema (config.js `rowFields[].when`), reading the FLAT row object.
+ *
+ * The only section-level (non-row) rows left are the shared "Enable On
+ * Editor" switch and the "Play" button, both gated on whether any
+ * interaction exists.
  */
 
-
-const SCROLL_TRIGGERS = ['on_scroll', 'play_with_scroll'];
-const SELECTOR_TRIGGERS = ['mouseover', 'click'];
-
-export function isAnimated(s, bp) { 
-	const effect = valueAt(s, 'aae_anim_effect', bp);
-	return !!effect && effect !== 'none'; 
-}
-export function isDurationEffect(s, bp) { return isAnimated(s, bp); }
-export function isEaseEffect(s, bp) { return isAnimated(s, bp); }
-export function isScrollTrigger(s, bp) { 
-	const trigger = valueAt(s, 'aae_anim_trigger', bp) || 'on_scroll';
-	return SCROLL_TRIGGERS.includes(trigger); 
-}
-export function isSelectorTrigger(s, bp) { 
-	const trigger = valueAt(s, 'aae_anim_trigger', bp) || 'on_scroll';
-	return SELECTOR_TRIGGERS.includes(trigger); 
-}
-
-export function isWrapperCustom(s, bp) { return valueEq(s, 'aae_anim_wrapper', bp, 'custom'); }
-
-/* ----- composite gates that several rows share ----- */
-
-export function showScrollCustomBlock(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp) && isWrapperCustom(s, bp);
-}
-
-
-export function showTriggerSelector(s, bp) {
-	return isAnimated(s, bp) && isSelectorTrigger(s, bp);
-}
-
-export function showWrapper(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp);
-}
-
-export function showMarkers(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp);
-}
-
-export function showScrollPosition(s, bp) {
-	return isAnimated(s, bp) && isScrollTrigger(s, bp);
-}
-
-/* ----- non-responsive rows (read raw envelope.value) ----- */
-
+/** Pull a non-responsive boolean's primitive out of its envelope. */
 function plainBool(s, bind) {
 	const v = s?.[bind];
 	if (v && typeof v === 'object' && '$$type' in v) return !!v.value;
 	return !!v;
 }
 
-/** Enable On Editor visible whenever an animation is selected at desktop level. */
-export function showEnableEditor(s, bp) {
-	return isAnimated(s, bp);
+/**
+ * True when at least one interaction row exists at any breakpoint. The
+ * effect now lives inside each row of the `aae_anim_interactions` repeater
+ * (Responsive_Json_Prop_Type) instead of a top-level prop.
+ */
+export function hasInteractions(s) {
+	const env = s?.['aae_anim_interactions'];
+	const map = (env && typeof env === 'object' && env.$$type === 'aae-rj') ? (env.value || {}) : {};
+	return Object.values(map).some((rows) => Array.isArray(rows) && rows.length > 0);
 }
 
-/** Play Now visible only when Enable On Editor is true AND an effect is selected. */
-export function showPlayButton(s, bp) {
-	return isAnimated(s, bp) && plainBool(s, 'aae_anim_enable_editor');
+/** Enable On Editor visible whenever at least one interaction exists. */
+export function showEnableEditor(s) {
+	return hasInteractions(s);
+}
+
+/** Play Now visible only when Enable On Editor is true AND an interaction exists. */
+export function showPlayButton(s) {
+	return hasInteractions(s) && plainBool(s, 'aae_anim_enable_editor');
 }
