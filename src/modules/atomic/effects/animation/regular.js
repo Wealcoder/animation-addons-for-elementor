@@ -324,10 +324,10 @@ export function bindRegular(el, mapConfig, forcePreview = false) {
 	killAllRows(el);
 
 	// In the editor, scroll-tied / page-load / scrub rows must NOT auto-fire on
-	// load — keep the canvas in its resting state. Only interactive rows
-	// (click / hover) bind there; the rest preview via the per-row ▶ play
-	// button. The published frontend binds everything. forcePreview overrides
-	// this so a single scroll row can be previewed with markers.
+	// load — keep the canvas at rest. Interactive rows (click / hover) DO bind
+	// so the user can click/hover the trigger element and see the animation; the
+	// non-interactive rows preview via the per-row ▶ play. The published
+	// frontend binds everything. forcePreview overrides for marker preview.
 	const isEditMode = !forcePreview && !!(window.elementorFrontend
 		&& window.elementorFrontend.isEditMode
 		&& window.elementorFrontend.isEditMode());

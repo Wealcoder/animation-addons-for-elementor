@@ -122,20 +122,51 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 		return () => {};
 	}
 
-	// hover / click can listen on a separate element when the kind has
-	// resolved a Trigger Selector (e.g. "#atomic-btn"). Defaults to el.
+	// hover / click can listen on a separate element via a Trigger Selector
+	// (e.g. "#atomic-btn"). When a selector is given we DON'T bind directly to a
+	// resolved node — in the editor that node may not exist yet at bind time (or
+	// gets re-rendered), so a direct listener silently misses. Instead we
+	// delegate from the document: one listener that fires play() whenever the
+	// event's target is inside something matching the selector. This is
+	// timing-proof and survives re-renders. With no selector we bind to el (self).
+	const sel = config && config.triggerSelector;
+	const hasSelector = typeof sel === 'string' && sel !== '';
+
 	if (mode === 'hover') {
+		if (hasSelector) {
+			const doc = el.ownerDocument || document;
+			const onOver = (e) => {
+				const t = e.target;
+				if (t && t.closest && t.closest(sel)) play();
+			};
+			// mouseover (delegatable, bubbles) instead of mouseenter (doesn't bubble).
+			doc.addEventListener('mouseover', onOver, true);
+			return setDisposer(() => doc.removeEventListener('mouseover', onOver, true));
+		}
 		const target = triggerEl || el;
 		target.addEventListener('mouseenter', play);
 		return setDisposer(() => target.removeEventListener('mouseenter', play));
 	}
 
 	if (mode === 'click') {
-		// Warn once per element — in the editor, rebind() fires on every
-		// settings change, so a per-call warn() would spam the console.
+		const isEdit = !!(window.elementorFrontend
+			&& window.elementorFrontend.isEditMode
+			&& window.elementorFrontend.isEditMode());
+
+		if (hasSelector) {
+			const doc = el.ownerDocument || document;
+			const evtName = isEdit ? 'pointerdown' : 'click';
+			const onEvt = (e) => {
+				const t = e.target;
+				if (t && t.closest && t.closest(sel)) play();
+			};
+			doc.addEventListener(evtName, onEvt, true);
+			return setDisposer(() => doc.removeEventListener(evtName, onEvt, true));
+		}
 		const target = triggerEl || el;
-		target.addEventListener('click', play);
-		return setDisposer(() => target.removeEventListener('click', play));
+		const evtName = isEdit ? 'pointerdown' : 'click';
+		target.addEventListener(evtName, play);
+		return setDisposer(() => target.removeEventListener(evtName, play));
 	}
 
 	const ScrollTrigger = getScrollTrigger();

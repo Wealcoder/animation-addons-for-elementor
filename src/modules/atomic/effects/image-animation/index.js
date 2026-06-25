@@ -286,9 +286,10 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
 	killAllRows(el);
 
-	// Editor: don't auto-fire scroll / page-load / scrub rows on load — keep
-	// the canvas resting. Only click / hover bind; the rest preview via ▶.
-	// forcePreview overrides so a single scroll row previews with markers.
+	// Editor: don't auto-fire scroll / page-load / scrub rows on load — keep the
+	// canvas resting. Interactive rows (click / hover) DO bind so the user can
+	// trigger them; the rest preview via ▶ play. The published frontend binds
+	// everything. forcePreview overrides so a single scroll row previews markers.
 	const isEditMode = !forcePreview && !!(window.elementorFrontend
 		&& window.elementorFrontend.isEditMode
 		&& window.elementorFrontend.isEditMode());

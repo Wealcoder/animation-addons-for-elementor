@@ -284,7 +284,9 @@ function buildTextConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_text_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for text animation — editor binding is driven
+	// purely by the rows' triggers (click / hover bind in the editor; scroll /
+	// page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 
@@ -457,7 +459,9 @@ function buildRegularConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_anim_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for regular animation — editor binding is
+	// driven purely by the rows' triggers (click / hover bind in the editor;
+	// scroll / page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 
@@ -561,7 +565,9 @@ function buildImgConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_img_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for image animation — editor binding is driven
+	// purely by the rows' triggers (click / hover bind in the editor; scroll /
+	// page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 
