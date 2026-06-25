@@ -52,7 +52,7 @@ final class Controls {
 		// switch row inside the section so it can hide when no effect is
 		// selected — see config.js (`when: isAnimated`).
 		return Section::make()
-			->set_label( __( 'Animation', self::TD ) )
+			->set_label( Bootstrap::get_label( __( 'Animation', self::TD ) ) )
 			->set_items( [
 
 				// Anchor — React replacement renders the full responsive section

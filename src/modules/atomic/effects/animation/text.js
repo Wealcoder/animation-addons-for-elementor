@@ -411,8 +411,9 @@ export function bindText(el, mapConfig, forcePreview = false) {
 
 	// In the editor, scroll-tied / page-load / scrub rows must NOT auto-fire on
 	// load — doing so splits the text and leaves it broken on the canvas. We
-	// bind only interactive rows (click / hover) there; the others preview via
-	// the per-row ▶ play button. The published frontend binds everything.
+	// bind only interactive rows (click / hover) there so the user can trigger
+	// them; the others preview via the per-row ▶ play. The published frontend
+	// binds everything. forcePreview overrides for marker preview.
 	const isEditMode = !forcePreview && !!(window.elementorFrontend
 		&& window.elementorFrontend.isEditMode
 		&& window.elementorFrontend.isEditMode());
@@ -422,7 +423,7 @@ export function bindText(el, mapConfig, forcePreview = false) {
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
 
-		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			// Skip auto-firing modes in the editor — keep the text intact.
 			state.push({ config, tween: null, dispose: null });
 			continue;

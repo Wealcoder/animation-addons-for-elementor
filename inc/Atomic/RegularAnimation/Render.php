@@ -145,9 +145,14 @@ final class Render
 		}
 
 		$out = [];
-		$exclusive_used = false;
-		// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
-		$exclusive_triggers = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+		// Two independent exclusive groups, each capped at one row (first-wins):
+		//   A) page-load   B) scroll / play-scroll / slide-change.
+		// So one page-load row AND one scroll-type row may coexist.
+		$exclusive_groups = [
+			['on_page_load'],
+			['on_scroll', 'play_with_scroll', 'on_slide_change'],
+		];
+		$used_groups = [];
 
 		foreach ($rows as $row) {
 			if (! is_array($row)) {
@@ -160,13 +165,21 @@ final class Render
 
 			$trigger = isset($row['trigger']) ? (string) $row['trigger'] : 'on_scroll';
 
-			// Exclusive-trigger enforcement (first-row-wins): any of the three
-			// non-interactive triggers fills the single shared slot.
-			if (in_array($trigger, $exclusive_triggers, true)) {
-				if ($exclusive_used) {
+			// Exclusive-trigger enforcement (first-row-wins PER group): the first
+			// row in each group fills that group's slot; later rows of the same
+			// group are dropped. The two groups don't block each other.
+			$gi = null;
+			foreach ($exclusive_groups as $idx => $group) {
+				if (in_array($trigger, $group, true)) {
+					$gi = $idx;
+					break;
+				}
+			}
+			if (null !== $gi) {
+				if (isset($used_groups[$gi])) {
 					continue;
 				}
-				$exclusive_used = true;
+				$used_groups[$gi] = true;
 			}
 
 			$out[] = $this->row_to_config($row, $effect, $trigger);

@@ -315,7 +315,7 @@ function scan(root) {
 			if (!config) {
 				continue;
 			}
-			
+
 			if (config.preventBindInEditor) {
 				continue;
 			}

@@ -1,6 +1,8 @@
 <?php
 namespace WCF_ADDONS\Atomic\ImageAnimation;
 
+use WCF_ADDONS\Atomic\Bootstrap;
+
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 
@@ -42,7 +44,7 @@ final class Controls {
 
 	private function build_section(): Section {
 		return Section::make()
-			->set_label( __( 'Image Animation', self::TD ) )
+			->set_label( Bootstrap::get_label( __( 'Image Animation', self::TD ) ) )
 			->set_items( [
 				Text_Control::bind_to( Schema::IMG_SECTION_ANCHOR ),
 			] );

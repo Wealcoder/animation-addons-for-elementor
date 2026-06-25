@@ -196,7 +196,27 @@ function plain(settings, key) {
 /* ---------- Text: REPEATER. Mirrors TextAnimation/Render.php ---------- */
 
 // page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
-const TEXT_EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+// Two independent exclusive groups, each capped at one row per element:
+//   A) page-load   B) scroll / play-scroll / slide-change.
+// Shared by all three features' RowsToRuntime dedupe. dedupeExclusive() below
+// keeps the first row of each group and drops later rows of the SAME group.
+const EXCLUSIVE_GROUPS = [
+	['on_page_load'],
+	['on_scroll', 'play_with_scroll', 'on_slide_change'],
+];
+
+/** Append cfg to out unless its trigger belongs to an exclusive group whose
+ *  slot is already filled. `usedGroups` is a Set of group indices used so far;
+ *  mutated in place. Returns true if cfg was accepted. */
+function acceptWithExclusive(cfg, out, usedGroups) {
+	const gi = EXCLUSIVE_GROUPS.findIndex((g) => g.includes(cfg.trigger));
+	if (gi !== -1) {
+		if (usedGroups.has(gi)) return false;
+		usedGroups.add(gi);
+	}
+	out.push(cfg);
+	return true;
+}
 
 /** One raw editor text row → one runtime interaction config (no dedupe).
  *  Returns null when the row has no usable effect. Exported for per-row
@@ -241,22 +261,16 @@ export function textRowToRuntime(row) {
 	return cfg;
 }
 
-/** Saved per-bp rows → runtime configs, with exclusive-trigger dedupe. */
+/** Saved per-bp rows → runtime configs, with per-group exclusive dedupe. */
 function textRowsToRuntime(rows) {
 	if (!Array.isArray(rows)) return [];
 	const out = [];
-	let exclusiveUsed = false;
+	const usedGroups = new Set();
 
 	for (const row of rows) {
 		const cfg = textRowToRuntime(row);
 		if (!cfg) continue;
-
-		if (TEXT_EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
-			if (exclusiveUsed) continue;
-			exclusiveUsed = true;
-		}
-
-		out.push(cfg);
+		acceptWithExclusive(cfg, out, usedGroups);
 	}
 	return out;
 }
@@ -284,7 +298,9 @@ function buildTextConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_text_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for text animation — editor binding is driven
+	// purely by the rows' triggers (click / hover bind in the editor; scroll /
+	// page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 
@@ -370,9 +386,6 @@ function regularCustomPairs(rows) {
 	return pairs;
 }
 
-// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
-const EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
-
 /** One raw editor row → one runtime interaction config (no dedupe). Returns
  *  null when the row has no usable effect. Exported for per-row isolated
  *  preview, where we want the EXACT row the user clicked — independent of the
@@ -412,23 +425,17 @@ export function regularRowToRuntime(row) {
 	return cfg;
 }
 
-/** A saved per-bp rows array → runtime interaction configs, with the
- *  exclusive-trigger dedupe (first-row-wins). Mirrors Render::rows_to_runtime. */
+/** A saved per-bp rows array → runtime interaction configs, with per-group
+ *  exclusive dedupe (first-row-wins per group). Mirrors Render::rows_to_runtime. */
 function regularRowsToRuntime(rows) {
 	if (!Array.isArray(rows)) return [];
 	const out = [];
-	let exclusiveUsed = false;
+	const usedGroups = new Set();
 
 	for (const row of rows) {
 		const cfg = regularRowToRuntime(row);
 		if (!cfg) continue;
-
-		if (EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
-			if (exclusiveUsed) continue;
-			exclusiveUsed = true;
-		}
-
-		out.push(cfg);
+		acceptWithExclusive(cfg, out, usedGroups);
 	}
 	return out;
 }
@@ -457,7 +464,9 @@ function buildRegularConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_anim_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for regular animation — editor binding is
+	// driven purely by the rows' triggers (click / hover bind in the editor;
+	// scroll / page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 
@@ -466,8 +475,6 @@ function buildRegularConfig(settings) {
  * =================================================================== */
 
 /* ---------- Image: REPEATER. Mirrors ImageAnimation/Render.php ---------- */
-
-const IMG_EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
 
 function imgCustomPairs(rows) {
 	if (!Array.isArray(rows)) return [];
@@ -522,18 +529,12 @@ export function imgRowToRuntime(row) {
 function imgRowsToRuntime(rows) {
 	if (!Array.isArray(rows)) return [];
 	const out = [];
-	let exclusiveUsed = false;
+	const usedGroups = new Set();
 
 	for (const row of rows) {
 		const cfg = imgRowToRuntime(row);
 		if (!cfg) continue;
-
-		if (IMG_EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
-			if (exclusiveUsed) continue;
-			exclusiveUsed = true;
-		}
-
-		out.push(cfg);
+		acceptWithExclusive(cfg, out, usedGroups);
 	}
 	return out;
 }
@@ -561,7 +562,9 @@ function buildImgConfig(settings) {
 		cfg['rows_' + bp] = bpRows;
 	}
 
-	if (plain(settings, 'aae_img_enable_editor')) cfg.enableEditor = true;
+	// No "Enable On Editor" switch for image animation — editor binding is driven
+	// purely by the rows' triggers (click / hover bind in the editor; scroll /
+	// page-load preview via the per-row ▶ play). See shouldBindInEditor().
 	return cfg;
 }
 

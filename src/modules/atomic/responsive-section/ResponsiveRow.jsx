@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import * as React from "react";
-import { Stack, Tooltip, Typography, styled } from "@elementor/ui";
+import { IconButton, Stack, Tooltip, Typography, styled } from "@elementor/ui";
 
 import { SelectInput } from "./inputs/SelectInput";
 import { NumberInput } from "./inputs/NumberInput";
@@ -43,14 +43,15 @@ const HelpTooltip = ({ title, children }) => (
         sx: {
           bgcolor: '#2b2d30',
           color: '#e5e5e5',
-          px: 1.5,
-          py: 1,
-          lineHeight: 1.5,
+          px: 1.75,
+          py: 1.25,
+          lineHeight: 1.65,
           fontSize: '11.5px',
           fontWeight: 400,
-          borderRadius: 1,
-          maxWidth: 240,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          letterSpacing: '0.2px',
+          borderRadius: 1.5,
+          maxWidth: 260,
+          boxShadow: '0 6px 18px rgba(0,0,0,0.28)',
         }
       }
     }}
@@ -494,6 +495,13 @@ function InteractionsRow({
     }
   };
 
+  // Add a fresh interaction. Same seed as the repeater's own bottom button —
+  // this header "+" is just a second entry point for the same action.
+  const handleAddRow = () => {
+    const current = Array.isArray(value) ? value : [];
+    handleValueChange([...current, { ...(rowDefaults || {}) }]);
+  };
+
   return (
     <Stack direction="column" sx={{ width: "100%", mb: 1 }}>
       <Stack direction="row" alignItems="center" gap={0.5} sx={{ mb: 0.5 }}>
@@ -509,6 +517,19 @@ function InteractionsRow({
             </HelpTooltip>
           )}
         </Typography>
+        <Tooltip title={addLabel || "Add Interaction"}>
+          <IconButton
+            size="small"
+            onClick={handleAddRow}
+            aria-label={addLabel || "Add Interaction"}
+            sx={{ width: 20, height: 20, p: 0 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </IconButton>
+        </Tooltip>
         {hasOverride ? (
           <Tooltip title={tooltipText}>
             <Dot

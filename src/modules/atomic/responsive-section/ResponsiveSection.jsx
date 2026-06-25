@@ -1,5 +1,3 @@
-/* eslint-env browser */
-
 import * as React from 'react';
 import { Stack, Tabs, Tab, Box } from '@elementor/ui';
 import { useSelectedElementSettings } from '@elementor/editor-elements';
@@ -78,7 +76,11 @@ export function ResponsiveSection({ config }) {
 	const { element, settings } = useSelectedElementSettings();
 	const activeBp = useActiveBreakpoint() || 'desktop';
 	const [activeOuterTabIdx, setActiveOuterTabIdx] = React.useState(0);
-	
+
+	// Header branding (logo + lock/try) is injected globally by
+	// section-branding.js so it appears on EVERY AAE section header — expanded
+	// or collapsed — not just the one whose body is currently mounted.
+
 	if (!element || !settings) return null;
 
 	const { fields = [], bindPrefix = '' } = config;

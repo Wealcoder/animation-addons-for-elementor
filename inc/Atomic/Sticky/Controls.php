@@ -42,7 +42,7 @@ final class Controls {
     private function build_sticky_section(): Section {
 
         return Section::make()
-            ->set_label( __( 'Sticky', 'animation-addons-for-elementor') )
+            ->set_label( Bootstrap::get_label( __( 'Sticky/Pin Element', 'animation-addons-for-elementor') ) )
             ->set_items([
 
                 // Sticky anchor

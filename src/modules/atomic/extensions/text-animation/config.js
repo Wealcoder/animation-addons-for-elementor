@@ -29,6 +29,7 @@ const EFFECT_OPTIONS = [
 	{ value: 'text_reveal', label: 'Text Reveal' },
 	{ value: 'text_scale', label: 'Text Scale' },
 	{ value: 'text_invert', label: 'Text Invert' },
+
 	...Object.keys(PREMIUM_EFFECTS).map((key) => ({
 		value: key.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
 		label: key,
@@ -41,6 +42,7 @@ const TRIGGER_OPTIONS = [
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
 	{ value: 'click', label: 'On Click' },
 	{ value: 'mouseover', label: 'On Hover' },
+	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
 const ROTATION_DIR_OPTIONS = [
