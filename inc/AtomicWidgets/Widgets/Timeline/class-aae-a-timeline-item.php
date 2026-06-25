@@ -103,89 +103,27 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Per-element base styles, keyed off the child class names. Compound
-	 * selectors (`base .child-class`) emit nested CSS scoped to the item's
-	 * auto-generated base class — no external SCSS/CSS file required.
+	 * Item-wrapper base style ONLY — no compound child selectors.
+	 *
+	 * Mirroring the IconList pattern: each child (marker / date / title /
+	 * desc) is a core atomic element with its own Style panel, so it must
+	 * NOT be styled here via `'base .child-class'` compound selectors.
+	 * Doing so emits CSS at (0,2,0) specificity which beats the user's
+	 * Style panel rules at (0,1,0) and silently blocks every override.
+	 *
+	 * Per-preset child default appearance lives in the PARENT's Twig
+	 * <style> block, wrapped in `:where()` so its specificity drops to
+	 * 0 — letting the Style panel always win.
 	 */
 	protected function define_base_styles(): array {
-		$px_0     = Size_Prop_Type::generate( [ 'size' => 0,   'unit' => 'px' ] );
-		$px_4     = Size_Prop_Type::generate( [ 'size' => 4,   'unit' => 'px' ] );
-		$px_8     = Size_Prop_Type::generate( [ 'size' => 8,   'unit' => 'px' ] );
-		$px_12    = Size_Prop_Type::generate( [ 'size' => 12,  'unit' => 'px' ] );
-		$px_22    = Size_Prop_Type::generate( [ 'size' => 22,  'unit' => 'px' ] );
-		$px_32    = Size_Prop_Type::generate( [ 'size' => 32,  'unit' => 'px' ] );
-		$pct_50   = Size_Prop_Type::generate( [ 'size' => 50,  'unit' => '%' ] );
-
 		return [
-			// Item wrapper — flex column, relative for the absolute marker,
-			// padded so the spine (border-inline-start, set in Twig) clears
-			// the content. border + negative-inset-positioned marker live in
-			// the Twig <style>.
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'position',             String_Prop_Type::generate( 'relative' ) )
-						->add_prop( 'display',              String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'flex-direction',       String_Prop_Type::generate( 'column' ) )
-						->add_prop( 'gap',                  $px_4 )
-						->add_prop( 'padding-inline-start', $px_32 )
-						->add_prop( 'padding-block-end',    $px_32 )
-				),
-
-			// Marker — circular dot. Size + appearance live here; the
-			// absolute positioning (negative inset onto the spine) is in
-			// the Twig <style> because Size_Prop_Type → CSS for negative
-			// values is not part of the v4 style schema's safe surface.
-			self::BASE_STYLE_KEY . ' .aae-a-timeline-item-marker' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'width',           $px_22 )
-						->add_prop( 'height',          $px_22 )
-						->add_prop( 'margin',          $px_0 )
-						->add_prop( 'display',         String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'align-items',     String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'background',      String_Prop_Type::generate( '#3b82f6' ) )
-						->add_prop( 'color',           String_Prop_Type::generate( '#ffffff' ) )
-						->add_prop( 'border-radius',   $pct_50 )
-						->add_prop( 'font-size',       Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
-						->add_prop( 'font-weight',     Number_Prop_Type::generate( 800 ) )
-						->add_prop( 'line-height',     Number_Prop_Type::generate( 1 ) )
-						->add_prop( 'z-index',         Number_Prop_Type::generate( 2 ) )
-				),
-
-			// Date — small uppercase label above the title.
-			self::BASE_STYLE_KEY . ' .aae-a-timeline-item-date' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'margin',         $px_0 )
-						->add_prop( 'color',          String_Prop_Type::generate( '#64748b' ) )
-						->add_prop( 'font-size',      Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ) )
-						->add_prop( 'font-weight',    Number_Prop_Type::generate( 700 ) )
-						->add_prop( 'letter-spacing', Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ) )
-						->add_prop( 'text-transform', String_Prop_Type::generate( 'uppercase' ) )
-						->add_prop( 'line-height',    Number_Prop_Type::generate( 1 ) )
-				),
-
-			// Title — bold heading.
-			self::BASE_STYLE_KEY . ' .aae-a-timeline-item-title' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'margin',      $px_0 )
-						->add_prop( 'font-size',   Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ) )
-						->add_prop( 'font-weight', Number_Prop_Type::generate( 700 ) )
-						->add_prop( 'color',       String_Prop_Type::generate( '#0f172a' ) )
-						->add_prop( 'line-height', Number_Prop_Type::generate( 1.2 ) )
-				),
-
-			// Description — body copy.
-			self::BASE_STYLE_KEY . ' .aae-a-timeline-item-desc' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'margin',      $px_0 )
-						->add_prop( 'color',       String_Prop_Type::generate( '#475569' ) )
-						->add_prop( 'font-size',   Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ) )
-						->add_prop( 'line-height', Number_Prop_Type::generate( 1.6 ) )
+						->add_prop( 'position',       String_Prop_Type::generate( 'relative' ) )
+						->add_prop( 'display',        String_Prop_Type::generate( 'flex' ) )
+						->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
+						->add_prop( 'gap',            Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ) )
 				),
 		];
 	}
@@ -280,10 +218,24 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		// Users can still drop arbitrary heading / paragraph / svg widgets
-		// inside an item if they want richer content alongside the locked
-		// marker / date / title / description.
-		return [ 'widget', 'e-heading', 'e-paragraph', 'e-svg' ];
+		// Permissive — users should be able to drop ANY widget inside
+		// a timeline event alongside the locked marker / date / title /
+		// description. `'widget'` is the wildcard that accepts every
+		// atomic widget (including AAE pro widgets like Progress Bar);
+		// the explicit `e-*` entries are kept as a belt-and-braces
+		// fallback for the core atomic primitives in case the wildcard
+		// is interpreted strictly.
+		return [
+			'widget',
+			'e-heading',
+			'e-paragraph',
+			'e-svg',
+			'e-button',
+			'e-image',
+			'e-divider',
+			'e-flexbox',
+			'e-div-block',
+		];
 	}
 
 	protected function define_default_html_tag() {

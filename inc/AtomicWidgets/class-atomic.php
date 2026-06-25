@@ -177,6 +177,7 @@ final class Atomic
 			'aae-a-toggle-pane',
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
+			'aae-a-social-share-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -741,6 +742,47 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 9,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share' => [
+				'label'        => 'Social Share',
+				'description'  => 'Atomic post social share widget with multiple vendors and AJAX share counts.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'post',
+					'atomic',
+					'aae',
+				],
+				'category'     => 'general',
+				'order'        => 10,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item' => [
+				'label'        => 'Social Share Item',
+				'description'  => 'Internal child item for Social Share.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 11,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1379,6 +1421,19 @@ final class Atomic
 			'has_script' => false,
 			'style_handle' => 'aae-a-icon-list-css',
 			'style_path' => '/assets/atomic/css/icon-list.css',
+		],
+
+		'aae-a-social-share' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
+			'file'          => 'Widgets/SocialShare/class-aae-a-social-share.php',
+			'script_handle' => 'aae-a-social-share-js',
+			'script_path'   => '/assets/atomic/js/social-share.js',
+			'has_script'    => true,
+		],
+		'aae-a-social-share-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
+			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
 		],
 		'aae-a-image-compare' => [
 			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',

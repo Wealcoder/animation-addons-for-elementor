@@ -13,28 +13,9 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
-    {#
-        Pieces the v4 atomic style schema can't carry cleanly. Everything
-        else (positioning, dimensions, colors, typography) is emitted by
-        `define_base_styles()` in the PHP class.
-
-        Specifically here:
-          - `border-inline-start` shorthand for the spine (color + style +
-            width as a single CSS shorthand).
-          - The marker's absolute positioning with a NEGATIVE
-            `inset-inline-start` offset onto the spine line.
-    #}
-    <style>
-        [data-id="{{ id }}"].aae-a-timeline-item {
-            border-inline-start: 2px solid #e2e8f0;
-        }
-
-        [data-id="{{ id }}"] .aae-a-timeline-item-marker {
-            position: absolute;
-            inset-block-start: 0;
-            inset-inline-start: -11px;
-        }
-    </style>
+    {# All per-child default appearance now lives in the PARENT's Twig
+       <style> block under `:where()` so the Style panel can override
+       every property. No inline <style> here. #}
 
     {{ children_placeholder | raw }}
 </div>
