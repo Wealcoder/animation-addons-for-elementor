@@ -1,33 +1,11 @@
 /* eslint-env browser */
 
-import { valueAt, valueEq, valueIn } from '../../responsive-section/helpers';
-
 /**
- * Predicate helpers for ImageAnimation field visibility. Each takes
- * (settings, activeBp) and resolves the responsive prop's value at the
- * active breakpoint (with cascade) before comparing.
+ * Predicate helpers for ImageAnimation. Post-repeater, per-row field
+ * visibility lives in config.js `rowFields[].when`; only the shared
+ * "Enable On Editor" switch + "Play" button gate on whether any interaction
+ * exists.
  */
-
-const ANIMATED_EFFECTS    = ['reveal', 'scale', 'stretch'];
-const REVEAL_OR_SCALE     = ['reveal', 'scale'];
-
-export function startPosAt(s, bp)   { return valueAt(s, 'aae_img_start_pos', bp); }
-
-export function isAnimated(s, bp)   { return valueIn(s, 'aae_img_effect', bp, ANIMATED_EFFECTS); }
-export function isReveal(s, bp)     { return valueEq(s, 'aae_img_effect', bp, 'reveal'); }
-export function isScale(s, bp)      { return valueEq(s, 'aae_img_effect', bp, 'scale'); }
-
-/** True for the fields shared by reveal + scale (start position picker). */
-export function isRevealOrScale(s, bp) {
-	return valueIn(s, 'aae_img_effect', bp, REVEAL_OR_SCALE);
-}
-
-/** Custom start text — visible only when start position is set to 'custom'. */
-export function showCustomStart(s, bp) {
-	return isRevealOrScale(s, bp) && startPosAt(s, bp) === 'custom';
-}
-
-/* ----- non-responsive rows ----- */
 
 function plainBool(s, bind) {
 	const v = s?.[bind];
@@ -35,12 +13,16 @@ function plainBool(s, bind) {
 	return !!v;
 }
 
-/** Enable On Editor visible whenever an effect is selected. */
-export function showEnableEditor(s, bp) {
-	return isAnimated(s, bp);
+export function hasInteractions(s) {
+	const env = s?.['aae_img_interactions'];
+	const map = (env && typeof env === 'object' && env.$$type === 'aae-rj') ? (env.value || {}) : {};
+	return Object.values(map).some((rows) => Array.isArray(rows) && rows.length > 0);
 }
 
-/** Play Now visible only when an effect is selected AND Enable On Editor is on. */
-export function showPlayButton(s, bp) {
-	return isAnimated(s, bp) && plainBool(s, 'aae_img_enable_editor');
+export function showEnableEditor(s) {
+	return hasInteractions(s);
+}
+
+export function showPlayButton(s) {
+	return hasInteractions(s) && plainBool(s, 'aae_img_enable_editor');
 }

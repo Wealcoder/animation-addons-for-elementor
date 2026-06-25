@@ -67,175 +67,120 @@ final class Render {
 	}
 
 	/**
-	 * Build the JS-side text config. Returns null when no effect is selected
-	 * at the desktop level (after cascade).
+	 * Build the JS-side text config — REPEATER. Output:
+	 *   { rows: [ <interaction>, ... ], rows_<bp>: [...], enableEditor: true }
+	 * Each <interaction> is one row's runtime config. Exclusive-trigger dedupe
+	 * (page-load max 1, scroll/scrub share one slot) is applied per breakpoint.
 	 */
 	private function build_config( array $settings ): ?array {
-		$extra_bps = $this->get_extra_breakpoints();
+		$map = $this->envelope_to_map( $settings[ Schema::TEXT_INTERACTIONS ] ?? null );
 
-		$effect_map      = $this->envelope_to_map( $settings[ Schema::TEXT_EFFECT ] ?? null );
-		$effect          = $effect_map['desktop'] ?? 'none';
-		if ( ! $effect || 'none' === $effect ) {
-			return null;
+		$desktop_rows = $this->rows_to_runtime( $map['desktop'] ?? [] );
+		if ( empty( $desktop_rows ) ) {
+			$any = false;
+			foreach ( $map as $rows ) {
+				if ( is_array( $rows ) && ! empty( $rows ) ) { $any = true; break; }
+			}
+			if ( ! $any ) {
+				return null;
+			}
 		}
 
 		$config = [];
+		if ( ! empty( $desktop_rows ) ) {
+			$config['rows'] = $desktop_rows;
+		}
 
-		// Non-responsive single-value flags. With raw settings these arrive as
-		// { $$type: 'boolean', value: true|false } so `! empty()` would always
-		// be truthy. Unwrap the inner primitive first.
+		$extra_bps = $this->get_extra_breakpoints();
+		foreach ( $extra_bps as $bp ) {
+			if ( ! array_key_exists( $bp, $map ) || null === $map[ $bp ] ) {
+				continue;
+			}
+			$bp_rows = $this->rows_to_runtime( $map[ $bp ] );
+			if ( $bp_rows === $desktop_rows ) {
+				continue;
+			}
+			$config[ 'rows_' . $bp ] = $bp_rows;
+		}
+
 		if ( (bool) $this->unwrap_primitive( $settings[ Schema::TEXT_ENABLE_EDITOR ] ?? null, false ) ) {
 			$config['enableEditor'] = true;
 		}
-		if ( (bool) $this->unwrap_primitive( $settings[ Schema::TEXT_MARKERS ] ?? null, false ) ) {
-			$config['markers'] = true;
-		}
-
-		// Resolve trigger at desktop for the scroll-only-keys gate.
-		$trigger_map      = $this->envelope_to_map( $settings[ Schema::TEXT_TRIGGER ] ?? null );
-		$trigger_desktop  = $trigger_map['desktop'] ?? 'on_scroll';
-
-		$is_on_scroll = 'on_scroll' === $trigger_desktop || 'play_with_scroll' === $trigger_desktop;
-		$scroll_only_keys = [
-			Schema::TEXT_START_TRIGGER,
-			Schema::TEXT_END_TRIGGER,
-			Schema::TEXT_START_POSITION,
-			Schema::TEXT_START_CUSTOM,
-			Schema::TEXT_END_POSITION,
-			Schema::TEXT_END_CUSTOM,
-		];
-
-		// Per-attr table: [ config key, default value, effect_family|null ].
-		// Defaults mirror RESPONSIVE_NUMBER_SETTINGS where they overlap.
-		$translate_family = Schema::TEXT_TRANSLATE_EFFECTS;
-
-		$responsive_map = [
-			Schema::TEXT_EFFECT           => [ 'effect',          'none',            null ],
-			Schema::TEXT_TRIGGER          => [ 'trigger',         'on_scroll',       null ],
-			Schema::TEXT_TRIGGER_SELECTOR => [ 'triggerSelector', '',                null ],
-			Schema::TEXT_WRAPPER          => [ 'wrapper',         'default',         null ],
-			Schema::TEXT_WRAPPER_SELECTOR => [ 'wrapperSelector', '',                null ],
-			Schema::TEXT_DELAY            => [ 'delay',           Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DELAY ],       null ],
-			Schema::TEXT_DURATION         => [ 'duration',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_DURATION ],    'duration_family' ],
-			Schema::TEXT_EASE             => [ 'ease',            '',                                                             'duration_family' ],
-			Schema::TEXT_TRANSLATE_X      => [ 'translateX',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_X ], $translate_family ],
-			Schema::TEXT_TRANSLATE_Y      => [ 'translateY',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_TRANSLATE_Y ], $translate_family ],
-			Schema::TEXT_ROTATION_DIR     => [ 'rotationDir',     'x',                                                            Schema::TEXT_MOVE_EFFECTS ],
-			Schema::TEXT_ROTATION         => [ 'rotation',        Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_ROTATION ],    Schema::TEXT_MOVE_EFFECTS ],
-			Schema::TEXT_TRANSFORM_ORIGIN => [ 'transformOrigin', 'top center -50',                                               ['text_move', 'origami_fold', 'shutter_cascade'] ],
-			Schema::TEXT_TEXT_SHADOW      => [ 'textShadow',      '',                                                             ['cyber_phantom'] ],
-
-			Schema::TEXT_START_TRIGGER    => [ 'startTrigger',  '',           null ],
-			Schema::TEXT_END_TRIGGER      => [ 'endTrigger',    '',           null ],
-			Schema::TEXT_START_POSITION   => [ 'startPosition', 'top 85%',    null ],
-			Schema::TEXT_START_CUSTOM     => [ 'startCustom',   'top top',    null ],
-			Schema::TEXT_END_POSITION     => [ 'endPosition',   'bottom 30%', null ],
-			Schema::TEXT_END_CUSTOM       => [ 'endCustom',     'bottom top', null ],
-
-			Schema::TEXT_INVERT_START     => [ 'invertStart',   'top 85%',       Schema::TEXT_INVERT_EFFECTS ],
-			Schema::TEXT_INVERT_END       => [ 'invertEnd',     'bottom center', Schema::TEXT_INVERT_EFFECTS ],
-
-			Schema::TEXT_SPIN_START       => [ 'spinStart',     'top 50%',                Schema::TEXT_SPIN_EFFECTS ],
-			Schema::TEXT_SPIN_END         => [ 'spinEnd',       'bottom 30%',             Schema::TEXT_SPIN_EFFECTS ],
-			Schema::TEXT_SPIN_TOGGLE      => [ 'spinToggle',    'play none none reverse', Schema::TEXT_SPIN_EFFECTS ],
-
-			Schema::TEXT_SCALE_EASE       => [ 'scaleEase',     'back',                                                            Schema::TEXT_SCALE_EFFECTS ],
-			Schema::TEXT_SCALE_NUM        => [ 'scaleNum',      Schema::RESPONSIVE_NUMBER_SETTINGS[ Schema::TEXT_SCALE_NUM ],      Schema::TEXT_SCALE_EFFECTS ],
-			Schema::TEXT_SCALE_BREAK      => [ 'scaleBreak',    'lines',                                                           Schema::TEXT_SCALE_EFFECTS ],
-			Schema::TEXT_SPIN_COLOR       => [ 'spinColor',     '#000000',                                                Schema::TEXT_SPIN_EFFECTS ],
-		];
-
-		// Pre-compute breakpoints where the animation is disabled (effect=none
-		// after cascade) — used to skip emitting other per-bp keys for those bps.
-		$disabled_bps   = [];
-		$resolved_effect = [ 'desktop' => $effect ];
-		foreach ( $extra_bps as $bp ) {
-			$own        = $effect_map[ $bp ] ?? null;
-			$parent_eff = $this->cascade_parent( $bp, $resolved_effect, $effect );
-			$effective  = ( null === $own || '' === $own ) ? $parent_eff : $own;
-			$resolved_effect[ $bp ] = $effective;
-			if ( ! $effective || 'none' === $effective ) {
-				$disabled_bps[ $bp ] = true;
-			}
-		}
-
-		foreach ( $responsive_map as $base_key => [ $config_key, $default, $effect_family ] ) {
-			// Skip effect-specific keys when the chosen effect doesn't use them.
-			if ( null !== $effect_family ) {
-				$is_premium = Schema::is_premium_effect( $effect );
-				if ( 'duration_family' === $effect_family ) {
-					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
-						continue;
-					}
-				} else if ( is_array( $effect_family ) && ! in_array( $effect, $effect_family, true ) ) {
-					continue;
-				}
-			}
-
-			// Skip scroll-trigger keys entirely when not on a scroll-style trigger.
-			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_keys, true ) ) {
-				continue;
-			}
-
-			$this->emit_responsive(
-				$config,
-				$settings,
-				$base_key,
-				$config_key,
-				$default,
-				$extra_bps,
-				[ $this, 'cast_value' ],
-				$disabled_bps
-			);
-		}
-
-		$responsive_object_map = [
-			Schema::TEXT_STAGGER => [ 'stagger', [], 'duration_family' ],
-		];
-
-		foreach ( $responsive_object_map as $base_key => [ $config_key, $default, $effect_family ] ) {
-			if ( null !== $effect_family ) {
-				$is_premium = Schema::is_premium_effect( $effect );
-				if ( 'duration_family' === $effect_family ) {
-					if ( ! $is_premium && ! in_array( $effect, Schema::TEXT_DURATION_EFFECTS, true ) ) {
-						continue;
-					}
-				} else if ( is_array( $effect_family ) && ! in_array( $effect, $effect_family, true ) ) {
-					continue;
-				}
-			}
-
-			if ( ! $is_on_scroll && in_array( $base_key, $scroll_only_keys, true ) ) {
-				continue;
-			}
-
-			if ( Schema::TEXT_STAGGER === $base_key && isset( $settings[ $base_key ] ) ) {
-				if ( is_array( $settings[ $base_key ] ) && isset( $settings[ $base_key ]['value'] ) && is_array( $settings[ $base_key ]['value'] ) ) {
-					foreach ( $settings[ $base_key ]['value'] as $bp => $val ) {
-						$settings[ $base_key ]['value'][ $bp ] = $this->parse_stagger_data( $val );
-					}
-				} else {
-					$settings[ $base_key ] = $this->parse_stagger_data( $settings[ $base_key ] );
-				}
-			}
-
-			// We use emit_responsive_object for arrays/JSON props
-			$this->emit_responsive_object(
-				$config,
-				$settings,
-				$base_key,
-				$config_key,
-				$default,
-				$extra_bps,
-				$disabled_bps
-			);
-		}
-		
-		if ( ! isset( $config['effect'] ) ) {
-			$config['effect'] = $effect;
-		}
 
 		return $config;
+	}
+
+	/** Per-bp rows array → runtime interaction configs, with exclusive-trigger
+	 *  dedupe (first-row-wins). Rows with effect=none/empty are dropped. */
+	private function rows_to_runtime( $rows ): array {
+		if ( ! is_array( $rows ) ) {
+			return [];
+		}
+
+		$out = [];
+		$exclusive_used = false;
+		// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
+		$exclusive_triggers = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$effect = isset( $row['effect'] ) ? (string) $row['effect'] : 'none';
+			if ( '' === $effect || 'none' === $effect ) {
+				continue;
+			}
+
+			$trigger = isset( $row['trigger'] ) ? (string) $row['trigger'] : 'on_scroll';
+			if ( in_array( $trigger, $exclusive_triggers, true ) ) {
+				if ( $exclusive_used ) { continue; }
+				$exclusive_used = true;
+			}
+
+			$out[] = $this->row_to_config( $row, $effect, $trigger );
+		}
+
+		return $out;
+	}
+
+	/** One editor row → one runtime text interaction config (camelCase keys). */
+	private function row_to_config( array $row, string $effect, string $trigger ): array {
+		$str = function ( $key, $default = '' ) use ( $row ) {
+			$v = $row[ $key ] ?? null;
+			return ( is_scalar( $v ) && '' !== $v ) ? $v : $default;
+		};
+		$num = function ( $key, $default ) use ( $row ) {
+			$v = $row[ $key ] ?? null;
+			return ( is_numeric( $v ) ) ? $this->cast_value( $v ) : $default;
+		};
+
+		$cfg = [
+			'effect'          => $effect,
+			'trigger'         => $trigger,
+			'triggerSelector' => $str( 'trigger_selector', '' ),
+			'startPosition'   => $str( 'start_position', 'top 85%' ),
+			'endPosition'     => $str( 'end_position', 'bottom 30%' ),
+			'invertStart'     => $str( 'invert_start', 'top 85%' ),
+			'invertEnd'       => $str( 'invert_end', 'bottom center' ),
+			'delay'           => $num( 'delay', 0.15 ),
+			'duration'        => $num( 'duration', 1 ),
+			'stagger'         => $num( 'stagger', 0.02 ),
+			'ease'            => $str( 'ease', '' ),
+			'translateX'      => $num( 'translate_x', 20 ),
+			'translateY'      => $num( 'translate_y', 0 ),
+			'rotationDir'     => $str( 'rotation_dir', 'x' ),
+			'rotation'        => $num( 'rotation', -80 ),
+			'transformOrigin' => $str( 'transform_origin', '' ),
+			'scaleEase'       => $str( 'scale_ease', 'back' ),
+			'scaleNum'        => $num( 'scale_num', 1.5 ),
+			'scaleBreak'      => $str( 'scale_break', 'lines' ),
+		];
+
+		if ( ! empty( $row['markers'] ) ) {
+			$cfg['markers'] = true;
+		}
+
+		return $cfg;
 	}
 
 	/**

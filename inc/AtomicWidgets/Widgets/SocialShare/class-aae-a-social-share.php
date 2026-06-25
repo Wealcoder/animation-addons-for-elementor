@@ -166,7 +166,6 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 		$children = [];
 		foreach ( $vendors as $vendor => $label ) {
 			$children[] = AAE_A_Social_Share_Item::generate()
-				->is_locked( true )
 				->editor_settings( [ 'title' => $label ] )
 				->settings( [
 					'vendor' => String_Prop_Type::generate( $vendor ),

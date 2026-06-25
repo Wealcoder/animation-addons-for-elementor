@@ -58,139 +58,159 @@ final class Render {
 		}
 	}
 
+	/**
+	 * Build the JS-side image config — REPEATER. Output:
+	 *   { rows: [ <interaction>, ... ], rows_<bp>: [...], enableEditor: true }
+	 * Exclusive-trigger dedupe applied per breakpoint (page_load + scroll +
+	 * play_with_scroll share one slot; click + hover unlimited).
+	 */
 	private function build_config( array $settings ): array {
-		$effect_map = $this->envelope_to_map( $settings[ Schema::IMG_EFFECT ] ?? null );
-		$extra_bps  = $this->get_extra_breakpoints();
+		$map = $this->envelope_to_map( $settings[ Schema::IMG_INTERACTIONS ] ?? null );
 
-		// Bail early if no breakpoint has an effect other than 'none'.
-		if ( ! $this->any_breakpoint_active( $effect_map, $extra_bps ) ) {
-			return [];
-		}
-
-		$config = [];
-
-		// Effect — always emit so the runtime sees it. Other fields are
-		// gated by effect family below.
-		$this->emit_responsive(
-			$config, $settings, Schema::IMG_EFFECT, 'effect', 'none', $extra_bps,
-			static fn( $v ) => is_string( $v ) ? $v : 'none'
-		);
-		if ( ! isset( $config['effect'] ) ) {
-			$config['effect'] = $effect_map['desktop'] ?? 'none';
-		}
-
-		$desktop_effect = $effect_map['desktop'] ?? 'none';
-
-		// reveal family — start_from + ease
-		if ( $this->family_used( $effect_map, $extra_bps, [ 'reveal' ] ) ) {
-			$this->emit_responsive(
-				$config, $settings, Schema::IMG_START_FROM, 'startFrom', 'right', $extra_bps,
-				static fn( $v ) => is_string( $v ) ? $v : 'right'
-			);
-			$this->emit_responsive(
-				$config, $settings, Schema::IMG_EASE, 'ease', 'power2.out', $extra_bps,
-				static fn( $v ) => is_string( $v ) ? $v : 'power2.out'
-			);
-		}
-
-		// scale family — scaleStart + scaleEnd
-		if ( $this->family_used( $effect_map, $extra_bps, [ 'scale' ] ) ) {
-			$this->emit_responsive(
-				$config, $settings, Schema::IMG_SCALE_START, 'scaleStart', 0.5, $extra_bps,
-				static fn( $v ) => is_numeric( $v ) ? (float) $v : null
-			);
-			$this->emit_responsive(
-				$config, $settings, Schema::IMG_SCALE_END, 'scaleEnd', 1.0, $extra_bps,
-				static fn( $v ) => is_numeric( $v ) ? (float) $v : null
-			);
-		}
-
-		// scale + reveal share the start position picker + custom override.
-		if ( $this->family_used( $effect_map, $extra_bps, [ 'scale', 'reveal' ] ) ) {
-			$this->emit_responsive(
-				$config, $settings, Schema::IMG_START_POS, 'startPos', 'top center', $extra_bps,
-				static fn( $v ) => is_string( $v ) ? $v : 'top center'
-			);
-
-
-			
-
-			// Emit customStart only when desktop start_pos === 'custom'. The
-			// runtime falls back to startPos otherwise.
-
-			// $start_pos_map = $this->envelope_to_map( $settings[ Schema::IMG_START_POS ] ?? null );
-			// if ( ( $start_pos_map['desktop'] ?? '' ) === 'custom' ) {
-			// 	$this->emit_responsive(
-			// 		$config, $settings, Schema::IMG_CUSTOM_START, 'customStart', 'top 90%', $extra_bps,
-			// 		static fn( $v ) => is_string( $v ) ? $v : 'top 90%'
-			// 	);
-			// }
-		}
-
-		// Non-responsive editor flag.
-
-		// $marker = $settings[ Schema::IMG_ENABLE_MARKER ] ?? null;
-		// if ( is_array( $marker ) && ! empty( $marker['value'] ) ) {
-		// 	$config['enableMarker'] = true;
-		// }
-		if ( $this->family_used( $effect_map, $extra_bps, [ 'scale' ] ) ) {
-
-			$this->emit_responsive(
-				$config,
-				$settings,
-				Schema::IMG_END_POS,
-				'endPos',
-				'',
-				$extra_bps,
-				static fn( $v ) => is_string( $v ) ? $v : ''
-			);
-
-			$marker = $settings[ Schema::IMG_ENABLE_MARKER ] ?? false;
-
-			if ( is_array( $marker ) ) {
-				$config['enableMarker'] = (bool) ( $marker['value'] ?? false );
-			} else {
-				$config['enableMarker'] = (bool) $marker;
+		$desktop_rows = $this->rows_to_runtime( $map['desktop'] ?? [] );
+		if ( empty( $desktop_rows ) ) {
+			$any = false;
+			foreach ( $map as $rows ) {
+				if ( is_array( $rows ) && ! empty( $rows ) ) { $any = true; break; }
+			}
+			if ( ! $any ) {
+				return [];
 			}
 		}
 
-		$editor = $settings[ Schema::IMG_ENABLE_EDITOR ] ?? null;
-		if ( is_array( $editor ) && ! empty( $editor['value'] ) ) {
+		$config = [];
+		if ( ! empty( $desktop_rows ) ) {
+			$config['rows'] = $desktop_rows;
+		}
+
+		$extra_bps = $this->get_extra_breakpoints();
+		foreach ( $extra_bps as $bp ) {
+			if ( ! array_key_exists( $bp, $map ) || null === $map[ $bp ] ) {
+				continue;
+			}
+			$bp_rows = $this->rows_to_runtime( $map[ $bp ] );
+			if ( $bp_rows === $desktop_rows ) {
+				continue;
+			}
+			$config[ 'rows_' . $bp ] = $bp_rows;
+		}
+
+		if ( (bool) $this->unwrap_primitive( $settings[ Schema::IMG_ENABLE_EDITOR ] ?? null, false ) ) {
 			$config['enableEditor'] = true;
 		}
 
 		return $config;
 	}
 
-	/** True when at least one breakpoint has effect ≠ 'none' / empty. */
-	private function any_breakpoint_active( array $effect_map, array $extra_bps ): bool {
-		$desktop = $effect_map['desktop'] ?? 'none';
-		if ( $desktop && 'none' !== $desktop ) {
-			return true;
+	/** Per-bp rows → runtime configs, with exclusive-trigger dedupe. */
+	private function rows_to_runtime( $rows ): array {
+		if ( ! is_array( $rows ) ) {
+			return [];
 		}
-		foreach ( $extra_bps as $bp ) {
-			$v = $effect_map[ $bp ] ?? null;
-			if ( $v && 'none' !== $v ) {
-				return true;
+
+		$out = [];
+		$exclusive_used = false;
+		$exclusive_triggers = [ 'on_page_load', 'on_scroll', 'play_with_scroll' ];
+
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
 			}
+			$effect = isset( $row['effect'] ) ? (string) $row['effect'] : 'none';
+			if ( '' === $effect || 'none' === $effect ) {
+				continue;
+			}
+
+			$trigger = isset( $row['trigger'] ) ? (string) $row['trigger'] : 'on_scroll';
+			if ( in_array( $trigger, $exclusive_triggers, true ) ) {
+				if ( $exclusive_used ) { continue; }
+				$exclusive_used = true;
+			}
+
+			$out[] = $this->row_to_config( $row, $effect, $trigger );
 		}
-		return false;
+
+		return $out;
 	}
 
-	/** True when any breakpoint's effect falls in $family (after cascade). */
-	private function family_used( array $effect_map, array $extra_bps, array $family ): bool {
-		$resolved = [ 'desktop' => $effect_map['desktop'] ?? 'none' ];
-		if ( in_array( $resolved['desktop'], $family, true ) ) {
-			return true;
+	/** One editor row → one runtime image interaction config (camelCase). */
+	private function row_to_config( array $row, string $effect, string $trigger ): array {
+		$str = function ( $key, $default = '' ) use ( $row ) {
+			$v = $row[ $key ] ?? null;
+			return ( is_scalar( $v ) && '' !== $v ) ? $v : $default;
+		};
+		$num = function ( $key, $default ) use ( $row ) {
+			$v = $row[ $key ] ?? null;
+			return ( is_numeric( $v ) ) ? $this->cast_value( $v ) : $default;
+		};
+
+		$cfg = [
+			'effect'          => $effect,
+			'trigger'         => $trigger,
+			'triggerSelector' => $str( 'trigger_selector', '' ),
+			'startPosition'   => $str( 'start_position', 'top center' ),
+			'endPosition'     => $str( 'end_position', 'bottom bottom' ),
+			'delay'           => $num( 'delay', 0 ),
+			'duration'        => $num( 'duration', 1.5 ),
+			'ease'            => $str( 'ease', 'power2.out' ),
+			'startFrom'       => $str( 'start_from', 'right' ),
+			'scaleStart'      => $num( 'scale_start', 0.5 ),
+			'scaleEnd'        => $num( 'scale_end', 1 ),
+			'method'          => $str( 'method', 'from' ),
+			'customProps'     => $this->custom_rows_to_pairs( $row['custom_props'] ?? [] ),
+			'customPropsTo'   => $this->custom_rows_to_pairs( $row['custom_props_to'] ?? [] ),
+		];
+
+		if ( ! empty( $row['markers'] ) ) {
+			$cfg['markers'] = true;
 		}
-		foreach ( $extra_bps as $bp ) {
-			$own = $effect_map[ $bp ] ?? null;
-			$parent = $this->cascade_parent( $bp, $resolved, $resolved['desktop'] );
-			$resolved[ $bp ] = ( null === $own || '' === $own ) ? $parent : $own;
-			if ( in_array( $resolved[ $bp ], $family, true ) ) {
-				return true;
+
+		return $cfg;
+	}
+
+	/** Repeater rows → [{k,v}] pairs (custom effect props). */
+	private function custom_rows_to_pairs( $rows ): array {
+		if ( ! is_array( $rows ) ) {
+			return [];
+		}
+		$pairs = [];
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
 			}
+			if ( isset( $row['enabled'] ) && false === $row['enabled'] ) {
+				continue;
+			}
+			$k = isset( $row['property'] ) && is_scalar( $row['property'] ) ? trim( (string) $row['property'] ) : '';
+			if ( '' === $k || 'none' === $k ) {
+				continue;
+			}
+			$v = isset( $row['value'] ) && is_scalar( $row['value'] ) ? trim( (string) $row['value'] ) : '';
+			$pairs[] = [ 'k' => $k, 'v' => $v ];
 		}
-		return false;
+		return $pairs;
+	}
+
+	private function unwrap_primitive( $value, $fallback ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+		if ( ! array_key_exists( 'value', $value ) ) {
+			return $fallback;
+		}
+		$inner = $value['value'];
+		if ( is_array( $inner ) && array_key_exists( 'desktop', $inner ) ) {
+			return $inner['desktop'];
+		}
+		return $inner;
+	}
+
+	/** Numeric strings round-trip as numbers; others stay strings. */
+	public function cast_value( $v ) {
+		if ( is_bool( $v ) || is_int( $v ) || is_float( $v ) ) return $v;
+		if ( is_string( $v ) && is_numeric( $v ) ) {
+			return ( false !== strpos( $v, '.' ) ) ? (float) $v : (int) $v;
+		}
+		return $v;
 	}
 }

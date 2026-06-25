@@ -193,68 +193,98 @@ function plain(settings, key) {
  * Text Animation feature
  * =================================================================== */
 
-const TEXT_RESPONSIVE = {
-	aae_text_effect: { configKey: 'effect', default: 'none' },
-	aae_text_trigger: { configKey: 'trigger', default: 'in-view' },
-	aae_text_trigger_selector: { configKey: 'triggerSelector', default: '' },
-	aae_text_wrapper: { configKey: 'wrapper', default: 'default' },
-	aae_text_wrapper_selector: { configKey: 'wrapperSelector', default: '' },
-	aae_text_delay: { configKey: 'delay', default: 0.15 },
-	aae_text_duration: { configKey: 'duration', default: 1 },
-	aae_text_ease: { configKey: 'ease', default: '' },
-	aae_text_translate_x: { configKey: 'translateX', default: 20 },
-	aae_text_translate_y: { configKey: 'translateY', default: 0 },
-	aae_text_rotation_dir: { configKey: 'rotationDir', default: 'x' },
-	aae_text_rotation: { configKey: 'rotation', default: -80 },
-	aae_text_transform_origin: { configKey: 'transformOrigin', default: 'top center -50' },
-	aae_text_text_shadow: { configKey: 'textShadow', default: '' },
-	aae_text_spin_color: { configKey: 'spinColor', default: '#000000' },
-	aae_text_start_trigger: { configKey: 'startTrigger', default: '' },
-	aae_text_end_trigger: { configKey: 'endTrigger', default: '' },
-	aae_text_start_position: { configKey: 'startPosition', default: 'top 85%' },
-	aae_text_end_position: { configKey: 'endPosition', default: 'bottom 30%' },
-	aae_text_invert_start: { configKey: 'invertStart', default: 'top 85%' },
-	aae_text_invert_end: { configKey: 'invertEnd', default: 'bottom center' },
-	aae_text_spin_start: { configKey: 'spinStart', default: 'top 50%' },
-	aae_text_spin_end: { configKey: 'spinEnd', default: 'bottom 30%' },
-	aae_text_spin_toggle: { configKey: 'spinToggle', default: 'play none none reverse' },
-	aae_text_scale_ease: { configKey: 'scaleEase', default: 'back' },
-	aae_text_scale_num: { configKey: 'scaleNum', default: 1.5 },
-	aae_text_scale_break: { configKey: 'scaleBreak', default: 'lines' },
-	aae_text_markers: { configKey: 'markers', default: false },
-};
+/* ---------- Text: REPEATER. Mirrors TextAnimation/Render.php ---------- */
 
-const TEXT_OBJECTS = {
-	aae_text_stagger: {
-		configKey: 'stagger',
-		isValid: (v) => v !== undefined && v !== null,
-	},
-};
+// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
+const TEXT_EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+
+/** One raw editor text row → one runtime interaction config (no dedupe).
+ *  Returns null when the row has no usable effect. Exported for per-row
+ *  isolated preview. */
+export function textRowToRuntime(row) {
+	if (!row || typeof row !== 'object') return null;
+	const effect = row.effect ? String(row.effect) : 'none';
+	if (effect === '' || effect === 'none') return null;
+
+	const trigger = row.trigger ? String(row.trigger) : 'on_scroll';
+	const str = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '') ? v : d;
+	};
+	const num = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '' && Number.isFinite(Number(v))) ? Number(v) : d;
+	};
+
+	const cfg = {
+		effect,
+		trigger,
+		triggerSelector: str('trigger_selector', ''),
+		startPosition: str('start_position', 'top 85%'),
+		endPosition: str('end_position', 'bottom 30%'),
+		invertStart: str('invert_start', 'top 85%'),
+		invertEnd: str('invert_end', 'bottom center'),
+		delay: num('delay', 0.15),
+		duration: num('duration', 1),
+		stagger: num('stagger', 0.02),
+		ease: str('ease', ''),
+		translateX: num('translate_x', 20),
+		translateY: num('translate_y', 0),
+		rotationDir: str('rotation_dir', 'x'),
+		rotation: num('rotation', -80),
+		transformOrigin: str('transform_origin', ''),
+		scaleEase: str('scale_ease', 'back'),
+		scaleNum: num('scale_num', 1.5),
+		scaleBreak: str('scale_break', 'lines'),
+	};
+	if (row.markers) cfg.markers = true;
+	return cfg;
+}
+
+/** Saved per-bp rows → runtime configs, with exclusive-trigger dedupe. */
+function textRowsToRuntime(rows) {
+	if (!Array.isArray(rows)) return [];
+	const out = [];
+	let exclusiveUsed = false;
+
+	for (const row of rows) {
+		const cfg = textRowToRuntime(row);
+		if (!cfg) continue;
+
+		if (TEXT_EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
+			if (exclusiveUsed) continue;
+			exclusiveUsed = true;
+		}
+
+		out.push(cfg);
+	}
+	return out;
+}
 
 function buildTextConfig(settings) {
+	const map = envelopeToMap(settings.aae_text_interactions);
 
-	const effect = readAt(settings, 'aae_text_effect', 'desktop', 'none');
-	if (!effect || effect === 'none') return null;
+	const desktopRows = textRowsToRuntime(Array.isArray(map.desktop) ? map.desktop : []);
+
+	let anyRows = desktopRows.length > 0;
+	if (!anyRows) {
+		for (const bp of BPS) {
+			if (Array.isArray(map[bp]) && map[bp].length) { anyRows = true; break; }
+		}
+	}
+	if (!anyRows) return null;
 
 	const cfg = {};
-	if (plain(settings, 'aae_text_enable_editor')) cfg.enableEditor = true;
-	if (plain(settings, 'aae_text_markers')) cfg.markers = true;
+	if (desktopRows.length) cfg.rows = desktopRows;
 
-	const resolvedEffect = resolveAllBreakpoints(settings, 'aae_text_effect', 'none');
-	const disabledBps = new Set();
 	for (const bp of BPS) {
-		if (!resolvedEffect[bp] || resolvedEffect[bp] === 'none') disabledBps.add(bp);
+		if (!(bp in map) || map[bp] === null || map[bp] === undefined) continue;
+		const bpRows = textRowsToRuntime(Array.isArray(map[bp]) ? map[bp] : []);
+		if (JSON.stringify(bpRows) === JSON.stringify(desktopRows)) continue;
+		cfg['rows_' + bp] = bpRows;
 	}
 
-	emitResponsive(cfg, settings, TEXT_RESPONSIVE, disabledBps);
-	emitResponsiveObjects(cfg, settings, TEXT_OBJECTS, disabledBps);
-
-	// Effect defaults to 'none', so a non-default desktop value WILL be
-	// emitted. Guarantee presence even if equal to default — the runtime
-	// uses cfg.effect existence as the "animation present" signal.
-	if (!('effect' in cfg)) {
-		cfg.effect = effect;
-	}
+	if (plain(settings, 'aae_text_enable_editor')) cfg.enableEditor = true;
 	return cfg;
 }
 
@@ -312,103 +342,120 @@ function buildStickyConfig(settings) {
  * Regular Animation feature
  * =================================================================== */
 
-const REGULAR_RESPONSIVE_ALWAYS = {
-	aae_anim_effect: { configKey: 'effect', default: 'none' },
-	aae_anim_method: { configKey: 'method', default: 'from' },
-	aae_anim_trigger: { configKey: 'trigger', default: 'in-view' },
-	aae_anim_trigger_selector: { configKey: 'triggerSelector', default: '' },
-	aae_anim_wrapper: { configKey: 'wrapper', default: 'default' },
-	aae_anim_delay: { configKey: 'delay', default: 0.15 },
-	aae_anim_duration: { configKey: 'duration', default: 1.5 },
-	aae_anim_easing: { configKey: 'easing', default: 'power2.out' },
-};
+/* ---------- Regular: REPEATER. Mirrors RegularAnimation/Render.php ---------- */
 
-const REGULAR_RESPONSIVE_SCROLL_CUSTOM = {
-	aae_anim_start_trigger: { configKey: 'startTrigger', default: '' },
-	aae_anim_end_trigger: { configKey: 'endTrigger', default: '' },
-	aae_anim_start_position: { configKey: 'startPosition', default: 'top top' },
-	aae_anim_end_position: { configKey: 'endPosition', default: 'bottom top' },
-};
+const REGULAR_GSAP_KEYS = ['opacity', 'x', 'y', 'z', 'width', 'height', 'scale', 'repeat', 'rotate', 'rotateX', 'rotateY', 'rotation', 'rotationX', 'rotationY', 'transformOrigin', 'perspective', 'color', 'background', 'border', 'boxShadow', 'textShadow', 'force3D', 'delay', 'duration', 'maxWidth', 'maxHeight', 'minWidth', 'minHeight', 'mixBlendMode', 'padding', 'margin', 'borderRadius', 'repeatDelay', 'scaleX', 'scaleY', 'xPercent', 'yPercent', 'autoAlpha', 'yoyo', 'filter', 'skewX', 'skewY', 'clipPath', 'fontSize', 'lineHeight', 'letterSpacing', 'wordSpacing', 'stroke', 'strokeWidth', 'fill', 'strokeDashoffset', 'strokeDasharray', 'backdropFilter', 'backgroundColor', 'backgroundPosition', 'backgroundPositionX', 'backgroundPositionY', 'borderColor', 'outline', 'outlineWidth', 'outlineColor', 'outlineOffset', 'top', 'left', 'right', 'bottom', 'overflow', 'overflowX', 'overflowY', 'ease', 'stagger', 'transformPerspective', 'overwrite', 'backfaceVisibility', 'transformStyle', 'zIndex'];
+
+function regularNormalizeKey(key) {
+	const str = String(key).trim();
+	const lower = str.toLowerCase().replace(/[\s-_]/g, '');
+	for (const gk of REGULAR_GSAP_KEYS) {
+		if (gk.toLowerCase() === lower) return gk;
+	}
+	return str;
+}
+
+/** custom-props repeater rows → [{k,v}] pairs. */
+function regularCustomPairs(rows) {
+	if (!Array.isArray(rows)) return [];
+	const pairs = [];
+	for (const row of rows) {
+		if (row?.enabled === false) continue;
+		let k = (row?.property !== undefined && row?.property !== null) ? String(row.property).trim() : '';
+		if (!k || k === 'none') continue;
+		k = regularNormalizeKey(k);
+		const v = (row?.value !== undefined && row?.value !== null) ? String(row.value).trim() : '';
+		pairs.push({ k, v });
+	}
+	return pairs;
+}
+
+// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
+const EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+
+/** One raw editor row → one runtime interaction config (no dedupe). Returns
+ *  null when the row has no usable effect. Exported for per-row isolated
+ *  preview, where we want the EXACT row the user clicked — independent of the
+ *  dedupe that reorders the bound list. */
+export function regularRowToRuntime(row) {
+	if (!row || typeof row !== 'object') return null;
+	const effect = row.effect ? String(row.effect) : 'none';
+	if (effect === '' || effect === 'none') return null;
+
+	const trigger = row.trigger ? String(row.trigger) : 'on_scroll';
+	const str = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '') ? v : d;
+	};
+	const num = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '' && Number.isFinite(Number(v))) ? Number(v) : d;
+	};
+
+	const cfg = {
+		effect,
+		method: str('method', 'from'),
+		trigger,
+		triggerSelector: str('trigger_selector', ''),
+		wrapper: str('wrapper', 'default'),
+		startTrigger: str('start_trigger', ''),
+		endTrigger: str('end_trigger', ''),
+		startPosition: str('start_position', 'top center'),
+		endPosition: str('end_position', 'bottom bottom'),
+		delay: num('delay', 0.15),
+		duration: num('duration', 1.5),
+		easing: str('easing', 'power2.out'),
+		customProps: regularCustomPairs(row.custom_props),
+		customPropsTo: regularCustomPairs(row.custom_props_to),
+	};
+	if (row.markers) cfg.markers = true;
+	return cfg;
+}
+
+/** A saved per-bp rows array → runtime interaction configs, with the
+ *  exclusive-trigger dedupe (first-row-wins). Mirrors Render::rows_to_runtime. */
+function regularRowsToRuntime(rows) {
+	if (!Array.isArray(rows)) return [];
+	const out = [];
+	let exclusiveUsed = false;
+
+	for (const row of rows) {
+		const cfg = regularRowToRuntime(row);
+		if (!cfg) continue;
+
+		if (EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
+			if (exclusiveUsed) continue;
+			exclusiveUsed = true;
+		}
+
+		out.push(cfg);
+	}
+	return out;
+}
 
 function buildRegularConfig(settings) {
-	const effect = readAt(settings, 'aae_anim_effect', 'desktop', 'none');
-	if (!effect || effect === 'none') return null;
+	const map = envelopeToMap(settings.aae_anim_interactions);
+
+	const desktopRows = regularRowsToRuntime(Array.isArray(map.desktop) ? map.desktop : []);
+
+	// Bail when nothing exists at any breakpoint.
+	let anyRows = desktopRows.length > 0;
+	if (!anyRows) {
+		for (const bp of BPS) {
+			if (Array.isArray(map[bp]) && map[bp].length) { anyRows = true; break; }
+		}
+	}
+	if (!anyRows) return null;
 
 	const cfg = {};
+	if (desktopRows.length) cfg.rows = desktopRows;
 
-	const resolvedEffect = resolveAllBreakpoints(settings, 'aae_anim_effect', 'none');
-	const disabledBps = new Set();
 	for (const bp of BPS) {
-		if (!resolvedEffect[bp] || resolvedEffect[bp] === 'none') disabledBps.add(bp);
+		if (!(bp in map) || map[bp] === null || map[bp] === undefined) continue;
+		const bpRows = regularRowsToRuntime(Array.isArray(map[bp]) ? map[bp] : []);
+		if (JSON.stringify(bpRows) === JSON.stringify(desktopRows)) continue;
+		cfg['rows_' + bp] = bpRows;
 	}
-
-	emitResponsive(cfg, settings, REGULAR_RESPONSIVE_ALWAYS, disabledBps);
-
-	if (!('effect' in cfg)) {
-		cfg.effect = effect;
-	}
-
-	const wrapper = readAt(settings, 'aae_anim_wrapper', 'desktop', 'default');
-	if (wrapper === 'custom') {
-		emitResponsive(cfg, settings, REGULAR_RESPONSIVE_SCROLL_CUSTOM, disabledBps);
-
-		if (readAt(settings, 'aae_anim_start_position', 'desktop', 'top top') === 'custom') {
-			cfg.startCustom = String(readAt(settings, 'aae_anim_start_custom', 'desktop', '') || '');
-		}
-		if (readAt(settings, 'aae_anim_end_position', 'desktop', 'bottom top') === 'custom') {
-			cfg.endCustom = String(readAt(settings, 'aae_anim_end_custom', 'desktop', '') || '');
-		}
-	}
-
-	// Markers ships independently of wrapper/trigger — the effect-runtime
-	// only honors it for scroll-tied animations, but emitting it always
-	// keeps the editor toggle in sync with what the user sees.
-	if (plain(settings, 'aae_anim_markers')) cfg.markers = true;
-
-	const GSAP_KEYS = ['opacity', 'x', 'y', 'z', 'width', 'height', 'scale', 'repeat', 'rotate', 'rotateX', 'rotateY', 'rotation', 'rotationX', 'rotationY', 'transformOrigin', 'perspective', 'color', 'background', 'border', 'boxShadow', 'textShadow', 'force3D', 'delay', 'duration', 'maxWidth', 'maxHeight', 'minWidth', 'minHeight', 'mixBlendMode', 'padding', 'margin', 'borderRadius', 'repeatDelay', 'scaleX', 'scaleY', 'xPercent', 'yPercent', 'autoAlpha', 'yoyo', 'filter', 'skewX', 'skewY', 'clipPath', 'fontSize', 'lineHeight', 'letterSpacing', 'wordSpacing', 'stroke', 'strokeWidth', 'fill', 'strokeDashoffset', 'strokeDasharray', 'backdropFilter', 'backgroundColor', 'backgroundPosition', 'backgroundPositionX', 'backgroundPositionY', 'borderColor', 'outline', 'outlineWidth', 'outlineColor', 'outlineOffset', 'top', 'left', 'right', 'bottom', 'overflow', 'overflowX', 'overflowY', 'ease', 'stagger', 'transformPerspective', 'overwrite', 'backfaceVisibility', 'transformStyle', 'zIndex'];
-
-	const normalizeKey = (key) => {
-		const str = String(key).trim();
-		const lower = str.toLowerCase().replace(/[\s-_]/g, '');
-		for (const gk of GSAP_KEYS) {
-			if (gk.toLowerCase() === lower) return gk;
-		}
-		return str; // Fallback to what they typed
-	};
-
-	const processRepeater = (bindName, cfgKey) => {
-		const map = envelopeToMap(settings[bindName]);
-		const rows = Array.isArray(map.desktop) ? map.desktop : [];
-		const pairs = [];
-		for (const row of rows) {
-			if (row?.enabled === false) continue;
-			let k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
-			if (!k || k === 'none') continue;
-			k = normalizeKey(k);
-			const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
-			pairs.push({ k, v });
-		}
-		if (pairs.length) cfg[cfgKey] = pairs;
-
-		for (const bp of BPS) {
-			if (disabledBps.has(bp)) continue;
-			const bpRows = Array.isArray(map[bp]) ? map[bp] : null;
-			if (!bpRows) continue;
-			const bpPairs = [];
-			for (const row of bpRows) {
-				if (row?.enabled === false) continue;
-				let k = row?.property !== undefined && row?.property !== null ? String(row.property).trim() : '';
-				if (!k || k === 'none') continue;
-				k = normalizeKey(k);
-				const v = row?.value !== undefined && row?.value !== null ? String(row.value).trim() : '';
-				bpPairs.push({ k, v });
-			}
-			if (bpPairs.length) cfg[cfgKey + '_' + bp] = bpPairs;
-		}
-	};
-
-	processRepeater('aae_anim_custom_props', 'customProps');
-	processRepeater('aae_anim_custom_props_to', 'customPropsTo');
 
 	if (plain(settings, 'aae_anim_enable_editor')) cfg.enableEditor = true;
 	return cfg;
@@ -418,67 +465,103 @@ function buildRegularConfig(settings) {
  * Image Animation feature
  * =================================================================== */
 
-const IMG_RESPONSIVE_ALWAYS = {
-	aae_img_effect: { configKey: 'effect', default: 'none' },
-};
+/* ---------- Image: REPEATER. Mirrors ImageAnimation/Render.php ---------- */
 
-const IMG_RESPONSIVE_REVEAL = {
-	aae_img_start_from: { configKey: 'startFrom', default: 'right' },
-	aae_img_ease: { configKey: 'ease', default: 'power2.out' },
-};
+const IMG_EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
 
-const IMG_RESPONSIVE_SCALE = {
-	aae_img_scale_start: { configKey: 'scaleStart', default: 0.5 },
-	aae_img_scale_end: { configKey: 'scaleEnd', default: 1 },
-};
+function imgCustomPairs(rows) {
+	if (!Array.isArray(rows)) return [];
+	const pairs = [];
+	for (const row of rows) {
+		if (row?.enabled === false) continue;
+		const k = (row?.property !== undefined && row?.property !== null) ? String(row.property).trim() : '';
+		if (!k || k === 'none') continue;
+		const v = (row?.value !== undefined && row?.value !== null) ? String(row.value).trim() : '';
+		pairs.push({ k, v });
+	}
+	return pairs;
+}
 
-const IMG_RESPONSIVE_REVEAL_OR_SCALE = {
-	aae_img_start_pos: { configKey: 'startPos', default: 'top center' },
-};
+/** One raw editor image row → one runtime config (no dedupe). Exported for
+ *  per-row isolated preview. */
+export function imgRowToRuntime(row) {
+	if (!row || typeof row !== 'object') return null;
+	const effect = row.effect ? String(row.effect) : 'none';
+	if (effect === '' || effect === 'none') return null;
+
+	const trigger = row.trigger ? String(row.trigger) : 'on_scroll';
+	const str = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '') ? v : d;
+	};
+	const num = (k, d) => {
+		const v = row[k];
+		return (v !== undefined && v !== null && v !== '' && Number.isFinite(Number(v))) ? Number(v) : d;
+	};
+
+	const cfg = {
+		effect,
+		trigger,
+		triggerSelector: str('trigger_selector', ''),
+		startPosition: str('start_position', 'top center'),
+		endPosition: str('end_position', 'bottom bottom'),
+		delay: num('delay', 0),
+		duration: num('duration', 1.5),
+		ease: str('ease', 'power2.out'),
+		startFrom: str('start_from', 'right'),
+		scaleStart: num('scale_start', 0.5),
+		scaleEnd: num('scale_end', 1),
+		method: str('method', 'from'),
+		customProps: imgCustomPairs(row.custom_props),
+		customPropsTo: imgCustomPairs(row.custom_props_to),
+	};
+	if (row.markers) cfg.markers = true;
+	return cfg;
+}
+
+function imgRowsToRuntime(rows) {
+	if (!Array.isArray(rows)) return [];
+	const out = [];
+	let exclusiveUsed = false;
+
+	for (const row of rows) {
+		const cfg = imgRowToRuntime(row);
+		if (!cfg) continue;
+
+		if (IMG_EXCLUSIVE_TRIGGERS.includes(cfg.trigger)) {
+			if (exclusiveUsed) continue;
+			exclusiveUsed = true;
+		}
+
+		out.push(cfg);
+	}
+	return out;
+}
 
 function buildImgConfig(settings) {
-	const effect = readAt(settings, 'aae_img_effect', 'desktop', 'none');
-	const resolvedEffect = resolveAllBreakpoints(settings, 'aae_img_effect', 'none');
+	const map = envelopeToMap(settings.aae_img_interactions);
 
-	const anyActive = effect !== 'none'
-		|| BPS.some((bp) => resolvedEffect[bp] && resolvedEffect[bp] !== 'none');
-	if (!anyActive) return null;
+	const desktopRows = imgRowsToRuntime(Array.isArray(map.desktop) ? map.desktop : []);
 
-	const cfg = {};
-	const disabledBps = new Set();
-	for (const bp of BPS) {
-		if (!resolvedEffect[bp] || resolvedEffect[bp] === 'none') disabledBps.add(bp);
-	}
-
-	emitResponsive(cfg, settings, IMG_RESPONSIVE_ALWAYS, disabledBps);
-	if (!('effect' in cfg)) cfg.effect = effect;
-
-	// Effect-family gated emissions. We use the DESKTOP effect to decide
-	// which families to include; per-bp overrides that change family will
-	// be picked up by emitResponsive's cascade and still write _<bp> keys.
-	if (effect === 'reveal') {
-		emitResponsive(cfg, settings, IMG_RESPONSIVE_REVEAL, disabledBps);
-	}
-	if (effect === 'scale') {
-		emitResponsive(cfg, settings, IMG_RESPONSIVE_SCALE, disabledBps);
-	}
-	if (effect === 'reveal' || effect === 'scale') {
-		emitResponsive(cfg, settings, IMG_RESPONSIVE_REVEAL_OR_SCALE, disabledBps);
-
-		// customStart is gated on desktop start_pos === 'custom'. Same
-		// dedup-aware emit pattern when present.
-		if (readAt(settings, 'aae_img_start_pos', 'desktop', '') === 'custom') {
-			emitResponsive(
-				cfg, settings,
-				{ aae_img_custom_start: { configKey: 'customStart', default: 'top 90%' } },
-				disabledBps
-			);
+	let anyRows = desktopRows.length > 0;
+	if (!anyRows) {
+		for (const bp of BPS) {
+			if (Array.isArray(map[bp]) && map[bp].length) { anyRows = true; break; }
 		}
 	}
+	if (!anyRows) return null;
 
-	if (plain(settings, 'aae_img_enable_marker')) cfg.enableMarker = true;
+	const cfg = {};
+	if (desktopRows.length) cfg.rows = desktopRows;
+
+	for (const bp of BPS) {
+		if (!(bp in map) || map[bp] === null || map[bp] === undefined) continue;
+		const bpRows = imgRowsToRuntime(Array.isArray(map[bp]) ? map[bp] : []);
+		if (JSON.stringify(bpRows) === JSON.stringify(desktopRows)) continue;
+		cfg['rows_' + bp] = bpRows;
+	}
+
 	if (plain(settings, 'aae_img_enable_editor')) cfg.enableEditor = true;
-
 	return cfg;
 }
 
@@ -1220,7 +1303,7 @@ export const FEATURES = [
 	{
 		name: 'text-animation',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-aae-a-post-title'],
-		enableSetting: 'aae_text_effect',
+		enableSetting: 'aae_text_interactions',
 		autoReplaySetting: 'aae_text_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TEXT',
 		buildConfig: buildTextConfig,
@@ -1229,7 +1312,7 @@ export const FEATURES = [
 	{
 		name: 'regular-animation',
 		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
-		enableSetting: 'aae_anim_effect',
+		enableSetting: 'aae_anim_interactions',
 		autoReplaySetting: 'aae_anim_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ANIM',
 		buildConfig: buildRegularConfig,
@@ -1238,7 +1321,7 @@ export const FEATURES = [
 	{
 		name: 'image-animation',
 		widgetTypes: ['e-image', 'e-svg', 'e-aae-a-post-image'],
-		enableSetting: 'aae_img_effect',
+		enableSetting: 'aae_img_interactions',
 		autoReplaySetting: 'aae_img_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMG',
 		buildConfig: buildImgConfig,

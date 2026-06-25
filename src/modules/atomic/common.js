@@ -472,6 +472,31 @@ function resetEl(el, playGroup = "") {
 	}
 }
 
+/**
+ * Editor-only: play ONE interaction row in isolation, regardless of its
+ * trigger (click / scroll / page-load). Used by the per-row play icon so the
+ * user can preview exactly what a single interaction looks like.
+ *
+ * `rowCfg`, when provided, is the EXACT runtime row config the editor wants
+ * to preview — passing it sidesteps any index mismatch between the editor's
+ * row list and the runtime's (the runtime drops effect=none rows and applies
+ * the exclusive-trigger dedupe, so positions can differ). The kind's
+ * `playRow(el, config, rowIndex, rowCfg)` uses rowCfg directly when present.
+ */
+function replayRow(el, playGroup = "", rowIndex = 0, rowCfg = null) {
+	if (!el) return;
+	for (const kind of kindsFor(el)) {
+		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) continue;
+		const config = kind.read(el);
+		if (!config) continue;
+		if (typeof kind.playRow === 'function') {
+			try { kind.playRow(el, config, rowIndex, rowCfg); } catch (_) {}
+		} else if (typeof kind.play === 'function') {
+			try { kind.play(el, config); } catch (_) {}
+		}
+	}
+}
+
 /** Force-replay (used by editor Play Now + initial-replay). Falls through
  *  to descendants. If `el` has an animated ancestor that's currently in
  *  the middle of its tween, defer this replay until the ancestor completes
@@ -560,6 +585,7 @@ const Registry = {
 	scan,
 	rebind,
 	replay,
+	replayRow,
 	reset: resetEl,
 };
 
@@ -581,11 +607,12 @@ window.AAEADDON = {
 	scan,
 	rebind,
 	replay,
+	replayRow,
 	reset: resetEl,
 };
 
 // Editor-bridge / preview-iframe entry point. The editor talks to the
-// runtime through this surface (rebind, scan, replay, reset on a single
-// element) so it doesn't need to know about the kind registry.
-window.aaeAtomicAnimations = { scan, rebind, replay, reset: resetEl };
+// runtime through this surface (rebind, scan, replay, replayRow, reset on a
+// single element) so it doesn't need to know about the kind registry.
+window.aaeAtomicAnimations = { scan, rebind, replay, replayRow, reset: resetEl };
 
