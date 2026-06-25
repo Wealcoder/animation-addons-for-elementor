@@ -34,6 +34,7 @@ export const TEXT_MAP = 'AAE_INTERACTIONS_TEXT';
 export const TEXT_PLAYED = '__aaeTextPlayed';
 
 const SPLIT_KEY = '__aaeTextSplit';   // shared class-free SplitText instance
+const INVERT_SPLIT_KEY = '__aaeInvertSplit'; // dedicated lines-only split for invert
 const ROWS_KEY = '__aaeTextRows';     // [{ config, tween, dispose }]
 const PARENT_CLASS = 'wcf-t-animation-text_invert';
 
@@ -154,6 +155,126 @@ function revertSharedSplit(el) {
 	if (gsap) { try { gsap.set(el, { clearProps: 'perspective' }); } catch (_) {} }
 }
 
+/* ---------- text_invert: dedicated, V3-faithful path ----------
+ *
+ * Invert is special: V3 builds its OWN `type:"lines"` SplitText (linesClass
+ * "invert-line") — NOT the shared lines/words/chars split — so each line is a
+ * single element with text directly inside it. That's required for
+ * `-webkit-background-clip: text` to clip the gradient to the glyphs. With the
+ * shared split, lines wrap nested word/char divs (no direct text), so clipping
+ * on the line shows nothing. We replicate V3 exactly and bind a per-line scrub
+ * ScrollTrigger that sweeps background-position-x → 0. */
+
+function computeInvertTextColor(el) {
+	const colorStr = window.getComputedStyle(el).color;
+	const rgb = colorStr.match(/\d+/g);
+	if (!rgb || rgb.length < 3) return;
+	const rr = parseInt(rgb[0]) / 255;
+	const gg = parseInt(rgb[1]) / 255;
+	const bb = parseInt(rgb[2]) / 255;
+	const max = Math.max(rr, gg, bb);
+	const min = Math.min(rr, gg, bb);
+	const chroma = max - min;
+	const l = (max + min) / 2;
+	let h = 0;
+	let s = 0;
+	if (chroma !== 0) {
+		s = l <= 0.5 ? chroma / (max + min) : chroma / (2 - (max + min));
+		switch (max) {
+			case rr: h = (gg - bb) / chroma + (gg < bb ? 6 : 0); break;
+			case gg: h = (bb - rr) / chroma + 2; break;
+			case bb: h = (rr - gg) / chroma + 4; break;
+		}
+		h *= 60;
+	}
+	el.style.setProperty('--text-color', `${h.toFixed(1)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%`);
+}
+
+function revertInvertSplit(el) {
+	const split = el[INVERT_SPLIT_KEY];
+	if (split && typeof split.revert === 'function') {
+		try { split.revert(); } catch (_) {}
+	}
+	delete el[INVERT_SPLIT_KEY];
+	el.classList.remove(PARENT_CLASS);
+	try { el.style.removeProperty('--text-color'); } catch (_) {}
+}
+
+/**
+ * Build the invert effect on `el`. Returns a disposer that kills the per-line
+ * ScrollTriggers and reverts the dedicated split. `forcePreview` plays a quick
+ * non-scroll preview (editor ▶) instead of a scroll-tied tween.
+ */
+function buildInvert(el, config, forcePreview = false) {
+	const gsap = getGsap();
+	const SplitText = getSplitText();
+	if (!gsap || !SplitText) return () => {};
+
+	// Fresh dedicated split each time.
+	revertInvertSplit(el);
+	el.classList.add(PARENT_CLASS);
+	computeInvertTextColor(el);
+
+	let split;
+	try {
+		split = new SplitText(el, { type: 'lines', linesClass: 'invert-line' });
+	} catch (_) {
+		return () => {};
+	}
+	el[INVERT_SPLIT_KEY] = split;
+
+	const lines = split.lines || [];
+	// Gradient + clip on each line (V3's .invert-line CSS, inlined so the
+	// atomic frontend needs no extra stylesheet). --text-color inherits from el.
+	lines.forEach((line) => {
+		line.style.setProperty('background-image', 'linear-gradient(to right, hsla(var(--text-color), 1) 50%, hsla(var(--text-color), 0.3) 50%)', 'important');
+		line.style.setProperty('background-size', '200% 100%', 'important');
+		line.style.setProperty('background-repeat', 'no-repeat', 'important');
+		line.style.setProperty('background-position-x', '100%');
+		line.style.setProperty('color', 'transparent', 'important');
+		line.style.setProperty('-webkit-background-clip', 'text', 'important');
+		line.style.setProperty('background-clip', 'text', 'important');
+		line.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
+	});
+
+	const tweens = [];
+	const start = config.invertStart || 'top 85%';
+	const end = config.invertEnd || 'bottom center';
+
+	if (forcePreview) {
+		// Editor ▶ preview: one quick sweep per line, no scroll dependency.
+		lines.forEach((line) => {
+			tweens.push(gsap.fromTo(line,
+				{ backgroundPositionX: '100%' },
+				{ backgroundPositionX: '0%', ease: 'none', duration: config.duration || 1 }
+			));
+		});
+	} else {
+		// Frontend: per-line scrub ScrollTrigger (exactly V3).
+		lines.forEach((line) => {
+			tweens.push(gsap.to(line, {
+				backgroundPositionX: '0%',
+				ease: 'none',
+				scrollTrigger: {
+					trigger: line,
+					scrub: 1,
+					start,
+					end,
+					markers: !!config.markers,
+				},
+			}));
+		});
+	}
+
+	return () => {
+		tweens.forEach((t) => {
+			try { t.scrollTrigger?.kill?.(); } catch (_) {}
+			try { t.kill?.(); } catch (_) {}
+		});
+		revertInvertSplit(el);
+	};
+}
+
 /** Which split collection a given effect tweens. null → whole element. */
 function piecesFor(el, config) {
 	const split = getSharedSplit(el);
@@ -167,7 +288,7 @@ function piecesFor(el, config) {
 
 	if (isPremium || effect === 'char') return split.chars || [el];
 	if (effect === 'word') return split.words || [el];
-	if (effect === 'text_move' || effect === 'text_invert') return split.lines || [el];
+	if (effect === 'text_move') return split.lines || [el];
 	if (effect === 'text_reveal') return split.chars || [el];
 	if (effect === 'text_scale') return split[config.scaleBreak || 'lines'] || [el];
 	// Unknown → whole element.
@@ -247,39 +368,8 @@ function textTween(effect, config, pieces, el) {
 				},
 			};
 
-		case 'text_invert': {
-			// Parent class + gradient is invert-only. Applied to el ONLY while
-			// this row runs; resetText() strips it.
-			el.classList.add(PARENT_CLASS);
-			const colorStr = window.getComputedStyle(el).color;
-			const rgb = colorStr.match(/\d+/g);
-			if (rgb && rgb.length >= 3) {
-				let rr = parseInt(rgb[0]) / 255;
-				let gg = parseInt(rgb[1]) / 255;
-				let bb = parseInt(rgb[2]) / 255;
-				const max = Math.max(rr, gg, bb);
-				const min = Math.min(rr, gg, bb);
-				const chroma = max - min;
-				const l = (max + min) / 2;
-				let h = 0;
-				let s = 0;
-				if (chroma !== 0) {
-					s = l <= 0.5 ? chroma / (max + min) : chroma / (2 - (max + min));
-					switch (max) {
-						case rr: h = (gg - bb) / chroma + (gg < bb ? 6 : 0); break;
-						case gg: h = (bb - rr) / chroma + 2; break;
-						case bb: h = (rr - gg) / chroma + 4; break;
-					}
-					h *= 60;
-				}
-				el.style.setProperty('--text-color', `${h.toFixed(1)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%`);
-			}
-			return {
-				method: 'fromTo',
-				from: { backgroundPositionX: '100%' },
-				to: { ...shared, backgroundPositionX: '0%', ease: 'none' },
-			};
-		}
+		// text_invert is handled by its dedicated buildInvert() path (own split +
+		// per-line scroll triggers), never through this shared-pieces tween.
 
 		default: {
 			const preset = PREMIUM_EFFECTS_BY_ID[effect];
@@ -348,8 +438,9 @@ function killAllRows(el) {
 	el[ROWS_KEY] = [];
 	delete el[TEXT_PLAYED];
 
-	// Revert the shared split LAST — after every row's tween is gone — so the
+	// Revert both splits LAST — after every row's tween/disposer is gone — so the
 	// original text DOM (and any inline styles) is restored cleanly.
+	revertInvertSplit(el);
 	revertSharedSplit(el);
 	if (gsap) { try { gsap.killTweensOf(el); } catch (_) {} }
 }
@@ -367,6 +458,12 @@ export function playText(el, mapConfig) {
 
 	const state = [];
 	for (const rowCfg of rows) {
+		if (rowCfg.effect === 'text_invert') {
+			// Dedicated path — quick one-shot sweep for an immediate preview.
+			const dispose = buildInvert(el, rowCfg, true);
+			state.push({ config: rowCfg, tween: null, dispose });
+			continue;
+		}
 		const tween = buildRowTween(el, rowCfg, false, false);
 		state.push({ config: rowCfg, tween, dispose: null });
 		if (tween) el[TEXT_PLAYED] = tween;
@@ -422,6 +519,19 @@ export function bindText(el, mapConfig, forcePreview = false) {
 
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
+
+		// text_invert: dedicated path (own split + per-line scroll triggers).
+		if (config.effect === 'text_invert') {
+			if (isEditMode && !forcePreview) {
+				// Don't split/sweep on the resting editor canvas; ▶ previews it.
+				state.push({ config, tween: null, dispose: null });
+				continue;
+			}
+			// forcePreview (per-row ▶) → quick one-shot sweep; frontend → scrub.
+			const dispose = buildInvert(el, config, forcePreview);
+			state.push({ config, tween: null, dispose });
+			continue;
+		}
 
 		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			// Skip auto-firing modes in the editor — keep the text intact.

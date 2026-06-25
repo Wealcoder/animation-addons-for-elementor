@@ -45,6 +45,14 @@ const TRIGGER_OPTIONS = [
 	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
+// text_invert is a scroll-tied gradient sweep — only "Play With Scroll" makes
+// sense for it, so lock the trigger choices to that one option.
+const INVERT_TRIGGER_OPTIONS = [
+	{ value: 'play_with_scroll', label: 'Play With Scroll' },
+];
+const triggerOptionsFor = (r) =>
+	(rowEffect(r) === 'text_invert') ? INVERT_TRIGGER_OPTIONS : TRIGGER_OPTIONS;
+
 const ROTATION_DIR_OPTIONS = [
 	{ value: 'x', label: 'X' },
 	{ value: 'y', label: 'Y' },
@@ -104,8 +112,13 @@ const rowIsScale = (r) => rowEffect(r) === 'text_scale';
 /* ---------- per-row field schema ---------- */
 
 const ROW_FIELDS = [
-	{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'char' },
-	{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: rowIsAnimated },
+	{
+		bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'char',
+		// Selecting text_invert forces the trigger to Play With Scroll (its only
+		// valid trigger); other effects leave the trigger untouched.
+		onSet: (_row, val) => (val === 'text_invert' ? { trigger: 'play_with_scroll' } : null),
+	},
+	{ bind: 'trigger', label: 'Trigger', control: 'select', options: triggerOptionsFor, defaultValue: 'on_scroll', when: rowIsAnimated },
 
 	{
 		bind: 'trigger_selector', label: 'Trigger Selector', control: 'text', placeholder: '.my-class',
