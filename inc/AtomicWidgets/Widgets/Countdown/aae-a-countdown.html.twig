@@ -1,5 +1,6 @@
 {% set classes = ['aae-a-countdown', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
 {% set show_separator = (settings.show_separator is defined and settings.show_separator == false) ? 'no' : 'yes' %}
+{% set layout = settings.layout | default('horizontal') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -9,6 +10,7 @@
     data-due-date="{{ settings.due_date | default('') | e('html_attr') }}"
     data-expire-title="{{ settings.expire_title | default('') | e('html_attr') }}"
     data-expire-desc="{{ settings.expire_desc | default('') | e('html_attr') }}"
+    data-layout="{{ layout }}"
     data-show-separator="{{ show_separator }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
@@ -18,15 +20,6 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
-    {#
-        Visibility wiring for the expire message:
-            - `[data-expired="true"]` is flipped by the JS handler when the
-              due date passes; CSS below hides the four units and shows
-              the expire block.
-            - Separator characters between units come from
-              `[data-show-separator="yes"]` so users can toggle them off
-              without touching markup.
-    #}
     <style>
         [data-id="{{ id }}"] .aae-a-countdown-expire {
             display: none;
@@ -39,16 +32,8 @@
         [data-id="{{ id }}"][data-expired="true"] .aae-a-countdown-expire {
             display: block;
         }
-
-        [data-id="{{ id }}"][data-show-separator="yes"] .aae-a-countdown-unit + .aae-a-countdown-unit::before {
-            content: ":";
-            display: inline-block;
-            margin-inline-end: var(--aae-countdown-separator-gap, 0px);
-            font-size: 1em;
-            line-height: 1;
-            opacity: 0.6;
-            pointer-events: none;
-            align-self: center;
+        [data-id="{{ id }}"][data-show-separator="no"] .aae-a-countdown-separator {
+            display: none;
         }
     </style>
 

@@ -13,7 +13,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Date_Time_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Textarea_Control;
@@ -24,6 +24,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Divider\Atomic_Divider;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 // Sub-element file — loaded eagerly so define_default_children() can call ::generate().
@@ -98,6 +99,9 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 
 			// Show / hide colon separator between units (visual only).
 			'show_separator' => Boolean_Prop_Type::make()->default( true ),
+
+			// Flex direction of the units row.
+			'layout'         => String_Prop_Type::make()->enum( [ 'horizontal', 'vertical' ] )->default( 'horizontal' ),
 		];
 	}
 
@@ -107,8 +111,15 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 				->set_label( __( 'Timer', 'animation-addons-for-elementor' ) )
 				->set_id( 'timer' )
 				->set_items( [
-					Date_Time_Control::bind_to( 'due_date' )
-						->set_label( __( 'Due Date', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'due_date' )
+						->set_label( __( 'Due Date', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'YYYY-MM-DD HH:MM:SS' ),
+					Select_Control::bind_to( 'layout' )
+						->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'horizontal', 'label' => __( 'Horizontal', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'vertical',   'label' => __( 'Vertical',   'animation-addons-for-elementor' ) ],
+						] ),
 					Switch_Control::bind_to( 'show_separator' )
 						->set_label( __( 'Show Separator', 'animation-addons-for-elementor' ) ),
 				] ),
@@ -134,18 +145,13 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 		];
 	}
 
-	/**
-	 * Container-level layout — 4 units arranged in a flex row that wraps
-	 * naturally on narrow viewports. Per-unit styling lives on the unit
-	 * class itself; this is purely outer layout.
-	 */
 	protected function define_base_styles(): array {
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'display',         String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'flex-wrap',       String_Prop_Type::generate( 'wrap' ) )
+						->add_prop( 'flex-direction',  String_Prop_Type::generate( 'row' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'align-items',     String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 40, 'unit' => 'px' ] ) )
@@ -176,7 +182,9 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 			'seconds' => __( 'Seconds', 'animation-addons-for-elementor' ),
 		];
 
-		$children = [];
+		$children   = [];
+		$unit_keys  = array_keys( $units );
+		$last_unit  = end( $unit_keys );
 
 		foreach ( $units as $unit_type => $label ) {
 			$children[] = AAE_A_Countdown_Unit::generate()
@@ -187,6 +195,16 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 				] )
 				->children( AAE_A_Countdown_Unit::build_default_inner_children( $label ) )
 				->build();
+
+			if ( $unit_type !== $last_unit ) {
+				$children[] = Atomic_Divider::generate()
+					->is_locked( true )
+					->editor_settings( [ 'title' => 'Separator' ] )
+					->settings( [
+						'classes' => Classes_Prop_Type::generate( [ 'aae-a-countdown-separator' ] ),
+					] )
+					->build();
+			}
 		}
 
 		return $children;
@@ -198,7 +216,7 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 	 * Atomic_Paragraph etc. still nest inside the unit itself.)
 	 */
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-countdown-unit' ];
+		return [ 'e-aae-a-countdown-unit', 'e-divider' ];
 	}
 
 	protected function define_default_html_tag() {

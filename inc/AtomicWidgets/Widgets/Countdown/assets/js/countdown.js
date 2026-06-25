@@ -1,20 +1,5 @@
 import { register } from '@elementor/frontend-handlers';
 
-/**
- * AAE Atomic Countdown — frontend handler.
- *
- * Reads the due-date from the wrapper, walks each `[data-unit-type]`
- * child unit, and writes the remaining time fragment into that unit's
- * `.aae-a-countdown-unit-count` element every second. When the due
- * date passes, flips `data-expired="true"` on the wrapper so the CSS
- * in the Twig swaps the four units out for the expire-message block.
- *
- * Why direct DOM updates and not re-rendering: the digit element is an
- * `Atomic_Heading` child with its own Style panel — replacing the
- * markup each tick would blow away any user styling that targets the
- * specific element. Updating `textContent` keeps the element identity
- * and its computed styles intact.
- */
 const UNIT_TYPES = [ 'days', 'hours', 'minutes', 'seconds' ];
 
 const MS_PER_SECOND = 1000;
@@ -36,14 +21,26 @@ const computeFragments = ( distanceMs ) => {
 	};
 };
 
+const applyLayout = ( container ) => {
+	container.style.flexDirection =
+		container.dataset.layout === 'vertical' ? 'column' : 'row';
+};
+
+// Track active intervals so re-init clears the previous one.
+const activeIntervals = new WeakMap();
+
 const initCountdown = ( container ) => {
-	if ( container.dataset.aaeCountdownReady === '1' ) return;
-	container.dataset.aaeCountdownReady = '1';
+	// Clear any existing interval from a previous init (e.g. editor re-render).
+	if ( activeIntervals.has( container ) ) {
+		window.clearInterval( activeIntervals.get( container ) );
+		activeIntervals.delete( container );
+	}
+
+	applyLayout( container );
 
 	const dueDateRaw = container.dataset.dueDate || '';
 	const dueDateMs  = new Date( dueDateRaw.replace( ' ', 'T' ) ).getTime();
 
-	// Cache the digit element for each unit type once — saves a query per tick.
 	const digitNodes = {};
 	UNIT_TYPES.forEach( ( unitType ) => {
 		const unit = container.querySelector( `[data-unit-type="${ unitType }"]` );
@@ -61,8 +58,6 @@ const initCountdown = ( container ) => {
 	};
 
 	const tick = () => {
-		// If due-date couldn't be parsed, show the expire block — better
-		// than silently rendering "NaN" in every unit forever.
 		if ( ! Number.isFinite( dueDateMs ) ) {
 			setExpired( true );
 			return;
@@ -80,21 +75,34 @@ const initCountdown = ( container ) => {
 
 		if ( distance <= 0 ) {
 			setExpired( true );
-			window.clearInterval( intervalId );
+			const id = activeIntervals.get( container );
+			if ( id ) {
+				window.clearInterval( id );
+				activeIntervals.delete( container );
+			}
 		} else {
 			setExpired( false );
 		}
 	};
 
 	tick();
-	const intervalId = window.setInterval( tick, MS_PER_SECOND );
+
+	// In the editor, stop after one tick — the interval would cause DOM
+	// mutations every second which trigger Elementor's MutationObserver
+	// and cause an infinite re-render loop.
+	const isEditMode = typeof elementorFrontend !== 'undefined' &&
+		elementorFrontend.isEditMode();
+
+	if ( ! isEditMode ) {
+		const intervalId = window.setInterval( tick, MS_PER_SECOND );
+		activeIntervals.set( container, intervalId );
+	}
 };
 
 register( {
 	elementType: 'e-aae-a-countdown',
 	id: 'e-aae-a-countdown-handler',
 	callback: ( { element } ) => {
-		element.removeAttribute( 'data-aae-countdown-ready' );
 		initCountdown( element );
 	},
 } );
