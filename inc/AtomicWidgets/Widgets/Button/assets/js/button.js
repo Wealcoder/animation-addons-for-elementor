@@ -9,13 +9,36 @@ const textFlipSetup = (container) => {
   }
 };
 
-const borderDivideSwap = (container) => {
-  // Disconnect any previous text-sync observer before re-running
-  if (container._aaeBorderObserver) {
-    container._aaeBorderObserver.disconnect();
-    container._aaeBorderObserver = null;
+// Re-sync the visible clones in a btn-border-divide button from the live originals.
+const syncBorderDivideClones = (btn) => {
+  const textWrapper = btn.querySelector(":scope > span.text");
+  const iconWrapper = btn.querySelector(":scope > span.icon");
+
+  if (textWrapper) {
+    const liveText = btn.querySelector(
+      ".elementor-widget-e-paragraph .e-paragraph-base, :scope > .e-paragraph-base",
+    );
+    const clone = textWrapper.querySelector(".e-paragraph-base");
+    if (liveText && clone && liveText.innerHTML !== clone.innerHTML) {
+      clone.innerHTML = liveText.innerHTML;
+    }
   }
 
+  if (iconWrapper) {
+    const liveSvg = btn.querySelector(
+      ".elementor-widget-e-svg .e-svg-base, :scope > .e-svg-base",
+    );
+    if (liveSvg) {
+      iconWrapper.querySelectorAll(".e-svg-base").forEach((clone) => {
+        if (clone.innerHTML !== liveSvg.innerHTML) {
+          clone.innerHTML = liveSvg.innerHTML;
+        }
+      });
+    }
+  }
+};
+
+const borderDivideSwap = (container) => {
   // Clean up any previous swap wrappers before re-running
   const existingText = container.querySelector(":scope > span.text");
   const existingIcon = container.querySelector(":scope > span.icon");
@@ -59,16 +82,6 @@ const borderDivideSwap = (container) => {
   container.prepend(textWrapper);
 
   container.dataset.borderDivideSwapped = "true";
-
-  // Keep the visible clone in sync when Elementor updates the original paragraph
-  const cloneEl = textWrapper.querySelector(".e-paragraph-base");
-  if (cloneEl) {
-    const observer = new MutationObserver(() => {
-      cloneEl.innerHTML = textEl.innerHTML;
-    });
-    observer.observe(textEl, { childList: true, subtree: true, characterData: true });
-    container._aaeBorderObserver = observer;
-  }
 };
 
 const maskBtn = (container) => {
@@ -77,12 +90,34 @@ const maskBtn = (container) => {
   container.setAttribute("data-text", textEl.textContent.trim());
 };
 
+// When a child atomic widget (e-paragraph or e-svg) is re-rendered by the
+// Elementor editor, it replaces its own DOM element. Any MutationObserver
+// placed on the old element becomes deaf. Instead, hook into Elementor's
+// frontend/element_ready event — fired for every widget render including
+// editor live-updates — and re-sync the visible clones from the new DOM.
+// We register these hooks once (after elementorFrontend is guaranteed ready)
+// using a flag so repeated button initializations don't stack duplicates.
+function hookChildReadyOnce() {
+  if (window._aaeBorderDivideHooked) return;
+  if (!window.elementorFrontend?.hooks) return;
+  window._aaeBorderDivideHooked = true;
+
+  const onChildReady = ($scope) => {
+    const btn = $scope?.[0]?.closest?.(".btn-border-divide");
+    if (btn) syncBorderDivideClones(btn);
+  };
+
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-paragraph", onChildReady);
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-svg", onChildReady);
+}
+
 register({
   elementType: "e-aae-a-button",
   id: "e-aae-a-button-handler",
   callback: ({ element }) => {
     if (element.classList.contains("btn-border-divide")) {
       borderDivideSwap(element);
+      hookChildReadyOnce();
     } else if (element.classList.contains("btn-text-flip")) {
       textFlipSetup(element);
     } else if (element.classList.contains("wcf-btn-mask")) {

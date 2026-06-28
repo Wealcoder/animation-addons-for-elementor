@@ -1,0 +1,391 @@
+@import "../../../../../../assets/src/scss/utils/variables";
+
+// =============================================================================
+// AAE Pro Button — Atomic widget styles
+//
+// CSS custom properties used for colour overrides (set via inline style):
+//   --aae-btn-color            text / icon colour (normal state)
+//   --aae-btn-bg               background colour  (normal state)
+//   --aae-btn-border-color     border colour      (normal state)
+//   --aae-btn-icon-color       icon-only colour override
+//   --aae-btn-hover-color      text / icon colour (hover state)
+//   --aae-btn-hover-bg         background colour  (hover state)
+//   --aae-btn-hover-border-color border colour    (hover state)
+//   --aae-btn-icon-size        size of SVG icon   (default 1em)
+//   --aae-btn-icon-box         icon circle size for styles 5/6 (default 60px)
+//   --outline-gap              gap for style-7 outline pill     (default 10px)
+// =============================================================================
+
+// ── Shared ────────────────────────────────────────────────────────────────────
+
+.aae-a-button-pro {
+  width: auto;
+
+  .e-svg-base {
+    width: 23px;
+    height: 23px;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &.aae--btn-pro {
+    gap: 5px;
+  }
+}
+
+.aae-a-button-pro,
+.aae--btn-pro,
+.aae-btn-pro-group {
+  svg,
+  svg path {
+    fill: currentColor;
+  }
+}
+
+.aae--btn-pro {
+  .icon {
+    line-height: 0;
+    font-size: var(--aae-btn-icon-size, 1em);
+    width: var(--aae-btn-icon-size, 1em);
+    height: var(--aae-btn-icon-size, 1em);
+    color: var(--aae-btn-icon-color, inherit);
+  }
+}
+
+// ── Style 4 — GSAP Ripple ─────────────────────────────────────────────────────
+//
+// Arrow is placed BEFORE children_placeholder in the Twig template so that
+// both editor (which appends children after static elements) and frontend have
+// the same DOM order: ripple → arrow → text.
+// flex-direction: row-reverse then flips the visual order to: text | arrow.
+
+.style-4 {
+  &.aae--btn-pro,
+  .aae--btn-pro {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    column-gap: 10px;
+    color: var(--aae-btn-color, #fff);
+    background-color: var(--aae-btn-bg, #121212);
+    padding: 18px 42px;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+
+    &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+
+      // Expand the ripple circle on hover
+      .aae-ripple-el,
+      > span:not([class]) {
+        width: 500px;
+        height: 500px;
+      }
+
+      .aae-arrow-el::after,
+      > strong::after {
+        right: 0;
+        opacity: 1;
+      }
+    }
+
+    // Ripple circle — origin moved by GSAP.quickTo()
+    .aae-ripple-el,
+    > span:not([class]) {
+      position: absolute;
+      width: 0;
+      height: 0;
+      background: var(--aae-btn-hover-bg, #FC5A11);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.5s ease, height 0.5s ease;
+      z-index: -1;
+    }
+
+    // Arrow indicator line
+    .aae-arrow-el,
+    > strong {
+      width: 50px;
+      display: inherit;
+      height: 1px;
+      background: var(--aae-btn-color, #fff);
+      margin-left: 5px;
+      position: relative;
+
+      &::after {
+        position: absolute;
+        content: '';
+        top: -5px;
+        right: 30px;
+        border: solid var(--aae-btn-color, #fff);
+        border-width: 0 1px 1px 0;
+        padding: 5px;
+        transform: rotate(-45deg);
+        transition: all 0.3s;
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// ── Styles 5 & 6 — Group Swap (shared base) ───────────────────────────────────
+
+.aae-btn-pro-group {
+  display: inline-flex;
+  width: fit-content;
+
+  &.aae--btn-pro {
+    gap: 0;
+  }
+
+  // Text pill
+  .e-paragraph-base,
+  > .elementor-widget-e-paragraph .e-paragraph-base {
+    padding: 21px 40px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--aae-btn-color, #fff);
+    background-color: var(--aae-btn-bg, #0A1A3D);
+    text-transform: capitalize;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1;
+    gap: 30px;
+    white-space: nowrap;
+    border-radius: 30px;
+    text-decoration: none;
+  }
+
+  // Icon circle — native SVG child or cloned [data-swap-clone]
+  > .e-svg-base,
+  > [data-swap-clone],
+  > .elementor-widget-e-svg > .e-svg-base {
+    color: var(--aae-btn-icon-color, var(--aae-btn-color, #fff));
+    fill: currentColor;
+    border-radius: 50px;
+    background-color: var(--aae-btn-bg, #0A1A3D);
+    border: 1px solid transparent;
+    width: var(--aae-btn-icon-box, 60px);
+    height: var(--aae-btn-icon-box, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+    flex-shrink: 0;
+  }
+
+  > * {
+    transition: all 0.5s;
+  }
+}
+
+// ── Style 5 — Group Swap Left (clone appears on the left) ─────────────────────
+
+.style-5 {
+  // Hidden clone — starts scaled-down off-screen to the left
+  &.aae-btn-pro-group > [data-swap-clone],
+  .aae-btn-pro-group > [data-swap-clone] {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
+
+  // Original SVG — visible on the right
+  &.aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+  .aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+  &.aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base,
+  .aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base {
+    transform: scale3d(1, 1, 1);
+    margin-left: 0;
+    opacity: 1;
+  }
+
+  // Hover — clone slides in from the left, original shrinks right
+  &.aae-btn-pro-group:hover > [data-swap-clone],
+  .aae-btn-pro-group:hover > [data-swap-clone] {
+    transform: scale3d(1, 1, 1);
+    margin-right: 0;
+    opacity: 1;
+  }
+
+  &.aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+  .aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+  &.aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base,
+  .aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
+}
+
+// ── Style 6 — Group Swap Right (clone appears on the right) ───────────────────
+
+.style-6 {
+  // Clone — starts visible on the left
+  &.aae-btn-pro-group > [data-swap-clone],
+  .aae-btn-pro-group > [data-swap-clone] {
+    transform: scale3d(1, 1, 1);
+    margin-right: 0;
+    opacity: 1;
+  }
+
+  // Original SVG — starts hidden off-screen to the right
+  &.aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+  .aae-btn-pro-group > .e-svg-base:not([data-swap-clone]),
+  &.aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base,
+  .aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
+
+  // Hover — clone shrinks left, original slides in from the right
+  &.aae-btn-pro-group:hover > [data-swap-clone],
+  .aae-btn-pro-group:hover > [data-swap-clone] {
+    transform: scale3d(0.5, 0.5, 1);
+    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    opacity: 0;
+  }
+
+  &.aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+  .aae-btn-pro-group:hover > .e-svg-base:not([data-swap-clone]),
+  &.aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base,
+  .aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base {
+    transform: scale3d(1, 1, 1);
+    margin-left: 0;
+    opacity: 1;
+  }
+}
+
+// ── Style 9 — Oval ────────────────────────────────────────────────────────────
+
+.style-9 {
+  &.aae-btn-oval,
+  .aae-btn-oval {
+    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+    padding: 32px 52px;
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
+    color: var(--aae-btn-color, #1C1D20);
+    background-color: var(--aae-btn-bg, transparent);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+      border-color: var(--aae-btn-hover-border-color, #1C1D20);
+    }
+
+    // Expanding fill circle — grows from cursor position on hover
+    .aae-btn-fill-el {
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: 50%;
+      top: 50%;
+      border-radius: 100%;
+      background-color: var(--aae-btn-hover-bg, #1C1D20);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+      z-index: -1;
+    }
+
+    &:hover .aae-btn-fill-el {
+      width: 400px;
+      height: 400px;
+    }
+  }
+}
+
+// ── Style 10 — Circle ─────────────────────────────────────────────────────────
+
+.style-10 {
+  &.aae-btn-circle,
+  .aae-btn-circle {
+    border-radius: 100%;
+    width: var(--aae-btn-size, 140px);
+    height: var(--aae-btn-size, 140px);
+    flex-direction: column;
+    padding: 0;
+    color: var(--aae-btn-color, #1C1D20);
+    background-color: var(--aae-btn-bg, #E8BF96);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+      color: var(--aae-btn-hover-color, #fff);
+    }
+
+    // Expanding fill circle — same pattern as oval
+    .aae-btn-fill-el {
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: 50%;
+      top: 50%;
+      border-radius: 100%;
+      background-color: var(--aae-btn-hover-bg, #1C1D20);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+      z-index: -1;
+    }
+
+    &:hover .aae-btn-fill-el {
+      width: 400px;
+      height: 400px;
+    }
+  }
+}
+
+// ── Style 11 — Ellipse ────────────────────────────────────────────────────────
+//
+// Outer element acts as the visible border ring (background-color = ring colour)
+
+.style-11 {
+  &.aae-btn-ellipse,
+  .aae-btn-ellipse {
+    color: var(--aae-btn-color, #1C1D20);
+    padding: 45px;
+    position: relative;
+    background-color: var(--aae-btn-border-color, #1C1D20);
+    border-radius: 100%;
+    border-top-left-radius: 200%;
+    border-bottom-right-radius: 200%;
+    z-index: 1;
+
+    &:hover {
+      color: var(--aae-btn-hover-color, #FFBC7D);
+      background-color: var(--aae-btn-hover-border-color, #E8BF96);
+    }
+
+    // Inner fill pseudo-element — gives the illusion of a border
+    &::before {
+      position: absolute;
+      content: '';
+      width: calc(100% - 16px);
+      height: calc(100% - 2px);
+      background-color: var(--aae-btn-bg, #fff);
+      z-index: -1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 100%;
+      border-top-left-radius: 200%;
+      border-bottom-right-radius: 200%;
+      transition: background-color 0.3s;
+    }
+
+    &:hover::before {
+      background-color: var(--aae-btn-hover-bg, #fff);
+    }
+  }
+}

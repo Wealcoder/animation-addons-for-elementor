@@ -71,8 +71,10 @@
     {# Styles 9 & 10 — expanding fill circle for hover background #}
     {% if style_num in ['9', '10'] %}<span class="aae-btn-fill-el"></span>{% endif %}
 
-    {{ children_placeholder | raw }}
-
-    {# Style 4 — arrow indicator injected after children #}
+    {# Style 4 — arrow placed before children so DOM order matches editor
+       (editor appends child widgets after static elements; row-reverse in CSS
+       then flips the visual order back to: text | arrow) #}
     {% if style_num == '4' %}<strong class="aae-arrow-el"></strong>{% endif %}
+
+    {{ children_placeholder | raw }}
 </a>

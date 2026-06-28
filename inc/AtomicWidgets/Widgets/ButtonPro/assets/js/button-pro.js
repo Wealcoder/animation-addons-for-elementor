@@ -11,6 +11,7 @@
  */
 
 import { register } from '@elementor/frontend-handlers';
+import '../scss/button-pro.scss';
 
 /* -------------------------------------------------------------------------
  * Style 4 — Ripple (GSAP-powered)
