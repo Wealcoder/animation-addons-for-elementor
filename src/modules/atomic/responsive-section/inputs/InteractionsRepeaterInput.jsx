@@ -356,6 +356,17 @@ function InteractionCard({
 		(f) => typeof f.when !== 'function' || f.when(rowData, activeBp)
 	);
 
+	const renderField = (field) => (
+		<RowField
+			key={field.bind}
+			field={field}
+			rowData={rowData}
+			activeBp={activeBp}
+			onFieldChange={onFieldChange}
+			triggerDisabledOptions={triggerDisabledOptions}
+		/>
+	);
+
 	return (
 		<Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
 			<Stack
@@ -429,16 +440,7 @@ function InteractionCard({
 
 			<Collapse in={open} unmountOnExit>
 				<Box sx={{ p: 1.5 }}>
-					{visibleFields.map((field) => (
-						<RowField
-							key={field.bind}
-							field={field}
-							rowData={rowData}
-							activeBp={activeBp}
-							onFieldChange={onFieldChange}
-							triggerDisabledOptions={triggerDisabledOptions}
-						/>
-					))}
+					{visibleFields.map((field) => renderField(field))}
 				</Box>
 			</Collapse>
 		</Box>

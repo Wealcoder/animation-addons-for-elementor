@@ -61,6 +61,8 @@ function normalizeRow(row) {
 		end: row.endPosition || 'bottom bottom',
 		startPosition: row.startPosition || 'top center',
 		endPosition: row.endPosition || 'bottom bottom',
+		startTrigger: row.startTrigger || '',
+		endTrigger: row.endTrigger || '',
 		markers: !!row.markers,
 		duration: Number(row.duration ?? 1.5),
 		delay: Number(row.delay ?? 0),
