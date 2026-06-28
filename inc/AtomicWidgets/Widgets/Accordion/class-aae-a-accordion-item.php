@@ -138,7 +138,14 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$open_icon_url  = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg';
 		$close_icon_url = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg';
 
-		// Open icon — shown while the item is collapsed.
+		// Icon show/hide is owned entirely by accordion.scss (scoped + !important
+		// so it always wins over the Atomic_Svg element's own base `display`):
+		// collapsed shows only the open icon, the `.active` item shows only the
+		// close icon. We deliberately do NOT attach per-element local display
+		// styles here — two competing systems made the editor/frontend
+		// occasionally render both icons on a collapsed header.
+
+		// Open icon — shown while the item is collapsed (default resting state).
 		$header_icon_open = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Open Icon' ] )
 			->settings( [
@@ -150,7 +157,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		// Close icon — shown while the item is expanded (active).
+		// Close icon — hidden by default; shown only while the item is active.
 		$header_icon_close = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Close Icon' ] )
 			->settings( [

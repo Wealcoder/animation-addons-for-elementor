@@ -18,7 +18,9 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-accordion-item.php';
+require_once __DIR__ . '/class-aae-a-items-control.php';
 use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -69,6 +71,20 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [
+			// "Items": a live projection of the accordion's real
+			// <e-aae-a-accordion-item> children — one repeater row each, with
+			// drag-reorder, duplicate, remove and rename. Mirrors the Nested
+			// Slider's "Slides" element-control. Rendered by the React component
+			// registered under 'aae-items' (src/modules/atomic/element-controls).
+			Section::make()
+				->set_id( 'items' )
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					AAE_A_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			Section::make()
 				->set_id( 'content' )
 				->set_label( __( 'Accordion Settings', 'animation-addons-for-elementor' ) )
@@ -110,42 +126,34 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 						->set_label( __( 'FAQ Schema', 'animation-addons-for-elementor' ) ),
 				] ),
 
-			// "Items" section — a panel-side overview of the accordion's child
-			// items. The clickable child rows are injected by the editor bridge
-			// (atomic-editor.js); this section is the anchor it targets by label.
-			// Clicking a row opens the Structure panel and selects that child.
 			Section::make()
-				->set_id( 'items' )
-				->set_label( __( 'Items', 'animation-addons-for-elementor' ) ),
+				->set_id( 'behavior_settings' )
+				->set_label( __( 'Behavior', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Toggle_Control::bind_to( 'default_state' )
+						->set_label( __( 'Default State', 'animation-addons-for-elementor' ) )
+						->add_options( [
+							'first' => [ 'title' => __( 'First Open', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-plus' ],
+							'none'  => [ 'title' => __( 'All Closed', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-minus' ],
+						] )
+						->set_exclusive( true )
+						->set_convert_options( true ),
 
-			// Section::make()
-			// 	->set_id( 'behavior_settings' )
-			// 	->set_label( __( 'Behavior', 'animation-addons-for-elementor' ) )
-			// 	->set_items( [
-			// 		Toggle_Control::bind_to( 'default_state' )
-			// 			->set_label( __( 'Default State', 'animation-addons-for-elementor' ) )
-			// 			->add_options( [
-			// 				'first' => [ 'title' => __( 'First Open', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-plus' ],
-			// 				'none'  => [ 'title' => __( 'All Closed', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-minus' ],
-			// 			] )
-			// 			->set_exclusive( true )
-			// 			->set_convert_options( true ),
+					Toggle_Control::bind_to( 'max_items_expanded' )
+						->set_label( __( 'Max Items Expanded', 'animation-addons-for-elementor' ) )
+						->add_options( [
+							'one'      => [ 'title' => __( 'One', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-number-1' ],
+							'multiple' => [ 'title' => __( 'Multiple', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-copy' ],
+						] )
+						->set_exclusive( true )
+						->set_convert_options( true ),
 
-			// 		Toggle_Control::bind_to( 'max_items_expanded' )
-			// 			->set_label( __( 'Max Items Expanded', 'animation-addons-for-elementor' ) )
-			// 			->add_options( [
-			// 				'one'      => [ 'title' => __( 'One', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-number-1' ],
-			// 				'multiple' => [ 'title' => __( 'Multiple', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-copy' ],
-			// 			] )
-			// 			->set_exclusive( true )
-			// 			->set_convert_options( true ),
+					Number_Control::bind_to( 'gap' )
+						->set_label( __( 'Gap', 'animation-addons-for-elementor' ) ),
 
-			// 		Number_Control::bind_to( 'gap' )
-			// 			->set_label( __( 'Gap', 'animation-addons-for-elementor' ) ),
-
-			// 		Number_Control::bind_to( 'animation_duration.size' )
-			// 			->set_label( __( 'Animation Speed (ms)', 'animation-addons-for-elementor' ) ),
-			// 	] ),
+					Number_Control::bind_to( 'animation_duration.size' )
+						->set_label( __( 'Animation Speed (ms)', 'animation-addons-for-elementor' ) ),
+				] ),
 		];
 	}
 
