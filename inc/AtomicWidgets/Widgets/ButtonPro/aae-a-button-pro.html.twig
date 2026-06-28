@@ -1,11 +1,7 @@
 {% set style_num = settings.btn_style | default('1') %}
 
 {# Style-specific modifier class applied to the <a> root element #}
-{% if style_num == '1' %}
-    {% set style_extra = 'btn-border-divide' %}
-{% elseif style_num == '3' %}
-    {% set style_extra = 'btn-text-flip' %}
-{% elseif style_num == '4' %}
+{% if style_num == '4' %}
     {% set style_extra = 'btn-hover' %}
 {% elseif style_num in ['5', '6'] %}
     {% set style_extra = 'aae-btn-pro-group' %}
@@ -47,9 +43,6 @@
 {% endif %}
 {% if settings.btn_hover_border_color is defined and settings.btn_hover_border_color is not empty %}
     {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_hover_border_color ~ ';' %}
-{% endif %}
-{% if style_num == '7' and settings.btn_outline_gap is defined %}
-    {% set inline_style = inline_style ~ '--outline-gap:' ~ settings.btn_outline_gap ~ 'px;' %}
 {% endif %}
 {% if style_num == '10' and settings.btn_circle_size is defined and settings.btn_circle_size is not empty %}
     {% set inline_style = inline_style ~ '--aae-btn-size:' ~ settings.btn_circle_size ~ 'px;' %}

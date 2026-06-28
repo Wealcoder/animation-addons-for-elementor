@@ -4,10 +4,10 @@
  * Build target: ../../../../../../assets/atomic/js/button-pro.js
  *
  * Styles handled here:
- *   1  — Border Divide  (borderDivideSetup — DOM restructure, CSS animates)
- *   3  — Text Flip      (textFlipSetup     — set data-text attr for CSS ::before)
- *   4  — Ripple         (rippleEffect      — GSAP quickTo for smooth cursor tracking)
- *   5/6 — Group Swap    (groupSwapSetup   — clone SVG, CSS handles slide in/out)
+ *   4  — Ripple         (rippleEffect    — GSAP quickTo for smooth cursor tracking)
+ *   5/6 — Group Swap   (groupSwapSetup  — clone SVG, CSS handles slide in/out)
+ *   9/10 — Hover Fill  (hoverFillSetup  — cursor-origin expanding circle)
+ *   9/10/11 — Magnetic (magneticSetup   — GSAP cursor-following parallax)
  */
 
 import { register } from '@elementor/frontend-handlers';
@@ -56,62 +56,6 @@ const groupSwapSetup = ( container ) => {
 };
 
 /* -------------------------------------------------------------------------
- * Style 1 — Border Divide
- * Wraps atomic paragraph + SVG children in .text and .icon <span>s so the
- * CSS border-bottom + overflow-hidden icon-slide animation works correctly.
- * Idempotent: removes existing wrappers before re-running.
- * ------------------------------------------------------------------------- */
-const borderDivideSetup = ( container ) => {
-	// Remove previously injected wrappers
-	container.querySelector( ':scope > span.text' )?.remove();
-	container.querySelector( ':scope > span.icon' )?.remove();
-
-	const svgEl = container.querySelector(
-		'.elementor-widget-e-svg .e-svg-base, :scope > .e-svg-base',
-	);
-	if ( ! svgEl ) return;
-
-	const textEl = container.querySelector(
-		'.elementor-widget-e-paragraph .e-paragraph-base, :scope > .e-paragraph-base',
-	);
-	if ( ! textEl ) return;
-
-	// Clone for the "entering" duplicate in the icon wrapper
-	const clonedSvg = svgEl.cloneNode( true );
-	clonedSvg.setAttribute( 'data-swap-clone', 'true' );
-	clonedSvg.removeAttribute( 'data-interaction-id' );
-
-	const textWrapper = document.createElement( 'span' );
-	textWrapper.classList.add( 'text' );
-
-	const iconWrapper = document.createElement( 'span' );
-	iconWrapper.classList.add( 'icon' );
-
-	const clonedText = textEl.cloneNode( true );
-	clonedText.removeAttribute( 'draggable' );
-	textWrapper.appendChild( clonedText );
-
-	iconWrapper.appendChild( svgEl.cloneNode( true ) );
-	iconWrapper.appendChild( clonedSvg );
-
-	container.prepend( iconWrapper );
-	container.prepend( textWrapper );
-};
-
-/* -------------------------------------------------------------------------
- * Style 3 — Text Flip
- * Copies the paragraph text into data-text on its <span> child so the CSS
- * ::before pseudo-element can mirror it for the rotateX flip.
- * ------------------------------------------------------------------------- */
-const textFlipSetup = ( container ) => {
-	const spanEl = container.querySelector( '.e-paragraph-base span, :scope > span' );
-	if ( ! spanEl ) return;
-	if ( ! spanEl.dataset.text ) {
-		spanEl.dataset.text = spanEl.textContent.trim();
-	}
-};
-
-/* -------------------------------------------------------------------------
  * Styles 9 & 10 — Hover Fill from cursor point (Oval / Circle)
  * Ensures .aae-btn-fill-el exists, then tracks mouseenter/leave position so
  * the expanding circle originates from the cursor entry/exit point rather
@@ -145,6 +89,11 @@ const magneticSetup = ( container ) => {
 	if ( container.dataset.aaeMagneticBound || typeof gsap === 'undefined' ) return;
 	container.dataset.aaeMagneticBound = '1';
 	container.addEventListener( 'mousemove', ( e ) => {
+		if (
+			! container.classList.contains( 'aae-btn-oval' ) &&
+			! container.classList.contains( 'aae-btn-circle' ) &&
+			! container.classList.contains( 'aae-btn-ellipse' )
+		) return;
 		const rect = container.getBoundingClientRect();
 		gsap.to( container, {
 			duration: 0.5,
@@ -165,17 +114,18 @@ register( {
 	elementType: 'e-aae-a-button-pro',
 	id: 'e-aae-a-button-pro-handler',
 	callback: ( { element } ) => {
+		if ( typeof gsap !== 'undefined' ) {
+			gsap.killTweensOf( element );
+			gsap.set( element, { clearProps: 'x,y' } );
+		}
 		if ( element.classList.contains( 'btn-hover' ) ) {
 			rippleEffect( element );
 		} else if ( element.classList.contains( 'aae-btn-pro-group' ) ) {
 			groupSwapSetup( element );
-		} else if ( element.classList.contains( 'btn-border-divide' ) ) {
-			borderDivideSetup( element );
-		} else if ( element.classList.contains( 'btn-text-flip' ) ) {
-			textFlipSetup( element );
 		} else if (
 			element.classList.contains( 'aae-btn-oval' ) ||
-			element.classList.contains( 'aae-btn-circle' )
+			element.classList.contains( 'aae-btn-circle' ) ||
+			element.classList.contains( 'aae-btn-ellipse' )
 		) {
 			hoverFillSetup( element );
 			magneticSetup( element );

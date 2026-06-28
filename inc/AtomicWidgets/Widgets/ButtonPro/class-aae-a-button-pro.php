@@ -78,12 +78,9 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 			'btn_target'   => String_Prop_Type::make()->default( '_self' ),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default( false ),
 
-			// Style selector (1–8, matching legacy button-pro styles)
-			'btn_style'     => String_Prop_Type::make()->default( '1' ),
+			// Style selector
+			'btn_style'     => String_Prop_Type::make()->default( '4' ),
 			'btn_alignment' => String_Prop_Type::make()->default( 'left' ),
-
-			// Style 7 only — gap between outer border and inner fill
-			'btn_outline_gap' => Number_Prop_Type::make()->default( 10 ),
 
 			// Style 10 only — equal width / height for circle shape (px)
 			'btn_circle_size' => Number_Prop_Type::make()->default( 140 ),
@@ -108,14 +105,9 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 					Select_Control::bind_to( 'btn_style' )
 						->set_label( __( 'Style', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => '1',  'label' => __( '1  — Border Divide',  'animation-addons-for-elementor' ) ],
-							[ 'value' => '2',  'label' => __( '2  — Shadow',          'animation-addons-for-elementor' ) ],
-							[ 'value' => '3',  'label' => __( '3  — Text Flip',       'animation-addons-for-elementor' ) ],
 							[ 'value' => '4',  'label' => __( '4  — Ripple (GSAP)',   'animation-addons-for-elementor' ) ],
 							[ 'value' => '5',  'label' => __( '5  — Group Swap L',    'animation-addons-for-elementor' ) ],
 							[ 'value' => '6',  'label' => __( '6  — Group Swap R',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '7',  'label' => __( '7  — Outline Pill',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '8',  'label' => __( '8  — Slide Fill',      'animation-addons-for-elementor' ) ],
 							[ 'value' => '9',  'label' => __( '9  — Oval',            'animation-addons-for-elementor' ) ],
 							[ 'value' => '10', 'label' => __( '10 — Circle',          'animation-addons-for-elementor' ) ],
 							[ 'value' => '11', 'label' => __( '11 — Ellipse',         'animation-addons-for-elementor' ) ],
@@ -133,10 +125,6 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 
 					Switch_Control::bind_to( 'btn_nofollow' )
 						->set_label( __( 'Add Nofollow', 'animation-addons-for-elementor' ) ),
-
-					Number_Control::bind_to( 'btn_outline_gap' )
-						->set_label( __( 'Outline Gap (px)', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'min' => 0, 'max' => 20, 'step' => 1 ] ),
 
 					Number_Control::bind_to( 'btn_circle_size' )
 						->set_label( __( 'Circle Size (px)', 'animation-addons-for-elementor' ) )
