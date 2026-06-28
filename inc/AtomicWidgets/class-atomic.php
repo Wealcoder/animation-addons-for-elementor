@@ -178,6 +178,8 @@ final class Atomic
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
 			'aae-a-social-share-item',
+			'aae-a-nav-item',
+			'aae-a-nav-sub',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -1011,6 +1013,51 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+
+			'aae-a-nav' => [
+				'label'        => 'Nav',
+				'description'  => 'Atomic navbar with fully styleable items and dropdown support.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'nav', 'menu', 'navbar', 'navigation', 'atomic', 'aae' ],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-nav-item' => [
+				'label'        => 'Nav Item (Internal)',
+				'description'  => 'Internal child item for Nav.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'nav item', 'internal' ],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-nav-sub' => [
+				'label'        => 'Nav Dropdown (Internal)',
+				'description'  => 'Internal dropdown container for Nav.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'nav sub', 'dropdown', 'internal' ],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];
 	}
 
@@ -1523,7 +1570,24 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			// Add new atomic widgets below...
+			'aae-a-nav' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav',
+			'file'          => 'Widgets/Nav/class-aae-a-nav.php',
+			'has_script'    => true,
+			'script_handle' => 'aae-a-nav-js',
+			'script_path'   => '/assets/atomic/js/nav.js',
+		],
+		'aae-a-nav-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item',
+			'file'       => 'Widgets/Nav/class-aae-a-nav-item.php',
+			'has_script' => false,
+		],
+		'aae-a-nav-sub' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub',
+			'file'       => 'Widgets/Nav/class-aae-a-nav-sub.php',
+			'has_script' => false,
+		],
+		// Add new atomic widgets below...
 		];
 	}
 

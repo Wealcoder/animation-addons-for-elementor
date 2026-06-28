@@ -1,0 +1,301 @@
+{% set classes = ['aae-a-nav', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+
+<ul role="navigation" class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-mobile-breakpoint="768"
+    data-offcanvas-side="right"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    <style>
+        /* ── Nav container — this is what Style tab targets ── */
+        :where([data-id="{{ id }}"]).aae-a-nav {
+            position: relative;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ── Nav items ── */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item {
+            display: inline-block;
+            position: relative;
+            list-style: none;
+            width: auto;
+        }
+
+        /* ── Dropdown hidden for all items by default ── */
+        :where([data-id="{{ id }}"]) .aae-a-nav-sub {
+            display: none;
+            position: absolute;
+            inset-block-start: 100%;
+            inset-inline-start: 0;
+            min-width: 200px;
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+        }
+
+        /* ── Show dropdown only when has-dropdown=true AND is-open ── */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"].is-open > .aae-a-nav-sub {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Nested sub-dropdown opens to the right ── */
+        :where([data-id="{{ id }}"]) .aae-a-nav-sub .aae-a-nav-item > .aae-a-nav-sub {
+            inset-block-start: 0;
+            inset-inline-start: 100%;
+        }
+
+        /* ── Cursor pointer on items with dropdown enabled ── */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"] {
+            cursor: pointer;
+        }
+
+        /* ══ CSS Dropdown Animations ══ */
+        @keyframes aae-nav-grow-down {
+            0%   { transform: scaleY(0); }
+            80%  { transform: scaleY(1.05); }
+            100% { transform: scaleY(1); }
+        }
+        @keyframes aae-nav-rotate-3d {
+            0%   { transform: rotateX(-90deg); opacity: 0; }
+            70%  { transform: rotateX(20deg); }
+            100% { transform: rotateX(0deg); opacity: 1; }
+        }
+        @keyframes aae-nav-grow-out {
+            0%   { transform: scale(0); opacity: 0; }
+            80%  { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes aae-nav-slide-item {
+            0%   { opacity: 0; transform: translateY(-16px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes aae-nav-rotate-item {
+            0%   { opacity: 0; transform: rotateX(-90deg); }
+            50%  { transform: rotateX(-20deg); }
+            100% { opacity: 1; transform: rotateX(0deg); }
+        }
+
+        /* grow-down */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > .aae-a-nav-sub {
+            animation: aae-nav-grow-down 300ms ease-in-out forwards;
+            transform-origin: top center;
+        }
+        /* rotate-3d */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-3d"] { perspective: 1000px; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-3d"].is-open > .aae-a-nav-sub {
+            animation: aae-nav-rotate-3d 400ms ease-in-out forwards;
+            transform-origin: top center;
+        }
+        /* grow-out */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="grow-out"].is-open > .aae-a-nav-sub {
+            animation: aae-nav-grow-out 300ms ease-in-out forwards;
+            transform-origin: top center;
+        }
+        /* slide-items */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > * {
+            animation: aae-nav-slide-item 300ms ease-out forwards;
+            opacity: 0;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(1) { animation-delay: 0ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(2) { animation-delay: 60ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(3) { animation-delay: 120ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(4) { animation-delay: 180ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(n+5) { animation-delay: 240ms; }
+        /* rotate-items */
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"] { perspective: 1000px; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > * {
+            animation: aae-nav-rotate-item 300ms ease-in-out forwards;
+            opacity: 0;
+            transform-origin: top center;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(1) { animation-delay: 0ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(2) { animation-delay: 60ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(3) { animation-delay: 120ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(4) { animation-delay: 180ms; }
+        :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(n+5) { animation-delay: 240ms; }
+
+        /* ── Editor: show dropdown only when this nav-item (or a child) is selected ── */
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .aae-a-nav-sub,
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .aae-a-nav-sub {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ══ Mobile — Hamburger + Offcanvas ══ */
+
+        /* Hamburger wrap: hidden on desktop */
+        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap {
+            display: none;
+            list-style: none;
+            margin-inline-start: auto;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 36px;
+            height: 36px;
+            padding: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Overlay */
+        :where([data-id="{{ id }}"]) .aae-a-nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9998;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-overlay {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Offcanvas panel */
+        :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: min(320px, 85vw);
+            background: #fff;
+            z-index: 9999;
+            padding: 20px;
+            overflow-y: auto;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas {
+            right: 0;
+            transform: translateX(100%);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+        }
+        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-offcanvas {
+            transform: translateX(0);
+        }
+
+        /* Close button */
+        :where([data-id="{{ id }}"]) .aae-a-nav-close {
+            display: flex;
+            align-self: flex-end;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: inherit;
+            margin-bottom: 12px;
+        }
+
+        /* Mobile list */
+        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-item {
+            display: block;
+            width: 100%;
+            cursor: pointer;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        /* Mobile sub: accordion (static, not absolute) */
+        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-sub {
+            position: static;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            padding: 4px 0 4px 16px;
+            min-width: unset;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-item.is-mobile-open > .aae-a-nav-sub {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mobile breakpoint — hide desktop items, show hamburger */
+        @media (max-width: 768px) {
+            :where([data-id="{{ id }}"]) > .aae-a-nav-item {
+                display: none !important;
+            }
+            :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap {
+                display: list-item;
+            }
+        }
+
+        /* Editor: never show offcanvas / hamburger in editor */
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap { display: none !important; }
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-overlay       { display: none !important; }
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas      { display: none !important; }
+    </style>
+
+    {# ── Hamburger (shown on mobile only) ── #}
+    <li class="aae-a-nav-hamburger-wrap">
+        <button class="aae-a-nav-hamburger" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </li>
+
+    {{ children_placeholder | raw }}
+
+    {# ── Overlay ── #}
+    <div class="aae-a-nav-overlay" aria-hidden="true"></div>
+
+    {# ── Offcanvas panel ── #}
+    <div class="aae-a-nav-offcanvas" role="dialog" aria-modal="true" aria-label="Mobile menu">
+        <button class="aae-a-nav-close" aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <ul class="aae-a-nav-mobile-list"></ul>
+    </div>
+</ul>

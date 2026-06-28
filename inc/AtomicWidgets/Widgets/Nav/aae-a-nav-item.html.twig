@@ -1,0 +1,23 @@
+{% set classes = ['aae-a-nav-item', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+{% set has_dropdown = settings.has_dropdown ? 'true' : 'false' %}
+{% set trigger = settings.trigger | default('click') %}
+{% set dropdown_anim = settings.dropdown_animation | default('gsap') %}
+
+<li class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-has-dropdown="{{ has_dropdown }}"
+    data-trigger="{{ trigger }}"
+    data-dropdown-anim="{{ dropdown_anim }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {{ children_placeholder | raw }}
+</li>
