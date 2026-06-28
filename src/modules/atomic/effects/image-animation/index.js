@@ -61,6 +61,8 @@ function normalizeRow(row) {
 		end: row.endPosition || 'bottom bottom',
 		startPosition: row.startPosition || 'top center',
 		endPosition: row.endPosition || 'bottom bottom',
+		startTrigger: row.startTrigger || '',
+		endTrigger: row.endTrigger || '',
 		markers: !!row.markers,
 		duration: Number(row.duration ?? 1.5),
 		delay: Number(row.delay ?? 0),
@@ -172,6 +174,11 @@ function buildCustomTween(el, config, paused, scrub) {
 		paused: !!paused,
 	};
 
+	if (config.method === 'set') {
+		// Instant state — no tween/duration. Returns a zero-duration tween so
+		// the row's playedKey / replay bookkeeping still works.
+		return gsap.set(image, { ...from });
+	}
 	if (config.method === 'to') {
 		return gsap.to(image, { ...from, ...timing });
 	}
@@ -286,9 +293,10 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
 	killAllRows(el);
 
-	// Editor: don't auto-fire scroll / page-load / scrub rows on load — keep
-	// the canvas resting. Only click / hover bind; the rest preview via ▶.
-	// forcePreview overrides so a single scroll row previews with markers.
+	// Editor: don't auto-fire scroll / page-load / scrub rows on load — keep the
+	// canvas resting. Interactive rows (click / hover) DO bind so the user can
+	// trigger them; the rest preview via ▶ play. The published frontend binds
+	// everything. forcePreview overrides so a single scroll row previews markers.
 	const isEditMode = !forcePreview && !!(window.elementorFrontend
 		&& window.elementorFrontend.isEditMode
 		&& window.elementorFrontend.isEditMode());
@@ -298,7 +306,7 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
 
-		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			state.push({ config, tween: null, dispose: null });
 			continue;
 		}
@@ -307,6 +315,13 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 		state.push(entry);
 
 		const play = () => {
+			// `set` is instant — re-apply each time the trigger fires.
+			if (config.method === 'set') {
+				const live = buildRowTween(el, config, false, false);
+				entry.tween = live;
+				if (live) el[IMG_PLAYED] = live;
+				return;
+			}
 			if (entry.tween) {
 				if (entry.tween.paused()) {
 					entry.tween.play();

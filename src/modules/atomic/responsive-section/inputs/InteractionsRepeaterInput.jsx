@@ -16,6 +16,16 @@ import {
 
 import { RepeaterInput } from './RepeaterInput';
 
+// Play-progress ring keyframe (injected once). Sweeps the arc empty→full by
+// animating stroke-dashoffset down to 0. Circumference = 2π·10.5 ≈ 65.97.
+const RING_CIRCUMFERENCE = 2 * Math.PI * 10.5;
+if (typeof document !== 'undefined' && !document.getElementById('aae-play-ring-style')) {
+	const style = document.createElement('style');
+	style.id = 'aae-play-ring-style';
+	style.textContent = `@keyframes aaePlayRing { from { stroke-dashoffset: ${RING_CIRCUMFERENCE}; } to { stroke-dashoffset: 0; } }`;
+	document.head.appendChild(style);
+}
+
 /**
  * InteractionsRepeaterInput — the repeater whose every row is a *full*
  * animation interaction (trigger + effect + all config), not a flat
@@ -42,29 +52,45 @@ import { RepeaterInput } from './RepeaterInput';
  * already uses one, the trigger dropdown in *other* rows hides ALL the
  * exclusive options. 'click' / 'mouseover' are always unlimited.
  *
- * Rule (simplified): on_page_load + on_scroll + play_with_scroll together
- * share ONE slot for the whole element — pick any one, total max 1. Click and
- * hover are unlimited.
+ * Rule: there are TWO independent exclusive groups, each capped at one row per
+ * element:
+ *   - Group A (page-load): on_page_load — max 1
+ *   - Group B (scroll-ish): on_scroll + play_with_scroll + on_slide_change —
+ *     max 1 between them
+ * So an element may carry one page-load row AND one scroll/play-scroll/
+ * slide-change row simultaneously. Click and hover are unlimited.
  */
 
-export const EXCLUSIVE_TRIGGERS = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+export const EXCLUSIVE_GROUPS = [
+	['on_page_load'],
+	['on_scroll', 'play_with_scroll', 'on_slide_change'],
+];
+// Flat list of every exclusive trigger (used by callers that just need
+// membership, e.g. "is this trigger exclusive at all").
+export const EXCLUSIVE_TRIGGERS = EXCLUSIVE_GROUPS.flat();
 
-/** Which exclusive options are unavailable to row `selfIndex`. If ANY other
- *  row already uses one of the three exclusive triggers, all three are
- *  blocked here (they share a single slot). */
+/** Which exclusive options are unavailable to row `selfIndex`. For each
+ *  exclusive group, if ANY other row already uses a trigger from that group,
+ *  every trigger in that group is blocked here (one slot per group). The two
+ *  groups are independent, so a page-load row doesn't block a scroll row. */
 function takenExclusivesExcluding(rows, selfIndex) {
 	const taken = new Set();
-	const usedByOther = rows.some((r, i) => i !== selfIndex && EXCLUSIVE_TRIGGERS.includes(r?.trigger));
-	if (usedByOther) {
-		EXCLUSIVE_TRIGGERS.forEach((t) => taken.add(t));
+	for (const group of EXCLUSIVE_GROUPS) {
+		const usedByOther = rows.some((r, i) => i !== selfIndex && group.includes(r?.trigger));
+		if (usedByOther) {
+			group.forEach((t) => taken.add(t));
+		}
 	}
 	return taken;
 }
 
 /* ---------- per-row field cells ---------- */
 
-function FieldSelect({ field, value, onChange, disabledOptions }) {
-	let options = field.options || [];
+function FieldSelect({ field, value, onChange, disabledOptions, rowData }) {
+	// options may be a static array OR a (rowData) => array function, so a
+	// field's choices can depend on other row values (e.g. the Method dropdown
+	// only offers "Set" when the effect is custom).
+	let options = typeof field.options === 'function' ? (field.options(rowData) || []) : (field.options || []);
 	if (disabledOptions && disabledOptions.size) {
 		options = options.filter((o) => !disabledOptions.has(o.value));
 	}
@@ -196,6 +222,7 @@ function RowField({ field, rowData, activeBp, onFieldChange, triggerDisabledOpti
 				<FieldSelect
 					field={field}
 					value={value}
+					rowData={rowData}
 					onChange={(v) => onFieldChange(field.bind, v)}
 					disabledOptions={field.bind === 'trigger' ? triggerDisabledOptions : null}
 				/>
@@ -251,7 +278,8 @@ function rowSummary(rowData, rowFields) {
 	const effectField = rowFields.find((f) => f.bind === 'effect');
 	const labelFor = (field, val) => {
 		if (!field) return val;
-		const opt = (field.options || []).find((o) => o.value === val);
+		const opts = typeof field.options === 'function' ? (field.options(rowData) || []) : (field.options || []);
+		const opt = opts.find((o) => o.value === val);
 		return opt ? opt.label : val;
 	};
 	const trig = labelFor(triggerField, rowData?.trigger) || '—';
@@ -272,6 +300,35 @@ function InteractionCard({
 	onPlay,
 }) {
 	const [open, setOpen] = React.useState(false);
+
+	// Play-progress ring: each ▶ click bumps playKey, which restarts a CSS
+	// keyframe that sweeps an SVG ring from empty→full over roughly the
+	// interaction's own (delay + duration) window. Pure visual feedback.
+	const [playKey, setPlayKey] = React.useState(0);
+	const [playing, setPlaying] = React.useState(false);
+	const doneTimer = React.useRef(0);
+
+	React.useEffect(() => () => clearTimeout(doneTimer.current), []);
+
+	const sec = (v, d) => {
+		const n = Number(v);
+		return Number.isFinite(n) && n >= 0 ? n : d;
+	};
+
+	// Total ring window (s), clamped so very long / short tweens still read well.
+	const ringDurMs = Math.min(
+		6000,
+		Math.max(400, (sec(rowData?.delay, 0.15) + sec(rowData?.duration, 1)) * 1000)
+	);
+
+	const handlePlayClick = (e) => {
+		e.stopPropagation();
+		onPlay(index);
+		setPlayKey((k) => k + 1);
+		setPlaying(true);
+		clearTimeout(doneTimer.current);
+		doneTimer.current = setTimeout(() => setPlaying(false), ringDurMs + 150);
+	};
 
 	const onFieldChange = (bind, val) => {
 		const next = rows.slice();
@@ -299,6 +356,17 @@ function InteractionCard({
 		(f) => typeof f.when !== 'function' || f.when(rowData, activeBp)
 	);
 
+	const renderField = (field) => (
+		<RowField
+			key={field.bind}
+			field={field}
+			rowData={rowData}
+			activeBp={activeBp}
+			onFieldChange={onFieldChange}
+			triggerDisabledOptions={triggerDisabledOptions}
+		/>
+	);
+
 	return (
 		<Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
 			<Stack
@@ -313,16 +381,40 @@ function InteractionCard({
 				</Typography>
 
 				<Tooltip title="Play this interaction">
-					<span>
+					<Box sx={{ position: 'relative', width: 24, height: 24, display: 'inline-flex' }}>
+						{playing && (
+							<Box
+								component="svg"
+								key={playKey}
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								sx={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)', pointerEvents: 'none' }}
+							>
+								{/* track */}
+								<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="2" />
+								{/* sweeping arc — dashoffset animates full→0 */}
+								<circle
+									cx="12" cy="12" r="10.5" fill="none"
+									stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+									strokeDasharray={RING_CIRCUMFERENCE}
+									strokeDashoffset={RING_CIRCUMFERENCE}
+									sx={{
+										color: 'primary.main',
+										animation: `aaePlayRing ${ringDurMs}ms linear forwards`,
+									}}
+								/>
+							</Box>
+						)}
 						<IconButton
 							size="small"
-							onClick={(e) => { e.stopPropagation(); onPlay(index); }}
+							onClick={handlePlayClick}
 							aria-label="Play interaction"
-							sx={{ width: 24, height: 24 }}
+							sx={{ width: 24, height: 24, color: playing ? 'primary.main' : undefined }}
 						>
 							<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
 						</IconButton>
-					</span>
+					</Box>
 				</Tooltip>
 
 				<Tooltip title="Remove interaction">
@@ -348,16 +440,7 @@ function InteractionCard({
 
 			<Collapse in={open} unmountOnExit>
 				<Box sx={{ p: 1.5 }}>
-					{visibleFields.map((field) => (
-						<RowField
-							key={field.bind}
-							field={field}
-							rowData={rowData}
-							activeBp={activeBp}
-							onFieldChange={onFieldChange}
-							triggerDisabledOptions={triggerDisabledOptions}
-						/>
-					))}
+					{visibleFields.map((field) => renderField(field))}
 				</Box>
 			</Collapse>
 		</Box>
@@ -413,23 +496,26 @@ export function InteractionsRepeaterInput({
 				/>
 			))}
 
-			<Box>
-				<IconButton
-					size="small"
-					color="primary"
-					onClick={addRow}
-					sx={{
-						border: '1px dashed',
-						borderRadius: 1,
-						width: '100%',
-						justifyContent: 'flex-start',
-						px: 1.5,
-						gap: 1,
-					}}
-				>
-					<Typography variant="caption">+ {addLabel}</Typography>
-				</IconButton>
-			</Box>
+			{/* Bottom add button: small + right-aligned. Hidden when there are no
+			    rows — the section header's "+" icon adds the first interaction. */}
+			{rows.length > 0 && (
+				<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+					<IconButton
+						size="small"
+						color="primary"
+						onClick={addRow}
+						sx={{
+							border: '1px dashed',
+							borderRadius: 1,
+							px: 1,
+							py: 0.25,
+							gap: 0.5,
+						}}
+					>
+						<Typography variant="caption" sx={{ fontSize: '0.7rem' }}>+ {addLabel}</Typography>
+					</IconButton>
+				</Box>
+			)}
 		</Stack>
 	);
 }

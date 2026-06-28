@@ -39,15 +39,24 @@ function shouldBindInEditor(featureName, cfg) {
 	const isScrollKind = ['horizontal', 'parallax', 'sticky'].includes(featureName);
 	if (isScrollKind) return false;
 
-	// Repeater features expose cfg.rows[] instead of a single cfg.trigger.
-	// Bind in the editor when at least one row uses a non-scroll trigger
+	// Repeater features expose cfg.rows[] (desktop) plus optional per-breakpoint
+	// cfg.rows_<bp>[] lists instead of a single cfg.trigger. Bind in the editor
+	// when at least one row in ANY of those lists uses a non-scroll trigger
 	// (click / hover / page-load); a page made only of scroll-tied rows
-	// shouldn't auto-fire on the canvas.
-	if (Array.isArray(cfg.rows)) {
-		const hasNonScrollRow = cfg.rows.some((r) => {
-			const t = r?.trigger || '';
-			return t !== 'on_scroll' && t !== 'play_with_scroll' && t !== 'in-view';
-		});
+	// shouldn't auto-fire on the canvas. We check every rows list — not just
+	// cfg.rows — so an interaction defined only on mobile/tablet still binds
+	// for click/hover preview.
+	const rowLists = Object.keys(cfg)
+		.filter((k) => k === 'rows' || k.startsWith('rows_'))
+		.map((k) => cfg[k])
+		.filter(Array.isArray);
+	if (rowLists.length) {
+		const hasNonScrollRow = rowLists.some((rows) =>
+			rows.some((r) => {
+				const t = r?.trigger || '';
+				return t !== 'on_scroll' && t !== 'play_with_scroll' && t !== 'in-view';
+			})
+		);
 		return hasNonScrollRow;
 	}
 

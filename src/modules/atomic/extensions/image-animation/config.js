@@ -26,10 +26,10 @@ const PRESET_EFFECT_OPTIONS = Object.keys(PRESETS)
 
 const EFFECT_OPTIONS = [
 	{ value: 'none', label: 'None' },
+	{ value: 'custom', label: 'Custom Animation' },
 	{ value: 'reveal', label: 'Reveal' },
 	{ value: 'scale', label: 'Scale' },
 	{ value: 'stretch', label: 'Stretch' },
-	{ value: 'custom', label: 'Custom Animation' },
 	...PRESET_EFFECT_OPTIONS,
 ];
 
@@ -42,6 +42,7 @@ const TRIGGER_OPTIONS = [
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
 	{ value: 'click', label: 'On Click' },
 	{ value: 'mouseover', label: 'On Hover' },
+	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
 const START_FROM_OPTIONS = [
@@ -56,6 +57,11 @@ const METHOD_OPTIONS = [
 	{ value: 'to', label: 'To' },
 	{ value: 'fromTo', label: 'From To' },
 ];
+// "Set" (instant state) only for a custom animation — premium presets carry
+// their own from/to, so instant set is meaningless there.
+const SET_METHOD_OPTION = { value: 'set', label: 'Set' };
+const methodOptionsFor = (r) =>
+	(rowEffect(r) === 'custom') ? [...METHOD_OPTIONS, SET_METHOD_OPTION] : METHOD_OPTIONS;
 
 const EASE_OPTIONS = [
 	{ value: 'power2.out', label: 'Power2.out' },
@@ -84,6 +90,13 @@ const rowIsAnimated = (r) => rowEffect(r) !== 'none';
 const rowTrigger = (r) => r?.trigger || 'on_scroll';
 const rowIsScroll = (r) => SCROLL_TRIGGERS.includes(rowTrigger(r));
 const rowIsSelector = (r) => SELECTOR_TRIGGERS.includes(rowTrigger(r));
+const rowWrapperCustom = (r) => r?.wrapper === 'custom';
+
+// Trigger anchor mode: "Custom" exposes Start/End Trigger Selector.
+const WRAPPER_OPTIONS = [
+	{ value: 'default', label: 'Default' },
+	{ value: 'custom', label: 'Custom' },
+];
 
 const rowIsReveal = (r) => rowEffect(r) === 'reveal';
 const rowIsScale = (r) => rowEffect(r) === 'scale';
@@ -115,6 +128,20 @@ const ROW_FIELDS = [
 		bind: 'trigger_selector', label: 'Trigger Selector', control: 'text', placeholder: '.my-class',
 		when: (r) => rowIsAnimated(r) && rowIsSelector(r),
 	},
+	// Wrapper = Custom exposes Start/End Trigger Selector (tie the ScrollTrigger
+	// to other elements). Scroll triggers only. Mirrors regular animation.
+	{
+		bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+	},
+	{
+		bind: 'start_trigger', label: 'Start Trigger Selector', control: 'text', placeholder: '.my-start-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
+	},
+	{
+		bind: 'end_trigger', label: 'End Trigger Selector', control: 'text', placeholder: '.my-end-el',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
+	},
 	{
 		bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
 		placeholder: 'top center', when: (r) => rowIsAnimated(r) && rowIsScroll(r),
@@ -133,7 +160,7 @@ const ROW_FIELDS = [
 
 	// Custom + preset effects: method + removable props repeaters. Preset
 	// effects fill these on select; the user can still tweak / remove rows.
-	{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: rowUsesProps },
+	{ bind: 'method', label: 'Method', control: 'select', options: methodOptionsFor, defaultValue: 'from', when: rowUsesProps },
 	{
 		bind: 'custom_props',
 		label: (r) => (r?.method === 'fromTo' ? 'From Properties' : 'Custom Properties'),
@@ -166,6 +193,7 @@ const ROW_DEFAULTS = {
 	ease: 'power2.out',
 	start_position: 'top center',
 	end_position: 'bottom bottom',
+	wrapper: 'default',
 	custom_props: [],
 	custom_props_to: [],
 };

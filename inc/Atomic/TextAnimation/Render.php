@@ -118,9 +118,13 @@ final class Render {
 		}
 
 		$out = [];
-		$exclusive_used = false;
-		// page_load + on_scroll + play_with_scroll share ONE slot (max 1 total).
-		$exclusive_triggers = ['on_page_load', 'on_scroll', 'play_with_scroll'];
+		// Two independent exclusive groups, each capped at one row (first-wins):
+		//   A) page-load   B) scroll / play-scroll / slide-change.
+		$exclusive_groups = [
+			['on_page_load'],
+			['on_scroll', 'play_with_scroll', 'on_slide_change'],
+		];
+		$used_groups = [];
 
 		foreach ( $rows as $row ) {
 			if ( ! is_array( $row ) ) {
@@ -132,9 +136,14 @@ final class Render {
 			}
 
 			$trigger = isset( $row['trigger'] ) ? (string) $row['trigger'] : 'on_scroll';
-			if ( in_array( $trigger, $exclusive_triggers, true ) ) {
-				if ( $exclusive_used ) { continue; }
-				$exclusive_used = true;
+
+			$gi = null;
+			foreach ( $exclusive_groups as $idx => $group ) {
+				if ( in_array( $trigger, $group, true ) ) { $gi = $idx; break; }
+			}
+			if ( null !== $gi ) {
+				if ( isset( $used_groups[ $gi ] ) ) { continue; }
+				$used_groups[ $gi ] = true;
 			}
 
 			$out[] = $this->row_to_config( $row, $effect, $trigger );
@@ -160,6 +169,9 @@ final class Render {
 			'triggerSelector' => $str( 'trigger_selector', '' ),
 			'startPosition'   => $str( 'start_position', 'top 85%' ),
 			'endPosition'     => $str( 'end_position', 'bottom 30%' ),
+			'wrapper'         => $str( 'wrapper', 'default' ),
+			'startTrigger'    => $str( 'start_trigger', '' ),
+			'endTrigger'      => $str( 'end_trigger', '' ),
 			'invertStart'     => $str( 'invert_start', 'top 85%' ),
 			'invertEnd'       => $str( 'invert_end', 'bottom center' ),
 			'delay'           => $num( 'delay', 0.15 ),

@@ -51,7 +51,7 @@ final class Controls
 		return Section::make()
 
 			->set_label(
-				'Scroll To'
+				Bootstrap::get_label( __( 'ScrollTo', 'animation-addons-for-elementor' ) )
 			)
 
 			->set_items([

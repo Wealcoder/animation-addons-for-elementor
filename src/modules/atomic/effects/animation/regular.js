@@ -138,7 +138,9 @@ function regularTween(config) {
 	}
 
 	const tween = { from: {}, to: {} };
-	if (config.method === 'from') {
+	if (config.method === 'from' || config.method === 'set') {
+		// `set` is an instant state (gsap.set) — it uses the single props list
+		// just like `from`; buildRowTween() applies it with no tween/duration.
 		tween.from = fromTarget;
 	} else if (config.method === 'to') {
 		tween.to = fromTarget;
@@ -180,7 +182,13 @@ function buildRowTween(el, config, isPaused = false, isScrubbed = false) {
 	if (isScrubbed) overrides.ease = 'none';
 
 	let tween;
-	if (config.method === 'to') {
+	if (config.method === 'set') {
+		// Instant state — no tween, no duration/ease. gsap.set returns a (zero-
+		// duration) tween instance, so the rest of the pipeline (playedKey,
+		// restart on replay) still works. No clearProps: a `set` is meant to
+		// stick, not revert.
+		tween = gsap.set(el, { ...tweenCfg.from });
+	} else if (config.method === 'to') {
 		tween = gsap.to(el, {
 			...tweenCfg.to,
 			duration: tweenCfg.duration,
@@ -324,10 +332,10 @@ export function bindRegular(el, mapConfig, forcePreview = false) {
 	killAllRows(el);
 
 	// In the editor, scroll-tied / page-load / scrub rows must NOT auto-fire on
-	// load — keep the canvas in its resting state. Only interactive rows
-	// (click / hover) bind there; the rest preview via the per-row ▶ play
-	// button. The published frontend binds everything. forcePreview overrides
-	// this so a single scroll row can be previewed with markers.
+	// load — keep the canvas at rest. Interactive rows (click / hover) DO bind
+	// so the user can click/hover the trigger element and see the animation; the
+	// non-interactive rows preview via the per-row ▶ play. The published
+	// frontend binds everything. forcePreview overrides for marker preview.
 	const isEditMode = !forcePreview && !!(window.elementorFrontend
 		&& window.elementorFrontend.isEditMode
 		&& window.elementorFrontend.isEditMode());
@@ -337,7 +345,7 @@ export function bindRegular(el, mapConfig, forcePreview = false) {
 	for (const config of rows) {
 		const mode = modeFor(config.trigger);
 
-		if (isEditMode && mode !== 'hover' && mode !== 'click') {
+		if (isEditMode && mode !== 'hover' && mode !== 'click' && mode !== 'slide-change') {
 			state.push({ config, tween: null, dispose: null });
 			continue;
 		}
@@ -351,6 +359,14 @@ export function bindRegular(el, mapConfig, forcePreview = false) {
 		state.push(entry);
 
 		const play = () => {
+			// `set` is instant — just re-apply it each time the trigger fires
+			// (a completed zero-duration tween's restart() is unreliable).
+			if (config.method === 'set') {
+				const live = buildRowTween(el, config, false, false);
+				entry.tween = live;
+				if (live) el[REGULAR_PLAYED] = live;
+				return;
+			}
 			if (entry.tween) {
 				if (entry.tween.paused()) {
 					entry.tween.play();

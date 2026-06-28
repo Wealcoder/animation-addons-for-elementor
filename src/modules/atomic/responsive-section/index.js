@@ -5,6 +5,7 @@ import { registerControlReplacement, useBoundProp } from '@elementor/editor-cont
 
 import { addSection, getSection, getAllAnchorKeys } from './registry';
 import { ResponsiveSection } from './ResponsiveSection';
+import { startSectionBranding } from './section-branding';
 
 /**
  * Public API: register a responsive section.
@@ -41,6 +42,9 @@ import { ResponsiveSection } from './ResponsiveSection';
 export function registerResponsiveSection(config) {
 	addSection(config);
 	bootstrapDispatcher();
+	// Global branding observer — brands ALL AAE section headers (logo + lock/
+	// try), expanded or not. Idempotent; only the first call wires it up.
+	startSectionBranding();
 }
 
 /* ---------- one-time shared dispatcher ---------- */

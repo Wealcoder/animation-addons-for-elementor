@@ -157,3 +157,14 @@
 .aae-icon-lock:before {
   content: "󤤁";
 }
+
+/* Atomic V4 panel header: the .elementor-section-title scope above doesn't
+   apply (V4 headers don't carry that class), so size the lock/unlock glyph
+   here, parent-agnostic. Doubled vs the inherited ~11px → 22px. The Try link's
+   own text stays readable; only its leading glyph is enlarged. */
+.aae-icon-unlock:before,
+.aae-icon-lock:before {
+  font-size: 22px;
+  vertical-align: middle;
+}
+/*# sourceMappingURL=editor.css.map */
