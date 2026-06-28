@@ -94,6 +94,10 @@
       }
     }
 
+    // .e-paragraph-base {
+    //   color: var(--aae-btn-color, #fff);
+    // }
+
     // Ripple circle — origin moved by GSAP.quickTo()
     .aae-ripple-el,
     > span:not([class]) {
@@ -140,6 +144,9 @@
   width: fit-content;
 
   &.aae--btn-pro {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
     gap: 0;
   }
 
