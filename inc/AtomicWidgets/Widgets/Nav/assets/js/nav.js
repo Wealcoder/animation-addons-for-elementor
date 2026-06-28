@@ -5,6 +5,11 @@ const g = () => window.gsap;
 /* Per-nav AbortControllers — abort stale document listeners on re-init */
 const navControllers = new Map();
 
+function isEditor() {
+	return document.body.classList.contains( 'elementor-editor-active' ) ||
+		window.elementorFrontend?.isEditMode?.() === true;
+}
+
 function getSub( item ) {
 	return item.querySelector( ':scope > .aae-a-nav-sub' );
 }
@@ -120,93 +125,90 @@ register( {
 		const navId = nav.getAttribute( 'data-id' );
 		if ( ! navId ) return;
 
+		if ( isEditor() ) {
+			if ( nav.dataset.navInit === 'true' ) return;
+			nav.dataset.navInit = 'true';
+
+			/*
+			 * Editor: keep ONE dropdown chain visible at a time — the chain that
+			 * leads to whatever the user just clicked. Survives style-tab edits
+			 * (panel clicks don't fire this listener) and color-picker popups
+			 * (which can briefly strip Elementor's `.elementor-element-editable`).
+			 *
+			 * Listening on mousedown (capture) so we run BEFORE Elementor's own
+			 * selection handler and aren't blocked by stopPropagation downstream.
+			 */
+			nav.addEventListener( 'mousedown', ( e ) => {
+				nav.querySelectorAll( '.aae-keep-open' )
+					.forEach( el => el.classList.remove( 'aae-keep-open' ) );
+
+				let item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+				while ( item && nav.contains( item ) ) {
+					item.classList.add( 'aae-keep-open' );
+					item = item.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+				}
+			}, true );
+			return;
+		}
+
+		if ( nav.dataset.navInit === 'true' ) return;
+		nav.dataset.navInit = 'true';
+
 		/* Abort stale document listeners from a previous render of this nav */
 		navControllers.get( navId )?.abort();
 		const ctrl = new AbortController();
 		navControllers.set( navId, ctrl );
 		const sig = ctrl.signal;
 
-		const closeClickItems = () => {
+		const closeAllClickItems = () => {
 			nav.querySelectorAll( '.aae-a-nav-item[data-trigger="click"].is-open' )
 				.forEach( item => closeItem( item ) );
 		};
 
-		/* Direct element listeners — guarded so they don't stack on same node */
-		if ( ! nav.dataset.navInit ) {
-			nav.dataset.navInit = 'true';
+		/* Close siblings of `item` at the SAME nesting level — leave ancestors open. */
+		const closeSiblings = ( item ) => {
+			const parentList = item.parentElement;
+			if ( ! parentList ) return;
+			parentList.querySelectorAll( ':scope > .aae-a-nav-item[data-trigger="click"].is-open' )
+				.forEach( sib => {
+					if ( sib !== item ) closeItem( sib );
+				} );
+		};
 
-			// Click trigger — event delegation
-			nav.addEventListener( 'click', ( e ) => {
-				const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"][data-trigger="click"]' );
-				if ( ! item || ! nav.contains( item ) ) {
-					closeClickItems();
-					return;
-				}
-				const wasOpen = item.classList.contains( 'is-open' );
-				closeClickItems();
-				if ( ! wasOpen ) openItem( item );
-				e.stopPropagation();
+		// Click trigger — event delegation
+		nav.addEventListener( 'click', ( e ) => {
+			const item = e.target.closest( '.aae-a-nav-item' );
+			if ( ! item || ! nav.contains( item ) ) return;
+
+			/* Only handle click-trigger dropdown items; let leaves navigate normally. */
+			if ( item.dataset.hasDropdown !== 'true' || item.dataset.trigger !== 'click' ) return;
+
+			/* If the click landed inside this item's own dropdown, defer to the
+			 * nested handler that bubbled through `closest()` — don't toggle this
+			 * (outer) item, which would close its own dropdown. */
+			const ownSub = item.querySelector( ':scope > .aae-a-nav-sub' );
+			if ( ownSub && ownSub.contains( e.target ) ) return;
+
+			const wasOpen = item.classList.contains( 'is-open' );
+			closeSiblings( item );
+			if ( wasOpen ) {
+				closeItem( item );
+			} else {
+				openItem( item );
+			}
+			e.stopPropagation();
+		} );
+
+		// Hover trigger — direct listeners per item
+		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"][data-trigger="hover"]' )
+			.forEach( item => {
+				item.addEventListener( 'mouseenter', () => openItem( item ) );
+				item.addEventListener( 'mouseleave', () => closeItem( item ) );
 			} );
 
-			// Hover trigger — direct listeners per item
-			nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"][data-trigger="hover"]' )
-				.forEach( item => {
-					item.addEventListener( 'mouseenter', () => openItem( item ) );
-					item.addEventListener( 'mouseleave', () => closeItem( item ) );
-				} );
-
-			// ── Mobile offcanvas ──
-			const hamburger  = nav.querySelector( '.aae-a-nav-hamburger' );
-			const closeBtn   = nav.querySelector( '.aae-a-nav-close' );
-			const overlay    = nav.querySelector( '.aae-a-nav-overlay' );
-			const mobileList = nav.querySelector( '.aae-a-nav-mobile-list' );
-
-			if ( hamburger && mobileList ) {
-				function buildMobileMenu() {
-					if ( mobileList.children.length ) return;
-					nav.querySelectorAll( ':scope > .aae-a-nav-item' ).forEach( item => {
-						const clone = item.cloneNode( true );
-						clone.removeAttribute( 'data-id' );
-						if ( clone.querySelector( ':scope > .aae-a-nav-sub' ) ) {
-							clone.addEventListener( 'click', ( e ) => {
-								e.stopPropagation();
-								clone.classList.toggle( 'is-mobile-open' );
-							} );
-						}
-						mobileList.appendChild( clone );
-					} );
-				}
-
-				function openOffcanvas() {
-					buildMobileMenu();
-					nav.classList.add( 'offcanvas-is-open' );
-					document.body.style.overflow = 'hidden';
-					hamburger.setAttribute( 'aria-expanded', 'true' );
-				}
-
-				function closeOffcanvas() {
-					nav.classList.remove( 'offcanvas-is-open' );
-					document.body.style.overflow = '';
-					hamburger.setAttribute( 'aria-expanded', 'false' );
-				}
-
-				hamburger.addEventListener( 'click', ( e ) => {
-					e.stopPropagation();
-					nav.classList.contains( 'offcanvas-is-open' ) ? closeOffcanvas() : openOffcanvas();
-				} );
-				closeBtn?.addEventListener( 'click', closeOffcanvas );
-				overlay?.addEventListener( 'click', closeOffcanvas );
-			}
-		}
-
-		/* Document-level listeners — always re-registered with fresh signal */
-		document.addEventListener( 'click', closeClickItems, { signal: sig } );
-		document.addEventListener( 'keydown', ( e ) => {
-			if ( e.key === 'Escape' && nav.classList.contains( 'offcanvas-is-open' ) ) {
-				nav.classList.remove( 'offcanvas-is-open' );
-				document.body.style.overflow = '';
-				nav.querySelector( '.aae-a-nav-hamburger' )?.setAttribute( 'aria-expanded', 'false' );
-			}
+		/* Document-level listener — only close when click landed OUTSIDE the nav. */
+		document.addEventListener( 'click', ( e ) => {
+			if ( ! nav.contains( e.target ) ) closeAllClickItems();
 		}, { signal: sig } );
 	},
 } );

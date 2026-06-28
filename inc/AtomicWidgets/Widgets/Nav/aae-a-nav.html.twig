@@ -5,8 +5,6 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
-    data-mobile-breakpoint="768"
-    data-offcanvas-side="right"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -132,170 +130,20 @@
         :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(4) { animation-delay: 180ms; }
         :where([data-id="{{ id }}"]) .aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(n+5) { animation-delay: 240ms; }
 
-        /* ── Editor: show dropdown only when this nav-item (or a child) is selected ── */
+        /* ── Editor visibility for dropdowns ──
+         * Shows only the dropdown chain the user is currently working with:
+         *   • .elementor-element-editable — the item just toggled on; selected
+         *     in canvas. Covers the "first time enabled" case.
+         *   • .aae-keep-open — set by nav.js editor mousedown listener on the
+         *     last clicked nav-item chain. Survives style-tab/color-picker
+         *     interactions because panel clicks don't reset it. */
         .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .aae-a-nav-sub,
-        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .aae-a-nav-sub {
+        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-item[data-has-dropdown="true"].aae-keep-open > .aae-a-nav-sub {
             display: flex;
             flex-direction: column;
         }
 
-        /* ══ Mobile — Hamburger + Offcanvas ══ */
-
-        /* Hamburger wrap: hidden on desktop */
-        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap {
-            display: none;
-            list-style: none;
-            margin-inline-start: auto;
-        }
-        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 5px;
-            width: 36px;
-            height: 36px;
-            padding: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: inherit;
-        }
-        :where([data-id="{{ id }}"]) .aae-a-nav-hamburger span {
-            display: block;
-            width: 100%;
-            height: 2px;
-            background: currentColor;
-            border-radius: 2px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-hamburger span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* Overlay */
-        :where([data-id="{{ id }}"]) .aae-a-nav-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 9998;
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-overlay {
-            display: block;
-            opacity: 1;
-        }
-
-        /* Offcanvas panel */
-        :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas {
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            width: min(320px, 85vw);
-            background: #fff;
-            z-index: 9999;
-            padding: 20px;
-            overflow-y: auto;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas {
-            right: 0;
-            transform: translateX(100%);
-            box-shadow: -4px 0 24px rgba(0,0,0,0.12);
-        }
-        :where([data-id="{{ id }}"]).offcanvas-is-open .aae-a-nav-offcanvas {
-            transform: translateX(0);
-        }
-
-        /* Close button */
-        :where([data-id="{{ id }}"]) .aae-a-nav-close {
-            display: flex;
-            align-self: flex-end;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: inherit;
-            margin-bottom: 12px;
-        }
-
-        /* Mobile list */
-        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-item {
-            display: block;
-            width: 100%;
-            cursor: pointer;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        /* Mobile sub: accordion (static, not absolute) */
-        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-sub {
-            position: static;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            padding: 4px 0 4px 16px;
-            min-width: unset;
-        }
-        :where([data-id="{{ id }}"]) .aae-a-nav-mobile-list .aae-a-nav-item.is-mobile-open > .aae-a-nav-sub {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Mobile breakpoint — hide desktop items, show hamburger */
-        @media (max-width: 768px) {
-            :where([data-id="{{ id }}"]) > .aae-a-nav-item {
-                display: none !important;
-            }
-            :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap {
-                display: list-item;
-            }
-        }
-
-        /* Editor: never show offcanvas / hamburger in editor */
-        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-hamburger-wrap { display: none !important; }
-        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-overlay       { display: none !important; }
-        .elementor-editor-active :where([data-id="{{ id }}"]) .aae-a-nav-offcanvas      { display: none !important; }
     </style>
 
-    {# ── Hamburger (shown on mobile only) ── #}
-    <li class="aae-a-nav-hamburger-wrap">
-        <button class="aae-a-nav-hamburger" aria-label="Open menu" aria-expanded="false">
-            <span></span><span></span><span></span>
-        </button>
-    </li>
-
     {{ children_placeholder | raw }}
-
-    {# ── Overlay ── #}
-    <div class="aae-a-nav-overlay" aria-hidden="true"></div>
-
-    {# ── Offcanvas panel ── #}
-    <div class="aae-a-nav-offcanvas" role="dialog" aria-modal="true" aria-label="Mobile menu">
-        <button class="aae-a-nav-close" aria-label="Close menu">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-            </svg>
-        </button>
-        <ul class="aae-a-nav-mobile-list"></ul>
-    </div>
 </ul>

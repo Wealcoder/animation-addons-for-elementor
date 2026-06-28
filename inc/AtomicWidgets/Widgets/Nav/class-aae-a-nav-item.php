@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -103,6 +104,8 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
+		/* Sub-dropdown ships with every nav-item — CSS keeps it hidden until
+		 * the user toggles "Enable Dropdown" on (data-has-dropdown="true"). */
 		$sub = AAE_A_Nav_Sub::generate()->build();
 
 		return [ $label, $sub ];

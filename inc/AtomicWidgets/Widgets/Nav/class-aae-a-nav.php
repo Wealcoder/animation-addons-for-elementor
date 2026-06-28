@@ -8,11 +8,16 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
 require_once __DIR__ . '/class-aae-a-nav-sub.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,10 +76,19 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
+		/* Every nav-item already ships with a hidden nav-sub child via its own
+		 * define_default_children(). We flip has_dropdown=true on the 3rd item
+		 * so users see one open dropdown immediately as an example. */
+		$item_with_dropdown = AAE_A_Nav_Item::generate()
+			->settings( [
+				'has_dropdown' => Boolean_Prop_Type::generate( true ),
+			] )
+			->build();
+
 		return [
 			AAE_A_Nav_Item::generate()->build(),
 			AAE_A_Nav_Item::generate()->build(),
-			AAE_A_Nav_Item::generate()->build(),
+			$item_with_dropdown,
 			AAE_A_Nav_Item::generate()->build(),
 		];
 	}

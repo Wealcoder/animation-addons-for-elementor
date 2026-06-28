@@ -32,7 +32,7 @@ export function CodeInput({ value, onChange, disabled, placeholder, play_group =
 	onChangeRef.current = onChange;
 	playGroupRef.current = play_group;
 
-	// Debounced preview sync — shared by the update listener.
+	// Debounced preview sync â€” shared by the update listener.
 	const syncToPreview = useCallback(() => {
 		const pg = playGroupRef.current;
 		if (!pg) return;
@@ -114,7 +114,7 @@ export function CodeInput({ value, onChange, disabled, placeholder, play_group =
 			viewRef.current = null;
 		};
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);  // Mount once — value changes are handled via the transaction below.
+	}, []);  // Mount once â€” value changes are handled via the transaction below.
 
 	// Sync external value changes into the editor (e.g. breakpoint switch,
 	// undo/redo from Elementor). Skip when the editor itself is the source
