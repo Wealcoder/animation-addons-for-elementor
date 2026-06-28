@@ -1001,7 +1001,7 @@ final class Atomic
 				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
-				'default'      => false,
+				'default'      => true,
 				'keywords'     => [
 					'button pro',
 					'cta',

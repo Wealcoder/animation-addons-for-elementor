@@ -545,10 +545,14 @@
 
 .style-1.btn-border-divide > .elementor-widget-e-paragraph,
 .style-1.btn-border-divide > .elementor-widget-e-svg,
+.style-1.btn-border-divide > .elementor-widget-e-paragraph > .e-paragraph-base,
+.style-1.btn-border-divide > .elementor-widget-e-svg > .e-svg-base,
 .style-1.btn-border-divide > .e-paragraph-base,
 .style-1.btn-border-divide > .e-svg-base:not([data-swap-clone]),
 .style-1 .btn-border-divide > .elementor-widget-e-paragraph,
 .style-1 .btn-border-divide > .elementor-widget-e-svg,
+.style-1 .btn-border-divide > .elementor-widget-e-paragraph > .e-paragraph-base,
+.style-1 .btn-border-divide > .elementor-widget-e-svg > .e-svg-base,
 .style-1 .btn-border-divide > .e-paragraph-base,
 .style-1 .btn-border-divide > .e-svg-base:not([data-swap-clone]) {
   display: none !important;

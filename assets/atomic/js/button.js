@@ -118,6 +118,12 @@ const textFlipSetup = container => {
   }
 };
 const borderDivideSwap = container => {
+  // Disconnect any previous text-sync observer before re-running
+  if (container._aaeBorderObserver) {
+    container._aaeBorderObserver.disconnect();
+    container._aaeBorderObserver = null;
+  }
+
   // Clean up any previous swap wrappers before re-running
   const existingText = container.querySelector(":scope > span.text");
   const existingIcon = container.querySelector(":scope > span.icon");
@@ -153,6 +159,20 @@ const borderDivideSwap = container => {
   container.prepend(iconWrapper);
   container.prepend(textWrapper);
   container.dataset.borderDivideSwapped = "true";
+
+  // Keep the visible clone in sync when Elementor updates the original paragraph
+  const cloneEl = textWrapper.querySelector(".e-paragraph-base");
+  if (cloneEl) {
+    const observer = new MutationObserver(() => {
+      cloneEl.innerHTML = textEl.innerHTML;
+    });
+    observer.observe(textEl, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+    container._aaeBorderObserver = observer;
+  }
 };
 const maskBtn = container => {
   const textEl = container.querySelector(".e-paragraph-base");

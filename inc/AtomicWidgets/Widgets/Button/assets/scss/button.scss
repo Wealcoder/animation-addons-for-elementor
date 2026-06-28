@@ -709,9 +709,14 @@
 
 .style-1.btn-border-divide,
 .style-1 .btn-border-divide {
-  // Hide the raw Elementor wrappers — only show our cloned wrappers
+  // Hide originals — only show the JS-built .text/.icon clones.
+  // The Elementor editor wraps atomic children with display:contents !important
+  // (inline), which overrides > .elementor-widget-* { display:none } at the
+  // wrapper level. Targeting the *inner* child bypasses that inline override.
   > .elementor-widget-e-paragraph,
   > .elementor-widget-e-svg,
+  > .elementor-widget-e-paragraph > .e-paragraph-base,
+  > .elementor-widget-e-svg > .e-svg-base,
   > .e-paragraph-base,
   > .e-svg-base:not([data-swap-clone]) {
     display: none !important;

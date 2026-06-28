@@ -53,7 +53,7 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Button Pro ->', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Button Pro', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -105,10 +105,10 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 					Select_Control::bind_to( 'btn_pro_style' )
 						->set_label( __( 'Style', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => '4',  'label' => __( '4p  — Ripple (GSAP)',   'animation-addons-for-elementor' ) ],
-							[ 'value' => '5',  'label' => __( '5p  — Group Swap L',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '6',  'label' => __( '6p  — Group Swap R',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '9',  'label' => __( '9p  — Oval',            'animation-addons-for-elementor' ) ],
+							[ 'value' => '4',  'label' => __( '4  — Ripple (GSAP)',   'animation-addons-for-elementor' ) ],
+							[ 'value' => '5',  'label' => __( '5  — Group Swap L',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '6',  'label' => __( '6  — Group Swap R',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '9',  'label' => __( '9  — Oval',            'animation-addons-for-elementor' ) ],
 							[ 'value' => '10', 'label' => __( '10 — Circle',          'animation-addons-for-elementor' ) ],
 							[ 'value' => '11', 'label' => __( '11 — Ellipse',         'animation-addons-for-elementor' ) ],
 						] ),
