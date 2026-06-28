@@ -283,111 +283,6 @@ final class Atomic
 		];
 	}
 
-	/* =====================================================================
-	 *  Initialisation
-	 * =================================================================== */
-
-	/* =====================================================================
-	 *  HOW TO ADD A NEW ATOMIC WIDGET
-	 * ---------------------------------------------------------------------
-	 *  Adding a new v4 atomic widget to this plugin is a 2-step edit
-	 *  inside this file (after you create the widget folder under
-	 *  inc/AtomicWidgets/Widgets/<PascalName>/). The Menu widget is the
-	 *  canonical reference — follow its exact folder structure:
-	 *
-	 *    inc/AtomicWidgets/Widgets/<PascalName>/
-	 *      ├── class-aae-a-<slug>.php   (Atomic_Widget_Base subclass)
-	 *      ├── aae-a-<slug>.html.twig   (Twig template)
-	 *      └── assets/
-	 *          ├── js/<slug>.js         (source JS — uses @elementor/frontend-handlers)
-	 *          └── scss/<slug>.scss     (source SCSS — optional)
-	 *
-	 *  Built outputs land at:
-	 *    /assets/atomic/js/<slug>.js
-	 *    /assets/atomic/css/<slug>.css
-	 *
-	 * ---------------------------------------------------------------------
-	 *  STEP 1 — Append a definition inside register_widget_definitions()
-	 *           below. This makes the widget appear as a toggle on the
-	 *           AAE dashboard so users can enable/disable it.
-	 *
-	 *      'aae-a-<slug>' => [
-	 *          'label'        => '<Human Title>',
-	 *          'description'  => '<one-line description for dashboard card>',
-	 *          'icon'         => 'eicon-<elementor-icon>',
-	 *          'is_pro'       => false,
-	 *          'is_extension' => false,
-	 *          'is_upcoming'  => false,
-	 *          'default'      => true,   // enabled on fresh installs
-	 *          'keywords'     => [ '<slug>', 'atomic', 'aae' ],
-	 *          'category'     => 'general',
-	 *          'order'        => 0,
-	 *          'demo_url'     => '',
-	 *          'doc_url'      => '',
-	 *      ],
-	 *
-	 * ---------------------------------------------------------------------
-	 *  STEP 2 — Append a mapping inside get_available_widgets() below.
-	 *           This tells Elementor which PHP class to instantiate and
-	 *           which JS/CSS handles to register.
-	 *
-	 *      'aae-a-<slug>' => [
-	 *          'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>\AAE_A_<PascalSlug>',
-	 *          'file'          => 'Widgets/<PascalName>/class-aae-a-<slug>.php',
-	 *          'script_handle' => 'aae-a-<slug>-js',
-	 *          'script_path'   => '/assets/atomic/js/<slug>.js',
-	 *          'has_script'    => true,
-	 *          'style_handle'  => 'aae-a-<slug>-css',          // omit if no SCSS
-	 *          'style_path'    => '/assets/atomic/css/<slug>.css', // omit if no SCSS
-	 *      ],
-	 *
-	 *  That's it. The loops in register_widgets(), register_atomic_scripts(),
-	 *  and register_atomic_styles() pick up the new entry automatically —
-	 *  NO further edits inside this file are needed.
-	 *
-	 * ---------------------------------------------------------------------
-	 *  CONTAINER WIDGETS (Atomic_Element_Base — like Nested Slider)
-	 *
-	 *  If your widget extends Atomic_Element_Base instead of
-	 *  Atomic_Widget_Base, omit the script bits if it has no JS, and
-	 *  register_elements() (not register_widgets()) will handle it
-	 *  automatically because is_subclass_of() routes the two.
-	 *
-	 * ---------------------------------------------------------------------
-	 *  NAMING RULES (keep these EXACT — they appear in 6+ places)
-	 *
-	 *    <slug>       lowercase kebab            e.g.  menu       / counter
-	 *    <PascalName> folder name                e.g.  Menu       / Counter
-	 *    <PascalSlug> class-name slug            e.g.  Menu       / Counter
-	 *    element type 'e-aae-a-<slug>'           e.g.  e-aae-a-menu
-	 *    PHP class    AAE_A_<PascalSlug>         e.g.  AAE_A_Menu
-	 *    namespace    WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>
-	 *    dashboard    'aae-a-<slug>'             (key in both arrays below)
-	 *    JS handle    'aae-a-<slug>-js'
-	 *    CSS handle   'aae-a-<slug>-css'
-	 *
-	 * ---------------------------------------------------------------------
-	 *  COMMON MISTAKES
-	 *
-	 *  - Toggle visible but widget not in Elementor panel ........... missing entry in get_available_widgets()
-	 *  - Widget not in dashboard at all ............................. missing entry in register_widget_definitions()
-	 *  - "Prop 'foo' not defined in schema" ......................... bind_to('foo') without matching key in define_props_schema()
-	 *  - Twig renders blank in editor ............................... get_templates() key must be 'elementor/elements/aae-a-<slug>' (NO 'e-' prefix on key)
-	 *  - JS doesn't fire on frontend ................................ register() elementType in source JS must equal get_element_type() ('e-aae-a-<slug>')
-	 *  - CSS missing on frontend .................................... style_handle / style_path not set OR build pipeline didn't emit /assets/atomic/css/<slug>.css
-	 *
-	 * =================================================================== */
-
-	/**
-	 * Register all available atomic widget definitions.
-	 *
-	 * This array drives the AAE dashboard toggle UI. Each entry here is
-	 * rendered as a card with an on/off switch — toggling on then calls
-	 * Elementor's register_widgets() through is_widget_active().
-	 *
-	 * To add a new widget, append an entry here AND in get_available_widgets().
-	 * See the "HOW TO ADD A NEW ATOMIC WIDGET" comment block above.
-	 */
 	private function register_widget_definitions(): void
 	{
 		$this->widgets_registry = [
@@ -497,11 +392,36 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-advanced-heading' => [
+				'label'        => 'Advanced Heading',
+				'description'  => 'Heading with editable text and highlight parts: gradient, bracket, divider+dot, or animated underline.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'heading',
+					'title',
+					'highlight',
+					'gradient',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
 				'keywords'     => ['atomic', 'slider', 'carousel'],
 				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
 				'category'     => 'general',
 				'order'        => 1,
 				'demo_url'     => '',
@@ -599,27 +519,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 2,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-nested-slider' => [
-				'label'        => 'Nested Slider',
-				'description'  => 'Atomic nested slider with drag-and-drop slide management and GSAP-powered transitions.',
-				'icon'         => 'wcf-icon-Content-Slider',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'slider',
-					'carousel',
-					'nested slider',
-					'atomic slider',
-					'slideshow',
-				],
-				'category'     => 'general',
-				'order'        => 3,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1014,12 +913,6 @@ final class Atomic
 		];
 	}
 
-	/**
-	 * Register all available atomic extension definitions.
-	 *
-	 * Maps directly to the extensions initialised in
-	 * \WCF_ADDONS\Atomic\Bootstrap::init().
-	 */
 	private function register_extension_definitions(): void
 	{
 		$this->extensions_registry = [
@@ -1482,6 +1375,14 @@ final class Atomic
 				'style_path'    => '/assets/atomic/js/button.css',
 			],
 
+			'aae-a-advanced-heading' => [
+				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
+				'file'         => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
+				'has_script'   => false,
+				'style_handle' => 'aae-a-advanced-heading-css',
+				'style_path'   => '/assets/atomic/css/advanced-heading.css',
+			],
+
 			'aae-a-progressbar' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar',
 				'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
@@ -1534,8 +1435,10 @@ final class Atomic
 	 */
 	public function register_widgets($widgets_manager)
 	{
+	
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
+			
 				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
 				if (! file_exists($file_path)) {
 					continue; // Skip missing widget files gracefully.
@@ -2079,6 +1982,153 @@ final class Atomic
 			$version,
 			true
 		);
+
+		// Expose bundled widget presets to the editor bridge so its panel UI
+		// (Apply Preset dropdown) can list and apply them. Keyed by widget type.
+		wp_localize_script(
+			'aae-atomic-editor',
+			'AAE_WIDGET_PRESETS',
+			$this->get_widget_presets()
+		);
+	}
+
+	/**
+	 * Scan every widget's presets/ folder and return the parsed JSON presets,
+	 * grouped by the widget type they belong to, so the editor can list the
+	 * presets relevant to the selected element.
+	 *
+	 * Two file formats are accepted:
+	 *   - Elementor native export: { content:[ <model> ], title, type, ... }
+	 *     (the user exports a flex container holding the design)
+	 *   - Plugin format:           { name, model:{...} }
+	 *
+	 * The exposed model is the root export element (e.g. an e-flexbox wrapper).
+	 * The editor unwraps a container wrapper on apply and places its children
+	 * at the selected element's position. The preset is keyed by the primary
+	 * atomic widget found inside (e.g. e-aae-a-advanced-heading) so it shows
+	 * when that widget is selected — not when a bare flexbox is selected.
+	 *
+	 * @return array<string, array<int, array>> elementType => preset[]
+	 */
+	private function get_widget_presets(): array
+	{
+		$presets = [];
+		
+		foreach ($this->get_available_widgets() as $widget_data) {
+			if (empty($widget_data['file'])) {
+				continue;
+			}
+
+			$widget_dir = wp_normalize_path(dirname(WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $widget_data['file']));
+			$preset_dir = $widget_dir . '/presets';
+
+			if (! is_dir($preset_dir)) {
+				continue;
+			}
+
+			foreach (glob($preset_dir . '/*.json') as $file) {
+				$raw = file_get_contents($file);
+				if (false === $raw) {
+					continue;
+				}
+
+				$data = json_decode($raw, true);
+				if (! is_array($data)) {
+					continue;
+				}
+
+				// Resolve the root model + name from either supported format.
+				$model = null;
+				$name  = basename($file, '.json');
+
+				if (! empty($data['model']) && is_array($data['model'])) {
+					// Plugin format.
+					$model = $data['model'];
+					if (isset($data['name'])) {
+						$name = (string) $data['name'];
+					}
+				} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
+					// Elementor native export: content[] holds top-level elements;
+					// the first is the wrapper we treat as the preset model.
+					$model = $data['content'][0];
+					if (! empty($data['title'])) {
+						$name = (string) $data['title'];
+					}
+				}
+
+				if (! $model) {
+					continue;
+				}
+
+				// Key by the primary atomic widget inside the model (so a
+				// flex-wrapped heading preset shows when a heading is selected),
+				// falling back to the model's own type.
+				$type = $this->detect_primary_widget_type($model);
+				if ('' === $type) {
+					continue;
+				}
+
+				$presets[$type][] = [
+					'id'    => sanitize_key(basename($file, '.json')),
+					'name'  => $name,
+					'model' => $model,
+				];
+			}
+		}
+
+		return $presets;
+	}
+
+	/**
+	 * Find the most relevant widget type a preset targets. If the root is a
+	 * layout container, descend to the first AAE atomic widget inside; else use
+	 * the root's own type. Returns the type string Elementor reports for the
+	 * element (elType for atomic elements, widgetType for classic widgets).
+	 *
+	 * @param array $model Element model.
+	 * @return string
+	 */
+	private function detect_primary_widget_type(array $model): string
+	{
+		$container_types = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
+
+		$root_type = $model['elType'] ?? '';
+		if ('widget' === $root_type && ! empty($model['widgetType'])) {
+			$root_type = $model['widgetType'];
+		}
+
+		// If the root isn't a container, it's the target itself.
+		if (! in_array($root_type, $container_types, true)) {
+			return $root_type;
+		}
+
+		// Descend breadth-first to the first AAE atomic widget.
+		$queue = $model['elements'] ?? [];
+
+		while (! empty($queue)) {
+			$node = array_shift($queue);
+			if (! is_array($node)) {
+				continue;
+			}
+
+			$type = $node['elType'] ?? '';
+			if ('widget' === $type && ! empty($node['widgetType'])) {
+				$type = $node['widgetType'];
+			}
+
+			if (is_string($type) && 0 === strpos($type, 'e-aae-a-')) {
+				return $type;
+			}
+
+			if (! empty($node['elements']) && is_array($node['elements'])) {
+				foreach ($node['elements'] as $child) {
+					$queue[] = $child;
+				}
+			}
+		}
+
+		// No AAE widget inside — fall back to the container type itself.
+		return $root_type;
 	}
 }
 
