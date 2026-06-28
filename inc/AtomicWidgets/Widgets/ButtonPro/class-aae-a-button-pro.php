@@ -53,7 +53,7 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Button Pro', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Button Pro ->', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -74,21 +74,21 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// Link
-			'btn_url'      => String_Prop_Type::make()->default( '#' ),
-			'btn_target'   => String_Prop_Type::make()->default( '_self' ),
-			'btn_nofollow' => Boolean_Prop_Type::make()->default( false ),
+			'btn_pro_url'      => String_Prop_Type::make()->default( '#' ),
+			'btn_pro_target'   => String_Prop_Type::make()->default( '_self' ),
+			'btn_pro_nofollow' => Boolean_Prop_Type::make()->default( false ),
 
 			// Style selector
-			'btn_style'     => String_Prop_Type::make()->default( '4' ),
-			'btn_alignment' => String_Prop_Type::make()->default( 'left' ),
+			'btn_pro_style' => String_Prop_Type::make()->default( '4' ),
+			'btn_pro_alignment' => String_Prop_Type::make()->default( 'left' ),
 
 			// Style 10 only — equal width / height for circle shape (px)
-			'btn_circle_size' => Number_Prop_Type::make()->default( 140 ),
+			'btn_pro_circle_size' => Number_Prop_Type::make()->default( 140 ),
 
 			// Hover colour overrides surfaced as CSS custom properties
-			'btn_hover_color'        => String_Prop_Type::make()->default( '' ),
-			'btn_hover_bg_color'     => String_Prop_Type::make()->default( '' ),
-			'btn_hover_border_color' => String_Prop_Type::make()->default( '' ),
+			'btn_pro_hover_color'        => String_Prop_Type::make()->default( '' ),
+			'btn_pro_hover_bg_color'     => String_Prop_Type::make()->default( '' ),
+			'btn_pro_hover_border_color' => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -102,35 +102,35 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 				->set_label( __( 'Button', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
 				->set_items( [
-					Select_Control::bind_to( 'btn_style' )
+					Select_Control::bind_to( 'btn_pro_style' )
 						->set_label( __( 'Style', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => '4',  'label' => __( '4  — Ripple (GSAP)',   'animation-addons-for-elementor' ) ],
-							[ 'value' => '5',  'label' => __( '5  — Group Swap L',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '6',  'label' => __( '6  — Group Swap R',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '9',  'label' => __( '9  — Oval',            'animation-addons-for-elementor' ) ],
+							[ 'value' => '4',  'label' => __( '4p  — Ripple (GSAP)',   'animation-addons-for-elementor' ) ],
+							[ 'value' => '5',  'label' => __( '5p  — Group Swap L',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '6',  'label' => __( '6p  — Group Swap R',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '9',  'label' => __( '9p  — Oval',            'animation-addons-for-elementor' ) ],
 							[ 'value' => '10', 'label' => __( '10 — Circle',          'animation-addons-for-elementor' ) ],
 							[ 'value' => '11', 'label' => __( '11 — Ellipse',         'animation-addons-for-elementor' ) ],
 						] ),
 
-					Text_Control::bind_to( 'btn_url' )
+					Text_Control::bind_to( 'btn_pro_url' )
 						->set_label( __( 'URL', 'animation-addons-for-elementor' ) ),
 
-					Select_Control::bind_to( 'btn_target' )
+					Select_Control::bind_to( 'btn_pro_target' )
 						->set_label( __( 'Open In', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => '_self',  'label' => __( 'Same Window', 'animation-addons-for-elementor' ) ],
 							[ 'value' => '_blank', 'label' => __( 'New Window',  'animation-addons-for-elementor' ) ],
 						] ),
 
-					Switch_Control::bind_to( 'btn_nofollow' )
+					Switch_Control::bind_to( 'btn_pro_nofollow' )
 						->set_label( __( 'Add Nofollow', 'animation-addons-for-elementor' ) ),
 
-					Number_Control::bind_to( 'btn_circle_size' )
+					Number_Control::bind_to( 'btn_pro_circle_size' )
 						->set_label( __( 'Circle Size (px)', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'min' => 40, 'max' => 400, 'step' => 1 ] ),
 
-					Select_Control::bind_to( 'btn_alignment' )
+					Select_Control::bind_to( 'btn_pro_alignment' )
 						->set_label( __( 'Alignment', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'left',   'label' => __( 'Left',   'animation-addons-for-elementor' ) ],
@@ -143,11 +143,11 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 				->set_label( __( 'Hover Colors', 'animation-addons-for-elementor' ) )
 				->set_id( 'btn_hv_colors_tab' )
 				->set_items( [
-					Text_Control::bind_to( 'btn_hover_color' )
+					Text_Control::bind_to( 'btn_pro_hover_color' )
 						->set_label( __( 'Hover Text Color', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( 'btn_hover_bg_color' )
+					Text_Control::bind_to( 'btn_pro_hover_bg_color' )
 						->set_label( __( 'Hover Background', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( 'btn_hover_border_color' )
+					Text_Control::bind_to( 'btn_pro_hover_border_color' )
 						->set_label( __( 'Hover Border Color', 'animation-addons-for-elementor' ) ),
 				] ),
 

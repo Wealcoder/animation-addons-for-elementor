@@ -1,4 +1,4 @@
-{% set style_num = settings.btn_style | default('1') %}
+{% set style_num = settings.btn_pro_style | default('4') %}
 
 {# Style-specific modifier class applied to the <a> root element #}
 {% if style_num == '4' %}
@@ -22,9 +22,9 @@
 {% set btn_classes = btn_classes | merge(settings.classes | default([])) %}
 
 {# rel attribute #}
-{% if settings.btn_target == '_blank' %}
-    {% set rel_attr = 'noopener' ~ (settings.btn_nofollow ? ' nofollow' : '') %}
-{% elseif settings.btn_nofollow %}
+{% if settings.btn_pro_target == '_blank' %}
+    {% set rel_attr = 'noopener' ~ (settings.btn_pro_nofollow ? ' nofollow' : '') %}
+{% elseif settings.btn_pro_nofollow %}
     {% set rel_attr = 'nofollow' %}
 {% else %}
     {% set rel_attr = '' %}
@@ -32,25 +32,25 @@
 
 {# Inline CSS custom properties for hover colours + alignment #}
 {% set inline_style = '' %}
-{% if settings.btn_alignment is defined and settings.btn_alignment is not empty %}
-    {% set inline_style = inline_style ~ 'text-align:' ~ settings.btn_alignment ~ ';' %}
+{% if settings.btn_pro_alignment is defined and settings.btn_pro_alignment is not empty %}
+    {% set inline_style = inline_style ~ 'text-align:' ~ settings.btn_pro_alignment ~ ';' %}
 {% endif %}
-{% if settings.btn_hover_color is defined and settings.btn_hover_color is not empty %}
-    {% set inline_style = inline_style ~ '--aae-btn-hover-color:' ~ settings.btn_hover_color ~ ';' %}
+{% if settings.btn_pro_hover_color is defined and settings.btn_pro_hover_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-color:' ~ settings.btn_pro_hover_color ~ ';' %}
 {% endif %}
-{% if settings.btn_hover_bg_color is defined and settings.btn_hover_bg_color is not empty %}
-    {% set inline_style = inline_style ~ '--aae-btn-hover-bg:' ~ settings.btn_hover_bg_color ~ ';' %}
+{% if settings.btn_pro_hover_bg_color is defined and settings.btn_pro_hover_bg_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-bg:' ~ settings.btn_pro_hover_bg_color ~ ';' %}
 {% endif %}
-{% if settings.btn_hover_border_color is defined and settings.btn_hover_border_color is not empty %}
-    {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_hover_border_color ~ ';' %}
+{% if settings.btn_pro_hover_border_color is defined and settings.btn_pro_hover_border_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_pro_hover_border_color ~ ';' %}
 {% endif %}
-{% if style_num == '10' and settings.btn_circle_size is defined and settings.btn_circle_size is not empty %}
-    {% set inline_style = inline_style ~ '--aae-btn-size:' ~ settings.btn_circle_size ~ 'px;' %}
+{% if style_num == '10' and settings.btn_pro_circle_size is defined and settings.btn_pro_circle_size is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-size:' ~ settings.btn_pro_circle_size ~ 'px;' %}
 {% endif %}
 
 <a class="{{ btn_classes | join(' ') }} {{ editor_classes | default('') }}"
-   href="{{ settings.btn_url | default('#') | e('html_attr') }}"
-   {% if settings.btn_target == '_blank' %}target="_blank"{% endif %}
+   href="{{ settings.btn_pro_url | default('#') | e('html_attr') }}"
+   {% if settings.btn_pro_target == '_blank' %}target="_blank"{% endif %}
    {% if rel_attr is not empty %}rel="{{ rel_attr }}"{% endif %}
    data-id="{{ id }}"
    data-element_type="{{ type }}"
