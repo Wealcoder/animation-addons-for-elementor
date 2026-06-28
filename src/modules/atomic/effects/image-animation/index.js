@@ -314,9 +314,19 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 		const entry = { config, tween: null, dispose: null };
 		state.push(entry);
 
+		// slide-change replays the entrance every time the slide is entered. The
+		// image effects (reveal clip-path %, scale) build their "from" state from
+		// the element's CURRENT geometry, so a tween cached from an earlier play —
+		// built while the slide was off-screen / mid-transition — restarts from a
+		// stale (wrong) start box and only the tail shows. Rebuild fresh each time
+		// so the entrance always measures the now-settled slide and plays in full.
+		const rebuildEachPlay = mode === 'slide-change';
+
 		const play = () => {
 			// `set` is instant — re-apply each time the trigger fires.
-			if (config.method === 'set') {
+			// slide-change rows also rebuild every time (fresh geometry, see above).
+			if (config.method === 'set' || rebuildEachPlay) {
+				if (entry.tween) { try { entry.tween.kill?.(); } catch (_) {} }
 				const live = buildRowTween(el, config, false, false);
 				entry.tween = live;
 				if (live) el[IMG_PLAYED] = live;

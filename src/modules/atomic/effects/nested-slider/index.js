@@ -745,6 +745,8 @@ function bind(container, config) {
 
 		maxIndex = getMaxIndex();
 
+		const prevIndex = currentIndex;
+
 		if (hasSeamlessLoop) {
 			if (index < 0) index = 0;
 			if (index >= slides.length) index = slides.length - 1;
@@ -760,7 +762,13 @@ function bind(container, config) {
 		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
-		emitSlideChange(index);
+		// Only broadcast a slide-change when the active slide actually CHANGED.
+		// With loop off, autoplay/keys keep calling goToSlide(last+1) which clamps
+		// back to the same last index — re-emitting every tick and replaying (or
+		// looping) the entrance animation on the last slide. Skip the no-op emit.
+		if (index !== prevIndex) {
+			emitSlideChange(index);
+		}
 	};
 
 	// Broadcast a slide-change so the animation runtime can replay the
