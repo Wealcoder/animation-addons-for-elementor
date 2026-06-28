@@ -296,6 +296,23 @@ function piecesFor(el, config) {
 
 /* ---------- stagger ---------- */
 
+/**
+ * Return a copy of the row config with any infinite-repeat stripped from its
+ * stagger, so an on_slide_change entrance plays once instead of looping. The
+ * stagger may be an object ({ each, repeat, yoyo, … }) or a JSON string.
+ */
+function stripRepeatFromConfig(config) {
+	let stagger = config.stagger;
+	if (typeof stagger === 'string' && stagger.trim().startsWith('{')) {
+		try { stagger = JSON.parse(stagger); } catch (_) { /* leave as-is */ }
+	}
+	if (stagger && typeof stagger === 'object') {
+		const { repeat, yoyo, ...rest } = stagger;
+		return { ...config, stagger: rest };
+	}
+	return config;
+}
+
 function buildStaggerConfig(userStagger, presetStagger = null) {
 	const staggerObj = (typeof userStagger === 'object' && userStagger !== null)
 		? userStagger
@@ -547,6 +564,32 @@ export function bindText(el, mapConfig, forcePreview = false) {
 		const entry = { config, tween: null, dispose: null };
 		state.push(entry);
 
+		// on_slide_change should play the entrance exactly ONCE per entry, even for
+		// effects whose stagger/preset carries repeat:-1 (infinite). Build from a
+		// config whose stagger has repeat/yoyo stripped (stagger-level repeat loops
+		// each piece's own sub-tween — a top-level repeat() can't stop that), and
+		// also clear any top-level repeat on the built tween for good measure.
+		const playOnce = mode === 'slide-change';
+		const playConfig = playOnce ? stripRepeatFromConfig(config) : config;
+		const buildOnce = () => {
+			const t = buildRowTween(el, playConfig, false, false);
+			if (playOnce && t) {
+				// Clear repeat on the tween/timeline AND any child tweens (a
+				// stagger with repeat:-1 builds a timeline whose per-piece tweens
+				// each carry the repeat — clearing only the parent leaves them
+				// looping).
+				try { if (typeof t.repeat === 'function') { t.repeat(0); t.yoyo(false); } } catch (_) {}
+				try {
+					if (typeof t.getChildren === 'function') {
+						t.getChildren(true, true, false).forEach((c) => {
+							if (c && typeof c.repeat === 'function') { c.repeat(0); c.yoyo(false); }
+						});
+					}
+				} catch (_) {}
+			}
+			return t;
+		};
+
 		const play = () => {
 			if (entry.tween) {
 				if (entry.tween.paused()) {
@@ -555,7 +598,7 @@ export function bindText(el, mapConfig, forcePreview = false) {
 					entry.tween.restart(true);
 				}
 			} else {
-				const live = buildRowTween(el, config, false, false);
+				const live = buildOnce();
 				entry.tween = live;
 				if (live) el[TEXT_PLAYED] = live;
 			}

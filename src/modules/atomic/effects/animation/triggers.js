@@ -191,12 +191,21 @@ export function wireTrigger({ el, mode, play, animation, buildScrubbed, triggerE
 		// slide never animates until the user navigates. The slider also marks the
 		// active slide with [data-aae-slide-active]; if el is inside it right now,
 		// the entry already happened, so play once to make up for the missed event.
+		//
+		// Defer to the next frame: at bind time the active slide may still be mid
+		// layout / transition, so a geometry-based "from" tween (image clip-path /
+		// scale) would measure the wrong start box and only the tail of the
+		// animation would show. A rAF lets layout settle so it plays from the top.
 		const activeNow = el.closest && el.closest('.aae-a-slide[data-aae-slide-active]');
+		let catchupRaf = 0;
 		if (activeNow && slider.contains(activeNow)) {
-			play();
+			catchupRaf = requestAnimationFrame(() => { catchupRaf = 0; play(); });
 		}
 
-		return setDisposer(() => slider.removeEventListener('aae:slide:change', onSlide));
+		return setDisposer(() => {
+			if (catchupRaf) cancelAnimationFrame(catchupRaf);
+			slider.removeEventListener('aae:slide:change', onSlide);
+		});
 	}
 
 	const ScrollTrigger = getScrollTrigger();
