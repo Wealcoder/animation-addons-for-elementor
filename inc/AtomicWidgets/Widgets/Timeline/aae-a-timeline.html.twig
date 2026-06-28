@@ -47,10 +47,11 @@
             display: none;
         }
 
+        {% if preset == 'editorial-rail' %}
         /* ═════════════════════════════════════════════════════
            EDITORIAL RAIL — green vertical spine on each item
            ═════════════════════════════════════════════════════ */
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]).aae-a-timeline {
+        :where([data-id="{{ id }}"]).aae-a-timeline {
             display: flex;
             flex-direction: column;
             max-width: 720px;
@@ -58,12 +59,12 @@
             padding-inline: 0;
             gap: 0;
         }
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]) .aae-a-timeline-item {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
             padding-inline-start: 32px;
             padding-block-end: 32px;
             border-inline-start: 2px solid #bbf7d0;
         }
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: 0;
             inset-inline-start: -11px;
@@ -75,14 +76,16 @@
             font-size: 10px; font-weight: 800; line-height: 1;
             z-index: 2;
         }
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]) .aae-a-timeline-item-date  { color: #15803d; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 20px; font-weight: 700; line-height: 1.2; }
-        :where([data-id="{{ id }}"][data-preset="editorial-rail"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #15803d; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 20px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        {% endif %}
 
+        {% if preset == 'heritage-split' %}
         /* ═════════════════════════════════════════════════════
            HERITAGE SPLIT — warm orange spine
            ═════════════════════════════════════════════════════ */
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]).aae-a-timeline {
+        :where([data-id="{{ id }}"]).aae-a-timeline {
             display: flex;
             flex-direction: column;
             max-width: 720px;
@@ -93,12 +96,12 @@
             border-radius: 14px;
             box-shadow: 0 18px 50px rgba(120,46,16,.10);
         }
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]) .aae-a-timeline-item {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
             padding-inline-start: 42px;
             padding-block-end: 32px;
             border-inline-start: 3px solid #f4ae88;
         }
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: 0;
             inset-inline-start: -18px;
@@ -110,14 +113,16 @@
             font-size: 12px; font-weight: 800; line-height: 1;
             z-index: 2;
         }
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]) .aae-a-timeline-item-date  { color: #c0502a; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]) .aae-a-timeline-item-title { color: #7c2d12; font-size: 20px; font-weight: 700; line-height: 1.2; }
-        :where([data-id="{{ id }}"][data-preset="heritage-split"]) .aae-a-timeline-item-desc  { color: #92400e; font-size: 14px; line-height: 1.6; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #c0502a; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #7c2d12; font-size: 20px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #92400e; font-size: 14px; line-height: 1.6; }
+        {% endif %}
 
+        {% if preset == 'roadmap-track' %}
         /* ═════════════════════════════════════════════════════
            ROADMAP TRACK — horizontal 4-col grid
            ═════════════════════════════════════════════════════ */
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]).aae-a-timeline {
+        :where([data-id="{{ id }}"]).aae-a-timeline {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 24px;
@@ -131,7 +136,7 @@
             background-repeat: no-repeat;
             border-radius: 14px;
         }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
             padding: 22px;
             gap: 8px;
             background: #fff;
@@ -139,7 +144,7 @@
             border-radius: 12px;
             box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.05);
         }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item-date {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date {
             position: absolute;
             inset-block-start: -78px;
             inset-inline-start: 0;
@@ -149,7 +154,7 @@
             letter-spacing: -.02em;
             text-transform: none;
         }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: -28px;
             inset-inline-start: 0;
@@ -162,19 +167,21 @@
             font-size: 9px; font-weight: 700; line-height: 1;
             z-index: 2;
         }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-marker {
             background: #2563eb;
             color: #fff;
             border-color: #2563eb;
             box-shadow: 0 0 0 5px rgba(37,99,235,.16);
         }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 18px; font-weight: 700; line-height: 1.2; }
-        :where([data-id="{{ id }}"][data-preset="roadmap-track"]) .aae-a-timeline-item-desc  { color: #64748b; font-size: 14px; line-height: 1.6; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 18px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #64748b; font-size: 14px; line-height: 1.6; }
+        {% endif %}
 
+        {% if preset == 'case-study' %}
         /* ═════════════════════════════════════════════════════
            CASE STUDY STEPS — bold navy, square marker
            ═════════════════════════════════════════════════════ */
-        :where([data-id="{{ id }}"][data-preset="case-study"]).aae-a-timeline {
+        :where([data-id="{{ id }}"]).aae-a-timeline {
             display: flex;
             flex-direction: column;
             max-width: 720px;
@@ -182,12 +189,12 @@
             padding-block: 16px;
             padding-inline: 0;
         }
-        :where([data-id="{{ id }}"][data-preset="case-study"]) .aae-a-timeline-item {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
             padding-inline-start: 48px;
             padding-block-end: 28px;
             border-inline-start: 4px solid #0f172a;
         }
-        :where([data-id="{{ id }}"][data-preset="case-study"]) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: 0;
             inset-inline-start: -24px;
@@ -198,14 +205,16 @@
             box-shadow: 0 8px 20px rgba(15,23,42,.22);
             font-size: 15px; font-weight: 800;
         }
-        :where([data-id="{{ id }}"][data-preset="case-study"]) .aae-a-timeline-item-date  { color: #fff; background: #0f172a; padding: 6px 12px; border-radius: 999px; align-self: start; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        :where([data-id="{{ id }}"][data-preset="case-study"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 22px; font-weight: 700; line-height: 1.2; }
-        :where([data-id="{{ id }}"][data-preset="case-study"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #fff; background: #0f172a; padding: 6px 12px; border-radius: 999px; align-self: start; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 22px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        {% endif %}
 
+        {% if preset == 'social' %}
         /* ═════════════════════════════════════════════════════
            SOCIAL — purple alternating split with dotted spine
            ═════════════════════════════════════════════════════ */
-        :where([data-id="{{ id }}"][data-preset="social"]).aae-a-timeline {
+        :where([data-id="{{ id }}"]).aae-a-timeline {
             display: flex;
             flex-direction: column;
             max-width: 720px;
@@ -214,30 +223,30 @@
             position: relative;
             margin-inline: auto;
         }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
             width: calc(50% - 24px);
             padding: 20px;
             background: #fff;
             border-radius: 14px;
             box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(124,58,237,.10);
         }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item:nth-child(odd)  { align-self: flex-start; }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item:nth-child(even) { align-self: flex-end; }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item:nth-child(odd) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(odd)  { align-self: flex-start; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(even) { align-self: flex-end; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(odd) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: 24px;
             inset-inline-end: -24px;
             inset-inline-start: auto;
             transform: translateX(50%);
         }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item:nth-child(even) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(even) .aae-a-timeline-item-marker {
             position: absolute;
             inset-block-start: 24px;
             inset-inline-start: -24px;
             inset-inline-end: auto;
             transform: translateX(-50%);
         }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item-marker {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
             width: 14px; height: 14px;
             background: #7c3aed;
             color: transparent;
@@ -246,10 +255,10 @@
             font-size: 0;
             z-index: 2;
         }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item-date  { color: #7c3aed; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item-title { color: #18181b; font-size: 17px; font-weight: 700; line-height: 1.3; }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-item-desc  { color: #52525b; font-size: 14px; line-height: 1.55; }
-        :where([data-id="{{ id }}"][data-preset="social"]) .aae-a-timeline-spine {
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #7c3aed; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #18181b; font-size: 17px; font-weight: 700; line-height: 1.3; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #52525b; font-size: 14px; line-height: 1.55; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-spine {
             display: block;
             position: absolute;
             inset-block-start: 16px;
@@ -270,6 +279,7 @@
             line-height: 0;
             z-index: 0;
         }
+        {% endif %}
     </style>
 
     {{ children_placeholder | raw }}
