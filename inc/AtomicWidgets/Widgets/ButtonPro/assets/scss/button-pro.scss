@@ -1,21 +1,5 @@
 @import "../../../../../../assets/src/scss/utils/variables";
 
-// =============================================================================
-// AAE Pro Button — Atomic widget styles
-//
-// CSS custom properties used for colour overrides (set via inline style):
-//   --aae-btn-color            text / icon colour (normal state)
-//   --aae-btn-bg               background colour  (normal state)
-//   --aae-btn-border-color     border colour      (normal state)
-//   --aae-btn-icon-color       icon-only colour override
-//   --aae-btn-hover-color      text / icon colour (hover state)
-//   --aae-btn-hover-bg         background colour  (hover state)
-//   --aae-btn-hover-border-color border colour    (hover state)
-//   --aae-btn-icon-size        size of SVG icon   (default 1em)
-//   --aae-btn-icon-box         icon circle size for styles 5/6 (default 60px)
-//   --outline-gap              gap for style-7 outline pill     (default 10px)
-// =============================================================================
-
 // ── Shared ────────────────────────────────────────────────────────────────────
 
 .aae-a-button-pro {
@@ -49,10 +33,10 @@
 .aae--btn-pro {
   .icon {
     line-height: 0;
-    font-size: var(--aae-btn-icon-size, 1em);
-    width: var(--aae-btn-icon-size, 1em);
-    height: var(--aae-btn-icon-size, 1em);
-    color: var(--aae-btn-icon-color, inherit);
+    font-size: 1em;
+    width: 1em;
+    height: 1em;
+    color: inherit;
   }
 }
 
@@ -70,8 +54,8 @@
     flex-direction: row-reverse;
     align-items: center;
     column-gap: 10px;
-    // color: var(--aae-btn-color, #fff);
-    background-color: var(--aae-btn-bg, #121212);
+    // color: #fff;
+    background-color: #121212;
     padding: 18px 42px;
     border-radius: 5px;
     position: relative;
@@ -79,18 +63,18 @@
     z-index: 1;
 
     &:hover {
-      color: var(--aae-btn-hover-color, #fff);
+      color: #fff;
 
       // Expand the ripple circle on hover
       .aae-ripple-el,
       > span:not([class]) {
-        width: var(--ripple-size, 500px);
-        height: var(--ripple-size, 500px);
+        width: 500px;
+        height: 500px;
       }
 
     .aae-arrow-el,
     > strong {
-      background: var(--aae-btn-hover-color, #fff);
+      background: #fff;
 
     }
 
@@ -102,7 +86,7 @@
     }
 
     // .e-paragraph-base {
-    //   color: var(--aae-btn-color, #fff);
+    //   color: #fff;
     // }
 
     // Ripple circle — origin moved by GSAP.quickTo()
@@ -111,7 +95,7 @@
       position: absolute;
       width: 0;
       height: 0;
-      background: var(--aae-btn-hover-bg, #FC5A11);
+      background: #FC5A11;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       transition: width 0.5s ease, height 0.5s ease;
@@ -124,7 +108,7 @@
       width: 50px;
       display: inherit;
       height: 1px;
-      // background: var(--aae-btn-hover-color, #fff);
+      // background: #fff;
       margin-left: 5px;
       position: relative;
 
@@ -134,7 +118,7 @@
         content: '';
         top: -5px;
         right: 30px;
-        border: solid var(--aae-btn-hover-color, #fff);
+        border: solid #fff;
         border-width: 0 1px 1px 0;
         padding: 5px;
         transform: rotate(-45deg);
@@ -165,8 +149,8 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 1;
-    color: var(--aae-btn-color, #000);
-    // background-color: var(--aae-btn-bg, #0A1A3D);
+    color: #000;
+    // background-color: #0A1A3D;
     text-transform: capitalize;
     transition: all 0.3s;
     display: inline-flex;
@@ -183,13 +167,13 @@
   > .e-svg-base,
   > [data-swap-clone],
   > .elementor-widget-e-svg > .e-svg-base {
-    color: var(--aae-btn-icon-color, var(--aae-btn-color, #000));
+    color: #000;
     fill: currentColor;
     border-radius: 50px;
-    // background-color: var(--aae-btn-bg, #0A1A3D);
+    // background-color: #0A1A3D;
     border: 1px solid transparent;
-    width: var(--aae-btn-icon-box, 60px);
-    height: var(--aae-btn-icon-box, 60px);
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -209,7 +193,7 @@
   &.aae-btn-pro-group > [data-swap-clone],
   .aae-btn-pro-group > [data-swap-clone] {
     transform: scale3d(0.5, 0.5, 1);
-    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    margin-right: -60px;
     opacity: 0;
   }
 
@@ -236,7 +220,7 @@
   &.aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base,
   .aae-btn-pro-group:hover > .elementor-widget-e-svg > .e-svg-base {
     transform: scale3d(0.5, 0.5, 1);
-    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    margin-left: -60px;
     opacity: 0;
   }
 
@@ -259,7 +243,7 @@
   &.aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base,
   .aae-btn-pro-group > .elementor-widget-e-svg > .e-svg-base {
     transform: scale3d(0.5, 0.5, 1);
-    margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
+    margin-left: -60px;
     opacity: 0;
   }
 
@@ -267,7 +251,7 @@
   &.aae-btn-pro-group:hover > [data-swap-clone],
   .aae-btn-pro-group:hover > [data-swap-clone] {
     transform: scale3d(0.5, 0.5, 1);
-    margin-right: calc(var(--aae-btn-icon-box, 60px) * -1);
+    margin-right: -60px;
     opacity: 0;
   }
 
@@ -293,16 +277,16 @@
     justify-content: center;
     border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
     padding: 32px 52px;
-    border: 1px solid var(--aae-btn-border-color, #1C1D20);
-    color: var(--aae-btn-color, #1C1D20);
-    background-color: var(--aae-btn-bg, transparent);
+    border: 1px solid #1C1D20;
+    color: #1C1D20;
+    background-color: transparent;
     overflow: hidden;
     position: relative;
     z-index: 1;
 
     &:hover {
-      color: var(--aae-btn-hover-color, #fff);
-      border-color: var(--aae-btn-hover-border-color, #1C1D20);
+      color: #fff;
+      border-color: #1C1D20;
     }
 
     // Expanding fill circle — grows from cursor position on hover
@@ -313,15 +297,15 @@
       left: 50%;
       top: 50%;
       border-radius: 100%;
-      background-color: var(--aae-btn-hover-bg, #1C1D20);
+      background-color: #1C1D20;
       transform: translate(-50%, -50%);
       transition: width 0.6s ease, height 0.6s ease;
       z-index: -1;
     }
 
     &:hover .aae-btn-fill-el {
-      width: var(--fill-size, 400px);
-      height: var(--fill-size, 400px);
+      width: 400px;
+      height: 400px;
     }
   }
 }
@@ -334,20 +318,20 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--aae-btn-size, 140px);
-    height: var(--aae-btn-size, 140px);
+    width: 140px;
+    height: 140px;
     flex-direction: column;
     padding: 0;
-    color: var(--aae-btn-color, #1C1D20);
-    // background-color: var(--aae-btn-bg, #fff);
-    border: 1px solid var(--aae-btn-border-color, #1C1D20);
+    color: #1C1D20;
+    // background-color: #fff;
+    border: 1px solid #1C1D20;
     border-radius: 100%;
     overflow: hidden;
     position: relative;
     z-index: 1;
 
     &:hover {
-      color: var(--aae-btn-hover-color, #fff);
+      color: #fff;
     }
 
     // Expanding fill circle — same pattern as oval
@@ -358,15 +342,15 @@
       left: 50%;
       top: 50%;
       border-radius: 100%;
-      background-color: var(--aae-btn-hover-bg, #1C1D20);
+      background-color: #1C1D20;
       transform: translate(-50%, -50%);
       transition: width 0.6s ease, height 0.6s ease;
       z-index: -1;
     }
 
     &:hover .aae-btn-fill-el {
-      width: var(--fill-size, 400px);
-      height: var(--fill-size, 400px);
+      width: 400px;
+      height: 400px;
     }
   }
 }
@@ -381,18 +365,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--aae-btn-color, #1C1D20);
+    color: #1C1D20;
     padding: 45px;
     position: relative;
-    background-color: var(--aae-btn-border-color, #1C1D20);
+    background-color: #1C1D20;
     border-radius: 100%;
     border-top-left-radius: 200%;
     border-bottom-right-radius: 200%;
     z-index: 1;
 
     &:hover {
-      color: var(--aae-btn-hover-color, #FFBC7D);
-      background-color: var(--aae-btn-hover-border-color, #E8BF96);
+      color: #FFBC7D;
+      background-color: #E8BF96;
     }
 
     // Inner fill pseudo-element — gives the illusion of a border
@@ -401,7 +385,7 @@
       content: '';
       width: calc(100% - 16px);
       height: calc(100% - 2px);
-      background-color: var(--aae-btn-bg, #fff);
+      background-color: #fff;
       z-index: -1;
       top: 50%;
       left: 50%;
@@ -413,7 +397,7 @@
     }
 
     &:hover::before {
-      background-color: var(--aae-btn-hover-bg, #fff);
+      background-color: #fff;
     }
   }
 }
