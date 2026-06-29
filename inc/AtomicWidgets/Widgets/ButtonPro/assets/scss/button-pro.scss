@@ -70,7 +70,7 @@
     flex-direction: row-reverse;
     align-items: center;
     column-gap: 10px;
-    color: var(--aae-btn-color, #fff);
+    // color: var(--aae-btn-color, #fff);
     background-color: var(--aae-btn-bg, #121212);
     padding: 18px 42px;
     border-radius: 5px;
@@ -165,7 +165,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 1;
-    color: var(--aae-btn-color, #fff);
+    color: var(--aae-btn-color, #000);
     // background-color: var(--aae-btn-bg, #0A1A3D);
     text-transform: capitalize;
     transition: all 0.3s;
@@ -183,7 +183,7 @@
   > .e-svg-base,
   > [data-swap-clone],
   > .elementor-widget-e-svg > .e-svg-base {
-    color: var(--aae-btn-icon-color, var(--aae-btn-color, #fff));
+    color: var(--aae-btn-icon-color, var(--aae-btn-color, #000));
     fill: currentColor;
     border-radius: 50px;
     // background-color: var(--aae-btn-bg, #0A1A3D);
@@ -239,6 +239,7 @@
     margin-left: calc(var(--aae-btn-icon-box, 60px) * -1);
     opacity: 0;
   }
+
 }
 
 // ── Style 6 — Group Swap Right (clone appears on the right) ───────────────────
@@ -333,13 +334,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 100%;
     width: var(--aae-btn-size, 140px);
     height: var(--aae-btn-size, 140px);
     flex-direction: column;
     padding: 0;
     color: var(--aae-btn-color, #1C1D20);
-    background-color: var(--aae-btn-bg, #E8BF96);
+    // background-color: var(--aae-btn-bg, #fff);
+    border: 1px solid var(--aae-btn-border-color, #1C1D20);
+    border-radius: 100%;
     overflow: hidden;
     position: relative;
     z-index: 1;
