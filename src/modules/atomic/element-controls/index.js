@@ -15,9 +15,11 @@
 import { controlsRegistry } from '@elementor/editor-editing-panel';
 
 import { SlidesControl } from './SlidesControl';
+import { PresetPickerControl } from './PresetPickerControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
+	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
 ];
 
 let registered = false;

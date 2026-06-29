@@ -125,6 +125,10 @@ function bind(container, config) {
 	sliderDiv.setAttribute('role', 'region');
 	sliderDiv.setAttribute('aria-roledescription', 'carousel');
 	sliderDiv.setAttribute('tabindex', '0');
+	// The slider is focusable (for keyboard arrows), but the browser's default
+	// focus outline shows as a black border across the top on click. Suppress it
+	// — navigation is driven by the slide itself, not an outlined focus state.
+	sliderDiv.style.outline = 'none';
 	if (!sliderDiv.getAttribute('aria-label')) {
 		sliderDiv.setAttribute('aria-label', 'Slider Carousel');
 	}
@@ -745,6 +749,8 @@ function bind(container, config) {
 
 		maxIndex = getMaxIndex();
 
+		const prevIndex = currentIndex;
+
 		if (hasSeamlessLoop) {
 			if (index < 0) index = 0;
 			if (index >= slides.length) index = slides.length - 1;
@@ -760,7 +766,13 @@ function bind(container, config) {
 		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
-		emitSlideChange(index);
+		// Only broadcast a slide-change when the active slide actually CHANGED.
+		// With loop off, autoplay/keys keep calling goToSlide(last+1) which clamps
+		// back to the same last index — re-emitting every tick and replaying (or
+		// looping) the entrance animation on the last slide. Skip the no-op emit.
+		if (index !== prevIndex) {
+			emitSlideChange(index);
+		}
 	};
 
 	// Broadcast a slide-change so the animation runtime can replay the
@@ -950,12 +962,26 @@ function bind(container, config) {
 		}, evtOpts);
 	}
 
-	// Keyboard controls
+	// Keyboard controls. Bound on the slider root (which has tabindex="0"), but
+	// keydown bubbles so it also fires when focus is on a child (link/button)
+	// inside the slider. We only act on the arrows and preventDefault so the page
+	// doesn't also scroll. To make "click then use arrows" reliable, a pointerdown
+	// on the slider focuses the root if focus isn't already inside it (clicking a
+	// plain slide area otherwise leaves nothing focused, so no keydown arrives).
+	sliderDiv.addEventListener('pointerdown', () => {
+		const active = sliderDiv.ownerDocument.activeElement;
+		if (!sliderDiv.contains(active)) {
+			try { sliderDiv.focus({ preventScroll: true }); } catch (_) { sliderDiv.focus(); }
+		}
+	}, evtOpts);
+
 	sliderDiv.addEventListener('keydown', (e) => {
 		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
 			goToSlide(currentIndex - 1);
 			resumeSlider();
 		} else if (e.key === 'ArrowRight') {
+			e.preventDefault();
 			goToSlide(currentIndex + 1);
 			resumeSlider();
 		}
