@@ -180,6 +180,7 @@ final class Atomic
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
 			'aae-a-nav-sub',
+			'aae-a-nav-sub-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -289,26 +290,26 @@ final class Atomic
 	{
 		$this->widgets_registry = [
 
-			'aae-a-menu' => [
-				'label'        => 'Menu',
-				'description'  => 'A modern standard navigation menu with GSAP interactions.',
-				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'menu',
-					'nav',
-					'navigation',
-					'atomic',
-					'gsap',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
+			// 'aae-a-menu' => [
+			// 	'label'        => 'Menu',
+			// 	'description'  => 'A modern standard navigation menu with GSAP interactions.',
+			// 	'icon'         => 'eicon-nav-menu',
+			// 	'is_pro'       => false,
+			// 	'is_extension' => false,
+			// 	'is_upcoming'  => false,
+			// 	'default'      => true,
+			// 	'keywords'     => [
+			// 		'menu',
+			// 		'nav',
+			// 		'navigation',
+			// 		'atomic',
+			// 		'gsap',
+			// 	],
+			// 	'category'     => 'general',
+			// 	'order'        => 0,
+			// 	'demo_url'     => '',
+			// 	'doc_url'      => '',
+			// ],
 
 			'aae-a-post-title' => [
 				'label'        => 'Post Title',
@@ -1477,6 +1478,8 @@ final class Atomic
 			'has_script'    => true,
 			'script_handle' => 'aae-a-nav-js',
 			'script_path'   => '/assets/atomic/js/nav.js',
+			'style_handle'  => 'aae-a-nav-css',
+			'style_path'    => '/assets/atomic/css/nav.css',
 		],
 		'aae-a-nav-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item',
@@ -1486,6 +1489,11 @@ final class Atomic
 		'aae-a-nav-sub' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub',
 			'file'       => 'Widgets/Nav/class-aae-a-nav-sub.php',
+			'has_script' => false,
+		],
+		'aae-a-nav-sub-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+			'file'       => 'Widgets/Nav/class-aae-a-nav-sub-item.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...

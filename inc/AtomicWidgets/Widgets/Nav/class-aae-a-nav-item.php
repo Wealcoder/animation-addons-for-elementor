@@ -104,15 +104,19 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		/* Sub-dropdown ships with every nav-item — CSS keeps it hidden until
-		 * the user toggles "Enable Dropdown" on (data-has-dropdown="true"). */
-		$sub = AAE_A_Nav_Sub::generate()->build();
-
-		return [ $label, $sub ];
+		/* Only the label ships by default. The nav-sub is attached via the
+		 * parent (AAE_A_Nav) for the one example nav-item that demonstrates
+		 * dropdowns. Auto-shipping a nav-sub on every nav-item doubled the
+		 * child count (25 elements/widget) which made device-mode switches
+		 * hang the editor as every child re-rendered + the validator walked
+		 * the (then-cyclic) allowed-child-types tree. */
+		return [ $label ];
 	}
 
 	protected function define_allowed_child_types() {
 		return [ 'widget', 'e-heading', 'e-paragraph', 'e-svg', 'e-aae-a-nav-sub' ];
+		// nav-sub IS allowed here (one-way), but nav-sub does NOT allow nav-item
+		// back — that's the cycle-break that fixes the device-switch hang.
 	}
 
 	protected function define_default_html_tag() {
