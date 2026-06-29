@@ -75,26 +75,89 @@ const groupSwapSetup = ( container ) => {
 
 /* -------------------------------------------------------------------------
  * Styles 9 & 10 — Hover Fill from cursor point (Oval / Circle)
- * Ensures .aae-btn-fill-el exists, then tracks mouseenter/leave position so
- * the expanding circle originates from the cursor entry/exit point rather
- * than always from the centre. Idempotent via data-aae-fill-bound flag.
+ * Places .aae-btn-fill-el inside a dedicated .aae-fill-clip wrapper that
+ * owns its own overflow:hidden, so the fill is always clipped to the button
+ * bounds regardless of what Elementor does to the container's overflow.
+ *
+ * Why a clip wrapper is needed:
+ *   Elementor's .e-con class sets `overflow: var(--overflow)`. On the
+ *   frontend, Elementor's JS applies `style="--overflow:visible"` to
+ *   container elements AFTER our callback runs, silently overriding the
+ *   inline `overflow:hidden` we set. The clip wrapper is a plain <span>
+ *   that Elementor never touches, so its overflow:hidden is permanent.
+ *
+ * The clip wrapper sits at z-index:-1 inside the button (which has
+ * z-index:1 via SCSS, creating a stacking context). This ensures the fill
+ * is painted above the button's background colour but below the text/icon.
+ * Idempotent via data-aae-fill-bound flag.
  * ------------------------------------------------------------------------- */
 const hoverFillSetup = ( container ) => {
+	// position:relative is still needed so the clip's inset:0 resolves to
+	// the button bounds.
+	container.style.position = 'relative';
+
+	// Create (or reuse) the clip wrapper. It covers the button exactly via
+	// inset:0 and provides its own overflow:hidden that Elementor cannot
+	// override.
+	let clip = container.querySelector( ':scope > .aae-fill-clip' );
+	if ( ! clip ) {
+		clip = document.createElement( 'span' );
+		clip.className = 'aae-fill-clip';
+		clip.setAttribute( 'aria-hidden', 'true' );
+		clip.style.cssText = [
+			'position:absolute',
+			'inset:0',
+			'overflow:hidden',
+			'border-radius:inherit',
+			'z-index:-1',
+			'pointer-events:none',
+		].join( ';' ) + ';';
+		// Insert as first child so it sits below text/icon siblings in DOM
+		// order (the button's z-index:1 stacking context ensures z-index:-1
+		// paints it after the background but before normal-flow children).
+		container.insertBefore( clip, container.firstChild );
+	}
+
+	// Move the fill into the clip wrapper. The Twig template renders the
+	// fill directly inside the button; we re-parent it here so it is clipped
+	// by the wrapper's overflow:hidden rather than the container's overflow.
 	let fill = container.querySelector( '.aae-btn-fill-el' );
 	if ( ! fill ) {
 		fill = document.createElement( 'span' );
-		fill.classList.add( 'aae-btn-fill-el' );
-		container.append( fill );
+		fill.className = 'aae-btn-fill-el';
 	}
+	if ( fill.parentElement !== clip ) {
+		clip.appendChild( fill );
+	}
+
 	if ( container.dataset.aaeFillBound ) return;
 	container.dataset.aaeFillBound = '1';
-	const updatePos = ( e ) => {
+
+	const onEnter = ( e ) => {
+		const rect = container.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		// Diameter must reach the farthest corner so the full button is
+		// covered regardless of where the cursor enters.
+		const maxDist = Math.max(
+			Math.hypot( x, y ),
+			Math.hypot( rect.width - x, y ),
+			Math.hypot( x, rect.height - y ),
+			Math.hypot( rect.width - x, rect.height - y )
+		);
+		container.style.setProperty( '--fill-size', Math.ceil( maxDist * 2 ) + 'px' );
+		fill.style.left = x + 'px';
+		fill.style.top  = y + 'px';
+	};
+
+	const onLeave = ( e ) => {
 		const rect = container.getBoundingClientRect();
 		fill.style.left = ( e.clientX - rect.left ) + 'px';
 		fill.style.top  = ( e.clientY - rect.top  ) + 'px';
 	};
-	container.addEventListener( 'mouseenter', updatePos );
-	container.addEventListener( 'mouseleave', updatePos );
+
+	container.addEventListener( 'mouseenter', onEnter );
+	container.addEventListener( 'mouseleave', onLeave );
 };
 
 /* -------------------------------------------------------------------------

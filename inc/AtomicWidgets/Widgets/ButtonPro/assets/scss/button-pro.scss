@@ -20,6 +20,7 @@
 
 .aae-a-button-pro {
   width: auto;
+  display: inline-flex;
 
   .e-svg-base {
     width: 23px;
@@ -284,6 +285,11 @@
 .style-9 {
   &.aae-btn-oval,
   .aae-btn-oval {
+    // 0,2,0 specificity beats Elementor's .e-con (0,1,0) which sets these via
+    // --display / --align-items / --justify-content CSS variables on the frontend.
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
     padding: 32px 52px;
     border: 1px solid var(--aae-btn-border-color, #1C1D20);
@@ -313,8 +319,8 @@
     }
 
     &:hover .aae-btn-fill-el {
-      width: 400px;
-      height: 400px;
+      width: var(--fill-size, 400px);
+      height: var(--fill-size, 400px);
     }
   }
 }
@@ -324,6 +330,9 @@
 .style-10 {
   &.aae-btn-circle,
   .aae-btn-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 100%;
     width: var(--aae-btn-size, 140px);
     height: var(--aae-btn-size, 140px);
@@ -354,8 +363,8 @@
     }
 
     &:hover .aae-btn-fill-el {
-      width: 400px;
-      height: 400px;
+      width: var(--fill-size, 400px);
+      height: var(--fill-size, 400px);
     }
   }
 }
@@ -367,6 +376,9 @@
 .style-11 {
   &.aae-btn-ellipse,
   .aae-btn-ellipse {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--aae-btn-color, #1C1D20);
     padding: 45px;
     position: relative;
