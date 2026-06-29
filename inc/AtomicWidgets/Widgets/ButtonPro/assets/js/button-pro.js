@@ -33,7 +33,24 @@ const rippleEffect = ( container ) => {
 		yTo( e.clientY - rect.top );
 	};
 
-	container.addEventListener( 'mouseenter', track );
+	const onEnter = ( e ) => {
+		const rect = container.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		// Diameter must reach the farthest corner from the entry point so the
+		// full button is covered regardless of where the cursor enters.
+		const maxDist = Math.max(
+			Math.hypot( x, y ),
+			Math.hypot( rect.width - x, y ),
+			Math.hypot( x, rect.height - y ),
+			Math.hypot( rect.width - x, rect.height - y )
+		);
+		container.style.setProperty( '--ripple-size', Math.ceil( maxDist * 2 ) + 'px' );
+		xTo( x );
+		yTo( y );
+	};
+
+	container.addEventListener( 'mouseenter', onEnter );
 	container.addEventListener( 'mouseleave', track );
 };
 

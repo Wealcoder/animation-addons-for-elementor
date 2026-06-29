@@ -83,8 +83,8 @@
       // Expand the ripple circle on hover
       .aae-ripple-el,
       > span:not([class]) {
-        width: 500px;
-        height: 500px;
+        width: var(--ripple-size, 500px);
+        height: var(--ripple-size, 500px);
       }
 
       .aae-arrow-el::after,
