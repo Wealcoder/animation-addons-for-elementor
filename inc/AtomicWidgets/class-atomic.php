@@ -373,6 +373,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-loop-grid' => [
+				'label'        => 'Loop Grid',
+				'description'  => 'Query posts and repeat a custom loop-item template per post (built from atomic widgets).',
+				'icon'         => 'eicon-loop-builder',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'loop',
+					'grid',
+					'posts',
+					'query',
+					'template',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-counter' => [
 				'label'        => 'Counter',
 				'description'  => 'An animated number counter using pure GSAP with minimal CSS footprint.',
@@ -1178,8 +1200,27 @@ final class Atomic
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_atomic_preview_scripts']);
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
 
+		// Loop Grid: register the loop-item document type (hosts atomic widgets).
+		add_action('elementor/documents/register', [$this, 'register_documents'], 11);
+
 		// AJAX endpoints for Editor previews
 		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
+
+		// Loop Grid: create a new loop-item template from the editor.
+		add_action('wp_ajax_aae_create_loop_item', [$this, 'ajax_create_loop_item']);
+
+		// Loop Grid: get the list of all loop-item templates.
+		add_action('wp_ajax_aae_get_loop_templates', [$this, 'ajax_get_loop_templates']);
+
+		// Loop Grid: server-render the grid for the editor preview (the atomic
+		// preview is client-side and can't run our PHP query/render).
+		add_action('wp_ajax_aae_render_loop_grid', [$this, 'ajax_render_loop_grid']);
+
+		// Loop Grid: pre-render referenced loop-item templates during the page
+		// render so the atomic widget CSS inside them gets discovered/enqueued
+		// (the loop item is printed via print_content(), bypassing the normal
+		// per-document asset pass).
+		add_action('elementor/post/render', [$this, 'enqueue_loop_template_assets'], 1);
 
 		// Seed defaults on first install (option doesn't exist yet).
 		$this->maybe_seed_widgets_defaults();
@@ -1330,6 +1371,16 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
+			],
+
+			'aae-a-loop-grid' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-grid.php',
+				'script_handle' => 'aae-a-loop-grid-js',
+				'script_path' => '/assets/atomic/js/loop-grid.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-loop-grid-css',
+				'style_path' => '/assets/atomic/css/loop-grid.css',
 			],
 
 			'aae-a-accordion' => [
@@ -1490,6 +1541,238 @@ final class Atomic
 		],
 		// Add new atomic widgets below...
 		];
+	}
+
+	/**
+	 * Register AAE custom Elementor document types.
+	 *
+	 * The loop-item document hosts the loop template (atomic widgets live
+	 * inside it). It is a V3 library document because atomic widgets have no
+	 * document type of their own.
+	 *
+	 * @param \Elementor\Core\Documents_Manager $documents_manager
+	 */
+	public function register_documents($documents_manager)
+	{
+		require_once __DIR__ . '/Documents/class-aae-loop-item-document.php';
+
+		$class = '\WCF_ADDONS\AtomicWidgets\Documents\AAE_Loop_Item_Document';
+
+		if (class_exists($class)) {
+			$documents_manager->register_document_type($class::DOCUMENT_TYPE, $class);
+		}
+	}
+
+	/**
+	 * AJAX: create a new loop-item template and return its post id.
+	 *
+	 * Called by the editor "Create Template" button. Creates an empty
+	 * aae-loop-item document; the editor then switches to it in place.
+	 */
+	public function ajax_create_loop_item()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		if (! class_exists('\Elementor\Plugin')) {
+			wp_send_json_error(['message' => 'Elementor not available.'], 500);
+		}
+
+		// The document class is only required on the 'elementor/documents/register'
+		// hook, which does NOT fire on admin-ajax requests. Load it here so the
+		// class exists for both create() and document type resolution.
+		require_once __DIR__ . '/Documents/class-aae-loop-item-document.php';
+
+		// Ensure the document type is registered in this request (the register
+		// hook may not have run on admin-ajax).
+		$dm   = \Elementor\Plugin::$instance->documents;
+		$type = \WCF_ADDONS\AtomicWidgets\Documents\AAE_Loop_Item_Document::DOCUMENT_TYPE;
+		if (! array_key_exists($type, $dm->get_document_types())) {
+			$dm->register_document_type($type, '\WCF_ADDONS\AtomicWidgets\Documents\AAE_Loop_Item_Document');
+		}
+
+		$title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : __('Loop Item', 'animation-addons-for-elementor');
+
+		$document = $dm->create(
+			\WCF_ADDONS\AtomicWidgets\Documents\AAE_Loop_Item_Document::DOCUMENT_TYPE,
+			['post_title' => $title]
+		);
+
+		if (is_wp_error($document)) {
+			wp_send_json_error(['message' => $document->get_error_message()], 500);
+		}
+
+		$doc_id = $document->get_main_id();
+
+		// Seed an empty atomic flexbox container so the loop-item opens with the
+		// atomic "drag widget here" drop zone (an empty document shows nothing to
+		// drop into). The user builds the card design inside this container.
+		$seed = [
+			[
+				'id'       => substr(md5('aae-loop-' . $doc_id), 0, 8),
+				'elType'   => 'e-flexbox',
+				'settings' => [],
+				'elements' => [],
+			],
+		];
+		update_post_meta($doc_id, '_elementor_data', wp_slash(wp_json_encode($seed)));
+		update_post_meta($doc_id, '_elementor_edit_mode', 'builder');
+
+		wp_send_json_success([
+			'id'        => $doc_id,
+			'edit_url'  => $document->get_edit_url(),
+		]);
+	}
+
+	/**
+	 * AJAX: server-render a loop grid for the editor preview.
+	 *
+	 * The atomic editor preview renders client-side and can't run the widget's
+	 * PHP query/render. The editor-bridge JS calls this with the widget's
+	 * settings and injects the returned HTML into the preview.
+	 */
+	public function ajax_render_loop_grid()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		require_once __DIR__ . '/Widgets/LoopGrid/class-aae-a-loop-grid.php';
+
+		$class = '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid';
+		if (! class_exists($class) || ! method_exists($class, 'render_grid_html')) {
+			wp_send_json_error(['message' => 'Loop grid renderer unavailable.'], 500);
+		}
+
+		$args = [
+			'template_id'    => isset($_POST['template_id']) ? absint($_POST['template_id']) : 0,
+			'columns'        => isset($_POST['columns']) ? absint($_POST['columns']) : 3,
+			'post_type'      => isset($_POST['post_type']) ? sanitize_key($_POST['post_type']) : 'post',
+			'posts_per_page' => isset($_POST['posts_per_page']) ? absint($_POST['posts_per_page']) : 6,
+			'order_by'       => isset($_POST['order_by']) ? sanitize_key($_POST['order_by']) : 'date',
+			'order'          => isset($_POST['order']) ? sanitize_key($_POST['order']) : 'desc',
+		];
+
+		$html = $class::render_grid_html($args);
+
+		wp_send_json_success(['html' => $html]);
+	}
+
+	/**
+	 * AJAX: get all existing loop-item templates.
+	 */
+	public function ajax_get_loop_templates()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$templates = get_posts([
+			'post_type'      => 'elementor_library',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'meta_query'     => [
+				[
+					'key'   => '_elementor_template_type',
+					'value' => 'aae-loop-item',
+				],
+			],
+		]);
+
+		$result = [];
+		foreach ($templates as $tpl) {
+			$result[] = [
+				'id'    => $tpl->ID,
+				'title' => $tpl->post_title,
+			];
+		}
+
+		wp_send_json_success($result);
+	}
+
+	/**
+	 * Pre-render loop-item templates referenced by loop-grid widgets on a page.
+	 *
+	 * Our loop grid prints each item via the loop-item document's
+	 * print_content(), which bypasses Elementor's normal per-document asset
+	 * pass — so the atomic widget CSS inside the template (post title/image,
+	 * etc.) would not be enqueued. We walk the page's element tree, collect the
+	 * referenced template ids, and re-enter the render pipeline for each so
+	 * their atomic CSS is discovered before output.
+	 *
+	 * @param int $post_id The document being rendered.
+	 */
+	public function enqueue_loop_template_assets($post_id)
+	{
+		static $processed = [];
+
+		$post_id = (int) $post_id;
+		if ($post_id <= 0 || isset($processed[$post_id])) {
+			return;
+		}
+		$processed[$post_id] = true;
+
+		if (! class_exists('\Elementor\Plugin')) {
+			return;
+		}
+		$plugin = \Elementor\Plugin::$instance;
+		if (! $plugin || ! isset($plugin->documents, $plugin->db)) {
+			return;
+		}
+
+		$document = $plugin->documents->get_doc_for_frontend($post_id);
+		if (! $document) {
+			$document = $plugin->documents->get($post_id);
+		}
+		if (! $document) {
+			return;
+		}
+
+		$elements_data = $document->get_elements_data();
+		if (empty($elements_data) || ! is_array($elements_data)) {
+			return;
+		}
+
+		$template_ids = [];
+
+		$plugin->db->iterate_data(
+			$elements_data,
+			static function ($element) use (&$template_ids) {
+				if (! is_array($element)) {
+					return;
+				}
+
+				$type = ($element['widgetType'] ?? '') ?: ($element['elType'] ?? '');
+				if ('e-aae-a-loop-grid' !== $type) {
+					return;
+				}
+
+				$settings = $element['settings'] ?? [];
+				$raw      = $settings['template_id'] ?? 0;
+				// Atomic props are wrapped: { $$type: 'number', value: N }.
+				$tpl = is_array($raw) ? ($raw['value'] ?? 0) : $raw;
+				$tpl = (int) $tpl;
+
+				if ($tpl > 0) {
+					$template_ids[$tpl] = true;
+				}
+			}
+		);
+
+		if (empty($template_ids)) {
+			return;
+		}
+
+		foreach (array_keys($template_ids) as $tpl) {
+			do_action('elementor/post/render', $tpl);
+		}
 	}
 
 	/**
@@ -2053,6 +2336,17 @@ final class Atomic
 			'aae-atomic-editor',
 			'AAE_WIDGET_PRESETS',
 			$this->get_widget_presets()
+		);
+
+		// Loop Grid: ajax config for the "Create Template" button.
+		wp_localize_script(
+			'aae-atomic-editor',
+			'AAE_LOOP_GRID',
+			[
+				'ajaxUrl'     => admin_url('admin-ajax.php'),
+				'createNonce' => wp_create_nonce('aae_loop_grid'),
+				'docType'     => \WCF_ADDONS\AtomicWidgets\Documents\AAE_Loop_Item_Document::DOCUMENT_TYPE,
+			]
 		);
 	}
 

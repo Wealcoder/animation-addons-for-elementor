@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(node t.mjs \"http://development.local/wp-admin/post.php?post=11055&action=elementor\")",
+      "Bash(node probe-attach.mjs \"http://development.local/wp-admin/post.php?post=11055&action=elementor&active-document=13147\")"
+    ]
+  }
+}

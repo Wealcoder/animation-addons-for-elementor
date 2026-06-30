@@ -1,0 +1,207 @@
+.aae-a-loop-grid-wrap {
+	display: block;
+	width: 100%;
+}
+
+.aae-a-loop-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+
+	&[data-columns="1"] { grid-template-columns: repeat(1, 1fr); }
+	&[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
+	&[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
+	&[data-columns="4"] { grid-template-columns: repeat(4, 1fr); }
+	&[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
+	&[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+
+	@media (max-width: 1024px) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	@media (max-width: 767px) {
+		grid-template-columns: repeat(1, 1fr);
+	}
+}
+
+.aae-a-loop-grid > * {
+	min-width: 0;
+}
+
+.aae-a-loop-grid-empty {
+	padding: 24px;
+	text-align: center;
+	color: var(--e-a-color-txt-muted, #818a96);
+}
+
+/* ----------------------------------------------------------------------- *
+ *  First-drop empty state (Pro replica): a placeholder card grid.
+ * ----------------------------------------------------------------------- */
+.aae-a-loop-grid-placeholder {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+
+	&[data-columns="1"] { grid-template-columns: repeat(1, 1fr); }
+	&[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
+	&[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
+	&[data-columns="4"] { grid-template-columns: repeat(4, 1fr); }
+	&[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
+	&[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+
+	@media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+	@media (max-width: 767px) { grid-template-columns: repeat(1, 1fr); }
+}
+
+.aae-a-loop-grid-ph-card {
+	min-height: 260px;
+	border: 1px dashed var(--e-a-border-color-bold, #c2c5c9);
+	border-radius: 6px;
+	background: var(--e-a-bg-default, #fff);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 24px;
+
+	&--main {
+		gap: 12px;
+	}
+}
+
+.aae-a-loop-grid-ph-icon {
+	margin-bottom: 4px;
+	line-height: 0;
+}
+
+.aae-a-loop-grid-ph-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--e-a-color-txt, #1a1a1a);
+}
+
+.aae-a-loop-grid-ph-desc {
+	font-size: 13px;
+	line-height: 1.5;
+	max-width: 320px;
+	color: var(--e-a-color-txt-muted, #818a96);
+}
+
+.aae-a-loop-grid-create-btn {
+	margin-top: 8px;
+	padding: 8px 18px;
+	cursor: pointer;
+	border: none;
+	border-radius: 4px;
+	background: var(--e-a-btn-bg-primary, #515962);
+	color: var(--e-a-btn-color-invert, #fff);
+	font-size: 13px;
+	font-weight: 500;
+	transition: background .15s ease;
+
+	&:hover { background: var(--e-a-btn-bg-primary-hover, #6d7882); }
+}
+
+/* ----------------------------------------------------------------------- *
+ *  Active loop-item document editing — constrain to a card-like width
+ *  (Pro replica). Applies only to the real loop-item document edit area;
+ *  the live-preview items have their document wrappers stripped by the
+ *  editor bridge, so this selector won't match them.
+ * ----------------------------------------------------------------------- */
+body.elementor-editor-active [data-elementor-type="aae-loop-item"] {
+	min-width: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+}
+
+.aae-a-loop-grid-editarea.elementor-edit-area-active #elementor-add-new-section{
+	display: block !important;	
+    margin: 0 !important;
+    padding: 0 !important;
+    top: -15px;
+}
+
+body.elementor-editor-active [data-elementor-type=aae-loop-item] .elementor-section-wrap:empty .elementor-add-section{
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	min-height: 120px !important;
+	margin: 0;
+}
+
+.elementor-widget-e-aae-a-loop-grid.elementor-element-editable > .elementor-element-overlay {
+	left: 0;
+}
+
+/* Give the empty master container a usable drop-zone size while editing. */
+body.elementor-editor-active [data-elementor-type="aae-loop-item"] .e-atomic-element:has(.elementor-empty-view) {
+	min-width: 500px;
+	min-height: 120px;
+}
+
+/* ----------------------------------------------------------------------- *
+ *  Pro-style edit / back handles (editor only).
+ *
+ *  EDIT  (pencil)     — appears on hover over a bound loop grid; enters the
+ *                       loop-item template edit in place.
+ *  BACK  (left arrow) — appears while editing the loop-item; saves + returns
+ *                       to the main post.
+ *  The handle elements are injected by the editor bridge; on the frontend no
+ *  such nodes exist, so these rules are inert there.
+ * ----------------------------------------------------------------------- */
+.aae-a-loop-grid-wrap,
+.aae-a-loop-grid-editarea {
+	position: relative;
+}
+
+.aae-loop-handle {
+	position: absolute;
+	top: -20px;
+	left: 0;
+	z-index: 999;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+
+	&__inner {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 6px 10px;
+		background: #515962;
+		color: #fff;
+		font-size: 11px;
+		font-weight: 500;
+		line-height: 1;
+		border-radius: 0 0 3px 0;
+		white-space: nowrap;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	}
+
+	i {
+		font-size: 13px;
+	}
+
+	&--edit {
+		opacity: 0;
+		transition: opacity 0.12s ease;
+	}
+
+	/* Back / Save handle: centered at the top of the master edit area. */
+	&--back {
+		left: 50%;
+		transform: translateX(-50%);
+
+		.aae-loop-handle__inner {
+			background: #6c5ce7;
+			border-radius: 0 0 3px 3px;
+		}
+	}
+}
+
+/* Reveal the edit handle when hovering the loop grid. */
+.aae-a-loop-grid-wrap:hover > .aae-loop-handle--edit {
+	opacity: 1;
+}

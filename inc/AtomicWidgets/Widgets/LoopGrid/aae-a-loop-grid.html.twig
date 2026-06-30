@@ -1,0 +1,57 @@
+{% import 'elementor/macros' as m %}
+{% set classes = ['aae-a-loop-grid-wrap', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-e-type="{{ type }}"
+     data-aae-template-id="{{ settings.loop_template_id | default(0) }}"
+     data-aae-columns="{{ settings.columns | default(3) }}"
+     data-aae-post-type="{{ settings.post_type | default('post') }}"
+     data-aae-posts-per-page="{{ settings.posts_per_page | default(6) }}"
+     data-aae-order-by="{{ settings.order_by | default('date') }}"
+     data-aae-order="{{ settings.order | default('desc') }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     {{- m.render_custom_attributes(settings) }}
+     {{ editor_attributes | default('') | raw }}>
+    {% if settings.is_frontend | default(false) %}
+        {# Server render (frontend / ajax): emit the real grid. #}
+        {% if settings.rendered_items is iterable and settings.rendered_items | length > 0 %}
+            <div class="aae-a-loop-grid" data-columns="{{ settings.columns | default(3) }}">
+                {% for item_html in settings.rendered_items %}
+                    {{ item_html | raw }}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="aae-a-loop-grid-empty">{{ 'No posts found.' }}</div>
+        {% endif %}
+    {% elseif settings.loop_template_id | default(0) > 0 %}
+        {# Editor preview (client render): the JS bridge fetches + injects the
+           server-rendered grid into .aae-a-loop-grid-live, and manages the
+           in-place edit-area target. #}
+        <div class="aae-a-loop-grid-live" data-aae-loop-pending="1">
+            <div class="aae-a-loop-grid-loading">{{ 'Loading loop preview…' }}</div>
+        </div>
+    {% else %}
+        {# First-drop empty state (Pro replica): a placeholder grid whose first
+           card invites creating/choosing a loop-item template. The editor bridge
+           wires the button to the create flow. #}
+        <div class="aae-a-loop-grid-placeholder" data-columns="{{ settings.columns | default(3) }}">
+            <div class="aae-a-loop-grid-ph-card aae-a-loop-grid-ph-card--main">
+                <div class="aae-a-loop-grid-ph-icon">
+                    <svg viewBox="0 0 80 80" width="72" height="72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="16" y="16" width="48" height="48" rx="10" fill="#E8EAFF"/>
+                        <circle cx="32" cy="38" r="3.5" fill="#6C5CE7"/>
+                        <circle cx="48" cy="38" r="3.5" fill="#6C5CE7"/>
+                        <path d="M31 48c3 3 15 3 18 0" stroke="#6C5CE7" stroke-width="3" stroke-linecap="round"/>
+                        <rect x="50" y="12" width="16" height="16" rx="4" fill="#6C5CE7"/>
+                        <path d="M54 20l3 3 5-6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="aae-a-loop-grid-ph-title">{{ 'Loop Grid starts with a template.' }}</div>
+                <div class="aae-a-loop-grid-ph-desc">{{ 'Either choose an existing template or create a new one and use it as the main item for your loop.' }}</div>
+                <button type="button" class="aae-a-loop-grid-create-btn">{{ 'Create a template' }}</button>
+            </div>
+            <div class="aae-a-loop-grid-ph-card"></div>
+            <div class="aae-a-loop-grid-ph-card"></div>
+        </div>
+    {% endif %}
+</div>
