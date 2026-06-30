@@ -2531,7 +2531,7 @@ class Posts extends Widget_Base {
 			// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 			if ( empty( $post->post_excerpt ) ) {
 				$max_length = (int) $this->get_settings( 'excerpt_length' );
-				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() );
+				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$excerpt    = $this->trim_words( $excerpt, $max_length );
 				echo wp_kses_post( $excerpt );
 			} else {

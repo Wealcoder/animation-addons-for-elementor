@@ -5,7 +5,7 @@
  *
  * @package WCF_ADDONS
  */
-namespace WCF_ADDONS\Admin\Base;
+namespace WCF_ADDONS\Admin\Base;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined( 'ABSPATH' ) || die();
 /**
@@ -471,13 +471,13 @@ class Helpers {
 	}
 	
 	public static function apply_filters( $hook, $default_data ) {
-		$new_data = apply_filters( $hook, $default_data );
+		$new_data = apply_filters( $hook, $default_data );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		if ( $new_data !== $default_data ) {
 			return $new_data;
 		}
 
-		$old_data = apply_filters( "st-$hook", $default_data );
+		$old_data = apply_filters( "st-$hook", $default_data );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		if ( $old_data !== $default_data ) {
 			return $old_data;
@@ -499,7 +499,7 @@ class Helpers {
 	 *                       functions hooked to the action. Default empty.
 	 */
 	public static function do_action( $hook, ...$arg ) {
-		do_action( $hook, ...$arg );
+		do_action( $hook, ...$arg );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		$args = [];
 		foreach ( $arg as $argument ) {

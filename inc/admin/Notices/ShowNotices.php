@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Admin\Notices;
+namespace WCF_ADDONS\Admin\Notices;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined( 'ABSPATH' ) || exit();
 

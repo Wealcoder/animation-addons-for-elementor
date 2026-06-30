@@ -765,7 +765,9 @@ class CustomCpt_Lite {
         //if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
-                WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css'
+                WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css',
+                array(),
+                WCF_ADDONS_VERSION
             );
 
             wp_enqueue_script(

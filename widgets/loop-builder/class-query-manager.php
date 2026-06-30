@@ -196,7 +196,8 @@ class Query_Manager {
 		// Handle AJAX filter parameters.
 		$this->handle_ajax_filters( $query_args );
 
-		return apply_filters( 'custom_loop_builder_query_args', $query_args, $settings );
+		// Established public hook name (no plugin prefix); kept for backward compatibility.
+		return apply_filters( 'custom_loop_builder_query_args', $query_args, $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**

@@ -653,12 +653,12 @@ class CustomIcons_Lite
 	{
 		$current_screen = get_current_screen();
 		if (isset($current_screen->id) && $current_screen->id == 'edit-wcf-custom-icons') {
-			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/css/list.css');
-			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/js/list-actions.js', array('jquery'), null, true);
+			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/css/list.css', array(), WCF_ADDONS_VERSION);
+			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/js/list-actions.js', array('jquery'), WCF_ADDONS_VERSION, true);
 		}
 		if (isset($current_screen->id) && $current_screen->id == 'wcf-custom-icons') {
 			wp_enqueue_media();
-			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.css');
+			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.css', array(), WCF_ADDONS_VERSION);
 			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.js', array(
 				'react',
 				'react-dom',

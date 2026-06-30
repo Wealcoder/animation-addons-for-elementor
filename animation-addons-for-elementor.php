@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:                Animation Addons
+ * Plugin Name:                Animation Addons for Elementor – GSAP Motion Elementor Addons & Website Templates
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
  * Version:                    2.6.8
@@ -268,7 +268,8 @@ final class WCF_ADDONS_Plugin {
 		require_once 'class-plugin.php';
 
 		//wcf plugin loaded
-		do_action( 'wcf_plugins_loaded' );
+		// Established public hook name; renaming would break backward compatibility.
+		do_action( 'wcf_plugins_loaded' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**

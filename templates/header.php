@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <?php do_action( 'wcf_header_builder_content' ); ?>
 	<?php
 		if( $aae_header_smoother == 'no' ){
-			do_action( 'wp_body_open' ); 
+			do_action( 'wp_body_open' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			if($aae_header_smoother_offsetY){
 				?>
 					<style id="aae-elementor-pro-compatibility-smoother">

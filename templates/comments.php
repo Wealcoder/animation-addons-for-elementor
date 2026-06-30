@@ -169,6 +169,8 @@ endif;
 			}
 			
 			$button_style = 'btn-hover-divide';
+			// 'the_permalink' below is a WordPress core filter (reused intentionally), not a plugin hook.
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			$defaults = [
 				'fields'			 => $fields,
 				'comment_field'		 => '
@@ -206,6 +208,7 @@ endif;
 				'submit_button' => '<button name="%1$s" type="submit" id="%2$s" class="%3$s" > %4$s <i class="icon-wcf-checvron-right"></i></button>',
 				'format'			 => 'xhtml',
 			];
+			// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			comment_form( $defaults );
 		?>

@@ -76,7 +76,8 @@ trait WCF_Post_Handler_Trait
 			// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 			if (empty($post->post_excerpt)) {
 				$max_length = (int) $this->get_settings('excerpt_length');
-				$excerpt    = apply_filters('the_excerpt', get_the_excerpt());
+				// 'the_excerpt' is a WordPress core filter, not a plugin-defined hook.
+				$excerpt    = apply_filters('the_excerpt', get_the_excerpt()); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$excerpt    = $this->trim_words($excerpt, $max_length);
 				echo wp_kses_post($excerpt);
 			} else {
@@ -461,7 +462,7 @@ trait WCF_Post_Handler_Trait
 						$date = get_the_date();
 						/** This filter is documented in wp-includes/general-template.php */
 						// PHPCS - The date is safe.
-						echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						?>
 					</span>
 				</div>

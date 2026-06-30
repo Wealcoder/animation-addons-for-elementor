@@ -118,7 +118,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param WP_Post  $menu_item Menu item data object.
 		 * @param int      $depth     Depth of menu item. Used for padding.
 		 */
-		$args = apply_filters( 'nav_menu_item_args', $args, $menu_item, $depth );
+		$args = apply_filters( 'nav_menu_item_args', $args, $menu_item, $depth ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 
 		/**
 		 * Filters the CSS classes applied to a menu item's list item element.
@@ -131,7 +131,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param stdClass $args      An object of wp_nav_menu() arguments.
 		 * @param int      $depth     Depth of menu item. Used for padding.
 		 */
-		$class_names = implode( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $menu_item, $args, $depth ) );
+		$class_names = implode( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $menu_item, $args, $depth ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 
 		/**
 		 * Filters the ID attribute applied to a menu item's list item element.
@@ -144,7 +144,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param stdClass $args         An object of wp_nav_menu() arguments.
 		 * @param int      $depth        Depth of menu item. Used for padding.
 		 */
-		$id = apply_filters( 'nav_menu_item_id', 'menu-item-' . $menu_item->ID, $menu_item, $args, $depth );
+		$id = apply_filters( 'nav_menu_item_id', 'menu-item-' . $menu_item->ID, $menu_item, $args, $depth ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 
 		$li_atts          = array();
 		$li_atts['id']    = ! empty( $id ) ? $id : '';
@@ -165,7 +165,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param stdClass $args      An object of wp_nav_menu() arguments.
 		 * @param int      $depth     Depth of menu item. Used for padding.
 		 */
-		$li_atts       = apply_filters( 'nav_menu_item_attributes', $li_atts, $menu_item, $args, $depth );
+		$li_atts       = apply_filters( 'nav_menu_item_attributes', $li_atts, $menu_item, $args, $depth ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 		$li_attributes = $this->build_atts( $li_atts );
 
 		$output .= $indent . '<li' . $li_attributes . '>';
@@ -215,11 +215,11 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param stdClass $args      An object of wp_nav_menu() arguments.
 		 * @param int      $depth     Depth of menu item. Used for padding.
 		 */
-		$atts       = apply_filters( 'nav_menu_link_attributes', $atts, $menu_item, $args, $depth );
+		$atts       = apply_filters( 'nav_menu_link_attributes', $atts, $menu_item, $args, $depth ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 		$attributes = $this->build_atts( $atts );
 
 		/** This filter is documented in wp-includes/post-template.php */
-		$title = apply_filters( 'the_title', $menu_item->title, $menu_item->ID );
+		$title = apply_filters( 'the_title', $menu_item->title, $menu_item->ID ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core filter re-fired by this Walker subclass.
 
 		/**
 		 * Filters a menu item's title.
@@ -231,7 +231,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param stdClass $args      An object of wp_nav_menu() arguments.
 		 * @param int      $depth     Depth of menu item. Used for padding.
 		 */
-		$title = apply_filters( 'nav_menu_item_title', $title, $menu_item, $args, $depth );
+		$title = apply_filters( 'nav_menu_item_title', $title, $menu_item, $args, $depth ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 
 		//custom indicator
 		$submenu_indicator = '';
@@ -276,7 +276,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		 * @param int      $depth       Depth of menu item. Used for padding.
 		 * @param stdClass $args        An object of wp_nav_menu() arguments.
 		 */
-		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $menu_item, $depth, $args );
+		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $menu_item, $depth, $args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core nav-menu filter re-fired by this Walker subclass.
 	}
 
 }

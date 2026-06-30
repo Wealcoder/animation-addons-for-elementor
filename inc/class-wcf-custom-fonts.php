@@ -550,7 +550,7 @@ Class CustomFonts_Lite{
 		
 		if(isset($current_screen->id) && $current_screen->id == 'wcf-custom-fonts'){
 			wp_enqueue_media();
-			wp_enqueue_style( 'wcf-addon-pro-custom-fonts', WCF_ADDONS_URL . 'assets/build/modules/custom-font/main.css' );
+			wp_enqueue_style( 'wcf-addon-pro-custom-fonts', WCF_ADDONS_URL . 'assets/build/modules/custom-font/main.css', array(), WCF_ADDONS_VERSION );
 			wp_enqueue_script( 'wcf-addon-pro-custom-fonts', WCF_ADDONS_URL . 'assets/build/modules/custom-font/main.js', array(
 				'react', 'react-dom', 'wp-element' , 'wp-i18n'
 			), WCF_ADDONS_VERSION, true );

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Admin;
+namespace WCF_ADDONS\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 

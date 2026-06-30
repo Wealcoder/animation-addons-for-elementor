@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Admin;
+namespace WCF_ADDONS\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 /**
  * Plugin Name: AAE Admin Buttons
@@ -206,7 +206,7 @@ final class AAE_Admin_Page_Importer
                 'nonce'        => wp_create_nonce('wcf_admin_nonce'),
 
                 'addons_config' => apply_filters(
-                    'wcf_addons_dashboard_config',
+                    'wcf_addons_dashboard_config',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                     $config
                 ),
 

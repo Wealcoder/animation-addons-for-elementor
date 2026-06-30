@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS;
+namespace WCF_ADDONS; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Plugin as ElementorPlugin;
 use WCF_ADDONS\INC\WPML as WPML;
@@ -150,7 +150,7 @@ class Plugin
 		}
 
 		$data = apply_filters(
-			'wcf-addons/js/data',
+			'wcf-addons/js/data', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'ajaxUrl'        => admin_url('admin-ajax.php'),
 				'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
@@ -248,7 +248,7 @@ class Plugin
 		);
 
 		$data = apply_filters(
-			'wcf-addons-editor/js/data',
+			'wcf-addons-editor/js/data', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'ajaxUrl'  => admin_url('admin-ajax.php'),
 				'_wpnonce' => wp_create_nonce('wcf-addons-editor'),
@@ -278,7 +278,7 @@ class Plugin
 					'template_types' => self::get_template_types(),
 					'nonce'          => wp_create_nonce('wcf-template-library'),
 					'dashboard_link' => admin_url('admin.php?page=wcf_addons_settings'),
-					'config'         => apply_filters('wcf_addons_editor_config', array()),
+					'config'         => apply_filters('wcf_addons_editor_config', array()), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 					'pro_installed'  => file_exists(WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro'), // change below code at version 2.5.9
 					'pro_active' 	 => class_exists('\AAE_ADDONS_Plugin_Pro'),
 					// 'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
@@ -319,7 +319,7 @@ class Plugin
 	public static function get_widget_scripts()
 	{
 		return apply_filters(
-			'aae/lite/widgets/scripts',
+			'aae/lite/widgets/scripts', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'typed'                => array(
 					'handler' => 'typed',
@@ -1445,7 +1445,7 @@ class Plugin
 	public static function get_widget_skins() {
 
 		return apply_filters(
-			'wcf_widget_skins',
+			'wcf_widget_skins', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'advance-pricing-table' => array( // widget file/dir name.
 					'label'       => __( 'Advanced Pricing Table', 'animation-addons-for-elementor' ),

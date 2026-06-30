@@ -855,7 +855,8 @@ class WCF_Theme_Builder
 					$output .= do_shortcode(render_block($block));
 				}
 			} else {
-				$content = apply_filters('the_content', $content);
+				// 'the_content' is a WordPress core filter, not a plugin-defined hook.
+				$content = apply_filters('the_content', $content); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$content = str_replace(']]>', ']]&gt;', $content);
 
 				return $content;
@@ -1963,8 +1964,8 @@ class WCF_Theme_Builder
 		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			// CSS
-			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css');
-			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css');
+			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css', array(), WCF_ADDONS_VERSION);
+			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css', array(), WCF_ADDONS_VERSION);
 
 			// JS
 			wp_enqueue_script('select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array('jquery'), WCF_ADDONS_VERSION, true);
