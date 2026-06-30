@@ -246,7 +246,8 @@ class CustomIcons_Lite
 			'numberposts' => 15, // Limit number of posts
 			'post_type' => $this->post_type,
 			'post_status' => 'any',
-			'meta_key'   => 'wcf_addon_custom_icons',
+			// Listing custom-icon posts by their marker meta key; capped at 15 posts.
+			'meta_key'   => 'wcf_addon_custom_icons', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 		];
 
 		$posts = get_posts($args);
@@ -623,7 +624,8 @@ class CustomIcons_Lite
 			'numberposts' => 15, // Limit number of posts
 			'post_type' => $this->post_type,
 			'post_status' => 'any',
-			'meta_key'   => 'wcf_addon_custom_icons',
+			// Listing custom-icon posts by their marker meta key; capped at 15 posts.
+			'meta_key'   => 'wcf_addon_custom_icons', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 		];
 
 		$posts = get_posts($args);

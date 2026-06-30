@@ -260,7 +260,8 @@ trait WCF_Button_Trait {
 			array(
 				'name'      => 'btn_background',
 				'types'     => array( 'classic', 'gradient' ),
-				'exclude'   => array( 'image' ),
+				// 'exclude' here is an Elementor background-control parameter, not a WP_Query exclusion.
+				'exclude'   => array( 'image' ), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .wcf__btn a:not(.wcf-btn-mask, .wcf-btn-ellipse), {{WRAPPER}} .wcf__btn a.wcf-btn-mask:after, {{WRAPPER}} .wcf__btn a.wcf-btn-ellipse:before',
 				'condition' => array( 'btn_element_list!' => 'underline' ),
 			)
@@ -304,7 +305,8 @@ trait WCF_Button_Trait {
 			array(
 				'name'      => 'btn_hover_background',
 				'types'     => array( 'classic', 'gradient' ),
-				'exclude'   => array( 'image' ),
+				// 'exclude' here is an Elementor background-control parameter, not a WP_Query exclusion.
+				'exclude'   => array( 'image' ), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .wcf__btn a:not(.wcf-btn-mask, .btn-item, .btn-parallal-border, .btn-rollover-cross, .wcf-btn-ellipse):after, {{WRAPPER}} .wcf__btn a.wcf-btn-mask, {{WRAPPER}} .wcf__btn .btn-hover-bgchange span, {{WRAPPER}} .wcf__btn .btn-rollover-cross:hover, {{WRAPPER}} .wcf__btn .btn-parallal-border:hover, {{WRAPPER}} .wcf__btn a.wcf-btn-ellipse:hover:before,{{WRAPPER}} .wcf__btn a.btn-hover-none:hover',
 				'condition' => array( 'btn_element_list!' => 'underline' ),
 			)

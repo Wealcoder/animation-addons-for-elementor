@@ -219,12 +219,8 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function init() {
 
-		// Load plugin textdomain for translations
-		load_plugin_textdomain(
-			'animation-addons-for-elementor',
-			false,
-			dirname( plugin_basename( WCF_ADDONS_FILE ) ) . '/languages'
-		);
+		// Translations for plugins hosted on WordPress.org are loaded automatically
+		// since WordPress 4.6, so a manual load_plugin_textdomain() call is not needed.
 
 		// Check if Elementor installed and activated
 		if ( ! did_action( 'elementor/loaded' ) ) {			

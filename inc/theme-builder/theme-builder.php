@@ -237,7 +237,8 @@ class WCF_Theme_Builder
 			return $template;
 		}
 
-		if (isset($_REQUEST['aaeid']) && ! isset($_REQUEST['preview_id'])) {
+		// Read-only request check for template routing; no nonce applies.
+		if (isset($_REQUEST['aaeid']) && ! isset($_REQUEST['preview_id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return $template;
 		}
 
@@ -354,7 +355,8 @@ class WCF_Theme_Builder
 			'posts_per_page' => -1,
 			'order'          => 'ASC',
 			'orderby'        => 'date',
-			'meta_query'     => array(
+			// Templates are selected by their _type marker meta; meta lookup is required here.
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'   => self::CPT_META . '_type',
 					'value' => $tmpType,
@@ -625,7 +627,8 @@ class WCF_Theme_Builder
 			'posts_per_page' => -1,
 			'order'          => 'ASC',
 			'orderby'        => 'date',
-			'meta_query'     => array_merge(array('relation' => 'AND'), $meta_query),
+			// Templates are filtered by their _type marker meta; meta lookup is required here.
+			'meta_query'     => array_merge(array('relation' => 'AND'), $meta_query), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		);
 
 		$query              = new \WP_Query($query_args);
@@ -893,9 +896,10 @@ class WCF_Theme_Builder
 	{
 		$active_class = 'nav-tab-active';
 		$current_type = '';
-		if (isset($_GET['template_type'])) {
+		// Read-only admin list-table tab filter; no nonce applies.
+		if (isset($_GET['template_type'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$active_class = '';
-			$current_type = sanitize_key($_GET['template_type']);
+			$current_type = sanitize_key(wp_unslash($_GET['template_type'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 ?>
 		<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
@@ -935,11 +939,14 @@ class WCF_Theme_Builder
 			return;
 		}
 
-		if (isset($_GET['template_type']) && $_GET['template_type'] != '' && $_GET['template_type'] != 'all') {
-			$type = isset($_GET['template_type']) ? sanitize_key($_GET['template_type']) : '';
+		// Read-only admin list-table query filter; no nonce applies.
+		$template_type = isset($_GET['template_type']) ? sanitize_key(wp_unslash($_GET['template_type'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ('' !== $template_type && 'all' !== $template_type) {
+			$type = $template_type;
 
-			$query->query_vars['meta_key']     = self::CPT_META . '_type';
-			$query->query_vars['meta_value']   = $type;
+			// Filtering the admin list table by template type marker meta; meta lookup is required here.
+			$query->query_vars['meta_key']     = self::CPT_META . '_type'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			$query->query_vars['meta_value']   = $type; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			$query->query_vars['meta_compare'] = '=';
 		}
 	}
@@ -1325,7 +1332,8 @@ class WCF_Theme_Builder
 	 */
 	public function print_popup()
 	{
-		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
+		// Read-only admin screen check; no nonce applies.
+		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 	<script type="text/template" id="tmpl-wcf-addons-ctppopup">
 		<div class="wcf-addons-template-edit-popup-area">
@@ -1951,7 +1959,8 @@ class WCF_Theme_Builder
 	public function enqueue_scripts($hook)
 	{
 
-		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
+		// Read-only admin screen check; no nonce applies.
+		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			// CSS
 			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css');

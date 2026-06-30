@@ -175,8 +175,9 @@ class Ajax_Handler {
 		try {
 			$this->verify_nonce();
 
-			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$page     = intval( $_POST['page'] ?? 1 );
+			// Nonce is verified in verify_nonce() above.
+			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+			$page     = isset( $_POST['page'] ) ? intval( wp_unslash( $_POST['page'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );
@@ -293,8 +294,9 @@ class Ajax_Handler {
 		try {
 			$this->verify_nonce();
 
-			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$page     = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : ( $settings['paged'] ?? 1 );
+			// Nonce is verified in verify_nonce() above.
+			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+			$page     = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : ( $settings['paged'] ?? 1 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );

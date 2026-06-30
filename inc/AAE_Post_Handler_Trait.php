@@ -531,7 +531,8 @@ trait AAE_Post_Handler_Trait {
 			array(
 				'post_type'   => 'aaeaddon_post_rating',
 				'post_status' => 'publish',
-				'meta_query'  => array(
+				// Ratings are stored as separate posts keyed by post_id meta; lookup by meta is required here.
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
 						'key'   => 'post_id',
 						'value' => $post_id,

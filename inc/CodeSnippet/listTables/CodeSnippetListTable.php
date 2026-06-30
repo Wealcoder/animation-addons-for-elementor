@@ -69,7 +69,8 @@ class CodeSnippetListTable extends AbstractListTable {
 
 		// Add meta_key for custom field sorting.
 		if ( in_array( $order_by, array( 'code_type', 'load_location', 'priority', 'snippet_status' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
-			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			// Custom-field sort for the snippets list table; meta-based ordering is required here.
+			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			if ( 'priority' === $order_by ) {
 				$args['orderby'] = 'meta_value_num';
 			} else {

@@ -2273,7 +2273,8 @@ class WXRImporter extends \WP_Importer
 
 		foreach ($this->url_remap as $from_url => $to_url) {
 			// Remap URLs in post_content
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			// Bulk one-time import write; object caching does not apply to a direct UPDATE.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$result_content = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->posts} SET post_content = REPLACE(post_content, %s, %s) WHERE post_content LIKE %s",
@@ -2285,7 +2286,8 @@ class WXRImporter extends \WP_Importer
 
 
 			// Remap enclosure URLs in postmeta
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			// Bulk one-time import write; object caching does not apply to a direct UPDATE.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$result_meta = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->postmeta} SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_key = %s AND meta_value LIKE %s",
@@ -2390,7 +2392,8 @@ class WXRImporter extends \WP_Importer
 		// Using prepare() with a fixed query to prevent PHPCS warnings.
 		$query = $wpdb->prepare("SELECT ID, guid FROM {$wpdb->posts} WHERE post_type != %s", ''); // Empty condition just for compliance.
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results($query);
 
 		foreach ($posts as $item) {
@@ -2448,7 +2451,8 @@ class WXRImporter extends \WP_Importer
 	{
 		global $wpdb;
 		update_option('aaeaddon_template_import_state', esc_html__('Comment checking', 'animation-addons-for-elementor'));
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results("SELECT comment_ID, comment_author, comment_date FROM {$wpdb->comments}");
 
 		foreach ($posts as $item) {
@@ -2510,8 +2514,8 @@ class WXRImporter extends \WP_Importer
 				  FROM {$wpdb->terms} AS t 
 				  JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id";
 
-		// Ignore PHPCS false-positive warning
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$terms = $wpdb->get_results($query);
 		foreach ($terms as $item) {
 			$exists_key = sha1($item->taxonomy . ':' . $item->slug);

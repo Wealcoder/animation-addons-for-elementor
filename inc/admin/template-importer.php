@@ -309,8 +309,9 @@ class AAEAddon_Importer {
 				if ( isset( $xml->option ) ) {
 					foreach ( $xml->option as $opt ) {
 						$option_name     = sanitize_text_field( (string) $opt->name );
-						$serialized_data = sanitize_text_field( (string) $opt->value );					
-						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+						$serialized_data = sanitize_text_field( (string) $opt->value );
+						// One-time import write to the options table; object caching does not apply.
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 						$wpdb->update(
 							$wpdb->options,
 							array( 'option_value' => $serialized_data ),
@@ -321,8 +322,9 @@ class AAEAddon_Importer {
 				} else {
 					$option_name     = sanitize_text_field( (string) $xml->name );
 					$serialized_data = sanitize_text_field( (string) $xml->value );
-	
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+
+					// One-time import write to the options table; object caching does not apply.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 					$wpdb->update(
 						$wpdb->options,
 						array( 'option_value' => $serialized_data ),
