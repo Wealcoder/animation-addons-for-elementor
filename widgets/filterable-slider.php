@@ -717,7 +717,7 @@ class Filterable_Slider extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'    => 'image_size',
-				'exclude' => ['custom'],
+				'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'include' => [],
 				'default' => 'full',
 			]

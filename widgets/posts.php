@@ -187,7 +187,7 @@ class Posts extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'         => 'thumbnail_size',
-				'exclude'      => [ 'custom' ],
+				'exclude'      => [ 'custom' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default'      => 'medium',
 				'prefix_class' => 'elementor-portfolio--thumbnail-size-',
 			]
@@ -596,7 +596,7 @@ class Posts extends Widget_Base {
 			[
 				'name'      => 'content_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .content',
 				'separator' => 'before',
 			]
@@ -628,7 +628,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'content_bg_even',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post:nth-child(even) .content',
 				'label'    => ''
 			]
@@ -1412,7 +1412,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'read_more_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link',
 			]
 		);
@@ -1444,7 +1444,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'read_more_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link:hover',
 			]
 		);
@@ -1727,7 +1727,7 @@ class Posts extends Widget_Base {
 			[
 				'name'      => 'read_more_hover_link_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .wcf-post:hover .link',
 				'condition' => [
 					'show_read_more' => 'yes',

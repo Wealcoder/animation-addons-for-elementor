@@ -277,7 +277,7 @@ class Animated_Heading extends Widget_Base {
 			array(
 				'name'     => 'heading_typo',
 				'selector' => '{{WRAPPER}} .animated--heading',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'text_decoration',
 				],
 			)

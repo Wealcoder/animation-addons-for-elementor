@@ -111,7 +111,7 @@ class Category_Showcase extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'    => 'thumbnail_size',
-				'exclude' => ['custom'],
+				'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => 'medium',
 			]
 		);

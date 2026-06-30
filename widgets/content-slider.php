@@ -327,7 +327,7 @@ class Content_Slider extends Widget_Base {
 			[
 				'name'     => 'box_background_color',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .swiper-slide',
 			]
 		);

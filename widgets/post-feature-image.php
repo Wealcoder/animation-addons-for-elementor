@@ -81,7 +81,7 @@ class Post_Feature_Image extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			array(
 				'name'    => 'thumbnail',
-				'exclude' => array( 'custom' ),
+				'exclude' => array( 'custom' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'include' => array(),
 				'default' => 'large',
 			)
@@ -359,7 +359,7 @@ class Post_Feature_Image extends Widget_Base {
 			Group_Control_Box_Shadow::get_type(),
 			array(
 				'name'     => 'image_box_shadow',
-				'exclude'  => array(
+				'exclude'  => array(  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'box_shadow_position',
 				),
 				'selector' => '{{WRAPPER}} img, {{WRAPPER}} iframe, {{WRAPPER}} audio',

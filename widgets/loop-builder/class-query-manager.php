@@ -261,7 +261,7 @@ class Query_Manager {
 		$query_args = array(
 			'post_type'      => get_post_type( $post_id ),
 			'posts_per_page' => $settings['posts_per_page'] ?? 6,
-			'post__not_in'   => array( $post_id ),
+			'post__not_in'   => array( $post_id ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
 			'orderby'        => 'rand',
 		);
 

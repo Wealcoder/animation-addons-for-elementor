@@ -214,7 +214,7 @@ class Grid_Hover_Posts extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'      => 'thumbnail_size',
-				'exclude'   => ['custom'],
+				'exclude'   => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default'   => 'medium',
 				'condition' => [
 					'show_thumb' => 'yes',
@@ -718,7 +718,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'name'      => 'content_background',
 				'types'     => ['classic', 'gradient'],
-				'exclude'   => ['image'],
+				'exclude'   => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .content',
 				'separator' => 'before',
 			]
@@ -1916,7 +1916,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'name'     => 'read_more_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link',
 			]
 		);
@@ -1946,7 +1946,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'name'     => 'read_more_hover_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link:hover',
 			]
 		);
@@ -2209,7 +2209,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'name'     => 'load_more_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-load-more',
 			]
 		);
@@ -2239,7 +2239,7 @@ class Grid_Hover_Posts extends Widget_Base
 			[
 				'name'     => 'load_more_hover_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-load-more:hover',
 			]
 		);
@@ -2800,7 +2800,7 @@ class Grid_Hover_Posts extends Widget_Base
 
 		$ratings = get_posts([
 			'post_type'  => 'aaeaddon_post_rating',
-			'meta_query' => [
+			'meta_query' => [  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				[
 					'key'   => 'post_id',
 					'value' => $post_id,

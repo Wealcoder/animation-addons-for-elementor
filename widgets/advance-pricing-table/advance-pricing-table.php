@@ -594,7 +594,7 @@ class Advance_Pricing_Table extends Widget_Base {
 			[
 				'name'      => 'currency_typography',
 				'selector'  => '{{WRAPPER}} .pt-currency',
-				'exclude' => ['text_transform', 'text_decoration', 'letter_spacing', 'word_spacing'],
+				'exclude' => ['text_transform', 'text_decoration', 'letter_spacing', 'word_spacing'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'condition' => [
 					'currency_symbol!' => '',
 				],

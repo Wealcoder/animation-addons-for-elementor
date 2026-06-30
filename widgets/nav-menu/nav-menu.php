@@ -429,7 +429,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_menu_item_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .menu-item a',
 			]
 		);
@@ -460,7 +460,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_menu_item_hover_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .menu-item a:hover, {{WRAPPER}} .desktop-menu-active .menu-item a:focus',
 			]
 		);
@@ -505,7 +505,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_menu_item_active_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .menu-item.current-menu-item > a',
 			]
 		);
@@ -682,7 +682,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_submenu_item_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .sub-menu .menu-item a',
 			]
 		);
@@ -713,7 +713,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_submenu_item_hover_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .sub-menu .menu-item a:hover, {{WRAPPER}} .desktop-menu-active .sub-menu .menu-item a:focus',
 			]
 		);
@@ -758,7 +758,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'      => 'desktop_submenu_item_active_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .desktop-menu-active .sub-menu .menu-item.current-menu-item > a',
 			]
 		);
@@ -938,7 +938,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_item_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .mobile-menu-active .menu-item a',
 			]
 		);
@@ -968,7 +968,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_item_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .mobile-menu-active .menu-item a:hover, {{WRAPPER}} .mobile-menu-active .menu-item a:focus',
 			]
 		);
@@ -1076,7 +1076,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'hamburger_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-menu-hamburger',
 			]
 		);
@@ -1106,7 +1106,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'hamburger_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-menu-hamburger:hover, {{WRAPPER}} .wcf-menu-hamburger:focus',
 			]
 		);
@@ -1214,7 +1214,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_close_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-menu-close',
 			]
 		);
@@ -1244,7 +1244,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_close_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-menu-close:hover, {{WRAPPER}} .wcf-menu-close:focus',
 			]
 		);
@@ -1368,7 +1368,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_back_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .mobile-menu-active a.nav-back-link',
 			]
 		);
@@ -1398,7 +1398,7 @@ class Nav_Menu extends Widget_Base {
 			[
 				'name'     => 'mobile_menu_back_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .mobile-menu-active a.nav-back-link:hover, {{WRAPPER}} .mobile-menu-active a.nav-back-link:focus',
 			]
 		);

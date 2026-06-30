@@ -124,7 +124,7 @@ class Image extends Widget_Base {
 			array(
 				'name'      => 'image_size',
 				'separator' => 'none',
-                    'exclude' => ['custom'],
+                    'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
                     'include' => [],
                     'default' => 'full',
 			)

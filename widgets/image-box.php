@@ -448,7 +448,7 @@ class Image_Box extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			array(
 				'name'    => 'image_size',
-				'exclude' => array( 'custom' ),
+				'exclude' => array( 'custom' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'include' => array(),
 				'default' => 'full',
 			)

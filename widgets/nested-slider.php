@@ -202,7 +202,7 @@ class Nested_Slider extends Widget_Nested_Base {
 			array(
 				'name'           => 'content_background',
 				'types'          => array( 'classic', 'gradient' ),
-				'exclude'        => array( 'image' ),
+				'exclude'        => array( 'image' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'       => $low_specificity_slider_container_selector,
 				'fields_options' => array(
 					'color' => array(

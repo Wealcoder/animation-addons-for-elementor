@@ -784,7 +784,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'load_more_background',
 				'types'    => array( 'classic', 'gradient' ),
-				'exclude'  => array( 'image' ),
+				'exclude'  => array( 'image' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-load-more',
 			)
 		);
@@ -814,7 +814,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'load_more_hover_background',
 				'types'    => array( 'classic', 'gradient' ),
-				'exclude'  => array( 'image' ),
+				'exclude'  => array( 'image' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-load-more:hover',
 			)
 		);
@@ -1174,7 +1174,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
 			'fields'                 => 'ids',
-			'meta_query'             => [
+			'meta_query'             => [  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				[
 					'key'   => 'wcf-addons-template-meta_type',
 					'value' => 'loop-builder',

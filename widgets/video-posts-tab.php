@@ -145,7 +145,7 @@ class Video_Posts_Tab extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'         => 'thumbnail_size',
-				'exclude'      => [ 'custom' ],
+				'exclude'      => [ 'custom' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default'      => 'medium',
 				'prefix_class' => 'elementor-portfolio--thumbnail-size-',
 			]
@@ -1160,7 +1160,7 @@ class Video_Posts_Tab extends Widget_Base {
 			[
 				'name'     => 'read_more_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link',
 			]
 		);
@@ -1192,7 +1192,7 @@ class Video_Posts_Tab extends Widget_Base {
 			[
 				'name'     => 'read_more_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link:hover',
 			]
 		);
@@ -1512,7 +1512,7 @@ class Video_Posts_Tab extends Widget_Base {
 			'ignore_sticky_posts' => empty( $this->get_settings( 'post_sticky_ignore' ) ) ? false : true,
 			'order'               => $this->get_settings( 'post_order' ),
 			'orderby'             => $this->get_settings( 'post_order_by' ),
-			'tax_query'           => array(
+			'tax_query'           => array(  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
 					'taxonomy' => 'post_format',
 					'field'    => 'slug',

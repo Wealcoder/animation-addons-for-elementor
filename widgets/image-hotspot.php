@@ -153,7 +153,7 @@ class Image_Hotspot extends Widget_Base
 			[
 				'name'    => 'hsp_img_size',
 				// Usage: `{name}_size` and `{name}_custom_dimension`, in this case `thumbnail_size` and `thumbnail_custom_dimension`.
-				'exclude' => ['custom'],
+				'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'include' => [],
 				'default' => 'full',
 			]
