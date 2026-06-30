@@ -549,7 +549,7 @@ class CodeSnippetFrontend {
 
 			try {
 				$wrapped = 'return function() { ' . $content . ' };';
-				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged
+				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged, Generic.PHP.ForbiddenFunctions.Found
 
 				if ( is_callable( $func ) ) {
 					$func();

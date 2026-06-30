@@ -48,7 +48,7 @@ trait AAE_Post_Handler_Trait {
 					$title                  = $this->trim_words( get_the_title(), $max_length );
 					$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-					echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+					echo wp_kses_post( $this->wcf_wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
 
 				} else {
 					the_title();
@@ -97,7 +97,7 @@ trait AAE_Post_Handler_Trait {
 		);
 
 		?>
-		<div class="thumb <?php echo 'wcf--format-' . get_post_format(); ?>">
+		<div class="thumb <?php echo esc_attr( 'wcf--format-' . get_post_format() ); ?>">
 			<a href="<?php echo esc_url( get_the_permalink() ); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
 			</a>
@@ -544,7 +544,7 @@ trait AAE_Post_Handler_Trait {
 		?>
 			<span class="post-review">
 				<?php $this->render_meta_icon( $meta ); ?>
-				<?php echo $total_ratings; ?>
+				<?php echo esc_html( $total_ratings ); ?>
 				<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
 			</span>
 		<?php
@@ -681,7 +681,7 @@ trait AAE_Post_Handler_Trait {
 			?>
 				<nav class="wcf-post-pagination"
 					aria-label="<?php esc_attr_e( 'Pagination', 'animation-addons-for-elementor' ); ?>">
-				<?php echo implode( PHP_EOL, $links ); ?>
+				<?php echo wp_kses_post( implode( PHP_EOL, $links ) ); ?>
 				</nav>
 			<?php
 			return;
