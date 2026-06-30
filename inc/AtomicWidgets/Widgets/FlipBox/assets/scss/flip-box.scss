@@ -1,9 +1,6 @@
 .aae-a-flip-box {
 	display: block !important;
 	height: var( --aae-flip-height, 300px );
-	background-color: transparent;
-	position: relative;
-	overflow: hidden;
 
 	> .flip-box-inner {
 		position: relative;
@@ -23,18 +20,12 @@
 		-webkit-backface-visibility: hidden !important;
 		backface-visibility: hidden !important;
 
-		background-color: #f2f1f1;
-		border-radius: 10px;
-		overflow: hidden;
-
 		// Override Elementor .e-con defaults.
 		display: flex !important;
 		flex-direction: column !important;
 		justify-content: center !important;
 		align-items: center !important;
 
-		// Default transition — overridden per-effect below.
-		transition: transform 0.8s;
 	}
 
 	.flip-box-back {
