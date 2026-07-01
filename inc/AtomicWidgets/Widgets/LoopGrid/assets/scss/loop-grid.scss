@@ -1,30 +1,41 @@
+/* ----------------------------------------------------------------------- *
+ *  AAE Loop Grid — atomic nested element.
+ *
+ *  The grid + its per-item cells are emitted by the element's
+ *  render_children_to_html() override (one cell per queried post). The columns
+ *  count is also driven by the `columns` atomic Style_Definition
+ *  (grid-template-columns: repeat(N, 1fr) on `& .aae-a-loop-grid`); the
+ *  [data-columns] rules below are the static fallback / editor default.
+ * ----------------------------------------------------------------------- */
+
+/* The grid container is `.aae-a-loop-grid` when the Loop Layout is present
+ * (new nested tree, editor + frontend) and `.aae-a-loop-grid-wrap` for the
+ * legacy flat tree. Both must be a grid so editor and frontend match exactly. */
+.aae-a-loop-grid,
 .aae-a-loop-grid-wrap {
-	display: block;
-	width: 100%;
-}
-
-.aae-a-loop-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 24px;
-
-	&[data-columns="1"] { grid-template-columns: repeat(1, 1fr); }
-	&[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
-	&[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
-	&[data-columns="4"] { grid-template-columns: repeat(4, 1fr); }
-	&[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
-	&[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+	display: grid !important;
+	grid-template-columns: repeat(var(--aae-columns-desktop, 3), 1fr);
+	gap: var(--aae-gap-desktop, 8px);
 
 	@media (max-width: 1024px) {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(var(--aae-columns-tablet, var(--aae-columns-desktop, 2)), 1fr) !important;
+		gap: var(--aae-gap-tablet, 8px) !important;
 	}
 
 	@media (max-width: 767px) {
-		grid-template-columns: repeat(1, 1fr);
+		grid-template-columns: repeat(var(--aae-columns-mobile, 1), 1fr) !important;
+		gap: var(--aae-gap-mobile, 8px) !important;
 	}
 }
 
-.aae-a-loop-grid > * {
+/* When the Loop Layout IS the grid, the outer wrap must NOT also be a grid
+ * (it just holds the layout + pagination stacked). */
+.aae-a-loop-grid-wrap:has(> .aae-a-loop-grid) {
+	display: block !important;
+}
+
+/* Each cell holds one repeat of the authored loop-item subtree. */
+.aae-a-loop-grid-item {
 	min-width: 0;
 }
 
@@ -35,173 +46,86 @@
 }
 
 /* ----------------------------------------------------------------------- *
- *  First-drop empty state (Pro replica): a placeholder card grid.
+ *  Pagination — atomic nested (Prev / Numbers / Next / Load More).
+ *
+ *  The DEFAULT LOOK of each piece (layout, padding, border, colours, arrow
+ *  size, space-between) lives in each widget's PHP define_base_styles(), so it
+ *  is fully overridable from the editor Style panel. This file only carries
+ *  what a base style CANNOT express: interaction STATES (:hover, .is-active,
+ *  .is-disabled, .is-loading), the RUNTIME-generated number links (<a> markup
+ *  built at render, not real elements), the editor drop-zone hide, and the
+ *  pagination-type visibility.
  * ----------------------------------------------------------------------- */
-.aae-a-loop-grid-placeholder {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 24px;
 
-	&[data-columns="1"] { grid-template-columns: repeat(1, 1fr); }
-	&[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
-	&[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
-	&[data-columns="4"] { grid-template-columns: repeat(4, 1fr); }
-	&[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
-	&[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+/* State-only rules for the nav (default look is in base styles). */
+.aae-a-loop-nav {
+	&:hover { filter: brightness(0.97); }
 
-	@media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
-	@media (max-width: 767px) { grid-template-columns: repeat(1, 1fr); }
+	&.is-disabled {
+		opacity: 0.4;
+		pointer-events: none;
+		cursor: default;
+	}
 }
 
-.aae-a-loop-grid-ph-card {
-	min-height: 260px;
-	border: 1px dashed var(--e-a-border-color-bold, #c2c5c9);
-	border-radius: 6px;
-	background: var(--e-a-bg-default, #fff);
-	display: flex;
-	flex-direction: column;
+/* Numbers container: hide the editor's empty drop-zone (numbers are generated
+ * at render, so this element must not read as a droppable container). */
+.aae-a-loop-numbers {
+	.elementor-empty-view,
+	> .elementor-add-section,
+	> .elementor-first-add {
+		display: none !important;
+	}
+}
+
+/* Runtime-generated number links (<a> / gap span). Not real atomic elements,
+ * so their look can't come from a base style — the Numbers element's own Style
+ * panel styles the CONTAINER; these style the generated items. */
+.aae-a-loop-num {
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
-	padding: 24px;
-
-	&--main {
-		gap: 12px;
-	}
-}
-
-.aae-a-loop-grid-ph-icon {
-	margin-bottom: 4px;
-	line-height: 0;
-}
-
-.aae-a-loop-grid-ph-title {
-	font-size: 16px;
-	font-weight: 600;
-	color: var(--e-a-color-txt, #1a1a1a);
-}
-
-.aae-a-loop-grid-ph-desc {
-	font-size: 13px;
-	line-height: 1.5;
-	max-width: 320px;
-	color: var(--e-a-color-txt-muted, #818a96);
-}
-
-.aae-a-loop-grid-create-btn {
-	margin-top: 8px;
-	padding: 8px 18px;
-	cursor: pointer;
-	border: none;
+	min-width: 36px;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid var(--e-a-border-color, #d5d8dc);
 	border-radius: 4px;
-	background: var(--e-a-btn-bg-primary, #515962);
-	color: var(--e-a-btn-color-invert, #fff);
-	font-size: 13px;
-	font-weight: 500;
-	transition: background .15s ease;
-
-	&:hover { background: var(--e-a-btn-bg-primary-hover, #6d7882); }
-}
-
-/* ----------------------------------------------------------------------- *
- *  Active loop-item document editing — constrain to a card-like width
- *  (Pro replica). Applies only to the real loop-item document edit area;
- *  the live-preview items have their document wrappers stripped by the
- *  editor bridge, so this selector won't match them.
- * ----------------------------------------------------------------------- */
-body.elementor-editor-active [data-elementor-type="aae-loop-item"] {
-	min-width: 500px;
-	margin-left: auto;
-	margin-right: auto;
-	width: 100%;
-}
-
-.aae-a-loop-grid-editarea.elementor-edit-area-active #elementor-add-new-section{
-	display: block !important;	
-    margin: 0 !important;
-    padding: 0 !important;
-    top: -15px;
-}
-
-body.elementor-editor-active [data-elementor-type=aae-loop-item] .elementor-section-wrap:empty .elementor-add-section{
-	display: flex !important;
-	justify-content: center !important;
-	align-items: center !important;
-	min-height: 120px !important;
-	margin: 0;
-}
-
-.elementor-widget-e-aae-a-loop-grid.elementor-element-editable > .elementor-element-overlay {
-	left: 0;
-}
-
-/* Give the empty master container a usable drop-zone size while editing. */
-body.elementor-editor-active [data-elementor-type="aae-loop-item"] .e-atomic-element:has(.elementor-empty-view) {
-	min-width: 500px;
-	min-height: 120px;
-}
-
-/* ----------------------------------------------------------------------- *
- *  Pro-style edit / back handles (editor only).
- *
- *  EDIT  (pencil)     — appears on hover over a bound loop grid; enters the
- *                       loop-item template edit in place.
- *  BACK  (left arrow) — appears while editing the loop-item; saves + returns
- *                       to the main post.
- *  The handle elements are injected by the editor bridge; on the frontend no
- *  such nodes exist, so these rules are inert there.
- * ----------------------------------------------------------------------- */
-.aae-a-loop-grid-wrap,
-.aae-a-loop-grid-editarea {
-	position: relative;
-}
-
-.aae-loop-handle {
-	position: absolute;
-	top: -20px;
-	left: 0;
-	z-index: 999;
+	color: var(--e-a-color-txt, #1a1a1a);
+	text-decoration: none;
 	cursor: pointer;
-	-webkit-user-select: none;
-	user-select: none;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
-	&__inner {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 6px 10px;
-		background: #515962;
-		color: #fff;
-		font-size: 11px;
-		font-weight: 500;
-		line-height: 1;
-		border-radius: 0 0 3px 0;
-		white-space: nowrap;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	&:hover { background: var(--e-a-bg-hover, #f1f2f3); }
+
+	&.is-active {
+		background: var(--e-a-btn-bg-primary, #515962);
+		border-color: var(--e-a-btn-bg-primary, #515962);
+		color: var(--e-a-btn-color-invert, #fff);
+		pointer-events: none;
 	}
 
-	i {
-		font-size: 13px;
-	}
-
-	&--edit {
-		opacity: 0;
-		transition: opacity 0.12s ease;
-	}
-
-	/* Back / Save handle: centered at the top of the master edit area. */
-	&--back {
-		left: 50%;
-		transform: translateX(-50%);
-
-		.aae-loop-handle__inner {
-			background: #6c5ce7;
-			border-radius: 0 0 3px 3px;
-		}
+	&-gap {
+		border: none;
+		cursor: default;
+		pointer-events: none;
+		min-width: auto;
+		padding: 0 4px;
 	}
 }
 
-/* Reveal the edit handle when hovering the loop grid. */
-.aae-a-loop-grid-wrap:hover > .aae-loop-handle--edit {
-	opacity: 1;
+/* Load More state-only (default look is in base styles). */
+.aae-a-loop-loadmore {
+	&:hover { filter: brightness(1.08); }
+
+	&.is-loading {
+		opacity: 0.6;
+		pointer-events: none;
+	}
 }
+
+.aae-a-loop-pagination.is-loading { opacity: 0.7; }
+
+/* No type-driven visibility any more: every pagination piece (Prev/Next,
+ * Numbers, Load More) renders by default and the user hides the unwanted ones
+ * from the Style panel (display: none). The frontend runtime is DOM-driven —
+ * it wires whichever pieces are present + visible. */

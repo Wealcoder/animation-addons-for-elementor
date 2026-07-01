@@ -1,209 +1,38 @@
 /* eslint-env browser */
 
 /**
- * Loop Grid editor bridge.
+ * Loop Grid editor preview — "full grid live".
  *
- * The atomic editor preview renders client-side from raw settings, so our
- * server-side WP_Query/loop-item render never runs there. This module bridges
- * that gap:
+ * The loop grid is now a true atomic NESTED element: its authored loop-item
+ * subtree is real, editable atomic children. The atomic editor preview renders
+ * those children CLIENT-side exactly once (one editable card) — it never runs
+ * our PHP WP_Query repetition.
  *
- *   1. LIVE PREVIEW — watches the preview iframe for loop-grid widgets, fetches
- *      the server-rendered grid (ajax: aae_render_loop_grid) and injects it.
- *      The injected markup's loop-item document wrappers are stripped so the
- *      editor doesn't treat them as embedded documents.
- *   2. CREATE TEMPLATE — the placeholder's "Create a template" button (and the
- *      panel control) create a loop-item document, bind it to the widget, and
- *      switch the editor into it.
- *   3. EDIT IN PLACE — switches the editor to the loop-item DOCUMENT (preview
- *      re-renders to it with the native add-widget zone; the top window / panel
- *      stay, so the editor is never left). A floating "Save & Back" tab returns.
+ * To give the "full grid" feel in the canvas without touching the editor's real
+ * elements, this module:
+ *   1. watches the preview for each loop-grid wrap,
+ *   2. wraps the single authored card in a `.aae-a-loop-grid` grid container,
+ *   3. fetches the queried posts' data (ajax: aae_loop_post_data) and appends
+ *      inert CLONES of the authored card — one per remaining post — each filled
+ *      with that post's title/image/url. Clones are display-only
+ *      (pointer-events:none, data-aae-clone) and never become editor elements.
  *
- * Runs in the editor OUTER frame; reaches the preview via getPreviewWindow().
- * Config (ajax url + nonce) comes from window.AAE_LOOP_GRID.
+ * Everything here is preview-cosmetic. The real output is produced server-side
+ * by AAE_A_Loop_Grid::render_children_to_html(). No documents, no switch, no
+ * raw-HTML injection, no CSS stripping.
  */
 
 import { state } from './state.js';
 import { getPreviewWindow } from './preview.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
-const LOOP_ITEM_TYPE = 'aae-loop-item';
+const TYPE = 'e-aae-a-loop-grid';
 
 function cfg() {
 	return window.AAE_LOOP_GRID || {};
 }
 
-/** Build the query signature for a wrap so we only refetch when it changes. */
-function wrapSignature(wrap) {
-	return [
-		wrap.getAttribute('data-aae-template-id'),
-		wrap.getAttribute('data-aae-columns'),
-		wrap.getAttribute('data-aae-post-type'),
-		wrap.getAttribute('data-aae-posts-per-page'),
-		wrap.getAttribute('data-aae-order-by'),
-		wrap.getAttribute('data-aae-order'),
-	].join('|');
-}
-
-/** Fetch the server-rendered grid HTML for a wrap's settings. */
-async function fetchGrid(wrap) {
-	const c = cfg();
-	if (!c.ajaxUrl || !c.createNonce) {
-		return null;
-	}
-	const body = new FormData();
-	body.append('action', 'aae_render_loop_grid');
-	body.append('nonce', c.createNonce);
-	body.append('template_id', wrap.getAttribute('data-aae-template-id') || '0');
-	body.append('columns', wrap.getAttribute('data-aae-columns') || '3');
-	body.append('post_type', wrap.getAttribute('data-aae-post-type') || 'post');
-	body.append('posts_per_page', wrap.getAttribute('data-aae-posts-per-page') || '6');
-	body.append('order_by', wrap.getAttribute('data-aae-order-by') || 'date');
-	body.append('order', wrap.getAttribute('data-aae-order') || 'desc');
-
-	try {
-		const res = await fetch(c.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
-		const json = await res.json();
-		return json && json.success ? json.data.html : null;
-	} catch (e) {
-		return null;
-	}
-}
-
-/**
- * Strip loop-item document wrappers from injected preview markup.
- *
- * print_content() wraps each item in the loop-item document's container attrs
- * (data-elementor-type / data-elementor-id / .elementor-<id>). Left in place,
- * Elementor's embedded-document machinery treats each item as a live document
- * and fires global-classes requests (some with post_id=NaN → 400). The live
- * preview is read-only, so we neutralise those attributes.
- */
-function stripDocumentWrappers(root) {
-	root.querySelectorAll('[data-elementor-type], [data-elementor-id]').forEach((node) => {
-		node.removeAttribute('data-elementor-type');
-		node.removeAttribute('data-elementor-id');
-		node.removeAttribute('data-elementor-settings');
-		Array.from(node.classList).forEach((cls) => {
-			if (cls === 'elementor' || /^elementor-\d+$/.test(cls)) {
-				node.classList.remove(cls);
-			}
-		});
-	});
-}
-
-/**
- * Ensure the hidden in-place edit-area attach target exists in a wrap.
- *
- * The editor switches the loop-item document INTO this node ($e switch with
- * `selector`), rendering its editable canvas (drag-widget zone) here. It carries
- * a VALID data-elementor-id so it is the one legitimate embedded document — the
- * read-only live-preview items have their wrappers stripped, so only this node
- * is treated as an embedded document.
- */
-function ensureEditArea(wrap, doc, tplId) {
-	let area = wrap.querySelector('.aae-a-loop-grid-editarea');
-	// If an edit area exists for a DIFFERENT template (the binding changed, e.g.
-	// after creating/selecting a new template), discard it. Leaving a stale
-	// `.elementor-<oldId>` node makes Elementor keep trying — and failing — to
-	// attach the old document ("Can't attach preview to document '<oldId>'").
-	if (area && area.getAttribute('data-elementor-id') !== String(tplId)) {
-		area.remove();
-		area = null;
-	}
-	const created = !area;
-	if (!area) {
-		area = doc.createElement('div');
-		area.setAttribute('data-elementor-type', LOOP_ITEM_TYPE);
-		area.setAttribute('data-elementor-title', 'Loop Item');
-		const inner = doc.createElement('div');
-		inner.className = 'elementor-section-wrap ui-sortable';
-		area.appendChild(inner);
-	}
-
-	// Place the editable master inside the live grid container as its first item
-	// (just like Elementor Pro does) so it sits on the left side of the grid.
-	const gridEl = wrap.querySelector('.aae-a-loop-grid');
-	if (gridEl) {
-		if (area.parentNode !== gridEl) {
-			gridEl.insertBefore(area, gridEl.firstChild);
-		}
-	} else {
-		// Fallback: place above live preview
-		const liveEl = wrap.querySelector('.aae-a-loop-grid-live');
-		if (liveEl) {
-			if (area.parentNode !== wrap) {
-				wrap.insertBefore(area, liveEl);
-			}
-		} else if (area.parentNode !== wrap) {
-			wrap.appendChild(area);
-		}
-	}
-
-	// Only (re)assert our own identity classes — do NOT overwrite className, or
-	// we'd strip the elementor-edit-area-active / elementor-edit-mode classes
-	// Elementor adds when this node is the live embedded edit area.
-	area.classList.add('elementor', 'elementor-' + tplId, 'aae-a-loop-grid-editarea');
-	area.setAttribute('data-elementor-id', String(tplId));
-	// Hide only on first creation; once it exists, syncEditState owns visibility
-	// (re-hiding an active edit area here is what made the drop zone disappear).
-	if (created) {
-		area.style.display = 'none';
-	}
-	return area;
-}
-
-/** Hydrate one loop-grid wrap: inject the (cleaned) live grid + edit target. */
-async function hydrateWrap(wrap) {
-	const tplId = parseInt(wrap.getAttribute('data-aae-template-id') || '0', 10);
-	if (!tplId) {
-		return;
-	}
-
-	const sig = wrapSignature(wrap);
-	if (wrap.__aaeLoopSig === sig && !wrap.querySelector('[data-aae-loop-pending]')) {
-		return; // already hydrated for these settings
-	}
-	wrap.__aaeLoopSig = sig;
-
-	const live = wrap.querySelector('.aae-a-loop-grid-live');
-	if (!live) {
-		return;
-	}
-
-	const html = await fetchGrid(wrap);
-	if (!wrap.isConnected) {
-		return; // wrap was replaced by a re-render while awaiting
-	}
-	if (html != null) {
-		live.innerHTML = html;
-		stripDocumentWrappers(live); // read-only items: no embedded-doc scanning
-	} else {
-		live.innerHTML = '<div class="aae-a-loop-grid-empty">Preview unavailable.</div>';
-	}
-	live.removeAttribute('data-aae-loop-pending');
-
-	ensureEditArea(wrap, wrap.ownerDocument, tplId); // keep one valid attach target
-}
-
-/** Scan the preview for pending loop-grids and hydrate them. */
-function scanAndHydrate() {
-	const win = getPreviewWindow();
-	const doc = win && win.document;
-	if (!doc) {
-		return;
-	}
-	doc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
-		if (wrap.querySelector('.aae-a-loop-grid-live[data-aae-loop-pending]')) {
-			hydrateWrap(wrap);
-		}
-	});
-}
-
-/* ----------------------------------------------------------------------- *
- *  Create + edit in place
- * ----------------------------------------------------------------------- */
-
-/** Resolve the V1 container for an element id. */
+/** Resolve the editor container (V1) for an element id, if available. */
 function getContainer(id) {
 	try {
 		return window.elementor?.getContainer?.(id) || null;
@@ -212,328 +41,333 @@ function getContainer(id) {
 	}
 }
 
-/** Write the template_id prop onto a loop-grid widget. */
-function setTemplateId(widgetId, tplId) {
-	const container = getContainer(widgetId);
-	if (!container || !window.$e?.run) {
-		return;
-	}
-	window.$e.run('document/elements/settings', {
-		container,
-		settings: { loop_template_id: { $$type: 'number', value: parseInt(tplId, 10) } },
-	});
+/** Unwrap an atomic prop value ({ $$type, value } | scalar) to a scalar. */
+function propValue(v) {
+	return v && typeof v === 'object' && 'value' in v ? v.value : v;
 }
 
-/** Create a loop-item template, bind it to the widget, and switch into it. */
-export async function createTemplate(widgetId) {
-	const c = cfg();
-	if (!c.ajaxUrl || !c.createNonce) {
-		return;
-	}
-	try {
-		const body = new FormData();
-		body.append('action', 'aae_create_loop_item');
-		body.append('nonce', c.createNonce);
-		body.append('title', 'Loop Item');
+/** Read the loop-grid query settings from its editor container (falls back to defaults). */
+function readSettings(wrap) {
+	const id = wrap.getAttribute('data-id');
+	const c = id ? getContainer(id) : null;
+	const get = (k, d) => {
+		try {
+			const raw = c?.settings?.get?.(k);
+			const val = propValue(raw);
+			return val === undefined || val === null || val === '' ? d : val;
+		} catch (e) {
+			return d;
+		}
+	};
+	return {
+		post_type: get('post_type', 'post'),
+		posts_per_page: parseInt(get('posts_per_page', 6), 10) || 6,
+		order_by: get('order_by', 'date'),
+		order: get('order', 'desc'),
+		columns: parseInt(get('columns', 3), 10) || 3,
+	};
+}
 
+/**
+ * Signature so we only refetch/rebuild when the QUERY changes.
+ *
+ * Deliberately excludes the authored card's HTML: selecting/hovering a widget
+ * inside the card makes Elementor add overlay nodes + selection classes, which
+ * would change the card markup and (if included here) trigger a full clone
+ * remove+refetch+re-append on every click — the visible "flicker". The clone
+ * SET is a function of the query alone, so key only on that.
+ */
+function signature(wrap, s) {
+	return [s.post_type, s.posts_per_page, s.order_by, s.order, s.columns].join('|');
+}
+
+/**
+ * Per-query post-data cache, keyed by the query signature.
+ *
+ * A settings change that feeds the element's render context (pagination_type /
+ * load_method) can make Elementor re-render the loop-item subtree in place,
+ * wiping our appended clones — but the QUERY is unchanged. Without a cache the
+ * recovery rebuild would re-hit AJAX, and the round-trip is a visible flicker
+ * (clones vanish, then reappear a moment later). Caching the posts per query
+ * lets the rebuild run synchronously from memory, so the clones are restored in
+ * the same tick — no refetch, no flicker.
+ */
+const postCache = new Map();
+
+/** Fetch per-post data for the preview (cached by query signature). */
+async function fetchPosts(s, sig) {
+	if (sig && postCache.has(sig)) {
+		return postCache.get(sig);
+	}
+	const c = cfg();
+	if (!c.ajaxUrl || !c.nonce) {
+		return null;
+	}
+	const body = new FormData();
+	body.append('action', 'aae_loop_post_data');
+	body.append('nonce', c.nonce);
+	body.append('post_type', s.post_type);
+	body.append('posts_per_page', String(s.posts_per_page));
+	body.append('order_by', s.order_by);
+	body.append('order', s.order);
+	try {
 		const res = await fetch(c.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
 		const json = await res.json();
-		if (!json || !json.success || !json.data || !json.data.id) {
+		const posts = json && json.success ? json.data.posts : null;
+		if (sig && posts) {
+			postCache.set(sig, posts);
+		}
+		return posts;
+	} catch (e) {
+		return null;
+	}
+}
+
+/** Synchronous cache read — used to rebuild instantly (no AJAX, no flicker). */
+function cachedPosts(sig) {
+	return sig && postCache.has(sig) ? postCache.get(sig) : null;
+}
+
+/**
+ * Strip all editor machinery from a clone so it's pure, inert preview HTML.
+ *
+ * A raw cloneNode still carries `.elementor-element*` classes, the injected
+ * `.elementor-element-overlay` nodes, and `data-id`/`data-model-cid` attrs — so
+ * the editor draws its hover outline / handles over the clones. Removing them
+ * makes clones display-only (no hover border, not selectable).
+ */
+function sanitizeClone(root) {
+	// Drop editor-injected overlay/handle nodes entirely.
+	root.querySelectorAll('.elementor-element-overlay, .ui-resizable-handle').forEach((n) => n.remove());
+
+	const scrub = (el) => {
+		// Remove editor identity + model attributes.
+		[ 'data-id', 'data-model-cid', 'data-element_type', 'data-e-type', 'data-widget_type',
+			'draggable', 'data-interaction-id' ].forEach((a) => el.removeAttribute(a));
+		// Strip ONLY the editor selection/hover classes (elementor-element*).
+		// Keep e-atomic-element + the generated atomic style classes so the
+		// clone still LOOKS identical to the authored card.
+		if ( el.classList && el.classList.length ) {
+			Array.from(el.classList).forEach((c) => {
+				if ( c.indexOf('elementor-element') === 0 ) {
+					el.classList.remove(c);
+				}
+			});
+		}
+	};
+	scrub(root);
+	root.querySelectorAll('*').forEach(scrub);
+}
+
+/**
+ * Fill a cloned card's current-post widgets with one post's data.
+ * Best-effort + non-destructive: only touches known AAE post widgets.
+ */
+function fillClone(clone, post) {
+	// Atomic widgets render with data-widget_type="<type>.<variant>" (e.g.
+	// "e-aae-a-post-title.default"), NOT data-e-type — match by prefix.
+	// Title: replace the text in the post-title widget.
+	const titleEl = clone.querySelector('[data-widget_type^="e-aae-a-post-title"]');
+	if (titleEl && post.title) {
+		const target = titleEl.querySelector('h1,h2,h3,h4,h5,h6,a,span,p') || titleEl;
+		target.textContent = post.title;
+	}
+	// Image: swap the featured-image src (post-image widget, or any img fallback).
+	const imgEl = clone.querySelector('[data-widget_type^="e-aae-a-post-image"] img, img');
+	if (imgEl && post.image) {
+		imgEl.setAttribute('src', post.image);
+		imgEl.removeAttribute('srcset');
+	}
+	// Links point at the post.
+	if (post.url) {
+		clone.querySelectorAll('a[href]').forEach((a) => a.setAttribute('href', post.url));
+	}
+}
+
+/**
+ * Locate the grid CONTAINER + the authored Loop Item inside a wrap.
+ *
+ * Two DOM shapes must both work, and the clone preview must match the FRONTEND
+ * cell structure (grid container holding `.aae-a-loop-grid-item` cells):
+ *   - New tree:  .aae-a-loop-grid-wrap > .aae-a-loop-grid (Loop Layout) > .aae-a-loop-item
+ *   - Old tree:  .aae-a-loop-grid-wrap > .aae-a-loop-item   (wrap itself is the grid)
+ */
+function findGridAndItem(wrap) {
+	const layout = wrap.querySelector(':scope > .aae-a-loop-grid');
+	const grid = layout || wrap; // Loop Layout if present, else the wrap
+	const item = grid.querySelector(':scope > .aae-a-loop-item, :scope > .aae-a-loop-grid-item > .aae-a-loop-item');
+	return { grid, item };
+}
+
+/** Remove every clone cell in a grid (idempotent). */
+function removeClones(grid) {
+	grid.querySelectorAll('[data-aae-clone]').forEach((n) => n.remove());
+}
+
+/**
+ * Build the grid preview: the authored item in cell 0 + inert clones for the
+ * rest of the queried posts.
+ *
+ * Race-safety: settings changes make Elementor re-render the Loop Item mid-run.
+ * Without guards, overlapping runs each append their own clone set and posts
+ * pile up / duplicate. So we (a) skip if a run is already in flight for this
+ * wrap, and (b) strip ALL clones immediately AND again right before appending.
+ */
+/**
+ * Ensure exactly ONE authored cell wraps the real item (frontend cell shape),
+ * and drop any stray non-clone cells left by a re-render. Returns the cell.
+ */
+function ensureFirstCell(grid, item, doc) {
+	let firstCell = item.closest('.aae-a-loop-grid-item');
+	if (!firstCell || firstCell.parentNode !== grid) {
+		firstCell = doc.createElement('div');
+		firstCell.className = 'aae-a-loop-grid-item';
+		grid.insertBefore(firstCell, item);
+		firstCell.appendChild(item);
+	}
+	grid.querySelectorAll(':scope > .aae-a-loop-grid-item:not([data-aae-clone])').forEach((c) => {
+		if (c !== firstCell) {
+			c.remove();
+		}
+	});
+	return firstCell;
+}
+
+/** Build inert preview clones (posts[1..]) after the authored cell. */
+function buildClones(grid, firstCell, posts, doc) {
+	removeClones(grid);
+	if (!posts || posts.length <= 1) {
+		return;
+	}
+	const frag = doc.createDocumentFragment();
+	for (let i = 1; i < posts.length; i++) {
+		const clone = firstCell.cloneNode(true);
+		clone.setAttribute('data-aae-clone', '1');
+		clone.style.pointerEvents = 'none';
+		fillClone(clone, posts[i]);  // uses data-widget_type selectors
+		sanitizeClone(clone);        // then strip editor attrs/classes
+		frag.appendChild(clone);
+	}
+	grid.appendChild(frag);
+}
+
+async function hydrate(wrap) {
+	const { grid, item } = findGridAndItem(wrap);
+	if (!item) {
+		return; // authored Loop Item not rendered yet
+	}
+
+	// Key the rebuild on the QUERY only (see signature()). Selecting a widget
+	// inside the card changes the card markup but NOT the query, so this stays
+	// stable across clicks — no rebuild, no flicker, no refetch.
+	const s = readSettings(wrap);
+	const sig = signature(wrap, s);
+	const doc = wrap.ownerDocument;
+
+	// The sig lives on the wrap NODE. Some setting changes (e.g. pagination_type
+	// / load_method) feed the element's PHP render context, so Elementor may
+	// re-render the loop-item subtree in place — which WIPES our appended clones
+	// while the wrap node (and its cached __aaeSig) survive. A pure sig check
+	// then early-returns and the grid stays stuck at a single item ("loop item
+	// disappear" when pagination/load method changes). So only trust the sig
+	// when the DOM still reflects it: at least one clone present, OR the query
+	// legitimately yields a single item (nothing to clone). Otherwise rebuild.
+	const clonesPresent = grid.querySelectorAll('[data-aae-clone]').length > 0;
+	const inSync = clonesPresent || wrap.__aaeSingle === true;
+	if (wrap.__aaeSig === sig && !wrap.__aaeDirty && inSync) {
+		return;
+	}
+
+	// FAST PATH (flicker-free recovery): the query is unchanged and we already
+	// have its posts cached — Elementor just re-rendered and wiped the clones.
+	// Rebuild synchronously from the cache in this same tick: no AJAX round-trip,
+	// so the clones never visibly disappear. This is the "no redraw flicker" case.
+	if (wrap.__aaeSig === sig && !clonesPresent) {
+		const cached = cachedPosts(sig);
+		if (cached) {
+			grid.style.setProperty('--aae-columns-desktop', String(s.columns));
+			const firstCell = ensureFirstCell(grid, item, doc);
+			buildClones(grid, firstCell, cached, doc);
+			wrap.__aaeSingle = cached.length <= 1;
 			return;
 		}
-		const tplId = json.data.id;
-		if (widgetId) {
-			setTemplateId(widgetId, tplId);
-		}
-		// The widget re-renders (client-side) with the new template_id; wait for
-		// its wrap, then edit. editTemplate retries until the wrap exists.
-		editTemplate(tplId, widgetId);
-	} catch (e) { /* noop */ }
-}
-
-/** Locate a loop-grid wrap by widget id (preferred) or bound template id. */
-function findWrap(doc, tplId, widgetId) {
-	if (widgetId) {
-		const byId = doc.querySelector(`${WRAP_SELECTOR}[data-id="${widgetId}"]`);
-		if (byId) {
-			return byId;
-		}
 	}
-	return doc.querySelector(`${WRAP_SELECTOR}[data-aae-template-id="${tplId}"]`);
-}
 
-/**
- * Edit the loop-item template IN PLACE.
- *
- * Reveals the wrap's hidden edit-area attach target (hiding the read-only live
- * grid) and switches the loop-item document into it via `selector`. The editor
- * renders the loop-item's editable canvas (drag-widget zone) into that node
- * without reloading the page. The page document stays mounted, so the back
- * switch can re-attach to it.
- */
-export function editTemplate(tplId, widgetId, attempt) {
-	const id = parseInt(tplId, 10);
-	if (!id || !window.$e?.run) {
+	if (wrap.__aaeBusy) {
+		wrap.__aaeDirty = true; // a run is active; ask it to re-run when done
 		return;
 	}
-	const tries = attempt || 0;
+	wrap.__aaeBusy = true;
+	wrap.__aaeDirty = false;
+	wrap.__aaeSig = sig;
 
-	const win = getPreviewWindow();
-	const doc = win && win.document;
-	const wrap = doc ? findWrap(doc, id, widgetId) : null;
+	// Publish the column count as the CSS var the SCSS reads (matches frontend).
+	grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 
-	// After a template_id change the widget re-renders from the placeholder to
-	// the template-bound (live) markup, REPLACING the wrap and its children. If
-	// we attach the edit area to the placeholder wrap, that re-render destroys it
-	// and the switch has no target. So retry until the wrap has settled into its
-	// live state (placeholder gone, live container present) before attaching.
-	const ready = !!wrap
-		&& !!wrap.querySelector('.aae-a-loop-grid-live')
-		&& !wrap.querySelector('.aae-a-loop-grid-placeholder');
-	if (!ready) {
-		if (tries < 30) {
-			setTimeout(() => editTemplate(id, widgetId, tries + 1), 100);
-		}
-		return;
+	// If we can serve this query from cache, DON'T wipe the clones before the
+	// (now synchronous) rebuild — avoids a flash. Only clear up front when we
+	// must await a fresh fetch (query genuinely changed).
+	const preCached = cachedPosts(sig);
+	if (!preCached) {
+		removeClones(grid);
 	}
 
-	const area = ensureEditArea(wrap, doc, id);
-	area.style.display = '';
-	// Do not hide the live grid container anymore so the edit area and other 
-	// cards remain visible next to each other in the grid columns.
+	const firstCell = ensureFirstCell(grid, item, doc);
 
-	try {
-		state.loopGridParentDoc = window.elementor.documents.getCurrentId();
-	} catch (e) { /* noop */ }
-
-	try {
-		window.$e.run('editor/documents/switch', {
-			id,
-			selector: '.elementor-' + id,
-			shouldNavigateToDefaultRoute: false,
-			setAsInitial: false,
-		});
-	} catch (e) { /* noop */ }
-}
-
-/**
- * Save the loop item and switch back to the main post document.
- *
- * Mirrors Elementor Pro's "Save %s" back handle: switch to the initial document
- * with mode:'save' (persists the loop-item edits). Falls back to the remembered
- * parent if the initial-document id isn't available.
- */
-export function backToPage() {
-	if (!window.$e?.run) {
-		return;
-	}
-	let parent = state.loopGridParentDoc;
-	if (!parent) {
+	let posts = preCached;
+	if (!posts) {
 		try {
-			parent = window.elementor?.config?.initial_document?.id;
-		} catch (e) { /* noop */ }
+			posts = await fetchPosts(s, sig);
+		} finally {
+			wrap.__aaeBusy = false;
+		}
+	} else {
+		wrap.__aaeBusy = false;
 	}
-	if (!parent) {
+
+	if (!wrap.isConnected) {
 		return;
 	}
-	try {
-		window.$e.run('editor/documents/switch', {
-			id: parseInt(parent, 10),
-			mode: 'save',
-			selector: '.elementor-' + parseInt(parent, 10),
-			shouldNavigateToDefaultRoute: false,
-		});
-	} catch (e) { /* noop */ }
 
-	// syncEditState restores the live grids once the active class drops; nudge
-	// the visible state immediately so the transition feels instant.
-	const win = getPreviewWindow();
-	const doc = win && win.document;
-	if (doc) {
-		doc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
-			const live = wrap.querySelector('.aae-a-loop-grid-live');
-			if (live) {
-				live.style.display = '';
-				live.setAttribute('data-aae-loop-pending', '1');
-			}
-			const area = wrap.querySelector('.aae-a-loop-grid-editarea');
-			if (area) {
-				area.style.display = 'none';
-				removeHandle(area, 'back');
-			}
-			wrap.__aaeLoopSig = null;
-		});
-	}
-}
-
-/** Click delegation for the placeholder "Create a template" button. */
-function onPreviewClick(e) {
-	const btn = e.target.closest && e.target.closest('.aae-a-loop-grid-create-btn');
-	if (!btn) {
+	// Re-run requested while we were awaiting (settings changed again) — restart
+	// so we build against the latest state instead of stacking stale clones.
+	if (wrap.__aaeDirty) {
+		wrap.__aaeSig = null;
+		hydrate(wrap);
 		return;
 	}
-	e.preventDefault();
-	e.stopPropagation();
-	const wrap = btn.closest(WRAP_SELECTOR);
-	const widgetId = wrap ? wrap.getAttribute('data-id') : null;
-	createTemplate(widgetId);
-}
 
-/* ----------------------------------------------------------------------- *
- *  Pro-style edit / back (save) handles.
- *
- *  Mirrors Elementor Pro's loop document handles (see Pro preview.js
- *  document-handle util):
- *    - EDIT handle (pencil)     on a bound loop grid → switch into the template;
- *    - BACK handle (left arrow) while editing        → save + back to the post.
- *  Built with our own classes (self-styled in loop-grid.scss) so they don't
- *  depend on core editor CSS being present in the atomic preview iframe.
- * ----------------------------------------------------------------------- */
-
-/** Build a handle element (icon + label) wired to onClick. */
-function buildHandle(doc, kind, label, onClick) {
-	const handle = doc.createElement('div');
-	handle.className = 'aae-loop-handle aae-loop-handle--' + kind;
-	handle.title = label; // native tooltip
-	const inner = doc.createElement('div');
-	inner.className = 'aae-loop-handle__inner';
-	const icon = doc.createElement('i');
-	icon.className = kind === 'edit' ? 'eicon-edit' : 'eicon-arrow-left';
-	icon.setAttribute('aria-hidden', 'true');
-	const text = doc.createElement('span');
-	text.className = 'aae-loop-handle__title';
-	text.textContent = label;
-	inner.appendChild(icon);
-	inner.appendChild(text);
-	handle.appendChild(inner);
-	handle.addEventListener('click', (ev) => {
-		ev.preventDefault();
-		ev.stopPropagation();
-		onClick();
-	});
-	return handle;
-}
-
-/** Direct-child handle of a kind ('edit' | 'back'), or null. */
-function childHandle(parent, kind) {
-	return parent ? parent.querySelector(':scope > .aae-loop-handle--' + kind) : null;
-}
-
-function removeHandle(parent, kind) {
-	const h = childHandle(parent, kind);
-	if (h) {
-		h.remove();
-	}
-}
-
-/** Ensure the "Edit Loop Item" handle exists on a bound, not-editing wrap. */
-function ensureEditHandle(wrap) {
-	if (childHandle(wrap, 'edit')) {
+	if (!posts || !posts.length) {
+		removeClones(grid);
+		wrap.__aaeSingle = true; // nothing to clone — a later no-clone DOM is in sync
 		return;
 	}
-	const tplId = parseInt(wrap.getAttribute('data-aae-template-id'), 10) || 0;
-	const widgetId = wrap.getAttribute('data-id') || null;
-	if (!tplId) {
-		return;
-	}
-	wrap.prepend(buildHandle(wrap.ownerDocument, 'edit', 'Edit Loop Item', () => editTemplate(tplId, widgetId)));
+
+	// Remember whether this query legitimately produces a single item (no clones
+	// expected). Without this the in-sync check above would treat a correct
+	// single-item grid as "clones missing" and rebuild on every tick.
+	wrap.__aaeSingle = posts.length <= 1;
+
+	buildClones(grid, firstCell, posts, doc);
 }
 
-/** Ensure the "Back to post" (save + back) handle exists on the active area. */
-function ensureBackHandle(area) {
-	if (childHandle(area, 'back')) {
-		return;
-	}
-	area.prepend(buildHandle(area.ownerDocument, 'back', 'Back to post', () => backToPage()));
-}
-
-/**
- * Keep each wrap's edit-area / live-grid visibility in sync with reality.
- *
- * The single source of truth is the DOM: Elementor stamps the active embedded
- * edit area with `elementor-edit-area-active` when a document is switched into
- * it. So per wrap:
- *   - edit area is the active one → show it, hide the read-only live grid;
- *   - otherwise               → hide the edit area, restore the live grid.
- *
- * Runs on every mutation tick, so it self-heals the race where a re-render or
- * re-hydration tried to re-hide the active edit area. (Elementor shows its own
- * "Back to page" affordance, so we don't add our own button — when the user
- * returns by any means the active class drops and the live grid comes back.)
- */
-function syncEditState() {
+/** Scan the preview and hydrate all loop grids. */
+function scan() {
 	const win = getPreviewWindow();
 	const doc = win && win.document;
 	if (!doc) {
 		return;
 	}
-	// Second signal: the id of the document Elementor currently has active. The
-	// DOM `elementor-edit-area-active` class and this id update at slightly
-	// different points during a switch; honouring whichever says "editing" first
-	// avoids a one-tick flicker where the live grid flashes back in.
-	let currentId = 0;
-	try {
-		currentId = parseInt(window.elementor?.documents?.getCurrentId?.(), 10) || 0;
-	} catch (e) { /* noop */ }
-
 	doc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
-		const area = wrap.querySelector('.aae-a-loop-grid-editarea');
-		const live = wrap.querySelector('.aae-a-loop-grid-live');
-		const areaId = area ? parseInt(area.getAttribute('data-elementor-id'), 10) || 0 : 0;
-		const editing = !!area && (
-			area.classList.contains('elementor-edit-area-active') ||
-			(areaId > 0 && areaId === currentId)
-		);
-
-		// The live grid preview stays visible at all times — Pro shows the grid
-		// below the master item you're editing; only the edit area toggles.
-		if (live && live.style.display === 'none') {
-			live.style.display = '';
-		}
-
-		if (editing) {
-			if (area.style.display === 'none') {
-				area.style.display = '';
-			}
-			ensureBackHandle(area);   // "← Back to post" while editing
-			removeHandle(wrap, 'edit');
-			wrap.__aaeWasEditing = true;
-		} else {
-			if (area && area.style.display !== 'none') {
-				area.style.display = 'none';
-			}
-			if (area) {
-				removeHandle(area, 'back');
-			}
-			// Just returned from editing (our handle OR the native back) — refresh
-			// the live preview so it reflects whatever was saved on the master.
-			if (wrap.__aaeWasEditing) {
-				wrap.__aaeWasEditing = false;
-				if (live) {
-					live.setAttribute('data-aae-loop-pending', '1');
-					wrap.__aaeLoopSig = null;
-				}
-			}
-			// "✎ Edit Loop Item" only on a bound grid (live present); never on the
-			// first-drop placeholder (it has its own "Create a template" button).
-			if (live) {
-				ensureEditHandle(wrap);
-			} else {
-				removeHandle(wrap, 'edit');
-			}
-		}
+		hydrate(wrap);
 	});
 }
 
-/** Install the preview hydrator, create-button delegation + back tab. */
 export function installLoopGrid() {
 	if (state.loopGridInstalled) {
 		return;
 	}
 	state.loopGridInstalled = true;
-
-	// Expose for the React panel control (separate bundle, shared window).
-	window.AAELoopGrid = { createTemplate, editTemplate, backToPage };
 
 	const schedule = () => {
 		if (state.loopGridRaf) {
@@ -541,27 +375,22 @@ export function installLoopGrid() {
 		}
 		state.loopGridRaf = requestAnimationFrame(() => {
 			state.loopGridRaf = null;
-			scanAndHydrate();
-			syncEditState();
+			scan();
 		});
 	};
 
-	const observer = new MutationObserver(schedule);
 	if (document.body) {
-		observer.observe(document.body, { childList: true, subtree: true });
+		new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
 	}
 
-	// Watch the preview document + delegate create-button clicks once available.
-	// On editor (re)load the preview iframe's document can exist before its
-	// <body> does; observe()-ing a null body throws, so gate on body and only
-	// mark observed once it succeeds (the interval retries until body appears).
+	// The preview iframe document can exist before its <body>; gate on body and
+	// only observe once (idempotent across in-place re-renders).
 	const hookPreview = () => {
 		const win = getPreviewWindow();
 		const pdoc = win && win.document;
 		if (pdoc && pdoc.body && !pdoc.__aaeLoopObserved) {
 			pdoc.__aaeLoopObserved = true;
 			new MutationObserver(schedule).observe(pdoc.body, { childList: true, subtree: true });
-			pdoc.addEventListener('click', onPreviewClick, true);
 		}
 	};
 	hookPreview();
