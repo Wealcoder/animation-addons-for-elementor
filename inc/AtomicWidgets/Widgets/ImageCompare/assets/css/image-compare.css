@@ -1,0 +1,21 @@
+@charset "UTF-8";
+/* AAE Atomic Image Compare — intentionally empty.
+
+   All per-element styles now live in two places that travel with the widget:
+
+   1. PHP base_styles in class-aae-a-image-compare.php
+      → compound selectors (e.g. `base .aae-a-image-compare-before`) emit
+        one CSS block per child class through Elementor's atomic-styles
+        pipeline. No external CSS file needs to be enqueued in editor or
+        frontend.
+
+   2. Inline <style> in aae-a-image-compare.html.twig
+      → only the rules the v4 style schema can't express (CSS-variable
+        driven `left`, sibling-combinator hover, pointer-events,
+        user-select, ::-webkit-slider-thumb, etc.).
+
+   The widget no longer registers `aae-a-image-compare-css` — see
+   inc/AtomicWidgets/class-atomic.php. This file is kept only so the build
+   pipeline that globs scss/*.scss still has a target to emit (an empty
+   stylesheet) for backwards compatibility.
+*//*# sourceMappingURL=image-compare.css.map */

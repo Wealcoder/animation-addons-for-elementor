@@ -11,15 +11,12 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Flexbox\Flexbox;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
-require_once __DIR__ . '/class-aae-a-nav-sub.php';
+require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
 require_once __DIR__ . '/class-aae-a-nav-items-control.php';
-
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub;
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -61,8 +58,6 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
-		require_once __DIR__ . '/class-aae-a-nav-items-control.php';
-
 		return [
 			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
@@ -84,47 +79,43 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_base_styles(): array {
-		/* Layout props are kept in nav.scss (class-based selectors) — Elementor
-		 * caches base-style class hashes in saved page data, so adding/removing
-		 * props here can leave the frontend referencing a stale empty hash and
-		 * the styles never reach the rendered HTML. CSS file is always emitted
-		 * via get_style_depends() so it's the reliable channel. */
 		return [];
 	}
 
 	protected function define_default_children() {
-		/* Default nav-items ship with only a label (no nav-sub). To show the
-		 * dropdown feature out of the box we construct one example item that
-		 * has has_dropdown=true and explicit [label, nav-sub] children. The
-		 * other 3 items are plain — users add a Nav Dropdown manually when
-		 * they want one. (Auto-attaching a nav-sub to every nav-item bloated
-		 * the tree to 25 elements/widget and hung the editor on device
-		 * switches.) */
-		$label = Atomic_Paragraph::generate()
+		$make_item = function ( $title, $has_dropdown = false, array $children = [] ) {
+			$builder = AAE_A_Nav_Item::generate()
+				->editor_settings( [ 'title' => $title ] )
+				->settings( [
+					'text' => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( $title ),
+						'children' => [],
+					] ),
+					'has_dropdown' => Boolean_Prop_Type::generate( $has_dropdown ),
+				] );
+			if ( $children ) {
+				$builder->children( $children );
+			}
+			return $builder->build();
+		};
+
+		$make_sub_item = fn( $text ) => AAE_A_Nav_Sub_Item::generate()
+			->editor_settings( [ 'title' => $text ] )
 			->settings( [
 				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( 'Menu Item' ),
+					'content'  => String_Prop_Type::generate( $text ),
 					'children' => [],
 				] ),
-				'tag' => String_Prop_Type::generate( 'span' ),
 			] )
 			->build();
 
-		$sub = AAE_A_Nav_Sub::generate()->build();
-
-		$item_with_dropdown = AAE_A_Nav_Item::generate()
-			->editor_settings( [ 'title' => 'Menu Item 3' ] )
-			->settings( [
-				'has_dropdown' => Boolean_Prop_Type::generate( true ),
-			] )
-			->children( [ $label, $sub ] )
-			->build();
-
+		/* BISECT: item 3 has has_dropdown=true but empty children.
+		 * If freeze goes away, Flexbox in PHP default_children is the trigger. */
 		return [
-			AAE_A_Nav_Item::generate()->editor_settings( [ 'title' => 'Menu Item 1' ] )->build(),
-			AAE_A_Nav_Item::generate()->editor_settings( [ 'title' => 'Menu Item 2' ] )->build(),
-			$item_with_dropdown,
-			AAE_A_Nav_Item::generate()->editor_settings( [ 'title' => 'Menu Item 4' ] )->build(),
+			$make_item( 'Menu Item 1' ),
+			$make_item( 'Menu Item 2' ),
+			$make_item( 'Menu Item 3', true ),
+			$make_item( 'Menu Item 4' ),
 		];
 	}
 

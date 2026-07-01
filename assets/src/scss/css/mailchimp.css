@@ -94,8 +94,6 @@
   align-items: center;
   gap: 10px;
   flex-direction: row-reverse;
-  /* Slider for toggle effect */
-  /* Hide unselected text */
 }
 .aae-radio label {
   text-transform: uppercase;
@@ -126,6 +124,9 @@
 .aae-radio .input input {
   display: none;
 }
+.aae-radio {
+  /* Slider for toggle effect */
+}
 .aae-radio .slider {
   position: absolute;
   width: 40px;
@@ -133,6 +134,9 @@
   background: #fff;
   border-radius: 20px;
   transition: all 0.3s;
+}
+.aae-radio {
+  /* Hide unselected text */
 }
 .aae-radio .input input[value=Yes]:checked ~ label[for=radio_field_1],
 .aae-radio .input input[value=No]:checked ~ label[for=radio_field_0] {
