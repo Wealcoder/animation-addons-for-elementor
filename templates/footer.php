@@ -11,7 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 <?php do_action( 'animation_addons_footer_builder_content' ); ?>
 </div><!-- #page -->
 <?php wp_footer(); ?>

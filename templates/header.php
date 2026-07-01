@@ -27,15 +27,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 ?>
 <div id="page" class="hfeed site">
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
- <?php do_action( 'animation_addons_header_builder_content' ); ?> 
+ <?php do_action( 'animation_addons_header_builder_content' ); ?>
 	<?php
 		if( $aae_header_smoother == 'no' ){
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 			do_action( 'wp_body_open' ); 
 			if($aae_header_smoother_offsetY){
 				?>
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 					<style id="aae-elementor-pro-compatibility-smoother">
 						html .admin-bar #smooth-wrapper
 						{

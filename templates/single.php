@@ -13,9 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 ?>
-<main data-aee="builder" id="content" <?php post_class( 'site-main aae-single-sitecontent' ); ?>>	
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound	
-<?php do_action( 'animation_addons_single_builder_content' ); ?> // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+<main data-aee="builder" id="content" <?php post_class( 'site-main aae-single-sitecontent' ); ?>>
+<?php do_action( 'animation_addons_single_builder_content' ); ?>
 </main>
 <?php
 get_footer();
