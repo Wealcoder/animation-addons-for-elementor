@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace WCF_ADDONS\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if (! defined('ABSPATH')) {
 	exit();
@@ -8,7 +8,7 @@ if (! defined('ABSPATH')) {
 
 class WCF_Setup_Wizard_Init
 {
-	use \Animation_Addons_For_Elementor\WCF_Extension_Widgets_Trait;
+	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
 	 */

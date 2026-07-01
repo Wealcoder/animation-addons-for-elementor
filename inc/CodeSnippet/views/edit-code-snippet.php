@@ -4,13 +4,13 @@
  * Admin views: Add/Edit Code Snippet
  *
  * @since 2.3.10
- * @package Animation_Addons_For_Elementor\CodeSnippet
+ * @package WCF_ADDONS\CodeSnippet
  * 
  */
  
 
-use Animation_Addons_For_Elementor\CodeSnippet\Helpers;
-use Animation_Addons_For_Elementor\WCF_Theme_Builder;
+use WCF_ADDONS\CodeSnippet\Helpers;
+use WCF_ADDONS\WCF_Theme_Builder;
 
 defined( 'ABSPATH' ) || exit;
 

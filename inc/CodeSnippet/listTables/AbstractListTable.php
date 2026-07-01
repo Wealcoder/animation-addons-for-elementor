@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\CodeSnippet\listTables;
+namespace WCF_ADDONS\CodeSnippet\listTables;
 
 defined( 'ABSPATH' ) || exit;
 

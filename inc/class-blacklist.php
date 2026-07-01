@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor;
+namespace WCF_ADDONS;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;

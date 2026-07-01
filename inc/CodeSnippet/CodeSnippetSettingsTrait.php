@@ -2,7 +2,7 @@
 /**
  * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
  */
-namespace Animation_Addons_For_Elementor\CodeSnippet;
+namespace WCF_ADDONS\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Provides helper method to get snippet settings by snippet ID.
  *
- * @package Animation_Addons_For_Elementor\CodeSnippet
+ * @package WCF_ADDONS\CodeSnippet
  */
 trait CodeSnippetSettingsTrait {
 	/**

@@ -2,7 +2,7 @@
 /**
  * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
  */
-namespace Animation_Addons_For_Elementor;
+namespace WCF_ADDONS;
 
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;

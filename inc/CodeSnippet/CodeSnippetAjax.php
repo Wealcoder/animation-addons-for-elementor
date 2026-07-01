@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\CodeSnippet;
+namespace WCF_ADDONS\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Handles all AJAX operations for the CodeSnippet module
  *
- * @package Animation_Addons_For_Elementor\CodeSnippet
+ * @package WCF_ADDONS\CodeSnippet
  * @since 2.3.10
  */
 class CodeSnippetAjax {

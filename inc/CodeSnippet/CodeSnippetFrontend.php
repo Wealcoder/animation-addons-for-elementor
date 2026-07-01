@@ -2,7 +2,7 @@
 /**
  * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
  */
-namespace Animation_Addons_For_Elementor\CodeSnippet;
+namespace WCF_ADDONS\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Handles frontend execution of code snippets with conditional loading
  *
- * @package Animation_Addons_For_Elementor\CodeSnippet
+ * @package WCF_ADDONS\CodeSnippet
  */
 class CodeSnippetFrontend {
 	use CodeSnippetSettingsTrait;

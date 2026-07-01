@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\CodeSnippet;
+namespace WCF_ADDONS\CodeSnippet;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -60,7 +60,7 @@ class Helpers {
 		switch ( $type ) {
 			case 'wcf-code-snippet':
 			default:
-				$list_table = new \Animation_Addons_For_Elementor\CodeSnippet\listTables\CodeSnippetListTable();
+				$list_table = new \WCF_ADDONS\CodeSnippet\listTables\CodeSnippetListTable();
 				break;
 		}
 

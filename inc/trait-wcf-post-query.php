@@ -2,7 +2,7 @@
 /**
  * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
  */
-namespace Animation_Addons_For_Elementor;
+namespace WCF_ADDONS;
 
 use Elementor\Controls_Manager;
 use WP_Query;

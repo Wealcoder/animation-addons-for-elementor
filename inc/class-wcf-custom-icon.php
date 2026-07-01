@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Extensions;
+namespace WCF_ADDONS\Extensions;
 
 use ZipArchive;
 
@@ -8,7 +8,7 @@ if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
-if (class_exists('\Animation_Addons_For_Elementor\Extensions\CustomIcons')) {
+if (class_exists('\WCF_ADDONS\Extensions\CustomIcons')) {
 	return;
 }
 
@@ -23,7 +23,7 @@ if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION,
  * Handles custom icon management for the plugin, including uploading and processing custom icon zip files,
  * managing icon settings, and integrating with Elementor's icon manager.
  *
- * @package Animation_Addons_For_Elementor\Extensions
+ * @package WCF_ADDONS\Extensions
  * @since 1.0.0
  */
 

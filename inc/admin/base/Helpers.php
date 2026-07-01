@@ -5,7 +5,7 @@
  *
  * @package WCF_ADDONS
  */
-namespace Animation_Addons_For_Elementor\Admin\Base;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace WCF_ADDONS\Admin\Base;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined( 'ABSPATH' ) || die();
 /**

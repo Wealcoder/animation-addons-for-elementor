@@ -1,5 +1,5 @@
 <?php
-namespace Animation_Addons_For_Elementor;
+namespace WCF_ADDONS;
 
 use Elementor\Controls_Manager;
 use Elementor\Element_Base;

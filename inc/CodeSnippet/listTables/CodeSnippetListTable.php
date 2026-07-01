@@ -2,11 +2,11 @@
 /**
  * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
  */
-namespace Animation_Addons_For_Elementor\CodeSnippet\listTables;
+namespace WCF_ADDONS\CodeSnippet\listTables;
 
-use Animation_Addons_For_Elementor\CodeSnippet\CodeSnippet;
-use Animation_Addons_For_Elementor\CodeSnippet\Helpers;
-use Animation_Addons_For_Elementor\CodeSnippet\listTables\AbstractListTable;
+use WCF_ADDONS\CodeSnippet\CodeSnippet;
+use WCF_ADDONS\CodeSnippet\Helpers;
+use WCF_ADDONS\CodeSnippet\listTables\AbstractListTable;
 
 defined( 'ABSPATH' ) || exit;
 

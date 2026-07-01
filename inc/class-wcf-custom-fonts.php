@@ -1,12 +1,12 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Extensions;
+namespace WCF_ADDONS\Extensions;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if(class_exists('\Animation_Addons_For_Elementor\Extensions\CustomFonts')){
+if(class_exists('\WCF_ADDONS\Extensions\CustomFonts')){
     return;
 }
 

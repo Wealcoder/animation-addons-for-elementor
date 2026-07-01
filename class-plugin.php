@@ -1,9 +1,9 @@
 <?php
 
-namespace Animation_Addons_For_Elementor; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace WCF_ADDONS; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Plugin as ElementorPlugin;
-use Animation_Addons_For_Elementor\INC\WPML as WPML;
+use WCF_ADDONS\INC\WPML as WPML;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -31,7 +31,7 @@ class Plugin
 	 *
 	 * @var string Plugin version.
 	 */
-	use \Animation_Addons_For_Elementor\WCF_Extension_Widgets_Trait;
+	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 
 	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
 
@@ -258,7 +258,7 @@ class Plugin
 		wp_localize_script('wcf-editor', 'WCF_Addons_Editor', $data);
 
 		// templates Library
-		if (class_exists('\Animation_Addons_For_Elementor\Library_Source')) {
+		if (class_exists('\WCF_ADDONS\Library_Source')) {
 			wp_enqueue_script(
 				'wcf-template-library',
 				plugins_url('/assets/js/wcf-template-library.js', __FILE__),
@@ -953,7 +953,7 @@ class Plugin
 					$class = explode('-', $slug);
 					$class = array_map('ucfirst', $class);
 					$class = implode('_', $class);
-					$class = 'Animation_Addons_For_Elementor\\Widgets\\' . $class;
+					$class = 'WCF_ADDONS\\Widgets\\' . $class;
 					ElementorPlugin::instance()->widgets_manager->register(new $class());
 				}
 			}
@@ -1491,7 +1491,7 @@ class Plugin
 				$class = explode( '-', $skin_slug );
 				$class = array_map( 'ucfirst', $class );
 				$class = implode( '_', $class );
-				$class = 'Animation_Addons_For_Elementor\\Widgets\\Skin\\' . $class;
+				$class = 'WCF_ADDONS\\Widgets\\Skin\\' . $class;
 
 				// has base base skin dont need register
 				if ( isset( $skin['is_base_skin'] ) ) {
@@ -1624,7 +1624,7 @@ class Plugin
 
 		add_action( 'elementor/init', array( $this, 'elementor_init' ), 0 );
 
-		if ( class_exists( '\Animation_Addons_For_Elementor\Library_Source' ) ) {
+		if ( class_exists( '\WCF_ADDONS\Library_Source' ) ) {
 
 			add_action('elementor/editor/footer', array($this, 'print_templates'));
 			// enqueue modal's preview css.

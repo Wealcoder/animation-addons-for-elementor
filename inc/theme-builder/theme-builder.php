@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor;
+namespace WCF_ADDONS;
 
 use Elementor\Modules\Library\Documents\Library_Document;
 use Elementor\Plugin as ElementorPlugin;

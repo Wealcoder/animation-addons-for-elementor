@@ -2,7 +2,7 @@
 /**
  * Timeline Widget WPML integration
  */
-namespace Animation_Addons_For_Elementor\INC\WPML\WIDGET;
+namespace WCF_ADDONS\INC\WPML\WIDGET;
 
 defined( 'ABSPATH' ) || die();
 
