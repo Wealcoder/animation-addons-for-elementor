@@ -15,7 +15,7 @@ get_header();
 ?>
 <main data-aee="builder" id="content" <?php post_class( 'site-main aae-single-sitecontent' ); ?>>	
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound	
-<?php do_action( 'wcf_single_builder_content' ); ?> // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+<?php do_action( 'animation_addons_single_builder_content' ); ?> // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 </main>
 <?php
 get_footer();

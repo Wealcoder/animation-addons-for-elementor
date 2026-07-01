@@ -72,10 +72,10 @@ class WCF_Theme_Builder
 		add_filter('template_include', array($this, 'template_loader'), 30);
 
 		// Archive Page
-		add_action('wcf_archive_builder_content', array($this, 'archive_page_builder_content'));
+		add_action('animation_addons_archive_builder_content', array($this, 'archive_page_builder_content'));
 
 		// single
-		add_action('wcf_single_builder_content', array($this, 'single_post_builder_content'));
+		add_action('animation_addons_single_builder_content', array($this, 'single_post_builder_content'));
 
 		// Body classes
 		add_filter('body_class', array($this, 'body_classes'));
@@ -83,8 +83,8 @@ class WCF_Theme_Builder
 		// header footer
 		add_action('get_header', array($this, 'override_header'));
 		add_action('get_footer', array($this, 'override_footer'));
-		add_action('wcf_header_builder_content', array($this, 'header_builder_content'));
-		add_action('wcf_footer_builder_content', array($this, 'footer_builder_content'));
+		add_action('animation_addons_header_builder_content', array($this, 'header_builder_content'));
+		add_action('animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
 	}
 
 	/**
