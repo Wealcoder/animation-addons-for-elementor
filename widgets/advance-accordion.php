@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Control_Media;
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;

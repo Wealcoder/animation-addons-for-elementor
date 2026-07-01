@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Group_Control_Typography;
 use Elementor\Repeater;

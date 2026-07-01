@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Text_Stroke;

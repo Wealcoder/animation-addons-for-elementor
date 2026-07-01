@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -12,8 +12,8 @@ use Elementor\Repeater;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use Animation_Addons_For_Elementor\WCF_Post_Query_Trait;
-use Animation_Addons_For_Elementor\WCF_Post_Handler_Trait;
+use WCF_ADDONS\WCF_Post_Query_Trait;
+use WCF_ADDONS\WCF_Post_Handler_Trait;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly

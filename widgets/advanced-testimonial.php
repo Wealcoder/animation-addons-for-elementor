@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -12,7 +12,7 @@ use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Box_Shadow;
-use Animation_Addons_For_Elementor\WCF_Slider_Trait;
+use WCF_ADDONS\WCF_Slider_Trait;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly

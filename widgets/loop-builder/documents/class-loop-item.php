@@ -1,5 +1,5 @@
 <?php
-namespace Animation_Addons_For_Elementor\Widgets\Loop_Builder\Documents;
+namespace WCF_ADDONS\Widgets\Loop_Builder\Documents;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Animation_Addons_For_Elementor\Widgets;
+namespace WCF_ADDONS\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -10,7 +10,7 @@ use Elementor\Icons_Manager;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use Animation_Addons_For_Elementor\WCF_Button_Trait;
+use WCF_ADDONS\WCF_Button_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
