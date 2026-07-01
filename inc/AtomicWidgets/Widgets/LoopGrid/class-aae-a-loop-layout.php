@@ -17,6 +17,9 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -67,6 +70,18 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [];
+	}
+
+	protected function define_base_styles(): array {
+		return [
+			'base' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
+						->add_prop( 'flex-direction', String_Prop_Type::generate( 'row' ) )
+						->add_prop( 'flex-wrap', String_Prop_Type::generate( 'wrap' ) )
+				),
+		];
 	}
 
 	protected function get_templates(): array {

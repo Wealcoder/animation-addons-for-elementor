@@ -187,15 +187,16 @@ function fillClone(clone, post) {
 /**
  * Locate the grid CONTAINER + the authored Loop Item inside a wrap.
  *
- * Two DOM shapes must both work, and the clone preview must match the FRONTEND
- * cell structure (grid container holding `.aae-a-loop-grid-item` cells):
+ * Two DOM shapes must both work:
  *   - New tree:  .aae-a-loop-grid-wrap > .aae-a-loop-grid (Loop Layout) > .aae-a-loop-item
  *   - Old tree:  .aae-a-loop-grid-wrap > .aae-a-loop-item   (wrap itself is the grid)
+ *
+ * The Loop Item is a direct child of the Loop Layout — no wrapper cell.
  */
 function findGridAndItem(wrap) {
 	const layout = wrap.querySelector(':scope > .aae-a-loop-grid');
 	const grid = layout || wrap; // Loop Layout if present, else the wrap
-	const item = grid.querySelector(':scope > .aae-a-loop-item, :scope > .aae-a-loop-grid-item > .aae-a-loop-item');
+	const item = grid.querySelector(':scope > .aae-a-loop-item');
 	return { grid, item };
 }
 
@@ -205,43 +206,25 @@ function removeClones(grid) {
 }
 
 /**
- * Build the grid preview: the authored item in cell 0 + inert clones for the
- * rest of the queried posts.
+ * Build the grid preview: the authored item as the first flex child + inert
+ * clones for the rest of the queried posts. The Loop Item's own div is the
+ * direct flex child of the Loop Layout — no wrapper cell.
  *
  * Race-safety: settings changes make Elementor re-render the Loop Item mid-run.
  * Without guards, overlapping runs each append their own clone set and posts
  * pile up / duplicate. So we (a) skip if a run is already in flight for this
  * wrap, and (b) strip ALL clones immediately AND again right before appending.
  */
-/**
- * Ensure exactly ONE authored cell wraps the real item (frontend cell shape),
- * and drop any stray non-clone cells left by a re-render. Returns the cell.
- */
-function ensureFirstCell(grid, item, doc) {
-	let firstCell = item.closest('.aae-a-loop-grid-item');
-	if (!firstCell || firstCell.parentNode !== grid) {
-		firstCell = doc.createElement('div');
-		firstCell.className = 'aae-a-loop-grid-item';
-		grid.insertBefore(firstCell, item);
-		firstCell.appendChild(item);
-	}
-	grid.querySelectorAll(':scope > .aae-a-loop-grid-item:not([data-aae-clone])').forEach((c) => {
-		if (c !== firstCell) {
-			c.remove();
-		}
-	});
-	return firstCell;
-}
 
-/** Build inert preview clones (posts[1..]) after the authored cell. */
-function buildClones(grid, firstCell, posts, doc) {
+/** Build inert preview clones (posts[1..]) after the authored item. */
+function buildClones(grid, item, posts, doc) {
 	removeClones(grid);
 	if (!posts || posts.length <= 1) {
 		return;
 	}
 	const frag = doc.createDocumentFragment();
 	for (let i = 1; i < posts.length; i++) {
-		const clone = firstCell.cloneNode(true);
+		const clone = item.cloneNode(true);
 		clone.setAttribute('data-aae-clone', '1');
 		clone.style.pointerEvents = 'none';
 		fillClone(clone, posts[i]);  // uses data-widget_type selectors
@@ -286,8 +269,7 @@ async function hydrate(wrap) {
 		const cached = cachedPosts(sig);
 		if (cached) {
 			grid.style.setProperty('--aae-columns-desktop', String(s.columns));
-			const firstCell = ensureFirstCell(grid, item, doc);
-			buildClones(grid, firstCell, cached, doc);
+			buildClones(grid, item, cached, doc);
 			wrap.__aaeSingle = cached.length <= 1;
 			return;
 		}
@@ -312,7 +294,7 @@ async function hydrate(wrap) {
 		removeClones(grid);
 	}
 
-	const firstCell = ensureFirstCell(grid, item, doc);
+
 
 	let posts = preCached;
 	if (!posts) {
@@ -348,7 +330,7 @@ async function hydrate(wrap) {
 	// single-item grid as "clones missing" and rebuild on every tick.
 	wrap.__aaeSingle = posts.length <= 1;
 
-	buildClones(grid, firstCell, posts, doc);
+	buildClones(grid, item, posts, doc);
 }
 
 /** Scan the preview and hydrate all loop grids. */

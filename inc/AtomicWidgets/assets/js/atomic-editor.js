@@ -44,3 +44,4 @@ function boot() {
 boot();
 installItemsPanel();
 installLoopGrid();
+

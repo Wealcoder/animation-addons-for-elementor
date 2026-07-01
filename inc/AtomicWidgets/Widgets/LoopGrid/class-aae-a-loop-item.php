@@ -44,7 +44,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     public function get_title() {
-        return esc_html__( 'Loop Layout', 'animation-addons-for-elementor' );
+        return esc_html__( 'Loop Item', 'animation-addons-for-elementor' );
     }
 
     public function get_icon() {
@@ -104,10 +104,10 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
      *
      * The Loop Grid root publishes its query on the Render_Context stack (keyed
      * by AAE_A_Loop_Grid::class). Here we read it, run the WP_Query, and render
-     * this element's full twig (parent::print_content()) once per post inside a
-     * .aae-a-loop-grid-item cell — so the atomic current-post widgets resolve per
-     * post. Repeating at THIS level (not the root) means non-repeating siblings
-     * of the layout (e.g. Pagination) render only once.
+     * this element's full twig once per post — each Loop Item div becomes a
+     * direct flex child of the Loop Layout, so the atomic current-post widgets
+     * resolve per post. Repeating at THIS level (not the root) means
+     * non-repeating siblings of the layout (e.g. Pagination) render only once.
      *
      * In the editor / when there's no query context (item edited in isolation),
      * fall back to a single normal render so the card is still editable.
@@ -137,11 +137,11 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         // Twig template (render()) — NOT parent::print_content(), which is the bare
         // Element_Base loop-children method and would skip the item's own wrapper
         // div, dropping its atomic style class (background etc.) on the frontend.
+        // The Loop Item's own Twig div is the direct flex child of Loop Layout —
+        // no intermediary wrapper is needed.
         while ( $query->have_posts() ) {
             $query->the_post();
-            echo '<div class="aae-a-loop-grid-item">';
             $this->render();
-            echo '</div>';
         }
         wp_reset_postdata();
     }

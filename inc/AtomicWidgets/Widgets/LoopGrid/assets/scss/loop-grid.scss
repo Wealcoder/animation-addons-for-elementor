@@ -11,33 +11,14 @@
 /* The grid container is `.aae-a-loop-grid` when the Loop Layout is present
  * (new nested tree, editor + frontend) and `.aae-a-loop-grid-wrap` for the
  * legacy flat tree. Both must be a grid so editor and frontend match exactly. */
-.aae-a-loop-grid,
-.aae-a-loop-grid-wrap {
-	display: grid !important;
-	grid-template-columns: repeat(var(--aae-columns-desktop, 3), 1fr);
-	gap: var(--aae-gap-desktop, 8px);
-
-	@media (max-width: 1024px) {
-		grid-template-columns: repeat(var(--aae-columns-tablet, var(--aae-columns-desktop, 2)), 1fr) !important;
-		gap: var(--aae-gap-tablet, 8px) !important;
-	}
-
-	@media (max-width: 767px) {
-		grid-template-columns: repeat(var(--aae-columns-mobile, 1), 1fr) !important;
-		gap: var(--aae-gap-mobile, 8px) !important;
-	}
-}
 
 /* When the Loop Layout IS the grid, the outer wrap must NOT also be a grid
  * (it just holds the layout + pagination stacked). */
 .aae-a-loop-grid-wrap:has(> .aae-a-loop-grid) {
-	display: block !important;
+	// display: block !important;
 }
 
-/* Each cell holds one repeat of the authored loop-item subtree. */
-.aae-a-loop-grid-item {
-	min-width: 0;
-}
+
 
 .aae-a-loop-grid-empty {
 	padding: 24px;
