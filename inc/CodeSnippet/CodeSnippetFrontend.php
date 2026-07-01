@@ -178,7 +178,7 @@ class CodeSnippetFrontend {
 		$should_load = $this->check_visibility_conditions( $snippet_data );
 
 		// Allow developers to filter the result.
-		return apply_filters( 'wcf_code_snippet_should_load', $should_load, $snippet_data );
+		return apply_filters( 'wcf_code_snippet_should_load', $should_load, $snippet_data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 	}
 
 	/**
@@ -415,7 +415,7 @@ class CodeSnippetFrontend {
 		}
 
 		// Fire action before snippet execution.
-		do_action( 'wcf_code_snippet_before_execute', $snippet );
+		do_action( 'wcf_code_snippet_before_execute', $snippet ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 
 		// Sanitize and prepare code content.
 		$code_content = $this->prepare_code_content( $code_content, $code_type );
@@ -445,7 +445,7 @@ class CodeSnippetFrontend {
 		}
 
 		// Fire action after snippet execution.
-		do_action( 'wcf_code_snippet_after_execute', $snippet );
+		do_action( 'wcf_code_snippet_after_execute', $snippet ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 	}
 
 	/**

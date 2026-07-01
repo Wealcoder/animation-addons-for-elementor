@@ -288,10 +288,12 @@ class WCF_Theme_Builder
 			
 		if ($template_ID) {
 			if($tmpType == 'header'){
-				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true ); 
 				$offsetY = get_post_meta( $template_ID, 'aae_header_smoother_offsety', true );
 				$offsetY = preg_replace( '/[^0-9.\-]/', '', $offsetY );
 				if($offsetY && is_numeric($offsetY)){
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 					$GLOBALS['aae_header_smoother_offsetY'] = $offsetY;
 				}
 				
@@ -1030,7 +1032,7 @@ class WCF_Theme_Builder
 				'optionkey' => 'singlepage',
 			),
 		);
-
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_builder_template_types', $template_type);
 	}
 
@@ -1109,6 +1111,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_hf_list', $selection_options);
 	}
 
@@ -1176,6 +1179,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		return apply_filters('wcf_display_archive_list', $selection_options);
 	}
 
@@ -1221,6 +1225,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_archive_list', $selection_options);
 	}
 
@@ -1253,6 +1258,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_taxonomy_list', $selection_options);
 	}
 

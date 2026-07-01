@@ -491,7 +491,7 @@ class CodeSnippetListTable extends AbstractListTable {
 				break;
 
 			default:
-				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item );
+				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 		}
 
 		return $value;

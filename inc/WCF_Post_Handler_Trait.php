@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
 namespace Animation_Addons_For_Elementor;
 
 use Elementor\Group_Control_Image_Size;
@@ -479,6 +481,7 @@ trait WCF_Post_Handler_Trait
 				$date = get_the_date();
 				/** This filter is documented in wp-includes/general-template.php */
 				// PHPCS - The date is safe.
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
 			</span>
