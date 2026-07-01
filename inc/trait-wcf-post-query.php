@@ -759,7 +759,7 @@ trait WCF_Post_Query_Trait {
 			}
 		}
 
-		$query_args = apply_filters('aaeaddons/lite/query/before', $query_args);
+		$query_args = apply_filters('aaeaddons/lite/query/before', $query_args); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 
 		return $query_args;
 	}

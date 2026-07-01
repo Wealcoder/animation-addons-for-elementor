@@ -1225,7 +1225,7 @@ class WXRImporter extends \WP_Importer
 			 * @param array $meta_item Meta data. (Return empty to skip.)
 			 * @param int $post_id Post the meta is attached to.
 			 */
-			$meta_item = apply_filters('wxr_importer.pre_process.post_meta', $meta_item, $post_id);
+			$meta_item = apply_filters('wxr_importer.pre_process.post_meta', $meta_item, $post_id); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			if (empty($meta_item)) {
 				return false;
 			}

@@ -463,7 +463,7 @@ trait AAE_Post_Handler_Trait {
 				$date = get_the_date();
 				/** This filter is documented in wp-includes/general-template.php */
 				// PHPCS - The date is safe.
-				echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				?>
 			</span>
 		<?php

@@ -3,7 +3,7 @@ Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: animation, elementor, elementor addons, elementor templates, elementor widgets
 Requires at least: 6.6
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 2.6.8
 License: GPL v2 or later

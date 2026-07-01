@@ -12,7 +12,7 @@
  * Domain Path:                /languages
  * Requires at least: 		   6.6
  * Requires PHP:               7.4
- * Tested up to:               6.9
+ * Tested up to:               7.0
  * Elementor tested up to:     3.34.0
  * Elementor Pro tested up to: 3.33.1
  */

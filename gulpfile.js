@@ -129,7 +129,6 @@ gulp.task('zip', () => {
         '!.phpcs.xml.dist',
         '!components.cptBuilder.json',
         '!components.dashboard.json',
-        '!components.json',
         '!components.pageImport.json',
         '!composer.json',
         '!gulpfile.js',
