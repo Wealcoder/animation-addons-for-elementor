@@ -125,31 +125,15 @@ register( {
 		const navId = nav.getAttribute( 'data-id' );
 		if ( ! navId ) return;
 
-		if ( isEditor() ) {
-			if ( nav.dataset.navInit === 'true' ) return;
-			nav.dataset.navInit = 'true';
-
-			/*
-			 * Editor: keep ONE dropdown chain visible at a time — the chain that
-			 * leads to whatever the user just clicked. Survives style-tab edits
-			 * (panel clicks don't fire this listener) and color-picker popups
-			 * (which can briefly strip Elementor's `.elementor-element-editable`).
-			 *
-			 * Listening on mousedown (capture) so we run BEFORE Elementor's own
-			 * selection handler and aren't blocked by stopPropagation downstream.
-			 */
-			nav.addEventListener( 'mousedown', ( e ) => {
-				nav.querySelectorAll( '.aae-keep-open' )
-					.forEach( el => el.classList.remove( 'aae-keep-open' ) );
-
-				let item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-				while ( item && nav.contains( item ) ) {
-					item.classList.add( 'aae-keep-open' );
-					item = item.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-				}
-			}, true );
-			return;
-		}
+		/*
+		 * Editor: do NOTHING here. Any DOM mutation (classList changes,
+		 * data-attr writes) triggers Elementor's MutationObserver, which
+		 * re-renders the widget — and rapid re-renders on drop/device-switch
+		 * cause the editor to hang. (See Countdown's `isEditMode` skip for
+		 * the same reason.) Visibility is handled by the always-show CSS
+		 * rule in aae-a-nav.html.twig.
+		 */
+		if ( isEditor() ) return;
 
 		if ( nav.dataset.navInit === 'true' ) return;
 		nav.dataset.navInit = 'true';
@@ -183,9 +167,6 @@ register( {
 			/* Only handle click-trigger dropdown items; let leaves navigate normally. */
 			if ( item.dataset.hasDropdown !== 'true' || item.dataset.trigger !== 'click' ) return;
 
-			/* If the click landed inside this item's own dropdown, defer to the
-			 * nested handler that bubbled through `closest()` — don't toggle this
-			 * (outer) item, which would close its own dropdown. */
 			const ownSub = item.querySelector( ':scope > .aae-a-nav-sub' );
 			if ( ownSub && ownSub.contains( e.target ) ) return;
 

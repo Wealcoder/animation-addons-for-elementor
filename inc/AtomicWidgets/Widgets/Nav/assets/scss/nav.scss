@@ -1,0 +1,139 @@
+/*
+ * AAE Atomic Nav — all styles.
+ *
+ * Tried moving layout props to define_base_styles() (PHP) but Elementor
+ * caches base-style class-name hashes inside saved page data; on the
+ * frontend that pinned the markup to a stale (empty) hash and `display:
+ * none` / `position: absolute` never reached the DOM, so dropdown items
+ * rendered inline in the navbar. CSS file is enqueued unconditionally
+ * via get_style_depends() so it's the reliable channel.
+ */
+
+.aae-a-nav {
+	position: relative;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 4px;
+}
+
+.aae-a-nav .aae-a-nav-item {
+	display: inline-block;
+	position: relative;
+	list-style: none;
+	width: auto;
+}
+
+.aae-a-nav .aae-a-nav-sub {
+	display: none;
+	position: absolute;
+	inset-block-start: 100%;
+	inset-inline-start: 0;
+	min-width: 200px;
+	list-style: none;
+	margin: 0;
+	padding: 8px 0;
+	z-index: 100;
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+}
+
+/* ── Show dropdown only when has-dropdown=true AND is-open (frontend) ── */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .aae-a-nav-sub {
+	display: flex;
+	flex-direction: column;
+}
+
+/* ── Nested sub-dropdown opens to the right ── */
+.aae-a-nav .aae-a-nav-sub .aae-a-nav-item > .aae-a-nav-sub {
+	inset-block-start: 0;
+	inset-inline-start: 100%;
+}
+
+/* ── Cursor pointer on items with dropdown enabled ── */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] {
+	cursor: pointer;
+}
+
+/* ══ CSS Dropdown Animations ══ */
+@keyframes aae-nav-grow-down {
+	0%   { transform: scaleY(0); }
+	80%  { transform: scaleY(1.05); }
+	100% { transform: scaleY(1); }
+}
+@keyframes aae-nav-rotate-3d {
+	0%   { transform: rotateX(-90deg); opacity: 0; }
+	70%  { transform: rotateX(20deg); }
+	100% { transform: rotateX(0deg); opacity: 1; }
+}
+@keyframes aae-nav-grow-out {
+	0%   { transform: scale(0); opacity: 0; }
+	80%  { transform: scale(1.05); }
+	100% { transform: scale(1); opacity: 1; }
+}
+@keyframes aae-nav-slide-item {
+	0%   { opacity: 0; transform: translateY(-16px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes aae-nav-rotate-item {
+	0%   { opacity: 0; transform: rotateX(-90deg); }
+	50%  { transform: rotateX(-20deg); }
+	100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+.aae-a-nav {
+	/* grow-down */
+	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > .aae-a-nav-sub {
+		animation: aae-nav-grow-down 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* rotate-3d */
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"].is-open > .aae-a-nav-sub {
+		animation: aae-nav-rotate-3d 400ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* grow-out */
+	.aae-a-nav-item[data-dropdown-anim="grow-out"].is-open > .aae-a-nav-sub {
+		animation: aae-nav-grow-out 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* slide-items */
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > * {
+		animation: aae-nav-slide-item 300ms ease-out forwards;
+		opacity: 0;
+	}
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > .aae-a-nav-sub > *:nth-child(n+5) { animation-delay: 240ms; }
+	/* rotate-items */
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > * {
+		animation: aae-nav-rotate-item 300ms ease-in-out forwards;
+		opacity: 0;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > .aae-a-nav-sub > *:nth-child(n+5) { animation-delay: 240ms; }
+}
+
+/* ── Editor visibility (see PHP base styles for the static layout props) ──
+ *   Top-level dropdowns: only the active repeater row is visible.
+ *   Nested dropdowns: selection / :has() / hover. */
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-sub {
+	display: flex;
+	flex-direction: column;
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-sub .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .aae-a-nav-sub,
+.elementor-editor-active .aae-a-nav .aae-a-nav-sub .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .aae-a-nav-sub,
+.elementor-editor-active .aae-a-nav .aae-a-nav-sub .aae-a-nav-item[data-has-dropdown="true"]:hover > .aae-a-nav-sub {
+	display: flex;
+	flex-direction: column;
+}

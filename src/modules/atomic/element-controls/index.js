@@ -16,9 +16,11 @@ import { controlsRegistry } from '@elementor/editor-editing-panel';
 
 import { SlidesControl } from './SlidesControl';
 import { PresetPickerControl } from './PresetPickerControl';
+import { NavItemsControl } from './NavItemsControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
+	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
 ];
 
