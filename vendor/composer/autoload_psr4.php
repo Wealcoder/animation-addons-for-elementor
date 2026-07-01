@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'WCF_ADDONS\\' => array($baseDir . '/inc'),
+    'Animation_Addons_For_Elementor\\' => array($baseDir . '/inc'),
 );

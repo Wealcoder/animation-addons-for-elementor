@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Control_Media;
 use Elementor\Controls_Manager;
@@ -14,7 +14,7 @@ use Elementor\Plugin;
 use Elementor\Repeater;
 use Elementor\Utils;
 use Elementor\Widget_Base;
-use WCF_ADDONS\WCF_Button_Trait;
+use Animation_Addons_For_Elementor\WCF_Button_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly

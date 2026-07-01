@@ -1,12 +1,12 @@
 <?php
 
-namespace WCF_ADDONS\Extensions;
+namespace Animation_Addons_For_Elementor\Extensions;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if(class_exists('\WCF_ADDONS\Extensions\CustomFonts')){
+if(class_exists('\Animation_Addons_For_Elementor\Extensions\CustomFonts')){
     return;
 }
 
@@ -156,7 +156,7 @@ Class CustomFonts_Lite{
         if(is_array($this->gl_settings) && isset($this->gl_settings['load_in_head']) && $this->gl_settings['load_in_head'] == true){
         
             $custom_css = '';
-            $fontlist   = apply_filters('wcf_addin_pro_custom_webfonts',[]);       
+            $fontlist   = apply_filters('wcf_addin_pro_custom_webfonts',[]); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
             foreach ($fontlist as $font_family => $fonts) 
             {
                 foreach ($fonts as $weight => $font_sources)
@@ -199,7 +199,7 @@ Class CustomFonts_Lite{
         }
         
         $custom_css = '';
-        $fontlist   = apply_filters('wcf_addin_pro_custom_webfonts',[]);   
+        $fontlist   = apply_filters('wcf_addin_pro_custom_webfonts',[]); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
      
         foreach ($fontlist as $font_family => $fonts) 
         {

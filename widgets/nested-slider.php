@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Icons_Manager;
@@ -10,7 +10,7 @@ use Elementor\Repeater;
 use Elementor\Plugin;
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
-use WCF_ADDONS\AAE_Nested_Slider_Trait;
+use Animation_Addons_For_Elementor\AAE_Nested_Slider_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly

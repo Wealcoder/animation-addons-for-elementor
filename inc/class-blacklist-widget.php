@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS;
+namespace Animation_Addons_For_Elementor;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

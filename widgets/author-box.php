@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Elementor widget that displays an author box.
  *
  * @since 1.0.0
- * @package WCF_ADDONS\Widgets
+ * @package Animation_Addons_For_Elementor\Widgets
  */
 class Author_Box extends Widget_Base {
 	public function get_name() {

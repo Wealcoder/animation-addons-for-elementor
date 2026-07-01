@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Border;
@@ -8,7 +8,7 @@ use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Image_Size;
 use Elementor\Plugin;
 use Elementor\Widget_Base;
-use WCF_ADDONS\WCF_Slider_Trait;
+use Animation_Addons_For_Elementor\WCF_Slider_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Elementor widget that displays a post-featured image.
  *
  * @since 1.0.0
- * @package WCF_ADDONS\Widgets
+ * @package Animation_Addons_For_Elementor\Widgets
  */
 class Post_Feature_Image extends Widget_Base {
 

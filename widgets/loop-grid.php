@@ -1,11 +1,11 @@
 <?php
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Group_Control_Background;
-use WCF_ADDONS\WCF_Post_Query_Trait;
-use WCF_ADDONS\AAE_Post_Handler_Trait;
-use WCF_ADDONS\Widgets\Loop_Builder\Template_Manager;
-use WCF_ADDONS\Widgets\Loop_Builder\Query_Manager;
+use Animation_Addons_For_Elementor\WCF_Post_Query_Trait;
+use Animation_Addons_For_Elementor\AAE_Post_Handler_Trait;
+use Animation_Addons_For_Elementor\Widgets\Loop_Builder\Template_Manager;
+use Animation_Addons_For_Elementor\Widgets\Loop_Builder\Query_Manager;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;

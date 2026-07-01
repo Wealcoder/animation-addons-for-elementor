@@ -4,7 +4,7 @@
  * WPML integration and compatibility manager
  */
 
-namespace WCF_ADDONS\INC\WPML;
+namespace Animation_Addons_For_Elementor\INC\WPML;
 
 defined('ABSPATH') || die();
 
@@ -139,7 +139,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Image_Box_Slider',]
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Image_Box_Slider',]
 			],
 
 			/**
@@ -191,7 +191,7 @@ class WPML_Manager
 				// 		],
 				// 	],
 				// ],
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial',]
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Testimonial',]
 			],
 
 			/**
@@ -217,7 +217,7 @@ class WPML_Manager
 				// 		],
 				// 	],
 				// ],
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Two',]
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Testimonial_Two',]
 			],
 
 			/**
@@ -253,7 +253,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Testimonial_Three',]
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Testimonial_Three',]
 			],
 
 			/**
@@ -264,7 +264,7 @@ class WPML_Manager
 			    'fields' => [
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advanced_Testimonial']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Advanced_Testimonial']
 			],
 
 			/**
@@ -314,7 +314,7 @@ class WPML_Manager
 						// ],
 					],
 				],
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Team_Slider']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Team_Slider']
 			],
 			
 			/**
@@ -373,7 +373,7 @@ class WPML_Manager
 						],
 					],
 				],
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\TypeWriter']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\TypeWriter']
 
 			],
 
@@ -434,7 +434,7 @@ class WPML_Manager
 				'fields' => [
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Timeline']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Timeline']
 
 			],
 
@@ -442,7 +442,7 @@ class WPML_Manager
 			 * Tabs Widget
 			 */
 			'wcf--tabs' => [
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Tabs']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Tabs']
 			],
 
 			/**
@@ -458,7 +458,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Services_Tab']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Services_Tab']
 			],
 
 			/**
@@ -466,7 +466,7 @@ class WPML_Manager
 			 */
 			'wcf--a-accordion' => [
 			
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Advance_Accordion']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Advance_Accordion']
 			],
 
 			/*--------------------------------------------------------------
@@ -476,7 +476,7 @@ class WPML_Manager
 				'conditions' => ['widgetType' => 'wcf--image-accordion'],
 				'fields'     => [],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Image_Accordion',]
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Image_Accordion',]
 
 			],
 
@@ -648,7 +648,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Post_Social_Share']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Post_Social_Share']
 
 			],
 
@@ -917,7 +917,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\One_Page_Nav']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\One_Page_Nav']
 			],
 
 			/**
@@ -1007,7 +1007,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Brand_Slider']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Brand_Slider']
 			],
 
 			/**
@@ -1030,7 +1030,7 @@ class WPML_Manager
 			'wcf--content-slider' => [
 
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Content_Slider']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Content_Slider']
 			],
 
 			/**
@@ -1046,7 +1046,7 @@ class WPML_Manager
 					],
 				],
 
-				'integration-class' => ['WCF_ADDONS\INC\WPML\WIDGET\Nested_Slider']
+				'integration-class' => ['Animation_Addons_For_Elementor\INC\WPML\WIDGET\Nested_Slider']
 			],
 
 			/**
@@ -1064,8 +1064,8 @@ class WPML_Manager
 				],
 
 				'integration-class' => [
-					'WCF_ADDONS\INC\WPML\WIDGET\Filterable_Slider_Filters',
-					'WCF_ADDONS\INC\WPML\WIDGET\Filterable_Slider_Projects',
+					'Animation_Addons_For_Elementor\INC\WPML\WIDGET\Filterable_Slider_Filters',
+					'Animation_Addons_For_Elementor\INC\WPML\WIDGET\Filterable_Slider_Projects',
 				]
 			],
 
@@ -1082,7 +1082,7 @@ class WPML_Manager
 				],
 
 				'integration-class' => [
-					'WCF_ADDONS\INC\WPML\WIDGET\Event_Slider',
+					'Animation_Addons_For_Elementor\INC\WPML\WIDGET\Event_Slider',
 				]
 			],
 

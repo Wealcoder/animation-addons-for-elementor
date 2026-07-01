@@ -3,9 +3,9 @@
  * MailChimp api
  */
 
-namespace WCF_ADDONS\Widgets\Nav_Menu;
+namespace Animation_Addons_For_Elementor\Widgets\Nav_Menu;
 
-use WCF_ADDONS\WCF_Theme_Builder;
+use Animation_Addons_For_Elementor\WCF_Theme_Builder;
 
 defined( 'ABSPATH' ) || die();
 

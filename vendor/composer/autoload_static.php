@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit29593bdbf416014cb72a7f7f6c7bd854
 {
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'A' =>
         array (
-            'WCF_ADDONS\\' => 11,
+            'Animation_Addons_For_Elementor\\' => 31,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WCF_ADDONS\\' => 
+        'Animation_Addons_For_Elementor\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc',
         ),

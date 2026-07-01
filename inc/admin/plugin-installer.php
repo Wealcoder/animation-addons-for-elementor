@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Animation_Addons_For_Elementor\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 

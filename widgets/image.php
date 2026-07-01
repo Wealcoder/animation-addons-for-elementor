@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets;
+namespace Animation_Addons_For_Elementor\Widgets;
 
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;

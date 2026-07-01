@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Animation_Addons_For_Elementor; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;

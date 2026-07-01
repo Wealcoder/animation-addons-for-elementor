@@ -4,7 +4,7 @@
  *
  * @since 2.3.10
  * @subpackage CodeSnippet/views
- * @package WCF_ADDONS\CodeSnippet
+ * @package Animation_Addons_For_Elementor\CodeSnippet
  * @var string $page_hook Page hook.
  */
 

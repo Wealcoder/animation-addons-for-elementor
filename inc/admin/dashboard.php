@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Animation_Addons_For_Elementor\Admin;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Modules\ElementManager\Options;
 use Elementor\Plugin;
@@ -13,7 +13,7 @@ class WCF_Admin_Init
 {
 
 
-	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+	use \Animation_Addons_For_Elementor\WCF_Extension_Widgets_Trait;
 
 	/**
 	 * Parent Menu Page Slug
@@ -286,7 +286,7 @@ class WCF_Admin_Init
 		require_once 'Importer.php';
 		require_once 'st-init.php';
 		require_once 'template-importer.php';
-		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
+		$oneimport = \Animation_Addons_For_Elementor\Admin\Base\OneClickImport::get_instance();
 	}
 
 

@@ -2,7 +2,7 @@
 /**
  * Nested Slider – Repeater Items WPML integration
  */
-namespace WCF_ADDONS\INC\WPML\WIDGET;
+namespace Animation_Addons_For_Elementor\INC\WPML\WIDGET;
 
 defined( 'ABSPATH' ) || die();
 

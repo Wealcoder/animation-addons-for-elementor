@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\CodeSnippet;
+namespace Animation_Addons_For_Elementor\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -10,7 +10,7 @@ require_once __DIR__ . '/CodeSnippetAjax.php';
 /**
  * CodeSnippet Class
  *
- * @package WCF_ADDONS\CodeSnippet
+ * @package Animation_Addons_For_Elementor\CodeSnippet
  */
 class CodeSnippet {
 	use CodeSnippetSettingsTrait;

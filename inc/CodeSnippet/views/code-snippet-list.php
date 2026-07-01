@@ -2,11 +2,11 @@
 /**
  * Admin View: List Code Snippets
  *
- * @package WCF_ADDONS\CodeSnippet
+ * @package Animation_Addons_For_Elementor\CodeSnippet
  * @since 1.0.0
  */
 
-use WCF_ADDONS\CodeSnippet\Helpers;
+use Animation_Addons_For_Elementor\CodeSnippet\Helpers;
 
 defined( 'ABSPATH' ) || exit;
 

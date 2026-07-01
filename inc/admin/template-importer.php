@@ -1,8 +1,8 @@
 <?php
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
+namespace Animation_Addons_For_Elementor\Admin\Base;
 
-use WCF_ADDONS\Admin\WCF_Plugin_Installer;
+use Animation_Addons_For_Elementor\Admin\WCF_Plugin_Installer;
 use WP_Error;
 use Elementor\Plugin;
 

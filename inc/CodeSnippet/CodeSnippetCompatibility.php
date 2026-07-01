@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\CodeSnippet;
+namespace Animation_Addons_For_Elementor\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Handles frontend execution of code snippets with conditional loading
  *
- * @package WCF_ADDONS\CodeSnippet
+ * @package Animation_Addons_For_Elementor\CodeSnippet
  */
 class CodeSnippetCompatibility {
 	/**
@@ -35,8 +35,8 @@ class CodeSnippetCompatibility {
 		// Only run if wp_body_open hook doesn't exist or hasn't been called.
 		if ( ! did_action( 'wp_body_open' ) ) {
 			// Try to find a suitable place to inject body start snippets.
-			if ( class_exists( '\WCF_ADDONS\CodeSnippet\CodeSnippetFrontend' ) ) {
-				$frontend = \WCF_ADDONS\CodeSnippet\CodeSnippetFrontend::instance();
+			if ( class_exists( '\Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend' ) ) {
+				$frontend = \Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend::instance();
 				if ( method_exists( $frontend, 'execute_body_start_snippets' ) ) {
 					$frontend->execute_body_start_snippets();
 				}
@@ -57,8 +57,8 @@ class CodeSnippetCompatibility {
 			add_action(
 				'woocommerce_before_main_content',
 				function () {
-					if ( class_exists( '\WCF_ADDONS\CodeSnippet\CodeSnippetFrontend' ) ) {
-						$frontend = \WCF_ADDONS\CodeSnippet\CodeSnippetFrontend::instance();
+					if ( class_exists( '\Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend' ) ) {
+						$frontend = \Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend::instance();
 						if ( method_exists( $frontend, 'execute_content_before_snippets' ) ) {
 							$frontend->execute_content_before_snippets();
 						}
@@ -70,8 +70,8 @@ class CodeSnippetCompatibility {
 			add_action(
 				'woocommerce_after_main_content',
 				function () {
-					if ( class_exists( '\WCF_ADDONS\CodeSnippet\CodeSnippetFrontend' ) ) {
-						$frontend = \WCF_ADDONS\CodeSnippet\CodeSnippetFrontend::instance();
+					if ( class_exists( '\Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend' ) ) {
+						$frontend = \Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend::instance();
 						if ( method_exists( $frontend, 'execute_content_after_snippets' ) ) {
 							$frontend->execute_content_after_snippets();
 						}
@@ -96,8 +96,8 @@ class CodeSnippetCompatibility {
 			add_action(
 				'bp_before_content',
 				function () {
-					if ( class_exists( '\WCF_ADDONS\CodeSnippet\CodeSnippetFrontend' ) ) {
-						$frontend = \WCF_ADDONS\CodeSnippet\CodeSnippetFrontend::instance();
+					if ( class_exists( '\Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend' ) ) {
+						$frontend = \Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend::instance();
 						if ( method_exists( $frontend, 'execute_content_before_snippets' ) ) {
 							$frontend->execute_content_before_snippets();
 						}
@@ -109,8 +109,8 @@ class CodeSnippetCompatibility {
 			add_action(
 				'bp_after_content',
 				function () {
-					if ( class_exists( '\WCF_ADDONS\CodeSnippet\CodeSnippetFrontend' ) ) {
-						$frontend = \WCF_ADDONS\CodeSnippet\CodeSnippetFrontend::instance();
+					if ( class_exists( '\Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend' ) ) {
+						$frontend = \Animation_Addons_For_Elementor\CodeSnippet\CodeSnippetFrontend::instance();
 						if ( method_exists( $frontend, 'execute_content_after_snippets' ) ) {
 							$frontend->execute_content_after_snippets();
 						}

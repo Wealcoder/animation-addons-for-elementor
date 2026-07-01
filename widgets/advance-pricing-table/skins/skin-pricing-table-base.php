@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Widgets\Skin;
+namespace Animation_Addons_For_Elementor\Widgets\Skin;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;

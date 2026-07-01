@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Admin\Notices;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Animation_Addons_For_Elementor\Admin\Notices;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined( 'ABSPATH' ) || exit();
 
@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit();
  *
  * @since   2.4.16
  * @version 2.4.16
- * @package WCF_ADDONS\Admin\Notices
+ * @package Animation_Addons_For_Elementor\Admin\Notices
  */
 class ShowNotices {
 	/**

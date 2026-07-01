@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Widgets\Skin;
+namespace Animation_Addons_For_Elementor\Widgets\Skin;
 
 use Elementor\Icons_Manager;
 use Elementor\Widget_Base;

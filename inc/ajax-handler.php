@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS;
+namespace Animation_Addons_For_Elementor;
 
 use Elementor\Plugin;
 use WP_Query;
@@ -158,7 +158,7 @@ class Ajax_Handler {
 		}
 		$api = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
 		update_option( 'aae_mailchimp_api', $api );
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
+		$response = \Animation_Addons_For_Elementor\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
 		wp_send_json( $response );
 	}
@@ -177,7 +177,7 @@ class Ajax_Handler {
 		$api     = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
 		$list_id = ! empty( $_REQUEST['list_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['list_id'] ) ) : '';
 
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
+		$response = \Animation_Addons_For_Elementor\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
 
 		wp_send_json( $response );
 	}
@@ -200,7 +200,7 @@ class Ajax_Handler {
 		$query           = isset( $_POST['subscriber_info'] ) ? wp_kses_post( wp_unslash( $_POST['subscriber_info'] ) ) : '';
 		$subscriber_info = html_entity_decode( $query );
 		parse_str( $subscriber_info, $subscriber );
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
+		$response = \Animation_Addons_For_Elementor\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
 
 		wp_send_json( $response );
 	}

@@ -5,7 +5,7 @@
   "license": "GPL-3",
   "autoload": {
     "psr-4": {
-      "WCF_ADDONS\\": "inc/"
+      "Animation_Addons_For_Elementor\\": "inc/"
     }
   },
   "authors": [

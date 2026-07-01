@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\INC\WPML;
+namespace Animation_Addons_For_Elementor\INC\WPML;
 
 defined( 'ABSPATH' ) || die();
 

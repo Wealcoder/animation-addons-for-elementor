@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\CodeSnippet;
+namespace Animation_Addons_For_Elementor\CodeSnippet;
 
 defined( 'ABSPATH' ) || exit;
 

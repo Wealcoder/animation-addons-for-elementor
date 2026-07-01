@@ -3,7 +3,7 @@
  * MailChimp api
  */
 
-namespace WCF_ADDONS\Widgets\Mailchimp;
+namespace Animation_Addons_For_Elementor\Widgets\Mailchimp;
 
 defined('ABSPATH') || die();
 

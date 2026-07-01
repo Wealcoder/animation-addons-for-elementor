@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Widgets\Loop_Builder;
+namespace Animation_Addons_For_Elementor\Widgets\Loop_Builder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -111,16 +111,16 @@ class AAE_Loop_Builder_Integration {
 		// Register document types.
 		\Elementor\Plugin::$instance->documents->register_document_type(
 			'loop-item',
-			\WCF_ADDONS\Widgets\Loop_Builder\Documents\Loop_Item::class
+			\Animation_Addons_For_Elementor\Widgets\Loop_Builder\Documents\Loop_Item::class
 		);
 
 		add_action( 'elementor/controls/register', array( $this, 'register_controls' ) );
 		add_action( 'elementor/ajax/register_actions', array( $this, 'register_ajax_actions' ) );
 
 		// Initialize managers.
-		\WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::instance();
-		\WCF_ADDONS\Widgets\Loop_Builder\Query_Manager::instance();
-		\WCF_ADDONS\Widgets\Loop_Builder\Ajax_Handler::instance();
+		\Animation_Addons_For_Elementor\Widgets\Loop_Builder\Template_Manager::instance();
+		\Animation_Addons_For_Elementor\Widgets\Loop_Builder\Query_Manager::instance();
+		\Animation_Addons_For_Elementor\Widgets\Loop_Builder\Ajax_Handler::instance();
 	}
 
 	/**
@@ -144,7 +144,7 @@ class AAE_Loop_Builder_Integration {
 	 * @return void
 	 */
 	public function register_controls( $controls_manager ) {
-		$controls_manager->register( new \WCF_ADDONS\Widgets\Loop_Builder\Controls\Template_Query() );
+		$controls_manager->register( new \Animation_Addons_For_Elementor\Widgets\Loop_Builder\Controls\Template_Query() );
 	}
 
 	/**
@@ -182,7 +182,7 @@ class AAE_Loop_Builder_Integration {
 			wp_send_json_error( 'Invalid template ID' );
 		}
 
-		$query_manager = \WCF_ADDONS\Widgets\Loop_Builder\Query_Manager::instance();
+		$query_manager = \Animation_Addons_For_Elementor\Widgets\Loop_Builder\Query_Manager::instance();
 		$query         = $query_manager->get_query( $settings );
 
 		$html = '';
@@ -191,7 +191,7 @@ class AAE_Loop_Builder_Integration {
 				$classes = get_post_class( 'e-loop-item aae-loop-item', get_the_ID() );
 				$query->the_post();
 				$html .= '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" data-elementor-type="loop-item">';
-				$html .= \WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::render_template( $template_id, get_the_ID() );
+				$html .= \Animation_Addons_For_Elementor\Widgets\Loop_Builder\Template_Manager::render_template( $template_id, get_the_ID() );
 				$html .= '</div>';
 			}
 			wp_reset_postdata();

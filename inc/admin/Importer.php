@@ -6,7 +6,7 @@
  * @package Animation Addon
  */
 
-namespace WCF_ADDONS\Admin\Base;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Animation_Addons_For_Elementor\Admin\Base;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if (! defined('ABSPATH')) {
 	exit();
@@ -29,7 +29,7 @@ class Importer
 	private $microtime;
 
 	/**
-	 * The instance of the WCF_ADDONS\Admin\Base\Logger class.
+	 * The instance of the Animation_Addons_For_Elementor\Admin\Base\Logger class.
 	 *
 	 * @var object
 	 */
