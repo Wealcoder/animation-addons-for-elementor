@@ -1,0 +1,8 @@
+{% import 'elementor/macros' as m %}
+{% set wrapper_classes = ['aae-a-post-meta-item'] | merge([ base_styles.base ]) | join(' ') %}
+
+<li class="{{ wrapper_classes }}"
+	data-interaction-id="{{ interaction_id | default('') }}"
+	{{- m.render_custom_attributes(settings) }}>
+	{{ children_placeholder | default('') | raw }}
+</li>

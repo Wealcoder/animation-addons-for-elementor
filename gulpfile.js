@@ -137,6 +137,7 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
     try {
         gulp.watch('assets/src/js/**/*.js', {ignoreInitial: true}, gulp.series('buildJs'));
         gulp.watch('assets/src/scss/**/*.scss', {ignoreInitial: true}, gulp.series('buildCss'));
+        gulp.watch('inc/AtomicWidgets/Widgets/**/*.scss', {ignoreInitial: true}, gulp.series('compile:atomic-scss', 'minify:atomic-css'));
         resolve();
     } catch (e) {
         reject(e);

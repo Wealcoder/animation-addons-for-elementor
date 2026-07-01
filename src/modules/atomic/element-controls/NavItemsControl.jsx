@@ -500,9 +500,11 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 			const existingChildren = container?.model?.get?.( 'elements' );
 			const hasAny = existingChildren ? existingChildren.length > 0 : false;
 			if ( container && ! hasAny ) {
-				/* Dropdown wrapper is a core Elementor Flexbox — user styles it
-				 * freely via the Style tab and can drop any widgets into it
-				 * for mega menu layouts. */
+				/* Create an EMPTY core Flexbox as the dropdown wrapper. User
+				 * fills it with widgets (or clicks "Add dropdown item" in this
+				 * panel). Nested `elements` in createElements silently fails
+				 * for atomic containers, so we ship empty and let the user
+				 * populate it themselves. */
 				createElements( {
 					title: 'Dropdown',
 					subtitle: 'Dropdown added',
@@ -511,11 +513,6 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 						model: {
 							elType: 'e-flexbox',
 							editor_settings: { title: 'Dropdown' },
-							elements: [
-								{ ...buildSubItemModel(), editor_settings: { title: 'Dropdown Item' } },
-								{ ...buildSubItemModel(), editor_settings: { title: 'Dropdown Item' } },
-								{ ...buildSubItemModel(), editor_settings: { title: 'Dropdown Item' } },
-							],
 						},
 						options: { at: 0 },
 					} ],
