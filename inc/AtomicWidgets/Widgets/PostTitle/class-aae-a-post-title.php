@@ -47,7 +47,19 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 
 	protected static function define_props_schema(): array
 	{
-		$post_title = get_the_title();
+		// Editor preview: sample a random post WITH a featured image (shared
+		// helper — the Post Image widget previews the SAME post) instead of the
+		// edited page's own title, which reads as broken in a loop preview.
+		$post_title = '';
+		if (class_exists('\Elementor\Plugin') && \Elementor\Plugin::$instance->editor->is_edit_mode()) {
+			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			if ($sample) {
+				$post_title = get_the_title($sample);
+			}
+		}
+		if (empty($post_title)) {
+			$post_title = get_the_title();
+		}
 		if (empty($post_title)) {
 			$post_title = __('Default Post Title', 'animation-addons-for-elementor');
 		}
@@ -147,9 +159,13 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 		// Fetch the current post title
 		$settings['post_title'] = get_the_title();
 
-		// Fallback for editor if no title exists
+		// Fallback for editor if no title exists: preview the shared sample
+		// post (random, has a featured image) so the card looks real.
 		if (empty($settings['post_title']) && \Elementor\Plugin::$instance->editor->is_edit_mode()) {
-			$settings['post_title'] = __('Sample Post Title', 'animation-addons-for-elementor');
+			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			$settings['post_title'] = $sample
+				? get_the_title($sample)
+				: __('Sample Post Title', 'animation-addons-for-elementor');
 		}
 
 		// Apply limit if set

@@ -66,6 +66,18 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		$image_url = get_the_post_thumbnail_url( null, 'large' );
 		$image_alt = get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true );
 
+		// Editor preview: the edited page rarely has a featured image, which
+		// used to mean the gray placeholder. Sample a random post WITH a
+		// featured image instead (shared helper — the Post Title widget
+		// previews the SAME post, so the card reads as one real post).
+		if ( empty( $image_url ) && class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			if ( $sample ) {
+				$image_url = get_the_post_thumbnail_url( $sample, 'large' );
+				$image_alt = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );
+			}
+		}
+
 		if ( empty( $image_url ) ) {
 			$image_url = \Elementor\Utils::get_placeholder_image_src();
 			$image_alt = 'Placeholder Image';
@@ -222,10 +234,18 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		$settings['image_url'] = get_the_post_thumbnail_url( null, $size );
 		$settings['image_alt'] = get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true );
 
-		// Fallback for editor or empty images
+		// Fallback for editor or empty images: preview the shared sample post
+		// (random, has a featured image) before resorting to the placeholder.
 		if ( empty( $settings['image_url'] ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			$settings['image_url'] = \Elementor\Utils::get_placeholder_image_src();
-			$settings['image_alt'] = 'Placeholder Image';
+			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			if ( $sample ) {
+				$settings['image_url'] = get_the_post_thumbnail_url( $sample, $size );
+				$settings['image_alt'] = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );
+			}
+			if ( empty( $settings['image_url'] ) ) {
+				$settings['image_url'] = \Elementor\Utils::get_placeholder_image_src();
+				$settings['image_alt'] = 'Placeholder Image';
+			}
 		}
 
 		$settings['post_url'] = get_permalink();

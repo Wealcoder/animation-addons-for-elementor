@@ -20,10 +20,14 @@
 		data-interaction-id="{{ interaction_id | default('') }}"
 		{{- m.render_custom_attributes(settings) }}>
 		
+		{# width/height 100% make the img FILL the aspect-ratio wrapper (object-fit
+		   crops the overflow). This used to live in the widget stylesheet; that
+		   file is bypassed now, so the fill must ship inline — otherwise every
+		   image renders at its own natural ratio and the grid looks uneven. #}
 		<img src="{{ settings.image_url }}"
 			alt="{{ settings.image_alt }}"
 			class="{{ img_classes }}"
-			style="object-fit: {{ settings.object_fit | default('cover') }};" />
+			style="object-fit: {{ settings.object_fit | default('cover') }}; width: 100%; height: 100%; display: block;" />
 
 		{{ children_placeholder | default('') | raw }}
 	</{{ wrapper_tag }}>

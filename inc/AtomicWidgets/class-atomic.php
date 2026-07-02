@@ -131,6 +131,99 @@ final class Atomic
 	}
 
 	/**
+	 * The EDITOR preview sample post for the current-post widgets (Post Title /
+	 * Post Image).
+	 *
+	 * Resolution order:
+	 *   1. The document's "Preview Settings" page setting (`aae_loop_page_post`,
+	 *      registered by the Pro plugin's WCF_Page_Loop_Settings) — the user's
+	 *      explicit choice always wins.
+	 *   2. A random published post that HAS a featured image — without this the
+	 *      editor shows the edited page's title and a gray placeholder (pages
+	 *      rarely have thumbnails), which reads as broken.
+	 *
+	 * Cached per-request so every widget previews the SAME post (title matches
+	 * image).
+	 *
+	 * @return \WP_Post|false Post object, or false when none qualifies.
+	 */
+	public static function get_sample_post()
+	{
+		static $sample = null;
+		if (null !== $sample) {
+			return $sample;
+		}
+
+		$sample = false;
+
+		// 1) Explicit choice from Page Settings → Preview Settings.
+		$chosen = self::get_preview_setting_post();
+		if ($chosen) {
+			$sample = $chosen;
+			return $sample;
+		}
+
+		// 2) Random fallback. A handful of candidates: a post can carry a stale
+		// _thumbnail_id whose attachment is gone, so verify the URL resolves.
+		$candidates = get_posts([
+			'post_type'   => 'post',
+			'post_status' => 'publish',
+			'numberposts' => 5,
+			'orderby'     => 'rand',
+			'meta_key'    => '_thumbnail_id',
+		]);
+
+		foreach ($candidates as $candidate) {
+			if (get_the_post_thumbnail_url($candidate, 'large')) {
+				$sample = $candidate;
+				break;
+			}
+		}
+
+		return $sample;
+	}
+
+	/**
+	 * The post chosen in the document's Page Settings → Preview Settings
+	 * (`aae_loop_page_post`). False when unset / invalid / Pro inactive.
+	 *
+	 * @return \WP_Post|false
+	 */
+	private static function get_preview_setting_post()
+	{
+		if (! class_exists('\Elementor\Core\Settings\Manager')) {
+			return false;
+		}
+
+		$doc_id = 0;
+		if (isset(\Elementor\Plugin::$instance->editor)) {
+			$doc_id = (int) \Elementor\Plugin::$instance->editor->get_post_id();
+		}
+		if (! $doc_id) {
+			$doc_id = (int) get_the_ID();
+		}
+		if (! $doc_id) {
+			return false;
+		}
+
+		try {
+			$manager = \Elementor\Core\Settings\Manager::get_settings_managers('page');
+			$model   = $manager ? $manager->get_model($doc_id) : null;
+			$chosen  = $model ? absint($model->get_settings('aae_loop_page_post')) : 0;
+		} catch (\Throwable $e) {
+			return false;
+		}
+
+		if (! $chosen) {
+			return false;
+		}
+
+		$post = get_post($chosen);
+
+		return ($post && 'publish' === $post->post_status) ? $post : false;
+	}
+
+	/**
 	 * Get slugs of currently enabled atomic widgets.
 	 *
 	 * @return string[]
@@ -1342,6 +1435,19 @@ final class Atomic
 		// atomic preview is client-side and can't run our PHP WP_Query).
 		add_action('wp_ajax_aae_loop_post_data', [$this, 'ajax_loop_post_data']);
 
+		// Loop Grid: one post's title/image for the editor's authored-card
+		// sample — used after "Apply & Preview" (Page Settings → Preview
+		// Settings) so the chosen post shows without a full editor reload.
+		add_action('wp_ajax_aae_loop_sample_post', [$this, 'ajax_loop_sample_post']);
+
+		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
+		// document before resolving tags, so a Featured Image / Post Title tag
+		// inside a loop item resolves against the PAGE (usually no thumbnail →
+		// empty). When the document has an explicit Preview Settings post
+		// (`aae_loop_page_post`), re-switch to it so core dynamic tags preview
+		// that post — same semantics the V3 loop preview always had.
+		add_action('elementor/dynamic_tags/before_render', [$this, 'switch_dynamic_tags_to_preview_post']);
+
 		// Loop Grid: frontend paginated cells (AJAX + Load More). Available to
 		// logged-out visitors too, so both hooks are registered.
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
@@ -1735,6 +1841,52 @@ final class Atomic
 	 * the authored card into inert preview cells filled with each post's values.
 	 * Returns a lightweight array — no markup, no document, no print_elements.
 	 */
+	/**
+	 * Resolve editor dynamic tags against the document's Preview Settings post.
+	 *
+	 * Runs on `elementor/dynamic_tags/before_render` (fired right after
+	 * `ajax_render_tags` switched to the edited document). ONLY re-switches
+	 * when the user explicitly chose a Preview Settings post — a document
+	 * without one keeps stock behavior, so normal pages are unaffected.
+	 */
+	public function switch_dynamic_tags_to_preview_post()
+	{
+		// Editor ajax only — never touch frontend rendering.
+		if (! is_admin() || ! wp_doing_ajax()) {
+			return;
+		}
+
+		$chosen = self::get_preview_setting_post();
+		if ($chosen) {
+			\Elementor\Plugin::$instance->db->switch_to_post($chosen->ID);
+		}
+	}
+
+	/**
+	 * One post's preview data (title + featured image) for the editor's
+	 * authored-card sample. The client sends the LIVE value of the document's
+	 * `aae_loop_page_post` page setting (Preview Settings), so the chosen post
+	 * previews immediately after "Apply & Preview" — no editor reload needed.
+	 */
+	public function ajax_loop_sample_post()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$post = isset($_POST['sample_id']) ? get_post(absint($_POST['sample_id'])) : null;
+		if (! $post || 'publish' !== $post->post_status) {
+			wp_send_json_error(['message' => 'Invalid sample post.'], 404);
+		}
+
+		wp_send_json_success([
+			'title' => get_the_title($post),
+			'image' => get_the_post_thumbnail_url($post, 'large') ?: '',
+		]);
+	}
+
 	public function ajax_loop_post_data()
 	{
 		check_ajax_referer('aae_loop_grid', 'nonce');
