@@ -1,0 +1,7 @@
+{% set classes = ['js-aae-current-number', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<span class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    {{ editor_attributes | default('') | raw }}>1</span>
