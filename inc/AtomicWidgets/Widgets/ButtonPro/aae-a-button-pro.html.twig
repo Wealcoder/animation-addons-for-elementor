@@ -1,0 +1,80 @@
+{% set style_num = settings.btn_pro_style | default('4') %}
+
+{# Style-specific modifier class applied to the <a> root element #}
+{% if style_num == '4' %}
+    {% set style_extra = 'btn-hover' %}
+{% elseif style_num in ['5', '6'] %}
+    {% set style_extra = 'aae-btn-pro-group' %}
+{% elseif style_num == '9' %}
+    {% set style_extra = 'aae-btn-oval' %}
+{% elseif style_num == '10' %}
+    {% set style_extra = 'aae-btn-circle' %}
+{% elseif style_num == '11' %}
+    {% set style_extra = 'aae-btn-ellipse' %}
+{% else %}
+    {% set style_extra = '' %}
+{% endif %}
+
+{% set btn_classes = ['aae-a-button-pro', 'e-con', 'e-atomic-element', base_styles.base, 'aae--btn-pro', 'style-' ~ style_num] %}
+{% if style_extra %}
+    {% set btn_classes = btn_classes | merge([style_extra]) %}
+{% endif %}
+{% set btn_classes = btn_classes | merge(settings.classes | default([])) %}
+
+{# rel attribute #}
+{% if settings.btn_pro_target == '_blank' %}
+    {% set rel_attr = 'noopener' ~ (settings.btn_pro_nofollow ? ' nofollow' : '') %}
+{% elseif settings.btn_pro_nofollow %}
+    {% set rel_attr = 'nofollow' %}
+{% else %}
+    {% set rel_attr = '' %}
+{% endif %}
+
+{# Inline CSS custom properties for hover colours + alignment #}
+{% set inline_style = '' %}
+{% if settings.btn_pro_alignment is defined and settings.btn_pro_alignment is not empty %}
+    {% set inline_style = inline_style ~ 'text-align:' ~ settings.btn_pro_alignment ~ ';' %}
+{% endif %}
+{% if settings.btn_pro_hover_color is defined and settings.btn_pro_hover_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-color:' ~ settings.btn_pro_hover_color ~ ';' %}
+{% endif %}
+{% if settings.btn_pro_hover_bg_color is defined and settings.btn_pro_hover_bg_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-bg:' ~ settings.btn_pro_hover_bg_color ~ ';' %}
+{% endif %}
+{% if settings.btn_pro_hover_border_color is defined and settings.btn_pro_hover_border_color is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-hover-border-color:' ~ settings.btn_pro_hover_border_color ~ ';' %}
+{% endif %}
+{% if style_num == '10' and settings.btn_pro_circle_size is defined and settings.btn_pro_circle_size is not empty %}
+    {% set inline_style = inline_style ~ '--aae-btn-size:' ~ settings.btn_pro_circle_size ~ 'px;' %}
+{% endif %}
+
+<a class="{{ btn_classes | join(' ') }} {{ editor_classes | default('') }}"
+   href="{{ settings.btn_pro_url | default('#') | e('html_attr') }}"
+   {% if settings.btn_pro_target == '_blank' %}target="_blank"{% endif %}
+   {% if rel_attr is not empty %}rel="{{ rel_attr }}"{% endif %}
+   data-id="{{ id }}"
+   data-element_type="{{ type }}"
+   data-e-type="{{ type }}"
+   data-interaction-id="{{ interaction_id | default('') }}"
+   {% if inline_style is not empty %}style="{{ inline_style }}"{% endif %}
+   {% if settings._cssid is defined and settings._cssid is not empty %}
+       id="{{ settings._cssid | e('html_attr') }}"
+   {% endif %}
+   {% if settings.attributes is defined and settings.attributes is not empty %}
+       {{ settings.attributes | raw }}
+   {% endif %}
+   {{ editor_attributes | default('') | raw }}>
+
+    {# Style 4 — ripple span positioned by GSAP on mouseenter/leave #}
+    {% if style_num == '4' %}<span class="aae-ripple-el"></span>{% endif %}
+
+    {# Styles 9 & 10 — expanding fill circle for hover background #}
+    {% if style_num in ['9', '10'] %}<span class="aae-btn-fill-el"></span>{% endif %}
+
+    {# Style 4 — arrow placed before children so DOM order matches editor
+       (editor appends child widgets after static elements; row-reverse in CSS
+       then flips the visual order back to: text | arrow) #}
+    {% if style_num == '4' %}<strong class="aae-arrow-el"></strong>{% endif %}
+
+    {{ children_placeholder | raw }}
+</a>

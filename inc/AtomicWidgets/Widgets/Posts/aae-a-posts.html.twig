@@ -1,29 +1,53 @@
 {% import 'elementor/macros' as m %}
-{% set classes = ['aae-a-posts-grid', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
-<div class="{{ classes }} {{ editor_classes | default('') }}" 
-     data-id="{{ id }}" 
-     data-e-type="{{ type }}" 
-     data-columns="{{ settings.columns | default(3) }}" 
-     data-interaction-id="{{ interaction_id | default('') }}" 
-     {{- m.render_custom_attributes(settings) }}
+{% set classes = ['aae-a-posts', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) %}
+
+<div class="{{ classes | join(' ') }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-element_type="{{ type }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     style="--aae-posts-columns: {{ settings.columns | default(3) }}"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | raw }}
+     {% endif %}
      {{ editor_attributes | default('') | raw }}>
-    {% if settings.posts_list is iterable and settings.posts_list | length > 0 %}
-        {% for post in settings.posts_list %}
+
+    <div class="aae-a-posts-grid layout-{{ settings.posts_layout | default('grid') }}">
+
+        {% if settings.posts_list is defined and settings.posts_list is not empty %}
+
+            {% for post in settings.posts_list %}
             <article class="aae-a-post-card">
-                <a href="{{ post.url }}" class="aae-a-post-image-link">
-                    <img src="{{ post.image }}" alt="{{ post.title }}" class="aae-a-post-thumbnail" />
+                <a href="{{ post.url | e('full_url') }}" class="aae-a-post-thumb-link" tabindex="-1" aria-hidden="true">
+                    <img src="{{ post.image | e('full_url') }}" alt="{{ post.title }}" class="aae-a-post-thumb" loading="lazy" />
                 </a>
                 <div class="aae-a-post-content">
-                    <span class="aae-a-post-date">{{ post.date }}</span>
-                    <h3 class="aae-a-post-title-link">
-                        <a href="{{ post.url }}">{{ post.title }}</a>
+                    {% if settings.show_date and post.date %}
+                        <span class="aae-a-post-date">{{ post.date }}</span>
+                    {% endif %}
+                    <h3 class="aae-a-post-title">
+                        <a href="{{ post.url | e('full_url') }}" class="aae-a-post-title-link">{{ post.title }}</a>
                     </h3>
-                    <p class="aae-a-post-excerpt">{{ post.excerpt }}</p>
-                    <a href="{{ post.url }}" class="aae-a-post-readmore">Read More &rarr;</a>
+                    {% if settings.show_excerpt %}
+                        <p class="aae-a-post-excerpt">{{ post.excerpt }}</p>
+                    {% endif %}
+                    {% if settings.show_read_more %}
+                        <a href="{{ post.url | e('full_url') }}" class="aae-a-post-read-more-link">
+                            {{ settings.read_more_text | default('Read More') }}
+                        </a>
+                    {% endif %}
                 </div>
             </article>
-        {% endfor %}
-    {% else %}
-        <div class="aae-a-posts-empty">No posts found.</div>
-    {% endif %}
+            {% endfor %}
+
+        {% else %}
+            {# Editor / no-posts fallback: render skeleton Post Card child #}
+            {{ children_placeholder | raw }}
+        {% endif %}
+
+    </div>
+
 </div>
