@@ -16,11 +16,6 @@
  * downstream style relies on it. */
 .aae-a-nav {
 	position: relative !important;
-	display: flex !important;
-	flex-direction: row !important;
-	flex-wrap: nowrap !important;
-	align-items: center !important;
-	gap: 4px;
 }
 
 .aae-a-nav .aae-a-nav-item {
@@ -96,6 +91,7 @@
 }
 
 .aae-a-nav {
+	min-height: unset !important; /* override Elementor's atomic .e-con default */
 	/* grow-down */
 	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > *:not(.aae-a-nav-item-label) {
 		animation: aae-nav-grow-down 300ms ease-in-out forwards;
@@ -153,8 +149,12 @@
 }
 
 /* 2. Reveal dropdown content for editing — TOP-LEVEL dropdowns. */
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+/* The preview iframe does not consistently carry `.elementor-editor-active`
+ * in Elementor v4. The marker itself is editor-only and is added by
+ * NavItemsControl, so it is safe (and more reliable) to key these two
+ * selectors directly from that marker. */
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),

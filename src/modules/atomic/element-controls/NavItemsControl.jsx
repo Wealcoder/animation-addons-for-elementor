@@ -7,10 +7,13 @@
  * Registered under the type id 'aae-nav-items' (see ./index.js). The PHP side
  * (AAE_A_Nav_Items_Control) places it inside the nav widget's panel.
  *
- * Flat structure: Nav → nav-item → nav-sub-item (leaf widget). The label lives
- * as a `text` prop on the nav-item itself, and dropdown sub-items are the
- * nav-item's direct children. This avoids the 4-level Atomic_Element_Base tree
- * (Nav → item → nav-sub → sub-item) that hangs the editor on device switch.
+ * This control manages the LIST of nav-items (add / duplicate / remove /
+ * reorder) and each item's own settings (title text prop, link, has_dropdown
+ * toggle, trigger, dropdown animation). When the user enables Dropdown
+ * Content, an empty core Elementor Flexbox is inserted as the nav-item's
+ * child — the actual dropdown content is edited by selecting that Flexbox
+ * (or its descendants) directly in the preview / Structure tree using
+ * Elementor's own controls, NOT from this panel.
  */
 
 import * as React from 'react';
@@ -31,7 +34,6 @@ import {
 import { useElement } from '@elementor/editor-editing-panel';
 import {
 	Box,
-	Button,
 	Collapse,
 	IconButton,
 	MenuItem,
@@ -44,7 +46,6 @@ import {
 } from '@elementor/ui';
 
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
-const NAV_SUB_ITEM_TYPE = 'e-aae-a-nav-sub-item';
 
 const prop = ( type, value ) => ( { $$type: type, value } );
 
@@ -84,30 +85,14 @@ function syncEditorDropdownPreview( navId, itemId ) {
 	}
 }
 
-function buildSubItemModel( text = 'Dropdown Item', url = '' ) {
-	return {
-		elType: 'widget',
-		widgetType: NAV_SUB_ITEM_TYPE,
-		editor_settings: { title: text },
-		settings: {
-			paragraph: prop( 'html-v3', {
-				content: prop( 'string', text ),
-				children: [],
-			} ),
-			...( url ? {
-				link: prop( 'link', {
-					destination: prop( 'url', url ),
-					isTargetBlank: prop( 'boolean', false ),
-					tag: prop( 'string', 'a' ),
-				} ),
-			} : {} ),
-		},
-		elements: [],
-		isInner: false,
-		styles: [],
-		interactions: [],
-		version: '0.0',
-	};
+function syncEditorDropdownPreviewAfterRender( navId, itemId ) {
+	const delays = [ 0, 80, 200, 400 ];
+	const timers = delays.map( ( delay ) => window.setTimeout(
+		() => syncEditorDropdownPreview( navId, itemId ),
+		delay
+	) );
+
+	return () => timers.forEach( ( timer ) => window.clearTimeout( timer ) );
 }
 
 function buildNavItemModel( position ) {
@@ -159,7 +144,20 @@ function useNavItems( navId ) {
 				const id = model.get( 'id' );
 				const editorSettings = model.get( 'editor_settings' ) || {};
 				next.push( { id, editorSettings } );
-				signatureParts.push( `${ id }:${ editorSettings.title || '' }` );
+				/* Signature includes has_dropdown state and child count so
+				 * toggling dropdown or add/remove of dropdown content
+				 * invalidates the cache — downstream effects (in particular
+				 * syncEditorDropdownPreview which re-applies the visibility
+				 * class after Elementor re-renders) depend on this. */
+				const container = getContainer( id );
+				const hasDropdown = readProp(
+					container?.settings?.get?.( 'has_dropdown' ),
+					false
+				);
+				const childCount = container?.model?.get?.( 'elements' )?.length ?? 0;
+				signatureParts.push(
+					`${ id }:${ editorSettings.title || '' }:${ hasDropdown ? 1 : 0 }:${ childCount }`
+				);
 			} );
 
 			const signature = signatureParts.join( '|' );
@@ -195,8 +193,11 @@ export function NavItemsControl( { label } ) {
 	const [ dragOver,   setDragOver   ] = React.useState( null );
 
 	React.useEffect( () => {
-		syncEditorDropdownPreview( navId, expandedId );
-	}, [ navId, expandedId ] );
+		/* Creating/removing the dropdown Flexbox can replace the preview DOM more
+		 * than once. Re-apply the marker across that short render window so the
+		 * expanded panel row remains the only visible dropdown placeholder. */
+		return syncEditorDropdownPreviewAfterRender( navId, expandedId );
+	}, [ navId, expandedId, sourceItems ] );
 
 	const getNavContainer = () => getContainer( navId );
 
@@ -395,10 +396,15 @@ export function NavItemsControl( { label } ) {
 
 							<Collapse in={ isExpanded } unmountOnExit>
 								<Box sx={ { px: 1.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider' } }>
-									<NavItemFields
-										elementId={ row.id }
-										fallbackTitle={ row.title }
-										onTitleChange={ ( title ) => setItems( ( current ) => current.map( ( item ) =>
+					<NavItemFields
+						elementId={ row.id }
+						fallbackTitle={ row.title }
+						onDropdownToggle={ ( enabled ) => {
+							const activeId = enabled ? row.id : null;
+							setExpandedId( activeId );
+							syncEditorDropdownPreviewAfterRender( navId, activeId );
+						} }
+						onTitleChange={ ( title ) => setItems( ( current ) => current.map( ( item ) =>
 											item.id === row.id
 												? { ...item, editorSettings: { ...item.editorSettings, title } }
 												: item
@@ -414,7 +420,7 @@ export function NavItemsControl( { label } ) {
 	);
 }
 
-function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
+function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange } ) {
 	const data = useListenTo(
 		[
 			v1ReadyEvent(),
@@ -441,7 +447,6 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 	);
 	const [ titleValue, setTitleValue ] = React.useState( data.title );
 	const [ dropdownEnabled, setDropdownEnabled ] = React.useState( data.hasDropdown );
-	const [ editingDropdown, setEditingDropdown ] = React.useState( false );
 	const [ trigger, setTrigger ] = React.useState( data.trigger );
 	const [ dropdownAnimation, setDropdownAnimation ] = React.useState( data.dropdownAnimation );
 
@@ -494,15 +499,23 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 
 	const toggleDropdown = ( enabled ) => {
 		setDropdownEnabled( enabled );
+		onDropdownToggle( enabled );
+
+		const container = getContainer( elementId );
+		const existingChildren = container?.model?.get?.( 'elements' );
+		const childIds = [];
+		existingChildren?.each?.( ( child ) => {
+			const id = child.get?.( 'id' );
+			if ( id ) {
+				childIds.push( id );
+			}
+		} );
 
 		if ( enabled ) {
-			const container = getContainer( elementId );
-			const existingChildren = container?.model?.get?.( 'elements' );
-			const hasAny = existingChildren ? existingChildren.length > 0 : false;
-			if ( container && ! hasAny ) {
+			if ( container && childIds.length === 0 ) {
 				/* Create an EMPTY core Flexbox as the dropdown wrapper. User
-				 * fills it with widgets (or clicks "Add dropdown item" in this
-				 * panel). Nested `elements` in createElements silently fails
+				 * fills it with widgets or clicks "Add dropdown item" in this
+				 * panel. Nested `elements` in createElements silently fails
 				 * for atomic containers, so we ship empty and let the user
 				 * populate it themselves. */
 				createElements( {
@@ -518,16 +531,21 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 					} ],
 				} );
 			}
+		} else if ( childIds.length > 0 ) {
+			/* Toggle disabled — clean up the dropdown container children so the
+			 * empty-view placeholder inside the Flexbox doesn't linger below
+			 * the label. Re-enabling creates a fresh Flexbox. */
+			removeElements( {
+				elementIds: childIds,
+				title: 'Dropdown',
+				subtitle: 'Dropdown removed',
+			} );
 		}
 
 		updateElementSettings( {
 			id: elementId,
 			props: { has_dropdown: prop( 'boolean', enabled ) },
 		} );
-
-		if ( ! enabled ) {
-			setEditingDropdown( false );
-		}
 	};
 
 	const updateDropdownSetting = ( key, value, setter ) => {
@@ -595,272 +613,6 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 					</Select>
 				</>
 			) }
-			{ dropdownEnabled && (
-				<Button
-					size="tiny"
-					variant="outlined"
-					onClick={ () => setEditingDropdown( ( current ) => ! current ) }
-				>
-					{ editingDropdown ? 'Close dropdown content' : 'Edit dropdown content' }
-				</Button>
-			) }
-			{ dropdownEnabled && editingDropdown && (
-				<DropdownItemsFields navItemId={ elementId } />
-			) }
-		</Stack>
-	);
-}
-
-function DropdownItemsFields( { navItemId } ) {
-	/* Sub-items live inside a container (typically Elementor's core Flexbox)
-	 * that sits as a child of the nav-item. This finds that container so
-	 * add/edit/remove operate one level deeper than the nav-item itself. */
-	const dropdownContainerId = useListenTo(
-		[
-			v1ReadyEvent(),
-			commandEndEvent( 'document/elements/create' ),
-			commandEndEvent( 'document/elements/delete' ),
-			commandEndEvent( 'document/elements/duplicate' ),
-		],
-		() => {
-			const children = getContainer( navItemId )?.model?.get?.( 'elements' );
-			if ( ! children ) {
-				return null;
-			}
-			let found = null;
-			children.each( ( model ) => {
-				if ( found ) {
-					return;
-				}
-				const type = model.get( 'widgetType' ) || model.get( 'elType' );
-				/* Prefer the first non-sub-item child — that's the container. */
-				if ( type !== NAV_SUB_ITEM_TYPE ) {
-					found = model.get( 'id' );
-				}
-			} );
-			return found;
-		},
-		[ navItemId ]
-	);
-
-	const sourceItems = useListenTo(
-		[
-			v1ReadyEvent(),
-			commandEndEvent( 'document/elements/create' ),
-			commandEndEvent( 'document/elements/delete' ),
-			commandEndEvent( 'document/elements/duplicate' ),
-			commandEndEvent( 'document/elements/settings' ),
-			commandEndEvent( 'document/elements/set-settings' ),
-		],
-		() => {
-			/* Read sub-items from the dropdown container if it exists;
-			 * otherwise fall back to nav-item's direct children (legacy). */
-			const parentId = dropdownContainerId || navItemId;
-			const children = getContainer( parentId )?.model?.get?.( 'elements' );
-			if ( ! children ) {
-				return [];
-			}
-
-			const out = [];
-			children.each( ( model, index ) => {
-				const type = model.get( 'widgetType' ) || model.get( 'elType' );
-				if ( type !== NAV_SUB_ITEM_TYPE ) {
-					return;
-				}
-				const id = model.get( 'id' );
-				const paragraph = readProp(
-					getContainer( id )?.settings?.get?.( 'paragraph' ),
-					{}
-				);
-				const link = readProp(
-					getContainer( id )?.settings?.get?.( 'link' ),
-					{}
-				);
-
-				out.push( {
-					id,
-					label: readProp( paragraph?.content, '' ) || `Dropdown Item ${ index + 1 }`,
-					url:   readProp( link?.destination, '' ),
-				} );
-			} );
-			return out;
-		},
-		[ navItemId, dropdownContainerId ]
-	);
-	const [ items, setItems ] = React.useState( sourceItems );
-
-	React.useEffect( () => {
-		setItems( sourceItems );
-	}, [ sourceItems ] );
-
-	const addItem = () => {
-		const parentId = dropdownContainerId || navItemId;
-		const container = getContainer( parentId );
-		if ( ! container ) {
-			return;
-		}
-
-		const result = createElements( {
-			title: 'Dropdown Item',
-			subtitle: 'Dropdown item added',
-			elements: [ {
-				container,
-				model: buildSubItemModel(),
-				options: { at: items.length },
-			} ],
-		} );
-		const id = result?.createdElements?.[ 0 ]?.containerId;
-		if ( id ) {
-			setItems( ( current ) => [
-				...current,
-				{ id, label: 'Dropdown Item', url: '' },
-			] );
-		}
-	};
-
-	const duplicateItem = ( item ) => {
-		const result = duplicateElements( {
-			elementIds: [ item.id ],
-			title: 'Dropdown Item',
-			subtitle: 'Dropdown item duplicated',
-		} );
-		const id = result?.duplicatedElements?.[ 0 ]?.containerId;
-
-		if ( id ) {
-			setItems( ( current ) => {
-				const index = current.findIndex( ( currentItem ) => currentItem.id === item.id );
-				const next = [ ...current ];
-				next.splice( index + 1, 0, {
-					id,
-					label: item.label,
-					url: item.url,
-				} );
-				return next;
-			} );
-		}
-	};
-
-	const removeItem = ( item ) => {
-		removeElements( {
-			elementIds: [ item.id ],
-			title: 'Dropdown Item',
-			subtitle: 'Dropdown item removed',
-		} );
-		setItems( ( current ) => current.filter( ( currentItem ) => currentItem.id !== item.id ) );
-	};
-
-	return (
-		<Stack gap={ 1 } sx={ { pt: 0.5 } }>
-			<Stack direction="row" alignItems="center" justifyContent="space-between">
-				<Typography variant="caption" sx={ { fontWeight: 600 } }>
-					{ 'Dropdown items' }
-				</Typography>
-				<Tooltip title="Add dropdown item">
-					<IconButton size="tiny" onClick={ addItem } aria-label="Add dropdown item">
-						<span style={ { fontSize: 16, lineHeight: 1 } }>+</span>
-					</IconButton>
-				</Tooltip>
-			</Stack>
-			{ items.map( ( item ) => (
-				<DropdownItemField
-					key={ item.id }
-					item={ item }
-					canRemove={ items.length > 1 }
-					onDuplicate={ duplicateItem }
-					onRemove={ removeItem }
-				/>
-			) ) }
-		</Stack>
-	);
-}
-
-function DropdownItemField( { item, canRemove, onDuplicate, onRemove } ) {
-	const [ value, setValue ] = React.useState( item.label );
-	const [ url, setUrl ] = React.useState( item.url || '' );
-
-	React.useEffect( () => {
-		setValue( item.label );
-	}, [ item.label ] );
-
-	React.useEffect( () => {
-		setUrl( item.url || '' );
-	}, [ item.url ] );
-
-	React.useEffect( () => {
-		updateElementEditorSettings( {
-			elementId: item.id,
-			settings: { title: item.label || 'Dropdown Item' },
-		} );
-	}, [ item.id, item.label ] );
-
-	const updateLabel = ( label ) => {
-		setValue( label );
-		updateElementSettings( {
-			id: item.id,
-			props: {
-				paragraph: prop( 'html-v3', {
-					content: prop( 'string', label ),
-					children: [],
-				} ),
-			},
-		} );
-		updateElementEditorSettings( {
-			elementId: item.id,
-			settings: { title: label || 'Dropdown Item' },
-		} );
-	};
-
-	const updateLink = ( nextUrl ) => {
-		setUrl( nextUrl );
-		updateElementSettings( {
-			id: item.id,
-			props: {
-				link: nextUrl ? prop( 'link', {
-					destination: prop( 'url', nextUrl ),
-					isTargetBlank: prop( 'boolean', false ),
-					tag: prop( 'string', 'a' ),
-				} ) : null,
-			},
-		} );
-	};
-
-	return (
-		<Stack gap={ 0.5 } sx={ { p: 0.75, border: '1px solid', borderColor: 'divider', borderRadius: 1 } }>
-			<Stack direction="row" gap={ 0.5 } alignItems="center">
-				<TextField
-					size="tiny"
-					placeholder="Title"
-					value={ value }
-					onChange={ ( { target } ) => updateLabel( target.value ) }
-					sx={ { flex: 1 } }
-				/>
-				<Tooltip title="Duplicate">
-				<IconButton
-					size="tiny"
-					aria-label="Duplicate dropdown item"
-					onClick={ () => onDuplicate( item ) }
-				>
-					<span style={ { fontSize: 13, lineHeight: 1 } }>⧉</span>
-				</IconButton>
-				</Tooltip>
-				{ canRemove && (
-				<Tooltip title="Remove">
-					<IconButton
-						size="tiny"
-						aria-label="Remove dropdown item"
-						onClick={ () => onRemove( item ) }
-					>
-						<span style={ { fontSize: 14, lineHeight: 1 } }>×</span>
-					</IconButton>
-				</Tooltip>
-				) }
-			</Stack>
-			<TextField
-				size="tiny"
-				placeholder="Link URL"
-				value={ url }
-				onChange={ ( { target } ) => updateLink( target.value ) }
-			/>
 		</Stack>
 	);
 }

@@ -109,12 +109,10 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			] )
 			->build();
 
-		/* BISECT: item 3 has has_dropdown=true but empty children.
-		 * If freeze goes away, Flexbox in PHP default_children is the trigger. */
 		return [
 			$make_item( 'Menu Item 1' ),
 			$make_item( 'Menu Item 2' ),
-			$make_item( 'Menu Item 3', true ),
+			$make_item( 'Menu Item 3' ),
 			$make_item( 'Menu Item 4' ),
 		];
 	}
