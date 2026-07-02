@@ -13,6 +13,9 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Flex_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -77,6 +80,17 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         return [];
     }
 
+    /**
+     * Default card sizing: each Loop Item is a flex child of the Loop Layout
+     * (display:flex + wrap), sized `flex: 1 1 32%` -> a 3-column "grid" built
+     * with flexbox. Editable from the Style panel.
+     *
+     * IMPORTANT: the atomic style schema has NO `flex-grow` / `flex-shrink` /
+     * `flex-basis` keys — only the `flex` shorthand (Flex_Prop_Type, see
+     * elementor style-schema.php). Likewise `height` must be a Size, not a
+     * String. Unknown/mistyped keys make the whole Style_Definition fail
+     * validation, so NONE of the props emit ("define_base_styles kaj kore na").
+     */
     protected function define_base_styles(): array {
         return [
             'base' => Style_Definition::make()
@@ -84,7 +98,12 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                     Style_Variant::make()
                         ->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
                         ->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
-                        ->add_prop( 'height', String_Prop_Type::generate( '100%' ) )
+                        ->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
+                        ->add_prop( 'flex', Flex_Prop_Type::generate( [
+                            'flexGrow'   => Number_Prop_Type::generate( 1 ),
+                            'flexShrink' => Number_Prop_Type::generate( 1 ),
+                            'flexBasis'  => Size_Prop_Type::generate( [ 'size' => 32, 'unit' => '%' ] ),
+                        ] ) )
                 )
         ];
     }

@@ -225,13 +225,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			$children[] = AAE_A_Post_Title::generate()
 				->editor_settings( [ 'title' => 'Post Title' ] )
 				->build();
-		} 		
-
-		if ( self::type_registered( 'e-aae-a-post-meta' ) ) {
-			$children[] = AAE_A_Post_Meta::generate()
-				->editor_settings( [ 'title' => 'Post Meta' ] )
-				->build();
-		}
+		} 	
 
 		// Full Pro-style tree:
 		//   Loop Layout (grid)  ->  Loop Item (repeats per post)  ->  card children
