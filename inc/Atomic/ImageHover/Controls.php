@@ -2,6 +2,8 @@
 
 namespace WCF_ADDONS\Atomic\ImageHover;
 
+use WCF_ADDONS\Atomic\Bootstrap;
+
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 
@@ -44,7 +46,7 @@ final class Controls
 	private function build_section(): Section
 	{
 		return Section::make()
-			->set_label(__('Image Reveal on Hover', 'animation-addons-for-elementor'))
+			->set_label( Bootstrap::get_label( __( 'Image Reveal on Hover', 'animation-addons-for-elementor' ) ) )
 			->set_items([
 				// Anchor — React replacement renders all controls (Enable,
 				// Media picker, Width / Height / Top / Left / Z-Index + Play).

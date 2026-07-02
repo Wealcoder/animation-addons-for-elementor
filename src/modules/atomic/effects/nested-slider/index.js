@@ -125,6 +125,10 @@ function bind(container, config) {
 	sliderDiv.setAttribute('role', 'region');
 	sliderDiv.setAttribute('aria-roledescription', 'carousel');
 	sliderDiv.setAttribute('tabindex', '0');
+	// The slider is focusable (for keyboard arrows), but the browser's default
+	// focus outline shows as a black border across the top on click. Suppress it
+	// — navigation is driven by the slide itself, not an outlined focus state.
+	sliderDiv.style.outline = 'none';
 	if (!sliderDiv.getAttribute('aria-label')) {
 		sliderDiv.setAttribute('aria-label', 'Slider Carousel');
 	}
@@ -745,6 +749,8 @@ function bind(container, config) {
 
 		maxIndex = getMaxIndex();
 
+		const prevIndex = currentIndex;
+
 		if (hasSeamlessLoop) {
 			if (index < 0) index = 0;
 			if (index >= slides.length) index = slides.length - 1;
@@ -760,6 +766,45 @@ function bind(container, config) {
 		sliderDiv._aaeSliderLastIndex = index; // survive editor re-binds
 		updateNavigationIndicators(index);
 		applyTransitions(index, useTransition);
+		// Only broadcast a slide-change when the active slide actually CHANGED.
+		// With loop off, autoplay/keys keep calling goToSlide(last+1) which clamps
+		// back to the same last index — re-emitting every tick and replaying (or
+		// looping) the entrance animation on the last slide. Skip the no-op emit.
+		if (index !== prevIndex) {
+			emitSlideChange(index);
+		}
+	};
+
+	// Broadcast a slide-change so the animation runtime can replay the
+	// interactions whose trigger is "on_slide_change" on elements inside the
+	// now-active slide. One event per goToSlide() (which every nav path — arrows,
+	// dots, drag, keyboard, autoplay, scrollbar — funnels through), so it fires
+	// every time the active slide changes. The animation kind matches `el` against
+	// detail.activeSlide.contains(el), so only the entered slide's elements run.
+	const emitSlideChange = (index) => {
+		const realIndex = hasSeamlessLoop ? (index % originalSlidesCount) : index;
+		// In a seamless loop the visible slide is often a CLONE (cloneNode copies
+		// that had their data-id / data-interaction-id stripped). The animation
+		// runtime's `el` lives in the ORIGINAL slide, so matching against a clone's
+		// .contains(el) always fails — which is why the looped first slide (and
+		// every clone-set slide from the 2nd loop on) never animated. Always resolve
+		// the active slide to its ORIGINAL counterpart by real index so the runtime
+		// match and the catch-up attribute land on the node that actually holds el.
+		const activeSlide = hasSeamlessLoop
+			? (originalSlides[realIndex] || null)
+			: (getSlides()[index] || null);
+		// Mark the active slide in the DOM so the animation runtime can do a
+		// bind-time catch-up: an element whose on_slide_change listener binds
+		// AFTER this event already fired (the page-load race on the first slide)
+		// reads this attribute and plays once, instead of missing the entry.
+		if (activeSlide) {
+			getSlides().forEach((s) => s.removeAttribute('data-aae-slide-active'));
+			activeSlide.setAttribute('data-aae-slide-active', '');
+		}
+		sliderDiv.dispatchEvent(new CustomEvent('aae:slide:change', {
+			bubbles: true,
+			detail: { index: realIndex, activeSlide, slider: sliderDiv },
+		}));
 	};
 
 	// Editor-only: bring a specific slide fully into view for EDITING. Unlike
@@ -917,12 +962,26 @@ function bind(container, config) {
 		}, evtOpts);
 	}
 
-	// Keyboard controls
+	// Keyboard controls. Bound on the slider root (which has tabindex="0"), but
+	// keydown bubbles so it also fires when focus is on a child (link/button)
+	// inside the slider. We only act on the arrows and preventDefault so the page
+	// doesn't also scroll. To make "click then use arrows" reliable, a pointerdown
+	// on the slider focuses the root if focus isn't already inside it (clicking a
+	// plain slide area otherwise leaves nothing focused, so no keydown arrives).
+	sliderDiv.addEventListener('pointerdown', () => {
+		const active = sliderDiv.ownerDocument.activeElement;
+		if (!sliderDiv.contains(active)) {
+			try { sliderDiv.focus({ preventScroll: true }); } catch (_) { sliderDiv.focus(); }
+		}
+	}, evtOpts);
+
 	sliderDiv.addEventListener('keydown', (e) => {
 		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
 			goToSlide(currentIndex - 1);
 			resumeSlider();
 		} else if (e.key === 'ArrowRight') {
+			e.preventDefault();
 			goToSlide(currentIndex + 1);
 			resumeSlider();
 		}
@@ -1191,6 +1250,39 @@ function bind(container, config) {
 		if (typeof sliderDiv._aaeGoTo === 'function') sliderDiv._aaeGoTo(e.detail.index);
 	};
 	window.addEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
+
+	// Editor affordance: clicking a slide's content on the canvas (its text/widget,
+	// or selecting it via Elementor's element handle/context menu — both land a
+	// pointer event inside the slide) should bring that slide into view, same as
+	// clicking its row in the panel's "Slides" list. Without this, selecting a
+	// widget in a not-currently-visible slide leaves it off-screen and unreachable.
+	// Delegated from the slider root so it survives slide re-renders. A movement
+	// guard skips drags (the drag gesture owns those) so a swipe doesn't also snap.
+	if (isEditMode) {
+		let downX = 0, downY = 0, downIdx = -1;
+		const slideIndexOf = (target) => {
+			const slide = target && target.closest && target.closest('.aae-a-slide');
+			if (!slide || !track.contains(slide)) return -1;
+			return getSlides().indexOf(slide);
+		};
+		const onCanvasDown = (e) => {
+			downX = e.clientX || 0;
+			downY = e.clientY || 0;
+			downIdx = slideIndexOf(e.target);
+		};
+		const onCanvasUp = (e) => {
+			if (downIdx < 0) return;
+			const dx = Math.abs((e.clientX || 0) - downX);
+			const dy = Math.abs((e.clientY || 0) - downY);
+			// Treat as a click only if the pointer barely moved (not a drag/swipe).
+			if (dx <= 6 && dy <= 6 && downIdx !== currentIndex) {
+				revealSlide(downIdx);
+			}
+			downIdx = -1;
+		};
+		sliderDiv.addEventListener('pointerdown', onCanvasDown, { capture: true, signal: localController.signal });
+		sliderDiv.addEventListener('pointerup', onCanvasUp, { capture: true, signal: localController.signal });
+	}
 	const prevEditCleanup = sliderDiv._aaeSliderEditCleanup;
 	sliderDiv._aaeSliderEditCleanup = () => {
 		window.removeEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);

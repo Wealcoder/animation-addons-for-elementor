@@ -1,0 +1,16 @@
+{% set classes = ['aae-a-loop-arrow', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set dir = settings.direction | default('next') %}
+<span class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    {% if dir == 'prev' %}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%" style="display:block;width:100%;height:100%"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%" style="display:block;width:100%;height:100%"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    {% endif %}
+</span>

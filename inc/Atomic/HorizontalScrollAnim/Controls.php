@@ -2,6 +2,8 @@
 
 namespace WCF_ADDONS\Atomic\HorizontalScrollAnim;
 
+use WCF_ADDONS\Atomic\Bootstrap;
+
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema;
@@ -62,7 +64,7 @@ final class Controls {
 		return Section::make()
 
 			->set_label(
-				__( 'Horizontal Scroll', self::TD )
+				Bootstrap::get_label( __( 'Horizontal Scroll', self::TD ) )
 			)
 
 			->set_items([

@@ -16,7 +16,6 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
-
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slides_Control;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track;

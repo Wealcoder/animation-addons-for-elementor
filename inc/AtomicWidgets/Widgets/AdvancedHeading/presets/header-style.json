@@ -1,0 +1,402 @@
+{
+    "content": [
+        {
+            "id": "24bc91a9",
+            "settings": {
+                "classes": {
+                    "$$type": "classes",
+                    "value": [
+                        "e-24bc91a9-63c65fd"
+                    ]
+                }
+            },
+            "elements": [
+                {
+                    "id": "240a5d7",
+                    "settings": [],
+                    "elements": [
+                        {
+                            "id": "10cbe10",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": [
+                                        "aae-ah-text",
+                                        "e-10cbe10-98bf94e"
+                                    ]
+                                },
+                                "paragraph": {
+                                    "$$type": "html-v3",
+                                    "value": {
+                                        "content": {
+                                            "$$type": "string",
+                                            "value": "Build your"
+                                        },
+                                        "children": []
+                                    }
+                                },
+                                "tag": {
+                                    "$$type": "string",
+                                    "value": "span"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-paragraph",
+                            "elType": "widget",
+                            "styles": {
+                                "e-10cbe10-98bf94e": {
+                                    "id": "e-10cbe10-98bf94e",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": {
+                                                "breakpoint": "desktop",
+                                                "state": null
+                                            },
+                                            "props": {
+                                                "font-family": {
+                                                    "$$type": "string",
+                                                    "value": "Aclonica"
+                                                },
+                                                "font-weight": {
+                                                    "$$type": "string",
+                                                    "value": "500"
+                                                },
+                                                "font-size": {
+                                                    "$$type": "size",
+                                                    "value": {
+                                                        "unit": "px",
+                                                        "size": 50
+                                                    }
+                                                }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": {
+                                "title": "Text"
+                            },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "30408028",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": [
+                                        "aae-ah-highlight",
+                                        "e-30408028-6bbf8bb"
+                                    ]
+                                },
+                                "paragraph": {
+                                    "$$type": "html-v3",
+                                    "value": {
+                                        "content": {
+                                            "$$type": "string",
+                                            "value": "Innovate"
+                                        },
+                                        "children": []
+                                    }
+                                },
+                                "tag": {
+                                    "$$type": "string",
+                                    "value": "span"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-paragraph",
+                            "elType": "widget",
+                            "styles": {
+                                "e-30408028-6bbf8bb": {
+                                    "id": "e-30408028-6bbf8bb",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": {
+                                                "breakpoint": "desktop",
+                                                "state": null
+                                            },
+                                            "props": {
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "color": {
+                                                            "$$type": "color",
+                                                            "value": "#e71010"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": {
+                                "title": "Highlight"
+                            },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "1e88dde6",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": [
+                                        "aae-ah-text",
+                                        "e-1e88dde6-87532eb"
+                                    ]
+                                },
+                                "paragraph": {
+                                    "$$type": "html-v3",
+                                    "value": {
+                                        "content": {
+                                            "$$type": "string",
+                                            "value": "Our Core Solution ddd"
+                                        },
+                                        "children": []
+                                    }
+                                },
+                                "tag": {
+                                    "$$type": "string",
+                                    "value": "span"
+                                },
+                                "link": {
+                                    "$$type": "link",
+                                    "value": []
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-paragraph",
+                            "elType": "widget",
+                            "styles": {
+                                "e-1e88dde6-87532eb": {
+                                    "id": "e-1e88dde6-87532eb",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": {
+                                                "breakpoint": "desktop",
+                                                "state": null
+                                            },
+                                            "props": {
+                                                "font-family": {
+                                                    "$$type": "string",
+                                                    "value": "Aboreto"
+                                                },
+                                                "font-weight": {
+                                                    "$$type": "string",
+                                                    "value": "200"
+                                                },
+                                                "font-size": {
+                                                    "$$type": "size",
+                                                    "value": {
+                                                        "unit": "px",
+                                                        "size": 50
+                                                    }
+                                                },
+                                                "color": {
+                                                    "$$type": "color",
+                                                    "value": "#f7f7f7"
+                                                },
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "background-overlay": {
+                                                            "$$type": "background-overlay",
+                                                            "value": [
+                                                                {
+                                                                    "$$type": "background-gradient-overlay",
+                                                                    "value": {
+                                                                        "type": {
+                                                                            "$$type": "string",
+                                                                            "value": "linear"
+                                                                        },
+                                                                        "angle": {
+                                                                            "$$type": "number",
+                                                                            "value": 180
+                                                                        },
+                                                                        "stops": {
+                                                                            "$$type": "gradient-color-stop",
+                                                                            "value": [
+                                                                                {
+                                                                                    "$$type": "color-stop",
+                                                                                    "value": {
+                                                                                        "color": {
+                                                                                            "$$type": "color",
+                                                                                            "value": "rgb(0,0,0)"
+                                                                                        },
+                                                                                        "offset": {
+                                                                                            "$$type": "number",
+                                                                                            "value": 0
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "$$type": "color-stop",
+                                                                                    "value": {
+                                                                                        "color": {
+                                                                                            "$$type": "color",
+                                                                                            "value": "rgb(255,255,255)"
+                                                                                        },
+                                                                                        "offset": {
+                                                                                            "$$type": "number",
+                                                                                            "value": 100
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "color": {
+                                                            "$$type": "color",
+                                                            "value": "#aa1f1f"
+                                                        },
+                                                        "clip": {
+                                                            "$$type": "string",
+                                                            "value": "padding-box"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": {
+                                "title": "Text"
+                            },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "d0149d2",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": [
+                                        "e-d0149d2-fbdb6fc"
+                                    ]
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-svg",
+                            "elType": "widget",
+                            "styles": {
+                                "e-d0149d2-fbdb6fc": {
+                                    "id": "e-d0149d2-fbdb6fc",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": {
+                                                "breakpoint": "desktop",
+                                                "state": null
+                                            },
+                                            "props": {
+                                                "height": {
+                                                    "$$type": "size",
+                                                    "value": {
+                                                        "unit": "px",
+                                                        "size": 20
+                                                    }
+                                                },
+                                                "position": {
+                                                    "$$type": "string",
+                                                    "value": "static"
+                                                },
+                                                "transform": {
+                                                    "$$type": "transform",
+                                                    "value": {
+                                                        "transform-functions": {
+                                                            "$$type": "transform-functions",
+                                                            "value": [
+                                                                {
+                                                                    "$$type": "transform-scale",
+                                                                    "value": {
+                                                                        "x": {
+                                                                            "$$type": "number",
+                                                                            "value": 1.3
+                                                                        },
+                                                                        "y": {
+                                                                            "$$type": "number",
+                                                                            "value": 1
+                                                                        },
+                                                                        "z": {
+                                                                            "$$type": "number",
+                                                                            "value": 1
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": [],
+                            "version": "0.0"
+                        }
+                    ],
+                    "isInner": false,
+                    "elType": "e-aae-a-advanced-heading",
+                    "styles": [],
+                    "interactions": [],
+                    "editor_settings": [],
+                    "version": "0.0"
+                }
+            ],
+            "isInner": false,
+            "elType": "e-flexbox",
+            "styles": {
+                "e-24bc91a9-63c65fd": {
+                    "id": "e-24bc91a9-63c65fd",
+                    "label": "local",
+                    "type": "class",
+                    "variants": [
+                        {
+                            "meta": {
+                                "breakpoint": "desktop",
+                                "state": null
+                            },
+                            "props": {
+                                "flex-direction": {
+                                    "$$type": "string",
+                                    "value": "column"
+                                }
+                            },
+                            "custom_css": null
+                        }
+                    ]
+                }
+            },
+            "interactions": [],
+            "editor_settings": [],
+            "version": "0.0"
+        }
+    ],
+    "page_settings": [],
+    "version": "0.4",
+    "title": "gradioent heaasd 2026",
+    "type": "e-flexbox"
+}

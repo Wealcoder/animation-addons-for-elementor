@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { getPreviewWindow, getSelectedContainer } from './helpers';
-import { featuresFor } from './features';
+import { featuresFor, regularRowToRuntime, textRowToRuntime, imgRowToRuntime } from './features';
 
 /**
  * Settings → preview-iframe bridge (interactions-map flavour).
@@ -36,13 +36,33 @@ function shouldBindInEditor(featureName, cfg) {
 	if (!cfg) return true;
 	if (cfg.enableEditor) return true;
 
+	const isScrollKind = ['horizontal', 'parallax', 'sticky'].includes(featureName);
+	if (isScrollKind) return false;
+
+	// Repeater features expose cfg.rows[] (desktop) plus optional per-breakpoint
+	// cfg.rows_<bp>[] lists instead of a single cfg.trigger. Bind in the editor
+	// when at least one row in ANY of those lists uses a non-scroll trigger
+	// (click / hover / page-load); a page made only of scroll-tied rows
+	// shouldn't auto-fire on the canvas. We check every rows list — not just
+	// cfg.rows — so an interaction defined only on mobile/tablet still binds
+	// for click/hover preview.
+	const rowLists = Object.keys(cfg)
+		.filter((k) => k === 'rows' || k.startsWith('rows_'))
+		.map((k) => cfg[k])
+		.filter(Array.isArray);
+	if (rowLists.length) {
+		const hasNonScrollRow = rowLists.some((rows) =>
+			rows.some((r) => {
+				const t = r?.trigger || '';
+				return t !== 'on_scroll' && t !== 'play_with_scroll' && t !== 'in-view';
+			})
+		);
+		return hasNonScrollRow;
+	}
+
 	const trigger = cfg.trigger || '';
 	const isScrollTrigger = trigger === 'on_scroll' || trigger === 'play_with_scroll' || trigger === 'in-view';
-	const isScrollKind = ['horizontal', 'parallax', 'sticky'].includes(featureName);
-
-	if (isScrollTrigger || isScrollKind) {
-		return false;
-	}
+	if (isScrollTrigger) return false;
 	return true;
 }
 
@@ -203,5 +223,83 @@ export function triggerAnimationReplay(playGroup = "") {
 		return false;
 	}
 
+	return true;
+}
+
+/** Editor's active device mode → breakpoint key the panel is showing. */
+function activeEditorBp() {
+	try {
+		const mode = window.elementor?.channels?.deviceMode?.request?.('currentMode');
+		return mode || 'desktop';
+	} catch (_) {
+		return 'desktop';
+	}
+}
+
+// Mirror of useArrayCellValue's PARENT_CASCADE — non-desktop bp inherits from
+// its parent bp when it has no own rows.
+const PARENT_CASCADE = {
+	mobile: ['mobile_extra', 'tablet', 'tablet_extra', 'laptop', 'desktop'],
+	mobile_extra: ['tablet', 'tablet_extra', 'laptop', 'desktop'],
+	tablet: ['tablet_extra', 'laptop', 'desktop'],
+	tablet_extra: ['laptop', 'desktop'],
+	laptop: ['desktop'],
+	widescreen: ['desktop'],
+};
+
+/** Resolve the rows array shown at `bp` (own → cascade → desktop). */
+function rowsForBp(map, bp) {
+	if (Array.isArray(map[bp])) return map[bp];
+	for (const parent of (PARENT_CASCADE[bp] || [])) {
+		if (Array.isArray(map[parent])) return map[parent];
+	}
+	return Array.isArray(map.desktop) ? map.desktop : [];
+}
+
+/**
+ * Per-row play: preview ONE interaction in isolation regardless of its real
+ * trigger. Pushes current settings to the iframe map, then asks the runtime
+ * to play just `rowIndex` of `playGroup`'s kind — for the breakpoint the
+ * editor panel is currently showing (so previewing on mobile plays the
+ * mobile row, not the desktop one).
+ */
+export function triggerAnimationReplayRow(playGroup = "", rowIndex = 0) {
+	const container = getSelectedContainer();
+	if (!container) return false;
+
+	const dom_settings = applySettingsToDom(container, playGroup);
+	if (!dom_settings || !dom_settings.target) return false;
+
+	const win = getPreviewWindow();
+	const api = win && win.aaeAtomicAnimations;
+	if (!api || typeof api.replayRow !== 'function') {
+		// Fall back to whole-group replay if the runtime predates replayRow.
+		return replayInPreview(dom_settings.target, playGroup);
+	}
+
+	// Resolve the EXACT raw row the user clicked from the saved interactions
+	// prop, then convert it to a runtime config. This sidesteps any index
+	// mismatch between the editor's full row list and the runtime's deduped
+	// list (effect=none rows dropped, exclusive-trigger first-row-wins).
+	const ROW_SOURCES = {
+		aae_anim_: { prop: 'aae_anim_interactions', toRuntime: regularRowToRuntime },
+		aae_text_: { prop: 'aae_text_interactions', toRuntime: textRowToRuntime },
+		aae_img_: { prop: 'aae_img_interactions', toRuntime: imgRowToRuntime },
+	};
+
+	let rowCfg = null;
+	const source = ROW_SOURCES[playGroup];
+	if (source) {
+		const settings = container.settings?.attributes || {};
+		const env = settings[source.prop];
+		const map = (env && typeof env === 'object' && env.$$type === 'aae-rj') ? (env.value || {}) : {};
+		// Use the breakpoint the panel is currently showing — so previewing on
+		// mobile plays the mobile rows (with cascade), not always desktop.
+		const rawRows = rowsForBp(map, activeEditorBp());
+		const rawRow = rawRows[rowIndex];
+		if (rawRow) rowCfg = source.toRuntime(rawRow);
+	}
+
+	api.replayRow(dom_settings.target, playGroup, rowIndex, rowCfg);
 	return true;
 }

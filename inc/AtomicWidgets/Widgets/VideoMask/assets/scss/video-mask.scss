@@ -7,9 +7,6 @@ $vm-mask-triangle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 121.0002 89'%3E%3Cpath d='M100.016,7.3972C90.2452,1.22,73.3084-3.6663,64.4255,3.7126,56.9836,9.89,62.0469,18.9174,55.01,25.3032c-10.6,9.6134-28.1589-5.4423-41.8584,2.6318C.6757,35.2543-4.2791,59.1489,4.2781,73.7975c13.1369,22.524,53.13,13.8541,61.1936,12.1061,4.5007-.9931,53.4953-12.265,55.4693-42.7043C121.898,28.2528,111.1,14.4185,100.016,7.3972Z'/%3E%3C/svg%3E");
 
 .aae-a-video-mask {
-	// Grid stacks the button and video in the same cell so the button sits
-	// centered on top of the masked video without any hard-coded position.
-	// User overrides button placement freely from the native Style panel.
 	display: grid;
 	position: relative;
 
@@ -25,9 +22,6 @@ $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 	}
 
 	// ── Video wrapper: same grid cell, behind button ─────────────────────────
-	// mask-image is set per vm-shape-* class below (CSS data URIs).
-	// mask-size / mask-position / mask-repeat stay here so the user can
-	// override them from Custom CSS in the Style panel.
 	> .vm-video-wrapper {
 		grid-area: 1 / 1;
 		-webkit-mask-repeat:   no-repeat;
@@ -41,9 +35,6 @@ $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 	}
 
 	// ── Shape mask per selection ─────────────────────────────────────────────
-	// The Twig template adds vm-shape-<value> to the outer container.
-	// Each rule supplies the correct mask-image inline as a data URI so there
-	// is no runtime URL lookup and no dependency on Elementor's assets path.
 	&.vm-shape-circle   > .vm-video-wrapper { -webkit-mask-image: $vm-mask-circle;   mask-image: $vm-mask-circle; }
 	&.vm-shape-flower   > .vm-video-wrapper { -webkit-mask-image: $vm-mask-flower;   mask-image: $vm-mask-flower; }
 	&.vm-shape-sketch   > .vm-video-wrapper { -webkit-mask-image: $vm-mask-sketch;   mask-image: $vm-mask-sketch; }
@@ -51,7 +42,6 @@ $vm-mask-blob:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 	&.vm-shape-blob     > .vm-video-wrapper { -webkit-mask-image: $vm-mask-blob;     mask-image: $vm-mask-blob; }
 
 	// ── Active / playing state ────────────────────────────────────────────────
-	// !important overrides the per-shape mask-image rules above.
 	&.mask-open {
 		> .vm-video-wrapper {
 			-webkit-mask-image: none !important;

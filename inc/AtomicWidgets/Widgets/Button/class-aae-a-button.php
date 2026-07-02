@@ -65,7 +65,7 @@ class AAE_A_Button extends Atomic_Element_Base
 
 	protected static function define_props_schema(): array
 	{
-		$indpendent_style_values = ['pro-1', 'pro-2', 'pro-3', 'pro-4', 'pro-5', 'pro-6', 'pro-7', 'pro-8', 'underline', 'mask'];
+		$indpendent_style_values = ['pro-1', 'pro-2', 'pro-3', 'pro-7', 'pro-8', 'underline', 'mask'];
 		$is_classic_style = Dependency_Manager::make()
 			->where([
 				'operator' => 'nin',
@@ -113,9 +113,6 @@ class AAE_A_Button extends Atomic_Element_Base
 							['value' => 'pro-1',     'label' => __('1-Border Divide',  'animation-addons-for-elementor')],
 							['value' => 'pro-2',     'label' => __('2-Shadow',         'animation-addons-for-elementor')],
 							['value' => 'pro-3',     'label' => __('3-Text Flip',      'animation-addons-for-elementor')],
-							['value' => 'pro-4',     'label' => __('4-Ripple',         'animation-addons-for-elementor')],
-							['value' => 'pro-5',     'label' => __('5-Group Swap L',   'animation-addons-for-elementor')],
-							['value' => 'pro-6',     'label' => __('6-Group Swap R',   'animation-addons-for-elementor')],
 							['value' => 'pro-7',     'label' => __('7-Outline Pill',   'animation-addons-for-elementor')],
 							['value' => 'pro-8',     'label' => __('8-Slide Fill',     'animation-addons-for-elementor')],
 						]),

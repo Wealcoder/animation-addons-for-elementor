@@ -597,15 +597,14 @@ export function bindImageHover(el, config) {
 }
 
 /**
- * playImageHover — used by the editor "Play Now" button. There's no
- * tween to replay (the effect is event-driven), so we just rebind. That
- * forces the overlay's size / image / position to refresh after a
- * settings change.
+ * playImageHover — used by the editor "Play Now" button. The effect is
+ * cursor-driven (mouseenter / mousemove / mouseleave), so there's no tween to
+ * replay; we just rebind to refresh the overlay's size / image / position
+ * after a settings change. Preview by hovering the widget on the canvas.
  */
 export function playImageHover(el, config) {
 	cleanupImageHover(el);
 	bindImageHover(el, config);
-
 }
 
 function cleanupImageHover(el) {
@@ -614,6 +613,13 @@ function cleanupImageHover(el) {
 		try { dispose(); } catch (_) { /* ignore */ }
 	}
 	el[IH_DISPOSE_KEY] = null;
+
+	// Kill a running demo timeline (editor "Play Now") if any, so it doesn't
+	// keep animating an overlay we're about to remove.
+	const played = el[IH_PLAYED];
+	if (played && typeof played.kill === 'function') {
+		try { played.kill(); } catch (_) { /* ignore */ }
+	}
 
 	const overlay = el[IH_OVERLAY_KEY];
 	if (overlay && overlay.parentNode) {

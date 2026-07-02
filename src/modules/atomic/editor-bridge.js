@@ -85,6 +85,7 @@ registerAaeElementControls();
 
 import { getPreviewWindow } from './editor-bridge/helpers';
 import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './editor-bridge/settings-bridge';
+import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 
 let bootstrapped = false;
 
@@ -93,7 +94,10 @@ function bootstrap() {
 		bootstrapped = false;
 	}
 	bootstrapped = true;
-	
+
+	// Selecting a slide (Structure panel, canvas, anywhere) drives the preview
+	// slider to it — same as clicking its row in the panel's "Slides" list.
+	startSlideSelectNav();
 }
 
 if (window.elementor && window.elementor.on) {

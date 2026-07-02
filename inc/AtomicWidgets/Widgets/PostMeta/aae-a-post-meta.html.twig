@@ -1,0 +1,11 @@
+{% import 'elementor/macros' as m %}
+{% set tag = settings.list_tag | default('ul') %}
+{% set flex_direction = (settings.layout == 'stacked') ? 'column' : 'row' %}
+{% set wrapper_classes = ['aae-a-post-meta'] | merge([ base_styles.base ]) | join(' ') %}
+
+<{{ tag }} class="{{ wrapper_classes }}"
+	style="flex-direction: {{ flex_direction }}; gap: {{ settings.gap | default('12px') }};"
+	data-interaction-id="{{ interaction_id | default('') }}"
+	{{- m.render_custom_attributes(settings) }}>
+	{{ children_placeholder | default('') | raw }}
+</{{ tag }}>

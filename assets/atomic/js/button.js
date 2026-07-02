@@ -110,33 +110,52 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scss_button_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/button.scss */ "./inc/AtomicWidgets/Widgets/Button/assets/scss/button.scss");
 
 
-const rippleBtn = container => {
-  // In V4 atomic the container IS the <a> root element, so check the element
-  // itself before falling back to a descendant search (needed for V3 compat).
-  const rippleBtn = container.classList.contains("btn-hover") ? container : container.querySelector(".btn-hover");
-  if (!rippleBtn) return;
-  const moveRipple = e => {
-    // Prefer the named ripple element injected by twig; fall back to bare span.
-    const span = rippleBtn.querySelector(".aae-ripple-el") || rippleBtn.querySelector("span:first-child");
-    if (!span) return;
-    const rect = rippleBtn.getBoundingClientRect();
-    span.style.left = e.clientX - rect.left + "px";
-    span.style.top = e.clientY - rect.top + "px";
-  };
-  rippleBtn.addEventListener("mouseenter", moveRipple);
-  rippleBtn.addEventListener("mouseleave", moveRipple);
-};
-const groupSwap = container => {
-  // Remove any existing clones first — idempotent across editor re-renders
-  container.querySelectorAll("[data-swap-clone]").forEach(el => el.remove());
 
-  // Find the LAST .e-svg-base (the "original" icon at the end)
-  const svgEls = container.querySelectorAll(".e-svg-base");
-  if (!svgEls.length) return null;
-  const lastSvg = svgEls[svgEls.length - 1];
-  const duplicatedSvg = lastSvg.cloneNode(true);
-  duplicatedSvg.setAttribute("data-swap-clone", "true");
-  container.prepend(duplicatedSvg);
+// On the frontend the paragraph's span is a direct child of the button (no
+// wrapper). In the editor, Elementor wraps every nested atomic child in a
+// `display: contents` div for selection/dragging — that CSS is layout-only,
+// so the span still sits one DOM level deeper and `:scope > span` misses it.
+// Matching `.e-paragraph-base` directly (regardless of depth) works in both.
+const textFlipSetup = container => {
+  const spanEl = container.querySelector(".e-paragraph-base");
+  if (!spanEl) return;
+  spanEl.dataset.text = spanEl.textContent.trim();
+};
+
+// Re-run textFlipSetup when the child paragraph re-renders (e.g. live text
+// edits in the panel replace its DOM node), so data-text stays in sync.
+// Same rationale as hookChildReadyOnce() below, for the text-flip style.
+function hookTextFlipReadyOnce() {
+  if (window._aaeTextFlipHooked) return;
+  if (!window.elementorFrontend?.hooks) return;
+  window._aaeTextFlipHooked = true;
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-paragraph", $scope => {
+    const btn = $scope?.[0]?.closest?.(".btn-text-flip");
+    if (btn) textFlipSetup(btn);
+  });
+}
+
+// Re-sync the visible clones in a btn-border-divide button from the live originals.
+const syncBorderDivideClones = btn => {
+  const textWrapper = btn.querySelector(":scope > span.text");
+  const iconWrapper = btn.querySelector(":scope > span.icon");
+  if (textWrapper) {
+    const liveText = btn.querySelector(".elementor-widget-e-paragraph .e-paragraph-base, :scope > .e-paragraph-base");
+    const clone = textWrapper.querySelector(".e-paragraph-base");
+    if (liveText && clone && liveText.innerHTML !== clone.innerHTML) {
+      clone.innerHTML = liveText.innerHTML;
+    }
+  }
+  if (iconWrapper) {
+    const liveSvg = btn.querySelector(".elementor-widget-e-svg .e-svg-base, :scope > .e-svg-base");
+    if (liveSvg) {
+      iconWrapper.querySelectorAll(".e-svg-base").forEach(clone => {
+        if (clone.innerHTML !== liveSvg.innerHTML) {
+          clone.innerHTML = liveSvg.innerHTML;
+        }
+      });
+    }
+  }
 };
 const borderDivideSwap = container => {
   // Clean up any previous swap wrappers before re-running
@@ -180,18 +199,37 @@ const maskBtn = container => {
   if (!textEl) return;
   container.setAttribute("data-text", textEl.textContent.trim());
 };
+
+// When a child atomic widget (e-paragraph or e-svg) is re-rendered by the
+// Elementor editor, it replaces its own DOM element. Any MutationObserver
+// placed on the old element becomes deaf. Instead, hook into Elementor's
+// frontend/element_ready event — fired for every widget render including
+// editor live-updates — and re-sync the visible clones from the new DOM.
+// We register these hooks once (after elementorFrontend is guaranteed ready)
+// using a flag so repeated button initializations don't stack duplicates.
+function hookChildReadyOnce() {
+  if (window._aaeBorderDivideHooked) return;
+  if (!window.elementorFrontend?.hooks) return;
+  window._aaeBorderDivideHooked = true;
+  const onChildReady = $scope => {
+    const btn = $scope?.[0]?.closest?.(".btn-border-divide");
+    if (btn) syncBorderDivideClones(btn);
+  };
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-paragraph", onChildReady);
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-svg", onChildReady);
+}
 (0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
   elementType: "e-aae-a-button",
   id: "e-aae-a-button-handler",
   callback: ({
     element
   }) => {
-    if (element.classList.contains("btn-hover")) {
-      rippleBtn(element);
-    } else if (element.classList.contains("aae-btn-pro-group")) {
-      groupSwap(element);
-    } else if (element.classList.contains("btn-border-divide")) {
+    if (element.classList.contains("btn-border-divide")) {
       borderDivideSwap(element);
+      hookChildReadyOnce();
+    } else if (element.classList.contains("btn-text-flip")) {
+      textFlipSetup(element);
+      hookTextFlipReadyOnce();
     } else if (element.classList.contains("wcf-btn-mask")) {
       maskBtn(element);
     }

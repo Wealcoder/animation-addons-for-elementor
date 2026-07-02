@@ -51,7 +51,7 @@ final class Controls
 		return Section::make()
 
 			->set_label(
-				'Tilt'
+				Bootstrap::get_label( __( 'Tilt', 'animation-addons-for-elementor' ) )
 			)
 
 			->set_items([

@@ -1,32 +1,28 @@
 /* eslint-env browser */
 
-import {
-	isAnimated,
-	isDurationEffect,
-	isEaseEffect,
-	showEnableEditor,
-	showPlayButton,
-	showScrollCustomBlock,
-	showScrollPosition,
-	showTriggerSelector,
-	showWrapper,
-	showMarkers,
-} from './predicates';
-import { valueAt } from '../../responsive-section/helpers';
+import { presetRowPatch } from './presets';
 
 /**
- * Declarative table for the RegularAnimation section. Each row is rendered
- * by <ResponsiveRow> with its own label, input, and dot. `when` runs against
- * (settings, activeBreakpoint); rows whose predicate returns falsy are
- * skipped entirely (no label, no slot reserved) for the active breakpoint.
+ * RegularAnimation section — REPEATER architecture.
  *
- * The PHP side registers every responsive prop as Responsive_Json_Prop_Type
- * (see Schema.php). Their default values live
- * server-side; this table only carries the editor-UX concerns: label,
- * options, placeholder, visibility.
+ * The whole section is now a single `interactions` repeater: every row is a
+ * full, independent interaction (trigger + effect + method + all config +
+ * its own custom-props list). Multiple interactions coexist on one element.
+ *
+ * Concurrency rule (enforced in InteractionsRepeaterInput, runtime, PHP):
+ *   - on_page_load                  → max 1 per element
+ *   - on_scroll / play_with_scroll  → one slot shared (max 1 total)
+ *   - mouseover / click             → unlimited
+ *
+ * Each row's fields are described by `rowFields`. Their `when(rowData, bp)`
+ * predicates read the FLAT row object (rowData.effect, rowData.trigger…),
+ * NOT the per-bp envelope — the whole list is already per-breakpoint at the
+ * outer `aae_anim_interactions` prop level.
+ *
+ * No legacy single-config path: storage is rows[] only.
  */
 
-/* ---------- option lists (mirror Schema::*() PHP maps) ---------- */
+/* ---------- option lists ---------- */
 
 const EFFECT_OPTIONS = [
 	{ value: 'none', label: 'None' },
@@ -60,6 +56,12 @@ const METHOD_OPTIONS = [
 	{ value: 'to', label: 'To' },
 	{ value: 'fromTo', label: 'From To' },
 ];
+// "Set" (instant state) is only meaningful for a custom animation — presets
+// carry their own from/to, so an instant set makes no sense there. Offer it
+// only when effect === 'custom'.
+const SET_METHOD_OPTION = { value: 'set', label: 'Set' };
+const methodOptionsFor = (r) =>
+	(r?.effect === 'custom') ? [...METHOD_OPTIONS, SET_METHOD_OPTION] : METHOD_OPTIONS;
 
 const TRIGGER_OPTIONS = [
 	{ value: 'on_scroll', label: 'On Scroll' },
@@ -67,6 +69,7 @@ const TRIGGER_OPTIONS = [
 	{ value: 'play_with_scroll', label: 'Play With Scroll' },
 	{ value: 'mouseover', label: 'On Hover' },
 	{ value: 'click', label: 'On Click' },
+	{ value: 'on_slide_change', label: 'On Slide Change' },
 ];
 
 const WRAPPER_OPTIONS = [
@@ -90,15 +93,10 @@ const SCROLL_POSITION_OPTIONS = [
 	'top top', 'top center', 'top bottom',
 	'center top', 'center center', 'center bottom',
 	'bottom top', 'bottom center', 'bottom bottom',
-].map((v) => ({
-	value: v,
-	label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-}));
+];
 
 /**
- * GSAP-compatible properties for the Custom Properties repeater. Mirrors
- * the v3 dropdown order. Values match GSAP's keyword names (kept unchanged
- * for runtime compatibility); labels are display-only.
+ * GSAP-compatible properties for the per-row Custom Properties repeater.
  */
 export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'none', label: 'None', category: 'General' },
@@ -130,12 +128,8 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'transformPerspective', label: 'Transform Perspective', category: 'Transform' },
 	{ value: 'backfaceVisibility', label: 'Backface Visibility', category: 'Transform' },
 	{ value: 'transformStyle', label: 'Transform Style', category: 'Transform' },
-	
-	// Spacing
 	{ value: 'padding', label: 'Padding', category: 'Spacing' },
 	{ value: 'margin', label: 'Margin', category: 'Spacing' },
-
-	// Design
 	{ value: 'color', label: 'Color', category: 'Design' },
 	{ value: 'background', label: 'Background', category: 'Design' },
 	{ value: 'backgroundColor', label: 'Background Color', category: 'Design' },
@@ -145,7 +139,7 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'border', label: 'Border', category: 'Design' },
 	{ value: 'borderColor', label: 'Border Color', category: 'Design' },
 	{ value: 'borderRadius', label: 'Border Radius', category: 'Design' },
-	{ value: 'boxShadow', label: 'BoxShadow', category: 'Design' },	
+	{ value: 'boxShadow', label: 'BoxShadow', category: 'Design' },
 	{ value: 'outline', label: 'Outline', category: 'Design' },
 	{ value: 'outlineColor', label: 'Outline Color', category: 'Design' },
 	{ value: 'outlineWidth', label: 'Outline Width', category: 'Design' },
@@ -154,34 +148,24 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'filter', label: 'Filter', category: 'Design' },
 	{ value: 'backdropFilter', label: 'Backdrop Filter', category: 'Design' },
 	{ value: 'clipPath', label: 'ClipPath', category: 'Design' },
-	
-	// Typography
 	{ value: 'fontSize', label: 'Font Size', category: 'Typography' },
 	{ value: 'lineHeight', label: 'Line Height', category: 'Typography' },
 	{ value: 'letterSpacing', label: 'Letter Spacing', category: 'Typography' },
 	{ value: 'wordSpacing', label: 'Word Spacing', category: 'Typography' },
-
-	// SVG
 	{ value: 'stroke', label: 'Stroke', category: 'SVG' },
 	{ value: 'strokeWidth', label: 'Stroke Width', category: 'SVG' },
 	{ value: 'fill', label: 'Fill', category: 'SVG' },
 	{ value: 'strokeDashoffset', label: 'Stroke Dashoffset', category: 'SVG' },
 	{ value: 'strokeDasharray', label: 'Stroke Dasharray', category: 'SVG' },
-
-	// Positioning
 	{ value: 'top', label: 'Top', category: 'Positioning' },
 	{ value: 'left', label: 'Left', category: 'Positioning' },
 	{ value: 'right', label: 'Right', category: 'Positioning' },
 	{ value: 'bottom', label: 'Bottom', category: 'Positioning' },
 	{ value: 'zIndex', label: 'Z Index', category: 'Positioning' },
-
-	// Overflow
 	{ value: 'overflow', label: 'Overflow', category: 'Overflow' },
 	{ value: 'overflowX', label: 'Overflow X', category: 'Overflow' },
 	{ value: 'overflowY', label: 'Overflow Y', category: 'Overflow' },
 	{ value: 'visibility', label: 'Visibility', category: 'Overflow' },
-
-	// GSAP Core
 	{ value: 'autoAlpha', label: 'Auto Alpha', category: 'GSAP Core' },
 	{ value: 'delay', label: 'Delay', category: 'GSAP Core' },
 	{ value: 'duration', label: 'Duration', category: 'GSAP Core' },
@@ -189,99 +173,129 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'repeatDelay', label: 'Repeat Delay', category: 'GSAP Core' },
 	{ value: 'yoyo', label: 'YoYo', category: 'GSAP Core' },
 	{ value: 'ease', label: 'Ease', category: 'GSAP Core' },
-	{ value: 'stagger', label: 'Stagger', category: 'GSAP Core' },
 	{ value: 'overwrite', label: 'Overwrite', category: 'GSAP Core' },
 	{ value: 'force3D', label: 'Force3D', category: 'GSAP Core' },
 ];
 
-/* ---------- the table ---------- */
+/* ---------- per-row predicates (flat rowData, not envelope) ---------- */
+
+const SCROLL_TRIGGERS = ['on_scroll', 'play_with_scroll'];
+const SELECTOR_TRIGGERS = ['mouseover', 'click'];
+
+const rowIsAnimated = (r) => !!r?.effect && r.effect !== 'none';
+const rowTrigger = (r) => r?.trigger || 'on_scroll';
+const rowIsScroll = (r) => SCROLL_TRIGGERS.includes(rowTrigger(r));
+const rowIsSelector = (r) => SELECTOR_TRIGGERS.includes(rowTrigger(r));
+const rowWrapperCustom = (r) => r?.wrapper === 'custom';
+
+/* ---------- per-row field schema ---------- */
+
+const SCROLL_DATALIST = SCROLL_POSITION_OPTIONS;
+
+export const CUSTOM_PROPS_CELLS = [
+	{
+		bind: 'property', type: 'select', placeholder: 'Property',
+		options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true,
+	},
+	{ bind: 'value', type: 'dynamic-value', placeholder: 'value', width: 5 },
+];
+
+const ROW_FIELDS = [
+	{
+		bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'fadeUp',
+		// Selecting a preset effect auto-fills the custom-props rows + sets
+		// method='fromTo'. 'custom' / unknown returns null → no auto-fill.
+		onSet: (_row, val) => presetRowPatch(val),
+	},
+	{ bind: 'method', label: 'Method', control: 'select', options: methodOptionsFor, defaultValue: 'fromTo', when: rowIsAnimated },
+	{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: rowIsAnimated },
+
+	{
+		bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
+		placeholder: '.my-class', when: (r) => rowIsAnimated(r) && rowIsSelector(r),
+	},
+	{
+		bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+	},
+	{
+		bind: 'start_trigger', label: 'Start Trigger', control: 'text', placeholder: '.start_area',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
+	},
+	{
+		bind: 'end_trigger', label: 'End Trigger', control: 'text', placeholder: '.end_area',
+		when: (r) => rowIsAnimated(r) && rowIsScroll(r) && rowWrapperCustom(r),
+	},
+	{
+		bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_DATALIST,
+		placeholder: 'top 50%', when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+	},
+	{
+		bind: 'end_position', label: 'End', control: 'text', datalist: SCROLL_DATALIST,
+		placeholder: 'bottom center', when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+	},
+
+	{ bind: 'delay', label: 'Delay', control: 'slider', min: 0, max: 10, step: 0.05, defaultValue: 0.15, when: rowIsAnimated },
+	{ bind: 'duration', label: 'Duration', control: 'slider', min: 0, max: 10, step: 0.1, defaultValue: 1.5, when: rowIsAnimated },
+	{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: rowIsAnimated },
+
+	{
+		bind: 'custom_props',
+		label: (r) => (r?.method === 'fromTo' ? 'From Properties' : (r?.method === 'set' ? 'Set Properties' : 'Custom Properties')),
+		control: 'repeater', addLabel: 'Add Property',
+		rowDefaults: { property: '', value: '' },
+		cells: CUSTOM_PROPS_CELLS,
+		when: rowIsAnimated,
+	},
+	{
+		bind: 'custom_props_to', label: 'To Properties', control: 'repeater', addLabel: 'Add Property',
+		rowDefaults: { property: '', value: '' },
+		cells: CUSTOM_PROPS_CELLS,
+		when: (r) => rowIsAnimated(r) && r?.method === 'fromTo',
+	},
+
+	{ bind: 'markers', label: 'Markers', control: 'switch', defaultValue: false, when: (r) => rowIsAnimated(r) && rowIsScroll(r) },
+];
+
+const ROW_DEFAULTS = {
+	effect: 'fadeUp',
+	trigger: 'on_scroll',
+	delay: 0.15,
+	duration: 1.5,
+	easing: 'power2.out',
+	wrapper: 'default',
+	start_position: 'top center',
+	end_position: 'bottom bottom',
+	// Seed the fadeUp preset so a freshly-added interaction animates
+	// immediately (method + custom-props pre-filled). Mirrors presetRowPatch.
+	...presetRowPatch('fadeUp'),
+};
+
+/* ---------- the section table ---------- */
 
 const config = {
 	anchorKey: 'aae-section-aae-animation',
 	bindPrefix: 'aae_anim_',
 	fields: [
-		{ bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'none', responsive: true, play_group: 'aae_anim_'  },
-
-		{ bind: 'method', label: 'Method', control: 'select', options: METHOD_OPTIONS, defaultValue: 'from', when: isAnimated, responsive: true },
-		{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: isAnimated, responsive: true },
-
 		{
-			bind: 'trigger_selector', label: 'Trigger Selector', control: 'text',
-			defaultValue: '', placeholder: '.my-class', when: showTriggerSelector, responsive: true
+			bind: 'interactions',
+			label: 'Interactions',
+			control: 'interactions',
+			defaultValue: [],
+			responsive: true,
+			play_group: 'aae_anim_',
+			// No live_change auto-replay: editing a row (effect, trigger,
+			// props) just saves. The user previews via the per-row ▶ play
+			// button, which runs that one interaction in isolation. This
+			// avoids stale/auto-firing animations while editing.
+			live_change: false,
+			addLabel: 'Add Interaction',
+			rowFields: ROW_FIELDS,
+			rowDefaults: ROW_DEFAULTS,
+			help: 'Each interaction is an independent animation: trigger + effect + config. Page-load and scroll triggers allow one each; click and hover are unlimited.',
 		},
-
-		{ bind: 'wrapper', label: 'Wrapper', control: 'select', options: WRAPPER_OPTIONS, defaultValue: 'default', when: showWrapper, responsive: true },
-
-		{
-			bind: 'start_trigger', label: 'Start Trigger', control: 'text',
-			defaultValue: '', placeholder: '.start_area', when: showScrollCustomBlock, responsive: true
-		},
-		{
-			bind: 'end_trigger', label: 'End Trigger', control: 'text',
-			defaultValue: '', placeholder: '.end_area', when: showScrollCustomBlock, responsive: true
-		},
-		{
-			bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
-			defaultValue: 'top center', placeholder: 'top 50%', when: showScrollPosition, responsive: true
-		},
-		{
-			bind: 'end_position', label: 'End', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
-			defaultValue: 'bottom bottom', placeholder: 'bottom center', when: showScrollPosition, responsive: true
-		},
-
-		{ bind: 'delay', label: 'Delay', control: 'number', defaultValue: 0.15, when: isDurationEffect, responsive: true },
-		{ bind: 'duration', label: 'Duration', control: 'number', defaultValue: 1.5, when: isDurationEffect, responsive: true },
-		{ bind: 'easing', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: isEaseEffect, responsive: true },
-
-		// Custom Properties repeater (effect = custom). Stored as a
-		// Responsive_Json_Prop_Type so the whole list can vary per breakpoint.
-		// Each row is a plain { enabled, property, value } object — JS owns
-		// the shape; PHP just round-trips the payload.
-		{
-			bind: 'custom_props', 
-			label: (s, bp) => valueAt(s, 'aae_anim_method', bp) === 'fromTo' ? 'From Properties' : 'Custom Properties', 
-			control: 'repeater',
-			defaultValue: [], when: isAnimated, responsive: true,
-			addLabel: 'Add Property',
-			innerTabGroup: (s, bp) => valueAt(s, 'aae_anim_method', bp) === 'fromTo' ? 'props' : null,
-			innerTabLabel: 'From',
-			rowDefaults: { property: '', value: '' },
-			cells: [
-				{
-					bind: 'property', type: 'select', placeholder: 'Property',
-					options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true
-				},
-				{ bind: 'value', type: 'dynamic-value', placeholder: 'value', width: 5 },
-			]
-		},
-		{
-			bind: 'custom_props_to', label: 'To Properties', control: 'repeater',
-			defaultValue: [], when: (s, bp) => isAnimated(s, bp) && valueAt(s, 'aae_anim_method', bp) === 'fromTo', responsive: true,
-			addLabel: 'Add Property',
-			innerTabGroup: 'props',
-			innerTabLabel: 'To',
-			rowDefaults: { property: '', value: '' },
-			cells: [
-				{
-					bind: 'property', type: 'select', placeholder: 'Property',
-					options: CUSTOM_PROPERTY_OPTIONS, width: 7, freeSolo: true, unique: true
-				},
-				{ bind: 'value', type: 'dynamic-value', placeholder: 'value', width: 5 },
-			]
-		},
-
-		// Non-responsive control rows.
-		// Markers is a ScrollTrigger debug overlay — only meaningful for the
-		// scroll-tied triggers, so we only show it when the trigger is a scroll type.
-		{
-			bind: 'markers', label: 'Markers', control: 'switch',
-			responsive: false, defaultValue: false, when: showMarkers
-		},
-		{
-			bind: 'enable_editor', label: 'Enable On Editor', control: 'switch',
-			responsive: false, defaultValue: false, when: showEnableEditor
-		},
-		{ control: 'play-button', when: showPlayButton, play_group: 'aae_anim_' },
+		// No global "Enable On Editor" / "Play" — each interaction row has its
+		// own ▶ play button for isolated preview.
 	],
 };
 

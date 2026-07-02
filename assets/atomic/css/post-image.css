@@ -1,26 +1,2 @@
-.aae-a-post-image-wrapper {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: inherit; /* inherit from base styles wrapper */
-}
-
-.aae-a-post-image-wrapper[data-aspect-ratio="16/9"] {
-  aspect-ratio: 16/9;
-}
-
-.aae-a-post-image-wrapper[data-aspect-ratio="4/3"] {
-  aspect-ratio: 4/3;
-}
-
-.aae-a-post-image-wrapper[data-aspect-ratio="1/1"] {
-  aspect-ratio: 1/1;
-}
-
-.aae-a-post-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  border-radius: inherit;
-}
+/* Bypassed: styling is handled via define_base_styles() in class-aae-a-post-image.php */
 /*# sourceMappingURL=post-image.css.map */
