@@ -180,6 +180,7 @@ final class Atomic
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
 			'aae-a-nav-sub-item',
+			'aae-a-mobile-nav',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -1701,6 +1702,15 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
 			'file'       => 'Widgets/Nav/class-aae-a-nav-sub-item.php',
 			'has_script' => false,
+		],
+		'aae-a-mobile-nav' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Mobile_Nav',
+			'file'          => 'Widgets/Nav/class-aae-a-mobile-nav.php',
+			'has_script'    => true,
+			'script_handle' => 'aae-a-nav-js',
+			'script_path'   => '/assets/atomic/js/nav.js',
+			'style_handle'  => 'aae-a-nav-css',
+			'style_path'    => '/assets/atomic/css/nav.css',
 		],
 		// Add new atomic widgets below...
 		];
