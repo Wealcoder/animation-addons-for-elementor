@@ -603,6 +603,11 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.6.9 – 07th July 2026
+
+  - **Fixed:** Secrutiy Fixed at whole plugin.
+  - ** Improved:** Performance Improved at whole plugin.
+
 = 🌀 Animation Addons for Elementor v2.6.8 – 16th June 2026
 
   - **Fixed:** Image Gallery - Lightbox doesn’t work, Now its working perfectly.
