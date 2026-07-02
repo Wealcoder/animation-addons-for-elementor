@@ -65,7 +65,6 @@ function readSettings(wrap) {
 		posts_per_page: parseInt(get('posts_per_page', 6), 10) || 6,
 		order_by: get('order_by', 'date'),
 		order: get('order', 'desc'),
-		columns: parseInt(get('columns', 3), 10) || 3,
 	};
 }
 
@@ -79,7 +78,7 @@ function readSettings(wrap) {
  * SET is a function of the query alone, so key only on that.
  */
 function signature(wrap, s) {
-	return [s.post_type, s.posts_per_page, s.order_by, s.order, s.columns].join('|');
+	return [s.post_type, s.posts_per_page, s.order_by, s.order].join('|');
 }
 
 /**
@@ -300,7 +299,6 @@ async function hydrate(wrap) {
 	if (wrap.__aaeSig === sig && ( ! clonesPresent || cloneStale )) {
 		const cached = cachedPosts(sig);
 		if (cached) {
-			grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 			buildClones(grid, item, cached, doc);
 			wrap.__aaeSingle = cached.length <= 1;
 			wrap.__aaeTitleSig = titleSig;
@@ -315,9 +313,6 @@ async function hydrate(wrap) {
 	wrap.__aaeBusy = true;
 	wrap.__aaeDirty = false;
 	wrap.__aaeSig = sig;
-
-	// Publish the column count as the CSS var the SCSS reads (matches frontend).
-	grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 
 	// If we can serve this query from cache, DON'T wipe the clones before the
 	// (now synchronous) rebuild — avoids a flash. Only clear up front when we
@@ -367,6 +362,72 @@ async function hydrate(wrap) {
 	wrap.__aaeTitleSig = titleSig;
 }
 
+/**
+ * The post chosen in Page Settings → Preview Settings (Pro's
+ * `aae_loop_page_post`), read LIVE from the page-settings model — so the value
+ * is current right after "Apply & Preview" (which only reloads the preview
+ * iframe; the editor's boot-time widget config keeps the OLD sample).
+ */
+function pageSamplePostId() {
+	try {
+		const v = window.elementor?.settings?.page?.model?.get?.('aae_loop_page_post');
+		const id = parseInt(propValue(v), 10);
+		return id > 0 ? id : 0;
+	} catch (e) {
+		return 0;
+	}
+}
+
+/**
+ * Fill each authored (non-clone) loop-item card with the Preview Settings
+ * post's title/image. Runs once per preview document load: the PHP schema
+ * default covers the editor BOOT; this covers the Apply-&-Preview reload,
+ * where the boot config is stale. Clones are untouched (they show the real
+ * queried posts via fillClone).
+ */
+async function fillAuthoredSample(pdoc) {
+	const id = pageSamplePostId();
+	if (!id) {
+		return;
+	}
+	const c = cfg();
+	if (!c.ajaxUrl || !c.nonce) {
+		return;
+	}
+	const body = new FormData();
+	body.append('action', 'aae_loop_sample_post');
+	body.append('nonce', c.nonce);
+	body.append('sample_id', String(id));
+	let data = null;
+	try {
+		const res = await fetch(c.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
+		const json = await res.json();
+		data = json && json.success ? json.data : null;
+	} catch (e) {
+		return;
+	}
+	if (!data || !pdoc.body) {
+		return;
+	}
+	pdoc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
+		const item = [...wrap.querySelectorAll('.aae-a-loop-item')].find((i) => !i.closest('[data-aae-clone]'));
+		if (!item) {
+			return;
+		}
+		const titleEl = item.querySelector('[data-widget_type^="e-aae-a-post-title"]');
+		if (titleEl && data.title) {
+			const target = titleEl.querySelector('h1,h2,h3,h4,h5,h6,a,span,p') || titleEl;
+			// Plain full text — the post-title-limit module captures + trims it.
+			target.textContent = data.title;
+		}
+		const img = item.querySelector('[data-widget_type^="e-aae-a-post-image"] img, img');
+		if (img && data.image) {
+			img.setAttribute('src', data.image);
+			img.removeAttribute('srcset');
+		}
+	});
+}
+
 /** Scan the preview and hydrate all loop grids. */
 function scan() {
 	const win = getPreviewWindow();
@@ -377,6 +438,18 @@ function scan() {
 	doc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
 		hydrate(wrap);
 	});
+
+	// Whenever the Preview Settings post CHANGES (boot, Apply-&-Preview, or a
+	// direct setting edit): sample it into the authored card. Keyed on the id
+	// so unchanged settings never refetch. Gate on an authored item existing so
+	// the fill lands on real DOM.
+	const sid = pageSamplePostId();
+	if (doc.__aaeSampleId !== sid && doc.querySelector(WRAP_SELECTOR + ' .aae-a-loop-item')) {
+		doc.__aaeSampleId = sid;
+		if (sid) {
+			fillAuthoredSample(doc);
+		}
+	}
 }
 
 export function installLoopGrid() {
@@ -408,6 +481,9 @@ export function installLoopGrid() {
 			pdoc.__aaeLoopObserved = true;
 			new MutationObserver(schedule).observe(pdoc.body, { childList: true, subtree: true });
 		}
+		// Poll a scan too: a Preview Settings change (page-settings model) has
+		// no DOM mutation of its own, so the observer alone would miss it.
+		schedule();
 	};
 	hookPreview();
 	setInterval(hookPreview, 1500);

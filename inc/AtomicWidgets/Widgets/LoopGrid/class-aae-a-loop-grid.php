@@ -94,10 +94,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'order_by'       => String_Prop_Type::make()->default( 'date' ),
 			'order'          => String_Prop_Type::make()->default( 'desc' ),
 
-			// Layout.
-			'columns'        => Number_Prop_Type::make()->default( 3 ),
-
-			// NOTE: the load_method setting lives on the Pagination child
+			// NOTE: no `columns` prop — the layout is flexbox (Loop Item base
+			// style `flex: 1 1 32%`), tuned responsively from the Style panel.
+			// The load_method setting lives on the Pagination child
 			// (e-aae-a-loop-pagination); there is no pagination "type" — the bar
 			// is DOM-driven and pieces are shown/hidden from the Style panel.
 		];
@@ -135,18 +134,12 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 						] ),
 				] ),
 
-			Section::make()
-				->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
-				->set_id( 'aae_loop_layout' )
-				->set_items( [
-					Number_Control::bind_to( 'columns' )
-						->set_label( __( 'Columns', 'animation-addons-for-elementor' ) )
-						->set_min( 1 )
-						->set_max( 12 ),
-
-					// Pagination Type + Load Method moved to the Pagination child
-					// widget — select the Pagination element to edit them.
-				] ),
+			// No Layout section: the column layout is flexbox-driven — the Loop
+			// Item's base style (`flex: 1 1 32%`) sets the default 3-up grid and
+			// the user tunes it responsively from the item's Style panel. The old
+			// "Columns" number control wasn't responsive and did nothing in the
+			// flex layout, so it was removed. Load Method lives on the Pagination
+			// child widget.
 		];
 	}
 
@@ -307,7 +300,6 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 				'context_key' => self::class,
 				'context'     => [
 					'query_args'    => $query_args,
-					'columns'       => isset( $s['columns'] ) ? (int) $s['columns'] : 3,
 					'paged'         => $paged,
 					'max_num_pages' => $max_pages,
 					// The load_method setting is the Pagination child's own —
@@ -320,7 +312,6 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 						'per_page'  => $per_page,
 						'order_by'  => isset( $s['order_by'] ) ? $s['order_by'] : 'date',
 						'order'     => isset( $s['order'] ) ? $s['order'] : 'desc',
-						'columns'   => isset( $s['columns'] ) ? (int) $s['columns'] : 3,
 					],
 				],
 			],

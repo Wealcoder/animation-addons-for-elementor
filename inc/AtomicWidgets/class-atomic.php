@@ -131,6 +131,99 @@ final class Atomic
 	}
 
 	/**
+	 * The EDITOR preview sample post for the current-post widgets (Post Title /
+	 * Post Image).
+	 *
+	 * Resolution order:
+	 *   1. The document's "Preview Settings" page setting (`aae_loop_page_post`,
+	 *      registered by the Pro plugin's WCF_Page_Loop_Settings) — the user's
+	 *      explicit choice always wins.
+	 *   2. A random published post that HAS a featured image — without this the
+	 *      editor shows the edited page's title and a gray placeholder (pages
+	 *      rarely have thumbnails), which reads as broken.
+	 *
+	 * Cached per-request so every widget previews the SAME post (title matches
+	 * image).
+	 *
+	 * @return \WP_Post|false Post object, or false when none qualifies.
+	 */
+	public static function get_sample_post()
+	{
+		static $sample = null;
+		if (null !== $sample) {
+			return $sample;
+		}
+
+		$sample = false;
+
+		// 1) Explicit choice from Page Settings → Preview Settings.
+		$chosen = self::get_preview_setting_post();
+		if ($chosen) {
+			$sample = $chosen;
+			return $sample;
+		}
+
+		// 2) Random fallback. A handful of candidates: a post can carry a stale
+		// _thumbnail_id whose attachment is gone, so verify the URL resolves.
+		$candidates = get_posts([
+			'post_type'   => 'post',
+			'post_status' => 'publish',
+			'numberposts' => 5,
+			'orderby'     => 'rand',
+			'meta_key'    => '_thumbnail_id',
+		]);
+
+		foreach ($candidates as $candidate) {
+			if (get_the_post_thumbnail_url($candidate, 'large')) {
+				$sample = $candidate;
+				break;
+			}
+		}
+
+		return $sample;
+	}
+
+	/**
+	 * The post chosen in the document's Page Settings → Preview Settings
+	 * (`aae_loop_page_post`). False when unset / invalid / Pro inactive.
+	 *
+	 * @return \WP_Post|false
+	 */
+	private static function get_preview_setting_post()
+	{
+		if (! class_exists('\Elementor\Core\Settings\Manager')) {
+			return false;
+		}
+
+		$doc_id = 0;
+		if (isset(\Elementor\Plugin::$instance->editor)) {
+			$doc_id = (int) \Elementor\Plugin::$instance->editor->get_post_id();
+		}
+		if (! $doc_id) {
+			$doc_id = (int) get_the_ID();
+		}
+		if (! $doc_id) {
+			return false;
+		}
+
+		try {
+			$manager = \Elementor\Core\Settings\Manager::get_settings_managers('page');
+			$model   = $manager ? $manager->get_model($doc_id) : null;
+			$chosen  = $model ? absint($model->get_settings('aae_loop_page_post')) : 0;
+		} catch (\Throwable $e) {
+			return false;
+		}
+
+		if (! $chosen) {
+			return false;
+		}
+
+		$post = get_post($chosen);
+
+		return ($post && 'publish' === $post->post_status) ? $post : false;
+	}
+
+	/**
 	 * Get slugs of currently enabled atomic widgets.
 	 *
 	 * @return string[]
@@ -175,6 +268,9 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-video-mask-btn',
+			'aae-a-flip-box-face',
+			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
 			'aae-a-social-share-item',
@@ -511,6 +607,21 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-card' => [
+				'label'        => 'Post Card (Internal)',
+				'description'  => 'Internal child card for the Posts Grid widget.',
+				'icon'         => 'eicon-post-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'post card', 'internal' ],
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
@@ -1109,6 +1220,125 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-flip-box' => [
+				'label'        => 'Flip Box',
+				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
+				'icon'         => 'eicon-flip-box',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip',
+					'box',
+					'card',
+					'hover',
+					'atomic',
+					'animation',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-face' => [
+				'label'        => 'Flip Box Face (Internal)',
+				'description'  => 'Internal front/back face container for Flip Box.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip face',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-site-logo' => [
+				'label'        => 'Site Logo',
+				'description'  => 'Displays the site logo with a configurable link — wraps a native Elementor image child so each piece is independently styleable.',
+				'icon'         => 'eicon-site-logo',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'site logo',
+					'logo',
+					'branding',
+					'atomic',
+					'header',
+				],
+				'category'     => 'header-footer',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-mask' => [
+				'label'        => 'Video Mask',
+				'description'  => 'A click-triggered masked video player with a customisable toggle button — icon and label are independent atomic children.',
+				'icon'         => 'eicon-youtube',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'video',
+					'mask',
+					'play',
+					'atomic',
+					'shape',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-mask-btn' => [
+				'label'        => 'Video Mask Button (Internal)',
+				'description'  => 'Internal button container for Video Mask. Positioned via the native Style panel.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'video mask button', 'internal' ],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-button-pro' => [
+				'label'        => 'Button Pro',
+				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
+				'icon'         => 'wcf-icon-Button',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'button pro',
+					'cta',
+					'gsap',
+					'hover',
+					'ripple',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -1343,6 +1573,19 @@ final class Atomic
 		// atomic preview is client-side and can't run our PHP WP_Query).
 		add_action('wp_ajax_aae_loop_post_data', [$this, 'ajax_loop_post_data']);
 
+		// Loop Grid: one post's title/image for the editor's authored-card
+		// sample — used after "Apply & Preview" (Page Settings → Preview
+		// Settings) so the chosen post shows without a full editor reload.
+		add_action('wp_ajax_aae_loop_sample_post', [$this, 'ajax_loop_sample_post']);
+
+		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
+		// document before resolving tags, so a Featured Image / Post Title tag
+		// inside a loop item resolves against the PAGE (usually no thumbnail →
+		// empty). When the document has an explicit Preview Settings post
+		// (`aae_loop_page_post`), re-switch to it so core dynamic tags preview
+		// that post — same semantics the V3 loop preview always had.
+		add_action('elementor/dynamic_tags/before_render', [$this, 'switch_dynamic_tags_to_preview_post']);
+
 		// Loop Grid: frontend paginated cells (AJAX + Load More). Available to
 		// logged-out visitors too, so both hooks are registered.
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
@@ -1507,6 +1750,12 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-posts-css',
 				'style_path' => '/assets/atomic/css/posts.css',
+			],
+
+			'aae-a-post-card' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Post_Card',
+				'file'       => 'Widgets/Posts/class-aae-a-post-card.php',
+				'has_script' => false,
 			],
 
 			'aae-a-loop-grid' => [
@@ -1732,6 +1981,58 @@ final class Atomic
 			'style_handle'  => 'aae-a-nav-css',
 			'style_path'    => '/assets/atomic/css/nav.css',
 		],
+
+		'aae-a-flip-box' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
+			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
+			'script_handle' => 'aae-a-flip-box-js',
+			'script_path'   => '/assets/atomic/js/flip-box.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-flip-box-css',
+			'style_path'    => '/assets/atomic/js/flip-box.css',
+		],
+
+		'aae-a-flip-box-face' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
+			'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
+			'has_script' => false,
+		],
+
+		'aae-a-site-logo' => [
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
+			'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
+			'has_script'   => false,
+			'style_handle' => 'aae-a-site-logo-css',
+			'style_path'   => '/assets/atomic/css/site-logo.css',
+		],
+
+		'aae-a-video-mask' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask',
+			'file'          => 'Widgets/VideoMask/class-aae-a-video-mask.php',
+			'script_handle' => 'aae-a-video-mask-js',
+			'script_path'   => '/assets/atomic/js/video-mask.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-video-mask-css',
+			'style_path'    => '/assets/atomic/js/video-mask.css',
+		],
+
+		'aae-a-video-mask-btn' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
+			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
+			'has_script' => false,
+		],
+
+		'aae-a-button-pro'  => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ButtonPro\AAE_A_Button_Pro',
+			'file'          => 'Widgets/ButtonPro/class-aae-a-button-pro.php',
+			'script_handle' => 'aae-a-button-pro-js',
+			'script_path'   => '/assets/atomic/js/button-pro.js',
+			'script_deps'   => [ 'gsap' ],
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-button-pro-css',
+			'style_path'    => '/assets/atomic/js/button-pro.css',
+		],
+
 		// Add new atomic widgets below...
 		];
 	}
@@ -1745,6 +2046,52 @@ final class Atomic
 	 * the authored card into inert preview cells filled with each post's values.
 	 * Returns a lightweight array — no markup, no document, no print_elements.
 	 */
+	/**
+	 * Resolve editor dynamic tags against the document's Preview Settings post.
+	 *
+	 * Runs on `elementor/dynamic_tags/before_render` (fired right after
+	 * `ajax_render_tags` switched to the edited document). ONLY re-switches
+	 * when the user explicitly chose a Preview Settings post — a document
+	 * without one keeps stock behavior, so normal pages are unaffected.
+	 */
+	public function switch_dynamic_tags_to_preview_post()
+	{
+		// Editor ajax only — never touch frontend rendering.
+		if (! is_admin() || ! wp_doing_ajax()) {
+			return;
+		}
+
+		$chosen = self::get_preview_setting_post();
+		if ($chosen) {
+			\Elementor\Plugin::$instance->db->switch_to_post($chosen->ID);
+		}
+	}
+
+	/**
+	 * One post's preview data (title + featured image) for the editor's
+	 * authored-card sample. The client sends the LIVE value of the document's
+	 * `aae_loop_page_post` page setting (Preview Settings), so the chosen post
+	 * previews immediately after "Apply & Preview" — no editor reload needed.
+	 */
+	public function ajax_loop_sample_post()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$post = isset($_POST['sample_id']) ? get_post(absint($_POST['sample_id'])) : null;
+		if (! $post || 'publish' !== $post->post_status) {
+			wp_send_json_error(['message' => 'Invalid sample post.'], 404);
+		}
+
+		wp_send_json_success([
+			'title' => get_the_title($post),
+			'image' => get_the_post_thumbnail_url($post, 'large') ?: '',
+		]);
+	}
+
 	public function ajax_loop_post_data()
 	{
 		check_ajax_referer('aae_loop_grid', 'nonce');
@@ -1900,7 +2247,6 @@ final class Atomic
 			'html'      => $html,
 			'paged'     => $paged,
 			'max_pages' => $max_pages,
-			'columns'   => (int) $val('columns', 3),
 		]);
 	}
 

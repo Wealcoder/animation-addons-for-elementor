@@ -9,10 +9,6 @@
         {% set pro_extra = 'btn-border-divide' %}
     {% elseif pro_num == '3' %}
         {% set pro_extra = 'btn-text-flip' %}
-    {% elseif pro_num == '4' %}
-        {% set pro_extra = 'btn-hover' %}
-    {% elseif pro_num in ['5', '6'] %}
-        {% set pro_extra = 'aae-btn-pro-group' %}
     {% else %}
         {% set pro_extra = '' %}
     {% endif %}
@@ -66,9 +62,7 @@
    {% endif %}
    {{ editor_attributes | default('') | raw }}>
 
-    {% if is_pro and pro_num == '4' %}<span class="aae-ripple-el"></span>{% endif %}
     {{ children_placeholder | raw }}
-    {% if is_pro and pro_num == '4' %}<strong class="aae-arrow-el"></strong>{% endif %}
 </a>
 
 

@@ -1,0 +1,29 @@
+{% import 'elementor/macros' as m %}
+{% set classes = ['aae-a-posts-grid', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}" 
+     data-id="{{ id }}" 
+     data-e-type="{{ type }}" 
+     data-columns="{{ settings.columns | default(3) }}" 
+     data-interaction-id="{{ interaction_id | default('') }}" 
+     {{- m.render_custom_attributes(settings) }}
+     {{ editor_attributes | default('') | raw }}>
+    {% if settings.posts_list is iterable and settings.posts_list | length > 0 %}
+        {% for post in settings.posts_list %}
+            <article class="aae-a-post-card">
+                <a href="{{ post.url }}" class="aae-a-post-image-link">
+                    <img src="{{ post.image }}" alt="{{ post.title }}" class="aae-a-post-thumbnail" />
+                </a>
+                <div class="aae-a-post-content">
+                    <span class="aae-a-post-date">{{ post.date }}</span>
+                    <h3 class="aae-a-post-title-link">
+                        <a href="{{ post.url }}">{{ post.title }}</a>
+                    </h3>
+                    <p class="aae-a-post-excerpt">{{ post.excerpt }}</p>
+                    <a href="{{ post.url }}" class="aae-a-post-readmore">Read More &rarr;</a>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="aae-a-posts-empty">No posts found.</div>
+    {% endif %}
+</div>

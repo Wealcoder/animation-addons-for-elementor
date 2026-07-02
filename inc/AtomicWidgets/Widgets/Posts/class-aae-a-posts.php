@@ -1,32 +1,46 @@
 <?php
 namespace WCF_ADDONS\AtomicWidgets\Widgets\Posts;
 
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
+require_once __DIR__ . '/class-aae-a-post-card.php';
+
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
-class AAE_A_Posts extends Atomic_Widget_Base {
-	use Has_Template;
+class AAE_A_Posts extends Atomic_Element_Base {
+	use Has_Element_Template;
+
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->meta( 'is_container', true );
+	}
+
+	public static function get_type() {
+		return 'e-aae-a-posts';
+	}
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-posts';
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Posts Grid', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Posts', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -38,140 +52,154 @@ class AAE_A_Posts extends Atomic_Widget_Base {
 	}
 
 	protected static function define_props_schema(): array {
-		$args = [
-			'post_type' => 'post',
-			'post_status' => 'publish',
-			'posts_per_page' => 6,
-			'orderby' => 'date',
-			'ignore_sticky_posts' => true,
-		];
-
-		$query = new \WP_Query( $args );
-		$posts_list = [];
-
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$image_url = get_the_post_thumbnail_url( null, 'medium_large' );
-				if ( empty($image_url) ) {
-					$image_url = \Elementor\Utils::get_placeholder_image_src();
-				}
-				$posts_list[] = [
-					'id' => get_the_ID(),
-					'title' => get_the_title(),
-					'excerpt' => wp_trim_words( get_the_excerpt(), 15 ),
-					'url' => get_permalink(),
-					'image' => $image_url,
-					'date' => get_the_date(),
-				];
-			}
-			wp_reset_postdata();
-		}
-
 		return [
-			'classes' => Classes_Prop_Type::make()->default( [] ),
-			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'columns' => Number_Prop_Type::make()->default( 3 ),
+			'classes'        => Classes_Prop_Type::make()->default( [] ),
+			'attributes'     => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+
+			'posts_layout'   => String_Prop_Type::make()->default( 'grid' ),
+			'columns'        => Number_Prop_Type::make()->default( 3 ),
 			'posts_per_page' => Number_Prop_Type::make()->default( 6 ),
-			'order_by' => String_Prop_Type::make()->default( 'date' ),
-			'posts_list' => Posts_List_Prop_Type::make()->default( $posts_list ),
+			'order_by'       => String_Prop_Type::make()->default( 'date' ),
+			'order'          => String_Prop_Type::make()->default( 'DESC' ),
+			'post_type'      => String_Prop_Type::make()->default( 'post' ),
+			'excerpt_length' => Number_Prop_Type::make()->default( 15 ),
+
+			'show_date'      => Boolean_Prop_Type::make()->default( false ),
+			'show_excerpt'   => Boolean_Prop_Type::make()->default( true ),
+			'show_read_more' => Boolean_Prop_Type::make()->default( true ),
+			'read_more_text' => String_Prop_Type::make()->default( 'Read More' ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
-				->set_label( __( 'Grid Settings', 'animation-addons-for-elementor' ) )
+				->set_label( __( 'Posts Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'content' )
 				->set_items( [
+					Select_Control::bind_to( 'posts_layout' )
+						->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'grid', 'label' => __( 'Grid', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'list', 'label' => __( 'List', 'animation-addons-for-elementor' ) ],
+						] ),
+
 					Number_Control::bind_to( 'columns' )
 						->set_label( __( 'Columns', 'animation-addons-for-elementor' ) )
-						->set_min( 1 )
-						->set_max( 6 ),
+						->set_meta( [ 'min' => 1, 'max' => 6, 'step' => 1 ] ),
 
 					Number_Control::bind_to( 'posts_per_page' )
 						->set_label( __( 'Posts Per Page', 'animation-addons-for-elementor' ) )
-						->set_min( 1 )
-						->set_max( 20 ),
+						->set_meta( [ 'min' => 1, 'max' => 24, 'step' => 1 ] ),
+
+					Number_Control::bind_to( 'excerpt_length' )
+						->set_label( __( 'Excerpt Length (words)', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'min' => 5, 'max' => 100, 'step' => 1 ] ),
+
+					Switch_Control::bind_to( 'show_date' )
+						->set_label( __( 'Show Date', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'show_excerpt' )
+						->set_label( __( 'Show Excerpt', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'show_read_more' )
+						->set_label( __( 'Read More Button', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'read_more_text' )
+						->set_label( __( 'Read More Text', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Query', 'animation-addons-for-elementor' ) )
+				->set_id( 'query' )
+				->set_items( [
+					Select_Control::bind_to( 'post_type' )
+						->set_label( __( 'Post Type', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'post', 'label' => __( 'Posts', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'page', 'label' => __( 'Pages', 'animation-addons-for-elementor' ) ],
+						] ),
 
 					Select_Control::bind_to( 'order_by' )
 						->set_label( __( 'Order By', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'date', 'label' => __( 'Date', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'title', 'label' => __( 'Title', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'rand', 'label' => __( 'Random', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'date',  'label' => __( 'Date',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'title', 'label' => __( 'Title',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'rand',  'label' => __( 'Random', 'animation-addons-for-elementor' ) ],
 						] ),
+
+					Select_Control::bind_to( 'order' )
+						->set_label( __( 'Order', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'DESC', 'label' => __( 'Descending', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'ASC',  'label' => __( 'Ascending',  'animation-addons-for-elementor' ) ],
+						] ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'settings' )
+				->set_items( [
+					Text_Control::bind_to( '_cssid' )
+						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
+						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
 		];
 	}
 
-	protected static function define_styles(): array {
+	protected function define_base_styles(): array {
 		return [
-			Style_Definition::make( 'columns' )
-				->add_variant(
-					Style_Variant::make( 'grid-template-columns' )
-						->set_selector( '& .aae-a-posts-grid' )
-						->set_css_property( 'grid-template-columns' )
-						->set_css_value( 'repeat({{VALUE}}, 1fr)' )
-				),
+			'base' => Style_Definition::make()
+				->add_variant( Style_Variant::make()->add_props( [
+					'display' => String_Prop_Type::generate( 'block' ),
+					'width'   => String_Prop_Type::generate( '100%' ),
+				] ) ),
 		];
 	}
 
-	protected function set_initial_state(): void {
-		parent::set_initial_state();
-
-		$this->add_style_dependencies( [
-			$this->get_style_handle('columns'),
-		] );
-	}
-
-	protected function get_templates(): array {
+	protected function define_default_children() {
 		return [
-			'elementor/elements/aae-a-posts' => __DIR__ . '/aae-a-posts.html.twig',
+			AAE_A_Post_Card::generate()
+				->editor_settings( [ 'title' => 'Post Card' ] )
+				->build(),
 		];
 	}
 
-	public function get_style_depends(): array {
-		return [ 'aae-a-posts-css' ];
+	protected function define_allowed_child_types() {
+		return [ 'e-aae-a-post-card' ];
 	}
 
-
-
-	public function get_script_depends(): array {
-		return [ 'aae-a-posts-js' ]; // Needs GSAP and ScrollTrigger via deps
-	}
-
-	// Dynamic data injection for Twig JS rendering natively!
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 
 		$args = [
-			'post_type' => 'post',
-			'post_status' => 'publish',
-			'posts_per_page' => isset($settings['posts_per_page']) ? (int) $settings['posts_per_page'] : 6,
-			'orderby' => isset($settings['order_by']) ? $settings['order_by'] : 'date',
+			'post_type'           => $settings['post_type'] ?? 'post',
+			'post_status'         => 'publish',
+			'posts_per_page'      => (int) ( $settings['posts_per_page'] ?? 6 ),
+			'orderby'             => $settings['order_by'] ?? 'date',
+			'order'               => $settings['order'] ?? 'DESC',
 			'ignore_sticky_posts' => true,
 		];
 
-		$query = new \WP_Query( $args );
+		$query      = new \WP_Query( $args );
 		$posts_list = [];
 
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
-				
-				// Get image url or placeholder
+
 				$image_url = get_the_post_thumbnail_url( null, 'medium_large' );
-				if ( empty($image_url) ) {
+				if ( empty( $image_url ) ) {
 					$image_url = \Elementor\Utils::get_placeholder_image_src();
 				}
 
 				$posts_list[] = [
-					'id' => get_the_ID(),
-					'title' => get_the_title(),
-					'excerpt' => wp_trim_words( get_the_excerpt(), 15 ),
-					'url' => get_permalink(),
-					'image' => $image_url,
-					'date' => get_the_date(),
+					'id'      => get_the_ID(),
+					'title'   => get_the_title(),
+					'excerpt' => wp_trim_words( get_the_excerpt(), (int) ( $settings['excerpt_length'] ?? 15 ) ),
+					'url'     => get_permalink(),
+					'image'   => $image_url,
+					'date'    => get_the_date(),
 				];
 			}
 			wp_reset_postdata();
@@ -181,35 +209,18 @@ class AAE_A_Posts extends Atomic_Widget_Base {
 
 		return $settings;
 	}
-}
 
-class Post_Item_Prop_Type extends \Elementor\Modules\AtomicWidgets\PropTypes\Base\Object_Prop_Type {
-	public static function get_key(): string {
-		return 'aae_post_item';
-	}
-	protected function define_shape(): array {
+	protected function get_templates(): array {
 		return [
-			'id' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type::make(),
-			'title' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::make(),
-			'excerpt' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::make(),
-			'url' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::make(),
-			'image' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::make(),
-			'date' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::make(),
+			'elementor/elements/aae-a-posts' => __DIR__ . '/aae-a-posts.html.twig',
 		];
 	}
-	public function validate( $value ): bool {
-		return true; // Bypass validation for dynamic internal data
-	}
-}
 
-class Posts_List_Prop_Type extends \Elementor\Modules\AtomicWidgets\PropTypes\Base\Array_Prop_Type {
-	public static function get_key(): string {
-		return 'aae_posts_list_array';
+	public function get_script_depends(): array {
+		return [ 'aae-a-posts-js' ];
 	}
-	protected function define_item_type(): \Elementor\Modules\AtomicWidgets\PropTypes\Contracts\Prop_Type {
-		return Post_Item_Prop_Type::make();
-	}
-	public function validate( $value ): bool {
-		return true; // Bypass validation for dynamic internal data
+
+	public function get_style_depends(): array {
+		return [ 'aae-a-posts-css' ];
 	}
 }
