@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .elementor-panel .elementor-element .icon .wcf::after {
   content: "";
   position: absolute;
@@ -32,7 +33,6 @@
 .elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-] {
   position: relative;
 }
-
 .elementor-panel :is(.elementor-panel-menu-item)[class*=elementor-panel-menu-item-settings-wcf-]:after {
   content: "";
   display: inline-block;
@@ -51,24 +51,20 @@
 .elementor-control-content .wcfaddon-pro-notice {
   padding: 15px 0;
 }
-
 .elementor-control-content .wcfaddon-pro-notice-content {
   text-align: center;
 }
-
 .elementor-control-content .wcfaddon-pro-notice-content h4 {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.4;
   margin-top: 20px;
 }
-
 .elementor-control-content .wcfaddon-pro-notice-content p {
   line-height: 1.8;
   font-size: 11px;
   margin-top: 5px;
 }
-
 .elementor-control-content .wcfaddon-pro-notice-content .elementor-button {
   background-color: #d30c5c;
   color: #fff;
@@ -92,10 +88,15 @@
   right: 15px;
 }
 
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.aae-icon-lock,
+.elementor-panel-heading-title.elementor-section-title span.wcfpro_text.aae-icon-unlock,
 .elementor-panel-heading-title.elementor-section-title span.wcfpro_text.eicon-lock {
   background: unset;
-  color: #000;
   padding: 0;
+  font-size: 30px;
+  line-height: 1;
+  color: #FC6848;
+  top: 9px;
 }
 
 .elementor-control-horizontal_scroll_breakpoint,
@@ -128,4 +129,41 @@
   pointer-events: none;
 }
 
-/*# sourceMappingURL=editor.css.map */
+@font-face {
+  font-family: "aae-icomoon";
+  src: url("../fonts/aae-icomoon.ttf?ualb3j") format("truetype"), url("../fonts/aae-icomoon.woff?ualb3j") format("woff"), url("../fonts/aae-icomoon.svg?ualb3j#aae-icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+[class^=aae-icon-], [class*=" aae-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "aae-icomoon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.aae-icon-unlock:before {
+  content: "󥢕";
+}
+
+.aae-icon-lock:before {
+  content: "󤤁";
+}
+
+/* Atomic V4 panel header: the .elementor-section-title scope above doesn't
+   apply (V4 headers don't carry that class), so size the lock/unlock glyph
+   here, parent-agnostic. Doubled vs the inherited ~11px → 22px. The Try link's
+   own text stays readable; only its leading glyph is enlarged. */
+.aae-icon-unlock:before,
+.aae-icon-lock:before {
+  font-size: 22px;
+  vertical-align: middle;
+}/*# sourceMappingURL=editor.css.map */

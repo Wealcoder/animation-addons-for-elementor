@@ -1,0 +1,177 @@
+/*
+ * AAE Atomic Nav — all styles.
+ *
+ * Dropdown content = a direct child of a nav-item WITH data-has-dropdown="true"
+ * that isn't the .aae-a-nav-item-label. Typically it's an Elementor core Flexbox
+ * the user styles themselves via the Style tab. This CSS only handles show/hide
+ * + positioning — decorative styling lives on the user's dropdown container.
+ */
+
+/* Selector for "dropdown content" — everything under a dropdown-enabled item
+ * except the label. Written verbose (no CSS var yet) for editor debuggability. */
+
+/* Elementor's atomic .e-con default is flex-direction: column with the
+ * same specificity as our .aae-a-nav rule, so we lose the cascade. Force
+ * with !important — nav is fundamentally a horizontal row and every
+ * downstream style relies on it. */
+.aae-a-nav {
+	position: relative !important;
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+	gap: 4px;
+}
+
+.aae-a-nav .aae-a-nav-item {
+	position: relative;
+	list-style: none;
+	width: auto;
+	flex: 0 0 auto;
+}
+
+/* Hide dropdown content by default. `display: none` combined with
+ * `position: absolute` on an atomic child (Flexbox) triggers a freeze in
+ * Elementor v4's atomic renderer on device switch; we hide via visibility
+ * + opacity + pointer-events instead, which keeps the element in the
+ * render tree and doesn't trigger the freeze. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+	position: absolute;
+	inset-block-start: 100%;
+	inset-inline-start: 0;
+	min-width: 200px;
+	z-index: 100;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 150ms ease, visibility 0s linear 150ms;
+}
+
+/* Show when frontend runtime toggles .is-open. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	transition: opacity 150ms ease, visibility 0s;
+}
+
+/* Nested sub-dropdown opens to the right. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+	inset-block-start: 0;
+	inset-inline-start: 100%;
+}
+
+/* Cursor pointer on items with dropdown enabled. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] {
+	cursor: pointer;
+}
+
+/* ══ CSS Dropdown Animations ══ */
+@keyframes aae-nav-grow-down {
+	0%   { transform: scaleY(0); }
+	80%  { transform: scaleY(1.05); }
+	100% { transform: scaleY(1); }
+}
+@keyframes aae-nav-rotate-3d {
+	0%   { transform: rotateX(-90deg); opacity: 0; }
+	70%  { transform: rotateX(20deg); }
+	100% { transform: rotateX(0deg); opacity: 1; }
+}
+@keyframes aae-nav-grow-out {
+	0%   { transform: scale(0); opacity: 0; }
+	80%  { transform: scale(1.05); }
+	100% { transform: scale(1); opacity: 1; }
+}
+@keyframes aae-nav-slide-item {
+	0%   { opacity: 0; transform: translateY(-16px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes aae-nav-rotate-item {
+	0%   { opacity: 0; transform: rotateX(-90deg); }
+	50%  { transform: rotateX(-20deg); }
+	100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+.aae-a-nav {
+	/* grow-down */
+	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-grow-down 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* rotate-3d */
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-rotate-3d 400ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* grow-out */
+	.aae-a-nav-item[data-dropdown-anim="grow-out"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-grow-out 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* slide-items — targets the children of the dropdown container. */
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > * {
+		animation: aae-nav-slide-item 300ms ease-out forwards;
+		opacity: 0;
+	}
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) { animation-delay: 240ms; }
+	/* rotate-items */
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > * {
+		animation: aae-nav-rotate-item 300ms ease-in-out forwards;
+		opacity: 0;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) { animation-delay: 240ms; }
+}
+
+/* ══ Editor UX ══
+ * 1. Hide Elementor's empty-container dropzone (class `.elementor-empty-view`,
+ *    inserted by atomic-element-empty-view.js) inside nav-items WITHOUT
+ *    has_dropdown=true — those items don't accept custom widgets, so the
+ *    dropzone is just visual noise.
+ * 2. Reveal the dropdown content for editing when the nav-item is the active
+ *    row in NavItemsControl (`.aae-editor-dropdown-open`), when the item
+ *    itself is selected in the preview (`.elementor-element-editable`),
+ *    when any descendant is being edited (`:has(.elementor-element-editable)`),
+ *    or when the panel-row Structure tree focuses a descendant. */
+
+/* 1. Hide dropzone in items that don't have has_dropdown=true. */
+.elementor-editor-active .aae-a-nav .aae-a-nav-item:not([data-has-dropdown="true"]) > .elementor-empty-view {
+	display: none;
+}
+
+/* 2. Reveal dropdown content for editing — TOP-LEVEL dropdowns. */
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}

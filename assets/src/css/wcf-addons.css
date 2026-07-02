@@ -2,6 +2,10 @@ button {
   cursor: pointer;
 }
 
+.wcf--text li {
+  list-style: unset !important;
+}
+
 .wcf--form-wrapper input[type=date],
 .wcf--form-wrapper input[type=email],
 .wcf--form-wrapper input[type=number],

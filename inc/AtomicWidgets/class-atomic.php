@@ -167,8 +167,16 @@ final class Atomic
 			'aae-a-icon-list-item',
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+<<<<<<< HEAD
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
+=======
+			'aae-a-offcanvas-panel',
+			'aae-a-timeline-item',
+			'aae-a-social-share-item',
+			'aae-a-nav-item',
+			'aae-a-nav-sub-item',
+>>>>>>> atomic4
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -383,26 +391,26 @@ final class Atomic
 	{
 		$this->widgets_registry = [
 
-			'aae-a-menu' => [
-				'label'        => 'Menu',
-				'description'  => 'A modern standard navigation menu with GSAP interactions.',
-				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'menu',
-					'nav',
-					'navigation',
-					'atomic',
-					'gsap',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
+			// 'aae-a-menu' => [
+			// 	'label'        => 'Menu',
+			// 	'description'  => 'A modern standard navigation menu with GSAP interactions.',
+			// 	'icon'         => 'eicon-nav-menu',
+			// 	'is_pro'       => false,
+			// 	'is_extension' => false,
+			// 	'is_upcoming'  => false,
+			// 	'default'      => true,
+			// 	'keywords'     => [
+			// 		'menu',
+			// 		'nav',
+			// 		'navigation',
+			// 		'atomic',
+			// 		'gsap',
+			// 	],
+			// 	'category'     => 'general',
+			// 	'order'        => 0,
+			// 	'demo_url'     => '',
+			// 	'doc_url'      => '',
+			// ],
 
 			'aae-a-post-title' => [
 				'label'        => 'Post Title',
@@ -446,6 +454,129 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-meta' => [
+				'label'        => 'Post Meta',
+				'description'  => 'Dynamically displays post author, date, comments, taxonomy, or custom fields in Elementor V4.',
+				'icon'         => 'eicon-post-info',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'meta',
+					'info',
+					'author',
+					'date',
+					'comments',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-meta-item' => [
+				'label'        => 'Post Meta Item',
+				'description'  => 'Internal child item for Post Meta.',
+				'icon'         => 'eicon-post-info',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post meta item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-loop-item' => [
+				'label'        => 'Loop Item',
+				'description'  => 'Container widget for Loop Grid items with default flex column layout.',
+				'icon'         => 'eicon-container',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'loop',
+					'item',
+					'container',
+					'flex',
+					'column',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+				'default_children' => [],
+			],
+
+			'aae-a-loop-layout' => [
+				'label'        => 'Loop Layout',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
+				'icon'         => 'eicon-loop-builder',
+				'keywords'     => [ 'loop', 'layout' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-pagination' => [
+				'label'        => 'Loop Pagination',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination',
+				'icon'         => 'eicon-ellipsis-h',
+				'keywords'     => [ 'loop', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-prev' => [
+				'label'        => 'Loop Previous',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Prev',
+				'icon'         => 'eicon-chevron-left',
+				'keywords'     => [ 'loop', 'prev', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-next' => [
+				'label'        => 'Loop Next',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Next',
+				'icon'         => 'eicon-chevron-right',
+				'keywords'     => [ 'loop', 'next', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-numbers' => [
+				'label'        => 'Loop Page Numbers',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
+				'icon'         => 'eicon-number-field',
+				'keywords'     => [ 'loop', 'numbers', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-loadmore' => [
+				'label'        => 'Loop Load More',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore',
+				'icon'         => 'eicon-plus-circle',
+				'keywords'     => [ 'loop', 'load more', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-arrow' => [
+				'label'        => 'Loop Arrow',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow',
+				'icon'         => 'eicon-chevron-right',
+				'keywords'     => [ 'loop', 'arrow', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-nav-wrap' => [
+				'label'        => 'Loop Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
+				'icon'         => 'eicon-navigation-horizontal',
+				'keywords'     => [ 'loop', 'nav', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
 				'description'  => 'A dynamic grid of recent posts with stagger animations.',
@@ -467,15 +598,33 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+<<<<<<< HEAD
 			'aae-a-post-card' => [
 				'label'        => 'Post Card (Internal)',
 				'description'  => 'Internal child card for the Posts Grid widget.',
 				'icon'         => 'eicon-post-list',
+=======
+			'aae-a-loop-grid' => [
+				'label'        => 'Loop Grid',
+				'description'  => 'Query posts and repeat a custom loop-item template per post (built from atomic widgets).',
+				'icon'         => 'eicon-loop-builder',
+>>>>>>> atomic4
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
+<<<<<<< HEAD
 				'keywords'     => [ 'post card', 'internal' ],
+=======
+				'keywords'     => [
+					'loop',
+					'grid',
+					'posts',
+					'query',
+					'template',
+					'dynamic',
+				],
+>>>>>>> atomic4
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
@@ -979,6 +1128,7 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+<<<<<<< HEAD
 			'aae-a-video-mask-btn' => [
 				'label'        => 'Video Mask Button (Internal)',
 				'description'  => 'Internal button container for Video Mask. Positioned via the native Style panel.',
@@ -1015,6 +1165,8 @@ final class Atomic
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
+=======
+>>>>>>> atomic4
 		];
 	}
 
@@ -1240,10 +1392,25 @@ final class Atomic
 		add_action('elementor/editor/before_enqueue_scripts', [$this, 'register_atomic_styles']);
 		add_action('elementor/preview/enqueue_styles', [$this, 'enqueue_atomic_preview_styles']);
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_atomic_preview_scripts']);
+		// Inside the preview iframe, force every Elementor per-document CSS to load
+		// after `editor-preview` (fixes the reload layout flash). Hook only fires in
+		// the preview because it's added from `elementor/preview/enqueue_styles`.
+		add_action('elementor/preview/enqueue_styles', function () {
+			add_action('wp_print_styles', [$this, 'fix_preview_css_order'], 0);
+		});
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
 
 		// AJAX endpoints for Editor previews
 		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
+
+		// Loop Grid: per-post data for the editor "full grid live" preview (the
+		// atomic preview is client-side and can't run our PHP WP_Query).
+		add_action('wp_ajax_aae_loop_post_data', [$this, 'ajax_loop_post_data']);
+
+		// Loop Grid: frontend paginated cells (AJAX + Load More). Available to
+		// logged-out visitors too, so both hooks are registered.
+		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
+		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 
 		// Seed defaults on first install (option doesn't exist yet).
 		$this->maybe_seed_widgets_defaults();
@@ -1339,8 +1506,18 @@ final class Atomic
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
 				'has_script' => false,
-				'style_handle' => 'aae-a-post-image-css',
-				'style_path' => '/assets/atomic/css/post-image.css',
+			],
+
+			'aae-a-post-meta' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta',
+				'file' => 'Widgets/PostMeta/class-aae-a-post-meta.php',
+				'has_script' => false,
+			],
+
+			'aae-a-post-meta-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta_Item',
+				'file' => 'Widgets/PostMeta/class-aae-a-post-meta-item.php',
+				'has_script' => false,
 			],
 
 			'aae-a-posts' => [
@@ -1356,6 +1533,62 @@ final class Atomic
 			'aae-a-post-card' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Post_Card',
 				'file'       => 'Widgets/Posts/class-aae-a-post-card.php',
+				'has_script' => false,
+			],
+
+			'aae-a-loop-grid' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-grid.php',
+				'script_handle' => 'aae-a-loop-grid-js',
+				'script_path' => '/assets/atomic/js/loop-grid.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-loop-grid-css',
+				'style_path' => '/assets/atomic/css/loop-grid.css',
+			],
+
+			'aae-a-loop-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-item.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-layout' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-layout.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-pagination.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-prev' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Prev',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-prev.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-next' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Next',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-next.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-numbers' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-numbers.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-loadmore' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-loadmore.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-arrow' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-arrow.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-nav-wrap' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-nav-wrap.php',
 				'has_script' => false,
 			],
 
@@ -1465,6 +1698,7 @@ final class Atomic
 				'has_script' => false,
 			],
 
+<<<<<<< HEAD
 			'aae-a-site-logo' => [
 				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
 				'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
@@ -1501,7 +1735,229 @@ final class Atomic
 			],
 
 			// Add new atomic widgets below...
+=======
+			'aae-a-nav' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav',
+			'file'          => 'Widgets/Nav/class-aae-a-nav.php',
+			'has_script'    => true,
+			'script_handle' => 'aae-a-nav-js',
+			'script_path'   => '/assets/atomic/js/nav.js',
+			'style_handle'  => 'aae-a-nav-css',
+			'style_path'    => '/assets/atomic/css/nav.css',
+		],
+		'aae-a-nav-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item',
+			'file'       => 'Widgets/Nav/class-aae-a-nav-item.php',
+			'has_script' => false,
+		],
+		'aae-a-nav-sub-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+			'file'       => 'Widgets/Nav/class-aae-a-nav-sub-item.php',
+			'has_script' => false,
+		],
+		// Add new atomic widgets below...
+>>>>>>> atomic4
 		];
+	}
+
+	/**
+	 * AJAX: per-post data for the Loop Grid editor "full grid live" preview.
+	 *
+	 * The atomic editor preview is client-side and never runs the element's PHP
+	 * WP_Query, so it natively shows ONE authored loop-item card. The editor JS
+	 * (loop-grid module) calls this to get the queried posts' data, then clones
+	 * the authored card into inert preview cells filled with each post's values.
+	 * Returns a lightweight array — no markup, no document, no print_elements.
+	 */
+	public function ajax_loop_post_data()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$query = new \WP_Query([
+			'post_type'           => isset($_POST['post_type']) ? sanitize_key(wp_unslash($_POST['post_type'])) : 'post',
+			'post_status'         => 'publish',
+			'posts_per_page'      => isset($_POST['posts_per_page']) ? absint($_POST['posts_per_page']) : 6,
+			'orderby'             => isset($_POST['order_by']) ? sanitize_key(wp_unslash($_POST['order_by'])) : 'date',
+			'order'               => isset($_POST['order']) ? (('asc' === sanitize_key(wp_unslash($_POST['order']))) ? 'ASC' : 'DESC') : 'DESC',
+			'ignore_sticky_posts' => true,
+		]);
+
+		$posts = [];
+		if ($query->have_posts()) {
+			while ($query->have_posts()) {
+				$query->the_post();
+				$posts[] = [
+					'title'   => get_the_title(),
+					'url'     => get_permalink(),
+					'image'   => get_the_post_thumbnail_url(null, 'large') ?: '',
+					'excerpt' => wp_strip_all_tags(get_the_excerpt()),
+				];
+			}
+			wp_reset_postdata();
+		}
+
+		wp_send_json_success(['posts' => $posts]);
+	}
+
+	/**
+	 * Frontend: render the loop-item cells for a given page of a specific Loop
+	 * Grid instance, WITH the authored atomic styles intact.
+	 *
+	 * Finds the loop-item element data inside the requesting document (by the
+	 * grid's element id), pushes the paged WP_Query onto the Render_Context stack
+	 * (keyed like AAE_A_Loop_Grid does), and renders the loop-item element — the
+	 * exact same path used server-side, so the markup + style classes match.
+	 *
+	 * Nonce: aae_loop_grid_front (public). Only reads published post content.
+	 */
+	public function ajax_loop_grid_page() {
+		check_ajax_referer('aae_loop_grid_front', 'nonce');
+
+		$post_id  = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+		$grid_id  = isset($_POST['grid_id']) ? sanitize_key(wp_unslash($_POST['grid_id'])) : '';
+		$paged    = isset($_POST['paged']) ? max(1, absint($_POST['paged'])) : 1;
+
+		if (! $post_id || ! $grid_id) {
+			wp_send_json_error(['message' => 'Missing post_id or grid_id.'], 400);
+		}
+
+		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
+		if (! $doc) {
+			wp_send_json_error(['message' => 'Document not found.'], 404);
+		}
+
+		$data = $doc->get_elements_data();
+
+		// Locate the loop-grid element (by id) and its loop-item descendant.
+		$grid_el = null;
+		$find_grid = function ($els) use (&$find_grid, &$grid_el, $grid_id) {
+			foreach ($els as $el) {
+				if (($el['id'] ?? '') === $grid_id && ($el['elType'] ?? '') === 'e-aae-a-loop-grid') {
+					$grid_el = $el;
+					return;
+				}
+				if (! empty($el['elements'])) {
+					$find_grid($el['elements']);
+					if ($grid_el) {
+						return;
+					}
+				}
+			}
+		};
+		$find_grid($data);
+
+		if (! $grid_el) {
+			wp_send_json_error(['message' => 'Loop grid not found.'], 404);
+		}
+
+		$item_el = null;
+		$find_item = function ($els) use (&$find_item, &$item_el) {
+			foreach ($els as $el) {
+				if (($el['elType'] ?? '') === 'e-aae-a-loop-item') {
+					$item_el = $el;
+					return;
+				}
+				if (! empty($el['elements'])) {
+					$find_item($el['elements']);
+					if ($item_el) {
+						return;
+					}
+				}
+			}
+		};
+		$find_item([$grid_el]);
+
+		if (! $item_el) {
+			wp_send_json_error(['message' => 'Loop item not found.'], 404);
+		}
+
+		// Build the paged query args from the grid's saved settings.
+		$gs  = $grid_el['settings'] ?? [];
+		$val = function ($k, $d) use ($gs) {
+			if (isset($gs[$k]['value'])) {
+				return $gs[$k]['value'];
+			}
+			if (isset($gs[$k]) && ! is_array($gs[$k])) {
+				return $gs[$k];
+			}
+			return $d;
+		};
+
+		$per_page   = (int) $val('posts_per_page', 6);
+		$query_args = [
+			'post_type'           => $val('post_type', 'post'),
+			'post_status'         => 'publish',
+			'posts_per_page'      => $per_page,
+			'orderby'             => $val('order_by', 'date'),
+			'order'               => ('asc' === strtolower($val('order', 'desc'))) ? 'ASC' : 'DESC',
+			'paged'               => $paged,
+			'ignore_sticky_posts' => true,
+		];
+
+		// Total pages (respects the same query).
+		$count     = new \WP_Query(array_merge($query_args, ['fields' => 'ids']));
+		$max_pages = max(1, (int) $count->max_num_pages);
+		wp_reset_postdata();
+
+		// Push context (same key the Loop Item reads) and render the item.
+		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class,
+			['query_args' => $query_args]
+		);
+
+		$item_obj = \Elementor\Plugin::$instance->elements_manager->create_element_instance($item_el);
+		ob_start();
+		if ($item_obj) {
+			$item_obj->print_element();
+		}
+		$html = ob_get_clean();
+
+		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::pop(
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class
+		);
+
+		wp_send_json_success([
+			'html'      => $html,
+			'paged'     => $paged,
+			'max_pages' => $max_pages,
+			'columns'   => (int) $val('columns', 3),
+		]);
+	}
+
+	/**
+	 * Make every Elementor document CSS in the editor preview depend on
+	 * `editor-preview`, so it prints AFTER it.
+	 *
+	 * The loop-item document's preview CSS (handle `local-<id>-preview-<device>`)
+	 * and post CSS (`elementor-post-<id>`) carry that document's atomic base
+	 * styles (`.e-flexbox-base { display:flex; flex-direction:row }` …). Elementor
+	 * enqueues them with frontend dependencies only, so on a hard reload they can
+	 * print BEFORE `editor-preview.min.css` and momentarily break the preview
+	 * layout. Patching their deps just before styles are output guarantees the
+	 * correct cascade. Runs on `wp_print_styles` (priority 0) inside the preview
+	 * iframe, when every handle is finally registered.
+	 */
+	public function fix_preview_css_order(): void {
+		if ( ! wp_style_is( 'editor-preview', 'registered' ) ) {
+			return;
+		}
+		$styles = wp_styles();
+		foreach ( $styles->registered as $handle => $style ) {
+			if ( 'editor-preview' === $handle ) {
+				continue;
+			}
+			// Elementor per-document CSS handles only.
+			if ( ! preg_match( '/^(local-\d+-preview|elementor-post-\d+)/', $handle ) ) {
+				continue;
+			}
+			if ( ! in_array( 'editor-preview', $style->deps, true ) ) {
+				$style->deps[] = 'editor-preview';
+			}
+		}
 	}
 
 	/**
@@ -1726,10 +2182,46 @@ final class Atomic
 	public function enqueue_atomic_preview_styles(): void {
 		$this->register_atomic_styles();
 
+		// In the editor preview iframe every atomic widget style MUST load AFTER
+		// Elementor's `editor-preview` stylesheet. Otherwise, on a hard reload the
+		// widget CSS can win source-order before editor-preview.css is parsed,
+		// briefly applying the wrong base rules (e.g.
+		// `.e-flexbox-base { display:flex; flex-direction:row }`) and breaking the
+		// layout until editor-preview settles. add_style_dependency() below makes
+		// WordPress emit our <link> after editor-preview's.
 		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) && ! empty( $widget_data['style_handle'] ) ) {
-				wp_enqueue_style( $widget_data['style_handle'] );
+			if ( $this->is_widget_active( $widget_id ) ) {
+				if ( ! empty( $widget_data['style_handle'] ) ) {
+					$this->add_style_dependency( $widget_data['style_handle'], 'editor-preview' );
+					wp_enqueue_style( $widget_data['style_handle'] );
+				}
 			}
+		}
+	}
+
+	/**
+	 * Append a dependency to an already-registered style handle.
+	 *
+	 * The atomic widget styles are registered once (with empty deps) by
+	 * register_atomic_styles(). In the preview iframe we need them to depend on
+	 * Elementor's `editor-preview` so they always print after it. Mutating the
+	 * registered handle's deps in place is cheaper (and avoids version churn)
+	 * than re-registering.
+	 *
+	 * @param string $handle Registered style handle.
+	 * @param string $dep    Dependency handle to add.
+	 */
+	private function add_style_dependency( string $handle, string $dep ): void {
+		if ( ! wp_style_is( $dep, 'registered' ) ) {
+			return;
+		}
+		$styles = wp_styles();
+		if ( ! isset( $styles->registered[ $handle ] ) ) {
+			return;
+		}
+		$registered = $styles->registered[ $handle ];
+		if ( ! in_array( $dep, $registered->deps, true ) ) {
+			$registered->deps[] = $dep;
 		}
 	}
 
@@ -2056,6 +2548,166 @@ final class Atomic
 			$version,
 			true
 		);
+<<<<<<< HEAD
+=======
+
+		// Expose bundled widget presets to the editor bridge so its panel UI
+		// (Apply Preset dropdown) can list and apply them. Keyed by widget type.
+		wp_localize_script(
+			'aae-atomic-editor',
+			'AAE_WIDGET_PRESETS',
+			$this->get_widget_presets()
+		);
+
+		// Loop Grid: ajax config for the editor "full grid live" preview module.
+		wp_localize_script(
+			'aae-atomic-editor',
+			'AAE_LOOP_GRID',
+			[
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce'   => wp_create_nonce('aae_loop_grid'),
+			]
+		);
+	}
+
+	/**
+	 * Scan every widget's presets/ folder and return the parsed JSON presets,
+	 * grouped by the widget type they belong to, so the editor can list the
+	 * presets relevant to the selected element.
+	 *
+	 * Two file formats are accepted:
+	 *   - Elementor native export: { content:[ <model> ], title, type, ... }
+	 *     (the user exports a flex container holding the design)
+	 *   - Plugin format:           { name, model:{...} }
+	 *
+	 * The exposed model is the root export element (e.g. an e-flexbox wrapper).
+	 * The editor unwraps a container wrapper on apply and places its children
+	 * at the selected element's position. The preset is keyed by the primary
+	 * atomic widget found inside (e.g. e-aae-a-advanced-heading) so it shows
+	 * when that widget is selected — not when a bare flexbox is selected.
+	 *
+	 * @return array<string, array<int, array>> elementType => preset[]
+	 */
+	private function get_widget_presets(): array
+	{
+		$presets = [];
+		
+		foreach ($this->get_available_widgets() as $widget_data) {
+			if (empty($widget_data['file'])) {
+				continue;
+			}
+
+			$widget_dir = wp_normalize_path(dirname(WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $widget_data['file']));
+			$preset_dir = $widget_dir . '/presets';
+
+			if (! is_dir($preset_dir)) {
+				continue;
+			}
+
+			foreach (glob($preset_dir . '/*.json') as $file) {
+				$raw = file_get_contents($file);
+				if (false === $raw) {
+					continue;
+				}
+
+				$data = json_decode($raw, true);
+				if (! is_array($data)) {
+					continue;
+				}
+
+				// Resolve the root model + name from either supported format.
+				$model = null;
+				$name  = basename($file, '.json');
+
+				if (! empty($data['model']) && is_array($data['model'])) {
+					// Plugin format.
+					$model = $data['model'];
+					if (isset($data['name'])) {
+						$name = (string) $data['name'];
+					}
+				} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
+					// Elementor native export: content[] holds top-level elements;
+					// the first is the wrapper we treat as the preset model.
+					$model = $data['content'][0];
+					if (! empty($data['title'])) {
+						$name = (string) $data['title'];
+					}
+				}
+
+				if (! $model) {
+					continue;
+				}
+
+				// Key by the primary atomic widget inside the model (so a
+				// flex-wrapped heading preset shows when a heading is selected),
+				// falling back to the model's own type.
+				$type = $this->detect_primary_widget_type($model);
+				if ('' === $type) {
+					continue;
+				}
+
+				$presets[$type][] = [
+					'id'    => sanitize_key(basename($file, '.json')),
+					'name'  => $name,
+					'model' => $model,
+				];
+			}
+		}
+
+		return $presets;
+	}
+
+	/**
+	 * Find the most relevant widget type a preset targets. If the root is a
+	 * layout container, descend to the first AAE atomic widget inside; else use
+	 * the root's own type. Returns the type string Elementor reports for the
+	 * element (elType for atomic elements, widgetType for classic widgets).
+	 *
+	 * @param array $model Element model.
+	 * @return string
+	 */
+	private function detect_primary_widget_type(array $model): string
+	{
+		$container_types = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
+
+		$root_type = $model['elType'] ?? '';
+		if ('widget' === $root_type && ! empty($model['widgetType'])) {
+			$root_type = $model['widgetType'];
+		}
+
+		// If the root isn't a container, it's the target itself.
+		if (! in_array($root_type, $container_types, true)) {
+			return $root_type;
+		}
+
+		// Descend breadth-first to the first AAE atomic widget.
+		$queue = $model['elements'] ?? [];
+
+		while (! empty($queue)) {
+			$node = array_shift($queue);
+			if (! is_array($node)) {
+				continue;
+			}
+
+			$type = $node['elType'] ?? '';
+			if ('widget' === $type && ! empty($node['widgetType'])) {
+				$type = $node['widgetType'];
+			}
+
+			if (is_string($type) && 0 === strpos($type, 'e-aae-a-')) {
+				return $type;
+			}
+
+			if (! empty($node['elements']) && is_array($node['elements'])) {
+				foreach ($node['elements'] as $child) {
+					$queue[] = $child;
+				}
+			}
+		}
+
+		// No AAE widget inside — fall back to the container type itself.
+		return $root_type;
+>>>>>>> atomic4
 	}
 }
 

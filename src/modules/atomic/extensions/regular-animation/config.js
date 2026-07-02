@@ -173,7 +173,6 @@ export const CUSTOM_PROPERTY_OPTIONS = [
 	{ value: 'repeatDelay', label: 'Repeat Delay', category: 'GSAP Core' },
 	{ value: 'yoyo', label: 'YoYo', category: 'GSAP Core' },
 	{ value: 'ease', label: 'Ease', category: 'GSAP Core' },
-	{ value: 'stagger', label: 'Stagger', category: 'GSAP Core' },
 	{ value: 'overwrite', label: 'Overwrite', category: 'GSAP Core' },
 	{ value: 'force3D', label: 'Force3D', category: 'GSAP Core' },
 ];

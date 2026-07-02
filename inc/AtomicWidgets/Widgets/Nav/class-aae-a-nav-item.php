@@ -6,6 +6,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -13,13 +14,19 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/*
+ * Structural note: the item's visible label is a PROP on this element
+ * (`text` + optional `link`), not a child paragraph widget. Dropdown
+ * sub-items are the item's direct children. This flattens the tree from
+ * Nav → item → nav-sub → sub-item (4 levels of Atomic_Element_Base with
+ * content — hangs the editor on device switch) down to Nav → item →
+ * sub-item (3 levels).
+ */
 class AAE_A_Nav_Item extends Atomic_Element_Base {
 	use Has_Element_Template;
 
@@ -50,11 +57,13 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
-			'classes'      => Classes_Prop_Type::make()->default( [] ),
-			'attributes'   => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'has_dropdown'        => Boolean_Prop_Type::make()->default( false ),
-			'trigger'             => String_Prop_Type::make()->default( 'click' ),
-			'dropdown_animation'  => String_Prop_Type::make()->default( 'gsap' ),
+			'classes'            => Classes_Prop_Type::make()->default( [] ),
+			'attributes'         => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'text'               => Html_V3_Prop_Type::make(),
+			'link'               => Link_Prop_Type::make(),
+			'has_dropdown'       => Boolean_Prop_Type::make()->default( false ),
+			'trigger'            => String_Prop_Type::make()->default( 'click' ),
+			'dropdown_animation' => String_Prop_Type::make()->default( 'gsap' ),
 		];
 	}
 
@@ -94,25 +103,14 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		$label = Atomic_Paragraph::generate()
-			->settings( [
-				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( 'Menu Item' ),
-					'children' => [],
-				] ),
-				'tag' => String_Prop_Type::generate( 'span' ),
-			] )
-			->build();
-
-		/* Sub-dropdown ships with every nav-item — CSS keeps it hidden until
-		 * the user toggles "Enable Dropdown" on (data-has-dropdown="true"). */
-		$sub = AAE_A_Nav_Sub::generate()->build();
-
-		return [ $label, $sub ];
+		return [];
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-heading', 'e-paragraph', 'e-svg', 'e-aae-a-nav-sub' ];
+		/* TEST: 'e-flexbox' added to see if core Elementor Flexbox at level 3
+		 * (Nav → item → flexbox → widgets) freezes device switch. If not,
+		 * we can drop it in as the mega-menu-capable dropdown container. */
+		return [ 'widget', 'e-aae-a-nav-sub-item', 'e-flexbox' ];
 	}
 
 	protected function define_default_html_tag() {

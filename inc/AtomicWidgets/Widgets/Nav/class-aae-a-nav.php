@@ -11,13 +11,12 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Elements\Flexbox\Flexbox;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
-require_once __DIR__ . '/class-aae-a-nav-sub.php';
-
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub;
+require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
+require_once __DIR__ . '/class-aae-a-nav-items-control.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -61,6 +60,14 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
+				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'menu_items' )
+				->set_items( [
+					AAE_A_Nav_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
 				->set_items( [
@@ -76,20 +83,39 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		/* Every nav-item already ships with a hidden nav-sub child via its own
-		 * define_default_children(). We flip has_dropdown=true on the 3rd item
-		 * so users see one open dropdown immediately as an example. */
-		$item_with_dropdown = AAE_A_Nav_Item::generate()
+		$make_item = function ( $title, $has_dropdown = false, array $children = [] ) {
+			$builder = AAE_A_Nav_Item::generate()
+				->editor_settings( [ 'title' => $title ] )
+				->settings( [
+					'text' => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( $title ),
+						'children' => [],
+					] ),
+					'has_dropdown' => Boolean_Prop_Type::generate( $has_dropdown ),
+				] );
+			if ( $children ) {
+				$builder->children( $children );
+			}
+			return $builder->build();
+		};
+
+		$make_sub_item = fn( $text ) => AAE_A_Nav_Sub_Item::generate()
+			->editor_settings( [ 'title' => $text ] )
 			->settings( [
-				'has_dropdown' => Boolean_Prop_Type::generate( true ),
+				'paragraph' => Html_V3_Prop_Type::generate( [
+					'content'  => String_Prop_Type::generate( $text ),
+					'children' => [],
+				] ),
 			] )
 			->build();
 
+		/* BISECT: item 3 has has_dropdown=true but empty children.
+		 * If freeze goes away, Flexbox in PHP default_children is the trigger. */
 		return [
-			AAE_A_Nav_Item::generate()->build(),
-			AAE_A_Nav_Item::generate()->build(),
-			$item_with_dropdown,
-			AAE_A_Nav_Item::generate()->build(),
+			$make_item( 'Menu Item 1' ),
+			$make_item( 'Menu Item 2' ),
+			$make_item( 'Menu Item 3', true ),
+			$make_item( 'Menu Item 4' ),
 		];
 	}
 
@@ -109,5 +135,9 @@ class AAE_A_Nav extends Atomic_Element_Base {
 
 	public function get_script_depends(): array {
 		return [ 'aae-a-nav-js' ];
+	}
+
+	public function get_style_depends(): array {
+		return [ 'aae-a-nav-css' ];
 	}
 }
