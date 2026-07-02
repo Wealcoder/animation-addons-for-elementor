@@ -6,7 +6,6 @@ build/
 assets/css/*
 assets/js/*
 log/
-composer.lock
 .DS_Store
 .project
 Thumbs.db
