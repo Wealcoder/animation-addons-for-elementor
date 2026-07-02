@@ -1,13 +1,30 @@
 import { register } from "@elementor/frontend-handlers";
 import "../scss/button.scss";
 
+// On the frontend the paragraph's span is a direct child of the button (no
+// wrapper). In the editor, Elementor wraps every nested atomic child in a
+// `display: contents` div for selection/dragging — that CSS is layout-only,
+// so the span still sits one DOM level deeper and `:scope > span` misses it.
+// Matching `.e-paragraph-base` directly (regardless of depth) works in both.
 const textFlipSetup = (container) => {
-  const spanEl = container.querySelector(".e-paragraph-base span, :scope > span");
+  const spanEl = container.querySelector(".e-paragraph-base");
   if (!spanEl) return;
-  if (!spanEl.dataset.text) {
-    spanEl.dataset.text = spanEl.textContent.trim();
-  }
+  spanEl.dataset.text = spanEl.textContent.trim();
 };
+
+// Re-run textFlipSetup when the child paragraph re-renders (e.g. live text
+// edits in the panel replace its DOM node), so data-text stays in sync.
+// Same rationale as hookChildReadyOnce() below, for the text-flip style.
+function hookTextFlipReadyOnce() {
+  if (window._aaeTextFlipHooked) return;
+  if (!window.elementorFrontend?.hooks) return;
+  window._aaeTextFlipHooked = true;
+
+  elementorFrontend.hooks.addAction("frontend/element_ready/e-paragraph", ($scope) => {
+    const btn = $scope?.[0]?.closest?.(".btn-text-flip");
+    if (btn) textFlipSetup(btn);
+  });
+}
 
 // Re-sync the visible clones in a btn-border-divide button from the live originals.
 const syncBorderDivideClones = (btn) => {
@@ -120,6 +137,7 @@ register({
       hookChildReadyOnce();
     } else if (element.classList.contains("btn-text-flip")) {
       textFlipSetup(element);
+      hookTextFlipReadyOnce();
     } else if (element.classList.contains("wcf-btn-mask")) {
       maskBtn(element);
     }
