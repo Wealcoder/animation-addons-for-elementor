@@ -2042,7 +2042,6 @@ final class Atomic
 			'html'      => $html,
 			'paged'     => $paged,
 			'max_pages' => $max_pages,
-			'columns'   => (int) $val('columns', 3),
 		]);
 	}
 

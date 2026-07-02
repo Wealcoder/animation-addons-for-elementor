@@ -4,7 +4,7 @@
  *
  * Structural container (Pro replica). Holds exactly one Loop Item, which repeats
  * per post at render. This element renders the `.aae-a-loop-grid` grid; the
- * columns count is read from the root Loop Grid via the Render_Context stack.
+ * column layout is flexbox-driven (each Loop Item's base style: flex 1 1 32%).
  *
  * @package AnimationAddonsForElementor
  */
@@ -90,14 +90,6 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 		];
 	}
 
-	/**
-	 * Expose the columns count (from the root Loop Grid's Render_Context) to the
-	 * twig so the grid renders the right column CSS var.
-	 */
-	protected function build_template_context(): array {
-		$ctx     = Render_Context::get( AAE_A_Loop_Grid::class );
-		$columns = isset( $ctx['columns'] ) ? (int) $ctx['columns'] : 3;
-
-		return array_merge( $this->build_base_template_context(), [ 'columns' => $columns ] );
-	}
+	// No custom template context: the column layout is flexbox-driven (the Loop
+	// Item's base style `flex: 1 1 32%`), so there is no columns CSS var to pass.
 }

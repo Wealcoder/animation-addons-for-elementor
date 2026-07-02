@@ -1,11 +1,10 @@
 /* ----------------------------------------------------------------------- *
  *  AAE Loop Grid — atomic nested element.
  *
- *  The grid + its per-item cells are emitted by the element's
- *  render_children_to_html() override (one cell per queried post). The columns
- *  count is also driven by the `columns` atomic Style_Definition
- *  (grid-template-columns: repeat(N, 1fr) on `& .aae-a-loop-grid`); the
- *  [data-columns] rules below are the static fallback / editor default.
+ *  The column layout is FLEXBOX-driven: the Loop Layout's base style is
+ *  display:flex + wrap and each Loop Item's base style is `flex: 1 1 32%`
+ *  (3-up by default), tuned from the Style panel. There is no columns
+ *  setting/CSS var. This file only carries what base styles cannot express.
  * ----------------------------------------------------------------------- */
 
 /* The grid container is `.aae-a-loop-grid` when the Loop Layout is present

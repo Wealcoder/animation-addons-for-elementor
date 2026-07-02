@@ -65,7 +65,6 @@ function readSettings(wrap) {
 		posts_per_page: parseInt(get('posts_per_page', 6), 10) || 6,
 		order_by: get('order_by', 'date'),
 		order: get('order', 'desc'),
-		columns: parseInt(get('columns', 3), 10) || 3,
 	};
 }
 
@@ -79,7 +78,7 @@ function readSettings(wrap) {
  * SET is a function of the query alone, so key only on that.
  */
 function signature(wrap, s) {
-	return [s.post_type, s.posts_per_page, s.order_by, s.order, s.columns].join('|');
+	return [s.post_type, s.posts_per_page, s.order_by, s.order].join('|');
 }
 
 /**
@@ -300,7 +299,6 @@ async function hydrate(wrap) {
 	if (wrap.__aaeSig === sig && ( ! clonesPresent || cloneStale )) {
 		const cached = cachedPosts(sig);
 		if (cached) {
-			grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 			buildClones(grid, item, cached, doc);
 			wrap.__aaeSingle = cached.length <= 1;
 			wrap.__aaeTitleSig = titleSig;
@@ -315,9 +313,6 @@ async function hydrate(wrap) {
 	wrap.__aaeBusy = true;
 	wrap.__aaeDirty = false;
 	wrap.__aaeSig = sig;
-
-	// Publish the column count as the CSS var the SCSS reads (matches frontend).
-	grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 
 	// If we can serve this query from cache, DON'T wipe the clones before the
 	// (now synchronous) rebuild — avoids a flash. Only clear up front when we
