@@ -322,6 +322,12 @@ body.aae-mobile-nav-scroll-lock {
 	width: 100%;
 	gap: 0 !important;
 
+	/* A styled dropdown can carry its own margin/padding. Fully remove closed
+	 * panels from grid layout so those authored styles cannot leave a gap. */
+	[hidden] {
+		display: none !important;
+	}
+
 	.aae-a-nav-item {
 		display: grid !important;
 		grid-template-columns: minmax(0, 1fr) auto !important;
@@ -331,7 +337,6 @@ body.aae-mobile-nav-scroll-lock {
 		align-items: center;
 		width: 100%;
 		flex: none;
-		border-block-end: 1px solid rgba(127, 127, 127, 0.18);
 	}
 
 	.aae-a-nav-item > .aae-a-nav-item-label {
@@ -339,28 +344,26 @@ body.aae-mobile-nav-scroll-lock {
 		min-width: 0;
 		display: flex;
 		align-items: center;
-		line-height: 1;
 	}
 
 	.aae-mobile-submenu-toggle {
 		grid-area: toggle;
 		justify-self: end;
+		align-self: center;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
-		padding: 10px;
 		border: 0;
 		background: transparent;
 		color: inherit;
 		cursor: pointer;
+		font: inherit;
+		line-height: 0;
 	}
 
 	.aae-mobile-submenu-icon {
 		display: block;
-		width: 100%;
-		height: 100%;
+		flex: none;
 		transition: transform 200ms ease;
 	}
 
@@ -374,10 +377,6 @@ body.aae-mobile-nav-scroll-lock {
 		pointer-events: none;
 		max-height: 0;
 		overflow: hidden;
-		margin: 0;
-		padding: 0 0 0 16px;
-		border: 0;
-		background: transparent;
 		transition: max-height 250ms ease, opacity 200ms ease, visibility 0s linear 250ms;
 	}
 
@@ -387,26 +386,33 @@ body.aae-mobile-nav-scroll-lock {
 		opacity: 1;
 		pointer-events: auto;
 		max-height: 2000px;
-		padding-block: 4px 14px;
 		transition-delay: 0s;
-	}
-
-	.aae-a-nav-item.is-mobile-submenu-open {
-		border-block-end-color: transparent;
-	}
-
-	.aae-a-nav-item.is-mobile-submenu-open > .aae-a-nav-item-label {
-		font-weight: 600;
-	}
-
-	.aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *,
-	.aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
-		margin-block: 0 10px;
 	}
 
 	.aae-a-nav-item.is-mobile-submenu-open > .aae-mobile-submenu-toggle .aae-mobile-submenu-icon {
 		transform: rotate(180deg);
 	}
+}
+
+/* Gap remains a normal Elementor grid property. This zero-specificity value
+ * is only the initial spacing; Nav Item → Layout → Gap overrides it. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-a-nav-item) {
+	column-gap: 8px;
+}
+
+/* Runtime buttons are only interaction wrappers. Keep the wrapper neutral so
+ * it cannot make dropdown rows taller than regular menu rows. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-toggle) {
+	min-inline-size: 0;
+	min-block-size: 0;
+	padding: 0;
+}
+
+/* Fallback only. The cloned Atomic SVG local class has higher specificity,
+ * so Width/Height values authored in Elementor override these dimensions. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-icon) {
+	inline-size: 20px;
+	block-size: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {
