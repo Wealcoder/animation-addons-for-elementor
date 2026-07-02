@@ -140,6 +140,7 @@ function addEditorCloneArrows( nav, arrowTemplate ) {
 	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 		const sub = getSub( item );
 		if ( ! sub ) return;
+		sub.hidden = true;
 		const button = document.createElement( 'button' );
 		button.type = 'button';
 		button.className = 'aae-mobile-submenu-toggle';
@@ -216,8 +217,14 @@ function initEditorMobilePreview( companion ) {
 				const item = button.closest( '.aae-a-nav-item' );
 				const open = ! item.classList.contains( 'is-mobile-submenu-open' );
 				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
-					.forEach( sibling => sibling.classList.remove( 'is-mobile-submenu-open' ) );
+					.forEach( sibling => {
+						sibling.classList.remove( 'is-mobile-submenu-open' );
+						const siblingSub = getSub( sibling );
+						if ( siblingSub ) siblingSub.hidden = true;
+					} );
 				item.classList.toggle( 'is-mobile-submenu-open', open );
+				const sub = getSub( item );
+				if ( sub ) sub.hidden = ! open;
 				button.setAttribute( 'aria-expanded', String( open ) );
 			} );
 		}, 60 );
@@ -400,7 +407,9 @@ register( {
 
 		const setSubmenu = ( item, open ) => {
 			const button = item.querySelector( ':scope > .aae-mobile-submenu-toggle' );
+			const sub = getSub( item );
 			item.classList.toggle( 'is-mobile-submenu-open', open );
+			if ( sub ) sub.hidden = ! open;
 			button?.setAttribute( 'aria-expanded', String( open ) );
 		};
 
@@ -412,6 +421,7 @@ register( {
 				if ( item.querySelector( ':scope > .aae-mobile-submenu-toggle' ) ) return;
 				const sub = getSub( item );
 				if ( ! sub ) return;
+				sub.hidden = true;
 				if ( ! sub.id ) sub.id = `aae-mobile-submenu-${ sourceId }-${ item.dataset.id }`;
 				const button = document.createElement( 'button' );
 				button.type = 'button';
@@ -433,8 +443,13 @@ register( {
 			} );
 		};
 
-		const removeArrows = () => nav.querySelectorAll( '.aae-mobile-submenu-toggle' )
-			.forEach( button => button.remove() );
+		const removeArrows = () => {
+			nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+				const sub = getSub( item );
+				if ( sub ) sub.removeAttribute( 'hidden' );
+			} );
+			nav.querySelectorAll( '.aae-mobile-submenu-toggle' ).forEach( button => button.remove() );
+		};
 
 		const closeDrawer = ( restoreFocus = true ) => {
 			companion.classList.remove( 'is-open' );
