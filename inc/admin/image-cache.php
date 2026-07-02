@@ -8,7 +8,9 @@
  * localStorage so each day it only warms once (configurable).
  */
 
-namespace WCF_ADDONS\Admin\Dashboard;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace WCF_ADDONS\Admin\Dashboard;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 

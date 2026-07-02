@@ -1,6 +1,8 @@
 <?php
 
-namespace WCF_ADDONS; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace WCF_ADDONS;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Plugin as ElementorPlugin;
 use WCF_ADDONS\INC\WPML as WPML;

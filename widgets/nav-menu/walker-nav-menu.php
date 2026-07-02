@@ -3,7 +3,9 @@
  * MailChimp api
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets\Nav_Menu;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WCF_ADDONS\WCF_Theme_Builder;
 
