@@ -135,9 +135,6 @@ class Plugin
 	 */
 	public function widget_scripts()
 	{
-
-		return null;
-
 		$scripts = array(
 			'wcf-addons-core' => array(
 				'handler' => 'wcf--addons',
@@ -175,8 +172,11 @@ class Plugin
 
 		wp_enqueue_script('wcf--addons');
 		// widget scripts
-		foreach (self::get_widget_scripts() as $key => $script) {
-			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
+		$widget_scripts = self::get_widget_scripts();
+		if (is_array($widget_scripts)) {
+			foreach ($widget_scripts as $key => $script) {
+				wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
+			}
 		}
 
 		if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.14', '<=')) {
@@ -194,9 +194,6 @@ class Plugin
 	 */
 	public static function widget_styles()
 	{
-
-		return null;
-
 		$styles = array(
 			'wcf-addons-core' => array(
 				'handler' => 'wcf--addons',
@@ -229,9 +226,6 @@ class Plugin
 	 */
 	public function editor_scripts()
 	{
-
-		return null;
-
 		wp_enqueue_script(
 			'aae-nested-sl',
 			WCF_ADDONS_URL . '/assets/build/modules/nested-slider/editor/index.js',
@@ -314,9 +308,6 @@ class Plugin
 	 */
 	public function editor_styles()
 	{
-
-		return null;
-
 		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), WCF_ADDONS_VERSION, 'all');
 	}
 

@@ -1564,7 +1564,7 @@ final class Atomic
 		add_action('elementor/preview/enqueue_styles', function () {
 			add_action('wp_print_styles', [$this, 'fix_preview_css_order'], 0);
 		});
-		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts']);
+		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts'], 100);
 
 		// AJAX endpoints for Editor previews
 		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
@@ -1917,7 +1917,6 @@ final class Atomic
 				'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
 				'script_handle' => 'aae-a-progressbar-js',
 				'script_path'   => '/assets/atomic/js/progressbar.js',
-				'script_deps'   => ['progressbar'],
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
 				'style_path'    => '/assets/atomic/js/progressbar.css',
@@ -2854,6 +2853,8 @@ final class Atomic
 	 */
 	public function enqueue_atomic_editor_scripts(): void
 	{
+		$this->guard_elementor_core_atomic_types();
+
 		$suffix = $this->is_dev_environment() ? '' : '.min';
 		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
 		$file_path = WCF_ADDONS_PATH . $path;
@@ -2889,6 +2890,47 @@ final class Atomic
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce'   => wp_create_nonce('aae_loop_grid'),
 			]
+		);
+	}
+
+	/**
+	 * Elementor 4.1 throws when its core Atomic views were already registered.
+	 * Make only the two Elementor-owned registrations idempotent; all custom
+	 * element type collisions continue to throw normally.
+	 */
+	private function guard_elementor_core_atomic_types(): void
+	{
+		$handle = 'elementor-atomic-widgets-editor';
+
+		if (! wp_script_is($handle, 'enqueued')) {
+			return;
+		}
+
+		wp_add_inline_script(
+			$handle,
+			<<<'JS'
+(function () {
+	var manager = window.elementor && window.elementor.elementsManager;
+	if (! manager || manager.__aaeCoreAtomicGuard) {
+		return;
+	}
+
+	var original = manager.registerElementType;
+	manager.registerElementType = function (element) {
+		var type = element && typeof element.getType === 'function' ? element.getType() : '';
+		if (
+			(type === 'e-div-block' || type === 'e-flexbox') &&
+			this.elementTypes && this.elementTypes[type]
+		) {
+			return this.elementTypes[type];
+		}
+
+		return original.call(this, element);
+	};
+	manager.__aaeCoreAtomicGuard = true;
+}());
+JS,
+			'before'
 		);
 	}
 
