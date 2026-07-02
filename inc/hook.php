@@ -99,6 +99,17 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
     }
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
+
+// Temporary test script
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_script(
+        'aae-test-native-widget',
+        WCF_ADDONS_URL . 'public/test/widget-using-native-widget.js',
+        [],
+        '1.0.0',
+        true
+    );
+});
 // post reaction ajax handeler
 
 if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
