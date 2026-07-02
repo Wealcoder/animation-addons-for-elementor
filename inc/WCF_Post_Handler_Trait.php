@@ -465,8 +465,8 @@ trait WCF_Post_Handler_Trait
 						<?php
 						$date = get_the_date();
 						/** This filter is documented in wp-includes/general-template.php */
-						// PHPCS - The date is safe.
-						echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+						echo esc_html( apply_filters('the_date', $date, get_option('date_format'), '', '') );
 						?>
 					</span>
 				</div>
@@ -482,9 +482,8 @@ trait WCF_Post_Handler_Trait
 				<?php
 				$date = get_the_date();
 				/** This filter is documented in wp-includes/general-template.php */
-				// PHPCS - The date is safe.
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-				echo apply_filters('the_date', $date, get_option('date_format'), '', ''); 
+				echo esc_html( apply_filters('the_date', $date, get_option('date_format'), '', '') );
 				?>
 			</span>
 		<?php
