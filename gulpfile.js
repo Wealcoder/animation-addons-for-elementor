@@ -130,7 +130,6 @@ gulp.task('zip', () => {
         '!components.cptBuilder.json',
         '!components.dashboard.json',
         '!components.pageImport.json',
-        '!composer.json',
         '!gulpfile.js',
         '!jsconfig.json',
         '!package-lock.json',
