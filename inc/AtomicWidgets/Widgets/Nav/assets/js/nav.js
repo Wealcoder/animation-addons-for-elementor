@@ -10,12 +10,16 @@ function isEditor() {
 		window.elementorFrontend?.isEditMode?.() === true;
 }
 
+/* Dropdown content = the first direct child of the nav-item that isn't the
+ * label span/anchor. Typically an Elementor Flexbox the user styles themselves. */
 function getSub( item ) {
-	return item.querySelector( ':scope > .aae-a-nav-sub' );
+	return item.querySelector( ':scope > :not(.aae-a-nav-item-label)' );
 }
 
 function isNested( item ) {
-	return !! item.parentElement?.closest( '.aae-a-nav-sub' );
+	return !! item.parentElement?.closest(
+		'.aae-a-nav-item[data-has-dropdown="true"]'
+	);
 }
 
 function getAnim( item ) {
@@ -167,7 +171,7 @@ register( {
 			/* Only handle click-trigger dropdown items; let leaves navigate normally. */
 			if ( item.dataset.hasDropdown !== 'true' || item.dataset.trigger !== 'click' ) return;
 
-			const ownSub = item.querySelector( ':scope > .aae-a-nav-sub' );
+			const ownSub = getSub( item );
 			if ( ownSub && ownSub.contains( e.target ) ) return;
 
 			const wasOpen = item.classList.contains( 'is-open' );

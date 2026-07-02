@@ -179,24 +179,6 @@ final class Atomic
 			'aae-a-timeline-item',
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
-			'aae-a-nav-sub',
-			'aae-a-loop-item',
-			'aae-a-loop-layout',
-			'aae-a-loop-pagination',
-			'aae-a-loop-prev',
-			'aae-a-loop-next',
-			'aae-a-loop-numbers',
-			'aae-a-loop-loadmore',
-			'aae-a-loop-arrow',
-			'aae-a-loop-nav-wrap',
-			// Loop Grid current-post building blocks: the Loop Grid seeds these as
-			// its default loop-item children, so they must always be registered
-			// (otherwise the editor throws ElementTypeNotFound on drop and the
-			// frontend can't resolve the featured image / title per post).
-			'aae-a-post-image',
-			'aae-a-post-title',
-			'aae-a-post-meta',
-			'aae-a-post-meta-item',
 			'aae-a-nav-sub-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
@@ -1106,20 +1088,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-nav-sub' => [
-				'label'        => 'Nav Dropdown (Internal)',
-				'description'  => 'Internal dropdown container for Nav.',
-				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'nav sub', 'dropdown', 'internal' ],
-				'category'     => 'general',
-				'order'        => 17,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
 		];
 	}
 
@@ -1727,11 +1695,6 @@ final class Atomic
 		'aae-a-nav-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item',
 			'file'       => 'Widgets/Nav/class-aae-a-nav-item.php',
-			'has_script' => false,
-		],
-		'aae-a-nav-sub' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub',
-			'file'       => 'Widgets/Nav/class-aae-a-nav-sub.php',
 			'has_script' => false,
 		],
 		'aae-a-nav-sub-item' => [

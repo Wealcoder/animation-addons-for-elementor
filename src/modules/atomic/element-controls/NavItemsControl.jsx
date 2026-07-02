@@ -1,5 +1,3 @@
-
-
 /* eslint-env browser */
 /* eslint-disable react/prop-types */
 
@@ -9,25 +7,19 @@
  * Registered under the type id 'aae-nav-items' (see ./index.js). The PHP side
  * (AAE_A_Nav_Items_Control) places it inside the nav widget's panel.
  *
- * Mirrors SlidesControl in spirit but the nav contains nav-items DIRECTLY —
- * no intermediate track container — so this is a flat list against the nav's
- * own elements collection. Same UX:
- *   - Click a row  → expand it (rename field).
- *   - "+" button   → append a new nav-item.
- *   - ⧉ Duplicate  → clone that nav-item (with its children, i.e. its sub-dropdown).
- *   - × Remove     → delete (hidden when only one item remains).
- *   - Drag a row   → reorder.
+ * Flat structure: Nav → nav-item → nav-sub-item (leaf widget). The label lives
+ * as a `text` prop on the nav-item itself, and dropdown sub-items are the
+ * nav-item's direct children. This avoids the 4-level Atomic_Element_Base tree
+ * (Nav → item → nav-sub → sub-item) that hangs the editor on device switch.
  */
 
 import * as React from 'react';
 import {
 	createElements,
 	duplicateElements,
-	generateElementId,
 	getContainer,
 	moveElements,
 	removeElements,
-	replaceElement,
 	updateElementEditorSettings,
 	updateElementSettings,
 } from '@elementor/editor-elements';
@@ -52,7 +44,6 @@ import {
 } from '@elementor/ui';
 
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
-const NAV_SUB_TYPE = 'e-aae-a-nav-sub';
 const NAV_SUB_ITEM_TYPE = 'e-aae-a-nav-sub-item';
 
 const prop = ( type, value ) => ( { $$type: type, value } );
@@ -69,44 +60,32 @@ function readProp( value, fallback = '' ) {
 	return value;
 }
 
-function findChild( parentId, type ) {
-	const children = getContainer( parentId )?.model?.get?.( 'elements' );
-	let found = null;
-
-	children?.each?.( ( model ) => {
-		const modelType = model.get( 'widgetType' ) || model.get( 'elType' );
-		if ( ! found && modelType === type ) {
-			found = model.get( 'id' );
-		}
-	} );
-
-	return found;
-}
-
 function syncEditorDropdownPreview( navId, itemId ) {
-	const apply = () => {
-		const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
-		const nav = previewDocument?.querySelector( `.aae-a-nav[data-id="${ navId }"]` );
-		if ( ! nav ) {
-			return;
-		}
+	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
+	const nav = previewDocument?.querySelector( `.aae-a-nav[data-id="${ navId }"]` );
+	if ( ! nav ) {
+		return;
+	}
 
-		nav.querySelectorAll( ':scope > .aae-a-nav-item.aae-editor-dropdown-open' )
-			.forEach( ( item ) => item.classList.remove( 'aae-editor-dropdown-open' ) );
+	const currentlyOpen = nav.querySelector(
+		':scope > .aae-a-nav-item.aae-editor-dropdown-open'
+	);
+	const currentOpenId = currentlyOpen?.getAttribute( 'data-id' ) || null;
+	if ( currentOpenId === ( itemId || null ) ) {
+		return;
+	}
 
-		if ( itemId ) {
-			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` )
-				?.classList.add( 'aae-editor-dropdown-open' );
-		}
-	};
-
-	apply();
-	window.setTimeout( apply, 80 );
+	if ( currentlyOpen ) {
+		currentlyOpen.classList.remove( 'aae-editor-dropdown-open' );
+	}
+	if ( itemId ) {
+		nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` )
+			?.classList.add( 'aae-editor-dropdown-open' );
+	}
 }
 
-function buildDropdownItemModel( text = 'Dropdown Item', url = '' ) {
+function buildSubItemModel( text = 'Dropdown Item', url = '' ) {
 	return {
-		id: generateElementId(),
 		elType: 'widget',
 		widgetType: NAV_SUB_ITEM_TYPE,
 		editor_settings: { title: text },
@@ -131,39 +110,26 @@ function buildDropdownItemModel( text = 'Dropdown Item', url = '' ) {
 	};
 }
 
-function buildMenuLabelModel( text = 'Menu Item' ) {
+function buildNavItemModel( position ) {
 	return {
-		id: generateElementId(),
-		elType: 'widget',
-		widgetType: 'e-paragraph',
-		editor_settings: { title: text },
+		elType: NAV_ITEM_TYPE,
+		editor_settings: { title: `Menu Item ${ position }` },
 		settings: {
-			paragraph: prop( 'html-v3', {
-				content: prop( 'string', text ),
+			text: prop( 'html-v3', {
+				content: prop( 'string', `Menu Item ${ position }` ),
 				children: [],
 			} ),
-			tag: prop( 'string', 'span' ),
+			has_dropdown: prop( 'boolean', false ),
+			trigger: prop( 'string', 'click' ),
+			dropdown_animation: prop( 'string', 'gsap' ),
 		},
 		elements: [],
-		isInner: false,
-		styles: [],
-		interactions: [],
-		version: '0.0',
-	};
-}
-
-function buildDropdownModel() {
-	return {
-		elType: NAV_SUB_TYPE,
-		elements: [
-			buildDropdownItemModel(),
-			buildDropdownItemModel(),
-			buildDropdownItemModel(),
-		],
 	};
 }
 
 function useNavItems( navId ) {
+	const cacheRef = React.useRef( { signature: null, value: [] } );
+
 	return useListenTo(
 		[
 			v1ReadyEvent(),
@@ -178,42 +144,39 @@ function useNavItems( navId ) {
 			const children = getContainer( navId )?.model?.get?.( 'elements' );
 
 			if ( ! children ) {
-				return [];
+				if ( cacheRef.current.signature !== '' ) {
+					cacheRef.current = { signature: '', value: [] };
+				}
+				return cacheRef.current.value;
 			}
 
-			return children
-				.filter( ( model ) =>
-					( model.get( 'widgetType' ) || model.get( 'elType' ) ) === NAV_ITEM_TYPE
-				)
-				.map( ( model ) => ( {
-					id: model.get( 'id' ),
-					editorSettings: model.get( 'editor_settings' ) || {},
-				} ) );
+			const next = [];
+			const signatureParts = [];
+			children.each( ( model ) => {
+				if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
+					return;
+				}
+				const id = model.get( 'id' );
+				const editorSettings = model.get( 'editor_settings' ) || {};
+				next.push( { id, editorSettings } );
+				signatureParts.push( `${ id }:${ editorSettings.title || '' }` );
+			} );
+
+			const signature = signatureParts.join( '|' );
+			if ( cacheRef.current.signature === signature ) {
+				return cacheRef.current.value;
+			}
+			cacheRef.current = { signature, value: next };
+			return next;
 		},
 		[ navId ]
 	);
-}
-
-function buildNavItemModel( position ) {
-	return {
-		elType: NAV_ITEM_TYPE,
-		editor_settings: { title: `Menu Item ${ position }` },
-		settings: {
-			has_dropdown: { $$type: 'boolean', value: false },
-			trigger: { $$type: 'string', value: 'click' },
-			dropdown_animation: { $$type: 'string', value: 'gsap' },
-		},
-		elements: [ buildMenuLabelModel() ],
-	};
 }
 
 export function NavItemsControl( { label } ) {
 	const { element } = useElement();
 	const navId = element.id;
 
-	// Direct children of the nav of type nav-item — useElementChildren accepts
-	// a parent-type → child-type map; for our flat hierarchy the nav itself
-	// is both the navId and the parent type that contains the items.
 	const sourceItems = useNavItems( navId );
 	const [ items, setItems ] = React.useState( sourceItems );
 
@@ -233,7 +196,7 @@ export function NavItemsControl( { label } ) {
 
 	React.useEffect( () => {
 		syncEditorDropdownPreview( navId, expandedId );
-	}, [ navId, expandedId, sourceItems ] );
+	}, [ navId, expandedId ] );
 
 	const getNavContainer = () => getContainer( navId );
 
@@ -307,8 +270,6 @@ export function NavItemsControl( { label } ) {
 
 		const nav = getNavContainer();
 		const movedElement = getContainer( movedId );
-		/* Move the nav-item container itself. Elementor serializes its complete
-		 * model here, so its paragraph, link and dropdown subtree travel with it. */
 		if ( nav && movedElement && movedElement.parent?.id === nav.id ) {
 			moveElements( {
 				title:    'Menu Item',
@@ -434,15 +395,15 @@ export function NavItemsControl( { label } ) {
 
 							<Collapse in={ isExpanded } unmountOnExit>
 								<Box sx={ { px: 1.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider' } }>
-					<NavItemFields
-						elementId={ row.id }
-						fallbackTitle={ row.title }
-						onTitleChange={ ( title ) => setItems( ( current ) => current.map( ( item ) =>
-							item.id === row.id
-								? { ...item, editorSettings: { ...item.editorSettings, title } }
-								: item
-						) ) }
-					/>
+									<NavItemFields
+										elementId={ row.id }
+										fallbackTitle={ row.title }
+										onTitleChange={ ( title ) => setItems( ( current ) => current.map( ( item ) =>
+											item.id === row.id
+												? { ...item, editorSettings: { ...item.editorSettings, title } }
+												: item
+										) ) }
+									/>
 								</Box>
 							</Collapse>
 						</Box>
@@ -464,35 +425,22 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 			commandEndEvent( 'document/elements/set-settings' ),
 		],
 		() => {
-			const labelId = findChild( elementId, 'e-paragraph' );
-			const label = labelId ? getContainer( labelId ) : null;
-			const paragraph = readProp( label?.settings?.get?.( 'paragraph' ), {} );
-			const link = readProp( label?.settings?.get?.( 'link' ), {} );
+			const container = getContainer( elementId );
+			const text = readProp( container?.settings?.get?.( 'text' ), {} );
+			const link = readProp( container?.settings?.get?.( 'link' ), {} );
 
 			return {
-				labelId,
-				title: readProp( paragraph?.content, '' ) || fallbackTitle,
-				url: readProp( link?.destination, '' ),
-				hasDropdown: readProp(
-					getContainer( elementId )?.settings?.get?.( 'has_dropdown' ),
-					false
-				),
-				trigger: readProp(
-					getContainer( elementId )?.settings?.get?.( 'trigger' ),
-					'click'
-				),
-				dropdownAnimation: readProp(
-					getContainer( elementId )?.settings?.get?.( 'dropdown_animation' ),
-					'gsap'
-				),
-				dropdownId: findChild( elementId, NAV_SUB_TYPE ),
+				title:             readProp( text?.content, '' ) || fallbackTitle,
+				url:               readProp( link?.destination, '' ),
+				hasDropdown:       readProp( container?.settings?.get?.( 'has_dropdown' ), false ),
+				trigger:           readProp( container?.settings?.get?.( 'trigger' ), 'click' ),
+				dropdownAnimation: readProp( container?.settings?.get?.( 'dropdown_animation' ), 'gsap' ),
 			};
 		},
 		[ elementId, fallbackTitle ]
 	);
 	const [ titleValue, setTitleValue ] = React.useState( data.title );
 	const [ dropdownEnabled, setDropdownEnabled ] = React.useState( data.hasDropdown );
-	const [ dropdownId, setDropdownId ] = React.useState( data.dropdownId );
 	const [ editingDropdown, setEditingDropdown ] = React.useState( false );
 	const [ trigger, setTrigger ] = React.useState( data.trigger );
 	const [ dropdownAnimation, setDropdownAnimation ] = React.useState( data.dropdownAnimation );
@@ -506,12 +454,6 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 	}, [ data.hasDropdown ] );
 
 	React.useEffect( () => {
-		if ( data.dropdownId ) {
-			setDropdownId( data.dropdownId );
-		}
-	}, [ data.dropdownId ] );
-
-	React.useEffect( () => {
 		setTrigger( data.trigger );
 	}, [ data.trigger ] );
 
@@ -522,18 +464,10 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 	const updateTitle = ( title ) => {
 		setTitleValue( title );
 		onTitleChange( title || 'Menu Item' );
-		if ( ! data.labelId ) {
-			updateElementEditorSettings( {
-				elementId,
-				settings: { title: title || 'Menu Item' },
-			} );
-			return;
-		}
-
 		updateElementSettings( {
-			id: data.labelId,
+			id: elementId,
 			props: {
-				paragraph: prop( 'html-v3', {
+				text: prop( 'html-v3', {
 					content: prop( 'string', title ),
 					children: [],
 				} ),
@@ -546,12 +480,8 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 	};
 
 	const updateLink = ( url ) => {
-		if ( ! data.labelId ) {
-			return;
-		}
-
 		updateElementSettings( {
-			id: data.labelId,
+			id: elementId,
 			props: {
 				link: url ? prop( 'link', {
 					destination: prop( 'url', url ),
@@ -565,18 +495,28 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 	const toggleDropdown = ( enabled ) => {
 		setDropdownEnabled( enabled );
 
-		if ( enabled && ! dropdownId ) {
+		if ( enabled ) {
 			const container = getContainer( elementId );
-			if ( container ) {
-				const result = createElements( {
+			const existingChildren = container?.model?.get?.( 'elements' );
+			const hasAny = existingChildren ? existingChildren.length > 0 : false;
+			if ( container && ! hasAny ) {
+				/* Create an EMPTY core Flexbox as the dropdown wrapper. User
+				 * fills it with widgets (or clicks "Add dropdown item" in this
+				 * panel). Nested `elements` in createElements silently fails
+				 * for atomic containers, so we ship empty and let the user
+				 * populate it themselves. */
+				createElements( {
 					title: 'Dropdown',
-					subtitle: 'Dropdown content added',
-					elements: [ { container, model: buildDropdownModel() } ],
+					subtitle: 'Dropdown added',
+					elements: [ {
+						container,
+						model: {
+							elType: 'e-flexbox',
+							editor_settings: { title: 'Dropdown' },
+						},
+						options: { at: 0 },
+					} ],
 				} );
-				const createdId = result?.createdElements?.[ 0 ]?.containerId;
-				if ( createdId ) {
-					setDropdownId( createdId );
-				}
 			}
 		}
 
@@ -655,7 +595,7 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 					</Select>
 				</>
 			) }
-			{ dropdownEnabled && dropdownId && (
+			{ dropdownEnabled && (
 				<Button
 					size="tiny"
 					variant="outlined"
@@ -664,14 +604,45 @@ function NavItemFields( { elementId, fallbackTitle, onTitleChange } ) {
 					{ editingDropdown ? 'Close dropdown content' : 'Edit dropdown content' }
 				</Button>
 			) }
-			{ dropdownEnabled && dropdownId && editingDropdown && (
-				<DropdownItemsFields dropdownId={ dropdownId } />
+			{ dropdownEnabled && editingDropdown && (
+				<DropdownItemsFields navItemId={ elementId } />
 			) }
 		</Stack>
 	);
 }
 
-function DropdownItemsFields( { dropdownId } ) {
+function DropdownItemsFields( { navItemId } ) {
+	/* Sub-items live inside a container (typically Elementor's core Flexbox)
+	 * that sits as a child of the nav-item. This finds that container so
+	 * add/edit/remove operate one level deeper than the nav-item itself. */
+	const dropdownContainerId = useListenTo(
+		[
+			v1ReadyEvent(),
+			commandEndEvent( 'document/elements/create' ),
+			commandEndEvent( 'document/elements/delete' ),
+			commandEndEvent( 'document/elements/duplicate' ),
+		],
+		() => {
+			const children = getContainer( navItemId )?.model?.get?.( 'elements' );
+			if ( ! children ) {
+				return null;
+			}
+			let found = null;
+			children.each( ( model ) => {
+				if ( found ) {
+					return;
+				}
+				const type = model.get( 'widgetType' ) || model.get( 'elType' );
+				/* Prefer the first non-sub-item child — that's the container. */
+				if ( type !== NAV_SUB_ITEM_TYPE ) {
+					found = model.get( 'id' );
+				}
+			} );
+			return found;
+		},
+		[ navItemId ]
+	);
+
 	const sourceItems = useListenTo(
 		[
 			v1ReadyEvent(),
@@ -682,17 +653,20 @@ function DropdownItemsFields( { dropdownId } ) {
 			commandEndEvent( 'document/elements/set-settings' ),
 		],
 		() => {
-			const children = getContainer( dropdownId )?.model?.get?.( 'elements' );
+			/* Read sub-items from the dropdown container if it exists;
+			 * otherwise fall back to nav-item's direct children (legacy). */
+			const parentId = dropdownContainerId || navItemId;
+			const children = getContainer( parentId )?.model?.get?.( 'elements' );
 			if ( ! children ) {
 				return [];
 			}
 
-			return children
-				.filter( ( model ) => {
-					const type = model.get( 'widgetType' ) || model.get( 'elType' );
-					return type === NAV_SUB_ITEM_TYPE || type === 'e-paragraph';
-				} )
-				.map( ( model, index ) => {
+			const out = [];
+			children.each( ( model, index ) => {
+				const type = model.get( 'widgetType' ) || model.get( 'elType' );
+				if ( type !== NAV_SUB_ITEM_TYPE ) {
+					return;
+				}
 				const id = model.get( 'id' );
 				const paragraph = readProp(
 					getContainer( id )?.settings?.get?.( 'paragraph' ),
@@ -703,39 +677,25 @@ function DropdownItemsFields( { dropdownId } ) {
 					{}
 				);
 
-				return {
+				out.push( {
 					id,
 					label: readProp( paragraph?.content, '' ) || `Dropdown Item ${ index + 1 }`,
-					url: readProp( link?.destination, '' ),
-					legacy: model.get( 'elType' ) !== 'widget' ||
-						model.get( 'widgetType' ) !== NAV_SUB_ITEM_TYPE,
-				};
+					url:   readProp( link?.destination, '' ),
+				} );
 			} );
+			return out;
 		},
-		[ dropdownId ]
+		[ navItemId, dropdownContainerId ]
 	);
 	const [ items, setItems ] = React.useState( sourceItems );
-	const repairedIds = React.useRef( new Set() );
 
 	React.useEffect( () => {
 		setItems( sourceItems );
 	}, [ sourceItems ] );
 
-	React.useEffect( () => {
-		items.forEach( ( item ) => {
-			if ( ! item.legacy || repairedIds.current.has( item.id ) ) {
-				return;
-			}
-
-			repairedIds.current.add( item.id );
-			replaceElement( {
-				currentElementId: item.id,
-				newElement: buildDropdownItemModel( item.label, item.url ),
-			} );
-		} );
-	}, [ items ] );
 	const addItem = () => {
-		const container = getContainer( dropdownId );
+		const parentId = dropdownContainerId || navItemId;
+		const container = getContainer( parentId );
 		if ( ! container ) {
 			return;
 		}
@@ -745,7 +705,7 @@ function DropdownItemsFields( { dropdownId } ) {
 			subtitle: 'Dropdown item added',
 			elements: [ {
 				container,
-				model: buildDropdownItemModel(),
+				model: buildSubItemModel(),
 				options: { at: items.length },
 			} ],
 		} );
@@ -753,7 +713,7 @@ function DropdownItemsFields( { dropdownId } ) {
 		if ( id ) {
 			setItems( ( current ) => [
 				...current,
-				{ id, label: 'Dropdown Item', url: '', legacy: false },
+				{ id, label: 'Dropdown Item', url: '' },
 			] );
 		}
 	};
@@ -774,7 +734,6 @@ function DropdownItemsFields( { dropdownId } ) {
 					id,
 					label: item.label,
 					url: item.url,
-					legacy: false,
 				} );
 				return next;
 			} );
