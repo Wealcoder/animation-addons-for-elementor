@@ -34,6 +34,7 @@ import {
 import { useElement } from '@elementor/editor-editing-panel';
 import {
 	Box,
+	Button,
 	Collapse,
 	IconButton,
 	MenuItem,
@@ -46,6 +47,7 @@ import {
 } from '@elementor/ui';
 
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
+const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 
 const prop = ( type, value ) => ( { $$type: type, value } );
 
@@ -98,6 +100,7 @@ function syncEditorDropdownPreviewAfterRender( navId, itemId ) {
 function buildNavItemModel( position ) {
 	return {
 		elType: NAV_ITEM_TYPE,
+		isLocked: true,
 		editor_settings: { title: `Menu Item ${ position }` },
 		settings: {
 			text: prop( 'html-v3', {
@@ -141,6 +144,9 @@ function useNavItems( navId ) {
 				if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
 					return;
 				}
+				if ( model.get( 'isLocked' ) !== true ) {
+					model.set( 'isLocked', true, { silent: true } );
+				}
 				const id = model.get( 'id' );
 				const editorSettings = model.get( 'editor_settings' ) || {};
 				next.push( { id, editorSettings } );
@@ -168,6 +174,262 @@ function useNavItems( navId ) {
 			return next;
 		},
 		[ navId ]
+	);
+}
+
+function useMobileNavSettings( navId ) {
+	return useListenTo(
+		[
+			v1ReadyEvent(),
+			commandEndEvent( 'document/elements/create' ),
+			commandEndEvent( 'document/elements/update' ),
+			commandEndEvent( 'document/elements/settings' ),
+			commandEndEvent( 'document/elements/set-settings' ),
+		],
+		() => {
+			const settings = getContainer( navId )?.settings;
+			return {
+				enabled: readProp( settings?.get?.( 'mobile_enabled' ), false ),
+				breakpoint: String( readProp( settings?.get?.( 'mobile_breakpoint' ), '767' ) ),
+				position: readProp( settings?.get?.( 'mobile_position' ), 'right' ),
+				closeOnLink: readProp( settings?.get?.( 'mobile_close_on_link' ), true ),
+				lockScroll: readProp( settings?.get?.( 'mobile_lock_scroll' ), true ),
+			};
+		},
+		[ navId ]
+	);
+}
+
+function findMobileCompanion( nav ) {
+	const siblings = nav?.parent?.model?.get?.( 'elements' );
+	let match = null;
+	siblings?.each?.( ( model ) => {
+		if ( match || ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== MOBILE_NAV_TYPE ) {
+			return;
+		}
+		const container = getContainer( model.get( 'id' ) );
+		if ( readProp( container?.settings?.get?.( 'source_nav_id' ), '' ) === nav.id ) {
+			match = container;
+		}
+	} );
+	return match;
+}
+
+function hasElementClass( container, className ) {
+	const classes = readProp( container?.settings?.get?.( 'classes' ), [] );
+	return Array.isArray( classes ) && classes.includes( className );
+}
+
+function flattenLegacyMobileCompanion( companion ) {
+	const rootChildren = companion?.model?.get?.( 'elements' );
+	let drawer = null;
+	rootChildren?.each?.( model => {
+		const child = getContainer( model.get( 'id' ) );
+		if ( hasElementClass( child, 'aae-mobile-nav-drawer' ) ) drawer = child;
+	} );
+	if ( ! drawer ) return;
+
+	const moves = [];
+	const removeIds = [];
+	drawer.model?.get?.( 'elements' )?.each?.( model => {
+		const child = getContainer( model.get( 'id' ) );
+		if ( hasElementClass( child, 'aae-mobile-nav-close' ) ||
+			hasElementClass( child, 'aae-mobile-nav-arrow-template' ) ) {
+			moves.push( {
+				element: child,
+				targetContainer: companion,
+				options: { at: companion.model?.get?.( 'elements' )?.length ?? 0 },
+			} );
+		} else if ( hasElementClass( child, 'aae-mobile-nav-mount' ) ) {
+			removeIds.push( child.id );
+		}
+	} );
+
+	if ( moves.length ) {
+		moveElements( {
+			title: 'Mobile Menu',
+			subtitle: 'Mobile structure optimized',
+			moves,
+		} );
+	}
+	if ( removeIds.length ) {
+		removeElements( {
+			elementIds: removeIds,
+			title: 'Mobile Menu',
+			subtitle: 'Legacy mount removed',
+		} );
+	}
+}
+
+function hasDescendantClass( container, className ) {
+	const children = container?.model?.get?.( 'elements' );
+	let found = false;
+	children?.each?.( model => {
+		if ( found ) return;
+		const child = getContainer( model.get( 'id' ) );
+		found = hasElementClass( child, className ) || hasDescendantClass( child, className );
+	} );
+	return found;
+}
+
+export function MobileNavLifecycleControl() {
+	const { element } = useElement();
+	const navId = element.id;
+	const mobileSettings = useMobileNavSettings( navId );
+	const syncRef = React.useRef( '' );
+	const creatingRef = React.useRef( false );
+
+	/* Elementor's atomic Switch control does not consistently emit one of the
+	 * public commandEnd events until focus/selection changes. Read the live
+	 * Backbone settings briefly while this section is mounted so ON creates the
+	 * companion immediately, without requiring another canvas click. */
+	React.useEffect( () => {
+		const ensureCompanion = () => {
+			const nav = getContainer( navId );
+			if ( ! nav?.parent || findMobileCompanion( nav ) || creatingRef.current ) return;
+			const settings = nav.settings;
+			const enabled = readProp( settings?.get?.( 'mobile_enabled' ), false );
+			if ( ! enabled ) return;
+
+			creatingRef.current = true;
+			const siblings = nav.parent.model?.get?.( 'elements' );
+			const navIndex = siblings?.indexOf?.( nav.model ) ?? -1;
+			createElements( {
+				title: 'Mobile Menu',
+				subtitle: 'Mobile companion added',
+				elements: [ {
+					container: nav.parent,
+					model: {
+						elType: MOBILE_NAV_TYPE,
+						editor_settings: { title: 'Mobile Nav' },
+						settings: {
+							source_nav_id: prop( 'string', navId ),
+							enabled: prop( 'boolean', true ),
+							breakpoint: prop( 'string', String( readProp( settings?.get?.( 'mobile_breakpoint' ), '767' ) ) ),
+							position: prop( 'string', readProp( settings?.get?.( 'mobile_position' ), 'right' ) ),
+							close_on_link: prop( 'boolean', readProp( settings?.get?.( 'mobile_close_on_link' ), true ) ),
+							lock_scroll: prop( 'boolean', readProp( settings?.get?.( 'mobile_lock_scroll' ), true ) ),
+						},
+					},
+					options: { at: navIndex >= 0 ? navIndex + 1 : siblings?.length ?? 0 },
+				} ],
+			} );
+			window.setTimeout( () => { creatingRef.current = false; }, 500 );
+		};
+
+		ensureCompanion();
+		const interval = window.setInterval( ensureCompanion, 120 );
+		return () => window.clearInterval( interval );
+	}, [ navId ] );
+
+	React.useEffect( () => {
+		if ( ! mobileSettings ) return;
+		const sync = () => {
+			const nav = getContainer( navId );
+			if ( ! nav?.parent ) return;
+
+			const signature = JSON.stringify( mobileSettings );
+			const companion = findMobileCompanion( nav );
+			const props = {
+				source_nav_id: prop( 'string', navId ),
+				enabled: prop( 'boolean', mobileSettings.enabled ),
+				breakpoint: prop( 'string', mobileSettings.breakpoint ),
+				position: prop( 'string', mobileSettings.position ),
+				close_on_link: prop( 'boolean', mobileSettings.closeOnLink ),
+				lock_scroll: prop( 'boolean', mobileSettings.lockScroll ),
+			};
+
+			if ( companion ) {
+				creatingRef.current = false;
+				flattenLegacyMobileCompanion( companion );
+				if ( syncRef.current !== signature ) {
+					syncRef.current = signature;
+					updateElementSettings( { id: companion.id, props } );
+				}
+				return;
+			}
+			if ( ! mobileSettings.enabled || creatingRef.current ) return;
+
+			creatingRef.current = true;
+			const siblings = nav.parent.model?.get?.( 'elements' );
+			const navIndex = siblings?.indexOf?.( nav.model ) ?? -1;
+			createElements( {
+				title: 'Mobile Menu',
+				subtitle: 'Mobile companion added',
+				elements: [ {
+					container: nav.parent,
+					model: {
+						elType: MOBILE_NAV_TYPE,
+						editor_settings: { title: 'Mobile Nav' },
+						settings: props,
+					},
+					options: { at: navIndex >= 0 ? navIndex + 1 : undefined },
+				} ],
+			} );
+			window.setTimeout( () => { creatingRef.current = false; }, 600 );
+		};
+
+		const timers = [ 0, 100, 300, 800, 1500 ].map( delay =>
+			window.setTimeout( sync, delay )
+		);
+		return () => timers.forEach( timer => window.clearTimeout( timer ) );
+	}, [ navId, mobileSettings ] );
+
+	const nav = getContainer( navId );
+	const companion = findMobileCompanion( nav );
+
+	const createMobileStructure = () => {
+		const currentNav = getContainer( navId );
+		if ( ! currentNav?.parent || findMobileCompanion( currentNav ) ) return;
+		const props = {
+			source_nav_id: prop( 'string', navId ),
+			enabled: prop( 'boolean', true ),
+			breakpoint: prop( 'string', mobileSettings.breakpoint ),
+			position: prop( 'string', mobileSettings.position ),
+			close_on_link: prop( 'boolean', mobileSettings.closeOnLink ),
+			lock_scroll: prop( 'boolean', mobileSettings.lockScroll ),
+		};
+		const siblings = currentNav.parent.model?.get?.( 'elements' );
+		const navIndex = siblings?.indexOf?.( currentNav.model ) ?? -1;
+		createElements( {
+			title: 'Mobile Menu',
+			subtitle: 'Mobile companion added',
+			elements: [ {
+				container: currentNav.parent,
+				model: {
+					elType: MOBILE_NAV_TYPE,
+					editor_settings: { title: 'Mobile Nav' },
+					settings: props,
+				},
+				options: { at: navIndex >= 0 ? navIndex + 1 : siblings?.length ?? 0 },
+			} ],
+		} );
+	};
+
+	if ( ! mobileSettings?.enabled ) return null;
+	const complete = companion &&
+		hasDescendantClass( companion, 'aae-mobile-nav-header' ) &&
+		hasDescendantClass( companion, 'aae-mobile-nav-menu-area' ) &&
+		hasDescendantClass( companion, 'aae-mobile-nav-footer' );
+	if ( companion && complete ) return null;
+
+	const rebuildMobileStructure = () => {
+		if ( ! companion ) {
+			createMobileStructure();
+			return;
+		}
+		removeElements( {
+			elementIds: [ companion.id ],
+			title: 'Mobile Menu',
+			subtitle: 'Legacy mobile structure removed',
+		} );
+		window.setTimeout( createMobileStructure, 350 );
+	};
+
+	return (
+		<Button size="tiny" variant="outlined" onClick={ rebuildMobileStructure } fullWidth>
+			{ companion ? 'Rebuild Atomic Mobile Structure' : 'Create Mobile Structure' }
+		</Button>
 	);
 }
 
@@ -531,15 +793,6 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 					} ],
 				} );
 			}
-		} else if ( childIds.length > 0 ) {
-			/* Toggle disabled — clean up the dropdown container children so the
-			 * empty-view placeholder inside the Flexbox doesn't linger below
-			 * the label. Re-enabling creates a fresh Flexbox. */
-			removeElements( {
-				elementIds: childIds,
-				title: 'Dropdown',
-				subtitle: 'Dropdown removed',
-			} );
 		}
 
 		updateElementSettings( {

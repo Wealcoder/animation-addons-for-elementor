@@ -1,19 +1,3 @@
-/*
- * AAE Atomic Nav — all styles.
- *
- * Dropdown content = a direct child of a nav-item WITH data-has-dropdown="true"
- * that isn't the .aae-a-nav-item-label. Typically it's an Elementor core Flexbox
- * the user styles themselves via the Style tab. This CSS only handles show/hide
- * + positioning — decorative styling lives on the user's dropdown container.
- */
-
-/* Selector for "dropdown content" — everything under a dropdown-enabled item
- * except the label. Written verbose (no CSS var yet) for editor debuggability. */
-
-/* Elementor's atomic .e-con default is flex-direction: column with the
- * same specificity as our .aae-a-nav rule, so we lose the cascade. Force
- * with !important — nav is fundamentally a horizontal row and every
- * downstream style relies on it. */
 .aae-a-nav {
 	position: relative !important;
 }
@@ -25,11 +9,6 @@
 	flex: 0 0 auto;
 }
 
-/* Hide dropdown content by default. `display: none` combined with
- * `position: absolute` on an atomic child (Flexbox) triggers a freeze in
- * Elementor v4's atomic renderer on device switch; we hide via visibility
- * + opacity + pointer-events instead, which keeps the element in the
- * render tree and doesn't trigger the freeze. */
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
 	position: absolute;
@@ -131,28 +110,10 @@
 	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) { animation-delay: 180ms; }
 	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) { animation-delay: 240ms; }
 }
-
-/* ══ Editor UX ══
- * 1. Hide Elementor's empty-container dropzone (class `.elementor-empty-view`,
- *    inserted by atomic-element-empty-view.js) inside nav-items WITHOUT
- *    has_dropdown=true — those items don't accept custom widgets, so the
- *    dropzone is just visual noise.
- * 2. Reveal the dropdown content for editing when the nav-item is the active
- *    row in NavItemsControl (`.aae-editor-dropdown-open`), when the item
- *    itself is selected in the preview (`.elementor-element-editable`),
- *    when any descendant is being edited (`:has(.elementor-element-editable)`),
- *    or when the panel-row Structure tree focuses a descendant. */
-
-/* 1. Hide dropzone in items that don't have has_dropdown=true. */
 .elementor-editor-active .aae-a-nav .aae-a-nav-item:not([data-has-dropdown="true"]) > .elementor-empty-view {
 	display: none;
 }
 
-/* 2. Reveal dropdown content for editing — TOP-LEVEL dropdowns. */
-/* The preview iframe does not consistently carry `.elementor-editor-active`
- * in Elementor v4. The marker itself is editor-only and is added by
- * NavItemsControl, so it is safe (and more reliable) to key these two
- * selectors directly from that marker. */
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
@@ -174,4 +135,285 @@
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
+}
+
+/* Mobile companion — completely inert until its JS breakpoint matcher adds
+ * `.is-mobile`; desktop Nav selectors and hierarchy remain unchanged.
+ *
+ * NOT hidden via `display: none`: in the editor the companion keeps this
+ * hidden state forever (`.is-mobile` is frontend-only), and display:none on
+ * an atomic element whose empty child Flexboxes carry Elementor's absolutely
+ * positioned empty-view reproduces the same v4 renderer freeze on device
+ * switch as the dropdown hide rule at the top of this file. Hide with the
+ * proven-safe combo instead: out-of-flow + zero size + visibility. */
+.aae-a-mobile-nav {
+	position: absolute !important;
+	inline-size: 0 !important;
+	block-size: 0 !important;
+	min-block-size: 0 !important;
+	min-inline-size: 0 !important;
+	overflow: hidden !important;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.aae-a-mobile-nav.is-mobile {
+	display: block;
+	position: relative !important;
+	inline-size: 0 !important;
+	block-size: 0 !important;
+	min-inline-size: 0 !important;
+	min-block-size: 0 !important;
+	max-inline-size: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	flex: 0 0 0 !important;
+	overflow: visible !important;
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 9999;
+
+	.aae-mobile-nav-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	.aae-mobile-nav-overlay {
+		position: fixed !important;
+		inset: 0 !important;
+		z-index: 9998;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 250ms ease, visibility 0s linear 250ms;
+	}
+
+	.aae-mobile-nav-drawer {
+		position: fixed !important;
+		inset-block: 0 !important;
+		inset-inline-end: 0 !important;
+		z-index: 9999;
+		display: flex !important;
+		flex-direction: column !important;
+		overflow-y: auto;
+		max-inline-size: 100vw;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translateX(100%);
+		transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 320ms;
+	}
+
+	.aae-mobile-nav-close {
+		position: relative !important;
+		inset: auto !important;
+		align-self: flex-end;
+		display: inline-flex !important;
+		cursor: pointer;
+	}
+
+	.aae-mobile-nav-arrow-template {
+		display: none !important;
+	}
+
+	&.position-left .aae-mobile-nav-drawer {
+		inset-inline: 0 auto !important;
+		transform: translateX(-100%);
+	}
+
+	&.is-open {
+		.aae-mobile-nav-overlay {
+			opacity: 1;
+			visibility: visible;
+			pointer-events: auto;
+			transition-delay: 0s;
+		}
+		.aae-mobile-nav-drawer {
+			visibility: visible;
+			pointer-events: auto;
+			transform: translateX(0);
+			transition-delay: 0s;
+		}
+	}
+}
+
+/* Visual defaults intentionally have zero specificity. Elementor's generated
+ * local Style-tab class therefore always wins for background, dimensions and
+ * spacing without requiring !important. */
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-overlay) {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-drawer) {
+	height: 100dvh;
+	padding: 24px;
+	background: #fff;
+	flex-direction: column;
+	justify-content: flex-start !important;
+	align-items: stretch !important;
+	gap: 20px;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-header) {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end !important;
+	align-items: center !important;
+	flex: 0 0 auto !important;
+	min-height: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-menu-area) {
+	width: 100%;
+	display: flex;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	justify-content: flex-start !important;
+	flex: 1 1 0 !important;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-footer) {
+	width: 100%;
+	display: flex;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	flex: 0 0 auto !important;
+	min-height: 0;
+	margin-block-start: auto !important;
+}
+
+/* In editor the real root-level close model remains selectable (avoids the
+ * v4 nested-model freeze); a sanitized styled clone is rendered in drawer. */
+.elementor-editor-active .aae-a-mobile-nav.is-mobile > .aae-mobile-nav-close {
+	display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer > .elementor-empty-view {
+	display: none !important;
+}
+
+/* Only the Footer Custom Container is a user-content drop zone. Suppress
+ * Elementor's empty placeholders on the companion's structural surfaces. */
+.elementor-editor-active .aae-a-mobile-nav > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-overlay > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-drawer > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-header > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-menu-area > .elementor-empty-view {
+	display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-footer > .elementor-empty-view {
+	display: flex !important;
+}
+
+body.aae-mobile-nav-scroll-lock {
+	overflow: hidden;
+}
+
+.aae-a-nav.aae-nav-mobile-mounted {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	width: 100%;
+	gap: 0 !important;
+
+	.aae-a-nav-item {
+		display: grid !important;
+		grid-template-columns: minmax(0, 1fr) auto !important;
+		grid-template-areas:
+			"label toggle"
+			"submenu submenu";
+		align-items: center;
+		width: 100%;
+		flex: none;
+		border-block-end: 1px solid rgba(127, 127, 127, 0.18);
+	}
+
+	.aae-a-nav-item > .aae-a-nav-item-label {
+		grid-area: label;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		line-height: 1;
+	}
+
+	.aae-mobile-submenu-toggle {
+		grid-area: toggle;
+		justify-self: end;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 10px;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+	}
+
+	.aae-mobile-submenu-icon {
+		display: block;
+		width: 100%;
+		height: 100%;
+		transition: transform 200ms ease;
+	}
+
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		position: static !important;
+		grid-area: submenu;
+		width: 100%;
+		visibility: hidden;
+		opacity: 0;
+		pointer-events: none;
+		max-height: 0;
+		overflow: hidden;
+		margin: 0;
+		padding: 0 0 0 16px;
+		border: 0;
+		background: transparent;
+		transition: max-height 250ms ease, opacity 200ms ease, visibility 0s linear 250ms;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+	.aae-a-nav-item.is-mobile-submenu-open > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		visibility: visible;
+		opacity: 1;
+		pointer-events: auto;
+		max-height: 2000px;
+		padding-block: 4px 14px;
+		transition-delay: 0s;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open {
+		border-block-end-color: transparent;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open > .aae-a-nav-item-label {
+		font-weight: 600;
+	}
+
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *,
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
+		margin-block: 0 10px;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open > .aae-mobile-submenu-toggle .aae-mobile-submenu-icon {
+		transform: rotate(180deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aae-a-mobile-nav *,
+	.aae-a-nav.aae-nav-mobile-mounted * {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
 }
