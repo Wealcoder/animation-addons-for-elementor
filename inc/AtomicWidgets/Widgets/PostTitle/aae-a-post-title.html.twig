@@ -1,6 +1,14 @@
 {% import 'elementor/macros' as m %}
 {% set tag = settings.tag | default('h2') %}
 {% set classes = settings.classes | merge([ base_styles.base ]) | join(' ') %}
-<{{ tag }} class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
+{# Line Clamp: pure CSS truncation by number of lines. Emitted inline from the
+   settings so it works IDENTICALLY in the editor's client-side render and the
+   frontend PHP render — no re-render or JS mirror needed. #}
+{% set clamp = 0 %}
+{% if settings.limit_by is defined and settings.limit_by == 'line' %}
+    {% set clamp = settings.title_limit | default(2) %}
+{% endif %}
+<{{ tag }} class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}"
+    {%- if clamp %} style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:{{ clamp }};overflow:hidden;"{% endif %} {{- m.render_custom_attributes(settings) }}>
     {{ settings.post_title | default('') | raw }}
 </{{ tag }}>

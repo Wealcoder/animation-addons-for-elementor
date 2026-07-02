@@ -66,8 +66,10 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 			'tag' => String_Prop_Type::make()->default('h2'),
 			'post_title' => String_Prop_Type::make()->default($post_title),
-			'limit_by' => String_Prop_Type::make()->default('none'),
-			'title_limit' => Number_Prop_Type::make()->default(10)->set_dependencies($has_limit),
+			// Default: CSS line-clamp at 2 lines — uniform card heights out of the
+			// box, works identically in editor + frontend (pure CSS, no trim).
+			'limit_by' => String_Prop_Type::make()->default('line'),
+			'title_limit' => Number_Prop_Type::make()->default(2)->set_dependencies($has_limit),
 		];
 	}
 
@@ -97,6 +99,7 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 							['value' => 'none', 'label' => __('None', 'animation-addons-for-elementor')],
 							['value' => 'word', 'label' => __('Word Count', 'animation-addons-for-elementor')],
 							['value' => 'char', 'label' => __('Character Count', 'animation-addons-for-elementor')],
+							['value' => 'line', 'label' => __('Line Clamp (CSS)', 'animation-addons-for-elementor')],
 						]),
 
 					Number_Control::bind_to('title_limit')

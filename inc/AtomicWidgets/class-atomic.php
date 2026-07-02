@@ -180,6 +180,26 @@ final class Atomic
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
 			'aae-a-nav-sub-item',
+			// Loop Grid structural pieces — always-on internal elements. The Loop
+			// Grid seeds them as default children, so they must be registered even
+			// when not toggled in the dashboard (otherwise the editor throws
+			// ElementTypeNotFound on drop and nothing renders).
+			'aae-a-loop-item',
+			'aae-a-loop-layout',
+			'aae-a-loop-pagination',
+			'aae-a-loop-prev',
+			'aae-a-loop-next',
+			'aae-a-loop-numbers',
+			'aae-a-loop-loadmore',
+			'aae-a-loop-arrow',
+			'aae-a-loop-nav-wrap',
+			// Loop Grid current-post building blocks: seeded as default loop-item
+			// children — must always be registered so the featured image / title /
+			// meta resolve per post.
+			'aae-a-post-image',
+			'aae-a-post-title',
+			'aae-a-post-meta',
+			'aae-a-post-meta-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;

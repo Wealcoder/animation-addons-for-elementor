@@ -24,6 +24,7 @@
 
 import { state } from './state.js';
 import { getPreviewWindow } from './preview.js';
+import { applyTitleLimit, readTitleLimit } from './post-title-limit.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
 const TYPE = 'e-aae-a-loop-grid';
@@ -170,7 +171,11 @@ function fillClone(clone, post) {
 	const titleEl = clone.querySelector('[data-widget_type^="e-aae-a-post-title"]');
 	if (titleEl && post.title) {
 		const target = titleEl.querySelector('h1,h2,h3,h4,h5,h6,a,span,p') || titleEl;
-		target.textContent = post.title;
+		// Mirror the widget's PHP limit (word/char) — fillClone runs BEFORE
+		// sanitizeClone, so the clone still carries the authored widget's
+		// data-id and we can read its live settings.
+		const { by, n } = readTitleLimit(titleEl.getAttribute('data-id'));
+		target.textContent = applyTitleLimit(post.title, by, n);
 	}
 	// Image: swap the featured-image src (post-image widget, or any img fallback).
 	const imgEl = clone.querySelector('[data-widget_type^="e-aae-a-post-image"] img, img');
@@ -265,8 +270,22 @@ async function hydrate(wrap) {
 	// without this check nothing would ever rebuild. Detect the drift (img count
 	// differs between card and clone) and treat the clones as stale — the post
 	// cache makes the rebuild synchronous, so there's no refetch/flicker.
-	const cloneStale = clonesPresent &&
+	const imgStale = clonesPresent &&
 		firstClone.querySelectorAll('img').length !== item.querySelectorAll('img').length;
+
+	// Post-title limit settings (limit_by / title_limit) trim the clone titles
+	// via fillClone. They're WIDGET settings, not loop-grid settings, so the
+	// query sig can't see them change — key them separately so a limit change
+	// re-fills the clones (sync, from cache).
+	const titleSig = [ ...item.querySelectorAll('[data-widget_type^="e-aae-a-post-title"][data-id]') ]
+		.map((el) => {
+			const { by, n } = readTitleLimit(el.getAttribute('data-id'));
+			return by + ':' + n;
+		})
+		.join('|');
+	const titleStale = clonesPresent && wrap.__aaeTitleSig !== titleSig;
+
+	const cloneStale = imgStale || titleStale;
 
 	const inSync = ( clonesPresent || wrap.__aaeSingle === true ) && !cloneStale;
 	if (wrap.__aaeSig === sig && !wrap.__aaeDirty && inSync) {
@@ -275,15 +294,16 @@ async function hydrate(wrap) {
 
 	// FAST PATH (flicker-free recovery): the query is unchanged and we already
 	// have its posts cached — Elementor re-rendered and wiped the clones, or the
-	// clones went stale vs the card (late-mounting <img> above). Rebuild
-	// synchronously from the cache in this same tick: no AJAX round-trip, so the
-	// clones never visibly disappear. This is the "no redraw flicker" case.
+	// clones went stale vs the card (late-mounting <img> / title-limit change
+	// above). Rebuild synchronously from the cache in this same tick: no AJAX
+	// round-trip, so the clones never visibly disappear.
 	if (wrap.__aaeSig === sig && ( ! clonesPresent || cloneStale )) {
 		const cached = cachedPosts(sig);
 		if (cached) {
 			grid.style.setProperty('--aae-columns-desktop', String(s.columns));
 			buildClones(grid, item, cached, doc);
 			wrap.__aaeSingle = cached.length <= 1;
+			wrap.__aaeTitleSig = titleSig;
 			return;
 		}
 	}
@@ -344,6 +364,7 @@ async function hydrate(wrap) {
 	wrap.__aaeSingle = posts.length <= 1;
 
 	buildClones(grid, item, posts, doc);
+	wrap.__aaeTitleSig = titleSig;
 }
 
 /** Scan the preview and hydrate all loop grids. */
