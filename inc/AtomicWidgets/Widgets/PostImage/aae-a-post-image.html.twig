@@ -1,6 +1,34 @@
 {% import 'elementor/macros' as m %}
 {% if settings.image_url %}
-<div class="aae-a-post-image-wrapper" data-aspect-ratio="{{ settings.aspect_ratio | default('16/9') }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
-    <img src="{{ settings.image_url }}" alt="{{ settings.image_alt }}" class="aae-a-post-image" style="object-fit: {{ settings.object_fit | default('cover') }};" />
-</div>
+	{% set wrapper_tag = 'div' %}
+	{% set link_attrs = '' %}
+	
+	{% if settings.link_to == 'post' and settings.post_url is not empty %}
+		{% set wrapper_tag = 'a' %}
+		{% set link_attrs = 'href="' ~ settings.post_url | e('html_attr') ~ '"' %}
+	{% elseif settings.link_to == 'custom' and settings.custom_link.attributes is not empty %}
+		{% set wrapper_tag = 'a' %}
+		{% set link_attrs = settings.custom_link.attributes | default('') | raw %}
+	{% endif %}
+
+	{% set wrapper_classes = ['aae-a-post-image-wrapper'] | merge([ base_styles.base ]) | join(' ') %}
+	{% set img_classes = ['aae-a-post-image'] | merge(settings.classes | default([])) | join(' ') %}
+
+	<{{ wrapper_tag }} class="{{ wrapper_classes }}"
+		{{ link_attrs | default('') | raw }}
+		style="{% if settings.aspect_ratio is defined and settings.aspect_ratio != 'auto' %}aspect-ratio: {{ settings.aspect_ratio | default('16/9') }};{% endif %}"
+		data-interaction-id="{{ interaction_id | default('') }}"
+		{{- m.render_custom_attributes(settings) }}>
+		
+		{# width/height 100% make the img FILL the aspect-ratio wrapper (object-fit
+		   crops the overflow). This used to live in the widget stylesheet; that
+		   file is bypassed now, so the fill must ship inline — otherwise every
+		   image renders at its own natural ratio and the grid looks uneven. #}
+		<img src="{{ settings.image_url }}"
+			alt="{{ settings.image_alt }}"
+			class="{{ img_classes }}"
+			style="object-fit: {{ settings.object_fit | default('cover') }}; width: 100%; height: 100%; display: block;" />
+
+		{{ children_placeholder | default('') | raw }}
+	</{{ wrapper_tag }}>
 {% endif %}

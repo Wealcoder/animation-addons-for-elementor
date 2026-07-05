@@ -4,18 +4,23 @@ const g = () => window.gsap;
 
 /* Per-nav AbortControllers — abort stale document listeners on re-init */
 const navControllers = new Map();
+const editorCompanionControllers = new Map();
 
 function isEditor() {
 	return document.body.classList.contains( 'elementor-editor-active' ) ||
 		window.elementorFrontend?.isEditMode?.() === true;
 }
 
+/* Dropdown content = the first direct child of the nav-item that isn't the
+ * label span/anchor. Typically an Elementor Flexbox the user styles themselves. */
 function getSub( item ) {
-	return item.querySelector( ':scope > .aae-a-nav-sub' );
+	return item.querySelector( ':scope > :not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle)' );
 }
 
 function isNested( item ) {
-	return !! item.parentElement?.closest( '.aae-a-nav-sub' );
+	return !! item.parentElement?.closest(
+		'.aae-a-nav-item[data-has-dropdown="true"]'
+	);
 }
 
 function getAnim( item ) {
@@ -112,6 +117,159 @@ function closeItem( item ) {
 	}
 }
 
+function sanitizeEditorClone( clone ) {
+	[ clone, ...clone.querySelectorAll( '*' ) ].forEach( node => {
+		node.removeAttribute?.( 'data-id' );
+		node.removeAttribute?.( 'data-element_type' );
+		node.removeAttribute?.( 'data-e-type' );
+		node.removeAttribute?.( 'data-interaction-id' );
+		node.removeAttribute?.( 'contenteditable' );
+		node.classList?.remove(
+			'elementor-element-editable',
+			'elementor-element-selected',
+			'elementor-element-empty',
+			'aae-editor-dropdown-open'
+		);
+	} );
+	clone.querySelectorAll( '.elementor-empty-view' ).forEach( node => node.remove() );
+	clone.setAttribute( 'aria-hidden', 'true' );
+	clone.classList.add( 'aae-nav-mobile-mounted', 'aae-mobile-editor-clone' );
+}
+
+function addEditorCloneArrows( nav, arrowTemplate ) {
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+		const sub = getSub( item );
+		if ( ! sub ) return;
+		sub.hidden = true;
+		const button = document.createElement( 'button' );
+		button.type = 'button';
+		button.className = 'aae-mobile-submenu-toggle';
+		button.setAttribute( 'aria-label', 'Toggle submenu preview' );
+		button.setAttribute( 'aria-expanded', 'false' );
+		const icon = arrowTemplate?.cloneNode( true );
+		if ( icon ) {
+			const sourceId = arrowTemplate.getAttribute( 'data-id' );
+			[ icon, ...icon.querySelectorAll( '*' ) ].forEach( node => {
+				node.removeAttribute?.( 'data-id' );
+				node.removeAttribute?.( 'data-element_type' );
+				node.removeAttribute?.( 'data-e-type' );
+			} );
+			icon.classList.remove( 'aae-mobile-nav-arrow-template' );
+			icon.classList.add( 'aae-mobile-submenu-icon' );
+			if ( sourceId ) button.dataset.editorSourceId = sourceId;
+			button.appendChild( icon );
+		}
+		item.insertBefore( button, sub );
+	} );
+}
+
+function initEditorMobilePreview( companion ) {
+	const companionId = companion.getAttribute( 'data-id' );
+	if ( ! companionId ) return;
+	editorCompanionControllers.get( companionId )?.abort();
+	const ctrl = new AbortController();
+	editorCompanionControllers.set( companionId, ctrl );
+	const sig = ctrl.signal;
+	let timer = null;
+
+	const render = () => {
+		window.clearTimeout( timer );
+		timer = window.setTimeout( () => {
+			const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
+			const mobile = window.innerWidth <= breakpoint && companion.dataset.enabled === 'true';
+			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
+			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
+			if ( ! drawer ) return;
+			menuArea?.querySelector( ':scope > .aae-mobile-editor-clone' )?.remove();
+			drawer.querySelector( ':scope > .aae-mobile-editor-close' )?.remove();
+			companion.classList.toggle( 'is-mobile', mobile );
+			companion.classList.toggle(
+				'is-open',
+				mobile && companion.dataset.editorPreviewClosed !== 'true'
+			);
+			if ( ! mobile ) return;
+
+			const sourceId = companion.dataset.sourceNavId;
+			const source = document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` );
+			if ( ! source ) return;
+			const clone = source.cloneNode( true );
+			sanitizeEditorClone( clone );
+			addEditorCloneArrows( clone, companion.querySelector( '.aae-mobile-nav-arrow-template' ) );
+			const sourceClose = companion.querySelector( '.aae-mobile-nav-close' );
+			if ( sourceClose && sourceClose.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
+				const sourceCloseId = sourceClose.getAttribute( 'data-id' );
+				const closeClone = sourceClose.cloneNode( true );
+				[ closeClone, ...closeClone.querySelectorAll( '*' ) ].forEach( node => {
+					node.removeAttribute?.( 'data-id' );
+					node.removeAttribute?.( 'data-element_type' );
+					node.removeAttribute?.( 'data-e-type' );
+				} );
+				closeClone.classList.add( 'aae-mobile-editor-close' );
+				if ( sourceCloseId ) closeClone.dataset.editorSourceId = sourceCloseId;
+				drawer.appendChild( closeClone );
+			}
+			menuArea.appendChild( clone );
+
+			clone.addEventListener( 'click', e => {
+				const button = e.target.closest( '.aae-mobile-submenu-toggle' );
+				if ( ! button ) return;
+				e.preventDefault();
+				const item = button.closest( '.aae-a-nav-item' );
+				const open = ! item.classList.contains( 'is-mobile-submenu-open' );
+				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
+					.forEach( sibling => {
+						sibling.classList.remove( 'is-mobile-submenu-open' );
+						const siblingSub = getSub( sibling );
+						if ( siblingSub ) siblingSub.hidden = true;
+					} );
+				item.classList.toggle( 'is-mobile-submenu-open', open );
+				const sub = getSub( item );
+				if ( sub ) sub.hidden = ! open;
+				button.setAttribute( 'aria-expanded', String( open ) );
+			} );
+		}, 60 );
+	};
+
+	window.addEventListener( 'resize', render, { signal: sig } );
+	const previewObserver = new MutationObserver( () => {
+		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
+		if ( window.innerWidth > breakpoint || companion.dataset.enabled !== 'true' ) return;
+		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
+			companion.querySelector( '.aae-mobile-nav-drawer' );
+		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
+			render();
+		}
+	} );
+	previewObserver.observe( companion, { childList: true, subtree: true } );
+	sig.addEventListener( 'abort', () => previewObserver.disconnect(), { once: true } );
+	companion.addEventListener( 'pointerdown', e => {
+		if ( e.target.closest( '.aae-mobile-nav-close' ) ) {
+			companion.dataset.editorPreviewClosed = 'true';
+			companion.classList.remove( 'is-open' );
+		}
+		const proxy = e.target.closest( '[data-editor-source-id]' );
+		if ( ! proxy ) return;
+		const original = document.querySelector( `[data-id="${ proxy.dataset.editorSourceId }"]` );
+		if ( ! original ) return;
+		original.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true, view: window } ) );
+		original.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true, view: window } ) );
+	}, { capture: true, signal: sig } );
+	companion.addEventListener( 'click', e => {
+		if ( e.target.closest( '.aae-mobile-nav-close' ) ) {
+			e.preventDefault();
+			companion.dataset.editorPreviewClosed = 'true';
+			companion.classList.remove( 'is-open' );
+			return;
+		}
+		if ( e.target.closest( '.aae-mobile-nav-toggle' ) ) {
+			e.preventDefault();
+			companion.dataset.editorPreviewClosed = 'false';
+			companion.classList.add( 'is-open' );
+		}
+	}, { signal: sig } );
+	[ 0, 150, 400 ].forEach( delay => window.setTimeout( render, delay ) );
+}
+
 register( {
 	elementType: 'e-aae-a-nav',
 	id: 'aae-a-nav-handler',
@@ -125,31 +283,15 @@ register( {
 		const navId = nav.getAttribute( 'data-id' );
 		if ( ! navId ) return;
 
-		if ( isEditor() ) {
-			if ( nav.dataset.navInit === 'true' ) return;
-			nav.dataset.navInit = 'true';
-
-			/*
-			 * Editor: keep ONE dropdown chain visible at a time — the chain that
-			 * leads to whatever the user just clicked. Survives style-tab edits
-			 * (panel clicks don't fire this listener) and color-picker popups
-			 * (which can briefly strip Elementor's `.elementor-element-editable`).
-			 *
-			 * Listening on mousedown (capture) so we run BEFORE Elementor's own
-			 * selection handler and aren't blocked by stopPropagation downstream.
-			 */
-			nav.addEventListener( 'mousedown', ( e ) => {
-				nav.querySelectorAll( '.aae-keep-open' )
-					.forEach( el => el.classList.remove( 'aae-keep-open' ) );
-
-				let item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-				while ( item && nav.contains( item ) ) {
-					item.classList.add( 'aae-keep-open' );
-					item = item.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-				}
-			}, true );
-			return;
-		}
+		/*
+		 * Editor: do NOTHING here. Any DOM mutation (classList changes,
+		 * data-attr writes) triggers Elementor's MutationObserver, which
+		 * re-renders the widget — and rapid re-renders on drop/device-switch
+		 * cause the editor to hang. (See Countdown's `isEditMode` skip for
+		 * the same reason.) Visibility is handled by the always-show CSS
+		 * rule in aae-a-nav.html.twig.
+		 */
+		if ( isEditor() ) return;
 
 		if ( nav.dataset.navInit === 'true' ) return;
 		nav.dataset.navInit = 'true';
@@ -183,10 +325,7 @@ register( {
 			/* Only handle click-trigger dropdown items; let leaves navigate normally. */
 			if ( item.dataset.hasDropdown !== 'true' || item.dataset.trigger !== 'click' ) return;
 
-			/* If the click landed inside this item's own dropdown, defer to the
-			 * nested handler that bubbled through `closest()` — don't toggle this
-			 * (outer) item, which would close its own dropdown. */
-			const ownSub = item.querySelector( ':scope > .aae-a-nav-sub' );
+			const ownSub = getSub( item );
 			if ( ownSub && ownSub.contains( e.target ) ) return;
 
 			const wasOpen = item.classList.contains( 'is-open' );
@@ -210,5 +349,191 @@ register( {
 		document.addEventListener( 'click', ( e ) => {
 			if ( ! nav.contains( e.target ) ) closeAllClickItems();
 		}, { signal: sig } );
+	},
+} );
+
+/* Mobile companion: moves the existing Nav DOM at the configured breakpoint,
+ * then restores the exact node to its original position on desktop. */
+register( {
+	elementType: 'e-aae-a-mobile-nav',
+	id: 'aae-a-mobile-nav-handler',
+	callback: ( { element } ) => {
+		const companion = element.classList.contains( 'aae-a-mobile-nav' )
+			? element
+			: element.querySelector( '.aae-a-mobile-nav' );
+		if ( ! companion ) return;
+		if ( isEditor() ) {
+			initEditorMobilePreview( companion );
+			return;
+		}
+		if ( companion.dataset.enabled !== 'true' ) return;
+
+		const sourceId = companion.dataset.sourceNavId;
+		const nav = document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` );
+		const mount = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
+			companion.querySelector( '.aae-mobile-nav-mount' ) ||
+			companion.querySelector( '.aae-mobile-nav-drawer' );
+		const toggle = companion.querySelector( '.aae-mobile-nav-toggle' );
+		const close = companion.querySelector( '.aae-mobile-nav-close' );
+		const overlay = companion.querySelector( '.aae-mobile-nav-overlay' );
+		const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
+		const arrowTemplate = companion.querySelector( '.aae-mobile-nav-arrow-template' );
+		if ( ! nav || ! mount || ! toggle || ! close || ! overlay || ! drawer ) return;
+		if ( close.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
+			drawer.insertBefore( close, drawer.firstChild );
+		}
+
+		const id = companion.getAttribute( 'data-id' );
+		const ctrl = new AbortController();
+		const sig = ctrl.signal;
+		const anchor = document.createComment( `aae-nav-anchor-${ sourceId }` );
+		let mounted = false;
+		let lastFocus = null;
+		let media;
+
+		companion.classList.toggle( 'position-left', companion.dataset.position === 'left' );
+	drawer.id = `aae-mobile-nav-drawer-${ id }`;
+	toggle.setAttribute( 'role', 'button' );
+	toggle.setAttribute( 'tabindex', '0' );
+	toggle.setAttribute( 'aria-label', 'Open menu' );
+	toggle.setAttribute( 'aria-controls', drawer.id );
+	toggle.setAttribute( 'aria-expanded', 'false' );
+	close.setAttribute( 'role', 'button' );
+	close.setAttribute( 'tabindex', '0' );
+	close.setAttribute( 'aria-label', 'Close menu' );
+	drawer.setAttribute( 'role', 'dialog' );
+	drawer.setAttribute( 'aria-modal', 'true' );
+	drawer.setAttribute( 'aria-hidden', 'true' );
+
+		const setSubmenu = ( item, open ) => {
+			const button = item.querySelector( ':scope > .aae-mobile-submenu-toggle' );
+			const sub = getSub( item );
+			item.classList.toggle( 'is-mobile-submenu-open', open );
+			if ( sub ) sub.hidden = ! open;
+			button?.setAttribute( 'aria-expanded', String( open ) );
+		};
+
+		const closeSubmenus = () => nav.querySelectorAll( '.is-mobile-submenu-open' )
+			.forEach( item => setSubmenu( item, false ) );
+
+		const addArrows = () => {
+			nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+				if ( item.querySelector( ':scope > .aae-mobile-submenu-toggle' ) ) return;
+				const sub = getSub( item );
+				if ( ! sub ) return;
+				sub.hidden = true;
+				if ( ! sub.id ) sub.id = `aae-mobile-submenu-${ sourceId }-${ item.dataset.id }`;
+				const button = document.createElement( 'button' );
+				button.type = 'button';
+				button.className = 'aae-mobile-submenu-toggle';
+				button.setAttribute( 'aria-label', 'Toggle submenu' );
+				button.setAttribute( 'aria-haspopup', 'true' );
+				button.setAttribute( 'aria-expanded', 'false' );
+				button.setAttribute( 'aria-controls', sub.id );
+				const icon = arrowTemplate?.cloneNode( true );
+				if ( icon ) {
+					icon.classList.remove( 'aae-mobile-nav-arrow-template' );
+					icon.classList.add( 'aae-mobile-submenu-icon' );
+					icon.removeAttribute( 'data-id' );
+					button.appendChild( icon );
+				} else {
+					button.textContent = '⌄';
+				}
+				item.insertBefore( button, sub );
+			} );
+		};
+
+		const removeArrows = () => {
+			nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+				const sub = getSub( item );
+				if ( sub ) sub.removeAttribute( 'hidden' );
+			} );
+			nav.querySelectorAll( '.aae-mobile-submenu-toggle' ).forEach( button => button.remove() );
+		};
+
+		const closeDrawer = ( restoreFocus = true ) => {
+			companion.classList.remove( 'is-open' );
+			toggle.setAttribute( 'aria-expanded', 'false' );
+			drawer.setAttribute( 'aria-hidden', 'true' );
+			closeSubmenus();
+			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
+			if ( restoreFocus ) lastFocus?.focus?.();
+		};
+
+		const openDrawer = () => {
+			lastFocus = document.activeElement;
+			companion.classList.add( 'is-open' );
+			toggle.setAttribute( 'aria-expanded', 'true' );
+			drawer.setAttribute( 'aria-hidden', 'false' );
+			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.add( 'aae-mobile-nav-scroll-lock' );
+			window.requestAnimationFrame( () => close.focus?.() );
+		};
+
+		const enterMobile = () => {
+			if ( mounted ) return;
+			nav.parentNode?.insertBefore( anchor, nav );
+			mount.appendChild( nav );
+			nav.classList.add( 'aae-nav-mobile-mounted' );
+			companion.classList.add( 'is-mobile' );
+			addArrows();
+			mounted = true;
+		};
+
+		const leaveMobile = () => {
+			if ( ! mounted ) return;
+			closeDrawer( false );
+			removeArrows();
+			nav.classList.remove( 'aae-nav-mobile-mounted' );
+			anchor.parentNode?.insertBefore( nav, anchor );
+			anchor.remove();
+			companion.classList.remove( 'is-mobile' );
+			mounted = false;
+		};
+
+		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
+		media = window.matchMedia( `(max-width: ${ breakpoint }px)` );
+		const syncMode = () => media.matches ? enterMobile() : leaveMobile();
+		media.addEventListener( 'change', syncMode, { signal: sig } );
+
+		const activate = ( node, action ) => {
+			node.addEventListener( 'click', action, { signal: sig } );
+			node.addEventListener( 'keydown', e => {
+				if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); action(); }
+			}, { signal: sig } );
+		};
+		activate( toggle, openDrawer );
+		activate( close, () => closeDrawer() );
+		overlay.addEventListener( 'click', () => closeDrawer(), { signal: sig } );
+
+		nav.addEventListener( 'click', e => {
+			if ( ! mounted ) return;
+			const button = e.target.closest( '.aae-mobile-submenu-toggle' );
+			if ( button ) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				const item = button.closest( '.aae-a-nav-item' );
+				const opening = ! item.classList.contains( 'is-mobile-submenu-open' );
+				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
+					.forEach( sibling => { if ( sibling !== item ) setSubmenu( sibling, false ); } );
+				setSubmenu( item, opening );
+				return;
+			}
+			if ( companion.dataset.closeOnLink === 'true' && e.target.closest( 'a' ) && ! e.target.closest( '[data-has-dropdown="true"] > .aae-a-nav-item-label' ) ) {
+				closeDrawer();
+			}
+		}, { capture: true, signal: sig } );
+
+		document.addEventListener( 'keydown', e => {
+			if ( e.key === 'Escape' && companion.classList.contains( 'is-open' ) ) closeDrawer();
+			if ( e.key !== 'Tab' || ! companion.classList.contains( 'is-open' ) ) return;
+			const focusable = [ close, ...drawer.querySelectorAll( 'a[href], button, [tabindex="0"]' ) ];
+			if ( ! focusable.length ) return;
+			const first = focusable[ 0 ];
+			const last = focusable[ focusable.length - 1 ];
+			if ( e.shiftKey && document.activeElement === first ) { e.preventDefault(); last.focus(); }
+			else if ( ! e.shiftKey && document.activeElement === last ) { e.preventDefault(); first.focus(); }
+		}, { signal: sig } );
+
+		syncMode();
 	},
 } );

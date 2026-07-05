@@ -434,6 +434,40 @@ which we replace with our `KINDS` scan/bind dispatcher.
 
 ---
 
+## Elementor core reference (Atomic v4 architecture)
+
+A full clone of the official Elementor development repo lives at:
+
+```
+e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
+```
+
+- **What it is:** `github.com/elementor/elementor`, branch `main` — the
+  development version (e.g. 4.3.0 while the installed runtime plugin
+  `elementor/` is 4.1.4). `git log` / `git pull` it to track upcoming
+  architecture. This is the source of truth for **Atomic v4** APIs.
+- **Where to look:**
+  - PHP atomic core: `modules/atomic-widgets/` — prop types
+    (`prop-types/*.php`), the style schema (`styles/style-schema.php`),
+    style transformers (`props-resolver/transformers/styles/`), element
+    base classes (`elements/base/`), styles manager + base-styles cache
+    (`styles/atomic-styles-manager.php`, `styles/atomic-widget-base-styles.php`).
+  - Editor (TS/React): `packages/packages/core/*` — `editor-canvas`,
+    `editor-editing-panel`, `editor-styles-repository`, `editor-elements-panel`, …
+  - Docs: `docs/`, `AGENTS.md` at repo root.
+- **When an atomic API question comes up** (valid style keys, prop-type
+  shapes, base-style pipeline, why a definition silently fails), read the
+  answer HERE first instead of guessing. Example: "why doesn't my
+  `define_base_styles()` work" → `styles/style-schema.php` shows there is
+  no `flex-grow`/`flex-shrink`/`flex-basis` key, only the `flex` shorthand
+  (`Flex_Prop_Type`), and `height` must be a `Size_Prop_Type` — one invalid
+  key fails the whole definition silently.
+- **Caveat:** the RUNTIME is the installed `elementor/` plugin, which is
+  older than this repo. Before using an API found here, confirm it exists
+  in the installed version too.
+
+---
+
 ## Quick reference
 
 ### To add a control to an existing effect

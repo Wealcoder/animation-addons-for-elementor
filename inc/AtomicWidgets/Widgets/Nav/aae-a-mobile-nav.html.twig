@@ -1,0 +1,14 @@
+{% set classes = ['aae-a-mobile-nav', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-source-nav-id="{{ settings.source_nav_id | default('') | e('html_attr') }}"
+    data-enabled="{{ settings.enabled ? 'true' : 'false' }}"
+    data-breakpoint="{{ settings.breakpoint | default('767') }}"
+    data-position="{{ settings.position | default('right') }}"
+    data-close-on-link="{{ settings.close_on_link ? 'true' : 'false' }}"
+    data-lock-scroll="{{ settings.lock_scroll ? 'true' : 'false' }}"
+    {{ editor_attributes | default('') | raw }}>
+    {{ children_placeholder | raw }}
+</div>

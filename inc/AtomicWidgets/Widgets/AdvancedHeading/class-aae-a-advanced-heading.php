@@ -181,9 +181,11 @@ class AAE_A_Advanced_Heading extends Atomic_Element_Base {
 			->build();
 	}
 
-	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-paragraph', 'e-heading', 'e-svg' ];
-	}
+	// No allowed-child-types whitelist: a non-empty list makes the editor's
+	// drag-drop gate (getChildType) STRICT — only listed types can be dropped,
+	// which silently blocked AAE atomic widgets like e-aae-a-counter. Returning
+	// the base default ([] = allow all, like flexbox/div-block) lets any native
+	// or AAE atomic widget be added inside the heading — including future ones.
 
 	protected function define_default_html_tag() {
 		return 'h2';

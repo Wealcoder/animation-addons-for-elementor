@@ -1,0 +1,111 @@
+/* ----------------------------------------------------------------------- *
+ *  AAE Loop Grid — atomic nested element.
+ *
+ *  The column layout is FLEXBOX-driven: the Loop Layout's base style is
+ *  display:flex + wrap and each Loop Item's base style is `flex: 1 1 32%`
+ *  (3-up by default), tuned from the Style panel. There is no columns
+ *  setting/CSS var. This file only carries what base styles cannot express.
+ * ----------------------------------------------------------------------- */
+
+/* The grid container is `.aae-a-loop-grid` when the Loop Layout is present
+ * (new nested tree, editor + frontend) and `.aae-a-loop-grid-wrap` for the
+ * legacy flat tree. Both must be a grid so editor and frontend match exactly. */
+
+/* When the Loop Layout IS the grid, the outer wrap must NOT also be a grid
+ * (it just holds the layout + pagination stacked). */
+.aae-a-loop-grid-wrap:has(> .aae-a-loop-grid) {
+	display: block !important;
+}
+
+
+
+.aae-a-loop-grid-empty {
+	padding: 24px;
+	text-align: center;
+	color: var(--e-a-color-txt-muted, #818a96);
+}
+
+/* ----------------------------------------------------------------------- *
+ *  Pagination — atomic nested (Prev / Numbers / Next / Load More).
+ *
+ *  The DEFAULT LOOK of each piece (layout, padding, border, colours, arrow
+ *  size, space-between) lives in each widget's PHP define_base_styles(), so it
+ *  is fully overridable from the editor Style panel. This file only carries
+ *  what a base style CANNOT express: interaction STATES (:hover, .is-active,
+ *  .is-disabled, .is-loading), the RUNTIME-generated number links (<a> markup
+ *  built at render, not real elements), the editor drop-zone hide, and the
+ *  pagination-type visibility.
+ * ----------------------------------------------------------------------- */
+
+/* State-only rules for the nav (default look is in base styles). */
+.aae-a-loop-nav {
+	&:hover { filter: brightness(0.97); }
+
+	&.is-disabled {
+		opacity: 0.4;
+		pointer-events: none;
+		cursor: default;
+	}
+}
+
+/* Numbers container: hide the editor's empty drop-zone (numbers are generated
+ * at render, so this element must not read as a droppable container). */
+.aae-a-loop-numbers {
+	.elementor-empty-view,
+	> .elementor-add-section,
+	> .elementor-first-add {
+		display: none !important;
+	}
+}
+
+/* Runtime-generated number links (<a> / gap span). Not real atomic elements,
+ * so their look can't come from a base style — the Numbers element's own Style
+ * panel styles the CONTAINER; these style the generated items. */
+.aae-a-loop-num {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 36px;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid var(--e-a-border-color, #d5d8dc);
+	border-radius: 4px;
+	color: var(--e-a-color-txt, #1a1a1a);
+	text-decoration: none;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+	&:hover { background: var(--e-a-bg-hover, #f1f2f3); }
+
+	&.is-active {
+		background: var(--e-a-btn-bg-primary, #515962);
+		border-color: var(--e-a-btn-bg-primary, #515962);
+		color: var(--e-a-btn-color-invert, #fff);
+		pointer-events: none;
+	}
+
+	&-gap {
+		border: none;
+		cursor: default;
+		pointer-events: none;
+		min-width: auto;
+		padding: 0 4px;
+	}
+}
+
+/* Load More state-only (default look is in base styles). */
+.aae-a-loop-loadmore {
+	&:hover { filter: brightness(1.08); }
+
+	&.is-loading {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+}
+
+.aae-a-loop-pagination.is-loading { opacity: 0.7; }
+
+/* No type-driven visibility any more: every pagination piece (Prev/Next,
+ * Numbers, Load More) renders by default and the user hides the unwanted ones
+ * from the Style panel (display: none). The frontend runtime is DOM-driven —
+ * it wires whichever pieces are present + visible. */

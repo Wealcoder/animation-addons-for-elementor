@@ -1,0 +1,425 @@
+.aae-a-nav {
+	position: relative !important;
+}
+
+.aae-a-nav .aae-a-nav-item {
+	position: relative;
+	list-style: none;
+	width: auto;
+	flex: 0 0 auto;
+}
+
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+	position: absolute;
+	inset-block-start: 100%;
+	inset-inline-start: 0;
+	min-width: 200px;
+	z-index: 100;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 150ms ease, visibility 0s linear 150ms;
+}
+
+/* Show when frontend runtime toggles .is-open. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	transition: opacity 150ms ease, visibility 0s;
+}
+
+/* Nested sub-dropdown opens to the right. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+	inset-block-start: 0;
+	inset-inline-start: 100%;
+}
+
+/* Cursor pointer on items with dropdown enabled. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] {
+	cursor: pointer;
+}
+
+/* ══ CSS Dropdown Animations ══ */
+@keyframes aae-nav-grow-down {
+	0%   { transform: scaleY(0); }
+	80%  { transform: scaleY(1.05); }
+	100% { transform: scaleY(1); }
+}
+@keyframes aae-nav-rotate-3d {
+	0%   { transform: rotateX(-90deg); opacity: 0; }
+	70%  { transform: rotateX(20deg); }
+	100% { transform: rotateX(0deg); opacity: 1; }
+}
+@keyframes aae-nav-grow-out {
+	0%   { transform: scale(0); opacity: 0; }
+	80%  { transform: scale(1.05); }
+	100% { transform: scale(1); opacity: 1; }
+}
+@keyframes aae-nav-slide-item {
+	0%   { opacity: 0; transform: translateY(-16px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes aae-nav-rotate-item {
+	0%   { opacity: 0; transform: rotateX(-90deg); }
+	50%  { transform: rotateX(-20deg); }
+	100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+.aae-a-nav {
+	min-height: unset !important; /* override Elementor's atomic .e-con default */
+	/* grow-down */
+	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-grow-down 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* rotate-3d */
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-rotate-3d 400ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* grow-out */
+	.aae-a-nav-item[data-dropdown-anim="grow-out"].is-open > *:not(.aae-a-nav-item-label) {
+		animation: aae-nav-grow-out 300ms ease-in-out forwards;
+		transform-origin: top center;
+	}
+	/* slide-items — targets the children of the dropdown container. */
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > * {
+		animation: aae-nav-slide-item 300ms ease-out forwards;
+		opacity: 0;
+	}
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) { animation-delay: 240ms; }
+	/* rotate-items */
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > * {
+		animation: aae-nav-rotate-item 300ms ease-in-out forwards;
+		opacity: 0;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) { animation-delay: 240ms; }
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-item:not([data-has-dropdown="true"]) > .elementor-empty-view {
+	display: none;
+}
+
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-con:not(.aae-a-nav-item-label) {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Mobile companion — completely inert until its JS breakpoint matcher adds
+ * `.is-mobile`; desktop Nav selectors and hierarchy remain unchanged.
+ *
+ * NOT hidden via `display: none`: in the editor the companion keeps this
+ * hidden state forever (`.is-mobile` is frontend-only), and display:none on
+ * an atomic element whose empty child Flexboxes carry Elementor's absolutely
+ * positioned empty-view reproduces the same v4 renderer freeze on device
+ * switch as the dropdown hide rule at the top of this file. Hide with the
+ * proven-safe combo instead: out-of-flow + zero size + visibility. */
+.aae-a-mobile-nav {
+	position: absolute !important;
+	inline-size: 0 !important;
+	block-size: 0 !important;
+	min-block-size: 0 !important;
+	min-inline-size: 0 !important;
+	overflow: hidden !important;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.aae-a-mobile-nav.is-mobile {
+	display: block;
+	position: relative !important;
+	inline-size: 0 !important;
+	block-size: 0 !important;
+	min-inline-size: 0 !important;
+	min-block-size: 0 !important;
+	max-inline-size: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	flex: 0 0 0 !important;
+	overflow: visible !important;
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 9999;
+
+	.aae-mobile-nav-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	.aae-mobile-nav-overlay {
+		position: fixed !important;
+		inset: 0 !important;
+		z-index: 9998;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 250ms ease, visibility 0s linear 250ms;
+	}
+
+	.aae-mobile-nav-drawer {
+		position: fixed !important;
+		inset-block: 0 !important;
+		inset-inline-end: 0 !important;
+		z-index: 9999;
+		display: flex !important;
+		flex-direction: column !important;
+		overflow-y: auto;
+		max-inline-size: 100vw;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translateX(100%);
+		transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 320ms;
+	}
+
+	.aae-mobile-nav-close {
+		position: relative !important;
+		inset: auto !important;
+		align-self: flex-end;
+		display: inline-flex !important;
+		cursor: pointer;
+	}
+
+	.aae-mobile-nav-arrow-template {
+		display: none !important;
+	}
+
+	&.position-left .aae-mobile-nav-drawer {
+		inset-inline: 0 auto !important;
+		transform: translateX(-100%);
+	}
+
+	&.is-open {
+		.aae-mobile-nav-overlay {
+			opacity: 1;
+			visibility: visible;
+			pointer-events: auto;
+			transition-delay: 0s;
+		}
+		.aae-mobile-nav-drawer {
+			visibility: visible;
+			pointer-events: auto;
+			transform: translateX(0);
+			transition-delay: 0s;
+		}
+	}
+}
+
+/* Visual defaults intentionally have zero specificity. Elementor's generated
+ * local Style-tab class therefore always wins for background, dimensions and
+ * spacing without requiring !important. */
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-overlay) {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-drawer) {
+	height: 100dvh;
+	padding: 24px;
+	background: #fff;
+	flex-direction: column;
+	justify-content: flex-start !important;
+	align-items: stretch !important;
+	gap: 20px;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-header) {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end !important;
+	align-items: center !important;
+	flex: 0 0 auto !important;
+	min-height: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-menu-area) {
+	width: 100%;
+	display: flex;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	justify-content: flex-start !important;
+	flex: 1 1 0 !important;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-footer) {
+	width: 100%;
+	display: flex;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	flex: 0 0 auto !important;
+	min-height: 0;
+	margin-block-start: auto !important;
+}
+
+/* In editor the real root-level close model remains selectable (avoids the
+ * v4 nested-model freeze); a sanitized styled clone is rendered in drawer. */
+.elementor-editor-active .aae-a-mobile-nav.is-mobile > .aae-mobile-nav-close {
+	display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer > .elementor-empty-view {
+	display: none !important;
+}
+
+/* Only the Footer Custom Container is a user-content drop zone. Suppress
+ * Elementor's empty placeholders on the companion's structural surfaces. */
+.elementor-editor-active .aae-a-mobile-nav > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-overlay > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-drawer > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-header > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-menu-area > .elementor-empty-view {
+	display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-footer > .elementor-empty-view {
+	display: flex !important;
+}
+
+body.aae-mobile-nav-scroll-lock {
+	overflow: hidden;
+}
+
+.aae-a-nav.aae-nav-mobile-mounted {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	width: 100%;
+	gap: 0 !important;
+
+	/* A styled dropdown can carry its own margin/padding. Fully remove closed
+	 * panels from grid layout so those authored styles cannot leave a gap. */
+	[hidden] {
+		display: none !important;
+	}
+
+	.aae-a-nav-item {
+		display: grid !important;
+		grid-template-columns: minmax(0, 1fr) auto !important;
+		grid-template-areas:
+			"label toggle"
+			"submenu submenu";
+		align-items: center;
+		width: 100%;
+		flex: none;
+	}
+
+	.aae-a-nav-item > .aae-a-nav-item-label {
+		grid-area: label;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+	}
+
+	.aae-mobile-submenu-toggle {
+		grid-area: toggle;
+		justify-self: end;
+		align-self: center;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		font: inherit;
+		line-height: 0;
+	}
+
+	.aae-mobile-submenu-icon {
+		display: block;
+		flex: none;
+		transition: transform 200ms ease;
+	}
+
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+	.aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		position: static !important;
+		grid-area: submenu;
+		width: 100%;
+		visibility: hidden;
+		opacity: 0;
+		pointer-events: none;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 250ms ease, opacity 200ms ease, visibility 0s linear 250ms;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+	.aae-a-nav-item.is-mobile-submenu-open > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		visibility: visible;
+		opacity: 1;
+		pointer-events: auto;
+		max-height: 2000px;
+		transition-delay: 0s;
+	}
+
+	.aae-a-nav-item.is-mobile-submenu-open > .aae-mobile-submenu-toggle .aae-mobile-submenu-icon {
+		transform: rotate(180deg);
+	}
+}
+
+/* Gap remains a normal Elementor grid property. This zero-specificity value
+ * is only the initial spacing; Nav Item → Layout → Gap overrides it. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-a-nav-item) {
+	column-gap: 8px;
+}
+
+/* Runtime buttons are only interaction wrappers. Keep the wrapper neutral so
+ * it cannot make dropdown rows taller than regular menu rows. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-toggle) {
+	min-inline-size: 0;
+	min-block-size: 0;
+	padding: 0;
+}
+
+/* Fallback only. The cloned Atomic SVG local class has higher specificity,
+ * so Width/Height values authored in Elementor override these dimensions. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-icon) {
+	inline-size: 20px;
+	block-size: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aae-a-mobile-nav *,
+	.aae-a-nav.aae-nav-mobile-mounted * {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}
