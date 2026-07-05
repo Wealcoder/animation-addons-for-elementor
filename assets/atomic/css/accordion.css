@@ -197,4 +197,3 @@
   transform: translateY(0);
   transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s;
 }
-/*# sourceMappingURL=accordion.css.map */
