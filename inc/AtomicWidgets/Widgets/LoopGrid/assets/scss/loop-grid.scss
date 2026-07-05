@@ -31,10 +31,8 @@
  *  The DEFAULT LOOK of each piece (layout, padding, border, colours, arrow
  *  size, space-between) lives in each widget's PHP define_base_styles(), so it
  *  is fully overridable from the editor Style panel. This file only carries
- *  what a base style CANNOT express: interaction STATES (:hover, .is-active,
- *  .is-disabled, .is-loading), the RUNTIME-generated number links (<a> markup
- *  built at render, not real elements), the editor drop-zone hide, and the
- *  pagination-type visibility.
+ *  what a base style cannot express: runtime states, the number-gap state and
+ *  editor-only structural behavior.
  * ----------------------------------------------------------------------- */
 
 /* State-only rules for the nav (default look is in base styles). */
@@ -48,8 +46,7 @@
 	}
 }
 
-/* Numbers container: hide the editor's empty drop-zone (numbers are generated
- * at render, so this element must not read as a droppable container). */
+/* Numbers container has a fixed seven-slot structure; hide manual insertion UI. */
 .aae-a-loop-numbers {
 	.elementor-empty-view,
 	> .elementor-add-section,
@@ -58,39 +55,13 @@
 	}
 }
 
-/* Runtime-generated number links (<a> / gap span). Not real atomic elements,
- * so their look can't come from a base style — the Numbers element's own Style
- * panel styles the CONTAINER; these style the generated items. */
-.aae-a-loop-num {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 36px;
-	height: 36px;
-	padding: 0 10px;
-	border: 1px solid var(--e-a-border-color, #d5d8dc);
-	border-radius: 4px;
-	color: var(--e-a-color-txt, #1a1a1a);
-	text-decoration: none;
-	cursor: pointer;
-	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-
-	&:hover { background: var(--e-a-bg-hover, #f1f2f3); }
-
-	&.is-active {
-		background: var(--e-a-btn-bg-primary, #515962);
-		border-color: var(--e-a-btn-bg-primary, #515962);
-		color: var(--e-a-btn-color-invert, #fff);
-		pointer-events: none;
-	}
-
-	&-gap {
-		border: none;
-		cursor: default;
-		pointer-events: none;
-		min-width: auto;
-		padding: 0 4px;
-	}
+/* Gap is runtime state, not a persisted Atomic style state. */
+.aae-a-loop-number.is-gap {
+	border: none;
+	cursor: default;
+	pointer-events: none;
+	min-width: auto;
+	padding: 0 4px;
 }
 
 /* Load More state-only (default look is in base styles). */

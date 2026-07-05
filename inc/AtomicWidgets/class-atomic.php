@@ -287,6 +287,7 @@ final class Atomic
 			'aae-a-loop-prev',
 			'aae-a-loop-next',
 			'aae-a-loop-numbers',
+			'aae-a-loop-number',
 			'aae-a-loop-loadmore',
 			'aae-a-loop-arrow',
 			'aae-a-loop-nav-wrap',
@@ -568,6 +569,13 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
 				'icon'         => 'eicon-number-field',
 				'keywords'     => [ 'loop', 'numbers', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-number' => [
+				'label'        => 'Loop Page Number',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'icon'         => 'eicon-number-field',
+				'keywords'     => [ 'loop', 'number', 'pagination' ],
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-loadmore' => [
@@ -1800,6 +1808,11 @@ final class Atomic
 			'aae-a-loop-numbers' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-numbers.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-number' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-number.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-loadmore' => [

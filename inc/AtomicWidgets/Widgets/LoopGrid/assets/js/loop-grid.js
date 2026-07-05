@@ -122,21 +122,75 @@
 		return pages;
 	}
 
+	function pageUrl( page ) {
+		var url = new URL( window.location.href );
+		if ( page > 1 ) {
+			url.searchParams.set( 'aae_page', String( page ) );
+		} else {
+			url.searchParams.delete( 'aae_page' );
+		}
+		return url.toString();
+	}
+
+	/** Update the seven persistent atomic link slots without replacing them. */
+	function updateAtomicNumberSlots( numbersEl, current, total ) {
+		var slots = numbersEl.querySelectorAll( '[data-aae-page-slot]' );
+		if ( ! slots.length ) {
+			return;
+		}
+
+		var items = smartPages( current, total );
+		Array.prototype.forEach.call( slots, function ( slot, index ) {
+			var item = items[ index ];
+			var isGap = item === '...';
+			var isCurrent = item === current;
+
+			slot.hidden = typeof item === 'undefined';
+			slot.classList.toggle( 'aae-a-loop-num-gap', isGap );
+			slot.classList.toggle( 'is-gap', isGap );
+			slot.classList.toggle( 'is-active', isCurrent );
+			slot.classList.toggle( 'e--selected', isCurrent );
+
+			if ( typeof item === 'undefined' ) {
+				slot.removeAttribute( 'href' );
+				slot.removeAttribute( 'data-aae-page' );
+				slot.removeAttribute( 'aria-current' );
+				slot.setAttribute( 'aria-hidden', 'true' );
+				slot.setAttribute( 'tabindex', '-1' );
+				return;
+			}
+
+			if ( isGap ) {
+				slot.textContent = '\u2026';
+				slot.removeAttribute( 'href' );
+				slot.removeAttribute( 'data-aae-page' );
+				slot.removeAttribute( 'aria-current' );
+				slot.setAttribute( 'aria-hidden', 'true' );
+				slot.setAttribute( 'tabindex', '-1' );
+				return;
+			}
+
+			slot.textContent = String( item );
+			slot.href = pageUrl( item );
+			slot.setAttribute( 'data-aae-page', String( item ) );
+			slot.setAttribute( 'aria-label', 'Go to page ' + item );
+			slot.removeAttribute( 'aria-hidden' );
+			slot.removeAttribute( 'tabindex' );
+
+			if ( isCurrent ) {
+				slot.setAttribute( 'aria-current', 'page' );
+			} else {
+				slot.removeAttribute( 'aria-current' );
+			}
+		} );
+
+	}
+
 	function rebuildNumbers( numbersEl, current, total ) {
 		if ( ! numbersEl ) {
 			return;
 		}
-		var items = smartPages( current, total );
-		var out = '';
-		items.forEach( function ( p ) {
-			if ( p === '...' ) {
-				out += '<span class="aae-a-loop-num aae-a-loop-num-gap">…</span>';
-			} else {
-				out += '<a href="#" class="aae-a-loop-num' + ( p === current ? ' is-active' : '' ) +
-					'" data-aae-page="' + p + '">' + p + '</a>';
-			}
-		} );
-		numbersEl.innerHTML = out;
+		updateAtomicNumberSlots( numbersEl, current, total );
 	}
 
 	function updatePrevNextState( pagination, current, total ) {

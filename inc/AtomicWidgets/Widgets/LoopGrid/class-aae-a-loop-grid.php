@@ -343,7 +343,6 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			// Load More) — see AAE_A_Loop_Pagination::define_default_children().
 			AAE_A_Loop_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
-				->is_locked( true )
 				->build(),
 		];
 

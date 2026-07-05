@@ -1,4 +1,4 @@
-import { register } from '@elementor/frontend-handlers';
+const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 
 const g = () => window.gsap;
 

@@ -160,7 +160,7 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 				->build(),
 			AAE_A_Loop_Numbers::generate()
 				->editor_settings( [ 'title' => 'Page Numbers' ] )
-				->is_locked( true )
+				->children( AAE_A_Loop_Numbers::build_number_slots() )
 				->build(),
 			AAE_A_Loop_LoadMore::generate()
 				->editor_settings( [ 'title' => 'Load More' ] )
