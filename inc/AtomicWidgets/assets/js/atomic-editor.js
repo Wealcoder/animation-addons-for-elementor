@@ -23,7 +23,9 @@
 
 import { state, isInitialized } from './atomic-editor/state.js';
 import { installRunWrapper } from './atomic-editor/command-bridge.js';
-import { installItemsPanel } from './atomic-editor/accordion-items-panel.js';
+// accordion-items-panel.js (vanilla injected list) is retired: the "Items"
+// section now renders the React AccordionItemsControl registered under
+// 'aae-items' in src/modules/atomic/element-controls (drag/duplicate/remove).
 import { installLoopGrid } from './atomic-editor/loop-grid.js';
 import { installPostTitleLimit } from './atomic-editor/post-title-limit.js';
 
@@ -43,7 +45,6 @@ function boot() {
 }
 
 boot();
-installItemsPanel();
 installLoopGrid();
 installPostTitleLimit();
 
