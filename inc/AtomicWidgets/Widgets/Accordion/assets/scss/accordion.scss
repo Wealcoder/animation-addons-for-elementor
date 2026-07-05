@@ -3,7 +3,7 @@
         border: 1px solid #e0e0e0;
         border-radius: 4px;
         background: #fff;
-        overflow: hidden;
+        overflow: hidden;   
     }
 
     /* Icon position - affects header layout.
@@ -13,24 +13,10 @@
     }
 
     .aae-accordion-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: 15px 20px;
-        background: transparent;
-        border: none;
+        
         cursor: pointer;
         text-align: left;
         transition: background-color 0.3s ease;
-
-        &:hover {
-            background: #f9f9f9;
-        }
-
-        &:focus {
-            outline: none;
-        }
 
         // Header slot - holds the injected Header Div_Block
         .aae-header-content {
@@ -58,16 +44,13 @@
                 white-space: nowrap;
             }
 
-            // Header Icons (SVG) — open/close indicators. Only what CANNOT be
-            // element styles lives here: `display` (the .active show/hide rules
-            // below own it — per-element display styles made both icons render
-            // on collapsed headers), `flex-shrink` (no standalone style-schema
-            // key), and the inner svg fill (targets a tag, not an element).
-            // Size (24x24) and centering are seeded as local element styles by
-            // the editor bridge (accordion-header-styles.js) — editable per icon.
             .aae-header-icon-element {
                 display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 flex-shrink: 0;
+                width: 24px !important;
+                height: 24px !important;
 
                 svg {
                     width: 100% !important;
@@ -78,40 +61,19 @@
         }
     }
 
-    /* ---------- ICON VISIBILITY (single source of truth) ----------
-       Collapsed (default) state: only the open (+) icon shows; hide the close
-       icon. The `.active` rules below invert this for the open item.
-
-       The open icon is visible by default via `.aae-header-icon-element`
-       (display: inline-flex above) — no per-icon "show" rule, so the editor
-       always has a visible icon the instant the item is dropped, never a blank.
-
-       The hide/show selectors are scoped as
-       `.aae-a-accordion-item .aae-header-icon-element.aae-header-icon-{open|close}`
-       (specificity 0,3,0) — NOT through the `.aae-accordion-header
-       .aae-header-element` path. In the editor the icon is sometimes still
-       inside the hidden children-injector (before distribution) or wrapped by
-       an extra `.elementor-element`, so the header path can fail to match and
-       both icons render. The item + dual-class path always matches wherever the
-       icon sits, and !important beats the Atomic_Svg base `display`. */
+    
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
 
-    /* Collapsed by default. Height is animated via max-height, driven by JS
-       (it sets an explicit px target so the transition is smooth, then settles
-       to `none` when fully open). overflow:hidden keeps content clipped while
-       collapsing. Works the same in the editor and on the frontend. */
+
     .aae-accordion-content-wrapper {
         max-height: 0;
         overflow: hidden;
         transition: max-height var(--aae-accordion-speed, 400ms) ease;
     }
 
-    /* ---------- OPEN STATE ---------- */
-    // Active item: hide the open icon, show the close icon. Same item +
-    // dual-class path as the collapsed rule (+ the .active class for higher
-    // specificity), so it matches wherever the icon sits in the editor DOM.
+   
     .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-open {
         display: none !important;
     }
@@ -147,30 +109,10 @@
             transition: padding var(--aae-accordion-speed, 400ms) ease;
         }
 
-        // Injected Content Div_Block (Text + Image)
-        // .aae-content-element {
-        //     display: flex;
-        //     flex-direction: column;
-        //     gap: 15px;
-
-        //     .aae-content-text-element {
-        //         margin: 0;
-        //         line-height: 1.6;
-        //     }
-
-        //     .aae-content-image-element {
-        //         max-width: 100%;
-        //         height: auto;
-        //         border-radius: 4px;
-        //     }
-        // }
     }
 }
 
-/* ---------- EDITOR ONLY ----------
-   Scoped to Elementor's editor preview (body.elementor-editor-active); these
-   rules do not apply on the published page. Smoothly reveal/hide the injected
-   content Div_Block (.aae-content-element) based on the item's .active state. */
+/* ---------- EDITOR ONLY ---------- */
 .elementor-editor-active {
     .aae-a-accordion-item .aae-content-element {
         opacity: 0;

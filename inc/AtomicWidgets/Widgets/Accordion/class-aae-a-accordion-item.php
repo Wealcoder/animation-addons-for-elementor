@@ -317,6 +317,10 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		];
 
 		$header_icon_styles = [
+
+		//    'width' => String_Prop_Type::generate( '24px !important' ),
+		// 	'height' => String_Prop_Type::generate( '24px !important' ),
+			//'justify-content' => String_Prop_Type::generate( 'space-between' ),
 			'width' => Size_Prop_Type::generate( [
 				'size' => 24,
 				'unit' => 'px',

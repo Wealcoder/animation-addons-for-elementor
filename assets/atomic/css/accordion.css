@@ -1,4 +1,3 @@
-@charset "UTF-8";
 .aae-a-accordion .aae-a-accordion-item {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -13,22 +12,9 @@
   flex-direction: row-reverse;
 }
 .aae-a-accordion .aae-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 15px 20px;
-  background: transparent;
-  border: none;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.3s ease;
-}
-.aae-a-accordion .aae-accordion-header:hover {
-  background: #f9f9f9;
-}
-.aae-a-accordion .aae-accordion-header:focus {
-  outline: none;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-content {
   display: flex;
@@ -53,46 +39,23 @@
 }
 .aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: 24px !important;
+  height: 24px !important;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element svg {
   width: 100% !important;
   height: 100% !important;
 }
-.aae-a-accordion {
-  /* ---------- ICON VISIBILITY (single source of truth) ----------
-     Collapsed (default) state: only the open (+) icon shows; hide the close
-     icon. The `.active` rules below invert this for the open item.
-
-     The open icon is visible by default via `.aae-header-icon-element`
-     (display: inline-flex above) — no per-icon "show" rule, so the editor
-     always has a visible icon the instant the item is dropped, never a blank.
-
-     The hide/show selectors are scoped as
-     `.aae-a-accordion-item .aae-header-icon-element.aae-header-icon-{open|close}`
-     (specificity 0,3,0) — NOT through the `.aae-accordion-header
-     .aae-header-element` path. In the editor the icon is sometimes still
-     inside the hidden children-injector (before distribution) or wrapped by
-     an extra `.elementor-element`, so the header path can fail to match and
-     both icons render. The item + dual-class path always matches wherever the
-     icon sits, and !important beats the Atomic_Svg base `display`. */
-}
 .aae-a-accordion .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
   display: none !important;
-}
-.aae-a-accordion {
-  /* Collapsed by default. Height is animated via max-height, driven by JS
-     (it sets an explicit px target so the transition is smooth, then settles
-     to `none` when fully open). overflow:hidden keeps content clipped while
-     collapsing. Works the same in the editor and on the frontend. */
 }
 .aae-a-accordion .aae-accordion-content-wrapper {
   max-height: 0;
   overflow: hidden;
   transition: max-height var(--aae-accordion-speed, 400ms) ease;
-}
-.aae-a-accordion {
-  /* ---------- OPEN STATE ---------- */
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-open {
   display: none !important;
@@ -121,10 +84,7 @@
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
 
-/* ---------- EDITOR ONLY ----------
-   Scoped to Elementor's editor preview (body.elementor-editor-active); these
-   rules do not apply on the published page. Smoothly reveal/hide the injected
-   content Div_Block (.aae-content-element) based on the item's .active state. */
+/* ---------- EDITOR ONLY ---------- */
 .elementor-editor-active .aae-a-accordion-item .aae-content-element {
   opacity: 0;
   visibility: hidden;
