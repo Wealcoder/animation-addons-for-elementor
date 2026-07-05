@@ -11,12 +11,26 @@ function read(el) {
 
     const cfg = configFor(el, MAP);
 
-    if (!cfg || !cfg.url) {
+    if (!cfg) {
+        return null;
+    }
+
+    let url = cfg.url;
+
+    // "Current Post" mode: the wrapper-link config is keyed by element id, but
+    // loop repeats share one id — the per-instance URL rides the DOM instead
+    // (data-aae-post-url printed by the Loop Item twig, per post).
+    if (cfg.source === 'post') {
+        const host = el.closest('[data-aae-post-url]');
+        url = (host && host.getAttribute('data-aae-post-url')) || cfg.url;
+    }
+
+    if (!url) {
         return null;
     }
 
     return {
-        url: cfg.url,
+        url,
         isExternal: !!cfg.isExternal,
         enableEditor: !!cfg.enableEditor,
     };

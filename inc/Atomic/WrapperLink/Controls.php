@@ -38,7 +38,7 @@ final class Controls
         if (
             ! in_array(
                 $element->get_element_type(),
-                Bootstrap::target_element_types(),
+                Schema::target_element_types(),
                 true
             )
         ) {
