@@ -100,16 +100,30 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 
-// Temporary test script
-add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_script(
-        'aae-test-native-widget',
-        WCF_ADDONS_URL . 'public/test/widget-using-native-widget.js',
-        [],
-        '1.0.0',
-        true
-    );
-});
+// Temporary test script — global preset interactions. Runs on the live
+// frontend and inside the Elementor builder's preview iframe, since
+// preset-driven markup can appear in either context.
+if (!function_exists('aaeaddon_enqueue_global_preset_assets')) {
+    function aaeaddon_enqueue_global_preset_assets()
+    {
+        wp_enqueue_style(
+            'aae-global-preset',
+            WCF_ADDONS_URL . 'public/test/global-preset.css',
+            [],
+            '1.0.0'
+        );
+
+        wp_enqueue_script(
+            'aae-global-preset',
+            WCF_ADDONS_URL . 'public/test/global-preset.js',
+            [],
+            '1.0.0',
+            true
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'aaeaddon_enqueue_global_preset_assets');
+add_action('elementor/preview/enqueue_scripts', 'aaeaddon_enqueue_global_preset_assets');
 // post reaction ajax handeler
 
 if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {

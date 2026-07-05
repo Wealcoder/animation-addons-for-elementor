@@ -1,3 +1,5 @@
+// Global preset interactions — ripple hover effect for preset buttons.
+// Base styling + transition for the ripple span live in global-preset.css.
 // ==================================================================================
 // ================================== without gsap ====================================
 

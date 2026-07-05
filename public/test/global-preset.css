@@ -1,0 +1,19 @@
+/* Global preset interactions — ripple hover effect for preset buttons. */
+
+
+/*
+	classes - 
+	aae-btn-gen-shape,
+	aae-btn-gen-shape-content,
+	aae-btn-gen-shape-hr
+
+*/
+
+.aae-btn-gen-shape:hover .aae-btn-gen-divide-hr {
+	width: 120%;
+}
+
+
+.aae-btn-gen-shape:hover .aae-btn-cross-hr {
+	height: 100%;
+}
