@@ -47,6 +47,27 @@ function propValue(v) {
 	return v && typeof v === 'object' && 'value' in v ? v.value : v;
 }
 
+/** Recursively unwrap nested { $$type, value } shapes to plain JSON values. */
+function deepUnwrap(v) {
+	if (v && typeof v === 'object' && '$$type' in v && 'value' in v) {
+		return deepUnwrap(v.value);
+	}
+	if (Array.isArray(v)) {
+		return v.map(deepUnwrap);
+	}
+	if (v && typeof v === 'object') {
+		const out = {};
+		for (const k of Object.keys(v)) {
+			out[k] = deepUnwrap(v[k]);
+		}
+		return out;
+	}
+	return v;
+}
+
+/** Non-taxonomy advanced-filter props mirrored into the preview query. */
+const FILTER_KEYS = ['include_posts', 'exclude_posts', 'date_range', 'meta_key_exists', 'only_featured_image'];
+
 /** Read the loop-grid query settings from its editor container (falls back to defaults). */
 function readSettings(wrap) {
 	const id = wrap.getAttribute('data-id');
@@ -60,11 +81,39 @@ function readSettings(wrap) {
 			return d;
 		}
 	};
+
+	// Advanced query filters. Taxonomy term chips are DYNAMIC `tax_<taxonomy>`
+	// props, so enumerate the settings model instead of hardcoding a list. The
+	// plain-JSON blob goes to the server whole; build_query_args() sanitizes it
+	// and assembles the exact query the frontend render runs.
+	const filters = {};
+	try {
+		const attrs = c?.settings?.attributes || {};
+		for (const k of Object.keys(attrs)) {
+			if (!k.startsWith('tax_') && !FILTER_KEYS.includes(k)) {
+				continue;
+			}
+			const val = deepUnwrap(attrs[k]);
+			const empty =
+				val === undefined ||
+				val === null ||
+				val === '' ||
+				val === false ||
+				(Array.isArray(val) && !val.length);
+			if (!empty) {
+				filters[k] = val;
+			}
+		}
+	} catch (e) {
+		/* settings model unavailable — no filters */
+	}
+
 	return {
 		post_type: get('post_type', 'post'),
 		posts_per_page: parseInt(get('posts_per_page', 6), 10) || 6,
 		order_by: get('order_by', 'date'),
 		order: get('order', 'desc'),
+		filters,
 	};
 }
 
@@ -78,7 +127,7 @@ function readSettings(wrap) {
  * SET is a function of the query alone, so key only on that.
  */
 function signature(wrap, s) {
-	return [s.post_type, s.posts_per_page, s.order_by, s.order].join('|');
+	return [s.post_type, s.posts_per_page, s.order_by, s.order, JSON.stringify(s.filters || {})].join('|');
 }
 
 /**
@@ -110,6 +159,9 @@ async function fetchPosts(s, sig) {
 	body.append('posts_per_page', String(s.posts_per_page));
 	body.append('order_by', s.order_by);
 	body.append('order', s.order);
+	if (s.filters && Object.keys(s.filters).length) {
+		body.append('filters', JSON.stringify(s.filters));
+	}
 	try {
 		const res = await fetch(c.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
 		const json = await res.json();
@@ -149,7 +201,7 @@ function sanitizeClone(root) {
 		// clone still LOOKS identical to the authored card.
 		if ( el.classList && el.classList.length ) {
 			Array.from(el.classList).forEach((c) => {
-				if ( c.indexOf('elementor-element') === 0 ) {
+				if ( c.indexOf('elementor-element-') === 0 ) {
 					el.classList.remove(c);
 				}
 			});

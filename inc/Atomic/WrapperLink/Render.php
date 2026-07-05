@@ -21,7 +21,7 @@ final class Render {
 		}
 
 		$type = $element->get_element_type();
-		if ( ! in_array( $type, Bootstrap::target_element_types(), true ) ) {
+		if ( ! in_array( $type, Schema::target_element_types(), true ) ) {
 			return;
 		}
 
@@ -49,6 +49,13 @@ final class Render {
 			return;
 		}
 
+		$source = $settings[ Schema::SOURCE ] ?? 'custom';
+		if ( is_array( $source ) && isset( $source['value'] ) ) {
+			$source = (string) $source['value'];
+		} else {
+			$source = (string) $source;
+		}
+
 		$url = $settings[ Schema::LINK ] ?? '';
 		if ( is_array( $url ) && isset( $url['value'] ) ) {
 			$url = (string) $url['value'];
@@ -63,12 +70,20 @@ final class Render {
 			$is_external = (bool) $is_external_raw;
 		}
 
-		if ( empty( $url ) ) {
+		// "Current Post" mode: this hook fires once per ELEMENT, but a loop item
+		// renders once per POST — a single URL here can't be right. The runtime
+		// resolves the per-instance URL from the card's data-aae-post-url attr
+		// (printed by the Loop Item twig per repeat), so no URL is needed in the
+		// id-keyed config.
+		if ( 'post' === $source ) {
+			$url = '';
+		} elseif ( empty( $url ) ) {
 			return;
 		}
 
 		$config = [
 			'url' => $url,
+			'source' => $source,
 			'isExternal' => $is_external,
 		];
 

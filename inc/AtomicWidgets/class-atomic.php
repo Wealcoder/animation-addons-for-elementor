@@ -1578,6 +1578,10 @@ final class Atomic
 		// Settings) so the chosen post shows without a full editor reload.
 		add_action('wp_ajax_aae_loop_sample_post', [$this, 'ajax_loop_sample_post']);
 
+		// Loop Grid: AJAX search options for the panel's `aae-query-chips`
+		// controls (posts by title/ID, taxonomy terms by name).
+		add_action('wp_ajax_aae_loop_query_options', [$this, 'ajax_loop_query_options']);
+
 		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
 		// document before resolving tags, so a Featured Image / Post Title tag
 		// inside a loop item resolves against the PAGE (usually no thumbnail →
@@ -2091,6 +2095,81 @@ final class Atomic
 		]);
 	}
 
+	/**
+	 * Make sure the Loop Grid element class (and its shared query builder) is
+	 * loaded. Element classes are normally require'd during Elementor's element
+	 * registration, which doesn't run on a plain admin-ajax request.
+	 */
+	private static function load_loop_grid_class(): void
+	{
+		if (! class_exists(\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class)) {
+			require_once __DIR__ . '/Widgets/LoopGrid/class-aae-a-loop-grid.php';
+		}
+	}
+
+	/**
+	 * Panel search for the `aae-query-chips` controls: posts (by title / ID) or
+	 * taxonomy terms (by name). Returns [{id, label}] — max 20.
+	 */
+	public function ajax_loop_query_options()
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$kind = isset($_POST['kind']) ? sanitize_key(wp_unslash($_POST['kind'])) : 'post';
+		$term = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
+		$options = [];
+
+		if ('term' === $kind) {
+			$taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
+			if (! $taxonomy || ! taxonomy_exists($taxonomy)) {
+				wp_send_json_error(['message' => 'Invalid taxonomy.'], 400);
+			}
+			$terms = get_terms([
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+				'number'     => 20,
+				'search'     => $term,
+			]);
+			if (! is_wp_error($terms)) {
+				foreach ($terms as $t) {
+					$options[] = ['id' => (int) $t->term_id, 'label' => $t->name];
+				}
+			}
+		} else {
+			$public_types = array_keys(get_post_types(['public' => true]));
+			$public_types = array_diff($public_types, ['attachment']);
+			$args = [
+				'post_type'           => array_values($public_types),
+				'post_status'         => 'publish',
+				'posts_per_page'      => 20,
+				'ignore_sticky_posts' => true,
+				'orderby'             => 'date',
+				'order'               => 'DESC',
+			];
+			if (ctype_digit($term)) {
+				// Numeric search: try the exact ID first, fall back to title search.
+				$by_id = get_post((int) $term);
+				if ($by_id && 'publish' === $by_id->post_status && in_array($by_id->post_type, $public_types, true)) {
+					$options[] = ['id' => (int) $by_id->ID, 'label' => get_the_title($by_id)];
+				}
+			}
+			if ('' !== $term) {
+				$args['s'] = $term;
+			}
+			$query = new \WP_Query($args);
+			foreach ($query->posts as $p) {
+				$options[] = ['id' => (int) $p->ID, 'label' => get_the_title($p)];
+			}
+			wp_reset_postdata();
+		}
+
+		wp_send_json_success(['options' => $options]);
+	}
+
 	public function ajax_loop_post_data()
 	{
 		check_ajax_referer('aae_loop_grid', 'nonce');
@@ -2099,14 +2178,33 @@ final class Atomic
 			wp_send_json_error(['message' => 'Access denied.'], 403);
 		}
 
-		$query = new \WP_Query([
-			'post_type'           => isset($_POST['post_type']) ? sanitize_key(wp_unslash($_POST['post_type'])) : 'post',
-			'post_status'         => 'publish',
-			'posts_per_page'      => isset($_POST['posts_per_page']) ? absint($_POST['posts_per_page']) : 6,
-			'orderby'             => isset($_POST['order_by']) ? sanitize_key(wp_unslash($_POST['order_by'])) : 'date',
-			'order'               => isset($_POST['order']) ? (('asc' === sanitize_key(wp_unslash($_POST['order']))) ? 'ASC' : 'DESC') : 'DESC',
-			'ignore_sticky_posts' => true,
-		]);
+		self::load_loop_grid_class();
+
+		// The client sends the loop grid's UNWRAPPED settings (query + filters)
+		// as one JSON blob; the shared builder sanitizes and assembles the exact
+		// query the frontend render will run, so the editor preview always
+		// matches the published page.
+		$filters = [];
+		if (isset($_POST['filters'])) {
+			$decoded = json_decode(sanitize_text_field(wp_unslash($_POST['filters'])), true);
+			if (is_array($decoded)) {
+				$filters = $decoded;
+			}
+		}
+
+		// Back-compat: individual fields override / fill in when present.
+		foreach (['post_type', 'order_by', 'order'] as $k) {
+			if (isset($_POST[$k])) {
+				$filters[$k] = sanitize_key(wp_unslash($_POST[$k]));
+			}
+		}
+		if (isset($_POST['posts_per_page'])) {
+			$filters['posts_per_page'] = absint($_POST['posts_per_page']);
+		}
+
+		$query = new \WP_Query(
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args($filters)
+		);
 
 		$posts = [];
 		if ($query->have_posts()) {
@@ -2197,28 +2295,14 @@ final class Atomic
 			wp_send_json_error(['message' => 'Loop item not found.'], 404);
 		}
 
-		// Build the paged query args from the grid's saved settings.
-		$gs  = $grid_el['settings'] ?? [];
-		$val = function ($k, $d) use ($gs) {
-			if (isset($gs[$k]['value'])) {
-				return $gs[$k]['value'];
-			}
-			if (isset($gs[$k]) && ! is_array($gs[$k])) {
-				return $gs[$k];
-			}
-			return $d;
-		};
-
-		$per_page   = (int) $val('posts_per_page', 6);
-		$query_args = [
-			'post_type'           => $val('post_type', 'post'),
-			'post_status'         => 'publish',
-			'posts_per_page'      => $per_page,
-			'orderby'             => $val('order_by', 'date'),
-			'order'               => ('asc' === strtolower($val('order', 'desc'))) ? 'ASC' : 'DESC',
-			'paged'               => $paged,
-			'ignore_sticky_posts' => true,
-		];
+		// Build the paged query args from the grid's saved settings — the same
+		// shared builder the frontend render uses, so pagination honors every
+		// query filter (taxonomy terms, include/exclude, date range, meta…).
+		self::load_loop_grid_class();
+		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
+			(array) ($grid_el['settings'] ?? []),
+			$paged
+		);
 
 		// Total pages (respects the same query).
 		$count     = new \WP_Query(array_merge($query_args, ['fields' => 'ids']));
