@@ -38,6 +38,7 @@ module.exports = {
     "@elementor/editor-controls":   ["elementorV2", "editorControls"],
     "@elementor/editor-editing-panel": ["elementorV2", "editorEditingPanel"],
     "@elementor/editor-elements":   ["elementorV2", "editorElements"],
+    "@elementor/editor-v1-adapters": ["elementorV2", "editorV1Adapters"],
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
     "@elementor/editor-ui":         ["elementorV2", "editorUi"],
