@@ -1,19 +1,38 @@
-/* Global preset interactions — ripple hover effect for preset buttons. */
-
-
 /*
 	classes - 
-	aae-btn-gen-shape,
-	aae-btn-gen-shape-content,
+	aae-btn-gen,
+	aae-btn-gen-content,
 	aae-btn-gen-shape-hr
 
 */
 
-.aae-btn-gen-shape:hover .aae-btn-gen-divide-hr {
+.aae-btn-gen {
+	cursor: pointer;
+}
+
+.aae-btn-gen:hover .aae-btn-divide-hr {
 	width: 120%;
 }
 
 
-.aae-btn-gen-shape:hover .aae-btn-cross-hr {
+.aae-btn-gen:hover .aae-btn-cross-hr {
 	height: 100%;
+}
+
+.aae-btn-gen:hover .aae-btn-underline-hr {
+	width: 0%;
+	min-width: 0;
+}
+
+
+.aae-btn-gen:hover .aae-btn-outlinepill-hr {
+	z-index: 0;
+	top: 4px;
+	width: 50%;
+	transform: translate(-50%, -100%);
+}
+
+.aae-btn-gen:hover .aae-btn-slidefill-bgfront {
+	z-index: 4;
+	left: -92%;
 }
