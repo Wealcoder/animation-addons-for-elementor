@@ -122,6 +122,13 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
+		// Base-style classes for the Header div and its icons. define_base_styles()
+		// emits static, cached CSS for these ({element_type}-{key} naming — see
+		// Has_Base_Styles::generate_base_style_id()), so the default design costs
+		// no per-element style data and no editor JS.
+		$header_class = static::get_element_type() . '-header_element';
+		$icon_class   = static::get_element_type() . '-header_icon';
+
 		// Header children: Title (Paragraph) + Icon (SVG)
 		$header_title = Atomic_Paragraph::generate()
 			->editor_settings( [ 'title' => 'Header Title' ] )
@@ -149,7 +156,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$header_icon_open = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Open Icon' ] )
 			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-open' ] ),
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-open', $icon_class ] ),
 				'svg'     => Svg_Src_Prop_Type::generate( [
 					'id'  => null,
 					'url' => Url_Prop_Type::generate( $open_icon_url ),
@@ -161,7 +168,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$header_icon_close = Atomic_Svg::generate()
 			->editor_settings( [ 'title' => 'Close Icon' ] )
 			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-close' ] ),
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-icon-element', 'aae-header-icon-close', $icon_class ] ),
 				'svg'     => Svg_Src_Prop_Type::generate( [
 					'id'  => null,
 					'url' => Url_Prop_Type::generate( $close_icon_url ),
@@ -188,15 +195,13 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		// Header wrapper div.
-		// NOTE: default header styles (display:flex / row / space-between) are
-		// applied at creation time by the editor bridge
-		// (atomic-editor/accordion-header-styles.js) — a `styles` key here would
-		// be silently dropped by Elementor's buildElement() whitelist.
+		// Header wrapper div. Default layout (display:flex / row / space-between)
+		// comes from the 'header_element' base-style class added below — static
+		// cached CSS, no per-element style data, no editor JS.
 		$header_div = Div_Block::generate()
 			->editor_settings( [ 'title' => 'Header' ] )
 			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-header-element' ] ),
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-element', $header_class ] ),
 			] )
 			->children( [ $header_title, $header_icon_open, $header_icon_close ] )
 			->build();
@@ -298,12 +303,46 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
+		// Default design for the Header div block and its open/close icons.
+		// These render as static, cached base-style CSS under the classes
+		// e-aae-a-accordion-item-header_element / -header_icon, which
+		// define_default_children() puts on those child elements. Being base
+		// styles, per-element local styles (user edits) still override them.
+		// Icon `display` stays scss-owned (state-driven show/hide), and
+		// flex-shrink/svg-fill live in accordion.scss (no style-schema keys).
+		$header_element_styles = [
+			'display' => String_Prop_Type::generate( 'flex' ),
+			'flex-direction' => String_Prop_Type::generate( 'row' ),
+			'justify-content' => String_Prop_Type::generate( 'space-between' ),
+		];
+
+		$header_icon_styles = [
+			'width' => Size_Prop_Type::generate( [
+				'size' => 24,
+				'unit' => 'px',
+			] ),
+			'height' => Size_Prop_Type::generate( [
+				'size' => 24,
+				'unit' => 'px',
+			] ),
+			'align-items' => String_Prop_Type::generate( 'center' ),
+			'justify-content' => String_Prop_Type::generate( 'center' ),
+		];
+
 		return [
 			'base' => Style_Definition::make()
 				->set_label( __( 'Item Box', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) )
 				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $wrapper_hover_styles ) )
 				->add_variant( Style_Variant::make()->set_state( Style_States::SELECTED )->add_props( $wrapper_selected_styles ) ),
+
+			'header_element' => Style_Definition::make()
+				->set_label( __( 'Header Layout', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $header_element_styles ) ),
+
+			'header_icon' => Style_Definition::make()
+				->set_label( __( 'Header Icon', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $header_icon_styles ) ),
 			
 			'header' => Style_Definition::make()
 				->set_label( __( 'Header', 'animation-addons-for-elementor' ) )

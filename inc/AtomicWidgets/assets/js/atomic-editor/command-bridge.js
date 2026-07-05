@@ -30,7 +30,6 @@ import {
 	handleDuplicate,
 	handleCreateLikeCommand,
 } from './slider-refresh.js';
-import { applyAccordionHeaderDefaults } from './accordion-header-styles.js';
 import { schedulePostTitleScan } from './post-title-limit.js';
 
 // Structural commands we post-process for slider refresh.
@@ -139,7 +138,6 @@ function handleAfterCommand(command, args, result, context) {
 		command === 'document/elements/import'
 	) {
 		handleCreateLikeCommand(args, result, context);
-		applyAccordionHeaderDefaults(result);
 	}
 }
 
