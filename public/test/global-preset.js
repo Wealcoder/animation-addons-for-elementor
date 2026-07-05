@@ -153,3 +153,54 @@
 
 
 */
+
+
+
+
+
+
+// Text-flip (pro-3)
+function textFlipSync(container) {
+  const contentEl = container.querySelector('.aae-btn-txtflip-content');
+  if (!contentEl) return;
+
+  const text = contentEl.textContent.trim();
+  if (contentEl.dataset.text !== text) {
+    contentEl.dataset.text = text;
+  }
+}
+
+document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
+
+
+// Border-divide (pro-1)
+function borderDivideSetup(container) {
+  const iconEl = container.querySelector(':scope > .e-svg-base');
+  if (!iconEl) return;
+  if (iconEl.querySelector(':scope > .aae-btn-borderdivide-icon-inner')) return;
+
+  const svgEl = iconEl.querySelector('svg');
+  if (!svgEl) return;
+
+  const inner = document.createElement('span');
+  inner.className = 'aae-btn-borderdivide-icon-inner';
+  Object.assign(inner.style, {
+    position: 'relative',
+    display: 'inline-flex',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  });
+  iconEl.replaceChild(inner, svgEl);
+  inner.appendChild(svgEl);
+
+  const clone = svgEl.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.removeAttribute('data-interaction-id');
+  clone.removeAttribute('data-id');
+  clone.setAttribute('data-swap-clone', 'true');
+  inner.appendChild(clone);
+}
+
+document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
+
