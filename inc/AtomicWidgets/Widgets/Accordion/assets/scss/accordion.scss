@@ -4,33 +4,6 @@
         border-radius: 4px;
         background: #fff;
         overflow: hidden;
-        margin-bottom: var(--aae-accordion-gap, 0);
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    /* Item alignment (Desktop) */
-    &[data-item-pos="flex-start"] { align-items: flex-start; }
-    &[data-item-pos="center"] { align-items: center; }
-    &[data-item-pos="flex-end"] { align-items: flex-end; }
-    &[data-item-pos="stretch"] { align-items: stretch; }
-
-    /* Item alignment (Tablet) */
-    @media (max-width: 1024px) {
-        &[data-item-pos-tablet="flex-start"] { align-items: flex-start; }
-        &[data-item-pos-tablet="center"] { align-items: center; }
-        &[data-item-pos-tablet="flex-end"] { align-items: flex-end; }
-        &[data-item-pos-tablet="stretch"] { align-items: stretch; }
-    }
-
-    /* Item alignment (Mobile) */
-    @media (max-width: 767px) {
-        &[data-item-pos-mobile="flex-start"] { align-items: flex-start; }
-        &[data-item-pos-mobile="center"] { align-items: center; }
-        &[data-item-pos-mobile="flex-end"] { align-items: flex-end; }
-        &[data-item-pos-mobile="stretch"] { align-items: stretch; }
     }
 
     /* Icon position - affects header layout.

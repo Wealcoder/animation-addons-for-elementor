@@ -1,7 +1,6 @@
 {% set classes = ['aae-a-accordion', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
 {% set multiple_open = settings.multiple_open | default(false) %}
 {% set animation_speed = settings.animation_speed | default(400) %}
-{% set gap = settings.gap | default(10) %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
@@ -9,10 +8,7 @@
     data-interaction-id="{{ interaction_id }}"
     {% set custom_expand = '' %}
     {% set custom_collapse = '' %}
-    style="display: flex; flex-direction: column; width: 100%; gap: {{ gap }}px; --aae-accordion-speed: {{ settings.animation_duration.size | default(400) }}{{ settings.animation_duration.unit | default('ms') }};"
-    data-item-pos="{{ settings.item_position_desktop | default('flex-start') }}"
-    data-item-pos-tablet="{{ settings.item_position_tablet | default('flex-start') }}"
-    data-item-pos-mobile="{{ settings.item_position_mobile | default('flex-start') }}"
+    style="--aae-accordion-speed: {{ settings.animation_duration.size | default(400) }}{{ settings.animation_duration.unit | default('ms') }};"
     data-max-items-expanded="{{ settings.max_items_expanded | default('one') }}"
     data-default-state="{{ settings.default_state | default('first') }}"
     data-animation-speed="{{ settings.animation_duration.size | default(400) }}"

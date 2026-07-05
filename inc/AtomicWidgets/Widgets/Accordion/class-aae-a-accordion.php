@@ -58,13 +58,9 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		return [
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'item_position_desktop' => String_Prop_Type::make()->enum( [ 'flex-start', 'center', 'flex-end', 'stretch' ] )->default( 'flex-start' ),
-			'item_position_tablet' => String_Prop_Type::make()->enum( [ 'flex-start', 'center', 'flex-end', 'stretch' ] )->default( 'flex-start' ),
-			'item_position_mobile' => String_Prop_Type::make()->enum( [ 'flex-start', 'center', 'flex-end', 'stretch' ] )->default( 'flex-start' ),
 			'default_state' => String_Prop_Type::make()->enum( [ 'first', 'none' ] )->default( 'first' ),
 			'max_items_expanded' => String_Prop_Type::make()->enum( [ 'one', 'multiple' ] )->default( 'one' ),
 			'animation_duration' => Size_Prop_Type::make()->default( [ 'size' => 400, 'unit' => 'ms' ] ),
-			'gap' => Number_Prop_Type::make()->default( 10 ),
 			'faq_schema' => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
@@ -89,39 +85,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 				->set_id( 'content' )
 				->set_label( __( 'Accordion Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					Toggle_Control::bind_to( 'item_position_desktop' )
-						->set_label( __( 'Item Position (Desktop)', 'animation-addons-for-elementor' ) )
-						->add_options( [
-							'flex-start' => [ 'title' => __( 'Start', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
-							'center'     => [ 'title' => __( 'Center', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-center' ],
-							'flex-end'   => [ 'title' => __( 'End', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
-							'stretch'    => [ 'title' => __( 'Stretch', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-stretch' ],
-						] )
-						->set_exclusive( true )
-						->set_convert_options( true ),
-
-					Toggle_Control::bind_to( 'item_position_tablet' )
-						->set_label( __( 'Item Position (Tablet)', 'animation-addons-for-elementor' ) )
-						->add_options( [
-							'flex-start' => [ 'title' => __( 'Start', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
-							'center'     => [ 'title' => __( 'Center', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-center' ],
-							'flex-end'   => [ 'title' => __( 'End', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
-							'stretch'    => [ 'title' => __( 'Stretch', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-stretch' ],
-						] )
-						->set_exclusive( true )
-						->set_convert_options( true ),
-
-					Toggle_Control::bind_to( 'item_position_mobile' )
-						->set_label( __( 'Item Position (Mobile)', 'animation-addons-for-elementor' ) )
-						->add_options( [
-							'flex-start' => [ 'title' => __( 'Start', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-left' ],
-							'center'     => [ 'title' => __( 'Center', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-center' ],
-							'flex-end'   => [ 'title' => __( 'End', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-right' ],
-							'stretch'    => [ 'title' => __( 'Stretch', 'animation-addons-for-elementor' ), 'atomic-icon' => 'eicon-h-align-stretch' ],
-						] )
-						->set_exclusive( true )
-						->set_convert_options( true ),
-
 					Switch_Control::bind_to( 'faq_schema' )
 						->set_label( __( 'FAQ Schema', 'animation-addons-for-elementor' ) ),
 				] ),
@@ -148,9 +111,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 						->set_exclusive( true )
 						->set_convert_options( true ),
 
-					Number_Control::bind_to( 'gap' )
-						->set_label( __( 'Gap', 'animation-addons-for-elementor' ) ),
-
 					Number_Control::bind_to( 'animation_duration.size' )
 						->set_label( __( 'Animation Speed (ms)', 'animation-addons-for-elementor' ) ),
 				] ),
@@ -162,6 +122,10 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'column' ),
 			'width' => String_Prop_Type::generate( '100%' ),
+			'gap' => Size_Prop_Type::generate( [
+				'size' => 10,
+				'unit' => 'px',
+			] ),
 		];
 
 		return [

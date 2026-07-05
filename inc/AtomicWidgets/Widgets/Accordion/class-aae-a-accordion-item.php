@@ -188,7 +188,11 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		// Header wrapper div
+		// Header wrapper div.
+		// NOTE: default header styles (display:flex / row / space-between) are
+		// applied at creation time by the editor bridge
+		// (atomic-editor/accordion-header-styles.js) — a `styles` key here would
+		// be silently dropped by Elementor's buildElement() whitelist.
 		$header_div = Div_Block::generate()
 			->editor_settings( [ 'title' => 'Header' ] )
 			->settings( [
