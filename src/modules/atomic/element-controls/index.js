@@ -16,12 +16,14 @@ import { controlsRegistry } from '@elementor/editor-editing-panel';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
+import { GalleryItemsControl } from './GalleryItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { MobileNavLifecycleControl, NavItemsControl } from './NavItemsControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
+	{ type: 'aae-gallery-items', component: GalleryItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },

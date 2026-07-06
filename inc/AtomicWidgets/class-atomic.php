@@ -265,6 +265,7 @@ final class Atomic
 			'aae-a-slider-progress-fill',
 			'aae-a-counter-number',
 			'aae-a-accordion-item',
+			'aae-a-image-gallery-item',
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
@@ -881,6 +882,45 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 7,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-image-gallery' => [
+				'label'        => 'AAE Image Gallery',
+				'description'  => 'Atomic image gallery with grid layout, hover effects and a built-in lightbox.',
+				'icon'         => 'eicon-gallery-grid',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'gallery',
+					'image',
+					'grid',
+					'lightbox',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 8,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-image-gallery-item' => [
+				'label'        => 'Gallery Item',
+				'description'  => 'Internal child container for the Image Gallery.',
+				'icon'         => 'eicon-image',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'gallery item',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 9,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1827,6 +1867,22 @@ final class Atomic
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
+				'has_script' => false,
+			],
+
+			'aae-a-image-gallery' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageGallery\AAE_A_Image_Gallery',
+				'file' => 'Widgets/ImageGallery/class-aae-a-image-gallery.php',
+				'script_handle' => 'aae-a-image-gallery-js',
+				'script_path' => '/assets/atomic/js/image-gallery.js',
+				'has_script' => true, // Lightbox runtime; enqueued on render with the frontend-handlers dep.
+				'style_handle' => 'aae-a-image-gallery-css',
+				'style_path' => '/assets/atomic/css/image-gallery.css',
+			],
+
+			'aae-a-image-gallery-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageGallery\AAE_A_Image_Gallery_Item',
+				'file' => 'Widgets/ImageGallery/class-aae-a-image-gallery-item.php',
 				'has_script' => false,
 			],
 

@@ -1,0 +1,345 @@
+// AAE Image Gallery (atomic) — grid metrics come from CSS variables set inline
+
+.elementor-editor-active .aae-a-image-gallery.aae-gallery--lightbox > .aae-lightbox-icons {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 8px;
+	margin-top: 8px;
+	grid-column: 1 / -1; // span the full grid width so it reads as one strip
+	outline: 1px dashed rgba( 128, 128, 128, 0.4 );
+
+	display: none;;
+}
+
+.aae-a-image-gallery {
+	// Native Atomic_Image inside each item fills the cell and crops.
+	.aae-a-gallery-item img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	// Hover effects — applied via the .aae-gallery--<effect> modifier on the
+	// gallery wrapper; they transform the item's <img>.
+	&.aae-gallery--effect-zoom-in,
+	&.aae-gallery--effect-zoom-out,
+	&.aae-gallery--left-move,
+	&.aae-gallery--right-move {
+		.aae-a-gallery-item img {
+			transition: transform 0.5s ease;
+		}
+	}
+
+	&.aae-gallery--effect-zoom-in .aae-a-gallery-item:hover img {
+		transform: scale(1.1);
+	}
+
+	&.aae-gallery--effect-zoom-out .aae-a-gallery-item img {
+		transform: scale(1);
+	}
+	&.aae-gallery--effect-zoom-out .aae-a-gallery-item:hover img {
+		transform: scale(0.9);
+	}
+
+	&.aae-gallery--left-move .aae-a-gallery-item img {
+		transform: scale(1.1);
+	}
+	&.aae-gallery--left-move .aae-a-gallery-item:hover img {
+		transform: scale(1.1) translateX(4%);
+	}
+
+	&.aae-gallery--right-move .aae-a-gallery-item img {
+		transform: scale(1.1);
+	}
+	&.aae-gallery--right-move .aae-a-gallery-item:hover img {
+		transform: scale(1.1) translateX(-4%);
+	}
+
+	// Lightbox affordance on the item.
+	&.aae-gallery--lightbox .aae-a-gallery-item {
+		cursor: zoom-in;
+	}
+}
+
+// ===== Lightbox (DOM built by image-gallery.js, appended to <body>) =====
+
+.aae-lightbox {
+	--aae-lightbox-overlay: rgba(0, 0, 0, 0.92);
+	--aae-lightbox-z: 99999;
+	--aae-lightbox-toolbar-offset: 16px 20px;
+	--aae-lightbox-nav-offset: 12px;
+	position: fixed;
+	inset: 0;
+	z-index: var(--aae-lightbox-z, 99999);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.35s ease, visibility 0.35s ease;
+
+	&.aae-lightbox--active {
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+.aae-lightbox__overlay {
+	position: absolute;
+	inset: 0;
+	background: var(--aae-lightbox-overlay);
+}
+
+.aae-lightbox__content {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1;
+}
+
+.aae-lightbox__toolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding: var(--aae-lightbox-toolbar-offset, 16px 20px);
+	z-index: 3;
+	gap: 12px;
+}
+
+.aae-lightbox__counter {
+	color: #fff;
+	font-size: 14px;
+	margin-right: auto;
+	opacity: 0.8;
+	letter-spacing: 1px;
+}
+
+.aae-lightbox__btn {
+	background: none;
+	border: none;
+	color: #fff;
+	cursor: pointer;
+	font-size: 20px;
+	padding: 0;
+	line-height: 1;
+	opacity: 0.7;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	&:hover {
+		opacity: 1;
+		transform: scale(1.15);
+	}
+
+	// Clear focus ring for keyboard users (a11y).
+	&:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
+		opacity: 1;
+	}
+
+	// The cloned native Atomic_Svg icon (a <div class="aae-lb-icon">) keeps its
+	// own Base-Style size/color/background/etc. The inner <svg> fills that
+	// element and inherits color when the user hasn't set an explicit fill.
+	.aae-lb-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		height: 30px;
+	}
+
+	.aae-lb-icon svg {
+		width: auto;
+		height: auto;
+		fill: currentColor;
+	}
+
+	// Bare fallback glyph (only used if an icon node is missing).
+	i {
+		font-size: inherit;
+	}
+}
+
+.aae-lightbox__close {
+	font-size: 24px;
+}
+
+.aae-lightbox__prev,
+.aae-lightbox__next {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 3;
+	font-size: 28px;
+
+	&:hover {
+		transform: translateY(-50%) scale(1.15);
+	}
+}
+
+.aae-lightbox__prev {
+	left: var(--aae-lightbox-nav-offset, 12px);
+}
+
+.aae-lightbox__next {
+	right: var(--aae-lightbox-nav-offset, 12px);
+}
+
+.aae-lightbox__stage {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 85%;
+	max-height: 85%;
+	transition: opacity 0.25s ease;
+
+	&.aae-lightbox__stage--fade {
+		opacity: 0;
+	}
+}
+
+.aae-lightbox__image {
+	max-width: 100%;
+	max-height: 85vh;
+	object-fit: contain;
+	border-radius: 4px;
+	display: block;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+// Fade & Scale
+.aae-lightbox--fade-scale {
+	.aae-lightbox__image {
+		transform: scale(0.85);
+		transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.35s ease;
+		opacity: 0;
+	}
+
+	&.aae-lightbox--active .aae-lightbox__image {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+// Slide
+.aae-lightbox--slide {
+	.aae-lightbox__image {
+		transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease;
+		opacity: 0;
+	}
+
+	&.aae-lightbox--active .aae-lightbox__image {
+		opacity: 1;
+	}
+}
+
+.aae-slide-out-left {
+	transform: translateX(-100%) !important;
+	opacity: 0 !important;
+	transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease !important;
+}
+
+.aae-slide-out-right {
+	transform: translateX(100%) !important;
+	opacity: 0 !important;
+	transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease !important;
+}
+
+.aae-slide-in-right {
+	animation: aaeSlideInRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.aae-slide-in-left {
+	animation: aaeSlideInLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes aaeSlideInRight {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes aaeSlideInLeft {
+	from {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@media only screen and (max-width: 767px) {
+	.aae-lightbox__stage {
+		max-width: 95%;
+		max-height: 80%;
+	}
+
+	.aae-lightbox__prev {
+		left: 4px;
+	}
+
+	.aae-lightbox__next {
+		right: 4px;
+	}
+
+	.aae-lightbox__prev,
+	.aae-lightbox__next {
+		font-size: 22px;
+		padding: 8px;
+	}
+
+	.aae-lightbox__toolbar {
+		padding: 10px 12px;
+	}
+}
+
+// High-contrast / forced-colors: keep controls perceivable and give the icons
+// a system-color outline so they don't vanish against the overlay.
+@media (forced-colors: active) {
+	.aae-lightbox__overlay {
+		background: Canvas;
+	}
+	.aae-lightbox__btn {
+		opacity: 1;
+		color: ButtonText;
+		forced-color-adjust: none;
+	}
+	.aae-lightbox__btn:focus-visible {
+		outline: 2px solid Highlight;
+	}
+	.aae-lightbox__image {
+		border: 1px solid CanvasText;
+	}
+}
+
+// Respect reduced-motion: drop the slide/scale/fade transitions.
+@media (prefers-reduced-motion: reduce) {
+	.aae-lightbox,
+	.aae-lightbox__image,
+	.aae-lightbox__stage,
+	.aae-lightbox__btn {
+		transition: none !important;
+		animation: none !important;
+	}
+}

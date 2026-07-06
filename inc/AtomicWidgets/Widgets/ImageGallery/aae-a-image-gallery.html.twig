@@ -1,0 +1,25 @@
+{% set hover = settings.hover_effect | default('effect-zoom-in') %}
+{% set hover_class = hover != 'none' ? 'aae-gallery--' ~ hover : '' %}
+{% set lightbox_on = settings.enable_lightbox is not defined or settings.enable_lightbox %}
+{% set classes = ['aae-a-image-gallery', 'e-con', 'e-atomic-element', base_styles.base, hover_class, lightbox_on ? 'aae-gallery--lightbox' : ''] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    style="--aae-gallery-columns: {{ settings.columns | default(5) }}; --aae-gallery-column-gap: {{ settings.column_gap | default(30) }}px; --aae-gallery-row-gap: {{ settings.row_gap | default(30) }}px; width: 100%; gap: var(--aae-gallery-row-gap, 30px) var(--aae-gallery-column-gap, 30px);"
+    {% if lightbox_on %}
+        data-lightbox="true"
+        data-lightbox-animation="{{ settings.lightbox_animation | default('fade-scale') }}"
+        data-lightbox-counter="{{ settings.lightbox_counter is not defined or settings.lightbox_counter ? 'true' : 'false' }}"
+    {% endif %}
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {{ children_placeholder | raw }}
+</div>
