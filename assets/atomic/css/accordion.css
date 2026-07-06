@@ -1,18 +1,7 @@
-.aae-a-accordion .aae-a-accordion-item {
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: #fff;
-  overflow: hidden;
-}
 .aae-a-accordion {
-  /* Icon position - affects header layout.
-     Title + Icon live inside the injected .aae-header-element. */
-}
-.aae-a-accordion .aae-a-accordion-item[data-icon-pos=left] .aae-header-element {
-  flex-direction: row-reverse;
+  /* Title + Icon live inside the injected .aae-header-element. */
 }
 .aae-a-accordion .aae-accordion-header {
-  cursor: pointer;
   text-align: left;
   transition: background-color 0.3s ease;
 }
@@ -95,3 +84,4 @@
   transform: translateY(0);
   transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s;
 }
+/*# sourceMappingURL=accordion.css.map */
