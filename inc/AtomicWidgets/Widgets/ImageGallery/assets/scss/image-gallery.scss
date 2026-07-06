@@ -1,4 +1,3 @@
-// AAE Image Gallery (atomic) — grid metrics come from CSS variables set inline
 
 .elementor-editor-active .aae-a-image-gallery.aae-gallery--lightbox > .aae-lightbox-icons {
 	display: flex;
@@ -9,8 +8,6 @@
 	margin-top: 8px;
 	grid-column: 1 / -1; // span the full grid width so it reads as one strip
 	outline: 1px dashed rgba( 128, 128, 128, 0.4 );
-
-	display: none;;
 }
 
 .aae-a-image-gallery {
