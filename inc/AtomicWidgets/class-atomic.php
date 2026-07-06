@@ -1339,6 +1339,27 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-btn' => [
+				'label'        => 'ButtonTemplate',
+				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
+				'icon'         => 'wcf-icon-Button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'button',
+					'basic button',
+					'template',
+					'container',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 21,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -1906,6 +1927,12 @@ final class Atomic
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-button-css',
 				'style_path'    => '/assets/atomic/js/button.css',
+			],
+
+			'aae-a-btn' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
+				'file'       => 'Widgets/Btn/class-aae-a-btn.php',
+				'has_script' => false,
 			],
 
 			'aae-a-advanced-heading' => [
