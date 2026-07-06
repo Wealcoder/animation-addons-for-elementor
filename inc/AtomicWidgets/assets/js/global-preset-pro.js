@@ -4,7 +4,7 @@
  * Build target: ../../../../../assets/atomic/js/global-preset-pro.js
  * Styles live in ../scss/global-preset-pro.scss (extracted by webpack).
  *
- * Covers: Group Swap L (5), Group Swap R (6), Oval (9).
+ * Covers: Group Swap L (5), Group Swap R (6), Oval/Circle/Ellipse "polygon" (9/10/11).
  */
 /* global gsap */
 import '../scss/global-preset-pro.scss';
@@ -39,18 +39,19 @@ function groupSwapRightSetup(container) {
   container.prepend(clone);
 }
 
-// 9  — Oval
-function ovalFillSetup(container) {
-  // .aae-btn-oval-effect is now a real element in the template (an e-div-block
-  // the user can select and style from Elementor's panel), not JS-created —
-  // just locate it. Descendant selector, not ':scope >', since it may sit
-  // behind an editor-only wrapper depending on how the template nests it.
-  const fill = container.querySelector('.aae-btn-oval-effect');
+// 9/10/11 — Oval / Circle / Ellipse share one "polygon" container class and
+// one fill mechanic. .aae-btn-polygon-effect is a real element in the
+// template (an e-div-block the user can select and style from Elementor's
+// panel), not JS-created — just locate it. Descendant selector, not
+// ':scope >', since it may sit behind an editor-only wrapper depending on
+// how the template nests it.
+function polygonFillSetup(container) {
+  const fill = container.querySelector('.aae-btn-polygon-effect');
   if (!fill) return;
 
   // Idempotent — don't attach duplicate listeners if this runs again.
-  if (container.dataset.aaeOvalBound) return;
-  container.dataset.aaeOvalBound = '1';
+  if (container.dataset.aaePolygonBound) return;
+  container.dataset.aaePolygonBound = '1';
 
   const onEnter = (e) => {
     const rect = container.getBoundingClientRect();
@@ -65,7 +66,7 @@ function ovalFillSetup(container) {
       Math.hypot(x, rect.height - y),
       Math.hypot(rect.width - x, rect.height - y)
     );
-    container.style.setProperty('--aae-btn-oval-fill-size', Math.ceil(maxDist * 2) + 'px');
+    container.style.setProperty('--aae-btn-polygon-fill-size', Math.ceil(maxDist * 2) + 'px');
 
     fill.style.left = x + 'px';
     fill.style.top = y + 'px';
@@ -81,13 +82,13 @@ function ovalFillSetup(container) {
   container.addEventListener('mouseleave', onLeave);
 }
 
-// 9  — Oval magnetic movement. Mirrors the v3 btn-wrapper + btn-item parallax:
-// the button physically follows the cursor within its bounds, then snaps back
-// on leave. Requires GSAP (loaded as a dependency) — no-ops silently without
-// it, same as the ButtonPro widget's own magneticSetup.
-function ovalMagneticSetup(container) {
-  if (container.dataset.aaeOvalMagneticBound || typeof gsap === 'undefined') return;
-  container.dataset.aaeOvalMagneticBound = '1';
+// 9/10/11 — polygon magnetic movement. Mirrors the v3 btn-wrapper + btn-item
+// parallax: the button physically follows the cursor within its bounds, then
+// snaps back on leave. Requires GSAP (loaded as a dependency) — no-ops
+// silently without it, same as the ButtonPro widget's own magneticSetup.
+function polygonMagneticSetup(container) {
+  if (container.dataset.aaePolygonMagneticBound || typeof gsap === 'undefined') return;
+  container.dataset.aaePolygonMagneticBound = '1';
 
   container.addEventListener('mousemove', (e) => {
     const rect = container.getBoundingClientRect();
@@ -107,8 +108,8 @@ function ovalMagneticSetup(container) {
 function initProButtonEffects() {
   document.querySelectorAll('.aae-btn-grswapl').forEach(groupSwapLeftSetup);
   document.querySelectorAll('.aae-btn-grswapr').forEach(groupSwapRightSetup);
-  document.querySelectorAll('.aae-btn-oval').forEach(ovalFillSetup);
-  document.querySelectorAll('.aae-btn-oval').forEach(ovalMagneticSetup);
+  document.querySelectorAll('.aae-btn-polygon').forEach(polygonFillSetup);
+  document.querySelectorAll('.aae-btn-polygon').forEach(polygonMagneticSetup);
 }
 
 // Run once for whatever is already in the DOM…

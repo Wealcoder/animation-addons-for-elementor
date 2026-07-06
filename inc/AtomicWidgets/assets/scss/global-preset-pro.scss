@@ -1,4 +1,3 @@
-/* =================================== pro button =================================== */
 /* 5  — Group Swap L */
 .aae-btn-grswapl [data-swap-clone] {
   transform: scale3d(0.5, 0.5, 1);
@@ -41,12 +40,16 @@
   margin-left: 0;
   opacity: 1;
 }
-// oval
-.aae-btn-oval-effect {
+// polygon — shared fill mechanics for Oval (9), Circle (10), Ellipse (11).
+.aae-btn-polygon-effect {
   pointer-events: none;
 }
 
-.aae-btn-oval:hover .aae-btn-oval-effect {
-  width: var(--aae-btn-oval-fill-size, 400px);
-  height: var(--aae-btn-oval-fill-size, 400px);
+.aae-btn-polygon:hover .aae-btn-polygon-effect {
+  width: var(--aae-btn-polygon-fill-size, 400px);
+  height: var(--aae-btn-polygon-fill-size, 400px);
+}
+
+.aae-btn-ellipse:hover .aae-btn-polygon-effect {
+  z-index: 0;
 }
