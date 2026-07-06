@@ -11,12 +11,17 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class AAE_A_Mobile_Nav extends Atomic_Element_Base {
 	use Has_Element_Template;
+
+	const BASE_STYLE_KEY = 'base';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -43,7 +48,37 @@ class AAE_A_Mobile_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array { return []; }
-	protected function define_base_styles(): array { return []; }
+
+	/**
+	 * Compound-selector keys (Image Compare pattern): the key becomes the id
+	 * `e-aae-a-mobile-nav-base .aae-mobile-nav-hamburger`, rendered as the
+	 * two-class selector `.e-aae-a-mobile-nav-base .aae-mobile-nav-hamburger`
+	 * — enough specificity to beat e-svg's own 65px single-class base style.
+	 * The bare 'base' key must exist so the Twig root picks up the scope
+	 * class via `base_styles.base`.
+	 */
+	protected function define_base_styles(): array {
+		$icon_size = Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] );
+
+		$icon_style = fn() => Style_Definition::make()
+			->add_variant(
+				Style_Variant::make()
+					->add_prop( 'width', $icon_size )
+					->add_prop( 'height', $icon_size )
+			);
+
+		return [
+			self::BASE_STYLE_KEY => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'display', String_Prop_Type::generate( 'block' ) )
+				),
+			self::BASE_STYLE_KEY . ' .aae-mobile-nav-hamburger'      => $icon_style(),
+			self::BASE_STYLE_KEY . ' .aae-mobile-nav-close-icon'     => $icon_style(),
+			self::BASE_STYLE_KEY . ' .aae-mobile-nav-arrow-template' => $icon_style(),
+			self::BASE_STYLE_KEY . ' .aae-mobile-submenu-icon'       => $icon_style(),
+		];
+	}
 
 	private function svg( string $file, string $title, string $class ): array {
 		return Atomic_Svg::generate()

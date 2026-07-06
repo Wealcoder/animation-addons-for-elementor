@@ -159,16 +159,24 @@
 }
 
 .aae-a-mobile-nav.is-mobile {
-	display: block;
+	/* Size to the hamburger toggle (the only in-flow child; overlay + drawer
+	 * are position:fixed and contribute nothing to the box). A real content
+	 * box is REQUIRED in the editor: with the previous 0×0 + overflow:visible
+	 * the toggle overflowed a zero-size box, so Elementor drew the companion's
+	 * hover/select overlay + toolbar at the 0×0 top-left origin — right on top
+	 * of the visually-overflowing hamburger, making the icon impossible to
+	 * click/select (the container kept grabbing the hover). fit-content wraps
+	 * the toggle so its overlay aligns and the toggle stays independently
+	 * hittable. */
+	display: inline-flex !important;
+	align-items: center;
 	position: relative !important;
-	inline-size: 0 !important;
-	block-size: 0 !important;
+	inline-size: fit-content !important;
+	block-size: auto !important;
 	min-inline-size: 0 !important;
 	min-block-size: 0 !important;
-	max-inline-size: 0 !important;
-	padding: 0 !important;
-	margin: 0 !important;
-	flex: 0 0 0 !important;
+	max-inline-size: none !important;
+	flex: 0 0 auto !important;
 	overflow: visible !important;
 	visibility: visible;
 	opacity: 1;
@@ -309,6 +317,47 @@
 
 .elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-footer > .elementor-empty-view {
 	display: flex !important;
+}
+
+/* Editor mobile preview: hide the source Nav while its clone lives in the
+ * drawer, so the desktop menu doesn't show in the header alongside the
+ * hamburger. NOT display:none — that plus the nav-items' absolutely
+ * positioned dropdown content re-triggers the v4 device-switch freeze; hide
+ * out-of-flow instead. Runtime-only class (added by nav.js in the editor). */
+.aae-a-nav.aae-nav-editor-mobile-hidden {
+	position: absolute !important;
+	inline-size: 0 !important;
+	block-size: 0 !important;
+	min-inline-size: 0 !important;
+	min-block-size: 0 !important;
+	max-inline-size: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	overflow: hidden !important;
+	visibility: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+
+/* Editor-only: keep the hamburger CLICKABLE (open/close the drawer while
+ * designing) but stop Elementor stacking THREE edit toolbars at the tiny
+ * hamburger spot. Only the toggle stays a pointer hit-target → a single
+ * toolbar (the element you'd style anyway); the companion wrapper and the
+ * icon pass pointer events through so their toolbars don't pile on top. Our
+ * click handler is on the companion, so a click on the toggle still bubbles
+ * up and opens the drawer. Scoped to `.aae-mobile-nav-in-editor` (added only
+ * by the editor preview handler) — the frontend hamburger is untouched. */
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile {
+	pointer-events: none !important;
+}
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-toggle {
+	pointer-events: auto !important;
+}
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-toggle * {
+	pointer-events: none !important;
+}
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-drawer {
+	pointer-events: auto !important;
 }
 
 body.aae-mobile-nav-scroll-lock {

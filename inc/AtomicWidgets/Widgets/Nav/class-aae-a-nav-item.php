@@ -107,9 +107,10 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		/* TEST: 'e-flexbox' added to see if core Elementor Flexbox at level 3
-		 * (Nav → item → flexbox → widgets) freezes device switch. If not,
-		 * we can drop it in as the mega-menu-capable dropdown container. */
+		/* 'e-flexbox' is the mega-menu-capable dropdown container: a core
+		 * Elementor Flexbox at level 3 (Nav → item → flexbox → widgets) which
+		 * the user styles via the Style tab. 'e-aae-a-nav-sub-item' is the
+		 * legacy leaf, kept for back-compat. 'widget' allows arbitrary content. */
 		return [ 'widget', 'e-aae-a-nav-sub-item', 'e-flexbox' ];
 	}
 

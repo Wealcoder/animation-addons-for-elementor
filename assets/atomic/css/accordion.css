@@ -1,62 +1,8 @@
-@charset "UTF-8";
 .aae-a-accordion .aae-a-accordion-item {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   background: #fff;
   overflow: hidden;
-  margin-bottom: var(--aae-accordion-gap, 0);
-}
-.aae-a-accordion .aae-a-accordion-item:last-child {
-  margin-bottom: 0;
-}
-.aae-a-accordion {
-  /* Item alignment (Desktop) */
-}
-.aae-a-accordion[data-item-pos=flex-start] {
-  align-items: flex-start;
-}
-.aae-a-accordion[data-item-pos=center] {
-  align-items: center;
-}
-.aae-a-accordion[data-item-pos=flex-end] {
-  align-items: flex-end;
-}
-.aae-a-accordion[data-item-pos=stretch] {
-  align-items: stretch;
-}
-.aae-a-accordion {
-  /* Item alignment (Tablet) */
-}
-@media (max-width: 1024px) {
-  .aae-a-accordion[data-item-pos-tablet=flex-start] {
-    align-items: flex-start;
-  }
-  .aae-a-accordion[data-item-pos-tablet=center] {
-    align-items: center;
-  }
-  .aae-a-accordion[data-item-pos-tablet=flex-end] {
-    align-items: flex-end;
-  }
-  .aae-a-accordion[data-item-pos-tablet=stretch] {
-    align-items: stretch;
-  }
-}
-.aae-a-accordion {
-  /* Item alignment (Mobile) */
-}
-@media (max-width: 767px) {
-  .aae-a-accordion[data-item-pos-mobile=flex-start] {
-    align-items: flex-start;
-  }
-  .aae-a-accordion[data-item-pos-mobile=center] {
-    align-items: center;
-  }
-  .aae-a-accordion[data-item-pos-mobile=flex-end] {
-    align-items: flex-end;
-  }
-  .aae-a-accordion[data-item-pos-mobile=stretch] {
-    align-items: stretch;
-  }
 }
 .aae-a-accordion {
   /* Icon position - affects header layout.
@@ -66,22 +12,9 @@
   flex-direction: row-reverse;
 }
 .aae-a-accordion .aae-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 15px 20px;
-  background: transparent;
-  border: none;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.3s ease;
-}
-.aae-a-accordion .aae-accordion-header:hover {
-  background: #f9f9f9;
-}
-.aae-a-accordion .aae-accordion-header:focus {
-  outline: none;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-content {
   display: flex;
@@ -116,40 +49,13 @@
   width: 100% !important;
   height: 100% !important;
 }
-.aae-a-accordion {
-  /* ---------- ICON VISIBILITY (single source of truth) ----------
-     Collapsed (default) state: only the open (+) icon shows; hide the close
-     icon. The `.active` rules below invert this for the open item.
-
-     The open icon is visible by default via `.aae-header-icon-element`
-     (display: inline-flex above) — no per-icon "show" rule, so the editor
-     always has a visible icon the instant the item is dropped, never a blank.
-
-     The hide/show selectors are scoped as
-     `.aae-a-accordion-item .aae-header-icon-element.aae-header-icon-{open|close}`
-     (specificity 0,3,0) — NOT through the `.aae-accordion-header
-     .aae-header-element` path. In the editor the icon is sometimes still
-     inside the hidden children-injector (before distribution) or wrapped by
-     an extra `.elementor-element`, so the header path can fail to match and
-     both icons render. The item + dual-class path always matches wherever the
-     icon sits, and !important beats the Atomic_Svg base `display`. */
-}
 .aae-a-accordion .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
   display: none !important;
-}
-.aae-a-accordion {
-  /* Collapsed by default. Height is animated via max-height, driven by JS
-     (it sets an explicit px target so the transition is smooth, then settles
-     to `none` when fully open). overflow:hidden keeps content clipped while
-     collapsing. Works the same in the editor and on the frontend. */
 }
 .aae-a-accordion .aae-accordion-content-wrapper {
   max-height: 0;
   overflow: hidden;
   transition: max-height var(--aae-accordion-speed, 400ms) ease;
-}
-.aae-a-accordion {
-  /* ---------- OPEN STATE ---------- */
 }
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-open {
   display: none !important;
@@ -160,12 +66,7 @@
 .aae-a-accordion .aae-a-accordion-item.active .aae-accordion-header {
   background: #f1f1f1;
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content.e-con {
-  --padding-top: 20px;
-  --padding-bottom: 20px;
-}
 .aae-a-accordion .aae-accordion-content {
-  padding: 0 20px;
   transition: padding var(--aae-accordion-speed, 400ms) ease;
   /* Inner container padding can be overridden by Elementor */
 }
@@ -178,10 +79,7 @@
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
 
-/* ---------- EDITOR ONLY ----------
-   Scoped to Elementor's editor preview (body.elementor-editor-active); these
-   rules do not apply on the published page. Smoothly reveal/hide the injected
-   content Div_Block (.aae-content-element) based on the item's .active state. */
+/* ---------- EDITOR ONLY ---------- */
 .elementor-editor-active .aae-a-accordion-item .aae-content-element {
   opacity: 0;
   visibility: hidden;
@@ -197,4 +95,3 @@
   transform: translateY(0);
   transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s;
 }
-/*# sourceMappingURL=accordion.css.map */

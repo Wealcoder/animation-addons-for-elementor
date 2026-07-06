@@ -272,6 +272,48 @@ function hasDescendantClass( container, className ) {
 	return found;
 }
 
+/* First descendant container (any depth) carrying `className`. */
+function findDescendantByClass( container, className ) {
+	const children = container?.model?.get?.( 'elements' );
+	let found = null;
+	children?.each?.( model => {
+		if ( found ) return;
+		const child = getContainer( model.get( 'id' ) );
+		if ( hasElementClass( child, className ) ) {
+			found = child;
+			return;
+		}
+		const deep = findDescendantByClass( child, className );
+		if ( deep ) found = deep;
+	} );
+	return found;
+}
+
+/* Nav "Mobile Menu" icon-picker prop → the class of the companion's SVG child
+ * it should drive. The pickers live on the Nav panel (so users needn't dig
+ * into the Structure tree); the reconciler copies each picked svg-src value
+ * onto the matching Atomic_Svg inside the companion. */
+const MOBILE_ICON_MAP = [
+	{ prop: 'mobile_hamburger_icon', className: 'aae-mobile-nav-hamburger' },
+	{ prop: 'mobile_close_icon',     className: 'aae-mobile-nav-close-icon' },
+	{ prop: 'mobile_dropdown_icon',  className: 'aae-mobile-nav-arrow-template' },
+];
+
+function syncCompanionIcons( nav, companion ) {
+	MOBILE_ICON_MAP.forEach( ( { prop, className } ) => {
+		const iconValue = nav.settings?.get?.( prop );
+		if ( ! iconValue ) return;
+		const svgChild = findDescendantByClass( companion, className );
+		if ( ! svgChild ) return;
+		/* Both the picker and the child store the same `svg-src` shape, so copy
+		 * through verbatim. Compare against the child's current value so we only
+		 * dispatch when the user actually changed the icon (no 200ms spam). */
+		const current = svgChild.settings?.get?.( 'svg' );
+		if ( JSON.stringify( current ) === JSON.stringify( iconValue ) ) return;
+		updateElementSettings( { id: svgChild.id, props: { svg: iconValue } } );
+	} );
+}
+
 export function MobileNavLifecycleControl() {
 	const { element } = useElement();
 	const navId = element.id;
@@ -279,17 +321,89 @@ export function MobileNavLifecycleControl() {
 	const syncRef = React.useRef( '' );
 	const creatingRef = React.useRef( false );
 
-	/* Elementor's atomic Switch control does not consistently emit one of the
-	 * public commandEnd events until focus/selection changes. Read the live
-	 * Backbone settings briefly while this section is mounted so ON creates the
-	 * companion immediately, without requiring another canvas click. */
+	/* Single reconciler for the companion element.
+	 *
+	 * Elementor's atomic Switch control does not reliably emit a public
+	 * commandEnd event when toggled (it commits through an internal
+	 * `document/elements/set-settings` transaction), so the listener-based
+	 * `mobileSettings` hook can miss the change until an unrelated command
+	 * fires. Earlier revisions worked around that with several overlapping
+	 * creators (an interval poller + a staggered setTimeout sync + the manual
+	 * button), each with its own latch — and they raced each other, which is
+	 * why the companion appeared only *sometimes*.
+	 *
+	 * This is now ONE interval-driven reconciler that reads the nav's live
+	 * Backbone settings (bypassing the unreliable event) and converges the
+	 * document to the correct state: companion exists iff `mobile_enabled`,
+	 * and its props mirror the nav's. The `creatingRef` latch is released only
+	 * when the created companion is actually observed in the tree, so there is
+	 * exactly one create in flight at a time — no double-create, no missed
+	 * create. */
 	React.useEffect( () => {
-		const ensureCompanion = () => {
+		const reconcile = () => {
 			const nav = getContainer( navId );
-			if ( ! nav?.parent || findMobileCompanion( nav ) || creatingRef.current ) return;
+			if ( ! nav?.parent ) return;
+
+			/* Sweep orphaned companions: a Mobile Nav is a SIBLING of its source
+			 * Nav, so deleting the Nav does not cascade-delete it. Any companion
+			 * whose source_nav_id no longer resolves is dead weight — it bloats
+			 * the saved document and (before nav.js tears down its editor
+			 * machinery) contributes to the device-switch hang. Remove them here
+			 * while some Nav is selected. */
+			const parentChildren = nav.parent.model?.get?.( 'elements' );
+			const orphanIds = [];
+			parentChildren?.each?.( ( model ) => {
+				if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== MOBILE_NAV_TYPE ) {
+					return;
+				}
+				const container = getContainer( model.get( 'id' ) );
+				const src = readProp( container?.settings?.get?.( 'source_nav_id' ), '' );
+				if ( src && ! getContainer( src ) ) {
+					orphanIds.push( model.get( 'id' ) );
+				}
+			} );
+			if ( orphanIds.length ) {
+				removeElements( {
+					elementIds: orphanIds,
+					title: 'Mobile Menu',
+					subtitle: 'Orphaned companion removed',
+				} );
+				return;
+			}
+
 			const settings = nav.settings;
-			const enabled = readProp( settings?.get?.( 'mobile_enabled' ), false );
-			if ( ! enabled ) return;
+			const liveProps = {
+				source_nav_id: prop( 'string', navId ),
+				enabled: prop( 'boolean', readProp( settings?.get?.( 'mobile_enabled' ), false ) ),
+				breakpoint: prop( 'string', String( readProp( settings?.get?.( 'mobile_breakpoint' ), '767' ) ) ),
+				position: prop( 'string', readProp( settings?.get?.( 'mobile_position' ), 'right' ) ),
+				close_on_link: prop( 'boolean', readProp( settings?.get?.( 'mobile_close_on_link' ), true ) ),
+				lock_scroll: prop( 'boolean', readProp( settings?.get?.( 'mobile_lock_scroll' ), true ) ),
+			};
+			const enabled = liveProps.enabled.value;
+			const companion = findMobileCompanion( nav );
+
+			if ( companion ) {
+				/* Create landed (or one already existed) — release the latch. */
+				creatingRef.current = false;
+				/* Icons update SVG children (not the companion root), so run them
+				 * independently of the root-props signature guard below. */
+				syncCompanionIcons( nav, companion );
+				const signature = JSON.stringify( liveProps );
+				if ( syncRef.current !== signature ) {
+					syncRef.current = signature;
+					flattenLegacyMobileCompanion( companion );
+					updateElementSettings( { id: companion.id, props: liveProps } );
+				}
+				return;
+			}
+
+			/* No companion. Reset the mirror signature so a later re-enable is
+			 * always re-evaluated, then create once while enabled. The latch
+			 * blocks re-entry until createElements lands — the next tick sees
+			 * the companion and releases it. */
+			syncRef.current = '';
+			if ( ! enabled || creatingRef.current ) return;
 
 			creatingRef.current = true;
 			const siblings = nav.parent.model?.get?.( 'elements' );
@@ -302,85 +416,27 @@ export function MobileNavLifecycleControl() {
 					model: {
 						elType: MOBILE_NAV_TYPE,
 						editor_settings: { title: 'Mobile Nav' },
-						settings: {
-							source_nav_id: prop( 'string', navId ),
-							enabled: prop( 'boolean', true ),
-							breakpoint: prop( 'string', String( readProp( settings?.get?.( 'mobile_breakpoint' ), '767' ) ) ),
-							position: prop( 'string', readProp( settings?.get?.( 'mobile_position' ), 'right' ) ),
-							close_on_link: prop( 'boolean', readProp( settings?.get?.( 'mobile_close_on_link' ), true ) ),
-							lock_scroll: prop( 'boolean', readProp( settings?.get?.( 'mobile_lock_scroll' ), true ) ),
-						},
+						settings: liveProps,
 					},
 					options: { at: navIndex >= 0 ? navIndex + 1 : siblings?.length ?? 0 },
 				} ],
 			} );
-			window.setTimeout( () => { creatingRef.current = false; }, 500 );
 		};
 
-		ensureCompanion();
-		const interval = window.setInterval( ensureCompanion, 120 );
+		reconcile();
+		const interval = window.setInterval( reconcile, 200 );
 		return () => window.clearInterval( interval );
 	}, [ navId ] );
-
-	React.useEffect( () => {
-		if ( ! mobileSettings ) return;
-		const sync = () => {
-			const nav = getContainer( navId );
-			if ( ! nav?.parent ) return;
-
-			const signature = JSON.stringify( mobileSettings );
-			const companion = findMobileCompanion( nav );
-			const props = {
-				source_nav_id: prop( 'string', navId ),
-				enabled: prop( 'boolean', mobileSettings.enabled ),
-				breakpoint: prop( 'string', mobileSettings.breakpoint ),
-				position: prop( 'string', mobileSettings.position ),
-				close_on_link: prop( 'boolean', mobileSettings.closeOnLink ),
-				lock_scroll: prop( 'boolean', mobileSettings.lockScroll ),
-			};
-
-			if ( companion ) {
-				creatingRef.current = false;
-				flattenLegacyMobileCompanion( companion );
-				if ( syncRef.current !== signature ) {
-					syncRef.current = signature;
-					updateElementSettings( { id: companion.id, props } );
-				}
-				return;
-			}
-			if ( ! mobileSettings.enabled || creatingRef.current ) return;
-
-			creatingRef.current = true;
-			const siblings = nav.parent.model?.get?.( 'elements' );
-			const navIndex = siblings?.indexOf?.( nav.model ) ?? -1;
-			createElements( {
-				title: 'Mobile Menu',
-				subtitle: 'Mobile companion added',
-				elements: [ {
-					container: nav.parent,
-					model: {
-						elType: MOBILE_NAV_TYPE,
-						editor_settings: { title: 'Mobile Nav' },
-						settings: props,
-					},
-					options: { at: navIndex >= 0 ? navIndex + 1 : undefined },
-				} ],
-			} );
-			window.setTimeout( () => { creatingRef.current = false; }, 600 );
-		};
-
-		const timers = [ 0, 100, 300, 800, 1500 ].map( delay =>
-			window.setTimeout( sync, delay )
-		);
-		return () => timers.forEach( timer => window.clearTimeout( timer ) );
-	}, [ navId, mobileSettings ] );
 
 	const nav = getContainer( navId );
 	const companion = findMobileCompanion( nav );
 
 	const createMobileStructure = () => {
 		const currentNav = getContainer( navId );
-		if ( ! currentNav?.parent || findMobileCompanion( currentNav ) ) return;
+		if ( ! currentNav?.parent || findMobileCompanion( currentNav ) || creatingRef.current ) return;
+		/* Share the reconciler's latch so a button click and an interval tick
+		 * can't both create in the same window. */
+		creatingRef.current = true;
 		const props = {
 			source_nav_id: prop( 'string', navId ),
 			enabled: prop( 'boolean', true ),

@@ -11,7 +11,7 @@
  * it, we tell Elementor to persist the value but skip rendering
  * (render/renderUI off), then patch the few presentation settings the runtime
  * reads from the DOM:
- *   - parent: default_state, max_items_expanded, gap
+ *   - parent: default_state, max_items_expanded
  *   - child item: is_active (open/closed)
  * Other settings persist to the model and show on save/reload.
  */
@@ -30,7 +30,6 @@ import {
 const ACCORDION_LIVE_SETTINGS = {
 	default_state:      { attr: 'data-default-state' },
 	max_items_expanded: { attr: 'data-max-items-expanded' },
-	gap:                { style: (el, v) => { el.style.gap = (parseFloat(v) || 0) + 'px'; } },
 };
 
 // Walk up the container tree; return the nearest accordion container id, or
