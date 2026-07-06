@@ -13,16 +13,22 @@
  */
 
 import { controlsRegistry } from '@elementor/editor-editing-panel';
+import { stringArrayPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { MobileNavLifecycleControl, NavItemsControl } from './NavItemsControl';
+import { QueryChipsControl } from './QueryChipsControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
+	// Prop-bound (unlike the element-controls above): the panel wraps it in a
+	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
+	// reads/writes the String_Array prop.
+	{ type: 'aae-query-chips', component: QueryChipsControl, layout: 'full', propTypeUtil: stringArrayPropTypeUtil },
 ];
 
 let registered = false;
@@ -33,13 +39,13 @@ export function registerAaeElementControls() {
 	}
 	registered = true;
 
-	ELEMENT_CONTROLS.forEach( ( { type, component, layout } ) => {
+	ELEMENT_CONTROLS.forEach( ( { type, component, layout, propTypeUtil } ) => {
 		try {
 			// Skip if something already claimed this type (defensive).
 			if ( controlsRegistry.get?.( type ) ) {
 				return;
 			}
-			controlsRegistry.register( type, component, layout );
+			controlsRegistry.register( type, component, layout, propTypeUtil );
 		} catch ( _e ) {
 			// Already registered or registry shape changed — non-fatal.
 		}

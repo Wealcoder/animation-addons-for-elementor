@@ -1,5 +1,6 @@
 import {
-	isEnabled
+	isEnabled,
+	isCustomSource
 } from './predicates';
 
 const config = {
@@ -16,11 +17,25 @@ const config = {
 			responsive: false,			
 		},
 		{
+			// "Current Post" links each Loop Grid card to its own post (the
+			// per-repeat URL rides the card's data-aae-post-url attribute).
+			bind: 'aae_wrapper_link_source',
+			label: 'Link Source',
+			control: 'select',
+			options: [
+				{ value: 'custom', label: 'Custom URL' },
+				{ value: 'post', label: 'Current Post' },
+			],
+			defaultValue: 'custom',
+			responsive: false,
+			when: isEnabled,
+		},
+		{
 			bind: 'aae_wrapper_link',
 			label: 'Link',
 			control: 'link',
 			responsive: false,
-			when: isEnabled,			
+			when: isCustomSource,
 		},
 		{
 			bind: 'aae_wrapper_link_is_external',

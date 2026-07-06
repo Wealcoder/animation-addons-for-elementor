@@ -119,6 +119,22 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     /**
+     * Expose the current loop post's permalink to the twig template.
+     *
+     * print_content() calls render() once per post with the WP loop pointing at
+     * that post, so get_permalink() resolves per repeat. The twig prints it as
+     * `data-aae-post-url` — the Wrapper Link extension's "Current Post" mode
+     * reads it per card (its runtime config is element-id-keyed and all repeats
+     * share one id, so the per-instance URL must ride the DOM).
+     */
+    protected function build_template_context(): array {
+        return array_merge(
+            $this->build_base_template_context(),
+            [ 'post_url' => (string) get_permalink() ]
+        );
+    }
+
+    /**
      * Repeat the WHOLE loop-item card once per queried post.
      *
      * The Loop Grid root publishes its query on the Render_Context stack (keyed

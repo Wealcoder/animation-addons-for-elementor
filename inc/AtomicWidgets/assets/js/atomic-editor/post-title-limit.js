@@ -40,12 +40,14 @@ export function readTitleLimit(id) {
 			const val = propValue(c?.settings?.get?.(k));
 			return val === undefined || val === null || val === '' ? d : val;
 		};
+		// Fallbacks mirror the PHP schema defaults (limit_by 'line', title_limit
+		// 2) so an untouched widget previews exactly like the frontend render.
 		return {
-			by: get('limit_by', 'none'),
-			n: parseInt(get('title_limit', 10), 10) || 10,
+			by: get('limit_by', 'line'),
+			n: parseInt(get('title_limit', 2), 10) || 2,
 		};
 	} catch (e) {
-		return { by: 'none', n: 10 };
+		return { by: 'line', n: 2 };
 	}
 }
 
