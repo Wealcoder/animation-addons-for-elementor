@@ -1,4 +1,5 @@
 /* aae-btn-gen, aae-btn-gen-content, aae-btn-gen-shape-hr */
+/* =================================== free button =================================== */
 .aae-btn-gen {
 	cursor: pointer;
 }
@@ -6,7 +7,7 @@
 	width: 120%;
 }
 .aae-btn-gen:hover .aae-btn-cross-hr {
-	height: 100%;
+	height: 120%;
 }
 .aae-btn-gen:hover .aae-btn-underline-hr {
 	width: 0%;
@@ -61,46 +62,4 @@
 .aae-btn-borderdivide:hover .aae-btn-borderdivide-icon-inner svg:not([data-swap-clone]) {
   transform: translate(10px, -10px);
   opacity: 0;
-}
-/* 5  — Group Swap L */
-.aae-btn-grswapl [data-swap-clone] {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-right: -50px;
-  opacity: 0;
-}
-.aae-btn-grswapl .aae-btn-grswapl-icon:not([data-swap-clone]) {
-  transform: scale3d(1, 1, 1);
-  margin-left: 0;
-  opacity: 1;
-}
-.aae-btn-grswapl:hover [data-swap-clone] {
-  transform: scale3d(1, 1, 1);
-  margin-right: 0;
-  opacity: 1;
-}
-.aae-btn-grswapl:hover .aae-btn-grswapl-icon:not([data-swap-clone]) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-left: -50px;
-  opacity: 0;
-}
-/* 6  — Group Swap R */
-.aae-btn-grswapr [data-swap-clone] {
-  transform: scale3d(1, 1, 1);
-  margin-right: 0;
-  opacity: 1;
-}
-.aae-btn-grswapr .aae-btn-grswapr-icon:not([data-swap-clone]) {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-left: -50px;
-  opacity: 0;
-}
-.aae-btn-grswapr:hover [data-swap-clone] {
-  transform: scale3d(0.5, 0.5, 1);
-  margin-right: -50px;
-  opacity: 0;
-}
-.aae-btn-grswapr:hover .aae-btn-grswapr-icon:not([data-swap-clone]) {
-  transform: scale3d(1, 1, 1);
-  margin-left: 0;
-  opacity: 1;
 }

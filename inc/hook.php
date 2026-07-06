@@ -100,24 +100,47 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 
-// Temporary test script — global preset interactions. Runs on the live
+// Global preset interactions — button presets driven by generic .aae-btn-gen
+// markup (Text-flip, Border-divide, Group Swap, etc). Runs on the live
 // frontend and inside the Elementor builder's preview iframe, since
-// preset-driven markup can appear in either context.
+// preset-driven markup can appear in either context. Free/pro tiers are
+// compiled as separate bundles (see webpack.config.js -> getAtomicWidgetEntries).
 if (!function_exists('aaeaddon_enqueue_global_preset_assets')) {
     function aaeaddon_enqueue_global_preset_assets()
     {
+        $free_js  = 'assets/atomic/js/global-preset-free.js';
+        $free_css = 'assets/atomic/js/global-preset-free.css';
+        $pro_js   = 'assets/atomic/js/global-preset-pro.js';
+        $pro_css  = 'assets/atomic/js/global-preset-pro.css';
+
         wp_enqueue_style(
-            'aae-global-preset',
-            WCF_ADDONS_URL . 'public/test/global-preset.css',
+            'aae-global-preset-free',
+            WCF_ADDONS_URL . $free_css,
             [],
-            '1.0.0'
+            file_exists(WCF_ADDONS_PATH . $free_css) ? filemtime(WCF_ADDONS_PATH . $free_css) : WCF_ADDONS_VERSION
         );
 
         wp_enqueue_script(
-            'aae-global-preset',
-            WCF_ADDONS_URL . 'public/test/global-preset.js',
+            'aae-global-preset-free',
+            WCF_ADDONS_URL . $free_js,
             [],
-            '1.0.0',
+            file_exists(WCF_ADDONS_PATH . $free_js) ? filemtime(WCF_ADDONS_PATH . $free_js) : WCF_ADDONS_VERSION,
+            true
+        );
+
+        // TODO: gate behind the pro license check once one exists for this plugin.
+        wp_enqueue_style(
+            'aae-global-preset-pro',
+            WCF_ADDONS_URL . $pro_css,
+            [],
+            file_exists(WCF_ADDONS_PATH . $pro_css) ? filemtime(WCF_ADDONS_PATH . $pro_css) : WCF_ADDONS_VERSION
+        );
+
+        wp_enqueue_script(
+            'aae-global-preset-pro',
+            WCF_ADDONS_URL . $pro_js,
+            [],
+            file_exists(WCF_ADDONS_PATH . $pro_js) ? filemtime(WCF_ADDONS_PATH . $pro_js) : WCF_ADDONS_VERSION,
             true
         );
     }
