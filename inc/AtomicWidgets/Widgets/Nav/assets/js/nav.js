@@ -5,10 +5,42 @@ const g = () => window.gsap;
 /* Per-nav AbortControllers — abort stale document listeners on re-init */
 const navControllers = new Map();
 const editorCompanionControllers = new Map();
+const editorCompanionNodes = new Map();
 
 function isEditor() {
-	return document.body.classList.contains( 'elementor-editor-active' ) ||
-		window.elementorFrontend?.isEditMode?.() === true;
+	if ( document.body?.classList.contains( 'elementor-editor-active' ) ||
+		window.elementorFrontend?.isEditMode?.() === true ) {
+		return true;
+	}
+
+	/* In the v4 canvas the frontend API/body marker can become ready after this
+	 * bundle. The same-origin parent editor is the stable signal. */
+	try {
+		return window.parent !== window && !! window.parent?.elementor;
+	} catch ( error ) {
+		return false;
+	}
+}
+
+function getEditorDeviceMode() {
+	try {
+		return window.elementor?.channels?.deviceMode?.request?.( 'currentMode' ) ||
+			window.parent?.elementor?.channels?.deviceMode?.request?.( 'currentMode' ) ||
+			window.elementorFrontend?.getCurrentDeviceMode?.() || '';
+	} catch ( error ) {
+		return window.elementorFrontend?.getCurrentDeviceMode?.() || '';
+	}
+}
+
+function isEditorMobileMode( breakpoint ) {
+	const mode = String( getEditorDeviceMode() ).toLowerCase();
+	const widthMatches = window.innerWidth <= breakpoint;
+	if ( mode.includes( 'mobile' ) ) return true;
+	if ( mode.includes( 'tablet' ) && breakpoint >= 1024 ) return true;
+
+	/* DevTools responsive mode can resize the preview iframe while Elementor's
+	 * toolbar channel still reports `desktop`. Either signal is sufficient. */
+	return widthMatches;
 }
 
 /* Dropdown content = the first direct child of the nav-item that isn't the
@@ -128,7 +160,10 @@ function sanitizeEditorClone( clone ) {
 			'elementor-element-editable',
 			'elementor-element-selected',
 			'elementor-element-empty',
-			'aae-editor-dropdown-open'
+			'aae-editor-dropdown-open',
+			/* Source Nav carries this while mobile preview is active; the clone
+			 * is made from it, so strip it or the drawer menu is hidden too. */
+			'aae-nav-editor-mobile-hidden'
 		);
 	} );
 	clone.querySelectorAll( '.elementor-empty-view' ).forEach( node => node.remove() );
@@ -166,9 +201,15 @@ function addEditorCloneArrows( nav, arrowTemplate ) {
 function initEditorMobilePreview( companion ) {
 	const companionId = companion.getAttribute( 'data-id' );
 	if ( ! companionId ) return;
+	/* Editor-only marker: scopes the "hamburger is a static preview" CSS
+	 * (pointer-events:none, so hovering it doesn't stack Elementor edit
+	 * toolbars) to the editor. This handler never runs on the frontend, so the
+	 * real hamburger there stays clickable. */
+	companion.classList.add( 'aae-mobile-nav-in-editor' );
 	editorCompanionControllers.get( companionId )?.abort();
 	const ctrl = new AbortController();
 	editorCompanionControllers.set( companionId, ctrl );
+	editorCompanionNodes.set( companionId, companion );
 	const sig = ctrl.signal;
 	let timer = null;
 
@@ -176,10 +217,20 @@ function initEditorMobilePreview( companion ) {
 		window.clearTimeout( timer );
 		timer = window.setTimeout( () => {
 			const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
-			const mobile = window.innerWidth <= breakpoint && companion.dataset.enabled === 'true';
+			const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
 			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
 			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
 			if ( ! drawer ) return;
+
+			/* Orphaned companion (its source Nav was deleted but this sibling
+			 * lingers): bail BEFORE mutating so we don't drive an observer/render
+			 * loop against a missing source. healthCheck tears it down shortly. */
+			const sourceId = companion.dataset.sourceNavId;
+			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+			if ( sourceId && ! source && companion.dataset.enabled === 'true' && isEditorMobileMode( breakpoint ) ) {
+				return;
+			}
+
 			menuArea?.querySelector( ':scope > .aae-mobile-editor-clone' )?.remove();
 			drawer.querySelector( ':scope > .aae-mobile-editor-close' )?.remove();
 			companion.classList.toggle( 'is-mobile', mobile );
@@ -187,10 +238,14 @@ function initEditorMobilePreview( companion ) {
 				'is-open',
 				mobile && companion.dataset.editorPreviewClosed !== 'true'
 			);
+			/* Match the frontend: below the breakpoint the desktop Nav belongs in
+			 * the drawer, not the header. The frontend MOVES it there; in the
+			 * editor we keep the model stable by cloning into the drawer instead,
+			 * so the original must be hidden while mobile preview is active (and
+			 * restored on desktop). Runtime-only class — never saved to the model. */
+			if ( source ) source.classList.toggle( 'aae-nav-editor-mobile-hidden', mobile );
 			if ( ! mobile ) return;
 
-			const sourceId = companion.dataset.sourceNavId;
-			const source = document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` );
 			if ( ! source ) return;
 			const clone = source.cloneNode( true );
 			sanitizeEditorClone( clone );
@@ -231,9 +286,32 @@ function initEditorMobilePreview( companion ) {
 	};
 
 	window.addEventListener( 'resize', render, { signal: sig } );
+	/* Elementor can change its responsive canvas without consistently firing a
+	 * resize in the preview document. Recover only when state/preview is stale;
+	 * do not continuously rebuild a healthy clone. */
+	const healthCheck = window.setInterval( () => {
+		if ( ! companion.isConnected ) {
+			ctrl.abort();
+			return;
+		}
+		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
+		const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
+		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
+			companion.querySelector( '.aae-mobile-nav-drawer' );
+		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
+		const missingPreview = mobile && menuArea &&
+			! menuArea.querySelector( ':scope > .aae-mobile-editor-clone' );
+		if ( staleMode || missingPreview ) render();
+	}, 250 );
+	sig.addEventListener( 'abort', () => {
+		window.clearInterval( healthCheck );
+		if ( editorCompanionNodes.get( companionId ) === companion ) {
+			editorCompanionNodes.delete( companionId );
+		}
+	}, { once: true } );
 	const previewObserver = new MutationObserver( () => {
 		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
-		if ( window.innerWidth > breakpoint || companion.dataset.enabled !== 'true' ) return;
+		if ( ! isEditorMobileMode( breakpoint ) || companion.dataset.enabled !== 'true' ) return;
 		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
 		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
@@ -269,6 +347,26 @@ function initEditorMobilePreview( companion ) {
 	}, { signal: sig } );
 	[ 0, 150, 400 ].forEach( delay => window.setTimeout( render, delay ) );
 }
+
+/* Atomic child/style updates may replace the Mobile Nav root without invoking
+ * its frontend handler again. Observe replacements and initialize each actual
+ * DOM node once; the node map prevents observer-driven reinitialization loops. */
+function ensureEditorMobilePreviews() {
+	if ( ! isEditor() ) return;
+	document.querySelectorAll( '.aae-a-mobile-nav[data-id]' ).forEach( companion => {
+		const id = companion.getAttribute( 'data-id' );
+		if ( editorCompanionNodes.get( id ) !== companion ) {
+			initEditorMobilePreview( companion );
+		}
+	} );
+}
+
+const editorMobileBootstrapObserver = new MutationObserver( ensureEditorMobilePreviews );
+editorMobileBootstrapObserver.observe( document.documentElement, { childList: true, subtree: true } );
+window.addEventListener( 'load', ensureEditorMobilePreviews );
+/* Covers the no-mutation race: editor readiness may change after both module
+ * evaluation and `load`. Node identity checks make healthy scans a no-op. */
+window.setInterval( ensureEditorMobilePreviews, 500 );
 
 register( {
 	elementType: 'e-aae-a-nav',

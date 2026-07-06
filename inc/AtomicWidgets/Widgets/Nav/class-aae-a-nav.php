@@ -9,12 +9,12 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use Elementor\Modules\AtomicWidgets\Elements\Flexbox\Flexbox;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
 require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
@@ -63,6 +63,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
 			'mobile_close_on_link' => Boolean_Prop_Type::make()->default( true ),
 			'mobile_lock_scroll' => Boolean_Prop_Type::make()->default( true ),
+			/* Icon pickers mirrored to the companion's SVG children by the
+			 * NavItemsControl reconciler. Default to the bundled icons so the
+			 * control shows the current icon and swapping is one click. */
+			'mobile_hamburger_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/hamburger.svg' ),
+			'mobile_close_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
+			'mobile_dropdown_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 		];
 	}
 
@@ -90,6 +99,12 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Close on Link Click', 'animation-addons-for-elementor' ) ),
 					Switch_Control::bind_to( 'mobile_lock_scroll' )
 						->set_label( __( 'Lock Body Scroll', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'mobile_hamburger_icon' )
+						->set_label( __( 'Hamburger Icon', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'mobile_close_icon' )
+						->set_label( __( 'Close Icon', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'mobile_dropdown_icon' )
+						->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) ),
 					AAE_A_Mobile_Nav_Lifecycle_Control::make()
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
@@ -134,16 +149,6 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			}
 			return $builder->build();
 		};
-
-		$make_sub_item = fn( $text ) => AAE_A_Nav_Sub_Item::generate()
-			->editor_settings( [ 'title' => $text ] )
-			->settings( [
-				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( $text ),
-					'children' => [],
-				] ),
-			] )
-			->build();
 
 		return [
 			$make_item( 'Menu Item 1' ),

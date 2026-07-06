@@ -118,7 +118,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading' ];
+		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading','e-flexbox' ];
 	}
 
 	protected function define_default_html_tag() {
