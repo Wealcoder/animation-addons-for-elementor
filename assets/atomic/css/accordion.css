@@ -66,12 +66,7 @@
 .aae-a-accordion .aae-a-accordion-item.active .aae-accordion-header {
   background: #f1f1f1;
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-content.e-con {
-  --padding-top: 20px;
-  --padding-bottom: 20px;
-}
 .aae-a-accordion .aae-accordion-content {
-  padding: 0 20px;
   transition: padding var(--aae-accordion-speed, 400ms) ease;
   /* Inner container padding can be overridden by Elementor */
 }

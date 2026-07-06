@@ -232,11 +232,20 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'block' ),
 			'width' => String_Prop_Type::generate( '100%' ),
-			'background' => Background_Prop_Type::generate([]),
-			'border-style' => String_Prop_Type::generate(''),
-			'border-color' => Color_Prop_Type::generate(''),
-			'border-width' => Size_Prop_Type::generate([]),
-			'border-radius' => Dimensions_Prop_Type::generate([]),
+			'overflow' => String_Prop_Type::generate( 'hidden' ),
+			'background' => Background_Prop_Type::generate( [
+				'color' => Color_Prop_Type::generate( '#ffffff' ),
+			] ),
+			'border-style' => String_Prop_Type::generate( 'solid' ),
+			'border-color' => Color_Prop_Type::generate( '#e0e0e0' ),
+			'border-width' => Size_Prop_Type::generate( [
+				'size' => 1,
+				'unit' => 'px',
+			] ),
+			'border-radius' => Size_Prop_Type::generate( [
+				'size' => 4,
+				'unit' => 'px',
+			] ),
 			'padding' => Dimensions_Prop_Type::generate([]),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
