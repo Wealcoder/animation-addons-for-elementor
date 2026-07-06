@@ -41,3 +41,12 @@
   margin-left: 0;
   opacity: 1;
 }
+// oval
+.aae-btn-oval-effect {
+  pointer-events: none;
+}
+
+.aae-btn-oval:hover .aae-btn-oval-effect {
+  width: var(--aae-btn-oval-fill-size, 400px);
+  height: var(--aae-btn-oval-fill-size, 400px);
+}

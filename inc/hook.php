@@ -136,10 +136,14 @@ if (!function_exists('aaeaddon_enqueue_global_preset_assets')) {
             file_exists(WCF_ADDONS_PATH . $pro_css) ? filemtime(WCF_ADDONS_PATH . $pro_css) : WCF_ADDONS_VERSION
         );
 
+        // 'gsap' powers the Oval magnetic-movement effect (ovalMagneticSetup).
+        // Declaring it as a dep is safe even when it's never registered (e.g.
+        // Pro not installed) — WP just skips the missing handle, matching the
+        // `typeof gsap === 'undefined'` guard already in global-preset-pro.js.
         wp_enqueue_script(
             'aae-global-preset-pro',
             WCF_ADDONS_URL . $pro_js,
-            [],
+            ['gsap'],
             file_exists(WCF_ADDONS_PATH . $pro_js) ? filemtime(WCF_ADDONS_PATH . $pro_js) : WCF_ADDONS_VERSION,
             true
         );
