@@ -16,10 +16,8 @@ import mouseMoveEffectSection from './extensions/mouse-move-effect/config';
 import advancetooltipSection from './extensions/advance-tooltip/config';
 import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
-import wrapperLinkSection from './extensions/wrapper-link/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
-import './effects/wrapper-link/index';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
@@ -50,7 +48,6 @@ registerResponsiveSection( mouseMoveEffectSection );
 registerResponsiveSection( advancetooltipSection );
 registerResponsiveSection( tilt );
 registerResponsiveSection( scrollTo );
-registerResponsiveSection( wrapperLinkSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
 

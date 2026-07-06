@@ -1,0 +1,31 @@
+{% set display_number = page_number | default(1) %}
+{% set is_current = is_current | default(false) %}
+{% set is_gap = is_gap | default(false) %}
+{% set classes = ['aae-a-loop-num', 'aae-a-loop-number', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
+{% if is_current %}
+    {% set classes = classes | merge(['is-active', 'e--selected']) %}
+{% endif %}
+{% if is_gap %}
+    {% set classes = classes | merge(['aae-a-loop-num-gap', 'is-gap']) %}
+{% endif %}
+<a class="{{ classes | join(' ') }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    {% if page_number is defined and page_number is not null %}
+        href="{{ page_url | default('#') | e('html_attr') }}"
+        data-aae-page="{{ page_number }}"
+        aria-label="{{ ('Go to page ' ~ page_number) | e('html_attr') }}"
+    {% else %}
+        aria-hidden="true"
+        tabindex="-1"
+    {% endif %}
+    {% if is_current %}aria-current="page"{% endif %}
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>{% if is_gap %}&hellip;{% else %}{{ display_number }}{% endif %}</a>

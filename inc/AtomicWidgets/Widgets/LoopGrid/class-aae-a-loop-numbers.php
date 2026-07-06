@@ -1,11 +1,10 @@
 <?php
 /**
- * AAE Loop Numbers — atomic pagination number list (Pro replica).
+ * AAE Loop Numbers — atomic pagination number list.
  *
- * A structural atomic container that renders the numbered page links
- * (`1 2 3 … N`, smart-truncated) for the Loop Grid. Fully editable/styleable
- * like any atomic element; the individual number anchors are generated at render
- * from the grid's Render_Context (current page + total pages).
+ * A structural atomic container holding ONE styleable page-number TEMPLATE
+ * (AAE_A_Loop_Number). The template repeats at render, once per page link
+ * (1 2 3 … N), so the user styles a single element and every number follows.
  *
  * @package AnimationAddonsForElementor
  */
@@ -14,13 +13,14 @@ namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+
+require_once __DIR__ . '/class-aae-a-loop-number.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,8 +35,8 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
-		// NOT a drop container: the number links are generated at render, so the
-		// editor must not show an empty "+" drop-zone. It stays a styleable leaf.
+		$this->meta( 'is_container', true );
+		// Holds a single Number template child, which repeats at render.
 	}
 
 	public static function get_type() {
@@ -60,7 +60,8 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [];
+		// Only the single page-number template lives here.
+		return [ 'e-aae-a-loop-number' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -72,6 +73,28 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [];
+	}
+
+	protected function define_default_children() {
+		return self::build_number_template();
+	}
+
+	/**
+	 * Seed the single page-number TEMPLATE. It is one authored atomic element the
+	 * user styles once (Normal / Hover / Current); AAE_A_Loop_Number::print_content()
+	 * repeats it per page link at render. Locked so it can't be deleted, but its
+	 * styles stay fully editable.
+	 *
+	 * Returns an array (one child) so callers can splice it straight into a
+	 * children list.
+	 */
+	public static function build_number_template(): array {
+		return [
+			AAE_A_Loop_Number::generate()
+				->editor_settings( [ 'title' => __( 'Page Number', 'animation-addons-for-elementor' ) ] )
+				->is_locked( true )
+				->build(),
+		];
 	}
 
 	protected function define_base_styles(): array {
@@ -91,26 +114,12 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 		];
 	}
 
-	/**
-	 * Expose the current page + total pages + smart-truncated page list to twig.
-	 */
-	protected function build_template_context(): array {
-		$ctx     = Render_Context::get( AAE_A_Loop_Grid::class );
-		$current = isset( $ctx['paged'] ) ? (int) $ctx['paged'] : 1;
-		$total   = isset( $ctx['max_num_pages'] ) ? (int) $ctx['max_num_pages'] : 1;
-
-		// In the editor there's no real query — show a representative set so the
-		// user can style it.
-		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			$current = 1;
-			$total   = 5;
+	public static function page_url( int $page ): string {
+		if ( 1 === $page ) {
+			return remove_query_arg( 'aae_page' );
 		}
 
-		return array_merge( $this->build_base_template_context(), [
-			'current_page' => $current,
-			'total_pages'  => $total,
-			'page_items'   => self::smart_pages( $current, $total ),
-		] );
+		return add_query_arg( 'aae_page', $page );
 	}
 
 	/**

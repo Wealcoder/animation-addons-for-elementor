@@ -1,5 +1,10 @@
 {% set classes = ['aae-a-loop-pagination', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
-<div class="{{ classes }} {{ editor_classes | default('') }}"
+{# Edge-state classes, known at render time: on the first page Prev is useless,
+   on the last page Next/Load More are — CSS hides them (frontend only, the
+   editor keeps every piece visible/styleable). NO ternary — Twing breaks. #}
+{% set pg_c = pg_current | default(1) %}
+{% set pg_t = pg_total | default(1) %}
+<div class="{{ classes }} {{ editor_classes | default('') }}{% if pg_c <= 1 %} aae-pg-first{% endif %}{% if pg_c >= pg_t %} aae-pg-last{% endif %}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"

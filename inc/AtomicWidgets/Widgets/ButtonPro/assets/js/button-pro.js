@@ -10,7 +10,7 @@
  *   9/10/11 — Magnetic (magneticSetup   — GSAP cursor-following parallax)
  */
 
-import { register } from '@elementor/frontend-handlers';
+const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 import '../scss/button-pro.scss';
 
 /* -------------------------------------------------------------------------

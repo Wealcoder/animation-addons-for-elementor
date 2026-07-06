@@ -287,6 +287,7 @@ final class Atomic
 			'aae-a-loop-prev',
 			'aae-a-loop-next',
 			'aae-a-loop-numbers',
+			'aae-a-loop-number',
 			'aae-a-loop-loadmore',
 			'aae-a-loop-arrow',
 			'aae-a-loop-nav-wrap',
@@ -568,6 +569,13 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
 				'icon'         => 'eicon-number-field',
 				'keywords'     => [ 'loop', 'numbers', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-number' => [
+				'label'        => 'Loop Page Number',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'icon'         => 'eicon-number-field',
+				'keywords'     => [ 'loop', 'number', 'pagination' ],
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-loadmore' => [
@@ -1502,19 +1510,6 @@ final class Atomic
 				'order'        => 12,
 			],
 
-			'wrapper-link' => [
-				'label'        => 'Wrapper Link',
-				'description'  => 'Make any atomic container clickable as a single link.',
-				'icon'         => 'wcf-icon-wrapper-link',
-				'is_pro'       => false,
-				'is_extension' => true,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => ['wrapper link', 'container link', 'clickable section', 'link wrapper'],
-				'category'     => 'utility',
-				'order'        => 13,
-			],
-
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
@@ -1800,6 +1795,11 @@ final class Atomic
 			'aae-a-loop-numbers' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-numbers.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-number' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'file' => 'Widgets/LoopGrid/class-aae-a-loop-number.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-loadmore' => [
@@ -2136,16 +2136,32 @@ final class Atomic
 			]);
 			if (! is_wp_error($terms)) {
 				foreach ($terms as $t) {
-					$options[] = ['id' => (int) $t->term_id, 'label' => $t->name];
+					// post_format terms are stored as "post-format-video" etc. —
+					// show the human name ("Video") instead.
+					$label = ('post_format' === $taxonomy)
+						? get_post_format_string(str_replace('post-format-', '', $t->slug))
+						: $t->name;
+					$options[] = ['id' => (int) $t->term_id, 'label' => $label];
 				}
 			}
 		} else {
 			$public_types = array_keys(get_post_types(['public' => true]));
-			$public_types = array_diff($public_types, ['attachment']);
+			$public_types = array_values(array_diff($public_types, ['attachment']));
+
+			// Scope the search to the grid's selected Source post type when the
+			// control sends it — "all settings are source related". No/invalid
+			// type falls back to every public type.
+			$post_type = isset($_POST['post_type']) ? sanitize_key(wp_unslash($_POST['post_type'])) : '';
+			$search_types = ($post_type && in_array($post_type, $public_types, true))
+				? [$post_type]
+				: $public_types;
+
 			$args = [
-				'post_type'           => array_values($public_types),
+				'post_type'           => $search_types,
 				'post_status'         => 'publish',
-				'posts_per_page'      => 20,
+				// Browsing (empty search) loads a small teaser list for
+				// performance; typing searches wider.
+				'posts_per_page'      => ('' === $term) ? 4 : 20,
 				'ignore_sticky_posts' => true,
 				'orderby'             => 'date',
 				'order'               => 'DESC',
@@ -2153,7 +2169,7 @@ final class Atomic
 			if (ctype_digit($term)) {
 				// Numeric search: try the exact ID first, fall back to title search.
 				$by_id = get_post((int) $term);
-				if ($by_id && 'publish' === $by_id->post_status && in_array($by_id->post_type, $public_types, true)) {
+				if ($by_id && 'publish' === $by_id->post_status && in_array($by_id->post_type, $search_types, true)) {
 					$options[] = ['id' => (int) $by_id->ID, 'label' => get_the_title($by_id)];
 				}
 			}
@@ -2200,6 +2216,16 @@ final class Atomic
 		}
 		if (isset($_POST['posts_per_page'])) {
 			$filters['posts_per_page'] = absint($_POST['posts_per_page']);
+		}
+
+		// Related source preview: the editor has no "current post", so relate
+		// from the document's Preview Settings post / sample post — the same
+		// post the authored card previews.
+		if (('related' === ($filters['post_type'] ?? '')) && empty($filters['_context_post_id'])) {
+			$sample = self::get_sample_post();
+			if ($sample instanceof \WP_Post) {
+				$filters['_context_post_id'] = $sample->ID;
+			}
 		}
 
 		$query = new \WP_Query(
@@ -2299,15 +2325,28 @@ final class Atomic
 		// shared builder the frontend render uses, so pagination honors every
 		// query filter (taxonomy terms, include/exclude, date range, meta…).
 		self::load_loop_grid_class();
+		$gs = (array) ($grid_el['settings'] ?? []);
+
+		// Related source: the requesting page's post is the relatedness anchor
+		// (admin-ajax has no queried object of its own).
+		$gs['_context_post_id'] = $post_id;
+
+		// Current Query source: the archive's query vars, captured into the
+		// pagination config at render time and posted back by the runtime.
+		if (isset($_POST['qv'])) {
+			$qv = json_decode(sanitize_text_field(wp_unslash($_POST['qv'])), true);
+			if (is_array($qv)) {
+				$gs['_qv'] = $qv; // whitelist-sanitized inside the builder
+			}
+		}
+
 		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
-			(array) ($grid_el['settings'] ?? []),
+			$gs,
 			$paged
 		);
 
-		// Total pages (respects the same query).
-		$count     = new \WP_Query(array_merge($query_args, ['fields' => 'ids']));
-		$max_pages = max(1, (int) $count->max_num_pages);
-		wp_reset_postdata();
+		// Total pages (respects the same query, offset-corrected).
+		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::compute_max_pages($gs, $query_args);
 
 		// Push context (same key the Loop Item reads) and render the item.
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
@@ -2942,7 +2981,16 @@ final class Atomic
 		$suffix = $this->is_dev_environment() ? '' : '.min';
 		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
 		$file_path = WCF_ADDONS_PATH . $path;
-		$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+		// Version the URL from the built file itself. Unlike a timestamp-only
+		// version, this also changes for multiple builds written in one second.
+		$version = WCF_ADDONS_VERSION;
+		if (is_readable($file_path)) {
+			$content_hash = md5_file($file_path);
+			$version = false !== $content_hash
+				? WCF_ADDONS_VERSION . '-' . substr($content_hash, 0, 12)
+				: (string) filemtime($file_path);
+		}
+		
 
 		wp_enqueue_script(
 			'aae-atomic-editor',
@@ -2978,9 +3026,21 @@ final class Atomic
 	}
 
 	/**
-	 * Elementor 4.1 throws when its core Atomic views were already registered.
-	 * Make only the two Elementor-owned registrations idempotent; all custom
-	 * element type collisions continue to throw normally.
+	 * Elementor 4.1 throws ("Element type already registered") when its core
+	 * Atomic views (`e-div-block` / `e-flexbox`) get registered a second time.
+	 *
+	 * The previous guard swallowed the throw by RETURNING the already-registered
+	 * (stale, first) type object and skipping `original.call`. That was wrong: on
+	 * a fresh element drop it bound the container to the earlier, incomplete type
+	 * definition, so the new flexbox rendered missing its `e-con`/`e-flexbox-base`
+	 * atomic classes (layout broke). See git history / issue: dropping a flexbox
+	 * on a new page produced `elementor-element … e-handles-inside` with no base
+	 * classes.
+	 *
+	 * Correct idempotency: on a collision for ONLY these two core types, let the
+	 * LATEST registration WIN (overwrite the stored type) instead of throwing or
+	 * keeping the stale one. Every other element-type collision still throws
+	 * normally, so real double-registration bugs elsewhere stay visible.
 	 */
 	private function guard_elementor_core_atomic_types(): void
 	{
@@ -2999,14 +3059,18 @@ final class Atomic
 		return;
 	}
 
+	var CORE = { 'e-div-block': true, 'e-flexbox': true };
 	var original = manager.registerElementType;
 	manager.registerElementType = function (element) {
 		var type = element && typeof element.getType === 'function' ? element.getType() : '';
-		if (
-			(type === 'e-div-block' || type === 'e-flexbox') &&
-			this.elementTypes && this.elementTypes[type]
-		) {
-			return this.elementTypes[type];
+
+		// Only intervene for the two Elementor-owned core atomic types when they
+		// are being registered a second time. Let the NEW element replace the old
+		// so the freshly-built (complete) type wins — this keeps `e-con` /
+		// `e-flexbox-base` base classes on freshly-dropped containers.
+		if (CORE[type] && this.elementTypes && this.elementTypes[type]) {
+			this.elementTypes[type] = element;
+			return element;
 		}
 
 		return original.call(this, element);

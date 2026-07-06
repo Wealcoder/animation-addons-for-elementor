@@ -11,13 +11,5 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-    {# In the editor the PHP context isn't available (client-side render), so
-       fall back to a representative 1-5 so the numbers are visible + styleable. #}
-    {% for p in page_items | default([1, 2, 3, 4, 5]) %}
-        {% if p == '...' %}
-            <span class="aae-a-loop-num aae-a-loop-num-gap">&hellip;</span>
-        {% else %}
-            <a href="#" class="aae-a-loop-num{{ p == (current_page | default(1)) ? ' is-active' : '' }}" data-aae-page="{{ p }}">{{ p }}</a>
-        {% endif %}
-    {% endfor %}
+    {{ children_placeholder | default('') | raw }}
 </div>

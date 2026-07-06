@@ -32,7 +32,6 @@ final class Assets
 		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
 		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
 		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
-		'aae-effect-wrapper-link'    => 'effects/wrapper-link.js',
 		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
 		'aae-effect-parallax'        => 'effects/parallax.js',
 		'aae-effect-custom-css'      => 'effects/custom-css.js',
@@ -225,6 +224,7 @@ final class Assets
 		'elementor-v2-editor-props',
 		'elementor-v2-editor-responsive',
 		'elementor-v2-editor-ui',
+		'elementor-v2-editor-v1-adapters',
 		'elementor-v2-ui',
 	];
 

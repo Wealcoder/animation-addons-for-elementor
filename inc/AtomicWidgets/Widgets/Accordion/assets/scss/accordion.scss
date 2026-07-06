@@ -1,63 +1,10 @@
 .aae-a-accordion {
-    .aae-a-accordion-item {
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        background: #fff;
-        overflow: hidden;
-        margin-bottom: var(--aae-accordion-gap, 0);
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    /* Item alignment (Desktop) */
-    &[data-item-pos="flex-start"] { align-items: flex-start; }
-    &[data-item-pos="center"] { align-items: center; }
-    &[data-item-pos="flex-end"] { align-items: flex-end; }
-    &[data-item-pos="stretch"] { align-items: stretch; }
-
-    /* Item alignment (Tablet) */
-    @media (max-width: 1024px) {
-        &[data-item-pos-tablet="flex-start"] { align-items: flex-start; }
-        &[data-item-pos-tablet="center"] { align-items: center; }
-        &[data-item-pos-tablet="flex-end"] { align-items: flex-end; }
-        &[data-item-pos-tablet="stretch"] { align-items: stretch; }
-    }
-
-    /* Item alignment (Mobile) */
-    @media (max-width: 767px) {
-        &[data-item-pos-mobile="flex-start"] { align-items: flex-start; }
-        &[data-item-pos-mobile="center"] { align-items: center; }
-        &[data-item-pos-mobile="flex-end"] { align-items: flex-end; }
-        &[data-item-pos-mobile="stretch"] { align-items: stretch; }
-    }
-
-    /* Icon position - affects header layout.
-       Title + Icon live inside the injected .aae-header-element. */
-    .aae-a-accordion-item[data-icon-pos="left"] .aae-header-element {
-        flex-direction: row-reverse;
-    }
+    /* Title + Icon live inside the injected .aae-header-element. */
 
     .aae-accordion-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: 15px 20px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
+
         text-align: left;
         transition: background-color 0.3s ease;
-
-        &:hover {
-            background: #f9f9f9;
-        }
-
-        &:focus {
-            outline: none;
-        }
 
         // Header slot - holds the injected Header Div_Block
         .aae-header-content {
@@ -85,10 +32,6 @@
                 white-space: nowrap;
             }
 
-            // Header Icons (SVG) — open/close indicators. Box only; per-icon
-            // show/hide lives in the dedicated rules below. Size is forced with
-            // !important so the Atomic_Svg element's own base width/height
-            // (65px) can't leak through and make the two icons different sizes.
             .aae-header-icon-element {
                 display: inline-flex;
                 align-items: center;
@@ -106,40 +49,19 @@
         }
     }
 
-    /* ---------- ICON VISIBILITY (single source of truth) ----------
-       Collapsed (default) state: only the open (+) icon shows; hide the close
-       icon. The `.active` rules below invert this for the open item.
-
-       The open icon is visible by default via `.aae-header-icon-element`
-       (display: inline-flex above) — no per-icon "show" rule, so the editor
-       always has a visible icon the instant the item is dropped, never a blank.
-
-       The hide/show selectors are scoped as
-       `.aae-a-accordion-item .aae-header-icon-element.aae-header-icon-{open|close}`
-       (specificity 0,3,0) — NOT through the `.aae-accordion-header
-       .aae-header-element` path. In the editor the icon is sometimes still
-       inside the hidden children-injector (before distribution) or wrapped by
-       an extra `.elementor-element`, so the header path can fail to match and
-       both icons render. The item + dual-class path always matches wherever the
-       icon sits, and !important beats the Atomic_Svg base `display`. */
+    
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
 
-    /* Collapsed by default. Height is animated via max-height, driven by JS
-       (it sets an explicit px target so the transition is smooth, then settles
-       to `none` when fully open). overflow:hidden keeps content clipped while
-       collapsing. Works the same in the editor and on the frontend. */
+
     .aae-accordion-content-wrapper {
         max-height: 0;
         overflow: hidden;
         transition: max-height var(--aae-accordion-speed, 400ms) ease;
     }
 
-    /* ---------- OPEN STATE ---------- */
-    // Active item: hide the open icon, show the close icon. Same item +
-    // dual-class path as the collapsed rule (+ the .active class for higher
-    // specificity), so it matches wherever the icon sits in the editor DOM.
+   
     .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-open {
         display: none !important;
     }
@@ -155,14 +77,14 @@
 
         .aae-accordion-content {
             &.e-con {
-                --padding-top: 20px;
-                --padding-bottom: 20px;
+                // --padding-top: 20px;
+                // --padding-bottom: 20px;
             }
         }
     }
 
     .aae-accordion-content {
-        padding: 0 20px;
+        // padding: 0 20px;
         transition: padding var(--aae-accordion-speed, 400ms) ease;
 
         /* Inner container padding can be overridden by Elementor */
@@ -175,30 +97,10 @@
             transition: padding var(--aae-accordion-speed, 400ms) ease;
         }
 
-        // Injected Content Div_Block (Text + Image)
-        // .aae-content-element {
-        //     display: flex;
-        //     flex-direction: column;
-        //     gap: 15px;
-
-        //     .aae-content-text-element {
-        //         margin: 0;
-        //         line-height: 1.6;
-        //     }
-
-        //     .aae-content-image-element {
-        //         max-width: 100%;
-        //         height: auto;
-        //         border-radius: 4px;
-        //     }
-        // }
     }
 }
 
-/* ---------- EDITOR ONLY ----------
-   Scoped to Elementor's editor preview (body.elementor-editor-active); these
-   rules do not apply on the published page. Smoothly reveal/hide the injected
-   content Div_Block (.aae-content-element) based on the item's .active state. */
+/* ---------- EDITOR ONLY ---------- */
 .elementor-editor-active {
     .aae-a-accordion-item .aae-content-element {
         opacity: 0;
