@@ -15,6 +15,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
+require_once __DIR__ . '/class-aae-a-nav-sub-items-control.php';
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -95,6 +97,14 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
 						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
+			Section::make()
+				->set_label( __( 'Sub-menu Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'sub_menu_items' )
+				->set_items( [
+					AAE_A_Nav_Sub_Items_Control::make()
+						->set_label( __( 'Sub-items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
 		];
 	}
 
@@ -110,12 +120,18 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 		/* 'e-flexbox' is the mega-menu-capable dropdown container: a core
 		 * Elementor Flexbox at level 3 (Nav → item → flexbox → widgets) which
 		 * the user styles via the Style tab. 'e-aae-a-nav-sub-item' is the
-		 * legacy leaf, kept for back-compat. 'widget' allows arbitrary content. */
-		return [ 'widget', 'e-aae-a-nav-sub-item', 'e-flexbox' ];
+		 * legacy leaf, kept for back-compat. 'widget' allows arbitrary content.
+		 * 'e-aae-a-nav-item' enables MULTI-LEVEL menus: a nested item is added
+		 * inside this item's dropdown flexbox (freeze-safe interleave — the core
+		 * flexbox breaks the AAE-element chain). See AAE_A_Nav_Sub_Items_Control. */
+		return [ 'widget', 'e-aae-a-nav-sub-item', 'e-flexbox', 'e-aae-a-nav-item' ];
 	}
 
 	protected function define_default_html_tag() {
-		return 'li';
+		/* <div>, not <li>: nav-items can nest inside a dropdown flexbox (<div>)
+		 * for multi-level menus, and a nested <li> would auto-close its ancestor
+		 * <li> in the browser parser, mangling the tree. See aae-a-nav-item.html.twig. */
+		return 'div';
 	}
 
 	protected function get_templates(): array {

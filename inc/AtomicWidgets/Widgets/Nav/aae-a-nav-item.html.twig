@@ -5,7 +5,13 @@
 {% set dropdown_anim = settings.dropdown_animation | default('gsap') %}
 {% set has_link = settings.link is defined and settings.link.href is defined and settings.link.href is not empty %}
 
-<li class="{{ classes }} {{ editor_classes | default('') }}"
+{# Rendered as <div>, NOT <li>: a nav-item can be nested inside another
+   nav-item's dropdown flexbox (a <div>) for multi-level menus. A <div> does
+   not bound the browser's "list-item scope", so a nested <li> would auto-close
+   its ancestor <li> and the parser would rip the nested tree apart. Using
+   <div> throughout (nav + items) keeps deep nesting intact. #}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    role="menuitem"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
@@ -33,4 +39,4 @@
 
     {# Dropdown container (typically a Flexbox) renders directly — the user styles it via its own Style tab. #}
     {{ children_placeholder | raw }}
-</li>
+</div>

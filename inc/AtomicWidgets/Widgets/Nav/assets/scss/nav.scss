@@ -10,7 +10,8 @@
 }
 
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown {
 	position: absolute;
 	inset-block-start: 100%;
 	inset-inline-start: 0;
@@ -24,7 +25,8 @@
 
 /* Show when frontend runtime toggles .is-open. */
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-con:not(.aae-a-nav-item-label) {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .aae-a-nav-dropdown {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -33,14 +35,38 @@
 
 /* Nested sub-dropdown opens to the right. */
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label) {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown {
 	inset-block-start: 0;
 	inset-inline-start: 100%;
+}
+
+.aae-a-nav-runtime-dropdown {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
 }
 
 /* Cursor pointer on items with dropdown enabled. */
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] {
 	cursor: pointer;
+}
+
+/* Multi-level submenu layout. A dropdown that CONTAINS nested menu items is a
+ * submenu → lay it out as a vertical list and make each item full-width, so
+ * sub-items stack instead of sitting in a row (nav-items are flex:0 0 auto).
+ * Scoped with `:has(> .aae-a-nav-item)` so a PURE mega-menu flexbox (columns /
+ * images, no nested items) keeps the direction the user set in the Style tab. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:has( > .aae-a-nav-item ),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:has( > .aae-a-nav-item ) {
+	flex-direction: column !important;
+	flex-wrap: nowrap !important;
+	align-items: stretch !important;
+}
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:has( > .aae-a-nav-item ) > .aae-a-nav-item,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:has( > .aae-a-nav-item ) > .aae-a-nav-item {
+	width: 100% !important;
+	flex: 0 0 auto !important;
 }
 
 /* ══ CSS Dropdown Animations ══ */
@@ -116,22 +142,22 @@
 
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
 }
 
 /* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-editable > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:hover > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -441,6 +467,47 @@ body.aae-mobile-nav-scroll-lock {
 	.aae-a-nav-item.is-mobile-submenu-open > .aae-mobile-submenu-toggle .aae-mobile-submenu-icon {
 		transform: rotate(180deg);
 	}
+
+	/* ══ Dropdown animations in the mobile drawer (accordion) ══
+	 * Desktop plays the chosen data-dropdown-anim on `.is-open`; mobile opens a
+	 * different state (`.is-mobile-submenu-open`) and the toggle flips the
+	 * `hidden` attribute, so a max-height *transition* is skipped on the
+	 * display:none→flex jump. Keyframe *animations* DO fire on that jump, so we
+	 * replay the same effects here keyed to the mobile open state. GSAP has no
+	 * JS runtime inside the drawer, so it falls back to grow-down. */
+	.aae-a-nav-item[data-dropdown-anim="gsap"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		animation: aae-nav-grow-down 300ms ease-in-out both;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-3d"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		animation: aae-nav-rotate-3d 400ms ease-in-out both;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="grow-out"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+		animation: aae-nav-grow-out 300ms ease-in-out both;
+		transform-origin: top center;
+	}
+	/* Item-stagger variants animate the dropdown's children. */
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
+		animation: aae-nav-slide-item 300ms ease-out both;
+	}
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"] { perspective: 1000px; }
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
+		animation: aae-nav-rotate-item 300ms ease-in-out both;
+		transform-origin: top center;
+	}
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(1),
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(1) { animation-delay: 0ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(2),
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(2) { animation-delay: 60ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(3),
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(3) { animation-delay: 120ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(4),
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(4) { animation-delay: 180ms; }
+	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5),
+	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5) { animation-delay: 240ms; }
 }
 
 /* Gap remains a normal Elementor grid property. This zero-specificity value
