@@ -204,3 +204,36 @@ function borderDivideSetup(container) {
 
 document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
 
+// ==================================================================================
+// =================================== pro button ===================================
+// ==================================================================================
+
+// 5  — Group Swap L
+function groupSwapLeftSetup(container) {
+  container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
+
+  const icon = container.querySelector(':scope > .aae-btn-grswapl-icon');
+  if (!icon) return;
+
+  const clone = icon.cloneNode(true);
+  clone.setAttribute('data-swap-clone', 'true');
+  clone.removeAttribute('data-interaction-id');
+  container.prepend(clone);
+}
+
+document.querySelectorAll('.aae-btn-grswapl').forEach(groupSwapLeftSetup);
+
+// 6  — Group Swap R
+function groupSwapRightSetup(container) {
+  container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
+
+  const icon = container.querySelector(':scope > .aae-btn-grswapr-icon');
+  if (!icon) return;
+
+  const clone = icon.cloneNode(true);
+  clone.setAttribute('data-swap-clone', 'true');
+  clone.removeAttribute('data-interaction-id');
+  container.prepend(clone);
+}
+
+document.querySelectorAll('.aae-btn-grswapr').forEach(groupSwapRightSetup);
