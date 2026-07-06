@@ -1,21 +1,16 @@
 {% import 'elementor/macros' as m %}
 {% if settings.image_url %}
 	{% set wrapper_tag = 'div' %}
-	{% set link_attrs = '' %}
-	
-	{% if settings.link_to == 'post' and settings.post_url is not empty %}
-		{% set wrapper_tag = 'a' %}
-		{% set link_attrs = 'href="' ~ settings.post_url | e('html_attr') ~ '"' %}
-	{% elseif settings.link_to == 'custom' and settings.custom_link.attributes is not empty %}
-		{% set wrapper_tag = 'a' %}
-		{% set link_attrs = settings.custom_link.attributes | default('') | raw %}
+
+	{% if settings.link is defined and settings.link.href is defined and settings.link.href is not empty %}
+		{% set wrapper_tag = settings.link.tag | default('a') %}
 	{% endif %}
 
 	{% set wrapper_classes = ['aae-a-post-image-wrapper'] | merge([ base_styles.base ]) | join(' ') %}
 	{% set img_classes = ['aae-a-post-image'] | merge(settings.classes | default([])) | join(' ') %}
 
 	<{{ wrapper_tag }} class="{{ wrapper_classes }}"
-		{{ link_attrs | default('') | raw }}
+		{{- ' ' }}{{ m.render_link_attributes(settings.link | default(null)) }}
 		style="{% if settings.aspect_ratio is defined and settings.aspect_ratio != 'auto' %}aspect-ratio: {{ settings.aspect_ratio | default('16/9') }};{% endif %}"
 		data-interaction-id="{{ interaction_id | default('') }}"
 		{{- m.render_custom_attributes(settings) }}>

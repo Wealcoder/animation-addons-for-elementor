@@ -27,7 +27,28 @@ import { getPreviewWindow } from './preview.js';
 import { applyTitleLimit, readTitleLimit } from './post-title-limit.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
-const TYPE = 'e-aae-a-loop-grid';
+
+/**
+ * While we mutate the preview ourselves (append/remove clones), our own DOM
+ * writes MUST NOT feed back into the MutationObserver → scan → hydrate loop.
+ * That feedback loop is what let a nested-Flexbox re-render race with our clone
+ * churn and drop the authored element's atomic classes. Every clone write is
+ * wrapped in `muteObserver()` so `schedule()` ignores mutations we caused.
+ */
+let observerMuted = 0;
+function muteObserver(fn) {
+	observerMuted++;
+	try {
+		return fn();
+	} finally {
+		// Release on the next microtask: the MutationObserver delivers records
+		// asynchronously, so a synchronous decrement would unmute before our own
+		// records arrive and we'd re-enter the loop anyway.
+		Promise.resolve().then(() => {
+			observerMuted--;
+		});
+	}
+}
 
 function cfg() {
 	return window.AAE_LOOP_GRID || {};
@@ -66,7 +87,7 @@ function deepUnwrap(v) {
 }
 
 /** Non-taxonomy advanced-filter props mirrored into the preview query. */
-const FILTER_KEYS = ['include_posts', 'exclude_posts', 'date_range', 'meta_key_exists', 'only_featured_image'];
+const FILTER_KEYS = ['include_posts', 'exclude_posts', 'date_range', 'meta_key_exists', 'only_featured_image', 'sticky_first', 'related_by', 'offset'];
 
 /** Read the loop-grid query settings from its editor container (falls back to defaults). */
 function readSettings(wrap) {
@@ -183,12 +204,18 @@ function cachedPosts(sig) {
 /**
  * Strip all editor machinery from a clone so it's pure, inert preview HTML.
  *
- * A raw cloneNode still carries `.elementor-element*` classes, the injected
- * `.elementor-element-overlay` nodes, and `data-id`/`data-model-cid` attrs — so
- * the editor draws its hover outline / handles over the clones. Removing them
- * makes clones display-only (no hover border, not selectable).
+ * A raw cloneNode still carries injected overlay nodes and model attributes,
+ * which can make Elementor treat the preview copy as an editable element.
+ * Keep every CSS class: Elementor's generated styles and tooltip behavior are
+ * scoped by element classes, so removing them changes the rendered clone.
  */
 function sanitizeClone(root) {
+	// This sanitizer belongs exclusively to Loop Grid preview clones. Keep the
+	// guard here so a future caller cannot accidentally scrub another widget.
+	if ( ! root.matches('[data-aae-clone]') ) {
+		return;
+	}
+
 	// Drop editor-injected overlay/handle nodes entirely.
 	root.querySelectorAll('.elementor-element-overlay, .ui-resizable-handle').forEach((n) => n.remove());
 
@@ -196,16 +223,7 @@ function sanitizeClone(root) {
 		// Remove editor identity + model attributes.
 		[ 'data-id', 'data-model-cid', 'data-element_type', 'data-e-type', 'data-widget_type',
 			'draggable', 'data-interaction-id' ].forEach((a) => el.removeAttribute(a));
-		// Strip ONLY the editor selection/hover classes (elementor-element*).
-		// Keep e-atomic-element + the generated atomic style classes so the
-		// clone still LOOKS identical to the authored card.
-		if ( el.classList && el.classList.length ) {
-			Array.from(el.classList).forEach((c) => {
-				if ( c.indexOf('elementor-element-') === 0 ) {
-					el.classList.remove(c);
-				}
-			});
-		}
+		// Keep every class. Elementor's generated styles are class-scoped.
 	};
 	scrub(root);
 	root.querySelectorAll('*').forEach(scrub);
@@ -223,7 +241,7 @@ function fillClone(clone, post) {
 	if (titleEl && post.title) {
 		const target = titleEl.querySelector('h1,h2,h3,h4,h5,h6,a,span,p') || titleEl;
 		// Mirror the widget's PHP limit (word/char) — fillClone runs BEFORE
-		// sanitizeClone, so the clone still carries the authored widget's
+	
 		// data-id and we can read its live settings.
 		const { by, n } = readTitleLimit(titleEl.getAttribute('data-id'));
 		target.textContent = applyTitleLimit(post.title, by, n);
@@ -258,7 +276,35 @@ function findGridAndItem(wrap) {
 
 /** Remove every clone cell in a grid (idempotent). */
 function removeClones(grid) {
-	grid.querySelectorAll('[data-aae-clone]').forEach((n) => n.remove());
+	const clones = grid.querySelectorAll('[data-aae-clone]');
+	if (!clones.length) {
+		return;
+	}
+	muteObserver(() => clones.forEach((n) => n.remove()));
+}
+
+/**
+ * Capture the authored card's rendered element tree without transient editor
+ * overlays. Nested Flexbox/Container children mount asynchronously, so query
+ * settings alone cannot tell us whether an earlier clone is now incomplete.
+ */
+function authoredStructureSignature(item) {
+	const parts = [];
+	const visit = (el, depth) => {
+		if (el.matches('.elementor-element-overlay, .ui-resizable-handle')) {
+			return;
+		}
+		parts.push([
+			depth,
+			el.tagName,
+			el.getAttribute('data-widget_type') || '',
+			el.getAttribute('data-e-type') || '',
+			el.getAttribute('data-element_type') || '',
+		].join(':'));
+		Array.from(el.children).forEach((child) => visit(child, depth + 1));
+	};
+	visit(item, 0);
+	return parts.join('|');
 }
 
 /**
@@ -273,21 +319,25 @@ function removeClones(grid) {
  */
 
 /** Build inert preview clones (posts[1..]) after the authored item. */
-function buildClones(grid, item, posts, doc) {
+function buildClones(grid, item, posts, doc, structureSig = authoredStructureSignature(item)) {
 	removeClones(grid);
 	if (!posts || posts.length <= 1) {
 		return;
 	}
+	// Build the fragment OUTSIDE the mute window (cloneNode/fill/sanitize touch
+	// only the detached fragment — no observed mutation). Only the single
+	// grid.appendChild is a live DOM write, so that is all we mute.
 	const frag = doc.createDocumentFragment();
 	for (let i = 1; i < posts.length; i++) {
 		const clone = item.cloneNode(true);
 		clone.setAttribute('data-aae-clone', '1');
+		clone.__aaeSourceStructure = structureSig;
 		clone.style.pointerEvents = 'none';
 		fillClone(clone, posts[i]);  // uses data-widget_type selectors
-		sanitizeClone(clone);        // then strip editor attrs/classes
+		sanitizeClone(clone);        // then strip editor identity attributes
 		frag.appendChild(clone);
 	}
-	grid.appendChild(frag);
+	muteObserver(() => grid.appendChild(frag));
 }
 
 async function hydrate(wrap) {
@@ -313,6 +363,8 @@ async function hydrate(wrap) {
 	// legitimately yields a single item (nothing to clone). Otherwise rebuild.
 	const firstClone = grid.querySelector('[data-aae-clone]');
 	const clonesPresent = !!firstClone;
+	const structureSig = authoredStructureSignature(item);
+	const structureStale = clonesPresent && firstClone.__aaeSourceStructure !== structureSig;
 
 	// Clones are a DOM snapshot of the authored card. On a FRESH DROP the card's
 	// widgets can finish mounting AFTER the clones were built — e.g. the
@@ -336,7 +388,7 @@ async function hydrate(wrap) {
 		.join('|');
 	const titleStale = clonesPresent && wrap.__aaeTitleSig !== titleSig;
 
-	const cloneStale = imgStale || titleStale;
+	const cloneStale = structureStale || imgStale || titleStale;
 
 	const inSync = ( clonesPresent || wrap.__aaeSingle === true ) && !cloneStale;
 	if (wrap.__aaeSig === sig && !wrap.__aaeDirty && inSync) {
@@ -351,7 +403,7 @@ async function hydrate(wrap) {
 	if (wrap.__aaeSig === sig && ( ! clonesPresent || cloneStale )) {
 		const cached = cachedPosts(sig);
 		if (cached) {
-			buildClones(grid, item, cached, doc);
+			buildClones(grid, item, cached, doc, structureSig);
 			wrap.__aaeSingle = cached.length <= 1;
 			wrap.__aaeTitleSig = titleSig;
 			return;
@@ -410,7 +462,7 @@ async function hydrate(wrap) {
 	// single-item grid as "clones missing" and rebuild on every tick.
 	wrap.__aaeSingle = posts.length <= 1;
 
-	buildClones(grid, item, posts, doc);
+	buildClones(grid, item, posts, doc, structureSig);
 	wrap.__aaeTitleSig = titleSig;
 }
 
@@ -480,6 +532,100 @@ async function fillAuthoredSample(pdoc) {
 	});
 }
 
+/**
+ * Preview the repeating page-number bar in the editor.
+ *
+ * The page numbers are ONE authored atomic template (AAE_A_Loop_Number) that
+ * repeats per page link on the frontend (its print_content loops 1..N). The
+ * editor renders that template CLIENT-side just once, so the canvas would show a
+ * single number. To make the bar look real — and to let the user see their
+ * styling on every number — we clone the authored number into a smart-truncated
+ * [1][2][3]…[N] set of INERT display-only copies (data-aae-num-clone,
+ * pointer-events:none), exactly like the loop-item card clones. The authored
+ * number stays the first, selectable element; clones are never editor elements.
+ *
+ * Preview page count is a fixed sample (current 3 of 7) so gaps + a current-page
+ * state are both visible to style. Keyed by a signature (authored markup +
+ * sample) so we only rebuild on real changes.
+ */
+const PREVIEW_CURRENT = 3;
+const PREVIEW_TOTAL = 7;
+
+function smartPagesPreview(current, total) {
+	if (total <= 7) {
+		const all = [];
+		for (let i = 1; i <= Math.max(1, total); i++) {
+			all.push(i);
+		}
+		return all;
+	}
+	const pages = [1];
+	const start = Math.max(2, current - 1);
+	const end = Math.min(total - 1, current + 1);
+	if (start > 2) {
+		pages.push('...');
+	}
+	for (let p = start; p <= end; p++) {
+		pages.push(p);
+	}
+	if (end < total - 1) {
+		pages.push('...');
+	}
+	pages.push(total);
+	return pages;
+}
+
+function stampPreviewNumber(el, item, current) {
+	const isGap = item === '...';
+	const isCurrent = item === current;
+	el.classList.toggle('is-gap', isGap);
+	el.classList.toggle('aae-a-loop-num-gap', isGap);
+	el.classList.toggle('is-active', isCurrent);
+	el.classList.toggle('e--selected', isCurrent);
+	el.textContent = isGap ? '…' : String(item);
+	el.removeAttribute('href');
+	el.style.pointerEvents = 'none';
+}
+
+function previewNumbers(doc) {
+	doc.querySelectorAll('.aae-a-loop-numbers').forEach((numbersEl) => {
+		// The authored template is the first real (non-clone) number.
+		const authored = numbersEl.querySelector('.aae-a-loop-number:not([data-aae-num-clone])');
+		if (!authored) {
+			return;
+		}
+
+		const items = smartPagesPreview(PREVIEW_CURRENT, PREVIEW_TOTAL);
+		// Signature: authored markup (styling/classes) + the sample page set. If
+		// the user restyles the template, authored.outerHTML changes -> rebuild.
+		const sig = authored.className + '|' + authored.getAttribute('style') + '|' + items.join(',');
+		if (numbersEl.__aaeNumPreviewSig === sig) {
+			return;
+		}
+		numbersEl.__aaeNumPreviewSig = sig;
+
+		// Drop old clones. Leave the AUTHORED number untouched (mutating it would
+		// fight Elementor's model re-render and muddle selection) — it stands in as
+		// page "1". Append inert clones for the remaining smart-truncated items.
+		const oldClones = numbersEl.querySelectorAll('[data-aae-num-clone]');
+
+		const frag = doc.createDocumentFragment();
+		for (let i = 1; i < items.length; i++) {
+			const clone = authored.cloneNode(true);
+			clone.setAttribute('data-aae-num-clone', '1');
+			// Strip editor identity so the clone is never treated as an element.
+			['data-id', 'data-model-cid', 'data-element_type', 'data-e-type', 'data-widget_type', 'data-interaction-id'].forEach((a) => clone.removeAttribute(a));
+			stampPreviewNumber(clone, items[i], PREVIEW_CURRENT);
+			frag.appendChild(clone);
+		}
+		// Both DOM writes muted so our own number clones don't re-trigger scan().
+		muteObserver(() => {
+			oldClones.forEach((n) => n.remove());
+			numbersEl.appendChild(frag);
+		});
+	});
+}
+
 /** Scan the preview and hydrate all loop grids. */
 function scan() {
 	const win = getPreviewWindow();
@@ -487,9 +633,19 @@ function scan() {
 	if (!doc) {
 		return;
 	}
-	doc.querySelectorAll(WRAP_SELECTOR).forEach((wrap) => {
+	// Cheap early-out: on any page WITHOUT a loop grid (the common case), do zero
+	// work beyond this one querySelector. Without it, the 1.5s poll would run
+	// previewNumbers + pageSamplePostId every tick for the life of the editor,
+	// even though nothing on the page is a loop grid.
+	const wraps = doc.querySelectorAll(WRAP_SELECTOR);
+	if (!wraps.length) {
+		return;
+	}
+	wraps.forEach((wrap) => {
 		hydrate(wrap);
 	});
+
+	previewNumbers(doc);
 
 	// Whenever the Preview Settings post CHANGES (boot, Apply-&-Preview, or a
 	// direct setting edit): sample it into the authored card. Keyed on the id
@@ -504,13 +660,34 @@ function scan() {
 	}
 }
 
+/** True if a mutation record is relevant to a loop grid (and not self-caused). */
+function isLoopGridRecord(record) {
+	const t = record.target;
+	if (!t || t.nodeType !== 1) {
+		return false;
+	}
+	// Our own clone subtree is inert preview scaffolding — never react to it, or
+	// the append/remove cycle re-feeds scan() (the class-drop feedback loop).
+	if (t.closest('[data-aae-clone], [data-aae-num-clone]')) {
+		return false;
+	}
+	// Only mutations inside a loop-grid wrap matter. An unrelated Flexbox being
+	// edited elsewhere in the canvas must not trigger a hydrate.
+	return !!(t.closest(WRAP_SELECTOR) || (t.querySelector && t.querySelector(WRAP_SELECTOR)));
+}
+
 export function installLoopGrid() {
 	if (state.loopGridInstalled) {
 		return;
 	}
+
 	state.loopGridInstalled = true;
 
 	const schedule = () => {
+		// Ignore mutations we caused ourselves (clone churn) — see muteObserver().
+		if (observerMuted) {
+			return;
+		}
 		if (state.loopGridRaf) {
 			return;
 		}
@@ -520,18 +697,25 @@ export function installLoopGrid() {
 		});
 	};
 
-	if (document.body) {
-		new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
-	}
+	// Only schedule when at least one record actually concerns a loop grid.
+	const onMutations = (records) => {
+		if (observerMuted) {
+			return;
+		}
+		if (records.some(isLoopGridRecord)) {
+			schedule();
+		}
+	};
 
 	// The preview iframe document can exist before its <body>; gate on body and
-	// only observe once (idempotent across in-place re-renders).
+	// only observe once (idempotent across in-place re-renders). We observe the
+	// preview body (where loop grids live), NOT the outer editor chrome.
 	const hookPreview = () => {
 		const win = getPreviewWindow();
 		const pdoc = win && win.document;
 		if (pdoc && pdoc.body && !pdoc.__aaeLoopObserved) {
 			pdoc.__aaeLoopObserved = true;
-			new MutationObserver(schedule).observe(pdoc.body, { childList: true, subtree: true });
+			new MutationObserver(onMutations).observe(pdoc.body, { childList: true, subtree: true });
 		}
 		// Poll a scan too: a Preview Settings change (page-settings model) has
 		// no DOM mutation of its own, so the observer alone would miss it.

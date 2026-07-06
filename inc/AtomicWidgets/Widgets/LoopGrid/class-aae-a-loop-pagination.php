@@ -88,6 +88,10 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 			// ones they don't want straight from the Style panel (display: none) —
 			// like any atomic element. The frontend runtime wires whichever pieces
 			// are present + visible. Only the load behaviour stays a setting.
+			//
+			// Number styling now lives on the Page Number TEMPLATE itself (one
+			// authored, selectable, styleable element that repeats per page link),
+			// so there are no number-theming props here anymore.
 			'load_method' => String_Prop_Type::make()->default( 'ajax' ),
 		];
 	}
@@ -160,7 +164,7 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 				->build(),
 			AAE_A_Loop_Numbers::generate()
 				->editor_settings( [ 'title' => 'Page Numbers' ] )
-				->children( AAE_A_Loop_Numbers::build_number_slots() )
+				->children( AAE_A_Loop_Numbers::build_number_template() )
 				->build(),
 			AAE_A_Loop_LoadMore::generate()
 				->editor_settings( [ 'title' => 'Load More' ] )

@@ -83,15 +83,6 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			$image_alt = 'Placeholder Image';
 		}
 
-		$is_custom_link = Dependency_Manager::make()
-			->where([
-				'operator' => 'eq',
-				'path'     => ['link_to'],
-				'value'    => 'custom',
-				'effect'   => 'hide',
-			])
-			->get();
-
 		$has_caption = Dependency_Manager::make()
 			->where([
 				'operator' => 'eq',
@@ -125,9 +116,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			'image_url' => String_Prop_Type::make()->default( $image_url ),
 			'image_alt' => String_Prop_Type::make()->default( $image_alt ),
 
-			// Link Options
-			'link_to' => String_Prop_Type::make()->default( 'none' ),
-			'custom_link' => Link_Prop_Type::make()->set_dependencies( $is_custom_link ),
+			'link' => Link_Prop_Type::make(),
 
 			// Caption Options
 			'show_caption' => Boolean_Prop_Type::make()->default( false ),
@@ -172,17 +161,9 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			Section::make()
 				->set_label( __( 'Link Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					Select_Control::bind_to( 'link_to' )
-						->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'none', 'label' => __( 'None', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'post', 'label' => __( 'Post URL', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'custom', 'label' => __( 'Custom URL', 'animation-addons-for-elementor' ) ],
-						] ),
-
-					Link_Control::bind_to( 'custom_link' )
+					Link_Control::bind_to( 'link' )
 						->set_label( __( 'Link URL', 'animation-addons-for-elementor' ) )
-						->set_placeholder( 'https://...' ),
+						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -247,8 +228,6 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 				$settings['image_alt'] = 'Placeholder Image';
 			}
 		}
-
-		$settings['post_url'] = get_permalink();
 
 		return $settings;
 	}

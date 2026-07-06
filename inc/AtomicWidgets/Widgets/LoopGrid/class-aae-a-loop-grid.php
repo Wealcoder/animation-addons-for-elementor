@@ -101,6 +101,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'posts_per_page' => Number_Prop_Type::make()->default( 6 ),
 			'order_by'       => String_Prop_Type::make()->default( 'date' ),
 			'order'          => String_Prop_Type::make()->default( 'desc' ),
+			// Skip the first N matches. Hidden for Current Query (the archive
+			// defines its own query); applies to post types AND Related.
+			'offset'         => Number_Prop_Type::make()->default( 0 ),
 
 			// NOTE: no `columns` prop — the layout is flexbox (Loop Item base
 			// style `flex: 1 1 32%`), tuned responsively from the Style panel.
@@ -136,24 +139,73 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 				);
 		}
 
-		$schema['include_posts']       = String_Array_Prop_Type::make()->default( [] );
-		$schema['exclude_posts']       = String_Array_Prop_Type::make()->default( [] );
-		$schema['date_range']          = Date_Range_Prop_Type::make();
-		$schema['meta_key_exists']     = String_Prop_Type::make()->default( '' );
-		$schema['only_featured_image'] = Boolean_Prop_Type::make()->default( false );
+		// The manual filters don't apply to the special sources: Related builds
+		// its own term query and Current Query inherits the archive's. Hidden
+		// via 'nin' — the 4.1.x client evaluator applies the hide when the
+		// actual value IS in the list (see the tax-prop note above).
+		$special_hide = Dependency_Manager::make()
+			->where( [
+				'operator' => 'nin',
+				'path'     => [ 'post_type' ],
+				'value'    => [ 'related', 'current_query' ],
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		// Offset stays available for Related (unlike the manual filters) but
+		// not for Current Query.
+		$schema['offset']->set_dependencies(
+			Dependency_Manager::make()
+				->where( [
+					'operator' => 'nin',
+					'path'     => [ 'post_type' ],
+					'value'    => [ 'current_query' ],
+					'effect'   => 'hide',
+				] )
+				->get()
+		);
+
+		$schema['include_posts']       = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
+		$schema['exclude_posts']       = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
+		$schema['date_range']          = Date_Range_Prop_Type::make()->set_dependencies( $special_hide );
+		$schema['meta_key_exists']     = String_Prop_Type::make()->default( '' )->set_dependencies( $special_hide );
+		$schema['only_featured_image'] = Boolean_Prop_Type::make()->default( false )->set_dependencies( $special_hide );
+		$schema['sticky_first']        = Boolean_Prop_Type::make()->default( false )->set_dependencies( $special_hide );
+
+		// Related-source options: which taxonomy relates posts. Visible only
+		// while Source = Related Posts ('in' + hide = hidden unless in list).
+		$schema['related_by'] = String_Prop_Type::make()
+			->default( 'both' )
+			->set_dependencies(
+				Dependency_Manager::make()
+					->where( [
+						'operator' => 'in',
+						'path'     => [ 'post_type' ],
+						'value'    => [ 'related' ],
+						'effect'   => 'hide',
+					] )
+					->get()
+			);
 
 		return $schema;
 	}
 
 	/**
-	 * Public taxonomies offered as query filters (post_format excluded — it's
-	 * technically public but not a user-facing filter).
+	 * Public taxonomies offered as query filters. post_format rides the same
+	 * per-taxonomy chips system (its object_type ['post'] makes the control
+	 * show only when Source = Posts), but only when the active theme actually
+	 * supports post formats — core registers the taxonomy unconditionally, so
+	 * without theme support it would be an always-empty control.
 	 *
 	 * @return array<string, \WP_Taxonomy>
 	 */
 	public static function get_query_taxonomies(): array {
 		$taxes = get_taxonomies( [ 'public' => true, 'show_ui' => true ], 'objects' );
-		unset( $taxes['post_format'] );
+
+		if ( isset( $taxes['post_format'] ) && ! current_theme_supports( 'post-formats' ) ) {
+			unset( $taxes['post_format'] );
+		}
+
 		return $taxes;
 	}
 
@@ -172,10 +224,22 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 						->set_label( __( 'Source', 'animation-addons-for-elementor' ) )
 						->set_options( $this->get_post_type_options() ),
 
+					Select_Control::bind_to( 'related_by' )
+						->set_label( __( 'Related By', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'both',     'label' => __( 'Categories & Tags', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'category', 'label' => __( 'Categories', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'post_tag', 'label' => __( 'Tags', 'animation-addons-for-elementor' ) ],
+						] ),
+
 					Number_Control::bind_to( 'posts_per_page' )
 						->set_label( __( 'Posts Per Page', 'animation-addons-for-elementor' ) )
 						->set_min( 1 )
 						->set_max( 50 ),
+
+					Number_Control::bind_to( 'offset' )
+						->set_label( __( 'Offset', 'animation-addons-for-elementor' ) )
+						->set_min( 0 ),
 
 					Select_Control::bind_to( 'order_by' )
 						->set_label( __( 'Order By', 'animation-addons-for-elementor' ) )
@@ -244,6 +308,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$items[] = Switch_Control::bind_to( 'only_featured_image' )
 			->set_label( __( 'Only With Featured Image', 'animation-addons-for-elementor' ) );
 
+		$items[] = Switch_Control::bind_to( 'sticky_first' )
+			->set_label( __( 'Sticky Posts First', 'animation-addons-for-elementor' ) );
+
 		return $items;
 	}
 
@@ -256,6 +323,13 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			}
 			$options[] = [ 'value' => $slug, 'label' => $obj->label ];
 		}
+
+		// Special sources (not post types):
+		//   related       — posts sharing terms with the current post (single templates)
+		//   current_query — inherit the page's main query (archive templates)
+		$options[] = [ 'value' => 'related',       'label' => __( 'Related Posts', 'animation-addons-for-elementor' ) ];
+		$options[] = [ 'value' => 'current_query', 'label' => __( 'Current Query (Archive)', 'animation-addons-for-elementor' ) ];
+
 		return $options;
 	}
 
@@ -388,9 +462,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// number of page links without re-querying.
 		$max_pages = 1;
 		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			$count = new \WP_Query( array_merge( $query_args, [ 'fields' => 'ids', 'no_found_rows' => false ] ) );
-			$max_pages = max( 1, (int) $count->max_num_pages );
-			wp_reset_postdata();
+			$max_pages = self::compute_max_pages( (array) $this->get_data( 'settings' ), $query_args );
 		}
 
 		return [
@@ -410,6 +482,11 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 						'per_page'  => $per_page,
 						'order_by'  => isset( $s['order_by'] ) ? $s['order_by'] : 'date',
 						'order'     => isset( $s['order'] ) ? $s['order'] : 'desc',
+						// Current Query source: capture the archive's query vars
+						// at render time — the pagination JS posts them back so
+						// the AJAX request (which has no archive context) can
+						// rebuild the same query.
+						'qv'        => ( 'current_query' === ( $s['post_type'] ?? '' ) ) ? self::current_query_vars() : null,
 					],
 				],
 			],
@@ -434,17 +511,23 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			? sanitize_key( $s['post_type'] )
 			: 'post';
 
-		$order_by = isset( $s['order_by'] ) && is_string( $s['order_by'] ) ? $s['order_by'] : 'date';
-		if ( ! in_array( $order_by, [ 'date', 'title', 'menu_order', 'rand', 'ID', 'modified' ], true ) ) {
-			$order_by = 'date';
+		// Special sources — not post types. Related builds its own term query
+		// from the current post; Current Query inherits the page's main
+		// (archive) query. Both skip the manual filters below (their controls
+		// are hidden for these sources too).
+		if ( 'related' === $post_type ) {
+			return self::build_related_query_args( $s, $paged );
+		}
+		if ( 'current_query' === $post_type ) {
+			return self::build_current_query_args( $s, $paged );
 		}
 
 		$args = [
 			'post_type'           => $post_type,
 			'post_status'         => 'publish',
-			'posts_per_page'      => max( 1, (int) ( $s['posts_per_page'] ?? 6 ) ),
-			'orderby'             => $order_by,
-			'order'               => ( isset( $s['order'] ) && 'asc' === strtolower( (string) $s['order'] ) ) ? 'ASC' : 'DESC',
+			'posts_per_page'      => self::sanitize_per_page( $s ),
+			'orderby'             => self::sanitize_order_by( $s ),
+			'order'               => self::sanitize_order( $s ),
 			'paged'               => max( 1, $paged ),
 			'ignore_sticky_posts' => true,
 		];
@@ -471,16 +554,14 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			$args['tax_query']     = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery
 		}
 
-		// Specific posts — manual selection. The include search offers every
-		// public post type, so when it's used the query opens up to all public
-		// types (like Pro's Manual Selection): the picked posts define the
-		// result, not the Source dropdown. An explicit type list, not 'any' —
-		// 'any' silently drops types flagged exclude_from_search.
+		// Specific posts. Include stays SOURCE-scoped — the panel's include
+		// search only offers posts of the selected Source type, and the query
+		// keeps that post_type too, so every filter follows the Source.
 		$include = self::extract_ids( $s['include_posts'] ?? null );
 		if ( $include ) {
-			$args['post__in']  = $include;
-			$args['post_type'] = array_values( array_diff( array_keys( get_post_types( [ 'public' => true ] ) ), [ 'attachment' ] ) );
+			$args['post__in'] = $include;
 		}
+
 		$exclude = self::extract_ids( $s['exclude_posts'] ?? null );
 		if ( $exclude ) {
 			$args['post__not_in'] = $exclude;
@@ -523,7 +604,272 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			$args['meta_query']     = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery
 		}
 
+		// Offset — skip the first N matches. WP_Query ignores `paged` once
+		// `offset` is set, so fold the page into a combined offset. The count
+		// correction lives in compute_max_pages().
+		$offset = self::sanitize_offset( $s );
+		if ( $offset ) {
+			$args['offset'] = $offset + ( max( 1, $paged ) - 1 ) * $args['posts_per_page'];
+		}
+
+		// Sticky posts first. WP_Query's own sticky handling only applies to
+		// the main home query, never to a secondary query like this one — so
+		// we pin manually: pre-resolve the FULL matching id list (stickies that
+		// match the filters first, then the rest in the chosen order) and turn
+		// the query into `post__in` + `orderby: post__in`. Pagination then
+		// flows naturally across the pinned list. Runs LAST so the id
+		// pre-query carries every filter above (tax/include/date/meta).
+		if ( ! empty( $s['sticky_first'] ) ) {
+			$sticky = array_map( 'intval', (array) get_option( 'sticky_posts', [] ) );
+			if ( $sticky ) {
+				$id_args = array_merge( $args, [
+					'posts_per_page' => -1,
+					'paged'          => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				] );
+				// The final paged query applies the offset — the id list must
+				// stay complete or the skip would happen twice.
+				unset( $id_args['offset'] );
+				$all_ids = ( new \WP_Query( $id_args ) )->posts;
+
+				$pinned = array_values( array_intersect( $sticky, $all_ids ) );
+				if ( $pinned ) {
+					$rest             = array_values( array_diff( $all_ids, $sticky ) );
+					$args['post__in'] = array_merge( $pinned, $rest );
+					$args['orderby']  = 'post__in';
+					unset( $args['order'] );
+				}
+			}
+		}
+
 		return $args;
+	}
+
+	private static function sanitize_per_page( array $s ): int {
+		return max( 1, (int) ( $s['posts_per_page'] ?? 6 ) );
+	}
+
+	private static function sanitize_order_by( array $s ): string {
+		$order_by = isset( $s['order_by'] ) && is_string( $s['order_by'] ) ? $s['order_by'] : 'date';
+		return in_array( $order_by, [ 'date', 'title', 'menu_order', 'rand', 'ID', 'modified' ], true ) ? $order_by : 'date';
+	}
+
+	private static function sanitize_order( array $s ): string {
+		return ( isset( $s['order'] ) && 'asc' === strtolower( (string) $s['order'] ) ) ? 'ASC' : 'DESC';
+	}
+
+	/** User offset — 0 for Current Query (the archive defines its own query). */
+	private static function sanitize_offset( array $s ): int {
+		if ( 'current_query' === ( $s['post_type'] ?? '' ) ) {
+			return 0;
+		}
+		return max( 0, (int) ( $s['offset'] ?? 0 ) );
+	}
+
+	/**
+	 * Total pages for a built query — the ONE place the count is computed.
+	 *
+	 * Needed because WP_Query's own max_num_pages is wrong once `offset` is in
+	 * play: found_posts ignores LIMIT, so it never subtracts the user's skip.
+	 * Count WITHOUT the offset, subtract it, divide by per_page.
+	 */
+	public static function compute_max_pages( array $raw_settings, array $query_args ): int {
+		$s        = self::unwrap_settings( $raw_settings );
+		$offset   = self::sanitize_offset( $s );
+		$per_page = max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) );
+
+		$count_args = array_merge( $query_args, [
+			'fields'         => 'ids',
+			'posts_per_page' => 1,
+			'paged'          => 1,
+			'no_found_rows'  => false,
+		] );
+		unset( $count_args['offset'] );
+
+		$count = new \WP_Query( $count_args );
+		$total = max( 0, (int) $count->found_posts - $offset );
+		wp_reset_postdata();
+
+		return max( 1, (int) ceil( $total / $per_page ) );
+	}
+
+	/**
+	 * The post the Related source relates FROM. Callers running outside a real
+	 * frontend request (AJAX pagination, editor preview) inject it as the
+	 * internal `_context_post_id` setting; a live singular page resolves from
+	 * the main query.
+	 */
+	private static function resolve_context_post_id( array $s ): int {
+		if ( ! empty( $s['_context_post_id'] ) ) {
+			return (int) $s['_context_post_id'];
+		}
+		if ( is_singular() ) {
+			return (int) get_queried_object_id();
+		}
+		return 0;
+	}
+
+	/**
+	 * Source: Related Posts — same post type as the current post, sharing at
+	 * least one term (categories/tags/both per `related_by`), current post
+	 * excluded. No context or no shared terms -> recent posts of that type,
+	 * so the grid never renders empty on a valid page.
+	 */
+	private static function build_related_query_args( array $s, int $paged ): array {
+		$current_id = self::resolve_context_post_id( $s );
+		$current    = $current_id ? get_post( $current_id ) : null;
+
+		$args = [
+			'post_type'           => $current ? $current->post_type : 'post',
+			'post_status'         => 'publish',
+			'posts_per_page'      => self::sanitize_per_page( $s ),
+			'orderby'             => self::sanitize_order_by( $s ),
+			'order'               => self::sanitize_order( $s ),
+			'paged'               => max( 1, $paged ),
+			'ignore_sticky_posts' => true,
+		];
+
+		if ( ! $current ) {
+			$offset = self::sanitize_offset( $s );
+			if ( $offset ) {
+				$args['offset'] = $offset + ( max( 1, $paged ) - 1 ) * $args['posts_per_page'];
+			}
+			return $args;
+		}
+
+		$args['post__not_in'] = [ $current->ID ];
+
+		$related_by = isset( $s['related_by'] ) && is_string( $s['related_by'] ) ? $s['related_by'] : 'both';
+		if ( ! in_array( $related_by, [ 'both', 'category', 'post_tag' ], true ) ) {
+			$related_by = 'both';
+		}
+
+		if ( 'both' === $related_by ) {
+			// Every taxonomy of the post's type (covers CPT taxonomies too);
+			// formats aren't a relatedness signal.
+			$taxonomies = array_diff( get_object_taxonomies( $current->post_type ), [ 'post_format' ] );
+		} else {
+			$taxonomies = [ $related_by ];
+		}
+
+		$tax_query = [];
+		foreach ( $taxonomies as $tax ) {
+			$term_ids = wp_get_object_terms( $current->ID, $tax, [ 'fields' => 'ids' ] );
+			if ( ! is_wp_error( $term_ids ) && $term_ids ) {
+				$tax_query[] = [
+					'taxonomy' => $tax,
+					'field'    => 'term_id',
+					'terms'    => array_map( 'intval', $term_ids ),
+				];
+			}
+		}
+		if ( $tax_query ) {
+			$tax_query['relation'] = 'OR';
+			$args['tax_query']     = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
+
+		$offset = self::sanitize_offset( $s );
+		if ( $offset ) {
+			$args['offset'] = $offset + ( max( 1, $paged ) - 1 ) * $args['posts_per_page'];
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Source: Current Query — inherit the page's main query (category / tag /
+	 * author / date / search / custom-tax archives). AJAX pagination posts the
+	 * archive's query vars back (`_qv`, captured into the pagination config at
+	 * render time) since admin-ajax has no archive context of its own. Outside
+	 * any archive (editor preview, a regular page) -> recent posts fallback.
+	 */
+	private static function build_current_query_args( array $s, int $paged ): array {
+		$overrides = [
+			'post_status'         => 'publish',
+			'posts_per_page'      => self::sanitize_per_page( $s ),
+			'paged'               => max( 1, $paged ),
+			'ignore_sticky_posts' => true,
+		];
+
+		$vars = ( isset( $s['_qv'] ) && is_array( $s['_qv'] ) )
+			? self::sanitize_query_vars( $s['_qv'] )
+			: self::current_query_vars();
+
+		if ( ! $vars ) {
+			return array_merge(
+				[
+					'post_type' => 'post',
+					'orderby'   => 'date',
+					'order'     => 'DESC',
+				],
+				$overrides
+			);
+		}
+
+		return array_merge( $vars, $overrides );
+	}
+
+	/**
+	 * The main query's ORIGINAL parsed vars ($wp_query->query — compact, e.g.
+	 * ['category_name' => 'design']) when the request is an archive-like page.
+	 */
+	public static function current_query_vars(): array {
+		global $wp_query;
+
+		if ( ! $wp_query instanceof \WP_Query ) {
+			return [];
+		}
+		if ( ! ( $wp_query->is_archive() || $wp_query->is_home() || $wp_query->is_search() ) ) {
+			return [];
+		}
+
+		return self::sanitize_query_vars( (array) $wp_query->query );
+	}
+
+	/**
+	 * Whitelist + sanitize main-query vars so a posted-back `_qv` blob can
+	 * never smuggle arbitrary WP_Query args (meta_query, post_status…).
+	 */
+	private static function sanitize_query_vars( array $vars ): array {
+		$allowed = [
+			'cat'           => 'int',
+			'category_name' => 'string',
+			'tag'           => 'string',
+			'tag_id'        => 'int',
+			's'             => 'string',
+			'author'        => 'int',
+			'author_name'   => 'string',
+			'year'          => 'int',
+			'monthnum'      => 'int',
+			'day'           => 'int',
+		];
+
+		$out = [];
+		foreach ( $allowed as $key => $type ) {
+			if ( ! isset( $vars[ $key ] ) || '' === $vars[ $key ] ) {
+				continue;
+			}
+			$out[ $key ] = 'int' === $type ? (int) $vars[ $key ] : sanitize_text_field( (string) $vars[ $key ] );
+		}
+
+		// Post type: string or array of registered public types only.
+		if ( ! empty( $vars['post_type'] ) ) {
+			$public = array_keys( get_post_types( [ 'public' => true ] ) );
+			$types  = array_values( array_intersect( array_map( 'sanitize_key', (array) $vars['post_type'] ), $public ) );
+			if ( $types ) {
+				$out['post_type'] = $types;
+			}
+		}
+
+		// Custom taxonomy archives arrive as { <taxonomy>: <term-slug> }.
+		foreach ( get_taxonomies( [ 'public' => true ] ) as $tax ) {
+			if ( isset( $vars[ $tax ] ) && is_string( $vars[ $tax ] ) && '' !== $vars[ $tax ] && ! isset( $out[ $tax ] ) ) {
+				$out[ $tax ] = sanitize_text_field( $vars[ $tax ] );
+			}
+		}
+
+		return $out;
 	}
 
 	/** Recursively unwrap { $$type, value } atomic prop shapes to plain values. */

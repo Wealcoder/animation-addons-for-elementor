@@ -46,13 +46,29 @@
 	}
 }
 
-/* Numbers container has a fixed seven-slot structure; hide manual insertion UI. */
+/* Numbers container. Number styling itself lives on the ONE authored Number
+ * template (atomic base styles + the user's Style-panel edits), which repeats
+ * per page link — so this file only carries the container layout + runtime
+ * states, NOT the number look. */
 .aae-a-loop-numbers {
 	.elementor-empty-view,
 	> .elementor-add-section,
 	> .elementor-first-add {
 		display: none !important;
 	}
+}
+
+/* Inert preview clones of the number template (editor only) must never catch
+ * pointer/selection — the authored number stays the single editable element. */
+.aae-a-loop-number[data-aae-num-clone] {
+	pointer-events: none;
+}
+
+/* Elementor gives any Atomic element containing an empty-view a 120px minimum
+ * height. Number slots contain that hidden editor helper, but they are leaves;
+ * neutralize the generic rule without affecting frontend or authored height. */
+.elementor-editor-active .e-atomic-element:is(.aae-a-loop-numbers, .aae-a-loop-number):has(.elementor-empty-view) {
+	min-height: 0;
 }
 
 /* Gap is runtime state, not a persisted Atomic style state. */
@@ -76,7 +92,34 @@
 
 .aae-a-loop-pagination.is-loading { opacity: 0.7; }
 
+/* Canvas selectability (editor only).
+ *
+ * Pagination always has children (Nav / Numbers / Load More), so Elementor never
+ * gives it an `.elementor-empty-view` — the clickable "grab" band populated
+ * containers rely on. With a column + align-items:flex-start layout its children
+ * hug the top-left, so a canvas click almost always lands on a child (often a
+ * locked one) instead of the bar itself, forcing users to select it from the
+ * Structure panel. Give it a guaranteed empty hit-band in the editor: a little
+ * padding + a min-height so there is always bar surface to click. Frontend is
+ * untouched. */
+.elementor-editor-active .aae-a-loop-pagination {
+	padding: 6px;
+	min-height: 20px;
+}
+
 /* No type-driven visibility any more: every pagination piece (Prev/Next,
  * Numbers, Load More) renders by default and the user hides the unwanted ones
  * from the Style panel (display: none). The frontend runtime is DOM-driven —
  * it wires whichever pieces are present + visible. */
+
+/* Edge-state visibility — FRONTEND ONLY (the editor keeps every piece visible
+ * and styleable). The twig stamps aae-pg-first / aae-pg-last at render time
+ * (totals are known server-side, so nothing flashes on page load) and the
+ * runtime re-syncs the classes after each AJAX page change. First page → no
+ * Prev; last page (incl. a single page) → no Next / Load More. */
+body:not(.elementor-editor-active) {
+	.aae-a-loop-pagination.aae-pg-first [data-aae-nav="prev"] { display: none; }
+
+	.aae-a-loop-pagination.aae-pg-last [data-aae-nav="next"],
+	.aae-a-loop-pagination.aae-pg-last [data-aae-loadmore] { display: none; }
+}

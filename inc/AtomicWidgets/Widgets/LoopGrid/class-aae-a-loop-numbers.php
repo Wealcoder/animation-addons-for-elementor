@@ -1,9 +1,10 @@
 <?php
 /**
- * AAE Loop Numbers — atomic pagination number list (Pro replica).
+ * AAE Loop Numbers — atomic pagination number list.
  *
- * A structural atomic container holding seven persistent, styleable Atomic
- * anchor slots. Runtime query state updates each slot without replacing it.
+ * A structural atomic container holding ONE styleable page-number TEMPLATE
+ * (AAE_A_Loop_Number). The template repeats at render, once per page link
+ * (1 2 3 … N), so the user styles a single element and every number follows.
  *
  * @package AnimationAddonsForElementor
  */
@@ -15,7 +16,6 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -36,7 +36,7 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
 		$this->meta( 'is_container', true );
-		// Only the seven internal number slots are valid children.
+		// Holds a single Number template child, which repeats at render.
 	}
 
 	public static function get_type() {
@@ -60,7 +60,8 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [];
+		// Only the single page-number template lives here.
+		return [ 'e-aae-a-loop-number' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -75,30 +76,25 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		return self::build_number_slots();
+		return self::build_number_template();
 	}
 
 	/**
-	 * Smart pagination never renders more than seven items, so seven persistent
-	 * atomic slots cover every runtime state without rebuilding their DOM.
+	 * Seed the single page-number TEMPLATE. It is one authored atomic element the
+	 * user styles once (Normal / Hover / Current); AAE_A_Loop_Number::print_content()
+	 * repeats it per page link at render. Locked so it can't be deleted, but its
+	 * styles stay fully editable.
+	 *
+	 * Returns an array (one child) so callers can splice it straight into a
+	 * children list.
 	 */
-	public static function build_number_slots(): array {
-		$children = [];
-
-		for ( $slot = 1; $slot <= 7; $slot++ ) {
-			$children[] = AAE_A_Loop_Number::generate()
-				->settings( [ 'slot' => Number_Prop_Type::generate( $slot ) ] )
-				->editor_settings( [
-					'title' => sprintf(
-						/* translators: %d is the pagination slot number. */
-						__( 'Page Number %d', 'animation-addons-for-elementor' ),
-						$slot
-					),
-				] )
-				->build();
-		}
-
-		return $children;
+	public static function build_number_template(): array {
+		return [
+			AAE_A_Loop_Number::generate()
+				->editor_settings( [ 'title' => __( 'Page Number', 'animation-addons-for-elementor' ) ] )
+				->is_locked( true )
+				->build(),
+		];
 	}
 
 	protected function define_base_styles(): array {

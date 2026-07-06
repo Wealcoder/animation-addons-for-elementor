@@ -74,7 +74,6 @@ module.exports = {
     "modules/atomic/effects/cursor-hover-effect": "./src/modules/atomic/effects/cursor-hover-effect/index.js",
     "modules/atomic/effects/advance-tooltip": "./src/modules/atomic/effects/advance-tooltip/index.js",
     "modules/atomic/effects/tilt": "./src/modules/atomic/effects/tilt/index.js",
-    "modules/atomic/effects/wrapper-link": "./src/modules/atomic/effects/wrapper-link/index.js",
     "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
     "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",

@@ -79,6 +79,24 @@ async function fetchOptions( { kind, taxonomy, search, postType } ) {
 export const QueryChipsControl = ( props ) => {
 	const { kind = 'post', taxonomy = '', placeholder } = props || {};
 	const { value, setValue, disabled } = useBoundProp( stringArrayPropTypeUtil );
+	const { element } = useElement();
+
+	// Post search is scoped to the grid's CURRENT Source post type — read the
+	// sibling setting live at search time (no reactivity needed: every dropdown
+	// open / keystroke triggers a fresh fetch).
+	const sourcePostType = () => {
+		if ( kind !== 'post' ) {
+			return '';
+		}
+		try {
+			const c = window.elementor?.getContainer?.( element?.id );
+			const raw = c?.settings?.get?.( 'post_type' );
+			const v = raw && typeof raw === 'object' && 'value' in raw ? raw.value : raw;
+			return typeof v === 'string' && v ? v : 'post';
+		} catch ( _e ) {
+			return 'post';
+		}
+	};
 
 	const [ options, setOptions ] = useState( [] );
 	const [ loading, setLoading ] = useState( false );
@@ -95,7 +113,7 @@ export const QueryChipsControl = ( props ) => {
 	const runSearch = ( search ) => {
 		const seq = ++requestSeq.current;
 		setLoading( true );
-		fetchOptions( { kind, taxonomy, search } ).then( ( result ) => {
+		fetchOptions( { kind, taxonomy, search, postType: sourcePostType() } ).then( ( result ) => {
 			if ( seq !== requestSeq.current ) {
 				return; // A newer search superseded this one.
 			}

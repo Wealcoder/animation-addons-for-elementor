@@ -13,12 +13,14 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Flex_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Link_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
@@ -67,12 +69,20 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         return [
             'classes'    => Classes_Prop_Type::make()->default( [] ),
             'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+            'link'       => Link_Prop_Type::make(),
         ];
     }
 
     protected function define_atomic_controls(): array {
-        // No custom controls needed beyond the base.
-        return [];
+        return [
+            Section::make()
+                ->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+                ->set_items( [
+                    Link_Control::bind_to( 'link' )
+                        ->set_label( __( 'Wrapper Link', 'animation-addons-for-elementor' ) )
+                        ->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
+                ] ),
+        ];
     }
 
     protected function define_default_children(): array {
@@ -116,22 +126,6 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         return [
             'elementor/elements/aae-a-loop-item' => __DIR__ . '/aae-a-loop-item.html.twig',
         ];
-    }
-
-    /**
-     * Expose the current loop post's permalink to the twig template.
-     *
-     * print_content() calls render() once per post with the WP loop pointing at
-     * that post, so get_permalink() resolves per repeat. The twig prints it as
-     * `data-aae-post-url` — the Wrapper Link extension's "Current Post" mode
-     * reads it per card (its runtime config is element-id-keyed and all repeats
-     * share one id, so the per-instance URL must ride the DOM).
-     */
-    protected function build_template_context(): array {
-        return array_merge(
-            $this->build_base_template_context(),
-            [ 'post_url' => (string) get_permalink() ]
-        );
     }
 
     /**
