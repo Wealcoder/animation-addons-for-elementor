@@ -170,12 +170,9 @@ function textFlipSync(container) {
   }
 }
 
-document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
-
-
 // Border-divide (pro-1)
 function borderDivideSetup(container) {
-  const iconEl = container.querySelector(':scope > .e-svg-base');
+  const iconEl = container.querySelector('.e-svg-base');
   if (!iconEl) return;
   if (iconEl.querySelector(':scope > .aae-btn-borderdivide-icon-inner')) return;
 
@@ -202,8 +199,6 @@ function borderDivideSetup(container) {
   inner.appendChild(clone);
 }
 
-document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
-
 // ==================================================================================
 // =================================== pro button ===================================
 // ==================================================================================
@@ -212,7 +207,7 @@ document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
 function groupSwapLeftSetup(container) {
   container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
 
-  const icon = container.querySelector(':scope > .aae-btn-grswapl-icon');
+  const icon = container.querySelector('.aae-btn-grswapl-icon');
   if (!icon) return;
 
   const clone = icon.cloneNode(true);
@@ -220,14 +215,12 @@ function groupSwapLeftSetup(container) {
   clone.removeAttribute('data-interaction-id');
   container.prepend(clone);
 }
-
-document.querySelectorAll('.aae-btn-grswapl').forEach(groupSwapLeftSetup);
 
 // 6  — Group Swap R
 function groupSwapRightSetup(container) {
   container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
 
-  const icon = container.querySelector(':scope > .aae-btn-grswapr-icon');
+  const icon = container.querySelector('.aae-btn-grswapr-icon');
   if (!icon) return;
 
   const clone = icon.cloneNode(true);
@@ -236,4 +229,24 @@ function groupSwapRightSetup(container) {
   container.prepend(clone);
 }
 
-document.querySelectorAll('.aae-btn-grswapr').forEach(groupSwapRightSetup);
+function initProButtonEffects() {
+  document.querySelectorAll('.aae-btn-grswapl').forEach(groupSwapLeftSetup);
+  document.querySelectorAll('.aae-btn-grswapr').forEach(groupSwapRightSetup);
+  document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
+  document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
+}
+
+// Run once for whatever is already in the DOM…
+initProButtonEffects();
+
+// …and again whenever the DOM changes. Elementor's editor preview mounts atomic
+// widgets asynchronously (they may not exist yet on first run above), and can also
+// replace a widget's markup on selection/setting changes, wiping our injected clone
+// or resetting the text-flip data-text sync.
+// Disconnect while we mutate so this observer doesn't react to its own changes.
+const proButtonObserver = new MutationObserver(() => {
+  proButtonObserver.disconnect();
+  initProButtonEffects();
+  proButtonObserver.observe(document.body, { childList: true, subtree: true });
+});
+proButtonObserver.observe(document.body, { childList: true, subtree: true });
