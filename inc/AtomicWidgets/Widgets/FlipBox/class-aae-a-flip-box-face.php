@@ -11,6 +11,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -62,6 +65,18 @@ class AAE_A_Flip_Box_Face extends Atomic_Element_Base {
 				->set_id( 'settings' )
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [] ),
+		];
+	}
+
+	protected function define_base_styles(): array {
+		return [
+			'base' => Style_Definition::make()
+				->add_variant( Style_Variant::make()->add_props( [
+					'background-color' => Color_Prop_Type::generate( '#f2f1f1' ),
+					'border-radius'    => String_Prop_Type::generate( '10px' ),
+					'overflow'         => String_Prop_Type::generate( 'hidden' ),
+					'transition'       => String_Prop_Type::generate( 'transform 0.8s' ),
+				] ) ),
 		];
 	}
 
