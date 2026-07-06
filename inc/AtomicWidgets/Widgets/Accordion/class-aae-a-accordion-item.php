@@ -203,6 +203,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			->settings( [
 				'classes' => Classes_Prop_Type::generate( [ 'aae-header-element', $header_class ] ),
 			] )
+			->is_locked( true )
 			->children( [ $header_title, $header_icon_open, $header_icon_close ] )
 			->build();
 
@@ -212,6 +213,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			->settings( [
 				'classes' => Classes_Prop_Type::generate( [ 'aae-content-element' ] ),
 			] )
+			->is_locked( true )
 			->children( [ $content_text, $content_image ] )
 			->build();
 
