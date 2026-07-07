@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.9
+Stable tag: 2.7.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -603,7 +603,11 @@ See the unminified JS and CSS in our public repo: [GitHub Repository](https://gi
 
 == Changelog ==
 
-= 🌀 Animation Addons for Elementor v2.6.9 – 07th July 2026
+= 🌀 Animation Addons for Elementor v2.7.0 – 7th July 2026
+
+  - **Fixed:** Variability issue fixed.
+  - **Improved:** Removed unused code.
+= 🌀 Animation Addons for Elementor v2.6.9 – 2ndth July 2026
 
   - **Fixed:** Secrutiy Fixed at whole plugin.
   - ** Improved:** Performance Improved at whole plugin.
