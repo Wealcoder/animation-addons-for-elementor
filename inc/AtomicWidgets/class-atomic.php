@@ -298,12 +298,10 @@ final class Atomic
 			'aae-a-loop-slide-item',
 			'aae-a-loop-slide-pagination',
 			// Loop Grid current-post building blocks: seeded as default loop-item
-			// children — must always be registered so the featured image / title /
-			// meta resolve per post.
+			// children — must always be registered so the featured image / title
+			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
-			'aae-a-post-meta',
-			'aae-a-post-meta-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -469,48 +467,6 @@ final class Atomic
 					'featured',
 					'atomic',
 					'dynamic',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-post-meta' => [
-				'label'        => 'Post Meta',
-				'description'  => 'Dynamically displays post author, date, comments, taxonomy, or custom fields in Elementor V4.',
-				'icon'         => 'eicon-post-info',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'post',
-					'meta',
-					'info',
-					'author',
-					'date',
-					'comments',
-					'atomic',
-					'dynamic',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-post-meta-item' => [
-				'label'        => 'Post Meta Item',
-				'description'  => 'Internal child item for Post Meta.',
-				'icon'         => 'eicon-post-info',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'post meta item',
-					'internal',
 				],
 				'category'     => 'general',
 				'order'        => 0,
@@ -1797,18 +1753,6 @@ final class Atomic
 			'aae-a-post-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
-				'has_script' => false,
-			],
-
-			'aae-a-post-meta' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta',
-				'file' => 'Widgets/PostMeta/class-aae-a-post-meta.php',
-				'has_script' => false,
-			],
-
-			'aae-a-post-meta-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta_Item',
-				'file' => 'Widgets/PostMeta/class-aae-a-post-meta-item.php',
 				'has_script' => false,
 			],
 
