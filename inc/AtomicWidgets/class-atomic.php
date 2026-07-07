@@ -1765,6 +1765,12 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-loop-grid-css',
 				'style_path' => '/assets/atomic/css/loop-grid.css',
+				// Editor-only stylesheet: canvas selectability + edit-handle overlay
+				// placement for the pagination pieces. Enqueued ONLY in the editor
+				// preview (see enqueue_atomic_preview_styles); never on the frontend,
+				// so the shipped loop-grid.css stays lean.
+				'editor_style_handle' => 'aae-a-loop-grid-editor-css',
+				'editor_style_path'   => '/assets/atomic/css/loop-grid-editor.css',
 			],
 
 			'aae-a-loop-item' => [
@@ -2641,8 +2647,42 @@ final class Atomic
 					$this->add_style_dependency( $widget_data['style_handle'], 'editor-preview' );
 					wp_enqueue_style( $widget_data['style_handle'] );
 				}
+
+				// Editor-only stylesheet: NOT registered by register_atomic_styles()
+				// (which feeds the frontend), so it never reaches a published page.
+				// Register it on the spot here and enqueue it in the preview only.
+				if ( ! empty( $widget_data['editor_style_handle'] ) && ! empty( $widget_data['editor_style_path'] ) ) {
+					$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
+					$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
+					wp_enqueue_style( $widget_data['editor_style_handle'] );
+				}
 			}
 		}
+	}
+
+	/**
+	 * Register an editor-only widget stylesheet (preview iframe only).
+	 *
+	 * Mirrors the min-file + filemtime versioning of register_atomic_styles(),
+	 * but is intentionally NOT called from the frontend registration path, so the
+	 * handle is unknown on published pages and the CSS is never shipped there.
+	 *
+	 * @param string $handle Style handle to register.
+	 * @param string $path   Plugin-relative path to the .css (min variant used in prod).
+	 */
+	private function register_editor_style( string $handle, string $path ): void {
+		if ( wp_style_is( $handle, 'registered' ) ) {
+			return;
+		}
+		if ( ! $this->is_dev_environment() ) {
+			$min_path = str_replace( '.css', '.min.css', $path );
+			if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+				$path = $min_path;
+			}
+		}
+		$file_path = WCF_ADDONS_PATH . $path;
+		$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+		wp_register_style( $handle, WCF_ADDONS_URL . $path, [], $version );
 	}
 
 	/**

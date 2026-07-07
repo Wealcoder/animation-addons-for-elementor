@@ -122,12 +122,12 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 				Style_Variant::make()
 					->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
 					->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
-					// Without this, a flex COLUMN defaults to align-items:stretch, so
-					// Nav / Numbers / Load More each span the full width. Their editor
-					// overlay then anchors to that full-width box's top-right — far from
-					// the visible content — so the toolbar is unreachable ("kape").
-					// flex-start keeps each piece content-width, overlay stays close.
-					->add_prop( 'align-items', String_Prop_Type::generate( 'flex-start' ) )
+					// A flex COLUMN defaults to align-items:stretch, so Nav / Numbers /
+					// Load More each span the full width, anchoring the editor overlay to the
+					// full-width box top-right (pushing the toolbar off to the right).
+					// `center` keeps each piece content-width AND centers it in the bar, so the
+					// overlay toolbar sits centered over the content. Also the common look.
+					->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
 					->add_prop( 'flex-wrap', String_Prop_Type::generate( 'wrap' ) )
 					->add_prop( 'gap', Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ) )
 					->add_prop( 'margin', Dimensions_Prop_Type::generate( [
