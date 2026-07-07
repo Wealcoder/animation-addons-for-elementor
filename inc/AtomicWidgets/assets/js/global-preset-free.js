@@ -207,9 +207,23 @@ function borderDivideSetup(container) {
   inner.appendChild(clone);
 }
 
+// Mask (mask-btn)
+function maskBtn(container) {
+  const textEl = container.querySelector('.aae-btn-mask-content');
+  const effectEl = container.querySelector('.aae-btn-mask-effect');
+  if (!textEl || !effectEl) return;
+
+  const text = textEl.textContent.trim();
+  container.setAttribute('data-text', text);
+  if (effectEl.textContent.trim() !== text) {
+    effectEl.textContent = text;
+  }
+}
+
 function initFreeButtonEffects() {
   document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
   document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
+  document.querySelectorAll('.aae-btn-mask').forEach(maskBtn);
 }
 
 // Run once for whatever is already in the DOM…
@@ -226,3 +240,4 @@ const freeButtonObserver = new MutationObserver(() => {
   freeButtonObserver.observe(document.body, { childList: true, subtree: true });
 });
 freeButtonObserver.observe(document.body, { childList: true, subtree: true });
+
