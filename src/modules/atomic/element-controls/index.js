@@ -18,13 +18,14 @@ import { stringArrayPropTypeUtil } from '@elementor/editor-props';
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
-import { MobileNavLifecycleControl, NavItemsControl } from './NavItemsControl';
+import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
 import { QueryChipsControl } from './QueryChipsControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
+	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
 	// Prop-bound (unlike the element-controls above): the panel wraps it in a

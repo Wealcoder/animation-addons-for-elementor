@@ -1,4 +1,4 @@
-import { register } from '@elementor/frontend-handlers';
+const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 
 const g = () => window.gsap;
 
@@ -46,7 +46,34 @@ function isEditorMobileMode( breakpoint ) {
 /* Dropdown content = the first direct child of the nav-item that isn't the
  * label span/anchor. Typically an Elementor Flexbox the user styles themselves. */
 function getSub( item ) {
-	return item.querySelector( ':scope > :not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle)' );
+	return item.querySelector(
+		':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
+	);
+}
+
+/* Older/broken editor data can contain widgets and nested nav-items directly
+ * under a nav-item. The interaction code requires one panel, so repair the
+ * rendered DOM defensively. The editor control performs the same repair in the
+ * saved model; this fallback also fixes already-published pages immediately. */
+function normalizeRenderedDropdowns( nav ) {
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+		let sub = getSub( item );
+		const stray = [ ...item.children ].filter( child =>
+			! child.classList.contains( 'aae-a-nav-item-label' ) &&
+			! child.classList.contains( 'aae-mobile-submenu-toggle' ) &&
+			child !== sub
+		);
+
+		if ( ! sub && stray.length ) {
+			sub = document.createElement( 'div' );
+			sub.className = 'aae-a-nav-dropdown aae-a-nav-runtime-dropdown';
+			item.appendChild( sub );
+		}
+		if ( ! sub ) return;
+
+		sub.classList.add( 'aae-a-nav-dropdown' );
+		stray.forEach( child => sub.appendChild( child ) );
+	} );
 }
 
 function isNested( item ) {
@@ -125,6 +152,11 @@ function gsapClose( sub, item, nested ) {
 }
 
 function openItem( item ) {
+	/* When the nav is mounted in the mobile drawer, dropdowns are accordions
+	 * driven ONLY by the submenu toggle button (click/tap). The desktop
+	 * hover/click listeners stay attached to the moved nav, so bail here — no
+	 * hover-open, no desktop overlay dropdown in mobile. */
+	if ( item.closest( '.aae-nav-mobile-mounted' ) ) return;
 	const sub = getSub( item );
 	if ( ! sub ) return;
 	const anim = getAnim( item );
@@ -139,6 +171,15 @@ function openItem( item ) {
 }
 
 function closeItem( item ) {
+	if ( item.closest( '.aae-nav-mobile-mounted' ) ) return;
+	item.querySelectorAll( '.aae-a-nav-item.is-open' ).forEach( descendant => {
+		const descendantSub = getSub( descendant );
+		if ( descendantSub && g() ) {
+			g().killTweensOf( [ descendantSub, descendantSub.children ] );
+			g().set( descendantSub, { clearProps: 'all' } );
+		}
+		descendant.classList.remove( 'is-open' );
+	} );
 	const sub  = getSub( item );
 	const anim = getAnim( item );
 
@@ -390,6 +431,7 @@ register( {
 		 * rule in aae-a-nav.html.twig.
 		 */
 		if ( isEditor() ) return;
+		normalizeRenderedDropdowns( nav );
 
 		if ( nav.dataset.navInit === 'true' ) return;
 		nav.dataset.navInit = 'true';
@@ -477,6 +519,7 @@ register( {
 		const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
 		const arrowTemplate = companion.querySelector( '.aae-mobile-nav-arrow-template' );
 		if ( ! nav || ! mount || ! toggle || ! close || ! overlay || ! drawer ) return;
+		normalizeRenderedDropdowns( nav );
 		if ( close.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
 			drawer.insertBefore( close, drawer.firstChild );
 		}
@@ -506,6 +549,16 @@ register( {
 		const setSubmenu = ( item, open ) => {
 			const button = item.querySelector( ':scope > .aae-mobile-submenu-toggle' );
 			const sub = getSub( item );
+			if ( ! open ) {
+				item.querySelectorAll( '.aae-a-nav-item.is-mobile-submenu-open' )
+					.forEach( descendant => {
+						descendant.classList.remove( 'is-mobile-submenu-open' );
+						const descendantSub = getSub( descendant );
+						if ( descendantSub ) descendantSub.hidden = true;
+						descendant.querySelector( ':scope > .aae-mobile-submenu-toggle' )
+							?.setAttribute( 'aria-expanded', 'false' );
+					} );
+			}
 			item.classList.toggle( 'is-mobile-submenu-open', open );
 			if ( sub ) sub.hidden = ! open;
 			button?.setAttribute( 'aria-expanded', String( open ) );

@@ -48,6 +48,7 @@ import {
 
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
+const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
 
 const prop = ( type, value ) => ( { $$type: type, value } );
 
@@ -87,6 +88,21 @@ function syncEditorDropdownPreview( navId, itemId ) {
 	}
 }
 
+function syncEditorNestedPreview( itemId, open ) {
+	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
+	const item = previewDocument?.querySelector( `.aae-a-nav-item[data-id="${ itemId }"]` );
+	if ( ! item ) return;
+
+	item.classList.toggle( 'aae-editor-dropdown-open', open );
+	if ( ! open ) return;
+
+	let ancestor = item.parentElement?.closest( '.aae-a-nav-item' );
+	while ( ancestor ) {
+		ancestor.classList.add( 'aae-editor-dropdown-open' );
+		ancestor = ancestor.parentElement?.closest( '.aae-a-nav-item' );
+	}
+}
+
 function syncEditorDropdownPreviewAfterRender( navId, itemId ) {
 	const delays = [ 0, 80, 200, 400 ];
 	const timers = delays.map( ( delay ) => window.setTimeout(
@@ -113,6 +129,145 @@ function buildNavItemModel( position ) {
 		},
 		elements: [],
 	};
+}
+
+function buildSubItemModel( position ) {
+	/* A nested menu item. NOT locked (unlike the top-level defaults) so users
+	 * can freely reorder/remove it. Starts without its own dropdown; toggling
+	 * "Enable Dropdown" on it (or its own "Add Sub-Item") goes one level deeper. */
+	return {
+		elType: NAV_ITEM_TYPE,
+		editor_settings: { title: `Sub Item ${ position }` },
+		settings: {
+			text: prop( 'html-v3', {
+				content: prop( 'string', `Sub Item ${ position }` ),
+				children: [],
+			} ),
+			has_dropdown: prop( 'boolean', false ),
+			trigger: prop( 'string', 'click' ),
+			dropdown_animation: prop( 'string', 'gsap' ),
+		},
+		elements: [],
+	};
+}
+
+/* First direct child of `container` whose type matches `type` (as a container). */
+function findFirstChildOfType( container, type ) {
+	const children = container?.model?.get?.( 'elements' );
+	let found = null;
+	children?.each?.( ( model ) => {
+		if ( found ) {
+			return;
+		}
+		if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) === type ) {
+			found = getContainer( model.get( 'id' ) );
+		}
+	} );
+	return found;
+}
+
+function markDropdownFlexbox( flexbox ) {
+	if ( ! flexbox || hasElementClass( flexbox, DROPDOWN_CLASS ) ) {
+		return;
+	}
+	const classes = readProp( flexbox.settings?.get?.( 'classes' ), [] );
+	updateElementSettings( {
+		id: flexbox.id,
+		props: {
+			classes: prop( 'classes', [
+				...( Array.isArray( classes ) ? classes : [] ),
+				DROPDOWN_CLASS,
+			] ),
+		},
+	} );
+}
+
+/* Repair old structures where widgets/nav-items were inserted directly below
+ * the item. A nav-item must own exactly one dropdown flexbox; everything else
+ * belongs inside it. Keeping this invariant makes every nesting level behave
+ * identically on desktop, mobile and in the editor. */
+function normalizeDropdownModel( itemId ) {
+	const item = getContainer( itemId );
+	if ( ! item ) return null;
+
+	const childModels = item.model?.get?.( 'elements' );
+	let flexbox = findFirstChildOfType( item, 'e-flexbox' );
+	const stray = [];
+	childModels?.each?.( model => {
+		const child = getContainer( model.get( 'id' ) );
+		if ( child && child.id !== flexbox?.id ) stray.push( child );
+	} );
+
+	const hasDropdown = readProp( item.settings?.get?.( 'has_dropdown' ), false );
+	if ( ! flexbox && ( hasDropdown || stray.length ) ) {
+		const result = createElements( {
+			title: 'Dropdown',
+			subtitle: stray.length ? 'Menu structure repaired' : 'Dropdown added',
+			elements: [ {
+				container: item,
+				model: {
+					elType: 'e-flexbox',
+					editor_settings: { title: 'Dropdown' },
+					settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+				},
+				options: { at: 0 },
+			} ],
+		} );
+		const flexId = result?.createdElements?.[ 0 ]?.containerId;
+		flexbox = flexId ? getContainer( flexId ) : findFirstChildOfType( getContainer( itemId ), 'e-flexbox' );
+	}
+
+	if ( ! flexbox ) return null;
+	markDropdownFlexbox( flexbox );
+	if ( stray.length ) {
+		moveElements( {
+			title: 'Dropdown',
+			subtitle: 'Menu structure repaired',
+			moves: stray.map( ( element, index ) => ( {
+				element,
+				targetContainer: flexbox,
+				options: { at: index },
+			} ) ),
+		} );
+	}
+
+	/* Migrate the common authoring mistake "AAE Nav inside Dropdown". Promote
+	 * that nested nav's items into this dropdown so they become genuine child
+	 * items, then remove only the redundant nav wrapper. */
+	const nestedNavs = [];
+	flexbox.model?.get?.( 'elements' )?.each?.( model => {
+		if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) === 'e-aae-a-nav' ) {
+			const nestedNav = getContainer( model.get( 'id' ) );
+			if ( nestedNav ) nestedNavs.push( nestedNav );
+		}
+	} );
+	nestedNavs.forEach( nestedNav => {
+		const items = [];
+		nestedNav.model?.get?.( 'elements' )?.each?.( model => {
+			if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) === NAV_ITEM_TYPE ) {
+				const child = getContainer( model.get( 'id' ) );
+				if ( child ) items.push( child );
+			}
+		} );
+		if ( items.length ) {
+			const start = flexbox.model?.get?.( 'elements' )?.length ?? 0;
+			moveElements( {
+				title: 'Menu hierarchy',
+				subtitle: 'Nested menu converted to child items',
+				moves: items.map( ( element, index ) => ( {
+					element,
+					targetContainer: flexbox,
+					options: { at: start + index },
+				} ) ),
+			} );
+		}
+		removeElements( {
+			elementIds: [ nestedNav.id ],
+			title: 'Menu hierarchy',
+			subtitle: 'Redundant nested Nav removed',
+		} );
+	} );
+	return flexbox;
 }
 
 function useNavItems( navId ) {
@@ -625,12 +780,13 @@ export function NavItemsControl( { label } ) {
 				<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
 					{ label }
 				</Typography>
-				<Tooltip title="Add Menu Item">
-					<IconButton size="tiny" onClick={ handleAdd } aria-label="Add Menu Item">
-						<span style={ { fontSize: 16, lineHeight: 1 } }>+</span>
-					</IconButton>
-				</Tooltip>
+				<Button size="tiny" variant="outlined" onClick={ handleAdd }>
+					{ '+ Add main item' }
+				</Button>
 			</Stack>
+			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+				{ 'Build the complete menu here. Expand a MAIN item, enable Dropdown Content, then use Add child. Do not place another AAE Nav inside a dropdown.' }
+			</Typography>
 
 			<Stack gap={ 0.5 }>
 				{ rows.map( ( row ) => {
@@ -678,6 +834,9 @@ export function NavItemsControl( { label } ) {
 								>
 									⠿
 								</Box>
+								<Typography variant="caption" sx={ { color: 'text.tertiary', fontWeight: 700 } }>
+									{ 'MAIN' }
+								</Typography>
 								<Typography
 									variant="body2"
 									sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400 } }
@@ -734,6 +893,212 @@ export function NavItemsControl( { label } ) {
 					);
 				} ) }
 			</Stack>
+		</Stack>
+	);
+}
+
+/* Sub-items of a nav-item = the nav-item children of that item's dropdown
+ * flexbox. Same signature-cache pattern as useNavItems, scoped to the flexbox. */
+function useSubItems( itemId ) {
+	const cacheRef = React.useRef( { signature: null, value: [] } );
+
+	return useListenTo(
+		[
+			v1ReadyEvent(),
+			commandEndEvent( 'document/elements/create' ),
+			commandEndEvent( 'document/elements/delete' ),
+			commandEndEvent( 'document/elements/update' ),
+			commandEndEvent( 'document/elements/settings' ),
+			commandEndEvent( 'document/elements/set-settings' ),
+			commandEndEvent( 'document/elements/duplicate' ),
+		],
+		() => {
+			const flexbox = findFirstChildOfType( getContainer( itemId ), 'e-flexbox' );
+			const children = flexbox?.model?.get?.( 'elements' );
+			const next = [];
+			const signatureParts = [];
+			children?.each?.( ( model ) => {
+				if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
+					return;
+				}
+				const id = model.get( 'id' );
+				const editorSettings = model.get( 'editor_settings' ) || {};
+				const container = getContainer( id );
+				const text = readProp( container?.settings?.get?.( 'text' ), {} );
+				const title = readProp( text?.content, '' ) || editorSettings.title || 'Sub Item';
+				next.push( { id, title } );
+				signatureParts.push( `${ id }:${ title }` );
+			} );
+
+			const signature = signatureParts.join( '|' );
+			if ( cacheRef.current.signature === signature ) {
+				return cacheRef.current.value;
+			}
+			cacheRef.current = { signature, value: next };
+			return next;
+		},
+		[ itemId ]
+	);
+}
+
+/**
+ * NavSubItemsControl — the "Sub-menu Items" manager shown on EVERY nav-item's
+ * panel (registered under 'aae-nav-sub-items'). It lists / adds / removes the
+ * nested menu items inside this item's dropdown flexbox. Because it's on every
+ * nav-item, selecting a nested item shows the same manager — that is how a user
+ * builds 2nd / 3rd-level menus without touching the Structure tree.
+ *
+ * Nested items are placed INSIDE the item's dropdown flexbox (a core element),
+ * so the AAE-element chain never runs deep enough to trigger the device-switch
+ * freeze (Nav → item → flexbox → nested item → flexbox → …).
+ */
+export function NavSubItemsControl() {
+	const { element } = useElement();
+	return <SubItemsManager itemId={ element.id } />;
+}
+
+function SubItemsManager( { itemId } ) {
+	const subItems = useSubItems( itemId );
+	const normalizedRef = React.useRef( null );
+	const [ expandedId, setExpandedId ] = React.useState( null );
+
+	React.useEffect( () => {
+		if ( normalizedRef.current === itemId ) return;
+		normalizedRef.current = itemId;
+		normalizeDropdownModel( itemId );
+	}, [ itemId ] );
+
+	/* Ensure this item has a dropdown flexbox (its submenu container); create it
+	 * and flip has_dropdown on if missing — so "Add Sub-Item" is one click. */
+	const ensureDropdownFlexbox = () => {
+		const item = getContainer( itemId );
+		if ( ! item ) {
+			return null;
+		}
+		const existing = normalizeDropdownModel( itemId );
+		if ( existing ) {
+			return existing;
+		}
+		const result = createElements( {
+			title: 'Dropdown',
+			subtitle: 'Dropdown added',
+			elements: [ {
+				container: item,
+				model: {
+					elType: 'e-flexbox',
+					editor_settings: { title: 'Dropdown' },
+					settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+				},
+				options: { at: 0 },
+			} ],
+		} );
+		updateElementSettings( {
+			id: itemId,
+			props: { has_dropdown: prop( 'boolean', true ) },
+		} );
+		const flexId = result?.createdElements?.[ 0 ]?.containerId;
+		return flexId ? getContainer( flexId ) : findFirstChildOfType( getContainer( itemId ), 'e-flexbox' );
+	};
+
+	const handleAddSubItem = () => {
+		const flexbox = ensureDropdownFlexbox();
+		if ( ! flexbox ) {
+			return;
+		}
+		const result = createElements( {
+			title: 'Sub Item',
+			subtitle: 'Sub-menu item added',
+			elements: [ {
+				container: flexbox,
+				model: buildSubItemModel( subItems.length + 1 ),
+				options: { at: subItems.length },
+			} ],
+		} );
+		const id = result?.createdElements?.[ 0 ]?.containerId;
+		if ( id ) setExpandedId( id );
+	};
+
+	const handleRemove = ( id ) => {
+		removeElements( {
+			elementIds: [ id ],
+			title: 'Sub Item',
+			subtitle: 'Sub-menu item removed',
+		} );
+	};
+
+	const toggleChild = ( id ) => {
+		const opening = expandedId !== id;
+		if ( expandedId ) syncEditorNestedPreview( expandedId, false );
+		setExpandedId( opening ? id : null );
+		syncEditorNestedPreview( id, opening );
+	};
+
+	return (
+		<Stack gap={ 1 } sx={ { mt: 0.5 } }>
+			<Stack direction="row" alignItems="center" justifyContent="space-between">
+				<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
+					{ 'Child items' }
+				</Typography>
+				<Button size="tiny" variant="outlined" onClick={ handleAddSubItem }>
+					{ '+ Add child' }
+				</Button>
+			</Stack>
+
+			{ subItems.length === 0 ? (
+				<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+					{ 'No child items. Add one to create the next menu level.' }
+				</Typography>
+			) : (
+				<Stack gap={ 0.5 }>
+					{ subItems.map( ( row ) => (
+						<Box
+							key={ row.id }
+							sx={ {
+								display: 'grid',
+								gridTemplateColumns: '1fr auto',
+								alignItems: 'center',
+								border: '1px solid',
+								borderColor: expandedId === row.id ? 'primary.main' : 'divider',
+								borderRadius: 1,
+								bgcolor: 'background.default',
+								overflow: 'hidden',
+							} }
+						>
+							<Box
+								onClick={ () => toggleChild( row.id ) }
+								sx={ { display: 'flex', alignItems: 'center', gap: 0.75, px: 1, py: 0.7, cursor: 'pointer' } }
+							>
+								<Typography variant="caption" sx={ { color: 'primary.main', fontWeight: 700 } }>
+									{ 'CHILD' }
+								</Typography>
+								<Typography variant="body2" sx={ { fontWeight: expandedId === row.id ? 600 : 400 } }>
+									{ row.title }
+								</Typography>
+							</Box>
+							<Tooltip title="Remove">
+								<IconButton
+									size="tiny"
+									aria-label="Remove sub-item"
+									onClick={ () => handleRemove( row.id ) }
+									sx={ { mr: 0.5 } }
+								>
+									<span style={ { fontSize: 14, lineHeight: 1 } }>×</span>
+								</IconButton>
+							</Tooltip>
+							<Collapse in={ expandedId === row.id } sx={ { gridColumn: '1 / -1' } }>
+								<Box sx={ { p: 1, borderTop: '1px solid', borderColor: 'divider' } }>
+									<NavItemFields
+										elementId={ row.id }
+										fallbackTitle={ row.title }
+										onDropdownToggle={ () => {} }
+										onTitleChange={ () => {} }
+									/>
+								</Box>
+							</Collapse>
+						</Box>
+					) ) }
+				</Stack>
+			) }
 		</Stack>
 	);
 }
@@ -844,6 +1209,7 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 						model: {
 							elType: 'e-flexbox',
 							editor_settings: { title: 'Dropdown' },
+							settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
 						},
 						options: { at: 0 },
 					} ],
@@ -855,6 +1221,9 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			id: elementId,
 			props: { has_dropdown: prop( 'boolean', enabled ) },
 		} );
+		if ( enabled && childIds.length > 0 ) {
+			normalizeDropdownModel( elementId );
+		}
 	};
 
 	const updateDropdownSetting = ( key, value, setter ) => {
@@ -920,6 +1289,9 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 						<MenuItem value="slide-items">{ 'Slide Items' }</MenuItem>
 						<MenuItem value="rotate-items">{ 'Rotate Items' }</MenuItem>
 					</Select>
+					<Box sx={ { pt: 1, mt: 0.5, borderTop: '1px solid', borderColor: 'divider' } }>
+						<SubItemsManager itemId={ elementId } />
+					</Box>
 				</>
 			) }
 		</Stack>

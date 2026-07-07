@@ -163,7 +163,9 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected function define_default_html_tag() {
-		return 'ul';
+		/* <div> (not <ul>): items render as <div> too, so no <ul>/<li> parser
+		 * mangling of nested menus. See aae-a-nav.html.twig. */
+		return 'div';
 	}
 
 	protected function get_templates(): array {

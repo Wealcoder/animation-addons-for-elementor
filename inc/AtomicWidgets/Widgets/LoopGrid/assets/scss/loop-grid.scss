@@ -1,29 +1,41 @@
 /* ----------------------------------------------------------------------- *
- *  AAE Loop Grid — atomic nested element.
+ *  AAE Loop Grid — atomic nested element (FRONTEND styles).
  *
  *  The column layout is FLEXBOX-driven: the Loop Layout's base style is
  *  display:flex + wrap and each Loop Item's base style is `flex: 1 1 32%`
  *  (3-up by default), tuned from the Style panel. There is no columns
  *  setting/CSS var. This file only carries what base styles cannot express.
+ *
+ *  EDITOR-ONLY rules (canvas selectability, edit-handle overlay placement,
+ *  hiding editor helper nodes) live in loop-grid-editor.scss and are enqueued
+ *  ONLY inside the editor preview — never shipped to the frontend. Keep this
+ *  file limited to rules that affect the published page (layout + runtime
+ *  states + edge-state visibility).
  * ----------------------------------------------------------------------- */
 
 /* The grid container is `.aae-a-loop-grid` when the Loop Layout is present
  * (new nested tree, editor + frontend) and `.aae-a-loop-grid-wrap` for the
  * legacy flat tree. Both must be a grid so editor and frontend match exactly. */
 
-/* When the Loop Layout IS the grid, the outer wrap must NOT also be a grid
- * (it just holds the layout + pagination stacked). */
+/* Guard (currently a no-op): the wrap ships as a bare `.e-con` with no
+ * `.e-flex`/`.e-grid` modifier, so it is already `display: block` and the Loop
+ * Layout + pagination stack correctly on their own. This keeps the wrap block
+ * IF it ever gains a flex/grid display (a layout base style, or a user Style-
+ * panel edit) — which would otherwise lay the Layout + pagination side-by-side.
+ * Frontend concern, so it lives here (not the editor-only file). */
 .aae-a-loop-grid-wrap:has(> .aae-a-loop-grid) {
 	display: block !important;
 }
 
-
-
+/* Frontend empty state: PHP print_content() emits this div when the query
+ * returns no posts (class-aae-a-loop-item.php). It renders on the published
+ * page, so its look must ship to the frontend. */
 .aae-a-loop-grid-empty {
 	padding: 24px;
 	text-align: center;
 	color: var(--e-a-color-txt-muted, #818a96);
 }
+
 
 /* ----------------------------------------------------------------------- *
  *  Pagination — atomic nested (Prev / Numbers / Next / Load More).
@@ -31,10 +43,7 @@
  *  The DEFAULT LOOK of each piece (layout, padding, border, colours, arrow
  *  size, space-between) lives in each widget's PHP define_base_styles(), so it
  *  is fully overridable from the editor Style panel. This file only carries
- *  what a base style CANNOT express: interaction STATES (:hover, .is-active,
- *  .is-disabled, .is-loading), the RUNTIME-generated number links (<a> markup
- *  built at render, not real elements), the editor drop-zone hide, and the
- *  pagination-type visibility.
+ *  what a base style cannot express: runtime states and the number-gap state.
  * ----------------------------------------------------------------------- */
 
 /* State-only rules for the nav (default look is in base styles). */
@@ -48,59 +57,46 @@
 	}
 }
 
-/* Numbers container: hide the editor's empty drop-zone (numbers are generated
- * at render, so this element must not read as a droppable container). */
-.aae-a-loop-numbers {
-	.elementor-empty-view,
-	> .elementor-add-section,
-	> .elementor-first-add {
-		display: none !important;
-	}
+/* Gap is runtime state, not a persisted Atomic style state. */
+.aae-a-loop-number.is-gap {
+	border: none;
+	cursor: default;
+	pointer-events: none;
+	min-width: auto;
+	padding: 0 4px;
 }
 
-/* Runtime-generated number links (<a> / gap span). Not real atomic elements,
- * so their look can't come from a base style — the Numbers element's own Style
- * panel styles the CONTAINER; these style the generated items. */
-.aae-a-loop-num {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 36px;
-	height: 36px;
-	padding: 0 10px;
-	border: 1px solid var(--e-a-border-color, #d5d8dc);
-	border-radius: 4px;
-	color: var(--e-a-color-txt, #1a1a1a);
-	text-decoration: none;
-	cursor: pointer;
-	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-
-	&:hover { background: var(--e-a-bg-hover, #f1f2f3); }
-
-	&.is-active {
-		background: var(--e-a-btn-bg-primary, #515962);
-		border-color: var(--e-a-btn-bg-primary, #515962);
-		color: var(--e-a-btn-color-invert, #fff);
-		pointer-events: none;
-	}
-
-	&-gap {
-		border: none;
-		cursor: default;
-		pointer-events: none;
-		min-width: auto;
-		padding: 0 4px;
-	}
-}
-
-/* Load More state-only (default look is in base styles). */
+/* Load More state-only (default look is in base styles).
+ *
+ * `.is-loading` is a runtime class the frontend JS toggles on the button during
+ * the AJAX fetch. While loading, the label dims and pointer input is blocked,
+ * and a small spinner is appended after the label. The spinner is a CSS-only
+ * `::after` that inherits the button's own text `color` (currentColor), so it
+ * always matches whatever the user styled the button to from the Style panel —
+ * no separate spinner-colour control needed. The button's base style is
+ * inline-flex with gap:6px, so the spinner spaces itself from the label. */
 .aae-a-loop-loadmore {
 	&:hover { filter: brightness(1.08); }
 
 	&.is-loading {
-		opacity: 0.6;
+		opacity: 0.75;
 		pointer-events: none;
+
+		&::after {
+			content: "";
+			width: 1em;
+			height: 1em;
+			flex: none;
+			border: 2px solid currentColor;
+			border-inline-end-color: transparent;
+			border-radius: 50%;
+			animation: aae-loadmore-spin 0.6s linear infinite;
+		}
 	}
+}
+
+@keyframes aae-loadmore-spin {
+	to { transform: rotate(360deg); }
 }
 
 .aae-a-loop-pagination.is-loading { opacity: 0.7; }
@@ -109,3 +105,15 @@
  * Numbers, Load More) renders by default and the user hides the unwanted ones
  * from the Style panel (display: none). The frontend runtime is DOM-driven —
  * it wires whichever pieces are present + visible. */
+
+/* Edge-state visibility — FRONTEND ONLY (the editor keeps every piece visible
+ * and styleable). The twig stamps aae-pg-first / aae-pg-last at render time
+ * (totals are known server-side, so nothing flashes on page load) and the
+ * runtime re-syncs the classes after each AJAX page change. First page → no
+ * Prev; last page (incl. a single page) → no Next / Load More. */
+body:not(.elementor-editor-active) {
+	.aae-a-loop-pagination.aae-pg-first [data-aae-nav="prev"] { display: none; }
+
+	.aae-a-loop-pagination.aae-pg-last [data-aae-nav="next"],
+	.aae-a-loop-pagination.aae-pg-last [data-aae-loadmore] { display: none; }
+}
