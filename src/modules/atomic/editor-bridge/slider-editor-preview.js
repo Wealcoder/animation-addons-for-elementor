@@ -42,6 +42,7 @@ const MIN_PREVIEW_SLIDES = 3; // never fewer than this many total (1 real + clon
  */
 function desiredSlideCount( win, slider ) {
 	let maxSpv = 0;
+	let maxPeek = 0;
 	try {
 		const id = slider.getAttribute( 'data-id' );
 		const cfg = ( win.AAE_INTERACTIONS_NS || {} )[ id ] || {};
@@ -53,10 +54,21 @@ function desiredSlideCount( win, slider ) {
 					maxSpv = v;
 				}
 			}
+			if ( key === 'peek' || key.indexOf( 'peek_' ) === 0 ) {
+				const p = parseFloat( cfg[ key ] );
+				if ( ! isNaN( p ) && p > maxPeek ) {
+					maxPeek = p;
+				}
+			}
 		} );
 	} catch ( _e ) { /* config not ready */ }
 
-	const needed = maxSpv > 0 ? Math.ceil( maxSpv ) + 1 : MIN_PREVIEW_SLIDES;
+	// The extra +1 slide exists ONLY so a Peek of the next slide is visible in the
+	// preview. With Peek = 0 the user wants exactly slidesPerView slides filling
+	// 100% (no sliver), so drop the +1 — otherwise the preview injects a 4th slide
+	// for a 3-up slider and it overflows as a misleading sliver.
+	const peekSlide = maxPeek > 0 ? 1 : 0;
+	const needed = maxSpv > 0 ? Math.ceil( maxSpv ) + peekSlide : MIN_PREVIEW_SLIDES;
 	return Math.max( MIN_PREVIEW_SLIDES, needed );
 }
 
@@ -295,9 +307,16 @@ export function startSliderEditorPreview() {
 				return true;
 			}
 			const touched = [ ...m.addedNodes, ...m.removedNodes ];
-			// If every touched node is one of our clones, skip.
+			// If every touched node is a clone, skip. This covers BOTH our editor
+			// preview clones (PREVIEW_CLASS) AND the runtime's own seamless-loop
+			// clones (aae-slide-clone) — the latter get added/removed by the
+			// slider's bind()/cleanup during the rebind WE trigger, so counting
+			// them as "relevant" would re-schedule a scan and loop indefinitely.
 			return ! touched.every(
-				( n ) => n.nodeType === 1 && n.classList && n.classList.contains( PREVIEW_CLASS )
+				( n ) => n.nodeType === 1 && n.classList && (
+					n.classList.contains( PREVIEW_CLASS ) ||
+					n.classList.contains( 'aae-slide-clone' )
+				)
 			);
 		} );
 		if ( relevant ) {

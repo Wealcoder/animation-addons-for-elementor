@@ -22,6 +22,8 @@ namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item;
 
 require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-item.php';
@@ -54,12 +56,23 @@ class AAE_A_Loop_Slide_Item extends AAE_A_Loop_Item {
 	 * the runtime's width math.
 	 */
 	protected function define_base_styles(): array {
+		// Zero padding by default — the slide card carries `e-con`, whose default
+		// 10px padding is an unwanted inherited default here. The user can still add
+		// padding from the panel to inset the card content.
+		$zero = Dimensions_Prop_Type::generate( [
+			'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+		] );
+
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
 						->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
+						->add_prop( 'padding', $zero )
 				),
 		];
 	}

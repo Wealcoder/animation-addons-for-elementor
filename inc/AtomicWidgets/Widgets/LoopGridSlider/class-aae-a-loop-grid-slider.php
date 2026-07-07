@@ -38,6 +38,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
@@ -121,6 +123,17 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 			'overflow' => String_Prop_Type::generate( 'hidden' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
 			'width'    => String_Prop_Type::generate( '100%' ),
+			// Default the slider wrapper to zero padding. It carries `e-con`, whose
+			// default 10px padding offsets the slide-width reference box away from
+			// the runtime's positioning box (see AAE_A_Loop_Slide_Track), clipping
+			// the first slide. The user can still add padding deliberately from the
+			// panel; this just removes the surprising inherited default.
+			'padding'  => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
 		];
 
 		return [
