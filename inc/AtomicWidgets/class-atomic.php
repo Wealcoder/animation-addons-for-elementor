@@ -291,6 +291,12 @@ final class Atomic
 			'aae-a-loop-loadmore',
 			'aae-a-loop-arrow',
 			'aae-a-loop-nav-wrap',
+			// Loop Grid Slider structural pieces — always-on internal elements,
+			// seeded as default children of the slider root (same reasoning as the
+			// Loop Grid pieces above).
+			'aae-a-loop-slide-track',
+			'aae-a-loop-slide-item',
+			'aae-a-loop-slide-pagination',
 			// Loop Grid current-post building blocks: seeded as default loop-item
 			// children — must always be registered so the featured image / title /
 			// meta resolve per post.
@@ -656,6 +662,50 @@ final class Atomic
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			'aae-a-loop-grid-slider' => [
+				'label'        => 'Loop Grid Slider',
+				'description'  => 'Query posts and present each as a slide, driven by the shared nested-slider runtime (effect / autoplay / coverflow / 3D) with AJAX load-more paging.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'loop',
+					'grid',
+					'slider',
+					'carousel',
+					'posts',
+					'query',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 1,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-loop-slide-track' => [
+				'label'        => 'Slider Track',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'icon'         => 'eicon-slider-push',
+				'keywords'     => [ 'loop', 'slider', 'track' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-slide-item' => [
+				'label'        => 'Loop Slide Item',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'icon'         => 'eicon-container',
+				'keywords'     => [ 'loop', 'slide', 'item' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-slide-pagination' => [
+				'label'        => 'Slider Pagination',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'icon'         => 'eicon-ellipsis-h',
+				'keywords'     => [ 'loop', 'slider', 'pagination' ],
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-counter' => [
@@ -1824,6 +1874,37 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
+			// nested-slider runtime. Its only own script is the load-more bridge
+			// (paging appends slides then re-binds the shared slider runtime).
+			'aae-a-loop-grid-slider' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',
+				'script_handle' => 'aae-a-loop-grid-slider-js',
+				'script_path' => '/assets/atomic/js/loop-grid-slider.js',
+				'has_script' => true,
+				// Load after the shared runtime so window.AAEADDON.rebind exists when
+				// the bridge appends slides (it also guards defensively at call time).
+				'script_deps' => [ 'aae-atomic-common' ],
+				'style_handle' => 'aae-a-loop-grid-slider-css',
+				'style_path' => '/assets/atomic/css/loop-grid-slider.css',
+			],
+			'aae-a-loop-slide-track' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-track.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-slide-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-item.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-slide-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-pagination.php',
+				'has_script' => false,
+			],
+
 			'aae-a-accordion' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
@@ -2284,11 +2365,18 @@ final class Atomic
 
 		$data = $doc->get_elements_data();
 
+		// The static grid and the slider variant share this endpoint. Both root
+		// types publish the same Render_Context (keyed by AAE_A_Loop_Grid::class,
+		// which the slider root extends) and repeat a loop-item subtree per post —
+		// only the element type names differ, so accept either here.
+		$grid_types = ['e-aae-a-loop-grid', 'e-aae-a-loop-grid-slider'];
+		$item_types = ['e-aae-a-loop-item', 'e-aae-a-loop-slide-item'];
+
 		// Locate the loop-grid element (by id) and its loop-item descendant.
 		$grid_el = null;
-		$find_grid = function ($els) use (&$find_grid, &$grid_el, $grid_id) {
+		$find_grid = function ($els) use (&$find_grid, &$grid_el, $grid_id, $grid_types) {
 			foreach ($els as $el) {
-				if (($el['id'] ?? '') === $grid_id && ($el['elType'] ?? '') === 'e-aae-a-loop-grid') {
+				if (($el['id'] ?? '') === $grid_id && in_array($el['elType'] ?? '', $grid_types, true)) {
 					$grid_el = $el;
 					return;
 				}
@@ -2307,9 +2395,9 @@ final class Atomic
 		}
 
 		$item_el = null;
-		$find_item = function ($els) use (&$find_item, &$item_el) {
+		$find_item = function ($els) use (&$find_item, &$item_el, $item_types) {
 			foreach ($els as $el) {
-				if (($el['elType'] ?? '') === 'e-aae-a-loop-item') {
+				if (in_array($el['elType'] ?? '', $item_types, true)) {
 					$item_el = $el;
 					return;
 				}

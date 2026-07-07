@@ -1377,7 +1377,9 @@ export const FEATURES = [
 	},
 	{
 		name: 'nested-slider',
-		widgetTypes: ['e-aae-a-slider'],
+		// The Loop Grid Slider root shares the slider config namespace + runtime,
+		// so the same live-preview feature drives it in the editor.
+		widgetTypes: ['e-aae-a-slider', 'e-aae-a-loop-grid-slider'],
 		enableSetting: null,
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_NS',

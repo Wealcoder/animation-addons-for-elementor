@@ -353,7 +353,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * "ElementTypeNotFound" — e.g. the AAE post widgets are dashboard-toggleable
 	 * and may be disabled. So we only seed children whose type resolves.
 	 */
-	private static function type_registered( string $type ): bool {
+	protected static function type_registered( string $type ): bool {
 		if ( ! class_exists( '\Elementor\Plugin' ) ) {
 			return false;
 		}

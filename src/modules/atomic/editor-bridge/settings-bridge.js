@@ -2,6 +2,7 @@
 
 import { getPreviewWindow, getSelectedContainer } from './helpers';
 import { featuresFor, regularRowToRuntime, textRowToRuntime, imgRowToRuntime } from './features';
+import { syncSliderPreviewForElement } from './slider-editor-preview';
 
 /**
  * Settings → preview-iframe bridge (interactions-map flavour).
@@ -139,6 +140,12 @@ export function applySettingsToDom(container, playGroup = "") {
 		map[container.id] = cfg;
 		results.push({ feature, active: true });
 	}
+
+	// Loop Grid Slider: the config just changed (e.g. slidesPerView), so re-sync
+	// the editor preview clones BEFORE the rebind — the runtime clamps
+	// slidesPerView to the number of slides in the DOM, so a 4-up slider needs
+	// enough cloned slides present before it re-measures.
+	syncSliderPreviewForElement(win, target);
 
 	// Single rebind() per element regardless of how many features applied —
 	// common.js's rebind walks ALL kinds and re-reads each map.

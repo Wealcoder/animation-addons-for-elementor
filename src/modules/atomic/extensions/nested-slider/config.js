@@ -72,7 +72,7 @@ const config = {
 			responsive: true,
 			defaultValue: 3,
 			min: 1,
-			max: 10,
+			max: 15,
 			when: showSlidesPerView,
 			play_group: 'aae_ns_',
 			live_change: true,

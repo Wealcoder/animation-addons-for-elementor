@@ -101,6 +101,12 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\NestedSlider\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\NestedSlider\Render() )->register();
 
+		// Loop Grid Slider — reuses the Nested Slider schema (NS_*) and the shared
+		// 'ns' InteractionsMap namespace + runtime, so no separate Schema is needed.
+		// This Render only publishes the config for e-aae-a-loop-grid-slider and
+		// enqueues the shared slider runtime plus the load-more bridge.
+		( new \WCF_ADDONS\Atomic\LoopGridSlider\Render() )->register();
+
 		// Style Manager
 		// ( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
 

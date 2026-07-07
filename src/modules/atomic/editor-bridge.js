@@ -83,6 +83,7 @@ registerAaeElementControls();
 import { getPreviewWindow } from './editor-bridge/helpers';
 import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './editor-bridge/settings-bridge';
 import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
+import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 
 let bootstrapped = false;
 
@@ -95,6 +96,10 @@ function bootstrap() {
 	// Selecting a slide (Structure panel, canvas, anywhere) drives the preview
 	// slider to it — same as clicking its row in the panel's "Slides" list.
 	startSlideSelectNav();
+
+	// Loop Grid Slider has no query in the editor (one authored slide), so
+	// duplicate that slide client-side for a realistic multi-up / effect preview.
+	startSliderEditorPreview();
 }
 
 if (window.elementor && window.elementor.on) {
