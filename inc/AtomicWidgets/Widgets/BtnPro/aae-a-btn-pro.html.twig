@@ -1,4 +1,4 @@
-{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
+{% set btn_classes = ['aae-a-btn-pro', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
 
 {% if settings.btn_target == '_blank' %}
     {% set rel_attr = 'noopener' ~ (settings.btn_nofollow ? ' nofollow' : '') %}
@@ -27,26 +27,14 @@
     {{ children_placeholder | raw }}
 </a>
 
-{#
-    No external CSS for this widget — just enough to make the default
-    label + icon children look like a button out of the box.
+<style>
 
-    <style>
-
-        [data-id="{{ id }}"].aae-a-btn .e-svg-base {
-            width: 1em;
-            height: 1em;
-        }
-
-        [data-id="{{ id }}"].aae-a-btn svg {
-            width: 100%;
-            height: 100%;
-            fill: currentColor;
-        }
-        [data-id="{{ id }}"].aae-a-btn .e-paragraph-base {
-            margin: 0;
-        }
-    </style>
-
-#}
-
+    [data-id="{{ id }}"].aae-a-btn-pro svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
+    [data-id="{{ id }}"].aae-a-btn-pro .e-paragraph-base {
+        margin: 0;
+    }
+</style>

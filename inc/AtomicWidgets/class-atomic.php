@@ -1368,6 +1368,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-btn-pro' => [
+				'label'        => 'ButtonTemplate Pro',
+				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
+				'icon'         => 'wcf-icon-Button',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'button',
+					'basic button',
+					'template',
+					'container',
+					'atomic',
+					'pro',
+				],
+				'category'     => 'general',
+				'order'        => 22,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -1938,6 +1960,12 @@ final class Atomic
 			'aae-a-btn' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
 				'file'       => 'Widgets/Btn/class-aae-a-btn.php',
+				'has_script' => false,
+			],
+
+			'aae-a-btn-pro' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
+				'file'       => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
 				'has_script' => false,
 			],
 
