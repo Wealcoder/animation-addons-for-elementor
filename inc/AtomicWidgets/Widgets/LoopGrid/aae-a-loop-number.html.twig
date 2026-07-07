@@ -28,4 +28,6 @@
     {% if settings.attributes is defined and settings.attributes is not empty %}
         {{ settings.attributes | raw }}
     {% endif %}
-    {{ editor_attributes | default('') | raw }}>{% if is_gap %}&hellip;{% else %}{{ display_number }}{% endif %}</a>
+    {{ editor_attributes | default('') | raw }}>
+    {% if is_gap %}&hellip;{% else %}{{ display_number }}{% endif %}
+    </a>
