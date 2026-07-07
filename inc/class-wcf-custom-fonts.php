@@ -70,7 +70,7 @@ Class CustomFonts_Lite{
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
 		add_action( 'wp_ajax_wcf_save_custom_fonts', [ $this, 'save_settings' ] );
 		add_action( 'wp_ajax_wcf_save_custom_fonts_settings', [ $this, 'save_global_settings' ] );
-		add_filter( 'upload_mimes', [$this ,'wcf_addon_pro_allow_custom_font_uploads'], 100);
+		//add_filter( 'upload_mimes', [$this ,'wcf_addon_pro_allow_custom_font_uploads'], 100);
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, '_custom_webfonts' ] , 4 );
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, 'global_custom_webfonts' ] , 9 );
 		add_filter( 'elementor/fonts/additional_fonts' , [ $this, 'elementor_additional_fonts' ] , 12 );

@@ -360,16 +360,16 @@ class Helpers {
 		);
 
 		// Register the import file types and their mime types.
-		add_filter( 'upload_mimes', function ( $defaults ) {
+		// add_filter( 'upload_mimes', function ( $defaults ) {
 
-			$custom = [
-				'xml'  => 'text/xml',
-				'json' => 'application/json',		
-			];
+		// 	$custom = [
+		// 		'xml'  => 'text/xml',
+		// 		'json' => 'application/json',		
+		// 	];
 		
 			
-			return array_merge( $custom, $defaults );
-		} );
+		// 	return array_merge( $custom, $defaults );
+		// } );
 
 		// Error data if the demo file was not provided.
 		$file_not_provided_error = array(
