@@ -19,16 +19,23 @@ import {
 } from "@/lib/widgetService";
 import { createContext, useCallback, useReducer } from "react";
 
+// Guarantees `.elements` is always an object, even when a category (e.g.
+// widgets) has been fully commented out of config.php or otherwise ships
+// without an `elements` key — prevents Object.entries()/.map() crashes
+// throughout the dashboard (widgets list, search, etc).
+const normalizeElements = (data) => {
+  const parsed = data ? JSON.parse(JSON.stringify(data)) : {};
+  return { ...parsed, elements: parsed.elements || {} };
+};
+
 const initialState = {
-  allWidgets:
-    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.widgets)) || {},
-  allExtensions:
-    JSON.parse(JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.extensions)) ||
-    {},
-  allLibrary:
-    JSON.parse(
-      JSON.stringify(WCF_ADDONS_ADMIN?.addons_config?.integrations?.library)
-    ) || {},
+  allWidgets: normalizeElements(WCF_ADDONS_ADMIN?.addons_config?.widgets),
+  allExtensions: normalizeElements(
+    WCF_ADDONS_ADMIN?.addons_config?.extensions
+  ),
+  allLibrary: normalizeElements(
+    WCF_ADDONS_ADMIN?.addons_config?.integrations?.library
+  ),
   activated: WCF_ADDONS_ADMIN?.addons_config || {},
   setupType: "basic",
   notice: [],

@@ -182,9 +182,10 @@ export const filterGsapExtension = (mainContent, filterKey) => {
 };
 
 export const generateWidgetSearchContent = (mainContent) => {
+  console.log(mainContent)
   let storeData = [];
-  Object.entries(mainContent).map(([key, val]) => {
-    Object.entries(val.elements).map(([key2, val2]) => {
+  Object.entries(mainContent || {}).map(([key, val]) => {
+    Object.entries(val.elements || {}).map(([key2, val2]) => {
       const sampleData = {
         icon: val2?.icon || "wcf-icon-Team",
         path: "widgets",
@@ -205,8 +206,8 @@ export const generateWidgetSearchContent = (mainContent) => {
 
 export const generateGsapExtSearchContent = (mainContent) => {
   let storeData = [];
-  Object.entries(mainContent).map(([key, val]) => {
-    Object.entries(val.elements).map(([key2, val2]) => {
+  Object.entries(mainContent || {}).map(([key, val]) => {
+    Object.entries(val.elements || {}).map(([key2, val2]) => {
       const sampleData = {
         icon: val2?.icon || "wcf-icon-Floating-Elements",
         path: "extensions",
@@ -227,7 +228,7 @@ export const generateGsapExtSearchContent = (mainContent) => {
 
 export const generateGenExtSearchContent = (mainContent) => {
   let storeData = [];
-  Object.entries(mainContent).map(([key, val]) => {
+  Object.entries(mainContent || {}).map(([key, val]) => {
     const sampleData = {
       icon: val?.icon || "wcf-icon-Floating-Elements",
       path: "extensions",

@@ -39,11 +39,11 @@ const GlobalSearch = ({ open, setOpen }) => {
     setPopularWidgets(widgets?.items?.slice(0, 3));
 
     const gsapExtensions = generateGsapExtSearchContent(
-      allExtensions.elements["gsap-extensions"].elements
+      allExtensions?.elements?.["gsap-extensions"]?.elements
     );
 
     const generalExtensions = generateGenExtSearchContent(
-      allExtensions.elements["general-extensions"].elements
+      allExtensions?.elements?.["general-extensions"]?.elements
     );
 
     const templates = {

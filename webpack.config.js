@@ -8,7 +8,11 @@ const fs = require('fs');
 // Helper to automatically find all JS files inside AtomicWidgets/Widgets/*/assets/js/
 const getAtomicWidgetEntries = () => {
   const entries = {
-    "../atomic/js/atomic-editor": "./inc/AtomicWidgets/assets/js/atomic-editor.js"
+    "../atomic/js/atomic-editor": "./inc/AtomicWidgets/assets/js/atomic-editor.js",
+    // Global button presets — split into free/pro tiers. Each imports its own
+    // SCSS, so webpack extracts a matching global-preset-{free,pro}.css too.
+    "../atomic/js/global-preset-free": "./inc/AtomicWidgets/assets/js/global-preset-free.js",
+    "../atomic/js/global-preset-pro": "./inc/AtomicWidgets/assets/js/global-preset-pro.js"
   };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {
