@@ -85,16 +85,26 @@ class AAE_A_Loop_Slide_Track extends Atomic_Element_Base {
 	}
 
 	/**
-	 * The track is a pure layout rail. It carries the `e-con` class, so it would
-	 * otherwise inherit Elementor's default 10px container padding — and that
-	 * padding shrinks the track's CONTENT box, which is the reference the slide
-	 * width (`100% / slidesPerView`) is measured against. The runtime, meanwhile,
-	 * left-aligns slides to the SLIDER root's content box. When the two boxes
-	 * disagree (because the track has padding the slider doesn't), the row of
-	 * slides no longer fits the space it's aligned within, so the first slide gets
-	 * clipped and a sliver of the next one shows. Zeroing the track's padding keeps
-	 * the width-reference box and the positioning box in agreement regardless of
-	 * any padding the user sets on the slider or the slides.
+	 * Zero the track's default padding via the ATOMIC base-style system.
+	 *
+	 * The track carries Elementor's `.e-con` class. With no explicit padding set,
+	 * Elementor's atomic base-styles cache emits a DEFAULT `.elementor .e-{id}
+	 * { padding: 10px }` rule (higher specificity than `.e-con` / any plain class,
+	 * so a raw CSS override can't beat it without `!important`). That 10px each side
+	 * shrinks the track CONTENT box the slides size against (100% / slidesPerView),
+	 * so N slides span (viewport − 20px) and leave a ~20px empty strip on the right.
+	 *
+	 * Defining the base style HERE makes atomic emit `padding: 0` for this element's
+	 * own `.e-{id}` class instead of the 10px default — the native, correct fix. And
+	 * because it flows through the same atomic style pipeline, a user setting padding
+	 * on the track via the Style panel regenerates this class with THEIR value and
+	 * wins cleanly (no `!important` fight). `padding` is a valid style-schema key
+	 * (Union of Dimensions/Size), so the definition applies rather than silently
+	 * failing.
+	 *
+	 * NOTE: atomic caches per-element CSS — after changing this, the cache may need a
+	 * regen (resave the document / Elementor → Tools → Regenerate CSS) for the new
+	 * `padding: 0` to appear.
 	 */
 	protected function define_base_styles(): array {
 		$zero = Dimensions_Prop_Type::generate( [

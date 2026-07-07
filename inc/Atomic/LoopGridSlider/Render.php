@@ -45,7 +45,7 @@ final class Render {
 		$config = [
 			'effect'            => 'slide',
 			'slidesPerView'     => 3,
-			'peek'              => 8,
+			'peek'              => 0,
 			'cfRotate'          => 45,
 			'cfDepth'           => 100,
 			'gap'               => 0,
@@ -72,7 +72,7 @@ final class Render {
 
 		$this->emit_responsive( $config, $settings, Schema::NS_EFFECT, 'effect', 'slide', $extra_bps, static fn( $v ) => is_string( $v ) ? $v : 'slide' );
 		$this->emit_responsive( $config, $settings, Schema::NS_SLIDES_PER_VIEW, 'slidesPerView', 3, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
-		$this->emit_responsive( $config, $settings, Schema::NS_PEEK, 'peek', 8, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
+		$this->emit_responsive( $config, $settings, Schema::NS_PEEK, 'peek', 0, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_CF_ROTATE, 'cfRotate', 45, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_CF_DEPTH, 'cfDepth', 100, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_GAP, 'gap', 0, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );

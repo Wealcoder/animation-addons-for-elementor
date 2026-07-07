@@ -62,15 +62,16 @@ function bind(container, config) {
 
 	// Configuration getters
 	const getEffect = () => r('effect', 'slide');
-	const getPeek = () => parseInt(r('peek', 8));
+	const getPeek = () => parseInt(r('peek', 0));
 	const getSlidesPerView = () => {
 		const effect = getEffect();
 		let spv = parseFloat(r('slidesPerView', 3));
 		const peek = getPeek();
-		// Peek shrinks each slide to reveal neighbours. When the user asks for a
-		// single centered slide it must fill the viewport and sit dead-center, so
-		// skip the peek widening in that case (otherwise the slide is narrower
-		// than the viewport and a sliver of the previous slide shows on the left).
+		// Peek shrinks each slide to reveal a sliver of the neighbours. It applies to
+		// ANY effect (incl. plain "slide") — but only when the user actually asks for
+		// it: peek DEFAULTS TO 0, so an untouched slider shows exactly N per view with
+		// no leaked sliver. A single centered slide must fill the viewport, so skip it
+		// there regardless.
 		const singleCentered = isCenterMode() && spv <= 1;
 		if (peek > 0 && !singleCentered) {
 			spv += (peek / 100) * 2;

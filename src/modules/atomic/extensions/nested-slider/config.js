@@ -203,7 +203,9 @@ const config = {
 			label: 'Peek %',
 			control: 'slider',
 			responsive: true,
-			defaultValue: 8,
+			// Default 0: no peek unless the user explicitly sets it, so a plain
+			// N-per-view slider fills edge-to-edge instead of leaking a sliver.
+			defaultValue: 0,
 			min: 0,
 			max: 20,
 			step: 1,

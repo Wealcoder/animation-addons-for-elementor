@@ -19,6 +19,13 @@
 		// slides line up horizontally before the runtime measures them.
 		flex-wrap: nowrap;
 
+		// NOTE: the track's default 10px `.e-con` padding (which shrinks the slide
+		// content box and leaves a right-side gap) is zeroed via the atomic base-style
+		// in AAE_A_Loop_Slide_Track::define_base_styles() — that emits `padding: 0` on
+		// the element's own `.e-{id}` class, which is what actually controls the
+		// padding here (not the `--padding-*` custom props). Doing it there keeps it
+		// overridable by the user's Style-panel padding. See that method for details.
+
 		// Slide sizing from the runtime-set custom props — the SAME formula the
 		// Nested Slider uses (nestedslider.scss `.aae-slider-track > *`). Targets
 		// the track's direct children so it also covers loop clones the runtime
