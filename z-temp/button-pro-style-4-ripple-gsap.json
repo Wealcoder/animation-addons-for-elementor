@@ -1,0 +1,334 @@
+{
+    "content": [
+        {
+            "id": "a71c4e08",
+            "settings": {
+                "classes": {
+                    "$$type": "classes",
+                    "value": ["e-a71c4e08-2d8f1b3"]
+                }
+            },
+            "elements": [
+                {
+                    "id": "b6d09f27",
+                    "settings": {
+                        "classes": {
+                            "$$type": "classes",
+                            "value": ["aae-btn-ripple", "e-b6d09f27-6c1a4e9"]
+                        },
+                        "btn_url": {
+                            "$$type": "string",
+                            "value": "#"
+                        },
+                        "btn_target": {
+                            "$$type": "string",
+                            "value": "_self"
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "c92f8a15",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": ["aae-btn-ripple-span", "e-c92f8a15-7b1d4e2"]
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "elType": "e-div-block",
+                            "styles": {
+                                "e-c92f8a15-7b1d4e2": {
+                                    "id": "e-c92f8a15-7b1d4e2",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": { "breakpoint": "desktop", "state": null },
+                                            "props": {
+                                                "position": { "$$type": "string", "value": "absolute" },
+                                                "inset-block-start": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
+                                                "inset-inline-start": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
+                                                "transform": {
+                                                    "$$type": "transform",
+                                                    "value": {
+                                                        "transform-functions": {
+                                                            "$$type": "transform-functions",
+                                                            "value": [
+                                                                {
+                                                                    "$$type": "transform-move",
+                                                                    "value": {
+                                                                        "x": { "$$type": "size", "value": { "unit": "%", "size": -50 } },
+                                                                        "y": { "$$type": "size", "value": { "unit": "%", "size": -50 } },
+                                                                        "z": { "$$type": "size", "value": { "unit": "px", "size": 0 } }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "width": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                "height": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "color": { "$$type": "color", "value": "#FC5A11" }
+                                                    }
+                                                },
+                                                "border-radius": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
+                                                "transition": {
+                                                    "$$type": "transition",
+                                                    "value": [
+                                                        {
+                                                            "$$type": "selection-size",
+                                                            "value": {
+                                                                "selection": {
+                                                                    "$$type": "key-value",
+                                                                    "value": {
+                                                                        "key": { "$$type": "string", "value": "All properties" },
+                                                                        "value": { "$$type": "string", "value": "all" }
+                                                                    }
+                                                                },
+                                                                "size": { "$$type": "size", "value": { "size": 500, "unit": "ms" } }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "z-index": { "$$type": "number", "value": -1 }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": { "title": "Ripple" },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "d417e6b2",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": []
+                                },
+                                "paragraph": {
+                                    "$$type": "html-v3",
+                                    "value": {
+                                        "content": {
+                                            "$$type": "string",
+                                            "value": "Explore Now"
+                                        },
+                                        "children": []
+                                    }
+                                },
+                                "tag": {
+                                    "$$type": "string",
+                                    "value": "span"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-paragraph",
+                            "elType": "widget",
+                            "styles": [],
+                            "interactions": [],
+                            "editor_settings": { "title": "Label" },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "e850c9a4",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": ["aae-btn-ripple-arrow", "e-e850c9a4-3f6c8a1"]
+                                }
+                            },
+                            "elements": [
+                                {
+                                    "id": "f96a3d71",
+                                    "settings": {
+                                        "classes": {
+                                            "$$type": "classes",
+                                            "value": ["aae-btn-ripple-arrow-tip", "e-f96a3d71-9e2b5c4"]
+                                        }
+                                    },
+                                    "elements": [],
+                                    "isInner": false,
+                                    "elType": "e-div-block",
+                                    "styles": {
+                                        "e-f96a3d71-9e2b5c4": {
+                                            "id": "e-f96a3d71-9e2b5c4",
+                                            "label": "local",
+                                            "type": "class",
+                                            "variants": [
+                                                {
+                                                    "meta": { "breakpoint": "desktop", "state": null },
+                                                    "props": {
+                                                        "position": { "$$type": "string", "value": "absolute" },
+                                                        "inset-block-start": { "$$type": "size", "value": { "unit": "px", "size": -4 } },
+                                                        "inset-inline-end": { "$$type": "size", "value": { "unit": "px", "size": 30 } },
+                                                        "width": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
+                                                        "height": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
+                                                        "border-color": { "$$type": "color", "value": "#ffffff" },
+                                                        "border-style": { "$$type": "string", "value": "solid" },
+                                                        "border-width": {
+                                                            "$$type": "border-width",
+                                                            "value": {
+                                                                "block-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                                "block-end": { "$$type": "size", "value": { "unit": "px", "size": 1 } },
+                                                                "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                                "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 1 } }
+                                                            }
+                                                        },
+                                                        "transform": {
+                                                            "$$type": "transform",
+                                                            "value": {
+                                                                "transform-functions": {
+                                                                    "$$type": "transform-functions",
+                                                                    "value": [
+                                                                        {
+                                                                            "$$type": "transform-rotate",
+                                                                            "value": {
+                                                                                "x": { "$$type": "size", "value": { "unit": "deg", "size": 0 } },
+                                                                                "y": { "$$type": "size", "value": { "unit": "deg", "size": 0 } },
+                                                                                "z": { "$$type": "size", "value": { "unit": "deg", "size": -45 } }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "opacity": { "$$type": "size", "value": { "unit": "%", "size": 0 } },
+                                                        "transition": {
+                                                            "$$type": "transition",
+                                                            "value": [
+                                                                {
+                                                                    "$$type": "selection-size",
+                                                                    "value": {
+                                                                        "selection": {
+                                                                            "$$type": "key-value",
+                                                                            "value": {
+                                                                                "key": { "$$type": "string", "value": "All properties" },
+                                                                                "value": { "$$type": "string", "value": "all" }
+                                                                            }
+                                                                        },
+                                                                        "size": { "$$type": "size", "value": { "size": 300, "unit": "ms" } }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "custom_css": null
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "interactions": [],
+                                    "editor_settings": { "title": "Arrow Tip" },
+                                    "version": "0.0"
+                                }
+                            ],
+                            "isInner": false,
+                            "elType": "e-div-block",
+                            "styles": {
+                                "e-e850c9a4-3f6c8a1": {
+                                    "id": "e-e850c9a4-3f6c8a1",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": { "breakpoint": "desktop", "state": null },
+                                            "props": {
+                                                "position": { "$$type": "string", "value": "relative" },
+                                                "width": { "$$type": "size", "value": { "unit": "px", "size": 50 } },
+                                                "height": { "$$type": "size", "value": { "unit": "px", "size": 1 } },
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "color": { "$$type": "color", "value": "#ffffff" }
+                                                    }
+                                                }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": { "title": "Arrow Line" },
+                            "version": "0.0"
+                        }
+                    ],
+                    "isInner": false,
+                    "elType": "e-aae-a-btn-pro",
+                    "styles": {
+                        "e-b6d09f27-6c1a4e9": {
+                            "id": "e-b6d09f27-6c1a4e9",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": { "breakpoint": "desktop", "state": null },
+                                    "props": {
+                                        "position": { "$$type": "string", "value": "relative" },
+                                        "overflow": { "$$type": "string", "value": "hidden" },
+                                        "z-index": { "$$type": "number", "value": 1 },
+                                        "background": {
+                                            "$$type": "background",
+                                            "value": {
+                                                "color": { "$$type": "color", "value": "#121212" }
+                                            }
+                                        },
+                                        "color": { "$$type": "color", "value": "#ffffff" },
+                                        "padding": {
+                                            "$$type": "dimensions",
+                                            "value": {
+                                                "block-start": { "$$type": "size", "value": { "unit": "px", "size": 18 } },
+                                                "block-end": { "$$type": "size", "value": { "unit": "px", "size": 18 } },
+                                                "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 42 } },
+                                                "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 42 } }
+                                            }
+                                        },
+                                        "border-radius": { "$$type": "size", "value": { "unit": "px", "size": 5 } },
+                                        "border-width": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                        "gap": { "$$type": "size", "value": { "unit": "px", "size": 10 } }
+                                    },
+                                    "custom_css": null
+                                }
+                            ]
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": { "title": "button-pro-ripple-gsap" },
+                    "version": "0.0"
+                }
+            ],
+            "isInner": false,
+            "elType": "e-flexbox",
+            "styles": {
+                "e-a71c4e08-2d8f1b3": {
+                    "id": "e-a71c4e08-2d8f1b3",
+                    "label": "local",
+                    "type": "class",
+                    "variants": [
+                        {
+                            "meta": { "breakpoint": "desktop", "state": null },
+                            "props": {
+                                "justify-content": { "$$type": "string", "value": "flex-start" }
+                            },
+                            "custom_css": null
+                        }
+                    ]
+                }
+            },
+            "interactions": [],
+            "editor_settings": [],
+            "version": "0.0"
+        }
+    ],
+    "page_settings": [],
+    "version": "0.4",
+    "title": "Button Pro - Ripple (GSAP)",
+    "type": "e-flexbox"
+}
