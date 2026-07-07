@@ -53,7 +53,7 @@ class AAE_A_Button_Pro extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Button Pro', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Button Pro - New', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {

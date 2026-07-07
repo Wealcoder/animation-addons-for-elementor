@@ -53,3 +53,6 @@
 .aae-btn-ellipse:hover .aae-btn-polygon-effect {
   z-index: 0;
 }
+.aae-btn-polygon .aae-btn-polygon-effect {
+  transition: width 700ms ease, height 700ms ease, left 300ms ease, top 300ms ease;
+}

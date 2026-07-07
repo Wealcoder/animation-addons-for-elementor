@@ -1,0 +1,163 @@
+{
+    "content": [
+        {
+            "id": "b3f21a09",
+            "settings": {
+                "classes": {
+                    "$$type": "classes",
+                    "value": ["e-b3f21a09-7a2c4e1"]
+                }
+            },
+            "elements": [
+                {
+                    "id": "c47e9d12",
+                    "settings": {
+                        "classes": {
+                            "$$type": "classes",
+                            "value": []
+                        },
+                        "btn_pro_style": {
+                            "$$type": "string",
+                            "value": "5"
+                        },
+                        "btn_pro_url": {
+                            "$$type": "string",
+                            "value": "#"
+                        },
+                        "btn_pro_target": {
+                            "$$type": "string",
+                            "value": "_self"
+                        },
+                        "btn_pro_nofollow": {
+                            "$$type": "boolean",
+                            "value": false
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "d582b6e4",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": ["e-d582b6e4-9f3c1a2"]
+                                },
+                                "paragraph": {
+                                    "$$type": "html-v3",
+                                    "value": {
+                                        "content": {
+                                            "$$type": "string",
+                                            "value": "Explore Now"
+                                        },
+                                        "children": []
+                                    }
+                                },
+                                "tag": {
+                                    "$$type": "string",
+                                    "value": "span"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-paragraph",
+                            "elType": "widget",
+                            "styles": {
+                                "e-d582b6e4-9f3c1a2": {
+                                    "id": "e-d582b6e4-9f3c1a2",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": { "breakpoint": "desktop", "state": null },
+                                            "props": {
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "color": { "$$type": "color", "value": "#0A1A3D" }
+                                                    }
+                                                },
+                                                "color": { "$$type": "color", "value": "#ffffff" }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": { "title": "Label" },
+                            "version": "0.0"
+                        },
+                        {
+                            "id": "f193c7a8",
+                            "settings": {
+                                "classes": {
+                                    "$$type": "classes",
+                                    "value": ["e-f193c7a8-4b7e2d6"]
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "e-svg",
+                            "elType": "widget",
+                            "styles": {
+                                "e-f193c7a8-4b7e2d6": {
+                                    "id": "e-f193c7a8-4b7e2d6",
+                                    "label": "local",
+                                    "type": "class",
+                                    "variants": [
+                                        {
+                                            "meta": { "breakpoint": "desktop", "state": null },
+                                            "props": {
+                                                "background": {
+                                                    "$$type": "background",
+                                                    "value": {
+                                                        "color": { "$$type": "color", "value": "#0A1A3D" }
+                                                    }
+                                                },
+                                                "color": { "$$type": "color", "value": "#ffffff" }
+                                            },
+                                            "custom_css": null
+                                        }
+                                    ]
+                                }
+                            },
+                            "interactions": [],
+                            "editor_settings": { "title": "Icon" },
+                            "version": "0.0"
+                        }
+                    ],
+                    "isInner": false,
+                    "elType": "e-aae-a-button-pro",
+                    "styles": [],
+                    "interactions": [],
+                    "editor_settings": { "title": "button-pro-group-swap-l" },
+                    "version": "0.0"
+                }
+            ],
+            "isInner": false,
+            "elType": "e-flexbox",
+            "styles": {
+                "e-b3f21a09-7a2c4e1": {
+                    "id": "e-b3f21a09-7a2c4e1",
+                    "label": "local",
+                    "type": "class",
+                    "variants": [
+                        {
+                            "meta": { "breakpoint": "desktop", "state": null },
+                            "props": {
+                                "justify-content": { "$$type": "string", "value": "flex-start" }
+                            },
+                            "custom_css": null
+                        }
+                    ]
+                }
+            },
+            "interactions": [],
+            "editor_settings": [],
+            "version": "0.0"
+        }
+    ],
+    "page_settings": [],
+    "version": "0.4",
+    "title": "Button Pro - Group Swap L",
+    "type": "e-flexbox"
+}

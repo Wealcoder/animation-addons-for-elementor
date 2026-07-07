@@ -13,6 +13,9 @@ import '../scss/global-preset-free.scss';
 // ==================================================================================
 
 (function () {
+
+  return null;
+
   function getRippleSpan(btn) {
     return btn.querySelector(".ripple-btn-span");
   }
