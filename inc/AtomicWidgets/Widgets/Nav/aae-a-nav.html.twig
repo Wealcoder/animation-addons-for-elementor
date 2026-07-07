@@ -1,6 +1,9 @@
 {% set classes = ['aae-a-nav', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
 
-<ul role="navigation" class="{{ classes }} {{ editor_classes | default('') }}"
+{# <div> (not <ul>): items are <div> too, so <ul>/<li> semantics don't apply.
+   Using <div> avoids the browser's <li> auto-close mangling deep nested menus.
+   role="menubar" keeps the a11y semantics. #}
+<div role="menubar" class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
@@ -14,4 +17,4 @@
     {{ editor_attributes | default('') | raw }}>
 
     {{ children_placeholder | raw }}
-</ul>
+</div>
