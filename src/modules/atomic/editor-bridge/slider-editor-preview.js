@@ -180,11 +180,12 @@ function ensurePreviewSlides( win, slider ) {
 	// configured slidesPerView so a 4-up (or higher) slider gets enough slides.
 	const cloneCount = Math.max( 0, desiredSlideCount( win, slider ) - 1 );
 
-	const existingClones = track.querySelectorAll( '.' + PREVIEW_CLASS ).length;
-	if ( existingClones === cloneCount ) {
-		return false; // already the right number — nothing to do
-	}
-
+	// Always rebuild: drop any existing clones and re-clone the authored slide
+	// from scratch on every re-render. This is the bulletproof path — when the
+	// user adds/removes/edits a child element (e.g. a Post Date button), the
+	// clones must mirror the CURRENT markup, and re-cloning guarantees that
+	// without any structural-diff bookkeeping. scan() is debounced (200ms) and
+	// skips mutations caused only by our own clones, so this doesn't loop.
 	clearClones( track );
 	const source = real[ 0 ];
 	const clones = [];
