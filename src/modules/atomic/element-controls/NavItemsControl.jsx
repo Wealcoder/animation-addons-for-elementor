@@ -23,6 +23,7 @@ import {
 	getContainer,
 	moveElements,
 	removeElements,
+	selectElement,
 	updateElementEditorSettings,
 	updateElementSettings,
 } from '@elementor/editor-elements';
@@ -71,6 +72,24 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		return;
 	}
 
+	const revealDropdown = ( item, open ) => {
+		const dropdown = item?.querySelector?.(
+			':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
+		);
+		item?.classList.toggle( 'aae-editor-dropdown-open', open );
+		if ( ! dropdown ) return;
+		if ( open ) {
+			dropdown.classList.add( DROPDOWN_CLASS );
+			dropdown.style.visibility = 'visible';
+			dropdown.style.opacity = '1';
+			dropdown.style.pointerEvents = 'auto';
+		} else {
+			dropdown.style.removeProperty( 'visibility' );
+			dropdown.style.removeProperty( 'opacity' );
+			dropdown.style.removeProperty( 'pointer-events' );
+		}
+	};
+
 	const currentlyOpen = nav.querySelector(
 		':scope > .aae-a-nav-item.aae-editor-dropdown-open'
 	);
@@ -80,11 +99,13 @@ function syncEditorDropdownPreview( navId, itemId ) {
 	}
 
 	if ( currentlyOpen ) {
-		currentlyOpen.classList.remove( 'aae-editor-dropdown-open' );
+		revealDropdown( currentlyOpen, false );
 	}
 	if ( itemId ) {
-		nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` )
-			?.classList.add( 'aae-editor-dropdown-open' );
+		revealDropdown(
+			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` ),
+			true
+		);
 	}
 }
 
@@ -94,11 +115,29 @@ function syncEditorNestedPreview( itemId, open ) {
 	if ( ! item ) return;
 
 	item.classList.toggle( 'aae-editor-dropdown-open', open );
+	const dropdown = item.querySelector(
+		':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
+	);
+	if ( dropdown && open ) {
+		dropdown.classList.add( DROPDOWN_CLASS );
+		dropdown.style.visibility = 'visible';
+		dropdown.style.opacity = '1';
+		dropdown.style.pointerEvents = 'auto';
+	}
 	if ( ! open ) return;
 
 	let ancestor = item.parentElement?.closest( '.aae-a-nav-item' );
 	while ( ancestor ) {
 		ancestor.classList.add( 'aae-editor-dropdown-open' );
+		const ancestorDropdown = ancestor.querySelector(
+			':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
+		);
+		if ( ancestorDropdown ) {
+			ancestorDropdown.classList.add( DROPDOWN_CLASS );
+			ancestorDropdown.style.visibility = 'visible';
+			ancestorDropdown.style.opacity = '1';
+			ancestorDropdown.style.pointerEvents = 'auto';
+		}
 		ancestor = ancestor.parentElement?.closest( '.aae-a-nav-item' );
 	}
 }
@@ -116,7 +155,6 @@ function syncEditorDropdownPreviewAfterRender( navId, itemId ) {
 function buildNavItemModel( position ) {
 	return {
 		elType: NAV_ITEM_TYPE,
-		isLocked: true,
 		editor_settings: { title: `Menu Item ${ position }` },
 		settings: {
 			text: prop( 'html-v3', {
@@ -164,6 +202,62 @@ function findFirstChildOfType( container, type ) {
 		}
 	} );
 	return found;
+}
+
+function getElementId( container ) {
+	return container?.id || container?.model?.get?.( 'id' ) || container?.model?.id || null;
+}
+
+function findDropdownContainer( itemId ) {
+	const item = getContainer( itemId );
+	if ( ! item ) return null;
+
+	let dropdown = findFirstChildOfType( item, 'e-flexbox' );
+	if ( dropdown ) return dropdown;
+
+	item.model?.get?.( 'elements' )?.each?.( model => {
+		if ( dropdown ) return;
+		const child = getContainer( model.get( 'id' ) );
+		if ( hasElementClass( child, DROPDOWN_CLASS ) ) {
+			dropdown = child;
+		}
+	} );
+
+	return dropdown;
+}
+
+function selectDropdownContainer( itemId ) {
+	const dropdown = normalizeDropdownModel( itemId ) || findDropdownContainer( itemId );
+	const dropdownId = getElementId( dropdown );
+	if ( ! dropdownId ) return;
+
+	syncEditorNestedPreview( itemId, true );
+
+	try {
+		selectElement( dropdownId );
+	} catch ( error ) {
+		/* The package helper occasionally races during v4 panel re-render.
+		 * Fall through to Elementor's lower-level command. */
+	}
+
+	const container = getContainer( dropdownId );
+	if ( container ) {
+		try {
+			window.$e?.run?.( 'document/elements/select', {
+				container: typeof container.lookup === 'function' ? container.lookup() : container,
+				append: false,
+			} );
+		} catch ( error ) {
+			/* best effort */
+		}
+	}
+
+	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
+	const node = previewDocument?.querySelector( `[data-id="${ dropdownId }"]` );
+	if ( node ) {
+		node.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true } ) );
+		node.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true } ) );
+	}
 }
 
 function markDropdownFlexbox( flexbox ) {
@@ -299,8 +393,11 @@ function useNavItems( navId ) {
 				if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
 					return;
 				}
-				if ( model.get( 'isLocked' ) !== true ) {
-					model.set( 'isLocked', true, { silent: true } );
+				/* A locked nav-item also locks its dropdown Flexbox in Elementor,
+				 * preventing both Structure selection and Style-tab editing. Older
+				 * documents were saved locked, so normalize them to editable here. */
+				if ( model.get( 'isLocked' ) === true ) {
+					model.set( 'isLocked', false, { silent: true } );
 				}
 				const id = model.get( 'id' );
 				const editorSettings = model.get( 'editor_settings' ) || {};
@@ -452,6 +549,7 @@ const MOBILE_ICON_MAP = [
 	{ prop: 'mobile_hamburger_icon', className: 'aae-mobile-nav-hamburger' },
 	{ prop: 'mobile_close_icon',     className: 'aae-mobile-nav-close-icon' },
 	{ prop: 'mobile_dropdown_icon',  className: 'aae-mobile-nav-arrow-template' },
+	{ prop: 'mobile_back_icon',      className: 'aae-mobile-nav-back-icon' },
 ];
 
 function syncCompanionIcons( nav, companion ) {
@@ -620,6 +718,8 @@ export function MobileNavLifecycleControl() {
 	if ( ! mobileSettings?.enabled ) return null;
 	const complete = companion &&
 		hasDescendantClass( companion, 'aae-mobile-nav-header' ) &&
+		hasDescendantClass( companion, 'aae-mobile-nav-back' ) &&
+		hasDescendantClass( companion, 'aae-mobile-nav-back-icon' ) &&
 		hasDescendantClass( companion, 'aae-mobile-nav-menu-area' ) &&
 		hasDescendantClass( companion, 'aae-mobile-nav-footer' );
 	if ( companion && complete ) return null;
@@ -639,7 +739,7 @@ export function MobileNavLifecycleControl() {
 
 	return (
 		<Button size="tiny" variant="outlined" onClick={ rebuildMobileStructure } fullWidth>
-			{ companion ? 'Rebuild Atomic Mobile Structure' : 'Create Mobile Structure' }
+			{ companion ? 'Upgrade Mobile Menu (adds SVG Back Icon)' : 'Create Mobile Structure' }
 		</Button>
 	);
 }
@@ -1234,6 +1334,16 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 		} );
 	};
 
+	const editDropdownStyle = () => {
+		/* normalizeDropdownModel can dispatch settings/move commands that replace
+		 * the editing-panel tree without throwing. Re-select across that short
+		 * render window so the user always lands on the actual Flexbox Style tab. */
+		[ 0, 80, 200, 400, 800 ].forEach( delay => window.setTimeout(
+			() => selectDropdownContainer( elementId ),
+			delay
+		) );
+	};
+
 	return (
 		<Stack gap={ 1.5 }>
 			<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
@@ -1263,6 +1373,12 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			</Stack>
 			{ dropdownEnabled && (
 				<>
+					<Button size="tiny" variant="outlined" onClick={ editDropdownStyle } fullWidth>
+						{ 'Edit dropdown style' }
+					</Button>
+					<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+						{ 'Selects this item’s dropdown container. Use its Style tab for background, width, padding and layout.' }
+					</Typography>
 					<Typography variant="caption">{ 'Trigger' }</Typography>
 					<Select
 						size="tiny"
