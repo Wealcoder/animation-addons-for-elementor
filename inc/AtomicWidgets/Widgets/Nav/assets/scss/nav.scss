@@ -12,9 +12,8 @@
 	overflow: visible !important;
 }
 
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > [data-aae-dropdown-for] {
 	position: absolute;
 	inset-block-start: 100%;
 	inset-inline-start: 0;
@@ -27,9 +26,8 @@
 }
 
 /* Show when frontend runtime toggles .is-open. */
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .e-con:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .aae-a-nav-dropdown {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > .aae-a-nav-dropdown,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].is-open > [data-aae-dropdown-for] {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -37,9 +35,8 @@
 }
 
 /* Nested sub-dropdown opens to the right. */
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > [data-aae-dropdown-for] {
 	inset-block-start: 0;
 	inset-inline-start: 100%;
 }
@@ -60,14 +57,14 @@
  * sub-items stack instead of sitting in a row (nav-items are flex:0 0 auto).
  * Scoped with `:has(> .aae-a-nav-item)` so a PURE mega-menu flexbox (columns /
  * images, no nested items) keeps the direction the user set in the Style tab. */
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:has( > .aae-a-nav-item ),
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:has( > .aae-a-nav-item ) {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown:has( > .aae-a-nav-item ),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > [data-aae-dropdown-for]:has( > .aae-a-nav-item ) {
 	flex-direction: column !important;
 	flex-wrap: nowrap !important;
 	align-items: stretch !important;
 }
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:has( > .aae-a-nav-item ) > .aae-a-nav-item,
-.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:has( > .aae-a-nav-item ) > .aae-a-nav-item {
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown:has( > .aae-a-nav-item ) > .aae-a-nav-item,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > [data-aae-dropdown-for]:has( > .aae-a-nav-item ) > .aae-a-nav-item {
 	width: 100% !important;
 	flex: 0 0 auto !important;
 }
@@ -145,39 +142,44 @@
 /* Core empty Flexboxes default to width:100%, which makes a newly enabled
  * dropdown look like a page-wide section. Keep only the empty authoring state
  * compact; authored width/background takes over as soon as content is added. */
-.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view) {
-	width: 240px !important;
-	min-width: 200px !important;
-	min-height: 120px !important;
+.elementor-edit-mode .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view),
+.elementor-edit-mode .aae-a-nav [data-aae-dropdown-for]:has(.elementor-empty-view),
+.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view),
+.elementor-editor-active .aae-a-nav [data-aae-dropdown-for]:has(.elementor-empty-view) {
+	width: 240px;
+	min-width: 200px;
+	min-height: 120px;
 }
 
-.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view {
+.elementor-edit-mode .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view,
+.elementor-edit-mode .aae-a-nav [data-aae-dropdown-for] .elementor-empty-view,
+.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view,
+.elementor-editor-active .aae-a-nav [data-aae-dropdown-for] .elementor-empty-view {
 	background: transparent !important;
 }
 
-.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-dropdown,
-.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > [data-aae-dropdown-for],
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-dropdown,
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > [data-aae-dropdown-for],
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-dropdown,
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > [data-aae-dropdown-for],
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .aae-a-nav-dropdown,
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > [data-aae-dropdown-for],
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .aae-a-nav-dropdown,
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > [data-aae-dropdown-for] {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
 }
 
 /* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
-.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-dropdown,
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > [data-aae-dropdown-for],
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .aae-a-nav-dropdown,
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > [data-aae-dropdown-for],
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .aae-a-nav-dropdown,
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > [data-aae-dropdown-for] {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -457,6 +459,25 @@ body.aae-mobile-nav-scroll-lock {
 	overflow: hidden;
 }
 
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer,
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-menu-area,
+.aae-a-nav.aae-nav-mobile-mounted,
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel,
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-dropdown {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer::-webkit-scrollbar,
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-menu-area::-webkit-scrollbar,
+.aae-a-nav.aae-nav-mobile-mounted::-webkit-scrollbar,
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel::-webkit-scrollbar,
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-dropdown::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0;
+}
+
 .aae-a-nav.aae-nav-mobile-mounted {
 	display: flex !important;
 	flex-direction: column !important;
@@ -466,10 +487,11 @@ body.aae-mobile-nav-scroll-lock {
 	max-width: 100%;
 	gap: 0 !important;
 	position: relative !important;
-	height: 100%;
+	height: auto !important;
+	block-size: auto !important;
 	min-height: 0;
 	overflow-x: hidden !important;
-	overflow-y: hidden !important;
+	overflow-y: visible !important;
 
 	/* A styled dropdown can carry its own margin/padding. Fully remove closed
 	 * panels from grid layout so those authored styles cannot leave a gap. */
@@ -536,8 +558,9 @@ body.aae-mobile-nav-scroll-lock {
 		display: block !important;
 		box-sizing: border-box;
 		width: 100% !important;
-		height: 100% !important;
-		overflow-y: auto !important;
+		height: auto !important;
+		min-height: 0 !important;
+		overflow-y: visible !important;
 		overflow-x: hidden !important;
 		visibility: hidden !important;
 		opacity: 0 !important;
@@ -552,6 +575,8 @@ body.aae-mobile-nav-scroll-lock {
 	}
 
 	.aae-mobile-drill-panel.is-active {
+		position: relative !important;
+		inset: auto !important;
 		transform: translateX(0);
 		visibility: visible !important;
 		opacity: 1 !important;
@@ -569,9 +594,14 @@ body.aae-mobile-nav-scroll-lock {
 		max-width: 100% !important;
 		max-inline-size: 100% !important;
 		height: auto !important;
+		block-size: auto !important;
 		min-height: 0 !important;
+		min-block-size: 0 !important;
+		max-height: none !important;
+		max-block-size: none !important;
 		box-sizing: border-box !important;
 		overflow-x: hidden !important;
+		overflow-y: visible !important;
 		visibility: visible !important;
 		opacity: 1 !important;
 		pointer-events: auto !important;
@@ -590,8 +620,7 @@ body.aae-mobile-nav-scroll-lock {
 	}
 
 	&[data-drill-depth]:not([data-drill-depth="0"]) > .aae-a-nav-item {
-		visibility: hidden;
-		pointer-events: none;
+		display: none !important;
 	}
 
 	/* Legacy mobile accordion rules retained for backwards compatibility with

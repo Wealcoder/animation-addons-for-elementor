@@ -60,6 +60,8 @@ function getSub( item ) {
  * rendered DOM defensively. The editor control performs the same repair in the
  * saved model; this fallback also fixes already-published pages immediately. */
 function normalizeRenderedDropdowns( nav ) {
+	const canRepairDom = ! isEditor();
+
 	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 		let sub = getSub( item );
 		const stray = [ ...item.children ].filter( child =>
@@ -68,7 +70,7 @@ function normalizeRenderedDropdowns( nav ) {
 			child !== sub
 		);
 
-		if ( ! sub && stray.length ) {
+		if ( canRepairDom && ! sub && stray.length ) {
 			sub = document.createElement( 'div' );
 			sub.className = 'aae-a-nav-dropdown aae-a-nav-runtime-dropdown';
 			item.appendChild( sub );
@@ -76,8 +78,53 @@ function normalizeRenderedDropdowns( nav ) {
 		if ( ! sub ) return;
 
 		sub.classList.add( 'aae-a-nav-dropdown' );
-		stray.forEach( child => sub.appendChild( child ) );
+		if ( canRepairDom ) {
+			stray.forEach( child => sub.appendChild( child ) );
+		}
 	} );
+}
+
+function getEditorDropdownChain( item ) {
+	const chain = new Set();
+	let current = item;
+	while ( current ) {
+		chain.add( current );
+		current = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	}
+	return chain;
+}
+
+function hideEditorDropdown( item ) {
+	item.classList.remove( 'aae-editor-dropdown-open' );
+	const sub = getSub( item );
+	if ( ! sub ) return;
+	sub.style.removeProperty( 'visibility' );
+	sub.style.removeProperty( 'opacity' );
+	sub.style.removeProperty( 'pointer-events' );
+}
+
+function closeInactiveEditorDropdowns( nav, activeItem = null ) {
+	const activeChain = activeItem ? getEditorDropdownChain( activeItem ) : new Set();
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open' ).forEach( item => {
+		if ( ! activeChain.has( item ) ) {
+			hideEditorDropdown( item );
+		}
+	} );
+}
+
+function getDirectDropdownOwner( dropdown ) {
+	if ( ! dropdown?.classList ) return null;
+	const owner = dropdown.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	if ( ! owner || getSub( owner ) !== dropdown ) return null;
+	if (
+		dropdown.classList.contains( 'aae-a-nav-dropdown' ) ||
+		dropdown.classList.contains( 'e-flexbox-base' ) ||
+		dropdown.classList.contains( 'e-con' ) ||
+		dropdown.hasAttribute( 'data-aae-dropdown-for' )
+	) {
+		return owner;
+	}
+	return null;
 }
 
 function openEditorDropdownChain( item ) {
@@ -87,6 +134,7 @@ function openEditorDropdownChain( item ) {
 		const sub = getSub( current );
 		if ( sub ) {
 			sub.classList.add( 'aae-a-nav-dropdown' );
+			sub.setAttribute( 'data-aae-dropdown-for', current.getAttribute( 'data-id' ) || '' );
 			sub.style.visibility = 'visible';
 			sub.style.opacity = '1';
 			sub.style.pointerEvents = 'auto';
@@ -94,6 +142,29 @@ function openEditorDropdownChain( item ) {
 		const parentItem = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		current = parentItem;
 	}
+}
+
+function getActiveEditorDropdownItem( nav ) {
+	const selected = nav.querySelector( '.elementor-element-selected' );
+	const selectedDropdownOwner = getDirectDropdownOwner( selected );
+	if ( selectedDropdownOwner ) {
+		return selectedDropdownOwner;
+	}
+
+	const selectedItem = selected?.closest?.( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	if ( selectedItem && nav.contains( selectedItem ) ) {
+		return selectedItem;
+	}
+
+	let activeItem = null;
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+		const itemSelected = item.classList.contains( 'elementor-element-selected' );
+
+		if ( itemSelected ) {
+			activeItem = item;
+		}
+	} );
+	return activeItem;
 }
 
 function selectEditorElementById( id ) {
@@ -129,11 +200,13 @@ function initEditorDropdownUX( nav ) {
 				sub.classList.add( 'aae-a-nav-dropdown' );
 				sub.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 			}
-			if ( item.classList.contains( 'elementor-element-selected' ) ||
-				item.querySelector( '.elementor-element-selected' ) ) {
-				openEditorDropdownChain( item );
-			}
 		} );
+
+		const activeItem = getActiveEditorDropdownItem( nav );
+		if ( activeItem ) {
+			closeInactiveEditorDropdowns( nav, activeItem );
+			openEditorDropdownChain( activeItem );
+		}
 	};
 
 	let raf = null;
@@ -146,22 +219,31 @@ function initEditorDropdownUX( nav ) {
 	};
 
 	nav.addEventListener( 'pointerdown', e => {
-		const dropdown = e.target.closest( '.aae-a-nav-dropdown' );
-		if ( ! dropdown || ! nav.contains( dropdown ) ) return;
-		const owner = dropdown.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-		if ( owner ) openEditorDropdownChain( owner );
+		const owner = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( ! owner || ! nav.contains( owner ) ) return;
+		const dropdown = getSub( owner );
+		if ( ! dropdown || ( ! dropdown.contains( e.target ) && e.target !== dropdown ) ) return;
+		dropdown.classList.add( 'aae-a-nav-dropdown' );
+		dropdown.setAttribute( 'data-aae-dropdown-for', owner.getAttribute( 'data-id' ) || '' );
+		if ( owner ) {
+			closeInactiveEditorDropdowns( nav, owner );
+			openEditorDropdownChain( owner );
+		}
 		selectEditorElementById( dropdown.getAttribute( 'data-id' ) );
 	}, { capture: true, signal: sig } );
 
 	nav.addEventListener( 'click', e => {
 		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( ! item || ! nav.contains( item ) ) return;
+		closeInactiveEditorDropdowns( nav, item );
 		openEditorDropdownChain( item );
 	}, { capture: true, signal: sig } );
 
 	const observer = new MutationObserver( schedule );
 	observer.observe( nav, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'data-has-dropdown' ] } );
 	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
+	const interval = window.setInterval( schedule, 1500 );
+	sig.addEventListener( 'abort', () => window.clearInterval( interval ), { once: true } );
 	sync();
 }
 
@@ -414,7 +496,6 @@ function initEditorMobilePreview( companion ) {
 			const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 			const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
 			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
-			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
 			if ( ! drawer ) return;
 
 			/* Orphaned companion (its source Nav was deleted but this sibling
@@ -427,13 +508,16 @@ function initEditorMobilePreview( companion ) {
 				return;
 			}
 
-			menuArea?.querySelector( ':scope > .aae-mobile-editor-clone' )?.remove();
-			drawer.querySelector( ':scope > .aae-mobile-editor-close' )?.remove();
 			companion.classList.toggle( 'is-mobile', mobile );
 			companion.classList.toggle(
 				'is-open',
 				mobile && companion.dataset.editorPreviewClosed !== 'true'
 			);
+			source?.classList.remove( 'aae-nav-editor-mobile-hidden' );
+			editorClone = null;
+			editorDrillStack = [];
+			const shouldRenderEditorClone = false;
+			if ( ! shouldRenderEditorClone ) return;
 			/* Match the frontend: below the breakpoint the desktop Nav belongs in
 			 * the drawer, not the header. The frontend MOVES it there; in the
 			 * editor we keep the model stable by cloning into the drawer instead,
@@ -512,14 +596,11 @@ function initEditorMobilePreview( companion ) {
 		}
 		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 		const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
-		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
-			companion.querySelector( '.aae-mobile-nav-drawer' );
 		const sourceId = companion.dataset.sourceNavId;
 		const currentSource = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
 		const replacedSource = currentSource !== observedSource;
 		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
-		const missingPreview = mobile && menuArea &&
-			! menuArea.querySelector( ':scope > .aae-mobile-editor-clone' );
+		const missingPreview = false;
 		if ( staleMode || missingPreview || replacedSource ) render();
 	}, 250 );
 	sig.addEventListener( 'abort', () => {
@@ -532,11 +613,7 @@ function initEditorMobilePreview( companion ) {
 	const previewObserver = new MutationObserver( () => {
 		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 		if ( ! isEditorMobileMode( breakpoint ) || companion.dataset.enabled !== 'true' ) return;
-		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
-			companion.querySelector( '.aae-mobile-nav-drawer' );
-		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
-			render();
-		}
+		render();
 	} );
 	previewObserver.observe( companion, { childList: true, subtree: true } );
 	sig.addEventListener( 'abort', () => previewObserver.disconnect(), { once: true } );
