@@ -1,5 +1,7 @@
 .aae-a-nav {
 	position: relative !important;
+	min-height: unset !important;
+	overflow: visible !important;
 }
 
 .aae-a-nav .aae-a-nav-item {
@@ -7,6 +9,7 @@
 	list-style: none;
 	width: auto;
 	flex: 0 0 auto;
+	overflow: visible !important;
 }
 
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
@@ -96,7 +99,6 @@
 }
 
 .aae-a-nav {
-	min-height: unset !important; /* override Elementor's atomic .e-con default */
 	/* grow-down */
 	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-open > *:not(.aae-a-nav-item-label) {
 		animation: aae-nav-grow-down 300ms ease-in-out forwards;
@@ -140,6 +142,22 @@
 	display: none;
 }
 
+/* Core empty Flexboxes default to width:100%, which makes a newly enabled
+ * dropdown look like a page-wide section. Keep only the empty authoring state
+ * compact; authored width/background takes over as soon as content is added. */
+.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view) {
+	width: 240px !important;
+	min-width: 200px !important;
+	min-height: 120px !important;
+}
+
+.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view {
+	background: transparent !important;
+}
+
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .aae-a-nav-dropdown,
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
@@ -154,6 +172,8 @@
 }
 
 /* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
@@ -246,7 +266,22 @@
 		inset: auto !important;
 		align-self: flex-end;
 		display: inline-flex !important;
+		width: auto !important;
+		flex: 0 0 auto !important;
 		cursor: pointer;
+	}
+
+	.aae-mobile-nav-back {
+		display: none !important;
+		width: auto !important;
+		flex: 0 0 auto !important;
+		align-items: center;
+		justify-content: flex-start;
+		cursor: pointer;
+	}
+
+	.aae-mobile-nav-back.is-visible {
+		display: inline-flex !important;
 	}
 
 	.aae-mobile-nav-arrow-template {
@@ -289,15 +324,46 @@
 	justify-content: flex-start !important;
 	align-items: stretch !important;
 	gap: 20px;
+	max-width: 100vw;
+	overflow-x: hidden;
 }
 
 :where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-header) {
 	width: 100%;
 	display: flex;
-	justify-content: flex-end !important;
+	justify-content: space-between !important;
 	align-items: center !important;
 	flex: 0 0 auto !important;
 	min-height: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back) {
+	border: 0;
+	background: transparent;
+	padding: 0;
+	font: inherit;
+	color: inherit;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back-label) {
+	margin: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back-icon) {
+	inline-size: 20px;
+	block-size: 20px;
+	pointer-events: none;
+}
+
+/* Keep the real Atomic Back element available for selection/styling in the
+ * editor. Runtime visibility still becomes exact as soon as a drill level is
+ * opened; the subdued root-state preview signals that it is a template. */
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-back {
+	display: inline-flex !important;
+	opacity: 0.45;
+}
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-back.is-visible {
+	opacity: 1;
 }
 
 :where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-menu-area) {
@@ -309,6 +375,7 @@
 	flex: 1 1 0 !important;
 	min-height: 0;
 	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 :where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-footer) {
@@ -394,8 +461,15 @@ body.aae-mobile-nav-scroll-lock {
 	display: flex !important;
 	flex-direction: column !important;
 	align-items: stretch !important;
+	justify-content: flex-start !important;
 	width: 100%;
+	max-width: 100%;
 	gap: 0 !important;
+	position: relative !important;
+	height: 100%;
+	min-height: 0;
+	overflow-x: hidden !important;
+	overflow-y: hidden !important;
 
 	/* A styled dropdown can carry its own margin/padding. Fully remove closed
 	 * panels from grid layout so those authored styles cannot leave a gap. */
@@ -411,7 +485,17 @@ body.aae-mobile-nav-scroll-lock {
 			"submenu submenu";
 		align-items: center;
 		width: 100%;
+		inline-size: 100% !important;
+		min-inline-size: 0 !important;
+		max-inline-size: 100% !important;
+		height: auto !important;
+		block-size: auto !important;
+		min-height: 0 !important;
+		min-block-size: 0 !important;
+		max-height: none !important;
+		max-block-size: none !important;
 		flex: none;
+		position: static !important;
 	}
 
 	.aae-a-nav-item > .aae-a-nav-item-label {
@@ -439,9 +523,79 @@ body.aae-mobile-nav-scroll-lock {
 	.aae-mobile-submenu-icon {
 		display: block;
 		flex: none;
+		transform: rotate(-90deg);
 		transition: transform 200ms ease;
 	}
 
+	/* Runtime wrapper owns viewport geometry; the authored Atomic dropdown
+	 * remains an independently styleable child and needs only mount resets. */
+	.aae-mobile-drill-panel {
+		position: absolute !important;
+		inset: 0 !important;
+		z-index: 5;
+		display: block !important;
+		box-sizing: border-box;
+		width: 100% !important;
+		height: 100% !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		visibility: hidden !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+		transform: translateX(100%);
+		background: #fff;
+		animation: none !important;
+		transition:
+			transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 180ms ease,
+			visibility 0s linear 280ms !important;
+	}
+
+	.aae-mobile-drill-panel.is-active {
+		transform: translateX(0);
+		visibility: visible !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+		transition-delay: 0s !important;
+	}
+
+	.aae-mobile-drill-panel > .aae-a-nav-dropdown {
+		position: static !important;
+		display: flex !important;
+		width: 100% !important;
+		inline-size: 100% !important;
+		min-width: 0 !important;
+		min-inline-size: 0 !important;
+		max-width: 100% !important;
+		max-inline-size: 100% !important;
+		height: auto !important;
+		min-height: 0 !important;
+		box-sizing: border-box !important;
+		overflow-x: hidden !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+		transform: none !important;
+		animation: none !important;
+	}
+
+	.aae-mobile-drill-panel > .aae-a-nav-dropdown > *,
+	.aae-mobile-drill-panel .aae-a-nav-item,
+	.aae-mobile-drill-panel .e-con,
+	.aae-mobile-drill-panel .e-atomic-element {
+		max-width: 100% !important;
+		max-inline-size: 100% !important;
+		min-width: 0 !important;
+		box-sizing: border-box !important;
+	}
+
+	&[data-drill-depth]:not([data-drill-depth="0"]) > .aae-a-nav-item {
+		visibility: hidden;
+		pointer-events: none;
+	}
+
+	/* Legacy mobile accordion rules retained for backwards compatibility with
+	 * previously rendered markup that does not use drill-panel wrappers. */
 	.aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
 	.aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
 		position: static !important;
@@ -468,13 +622,7 @@ body.aae-mobile-nav-scroll-lock {
 		transform: rotate(180deg);
 	}
 
-	/* ══ Dropdown animations in the mobile drawer (accordion) ══
-	 * Desktop plays the chosen data-dropdown-anim on `.is-open`; mobile opens a
-	 * different state (`.is-mobile-submenu-open`) and the toggle flips the
-	 * `hidden` attribute, so a max-height *transition* is skipped on the
-	 * display:none→flex jump. Keyframe *animations* DO fire on that jump, so we
-	 * replay the same effects here keyed to the mobile open state. GSAP has no
-	 * JS runtime inside the drawer, so it falls back to grow-down. */
+	/* Dropdown animations in the legacy mobile accordion. */
 	.aae-a-nav-item[data-dropdown-anim="gsap"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
 	.aae-a-nav-item[data-dropdown-anim="grow-down"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
 		animation: aae-nav-grow-down 300ms ease-in-out both;
@@ -489,7 +637,6 @@ body.aae-mobile-nav-scroll-lock {
 		animation: aae-nav-grow-out 300ms ease-in-out both;
 		transform-origin: top center;
 	}
-	/* Item-stagger variants animate the dropdown's children. */
 	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
 		animation: aae-nav-slide-item 300ms ease-out both;
 	}
@@ -508,6 +655,7 @@ body.aae-mobile-nav-scroll-lock {
 	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(4) { animation-delay: 180ms; }
 	.aae-a-nav-item[data-dropdown-anim="slide-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5),
 	.aae-a-nav-item[data-dropdown-anim="rotate-items"].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5) { animation-delay: 240ms; }
+
 }
 
 /* Gap remains a normal Elementor grid property. This zero-specificity value
