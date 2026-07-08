@@ -180,6 +180,12 @@ function getDrillSurface( item ) {
 	return sub ? ( mobileDrillSurfaces.get( sub ) || sub ) : null;
 }
 
+function resetScroll( ...nodes ) {
+	nodes.forEach( node => {
+		if ( node ) node.scrollTop = 0;
+	} );
+}
+
 /* Drill panels cannot remain DOM descendants of their parent menu item: hiding
  * a previous level would also hide the current child level. Move every panel
  * beside the root nav items while mobile is mounted, keeping comment anchors
@@ -478,6 +484,7 @@ function initEditorMobilePreview( companion ) {
 				surface.hidden = false;
 				surface.classList.remove( 'is-active' );
 				surface.style.zIndex = String( 5 + editorDrillStack.length );
+				resetScroll( clone, surface, surface.firstElementChild );
 				/* Paint the translated start position before activating so forward
 				 * navigation animates instead of jumping directly to the panel. */
 				void surface.offsetWidth;
@@ -553,6 +560,7 @@ function initEditorMobilePreview( companion ) {
 				current.surface.classList.remove( 'is-active' );
 				current.surface.style.removeProperty( 'z-index' );
 				current.surface.hidden = true;
+				resetScroll( current.surface );
 				current.item.classList.remove( 'is-mobile-submenu-open' );
 				current.button.setAttribute( 'aria-expanded', 'false' );
 			}
@@ -561,8 +569,11 @@ function initEditorMobilePreview( companion ) {
 			const parent = editorDrillStack.at( -1 );
 			if ( parent ) {
 				parent.surface.hidden = false;
+				resetScroll( parent.surface, parent.surface.firstElementChild );
 				void parent.surface.offsetWidth;
 				parent.surface.classList.add( 'is-active' );
+			} else {
+				resetScroll( editorClone, companion.querySelector( '.aae-mobile-nav-menu-area' ), companion.querySelector( '.aae-mobile-nav-drawer' ) );
 			}
 			back?.classList.toggle( 'is-visible', !! parent );
 			setBackLabel( back, parent?.item || null );
@@ -773,6 +784,7 @@ register( {
 			surface.hidden = false;
 			surface.classList.remove( 'is-active' );
 			surface.style.zIndex = String( 5 + drillStack.length );
+			resetScroll( nav, mount, drawer, surface, surface.firstElementChild );
 			void surface.offsetWidth;
 			surface.classList.add( 'is-active' );
 			item.classList.add( 'is-mobile-submenu-open' );
@@ -788,16 +800,24 @@ register( {
 			current.surface.classList.remove( 'is-active' );
 			current.surface.style.removeProperty( 'z-index' );
 			current.surface.hidden = true;
+			current.surface.setAttribute( 'hidden', '' );
+			resetScroll( current.surface );
 			current.item.classList.remove( 'is-mobile-submenu-open' );
 			current.button.setAttribute( 'aria-expanded', 'false' );
 			const previous = drillStack.at( -1 );
 			if ( previous ) {
 				previous.surface.hidden = false;
+				previous.surface.removeAttribute( 'hidden' );
+				resetScroll( previous.surface, previous.surface.firstElementChild );
 				void previous.surface.offsetWidth;
 				previous.surface.classList.add( 'is-active' );
+				previous.item.classList.add( 'is-mobile-submenu-open' );
+				previous.button.setAttribute( 'aria-expanded', 'true' );
+			} else {
+				resetScroll( nav, mount, drawer );
 			}
 			syncDrillState();
-			window.requestAnimationFrame( () => current.button.focus?.() );
+			window.requestAnimationFrame( () => ( previous ? back : close ).focus?.() );
 		};
 
 		const resetDrill = () => {
@@ -903,8 +923,14 @@ register( {
 		};
 		activate( toggle, openDrawer );
 		activate( close, () => closeDrawer() );
-		activate( back, closeDrillPanel );
 		overlay.addEventListener( 'click', () => closeDrawer(), { signal: sig } );
+
+		companion.addEventListener( 'click', e => {
+			if ( ! mounted || ! e.target.closest( '.aae-mobile-nav-back' ) ) return;
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			closeDrillPanel();
+		}, { capture: true, signal: sig } );
 
 		nav.addEventListener( 'click', e => {
 			if ( ! mounted ) return;
