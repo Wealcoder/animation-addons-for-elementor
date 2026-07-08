@@ -2,7 +2,7 @@ import '../scss/global-preset-pro.scss';
 
 // 4  — Ripple (GSAP)
 function rippleGsapSetup(container) {
-  const span = container.querySelector('.aae-btn-ripple-effect_');
+  const span = container.querySelector('.aae-btn-ripple-effect');
   if (!span || typeof gsap === 'undefined') return;
 
   if (container.dataset.aaeRippleBound) return;

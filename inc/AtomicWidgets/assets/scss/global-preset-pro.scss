@@ -66,24 +66,19 @@
 
 
 // ripple button
-.aae-btn-ripple:hover .aae-btn-ripple-effect {
-  width: 500px;
-  height: 500px;
+.aae-btn-ripple .aae-btn-ripple-arrow::after {
+  position: absolute;
+  content: '';
+  top: -5px;
+  right: 30px;
+  border: solid currentcolor;
+  border-width: 0 1px 1px 0;
+  padding: 5px;
+  transform: rotate(-45deg);
+  transition: all 0.3s;
+  opacity: 0;
 }
-
-// .aae-btn-ripple .aae-btn-ripple-arrow::after {
-//   position: absolute;
-//   content: '';
-//   top: -5px;
-//   right: 30px;
-//   border: solid currentcolor;
-//   border-width: 0 1px 1px 0;
-//   padding: 5px;
-//   transform: rotate(-45deg);
-//   transition: all 0.3s;
-//   opacity: 0;
-// }
-// .aae-btn-ripple:hover .aae-btn-ripple-arrow::after {
-//   right: 0;
-//   opacity: 1;
-// }
+.aae-btn-ripple:hover .aae-btn-ripple-arrow::after {
+  right: 0;
+  opacity: 1;
+}
