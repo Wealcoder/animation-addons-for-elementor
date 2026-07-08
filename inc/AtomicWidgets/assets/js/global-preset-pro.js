@@ -1,36 +1,12 @@
-/**
- * AAE Global Preset — Pro button interactions.
- *
- * Build target: ../../../../../assets/atomic/js/global-preset-pro.js
- * Styles live in ../scss/global-preset-pro.scss (extracted by webpack).
- *
- * Covers: Ripple (4), Group Swap L (5), Group Swap R (6), Oval/Circle/Ellipse
- * "polygon" (9/10/11).
- */
-/* global gsap */
 import '../scss/global-preset-pro.scss';
 
-// ==================================================================================
-// =================================== pro button ===================================
-// ==================================================================================
-
 // 4  — Ripple (GSAP)
-// Ported from the ButtonPro widget's own rippleEffect() (see
-// Widgets/ButtonPro/assets/js/button-pro.js), but deliberately CSS-free: the
-// ripple span and arrow tip are real elements whose colors/sizes/transitions
-// are authored entirely via Style-panel props in the preset JSON
-// (z-temp/button-pro-style-4-ripple-gsap.json). This function only tracks the
-// cursor and toggles inline styles — clearing them on mouseleave hands control
-// straight back to whatever the user configured, no `:hover`/`::after` rules
-// or CSS custom properties required here.
 function rippleGsapSetup(container) {
-  const span = container.querySelector('.aae-btn-ripple-span');
+  const span = container.querySelector('.aae-btn-ripple-effect_');
   if (!span || typeof gsap === 'undefined') return;
 
   if (container.dataset.aaeRippleBound) return;
   container.dataset.aaeRippleBound = '1';
-
-  const tip = container.querySelector('.aae-btn-ripple-arrow-tip');
 
   const xTo = gsap.quickTo(span, 'left', { duration: 0.3, ease: 'power2.out' });
   const yTo = gsap.quickTo(span, 'top', { duration: 0.3, ease: 'power2.out' });
@@ -58,23 +34,14 @@ function rippleGsapSetup(container) {
     span.style.height = size;
     xTo(x);
     yTo(y);
-
-    if (tip) {
-      tip.style.opacity = '1';
-      tip.style.insetInlineEnd = '0px';
-    }
   };
 
   const onLeave = (e) => {
     // Empty string clears the inline override, so the element falls back to
-    // whatever width/height/opacity/offset the preset's own style declares —
-    // the transition configured there still animates the change.
+    // whatever width/height the preset's own style declares — the
+    // transition configured there still animates the change.
     span.style.width = '';
     span.style.height = '';
-    if (tip) {
-      tip.style.opacity = '';
-      tip.style.insetInlineEnd = '';
-    }
     track(e);
   };
 
@@ -182,16 +149,16 @@ function initProButtonEffects() {
   document.querySelectorAll('.aae-btn-polygon').forEach(polygonMagneticSetup);
 }
 
-// // Run once for whatever is already in the DOM…
-// initProButtonEffects();
+// Run once for whatever is already in the DOM…
+initProButtonEffects();
 
-// // …and again whenever the DOM changes. Elementor's editor preview mounts atomic
-// // widgets asynchronously (they may not exist yet on first run above), and can also
-// // replace a widget's markup on selection/setting changes, wiping our injected clone.
-// // Disconnect while we mutate so this observer doesn't react to its own changes.
-// const proButtonObserver = new MutationObserver(() => {
-//   proButtonObserver.disconnect();
-//   initProButtonEffects();
-//   proButtonObserver.observe(document.body, { childList: true, subtree: true });
-// });
-// proButtonObserver.observe(document.body, { childList: true, subtree: true });
+// …and again whenever the DOM changes. Elementor's editor preview mounts atomic
+// widgets asynchronously (they may not exist yet on first run above), and can also
+// replace a widget's markup on selection/setting changes, wiping our injected clone.
+// Disconnect while we mutate so this observer doesn't react to its own changes.
+const proButtonObserver = new MutationObserver(() => {
+  proButtonObserver.disconnect();
+  initProButtonEffects();
+  proButtonObserver.observe(document.body, { childList: true, subtree: true });
+});
+proButtonObserver.observe(document.body, { childList: true, subtree: true });

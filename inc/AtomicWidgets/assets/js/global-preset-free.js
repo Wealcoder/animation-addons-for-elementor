@@ -67,18 +67,18 @@ function initFreeButtonEffects() {
   document.querySelectorAll('.aae-btn-mask').forEach(maskBtn);
 }
 
-// // Run once for whatever is already in the DOM…
-// initFreeButtonEffects();
+// Run once for whatever is already in the DOM…
+initFreeButtonEffects();
 
-// // …and again whenever the DOM changes. Elementor's editor preview mounts atomic
-// // widgets asynchronously (they may not exist yet on first run above), and can also
-// // replace a widget's markup on selection/setting changes, wiping our injected clone
-// // or resetting the text-flip data-text sync.
-// // Disconnect while we mutate so this observer doesn't react to its own changes.
-// const freeButtonObserver = new MutationObserver(() => {
-//   freeButtonObserver.disconnect();
-//   initFreeButtonEffects();
-//   freeButtonObserver.observe(document.body, { childList: true, subtree: true });
-// });
-// freeButtonObserver.observe(document.body, { childList: true, subtree: true });
+// …and again whenever the DOM changes. Elementor's editor preview mounts atomic
+// widgets asynchronously (they may not exist yet on first run above), and can also
+// replace a widget's markup on selection/setting changes, wiping our injected clone
+// or resetting the text-flip data-text sync.
+// Disconnect while we mutate so this observer doesn't react to its own changes.
+const freeButtonObserver = new MutationObserver(() => {
+  freeButtonObserver.disconnect();
+  initFreeButtonEffects();
+  freeButtonObserver.observe(document.body, { childList: true, subtree: true });
+});
+freeButtonObserver.observe(document.body, { childList: true, subtree: true });
 
