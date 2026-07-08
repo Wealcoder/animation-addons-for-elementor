@@ -58,9 +58,42 @@ class Manager {
 		$context = \Elementor\Plugin::$instance->preview->is_editor_or_preview() ? 'preview' : 'frontend';
 
 		$get_styles = function() {
+			// AAE utility classes, emitted through Elementor's atomic styles pipeline.
+			//
+			// IMPORTANT — only keys present in Elementor's style-schema
+			// (modules/atomic-widgets/styles/style-schema.php) emit; anything else is
+			// silently dropped. Notably there is NO `border` or `list-style` shorthand
+			// (use `border-width`/`border-style`/`border-color`; list-style isn't
+			// supported at all). SIZE values must carry a UNIT — a bare '0' is dropped,
+			// so write '0px'. (Both verified in-browser.)
 			$utilities = [
-				'aae-flex'         => [ 'display' => 'flex' ],
-				'aae-items-center' => [ 'align-items' => 'center' ],
+				// Display / flex
+				'aae-flex'          => [ 'display' => 'flex' ],
+				'aae-a-inline-flex' => [ 'display' => 'inline-flex' ],
+				'aae-a-block'       => [ 'display' => 'block' ],
+				'aae-a-hidden'      => [ 'display' => 'none' ],
+				'aae-items-center'  => [ 'align-items' => 'center' ],
+				'aae-a-justify-center' => [ 'justify-content' => 'center' ],
+				'aae-a-justify-between' => [ 'justify-content' => 'space-between' ],
+				'aae-a-col'         => [ 'flex-direction' => 'column' ],
+				'aae-a-wrap'        => [ 'flex-wrap' => 'wrap' ],
+
+				// Spacing (units required)
+				'aae-a-m0'          => [ 'margin' => '0px' ],
+				'aae-a-p0'          => [ 'padding' => '0px' ],
+
+				// Sizing
+				'aae-a-w-full'      => [ 'width' => '100%' ],
+				'aae-a-h-full'      => [ 'height' => '100%' ],
+				'aae-a-svg'         => [ 'width' => '20px', 'height' => '20px' ],
+
+				// Border reset (no `border` shorthand in the schema — zero the width)
+				'aae-a-b0'          => [ 'border-width' => '0px' ],
+
+				// Misc layout
+				'aae-a-relative'    => [ 'position' => 'relative' ],
+				'aae-a-overflow-hidden' => [ 'overflow' => 'hidden' ],
+				'aae-a-text-center' => [ 'text-align' => 'center' ],
 			];
 
 			// Map class suffix to Elementor breakpoint name

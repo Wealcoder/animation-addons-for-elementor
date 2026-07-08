@@ -47,6 +47,9 @@ final class Assets
 		add_action('wp_enqueue_scripts',                     [$this, 'register_common'], 100);
 		add_action('elementor/preview/enqueue_scripts',      [$this, 'enqueue_all_in_editor'], 100);
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_editor_bridge'], 100);
+
+		// Preset interaction CSS is handled by StyleManager\Preset_Styles (a
+		// keyed CSS map printed inline on demand), not enqueued here.
 	}
 
 	/**

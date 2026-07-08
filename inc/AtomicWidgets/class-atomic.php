@@ -291,13 +291,17 @@ final class Atomic
 			'aae-a-loop-loadmore',
 			'aae-a-loop-arrow',
 			'aae-a-loop-nav-wrap',
+			// Loop Grid Slider structural pieces — always-on internal elements,
+			// seeded as default children of the slider root (same reasoning as the
+			// Loop Grid pieces above).
+			'aae-a-loop-slide-track',
+			'aae-a-loop-slide-item',
+			'aae-a-loop-slide-pagination',
 			// Loop Grid current-post building blocks: seeded as default loop-item
-			// children — must always be registered so the featured image / title /
-			// meta resolve per post.
+			// children — must always be registered so the featured image / title
+			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
-			'aae-a-post-meta',
-			'aae-a-post-meta-item',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -470,48 +474,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-post-meta' => [
-				'label'        => 'Post Meta',
-				'description'  => 'Dynamically displays post author, date, comments, taxonomy, or custom fields in Elementor V4.',
-				'icon'         => 'eicon-post-info',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'post',
-					'meta',
-					'info',
-					'author',
-					'date',
-					'comments',
-					'atomic',
-					'dynamic',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-post-meta-item' => [
-				'label'        => 'Post Meta Item',
-				'description'  => 'Internal child item for Post Meta.',
-				'icon'         => 'eicon-post-info',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'post meta item',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-loop-item' => [
 				'label'        => 'Loop Item',
 				'description'  => 'Container widget for Loop Grid items with default flex column layout.',
@@ -656,6 +618,50 @@ final class Atomic
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			'aae-a-loop-grid-slider' => [
+				'label'        => 'Loop Grid Slider',
+				'description'  => 'Query posts and present each as a slide, driven by the shared nested-slider runtime (effect / autoplay / coverflow / 3D) with AJAX load-more paging.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'loop',
+					'grid',
+					'slider',
+					'carousel',
+					'posts',
+					'query',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 1,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-loop-slide-track' => [
+				'label'        => 'Slider Track',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'icon'         => 'eicon-slider-push',
+				'keywords'     => [ 'loop', 'slider', 'track' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-slide-item' => [
+				'label'        => 'Loop Slide Item',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'icon'         => 'eicon-container',
+				'keywords'     => [ 'loop', 'slide', 'item' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-loop-slide-pagination' => [
+				'label'        => 'Slider Pagination',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'icon'         => 'eicon-ellipsis-h',
+				'keywords'     => [ 'loop', 'slider', 'pagination' ],
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-counter' => [
@@ -1589,6 +1595,12 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Register library-document types for our atomic top-level widgets so
+		// "Save as a template" works on them (Elementor only registers types for
+		// e-flexbox / e-div-block / e-form; our roots would otherwise fail with
+		// "Invalid template type"). See inc/AtomicWidgets/Library/.
+		add_action('elementor/documents/register', [$this, 'register_library_documents']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'], 16);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_widget_scripts_in_preview']);
@@ -1772,18 +1784,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-post-meta' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta',
-				'file' => 'Widgets/PostMeta/class-aae-a-post-meta.php',
-				'has_script' => false,
-			],
-
-			'aae-a-post-meta-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta_Item',
-				'file' => 'Widgets/PostMeta/class-aae-a-post-meta-item.php',
-				'has_script' => false,
-			],
-
 			'aae-a-posts' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
@@ -1864,6 +1864,37 @@ final class Atomic
 			'aae-a-loop-nav-wrap' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-nav-wrap.php',
+				'has_script' => false,
+			],
+
+			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
+			// nested-slider runtime. Its only own script is the load-more bridge
+			// (paging appends slides then re-binds the shared slider runtime).
+			'aae-a-loop-grid-slider' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',
+				'script_handle' => 'aae-a-loop-grid-slider-js',
+				'script_path' => '/assets/atomic/js/loop-grid-slider.js',
+				'has_script' => true,
+				// Load after the shared runtime so window.AAEADDON.rebind exists when
+				// the bridge appends slides (it also guards defensively at call time).
+				'script_deps' => [ 'aae-atomic-common' ],
+				'style_handle' => 'aae-a-loop-grid-slider-css',
+				'style_path' => '/assets/atomic/css/loop-grid-slider.css',
+			],
+			'aae-a-loop-slide-track' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-track.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-slide-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-item.php',
+				'has_script' => false,
+			],
+			'aae-a-loop-slide-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-pagination.php',
 				'has_script' => false,
 			],
 
@@ -2339,11 +2370,18 @@ final class Atomic
 
 		$data = $doc->get_elements_data();
 
+		// The static grid and the slider variant share this endpoint. Both root
+		// types publish the same Render_Context (keyed by AAE_A_Loop_Grid::class,
+		// which the slider root extends) and repeat a loop-item subtree per post —
+		// only the element type names differ, so accept either here.
+		$grid_types = ['e-aae-a-loop-grid', 'e-aae-a-loop-grid-slider'];
+		$item_types = ['e-aae-a-loop-item', 'e-aae-a-loop-slide-item'];
+
 		// Locate the loop-grid element (by id) and its loop-item descendant.
 		$grid_el = null;
-		$find_grid = function ($els) use (&$find_grid, &$grid_el, $grid_id) {
+		$find_grid = function ($els) use (&$find_grid, &$grid_el, $grid_id, $grid_types) {
 			foreach ($els as $el) {
-				if (($el['id'] ?? '') === $grid_id && ($el['elType'] ?? '') === 'e-aae-a-loop-grid') {
+				if (($el['id'] ?? '') === $grid_id && in_array($el['elType'] ?? '', $grid_types, true)) {
 					$grid_el = $el;
 					return;
 				}
@@ -2362,9 +2400,9 @@ final class Atomic
 		}
 
 		$item_el = null;
-		$find_item = function ($els) use (&$find_item, &$item_el) {
+		$find_item = function ($els) use (&$find_item, &$item_el, $item_types) {
 			foreach ($els as $el) {
-				if (($el['elType'] ?? '') === 'e-aae-a-loop-item') {
+				if (in_array($el['elType'] ?? '', $item_types, true)) {
 					$item_el = $el;
 					return;
 				}
@@ -2507,6 +2545,26 @@ final class Atomic
 				}
 			}
 		}
+	}
+
+	/**
+	 * Register library-document types for the atomic top-level widgets, so the
+	 * editor's "Save as a template" (which sends the element's own elType as the
+	 * template type) resolves to a valid document and passes the local source's
+	 * is_valid_template_type() check. Mirrors Elementor's own registration for
+	 * e-flexbox / e-div-block.
+	 *
+	 * @param \Elementor\Core\Documents_Manager $documents_manager
+	 */
+	public function register_library_documents($documents_manager)
+	{
+		require_once __DIR__ . '/Library/class-aae-a-library-document.php';
+		require_once __DIR__ . '/Library/class-aae-a-library-documents.php';
+
+		$documents_manager
+			->register_document_type('e-aae-a-loop-grid', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Document::class)
+			->register_document_type('e-aae-a-loop-grid-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Slider_Document::class)
+			->register_document_type('e-aae-a-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Slider_Document::class);
 	}
 
 	public function register_atomic_scripts($loader)
@@ -3198,7 +3256,8 @@ JS,
 	private function get_widget_presets(): array
 	{
 		$presets = [];
-		
+		$scanned_dirs = [];
+
 		foreach ($this->get_available_widgets() as $widget_data) {
 			if (empty($widget_data['file'])) {
 				continue;
@@ -3210,6 +3269,15 @@ JS,
 			if (! is_dir($preset_dir)) {
 				continue;
 			}
+
+			// Many widgets share one folder (e.g. all LoopGrid parts live in
+			// Widgets/LoopGrid), so the same presets/ dir would be globbed once
+			// per sibling widget and every preset would appear N times. Scan each
+			// dir only once.
+			if (isset($scanned_dirs[$preset_dir])) {
+				continue;
+			}
+			$scanned_dirs[$preset_dir] = true;
 
 			foreach (glob($preset_dir . '/*.json') as $file) {
 				$raw = file_get_contents($file);

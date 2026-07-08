@@ -48,7 +48,9 @@ final class Schema {
 
 		$schema[ self::NS_EFFECT ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 'slide' ]);
 		$schema[ self::NS_SLIDES_PER_VIEW ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 3 ]);
-		$schema[ self::NS_PEEK ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 8 ]);
+		// Peek defaults to 0 (no sliver of neighbours) so a plain N-per-view slider
+		// fills edge-to-edge; the user opts into peek by raising it in Advanced.
+		$schema[ self::NS_PEEK ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0 ]);
 		$schema[ self::NS_CF_ROTATE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 45 ]);
 		$schema[ self::NS_CF_DEPTH ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 100 ]);
 		$schema[ self::NS_GAP ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 0 ]);

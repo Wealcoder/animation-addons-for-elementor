@@ -72,6 +72,8 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
 			'mobile_dropdown_icon' => Svg_Src_Prop_Type::make()
 				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
+			'mobile_back_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-left.svg' ),
 		];
 	}
 
@@ -105,6 +107,8 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Close Icon', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'mobile_dropdown_icon' )
 						->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'mobile_back_icon' )
+						->set_label( __( 'Back Icon', 'animation-addons-for-elementor' ) ),
 					AAE_A_Mobile_Nav_Lifecycle_Control::make()
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
@@ -135,7 +139,6 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	protected function define_default_children() {
 		$make_item = function ( $title, $has_dropdown = false, array $children = [] ) {
 			$builder = AAE_A_Nav_Item::generate()
-				->is_locked( true )
 				->editor_settings( [ 'title' => $title ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [

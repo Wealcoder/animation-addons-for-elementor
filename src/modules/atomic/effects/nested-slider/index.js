@@ -62,15 +62,16 @@ function bind(container, config) {
 
 	// Configuration getters
 	const getEffect = () => r('effect', 'slide');
-	const getPeek = () => parseInt(r('peek', 8));
+	const getPeek = () => parseInt(r('peek', 0));
 	const getSlidesPerView = () => {
 		const effect = getEffect();
 		let spv = parseFloat(r('slidesPerView', 3));
 		const peek = getPeek();
-		// Peek shrinks each slide to reveal neighbours. When the user asks for a
-		// single centered slide it must fill the viewport and sit dead-center, so
-		// skip the peek widening in that case (otherwise the slide is narrower
-		// than the viewport and a sliver of the previous slide shows on the left).
+		// Peek shrinks each slide to reveal a sliver of the neighbours. It applies to
+		// ANY effect (incl. plain "slide") — but only when the user actually asks for
+		// it: peek DEFAULTS TO 0, so an untouched slider shows exactly N per view with
+		// no leaked sliver. A single centered slide must fill the viewport, so skip it
+		// there regardless.
 		const singleCentered = isCenterMode() && spv <= 1;
 		if (peek > 0 && !singleCentered) {
 			spv += (peek / 100) * 2;
@@ -1163,9 +1164,14 @@ function bind(container, config) {
 	track.addEventListener('mousemove', onPointerMove, evtOpts);
 	window.addEventListener('mouseup', onPointerUp, evtOpts);
 
-	track.addEventListener('touchstart', onPointerDown, evtOpts);
-	track.addEventListener('touchmove', onPointerMove, evtOpts);
-	window.addEventListener('touchend', onPointerUp, evtOpts);
+	// Touch handlers never call preventDefault (the mouse path guards with
+	// e.type === 'mousedown'), so they're safe to register as passive. This
+	// clears Chrome's "non-passive scroll-blocking touchstart/touchmove" console
+	// violation and lets the browser scroll without waiting on our handler.
+	const touchOpts = { signal: localController.signal, passive: true };
+	track.addEventListener('touchstart', onPointerDown, touchOpts);
+	track.addEventListener('touchmove', onPointerMove, touchOpts);
+	window.addEventListener('touchend', onPointerUp, touchOpts);
 
 	// Window resize handler
 	window.addEventListener(
@@ -1216,7 +1222,16 @@ function bind(container, config) {
 			const shouldRefresh = mutations.some(
 				(mutation) => mutation.type === 'childList' &&
 				[...mutation.addedNodes, ...mutation.removedNodes].some(
-					(n) => n.nodeType === 1 && !n.classList.contains('aae-slide-clone')
+					// Ignore BOTH clone families: our own seamless-loop clones
+					// (aae-slide-clone) AND the editor multi-slide preview clones
+					// injected by slider-editor-preview.js (aae-slide-editor-preview).
+					// Missing the latter made every preview-clone rebuild re-trigger
+					// this observer → reInit → bind → (its cleanup re-touches the
+					// track) → the editor-preview observer fires again … an infinite
+					// bind loop that spammed the console and pinned the CPU.
+					(n) => n.nodeType === 1 &&
+						!n.classList.contains('aae-slide-clone') &&
+						!n.classList.contains('aae-slide-editor-preview')
 				)
 			);
 			if (shouldRefresh) reInit();

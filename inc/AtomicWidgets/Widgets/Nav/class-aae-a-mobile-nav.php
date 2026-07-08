@@ -77,6 +77,7 @@ class AAE_A_Mobile_Nav extends Atomic_Element_Base {
 			self::BASE_STYLE_KEY . ' .aae-mobile-nav-close-icon'     => $icon_style(),
 			self::BASE_STYLE_KEY . ' .aae-mobile-nav-arrow-template' => $icon_style(),
 			self::BASE_STYLE_KEY . ' .aae-mobile-submenu-icon'       => $icon_style(),
+			self::BASE_STYLE_KEY . ' .aae-mobile-nav-back-icon'       => $icon_style(),
 		];
 	}
 
@@ -116,11 +117,20 @@ class AAE_A_Mobile_Nav extends Atomic_Element_Base {
 			->children( [ $this->svg( 'close.svg', 'Close Icon', 'aae-mobile-nav-close-icon' ) ] )
 			->build();
 
+		$back = Flexbox::generate()
+			->editor_settings( [ 'title' => 'Mobile Menu Back Button' ] )
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-mobile-nav-back' ] ),
+				'tag' => String_Prop_Type::generate( 'button' ),
+			] )
+			->children( [ $this->svg( 'chevron-left.svg', 'Back Icon', 'aae-mobile-nav-back-icon' ) ] )
+			->build();
+
 		$arrow = $this->svg( 'chevron-down.svg', 'Submenu Arrow Template', 'aae-mobile-nav-arrow-template' );
 		$header = Flexbox::generate()
 			->editor_settings( [ 'title' => 'Offcanvas Header' ] )
 			->settings( [ 'classes' => Classes_Prop_Type::generate( [ 'aae-mobile-nav-header' ] ) ] )
-			->children( [ $close ] )
+			->children( [ $back, $close ] )
 			->build();
 		$menu_area = Flexbox::generate()
 			->editor_settings( [ 'title' => 'Menu Area' ] )

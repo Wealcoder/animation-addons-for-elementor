@@ -49,11 +49,9 @@ require_once __DIR__ . '/class-aae-a-loop-prev.php';
 require_once __DIR__ . '/class-aae-a-loop-next.php';
 require_once __DIR__ . '/../PostImage/class-aae-a-post-image.php';
 require_once __DIR__ . '/../PostTitle/class-aae-a-post-title.php';
-require_once __DIR__ . '/../PostMeta/class-aae-a-post-meta.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
-use WCF_ADDONS\AtomicWidgets\Widgets\PostMeta\AAE_A_Post_Meta;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -353,7 +351,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * "ElementTypeNotFound" — e.g. the AAE post widgets are dashboard-toggleable
 	 * and may be disabled. So we only seed children whose type resolves.
 	 */
-	private static function type_registered( string $type ): bool {
+	protected static function type_registered( string $type ): bool {
 		if ( ! class_exists( '\Elementor\Plugin' ) ) {
 			return false;
 		}

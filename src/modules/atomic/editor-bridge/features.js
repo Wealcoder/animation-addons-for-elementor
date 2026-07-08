@@ -1206,7 +1206,7 @@ function buildCustomCssConfig(settings) {
 const SLIDER_RESPONSIVE = {
 	aae_ns_effect: { configKey: 'effect', default: 'slide' },
 	aae_ns_slides_per_view: { configKey: 'slidesPerView', default: 3 },
-	aae_ns_peek: { configKey: 'peek', default: 8 },
+	aae_ns_peek: { configKey: 'peek', default: 0 },
 	aae_ns_cf_rotate: { configKey: 'cfRotate', default: 45 },
 	aae_ns_cf_depth: { configKey: 'cfDepth', default: 100 },
 	aae_ns_gap: { configKey: 'gap', default: 0 },
@@ -1234,7 +1234,7 @@ function buildSliderConfig(settings) {
 	const cfg = {
 		effect: readAt(settings, 'aae_ns_effect', 'desktop', 'slide'),
 		slidesPerView: readAt(settings, 'aae_ns_slides_per_view', 'desktop', 3),
-		peek: readAt(settings, 'aae_ns_peek', 'desktop', 8),
+		peek: readAt(settings, 'aae_ns_peek', 'desktop', 0),
 		cfRotate: readAt(settings, 'aae_ns_cf_rotate', 'desktop', 45),
 		cfDepth: readAt(settings, 'aae_ns_cf_depth', 'desktop', 100),
 		gap: readAt(settings, 'aae_ns_gap', 'desktop', 0),
@@ -1377,7 +1377,9 @@ export const FEATURES = [
 	},
 	{
 		name: 'nested-slider',
-		widgetTypes: ['e-aae-a-slider'],
+		// The Loop Grid Slider root shares the slider config namespace + runtime,
+		// so the same live-preview feature drives it in the editor.
+		widgetTypes: ['e-aae-a-slider', 'e-aae-a-loop-grid-slider'],
 		enableSetting: null,
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_NS',

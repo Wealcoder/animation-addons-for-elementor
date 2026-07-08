@@ -1,4 +1,12 @@
 .aae-a-slider {
+
+    // NOTE: the track's default 10px `.e-con` padding (which shrinks the slide
+    // content box and leaves a right-side gap) is zeroed via the atomic base-style
+    // in AAE_A_Slider_Track::define_base_styles(), not here — that emits `padding: 0`
+    // on the element's own `.e-{id}` class, which is what actually controls the
+    // padding (NOT the `--padding-*` custom props), and stays overridable by the
+    // user's Style-panel padding.
+
     .aae-slider-track > * {
         flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
         max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));

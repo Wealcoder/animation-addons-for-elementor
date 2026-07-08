@@ -1,0 +1,5 @@
+/* Image Cover Card — hover: image zoom + darken, brand-color tint wash. */
+.aae-hover-card .aae-hover-img { transition: transform .6s ease, filter .4s ease; will-change: transform; }
+.aae-hover-card .aae-hover-tint { transition: background-color .4s ease; }
+.aae-hover-card:hover .aae-hover-img { transform: scale(1.08); filter: brightness(.82); }
+.aae-hover-card:hover .aae-hover-tint { background-color: rgba(199, 105, 105, .45); }

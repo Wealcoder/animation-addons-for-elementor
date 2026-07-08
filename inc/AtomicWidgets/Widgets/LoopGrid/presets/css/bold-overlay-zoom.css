@@ -1,0 +1,6 @@
+/* Bold Overlay Zoom — hover: strong image zoom, wash deepens, content lifts. */
+.aae-bold-card .aae-bold-img { transition: transform .8s cubic-bezier(.2, .7, .2, 1); will-change: transform; }
+.aae-bold-card .aae-bold-wash { transition: opacity .45s ease; }
+.aae-bold-card .aae-bold-content { transition: transform .45s ease; }
+.aae-bold-card:hover .aae-bold-img { transform: scale(1.12); }
+.aae-bold-card:hover .aae-bold-content { transform: translateY(-6px); }

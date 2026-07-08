@@ -4,8 +4,11 @@ const g = () => window.gsap;
 
 /* Per-nav AbortControllers — abort stale document listeners on re-init */
 const navControllers = new Map();
+const editorNavControllers = new Map();
 const editorCompanionControllers = new Map();
 const editorCompanionNodes = new Map();
+const mobileSubPanels = new WeakMap();
+const mobileDrillSurfaces = new WeakMap();
 
 function isEditor() {
 	if ( document.body?.classList.contains( 'elementor-editor-active' ) ||
@@ -46,6 +49,7 @@ function isEditorMobileMode( breakpoint ) {
 /* Dropdown content = the first direct child of the nav-item that isn't the
  * label span/anchor. Typically an Elementor Flexbox the user styles themselves. */
 function getSub( item ) {
+	if ( mobileSubPanels.has( item ) ) return mobileSubPanels.get( item );
 	return item.querySelector(
 		':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
 	);
@@ -76,6 +80,91 @@ function normalizeRenderedDropdowns( nav ) {
 	} );
 }
 
+function openEditorDropdownChain( item ) {
+	let current = item;
+	while ( current ) {
+		current.classList.add( 'aae-editor-dropdown-open' );
+		const sub = getSub( current );
+		if ( sub ) {
+			sub.classList.add( 'aae-a-nav-dropdown' );
+			sub.style.visibility = 'visible';
+			sub.style.opacity = '1';
+			sub.style.pointerEvents = 'auto';
+		}
+		const parentItem = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		current = parentItem;
+	}
+}
+
+function selectEditorElementById( id ) {
+	if ( ! id ) return;
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		const container = editorWindow.elementor?.getContainer?.( id );
+		if ( ! container ) return;
+		editorWindow.$e?.run?.( 'document/elements/select', {
+			container: typeof container.lookup === 'function' ? container.lookup() : container,
+			append: false,
+		} );
+	} catch ( error ) {
+		/* Best effort only: editor internals may not be ready during render. */
+	}
+}
+
+function initEditorDropdownUX( nav ) {
+	const navId = nav.getAttribute( 'data-id' );
+	if ( ! navId || nav.dataset.aaeEditorDropdownUx === 'true' ) return;
+	nav.dataset.aaeEditorDropdownUx = 'true';
+
+	editorNavControllers.get( navId )?.abort();
+	const ctrl = new AbortController();
+	editorNavControllers.set( navId, ctrl );
+	const sig = ctrl.signal;
+
+	const sync = () => {
+		normalizeRenderedDropdowns( nav );
+		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+			const sub = getSub( item );
+			if ( sub ) {
+				sub.classList.add( 'aae-a-nav-dropdown' );
+				sub.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
+			}
+			if ( item.classList.contains( 'elementor-element-selected' ) ||
+				item.querySelector( '.elementor-element-selected' ) ) {
+				openEditorDropdownChain( item );
+			}
+		} );
+	};
+
+	let raf = null;
+	const schedule = () => {
+		if ( raf ) return;
+		raf = window.requestAnimationFrame( () => {
+			raf = null;
+			sync();
+		} );
+	};
+
+	nav.addEventListener( 'pointerdown', e => {
+		const dropdown = e.target.closest( '.aae-a-nav-dropdown' );
+		if ( ! dropdown || ! nav.contains( dropdown ) ) return;
+		const owner = dropdown.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( owner ) openEditorDropdownChain( owner );
+		selectEditorElementById( dropdown.getAttribute( 'data-id' ) );
+	}, { capture: true, signal: sig } );
+
+	nav.addEventListener( 'click', e => {
+		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( ! item || ! nav.contains( item ) ) return;
+		openEditorDropdownChain( item );
+	}, { capture: true, signal: sig } );
+
+	const observer = new MutationObserver( schedule );
+	observer.observe( nav, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'data-has-dropdown' ] } );
+	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
+	sync();
+}
+
 function isNested( item ) {
 	return !! item.parentElement?.closest(
 		'.aae-a-nav-item[data-has-dropdown="true"]'
@@ -84,6 +173,61 @@ function isNested( item ) {
 
 function getAnim( item ) {
 	return item.dataset.dropdownAnim || 'gsap';
+}
+
+function getDrillSurface( item ) {
+	const sub = getSub( item );
+	return sub ? ( mobileDrillSurfaces.get( sub ) || sub ) : null;
+}
+
+function resetScroll( ...nodes ) {
+	nodes.forEach( node => {
+		if ( node ) node.scrollTop = 0;
+	} );
+}
+
+/* Drill panels cannot remain DOM descendants of their parent menu item: hiding
+ * a previous level would also hide the current child level. Move every panel
+ * beside the root nav items while mobile is mounted, keeping comment anchors
+ * so the exact authored tree can be restored on desktop. */
+function flattenDrillPanels( nav ) {
+	const records = [];
+	[ ...nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ) ].forEach( item => {
+		const sub = getSub( item );
+		if ( ! sub || sub.parentElement === nav ) return;
+		const anchor = document.createComment( `aae-drill-panel-${ item.dataset.id || '' }` );
+		sub.parentNode.insertBefore( anchor, sub );
+		const surface = document.createElement( 'div' );
+		surface.className = 'aae-mobile-drill-panel';
+		surface.hidden = true;
+		mobileSubPanels.set( item, sub );
+		mobileDrillSurfaces.set( sub, surface );
+		records.push( { item, sub, anchor, surface } );
+		sub.hidden = false;
+		surface.appendChild( sub );
+		nav.appendChild( surface );
+	} );
+	return records;
+}
+
+function restoreDrillPanels( records ) {
+	[ ...records ].reverse().forEach( ( { item, sub, anchor, surface } ) => {
+		if ( anchor.parentNode ) anchor.parentNode.insertBefore( sub, anchor );
+		anchor.remove();
+		surface.remove();
+		mobileSubPanels.delete( item );
+		mobileDrillSurfaces.delete( sub );
+		sub.removeAttribute( 'hidden' );
+	} );
+}
+
+function getItemTitle( item ) {
+	return item.querySelector( ':scope > .aae-a-nav-item-label' )?.textContent?.trim() || 'Menu';
+}
+
+function setBackLabel( back, item ) {
+	const label = back?.querySelector( '.aae-mobile-nav-back-label' );
+	if ( label ) label.textContent = item ? `← ${ getItemTitle( item ) }` : '← Back';
 }
 
 /* Force CSS animation to restart (needed on re-open) */
@@ -253,6 +397,16 @@ function initEditorMobilePreview( companion ) {
 	editorCompanionNodes.set( companionId, companion );
 	const sig = ctrl.signal;
 	let timer = null;
+	let editorClone = null;
+	let editorDrillStack = [];
+	let observedSource = null;
+	const sourceObserver = new MutationObserver( () => render() );
+	const observeSource = source => {
+		if ( source === observedSource ) return;
+		sourceObserver.disconnect();
+		observedSource = source;
+		if ( source ) sourceObserver.observe( source, { childList: true, subtree: true } );
+	};
 
 	const render = () => {
 		window.clearTimeout( timer );
@@ -268,6 +422,7 @@ function initEditorMobilePreview( companion ) {
 			 * loop against a missing source. healthCheck tears it down shortly. */
 			const sourceId = companion.dataset.sourceNavId;
 			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+			observeSource( source );
 			if ( sourceId && ! source && companion.dataset.enabled === 'true' && isEditorMobileMode( breakpoint ) ) {
 				return;
 			}
@@ -291,6 +446,7 @@ function initEditorMobilePreview( companion ) {
 			const clone = source.cloneNode( true );
 			sanitizeEditorClone( clone );
 			addEditorCloneArrows( clone, companion.querySelector( '.aae-mobile-nav-arrow-template' ) );
+			flattenDrillPanels( clone );
 			const sourceClose = companion.querySelector( '.aae-mobile-nav-close' );
 			if ( sourceClose && sourceClose.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
 				const sourceCloseId = sourceClose.getAttribute( 'data-id' );
@@ -305,23 +461,42 @@ function initEditorMobilePreview( companion ) {
 				drawer.appendChild( closeClone );
 			}
 			menuArea.appendChild( clone );
+			editorClone = clone;
+			editorDrillStack = [];
+			clone.dataset.drillDepth = '0';
+			const editorBack = companion.querySelector( '.aae-mobile-nav-back' );
+			editorBack?.classList.remove( 'is-visible' );
 
 			clone.addEventListener( 'click', e => {
 				const button = e.target.closest( '.aae-mobile-submenu-toggle' );
 				if ( ! button ) return;
 				e.preventDefault();
 				const item = button.closest( '.aae-a-nav-item' );
-				const open = ! item.classList.contains( 'is-mobile-submenu-open' );
-				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
-					.forEach( sibling => {
-						sibling.classList.remove( 'is-mobile-submenu-open' );
-						const siblingSub = getSub( sibling );
-						if ( siblingSub ) siblingSub.hidden = true;
-					} );
-				item.classList.toggle( 'is-mobile-submenu-open', open );
 				const sub = getSub( item );
-				if ( sub ) sub.hidden = ! open;
-				button.setAttribute( 'aria-expanded', String( open ) );
+				if ( ! sub ) return;
+				const surface = getDrillSurface( item );
+				if ( ! surface ) return;
+				const previous = editorDrillStack.at( -1 );
+				if ( previous ) {
+					previous.surface.classList.remove( 'is-active' );
+					previous.surface.hidden = true;
+				}
+				surface.hidden = false;
+				surface.classList.remove( 'is-active' );
+				surface.style.zIndex = String( 5 + editorDrillStack.length );
+				resetScroll( clone, surface, surface.firstElementChild );
+				/* Paint the translated start position before activating so forward
+				 * navigation animates instead of jumping directly to the panel. */
+				void surface.offsetWidth;
+				surface.classList.add( 'is-active' );
+				item.classList.add( 'is-mobile-submenu-open' );
+				button.setAttribute( 'aria-expanded', 'true' );
+				editorDrillStack.push( { item, sub, surface, button } );
+				clone.dataset.drillDepth = String( editorDrillStack.length );
+				if ( editorBack ) {
+					editorBack.classList.add( 'is-visible' );
+					setBackLabel( editorBack, item );
+				}
 			} );
 		}, 60 );
 	};
@@ -339,13 +514,17 @@ function initEditorMobilePreview( companion ) {
 		const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
 		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
+		const sourceId = companion.dataset.sourceNavId;
+		const currentSource = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+		const replacedSource = currentSource !== observedSource;
 		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
 		const missingPreview = mobile && menuArea &&
 			! menuArea.querySelector( ':scope > .aae-mobile-editor-clone' );
-		if ( staleMode || missingPreview ) render();
+		if ( staleMode || missingPreview || replacedSource ) render();
 	}, 250 );
 	sig.addEventListener( 'abort', () => {
 		window.clearInterval( healthCheck );
+		sourceObserver.disconnect();
 		if ( editorCompanionNodes.get( companionId ) === companion ) {
 			editorCompanionNodes.delete( companionId );
 		}
@@ -374,6 +553,32 @@ function initEditorMobilePreview( companion ) {
 		original.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true, view: window } ) );
 	}, { capture: true, signal: sig } );
 	companion.addEventListener( 'click', e => {
+		if ( e.target.closest( '.aae-mobile-nav-back' ) ) {
+			e.preventDefault();
+			const current = editorDrillStack.pop();
+			if ( current ) {
+				current.surface.classList.remove( 'is-active' );
+				current.surface.style.removeProperty( 'z-index' );
+				current.surface.hidden = true;
+				resetScroll( current.surface );
+				current.item.classList.remove( 'is-mobile-submenu-open' );
+				current.button.setAttribute( 'aria-expanded', 'false' );
+			}
+			if ( editorClone ) editorClone.dataset.drillDepth = String( editorDrillStack.length );
+			const back = companion.querySelector( '.aae-mobile-nav-back' );
+			const parent = editorDrillStack.at( -1 );
+			if ( parent ) {
+				parent.surface.hidden = false;
+				resetScroll( parent.surface, parent.surface.firstElementChild );
+				void parent.surface.offsetWidth;
+				parent.surface.classList.add( 'is-active' );
+			} else {
+				resetScroll( editorClone, companion.querySelector( '.aae-mobile-nav-menu-area' ), companion.querySelector( '.aae-mobile-nav-drawer' ) );
+			}
+			back?.classList.toggle( 'is-visible', !! parent );
+			setBackLabel( back, parent?.item || null );
+			return;
+		}
 		if ( e.target.closest( '.aae-mobile-nav-close' ) ) {
 			e.preventDefault();
 			companion.dataset.editorPreviewClosed = 'true';
@@ -423,14 +628,15 @@ register( {
 		if ( ! navId ) return;
 
 		/*
-		 * Editor: do NOTHING here. Any DOM mutation (classList changes,
-		 * data-attr writes) triggers Elementor's MutationObserver, which
-		 * re-renders the widget — and rapid re-renders on drop/device-switch
-		 * cause the editor to hang. (See Countdown's `isEditMode` skip for
-		 * the same reason.) Visibility is handled by the always-show CSS
-		 * rule in aae-a-nav.html.twig.
+		 * Editor: skip frontend open/close listeners, but install a tiny
+		 * idempotent authoring helper so the dropdown Flexbox itself remains
+		 * selectable/styleable/drop-target friendly in the canvas.
 		 */
-		if ( isEditor() ) return;
+		if ( isEditor() ) {
+			normalizeRenderedDropdowns( nav );
+			initEditorDropdownUX( nav );
+			return;
+		}
 		normalizeRenderedDropdowns( nav );
 
 		if ( nav.dataset.navInit === 'true' ) return;
@@ -515,10 +721,18 @@ register( {
 			companion.querySelector( '.aae-mobile-nav-drawer' );
 		const toggle = companion.querySelector( '.aae-mobile-nav-toggle' );
 		const close = companion.querySelector( '.aae-mobile-nav-close' );
+		let back = companion.querySelector( '.aae-mobile-nav-back' );
 		const overlay = companion.querySelector( '.aae-mobile-nav-overlay' );
 		const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
 		const arrowTemplate = companion.querySelector( '.aae-mobile-nav-arrow-template' );
 		if ( ! nav || ! mount || ! toggle || ! close || ! overlay || ! drawer ) return;
+		if ( ! back ) {
+			back = document.createElement( 'button' );
+			back.type = 'button';
+			back.className = 'aae-mobile-nav-back aae-mobile-nav-back-fallback';
+			back.innerHTML = '<span class="aae-mobile-nav-back-label">← Back</span>';
+			( companion.querySelector( '.aae-mobile-nav-header' ) || drawer ).prepend( back );
+		}
 		normalizeRenderedDropdowns( nav );
 		if ( close.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
 			drawer.insertBefore( close, drawer.firstChild );
@@ -531,6 +745,8 @@ register( {
 		let mounted = false;
 		let lastFocus = null;
 		let media;
+		let drillStack = [];
+		let drillPanelRecords = [];
 
 		companion.classList.toggle( 'position-left', companion.dataset.position === 'left' );
 	drawer.id = `aae-mobile-nav-drawer-${ id }`;
@@ -542,30 +758,79 @@ register( {
 	close.setAttribute( 'role', 'button' );
 	close.setAttribute( 'tabindex', '0' );
 	close.setAttribute( 'aria-label', 'Close menu' );
+	back.setAttribute( 'aria-label', 'Back to parent menu' );
+	back.hidden = true;
 	drawer.setAttribute( 'role', 'dialog' );
 	drawer.setAttribute( 'aria-modal', 'true' );
 	drawer.setAttribute( 'aria-hidden', 'true' );
 
-		const setSubmenu = ( item, open ) => {
-			const button = item.querySelector( ':scope > .aae-mobile-submenu-toggle' );
-			const sub = getSub( item );
-			if ( ! open ) {
-				item.querySelectorAll( '.aae-a-nav-item.is-mobile-submenu-open' )
-					.forEach( descendant => {
-						descendant.classList.remove( 'is-mobile-submenu-open' );
-						const descendantSub = getSub( descendant );
-						if ( descendantSub ) descendantSub.hidden = true;
-						descendant.querySelector( ':scope > .aae-mobile-submenu-toggle' )
-							?.setAttribute( 'aria-expanded', 'false' );
-					} );
-			}
-			item.classList.toggle( 'is-mobile-submenu-open', open );
-			if ( sub ) sub.hidden = ! open;
-			button?.setAttribute( 'aria-expanded', String( open ) );
+		const syncDrillState = () => {
+			nav.dataset.drillDepth = String( drillStack.length );
+			const current = drillStack.at( -1 );
+			back.hidden = ! current;
+			back.classList.toggle( 'is-visible', !! current );
+			setBackLabel( back, current?.item || null );
 		};
 
-		const closeSubmenus = () => nav.querySelectorAll( '.is-mobile-submenu-open' )
-			.forEach( item => setSubmenu( item, false ) );
+		const openDrillPanel = ( item, button ) => {
+			const sub = getSub( item );
+			const surface = getDrillSurface( item );
+			if ( ! sub || ! surface ) return;
+			const previous = drillStack.at( -1 );
+			if ( previous ) {
+				previous.surface.classList.remove( 'is-active' );
+				previous.surface.hidden = true;
+			}
+			surface.hidden = false;
+			surface.classList.remove( 'is-active' );
+			surface.style.zIndex = String( 5 + drillStack.length );
+			resetScroll( nav, mount, drawer, surface, surface.firstElementChild );
+			void surface.offsetWidth;
+			surface.classList.add( 'is-active' );
+			item.classList.add( 'is-mobile-submenu-open' );
+			button.setAttribute( 'aria-expanded', 'true' );
+			drillStack.push( { item, sub, surface, button } );
+			syncDrillState();
+			window.requestAnimationFrame( () => back.focus?.() );
+		};
+
+		const closeDrillPanel = () => {
+			const current = drillStack.pop();
+			if ( ! current ) return;
+			current.surface.classList.remove( 'is-active' );
+			current.surface.style.removeProperty( 'z-index' );
+			current.surface.hidden = true;
+			current.surface.setAttribute( 'hidden', '' );
+			resetScroll( current.surface );
+			current.item.classList.remove( 'is-mobile-submenu-open' );
+			current.button.setAttribute( 'aria-expanded', 'false' );
+			const previous = drillStack.at( -1 );
+			if ( previous ) {
+				previous.surface.hidden = false;
+				previous.surface.removeAttribute( 'hidden' );
+				resetScroll( previous.surface, previous.surface.firstElementChild );
+				void previous.surface.offsetWidth;
+				previous.surface.classList.add( 'is-active' );
+				previous.item.classList.add( 'is-mobile-submenu-open' );
+				previous.button.setAttribute( 'aria-expanded', 'true' );
+			} else {
+				resetScroll( nav, mount, drawer );
+			}
+			syncDrillState();
+			window.requestAnimationFrame( () => ( previous ? back : close ).focus?.() );
+		};
+
+		const resetDrill = () => {
+			while ( drillStack.length ) {
+				const current = drillStack.pop();
+				current.surface.classList.remove( 'is-active' );
+				current.surface.style.removeProperty( 'z-index' );
+				current.surface.hidden = true;
+				current.item.classList.remove( 'is-mobile-submenu-open' );
+				current.button.setAttribute( 'aria-expanded', 'false' );
+			}
+			syncDrillState();
+		};
 
 		const addArrows = () => {
 			nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
@@ -606,7 +871,7 @@ register( {
 			companion.classList.remove( 'is-open' );
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			drawer.setAttribute( 'aria-hidden', 'true' );
-			closeSubmenus();
+			resetDrill();
 			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
 			if ( restoreFocus ) lastFocus?.focus?.();
 		};
@@ -627,6 +892,8 @@ register( {
 			nav.classList.add( 'aae-nav-mobile-mounted' );
 			companion.classList.add( 'is-mobile' );
 			addArrows();
+			drillPanelRecords = flattenDrillPanels( nav );
+			resetDrill();
 			mounted = true;
 		};
 
@@ -634,6 +901,8 @@ register( {
 			if ( ! mounted ) return;
 			closeDrawer( false );
 			removeArrows();
+			restoreDrillPanels( drillPanelRecords );
+			drillPanelRecords = [];
 			nav.classList.remove( 'aae-nav-mobile-mounted' );
 			anchor.parentNode?.insertBefore( nav, anchor );
 			anchor.remove();
@@ -656,6 +925,13 @@ register( {
 		activate( close, () => closeDrawer() );
 		overlay.addEventListener( 'click', () => closeDrawer(), { signal: sig } );
 
+		companion.addEventListener( 'click', e => {
+			if ( ! mounted || ! e.target.closest( '.aae-mobile-nav-back' ) ) return;
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			closeDrillPanel();
+		}, { capture: true, signal: sig } );
+
 		nav.addEventListener( 'click', e => {
 			if ( ! mounted ) return;
 			const button = e.target.closest( '.aae-mobile-submenu-toggle' );
@@ -663,10 +939,7 @@ register( {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				const item = button.closest( '.aae-a-nav-item' );
-				const opening = ! item.classList.contains( 'is-mobile-submenu-open' );
-				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
-					.forEach( sibling => { if ( sibling !== item ) setSubmenu( sibling, false ); } );
-				setSubmenu( item, opening );
+				openDrillPanel( item, button );
 				return;
 			}
 			if ( companion.dataset.closeOnLink === 'true' && e.target.closest( 'a' ) && ! e.target.closest( '[data-has-dropdown="true"] > .aae-a-nav-item-label' ) ) {
@@ -677,7 +950,8 @@ register( {
 		document.addEventListener( 'keydown', e => {
 			if ( e.key === 'Escape' && companion.classList.contains( 'is-open' ) ) closeDrawer();
 			if ( e.key !== 'Tab' || ! companion.classList.contains( 'is-open' ) ) return;
-			const focusable = [ close, ...drawer.querySelectorAll( 'a[href], button, [tabindex="0"]' ) ];
+			const focusable = [ close, ...drawer.querySelectorAll( 'a[href], button, [tabindex="0"]' ) ]
+				.filter( ( node, index, list ) => ! node.hidden && list.indexOf( node ) === index );
 			if ( ! focusable.length ) return;
 			const first = focusable[ 0 ];
 			const last = focusable[ focusable.length - 1 ];

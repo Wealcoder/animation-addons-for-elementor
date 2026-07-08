@@ -1,0 +1,66 @@
+/**
+ * AAE Loop Grid Slider — frontend styles.
+ *
+ * The slider MOTION (track transform, autoplay, effects) is owned by the shared
+ * nested-slider runtime. But the runtime only SETS the `--aae-slides-per-view`
+ * / `--aae-slide-gap` custom properties — the rule that turns them into a real
+ * slide WIDTH lives in the Nested Slider's own stylesheet, which this widget
+ * deliberately does not load (to avoid a cross-widget CSS dependency). So we
+ * replicate that one sizing rule here, scoped to this widget. Without it every
+ * slide takes its natural width and only one shows regardless of slidesPerView.
+ */
+
+.aae-a-loop-grid-slider {
+	// Nav arrows (reused from the Nested Slider) anchor to this positioned box.
+	position: relative;
+
+	.aae-slider-track {
+		// The runtime writes transform/gap; keep it a single non-wrapping row so
+		// slides line up horizontally before the runtime measures them.
+		flex-wrap: nowrap;
+
+		// NOTE: the track's default 10px `.e-con` padding (which shrinks the slide
+		// content box and leaves a right-side gap) is zeroed via the atomic base-style
+		// in AAE_A_Loop_Slide_Track::define_base_styles() — that emits `padding: 0` on
+		// the element's own `.e-{id}` class, which is what actually controls the
+		// padding here (not the `--padding-*` custom props). Doing it there keeps it
+		// overridable by the user's Style-panel padding. See that method for details.
+
+		// Slide sizing from the runtime-set custom props — the SAME formula the
+		// Nested Slider uses (nestedslider.scss `.aae-slider-track > *`). Targets
+		// the track's direct children so it also covers loop clones the runtime
+		// injects. `--aae-slides-per-view` defaults to 1 if the runtime hasn't set
+		// it yet, so keep a sane fallback.
+		> * {
+			flex: 0 0 calc((100% - (var(--aae-slide-gap, 0px) * (var(--aae-slides-per-view, 1) - 1))) / var(--aae-slides-per-view, 1));
+			max-width: calc((100% - (var(--aae-slide-gap, 0px) * (var(--aae-slides-per-view, 1) - 1))) / var(--aae-slides-per-view, 1));
+			box-sizing: border-box;
+			transform-style: preserve-3d;
+			transition: transform 0.5s ease-out;
+			height: var(--aae-slide-height, auto);
+		}
+	}
+
+	.aae-a-loop-grid-empty {
+		width: 100%;
+		padding: 2rem;
+		text-align: center;
+		opacity: 0.7;
+	}
+
+}
+
+// Pagination edge-state (mirrors the Loop Grid): hide the inert control on the
+// boundary pages. FRONTEND ONLY — scoped on `body` (the editor-active class is
+// on the preview <body>, NOT on the slider div, so a `.aae-a-loop-grid-slider:not(...)`
+// scope would wrongly fire in the editor and hide Load More there). The editor
+// keeps every piece visible + styleable.
+body:not(.elementor-editor-active) {
+	.aae-a-loop-grid-slider {
+		.aae-pg-first [data-aae-nav="prev"],
+		.aae-pg-last [data-aae-nav="next"],
+		.aae-pg-last [data-aae-loadmore] {
+			display: none;
+		}
+	}
+}
