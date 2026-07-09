@@ -50,6 +50,7 @@ import {
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
+const dropdownSelectTimers = new Set();
 
 const prop = ( type, value ) => ( { $$type: type, value } );
 
@@ -65,6 +66,42 @@ function readProp( value, fallback = '' ) {
 	return value;
 }
 
+function normalizeClassesValue( classes ) {
+	const raw = readProp( classes, [] );
+	if ( Array.isArray( raw ) ) {
+		return raw;
+	}
+	if ( typeof raw === 'string' ) {
+		return raw.split( /\s+/ ).filter( Boolean );
+	}
+	return [];
+}
+
+function classToken( item ) {
+	if ( typeof item === 'string' ) {
+		return item;
+	}
+	return item?.value || item?.label || item?.name || item?.id || '';
+}
+
+function isEditorModalOrPopoverActive() {
+	const doc = window.document;
+	const active = doc.activeElement;
+	return !! (
+		doc.querySelector( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' ) ||
+		active?.closest?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' )
+	);
+}
+
+function getSelectedElementId() {
+	try {
+		const selected = window.elementor?.selection?.getElements?.()?.[ 0 ];
+		return selected?.id || selected?.model?.get?.( 'id' ) || null;
+	} catch ( error ) {
+		return null;
+	}
+}
+
 function syncEditorDropdownPreview( navId, itemId ) {
 	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
 	const nav = previewDocument?.querySelector( `.aae-a-nav[data-id="${ navId }"]` );
@@ -78,8 +115,9 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		);
 		item?.classList.toggle( 'aae-editor-dropdown-open', open );
 		if ( ! dropdown ) return;
+		dropdown.classList.add( DROPDOWN_CLASS );
+		dropdown.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 		if ( open ) {
-			dropdown.classList.add( DROPDOWN_CLASS );
 			dropdown.style.visibility = 'visible';
 			dropdown.style.opacity = '1';
 			dropdown.style.pointerEvents = 'auto';
@@ -90,17 +128,11 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		}
 	};
 
-	const currentlyOpen = nav.querySelector(
-		':scope > .aae-a-nav-item.aae-editor-dropdown-open'
-	);
-	const currentOpenId = currentlyOpen?.getAttribute( 'data-id' ) || null;
-	if ( currentOpenId === ( itemId || null ) ) {
-		return;
-	}
-
-	if ( currentlyOpen ) {
-		revealDropdown( currentlyOpen, false );
-	}
+	nav.querySelectorAll( ':scope > .aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
+		if ( item.getAttribute( 'data-id' ) !== itemId ) {
+			revealDropdown( item, false );
+		}
+	} );
 	if ( itemId ) {
 		revealDropdown(
 			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` ),
@@ -118,11 +150,19 @@ function syncEditorNestedPreview( itemId, open ) {
 	const dropdown = item.querySelector(
 		':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
 	);
-	if ( dropdown && open ) {
+	if ( dropdown ) {
 		dropdown.classList.add( DROPDOWN_CLASS );
+		dropdown.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
+	}
+	if ( dropdown && open ) {
 		dropdown.style.visibility = 'visible';
 		dropdown.style.opacity = '1';
 		dropdown.style.pointerEvents = 'auto';
+	}
+	if ( dropdown && ! open ) {
+		dropdown.style.removeProperty( 'visibility' );
+		dropdown.style.removeProperty( 'opacity' );
+		dropdown.style.removeProperty( 'pointer-events' );
 	}
 	if ( ! open ) return;
 
@@ -134,6 +174,7 @@ function syncEditorNestedPreview( itemId, open ) {
 		);
 		if ( ancestorDropdown ) {
 			ancestorDropdown.classList.add( DROPDOWN_CLASS );
+			ancestorDropdown.setAttribute( 'data-aae-dropdown-for', ancestor.getAttribute( 'data-id' ) || '' );
 			ancestorDropdown.style.visibility = 'visible';
 			ancestorDropdown.style.opacity = '1';
 			ancestorDropdown.style.pointerEvents = 'auto';
@@ -208,6 +249,23 @@ function getElementId( container ) {
 	return container?.id || container?.model?.get?.( 'id' ) || container?.model?.id || null;
 }
 
+function findOwnerNavId( itemId ) {
+	let current = getContainer( itemId );
+	while ( current ) {
+		const type = current.model?.get?.( 'widgetType' ) || current.model?.get?.( 'elType' );
+		if ( type === 'e-aae-a-nav' ) {
+			return getElementId( current );
+		}
+		current = current.parent || null;
+	}
+	return null;
+}
+
+function isTopLevelNavItem( itemId ) {
+	const item = getContainer( itemId );
+	return ( item?.parent?.model?.get?.( 'widgetType' ) || item?.parent?.model?.get?.( 'elType' ) ) === 'e-aae-a-nav';
+}
+
 function findDropdownContainer( itemId ) {
 	const item = getContainer( itemId );
 	if ( ! item ) return null;
@@ -232,6 +290,9 @@ function selectDropdownContainer( itemId ) {
 	if ( ! dropdownId ) return;
 
 	syncEditorNestedPreview( itemId, true );
+	if ( isEditorModalOrPopoverActive() || getSelectedElementId() === dropdownId ) {
+		return;
+	}
 
 	try {
 		selectElement( dropdownId );
@@ -242,6 +303,7 @@ function selectDropdownContainer( itemId ) {
 
 	const container = getContainer( dropdownId );
 	if ( container ) {
+		markDropdownFlexbox( container );
 		try {
 			window.$e?.run?.( 'document/elements/select', {
 				container: typeof container.lookup === 'function' ? container.lookup() : container,
@@ -251,25 +313,30 @@ function selectDropdownContainer( itemId ) {
 			/* best effort */
 		}
 	}
+}
 
-	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
-	const node = previewDocument?.querySelector( `[data-id="${ dropdownId }"]` );
-	if ( node ) {
-		node.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true } ) );
-		node.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true } ) );
-	}
+function selectDropdownContainerAfterRender( itemId ) {
+	dropdownSelectTimers.forEach( timer => window.clearTimeout( timer ) );
+	dropdownSelectTimers.clear();
+	[ 0, 120, 280 ].forEach( delay => {
+		const timer = window.setTimeout( () => {
+			dropdownSelectTimers.delete( timer );
+			selectDropdownContainer( itemId );
+		}, delay );
+		dropdownSelectTimers.add( timer );
+	} );
 }
 
 function markDropdownFlexbox( flexbox ) {
 	if ( ! flexbox || hasElementClass( flexbox, DROPDOWN_CLASS ) ) {
 		return;
 	}
-	const classes = readProp( flexbox.settings?.get?.( 'classes' ), [] );
+	const classes = normalizeClassesValue( flexbox.settings?.get?.( 'classes' ) );
 	updateElementSettings( {
 		id: flexbox.id,
 		props: {
 			classes: prop( 'classes', [
-				...( Array.isArray( classes ) ? classes : [] ),
+				...classes,
 				DROPDOWN_CLASS,
 			] ),
 		},
@@ -468,8 +535,8 @@ function findMobileCompanion( nav ) {
 }
 
 function hasElementClass( container, className ) {
-	const classes = readProp( container?.settings?.get?.( 'classes' ), [] );
-	return Array.isArray( classes ) && classes.includes( className );
+	return normalizeClassesValue( container?.settings?.get?.( 'classes' ) )
+		.some( item => classToken( item ) === className );
 }
 
 function flattenLegacyMobileCompanion( companion ) {
@@ -1324,6 +1391,14 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 		if ( enabled && childIds.length > 0 ) {
 			normalizeDropdownModel( elementId );
 		}
+		if ( enabled ) {
+			const ownerNavId = findOwnerNavId( elementId );
+			if ( ownerNavId && isTopLevelNavItem( elementId ) ) {
+				syncEditorDropdownPreviewAfterRender( ownerNavId, elementId );
+			} else {
+				syncEditorNestedPreview( elementId, true );
+			}
+		}
 	};
 
 	const updateDropdownSetting = ( key, value, setter ) => {
@@ -1338,10 +1413,7 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 		/* normalizeDropdownModel can dispatch settings/move commands that replace
 		 * the editing-panel tree without throwing. Re-select across that short
 		 * render window so the user always lands on the actual Flexbox Style tab. */
-		[ 0, 80, 200, 400, 800 ].forEach( delay => window.setTimeout(
-			() => selectDropdownContainer( elementId ),
-			delay
-		) );
+		selectDropdownContainerAfterRender( elementId );
 	};
 
 	return (

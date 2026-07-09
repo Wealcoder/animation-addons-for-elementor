@@ -466,10 +466,11 @@ body.aae-mobile-nav-scroll-lock {
 	max-width: 100%;
 	gap: 0 !important;
 	position: relative !important;
-	height: 100%;
+	height: auto !important;
+	block-size: auto !important;
 	min-height: 0;
 	overflow-x: hidden !important;
-	overflow-y: hidden !important;
+	overflow-y: visible !important;
 
 	/* A styled dropdown can carry its own margin/padding. Fully remove closed
 	 * panels from grid layout so those authored styles cannot leave a gap. */
@@ -530,14 +531,19 @@ body.aae-mobile-nav-scroll-lock {
 	/* Runtime wrapper owns viewport geometry; the authored Atomic dropdown
 	 * remains an independently styleable child and needs only mount resets. */
 	.aae-mobile-drill-panel {
-		position: absolute !important;
-		inset: 0 !important;
+		position: relative !important;
+		inset: auto !important;
 		z-index: 5;
 		display: block !important;
 		box-sizing: border-box;
 		width: 100% !important;
-		height: 100% !important;
-		overflow-y: auto !important;
+		height: auto !important;
+		block-size: auto !important;
+		min-height: 0 !important;
+		min-block-size: 0 !important;
+		max-height: none !important;
+		max-block-size: none !important;
+		overflow-y: visible !important;
 		overflow-x: hidden !important;
 		visibility: hidden !important;
 		opacity: 0 !important;
@@ -552,6 +558,8 @@ body.aae-mobile-nav-scroll-lock {
 	}
 
 	.aae-mobile-drill-panel.is-active {
+		position: relative !important;
+		inset: auto !important;
 		transform: translateX(0);
 		visibility: visible !important;
 		opacity: 1 !important;
@@ -569,9 +577,14 @@ body.aae-mobile-nav-scroll-lock {
 		max-width: 100% !important;
 		max-inline-size: 100% !important;
 		height: auto !important;
+		block-size: auto !important;
 		min-height: 0 !important;
+		min-block-size: 0 !important;
+		max-height: none !important;
+		max-block-size: none !important;
 		box-sizing: border-box !important;
 		overflow-x: hidden !important;
+		overflow-y: visible !important;
 		visibility: visible !important;
 		opacity: 1 !important;
 		pointer-events: auto !important;
@@ -590,8 +603,7 @@ body.aae-mobile-nav-scroll-lock {
 	}
 
 	&[data-drill-depth]:not([data-drill-depth="0"]) > .aae-a-nav-item {
-		visibility: hidden;
-		pointer-events: none;
+		display: none !important;
 	}
 
 	/* Legacy mobile accordion rules retained for backwards compatibility with

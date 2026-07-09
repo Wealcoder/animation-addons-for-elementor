@@ -100,6 +100,9 @@ function selectEditorElementById( id ) {
 	if ( ! id ) return;
 	try {
 		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		if ( editorWindow.document?.querySelector?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' ) ) {
+			return;
+		}
 		const container = editorWindow.elementor?.getContainer?.( id );
 		if ( ! container ) return;
 		editorWindow.$e?.run?.( 'document/elements/select', {
@@ -109,6 +112,49 @@ function selectEditorElementById( id ) {
 	} catch ( error ) {
 		/* Best effort only: editor internals may not be ready during render. */
 	}
+}
+
+function getEditorDropdownChain( item ) {
+	const chain = new Set();
+	let current = item;
+	while ( current ) {
+		chain.add( current );
+		current = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	}
+	return chain;
+}
+
+function hideEditorDropdown( item ) {
+	item.classList.remove( 'aae-editor-dropdown-open' );
+	const sub = getSub( item );
+	if ( ! sub ) return;
+	sub.style.removeProperty( 'visibility' );
+	sub.style.removeProperty( 'opacity' );
+	sub.style.removeProperty( 'pointer-events' );
+}
+
+function closeInactiveEditorDropdowns( nav, activeItem = null ) {
+	const activeChain = activeItem ? getEditorDropdownChain( activeItem ) : new Set();
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open' ).forEach( item => {
+		if ( ! activeChain.has( item ) ) {
+			hideEditorDropdown( item );
+		}
+	} );
+}
+
+function getDirectDropdownOwner( dropdown ) {
+	if ( ! dropdown?.classList ) return null;
+	const owner = dropdown.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	if ( ! owner || getSub( owner ) !== dropdown ) return null;
+	if (
+		dropdown.classList.contains( 'aae-a-nav-dropdown' ) ||
+		dropdown.classList.contains( 'e-flexbox-base' ) ||
+		dropdown.classList.contains( 'e-con' ) ||
+		dropdown.hasAttribute( 'data-aae-dropdown-for' )
+	) {
+		return owner;
+	}
+	return null;
 }
 
 function initEditorDropdownUX( nav ) {
@@ -129,11 +175,16 @@ function initEditorDropdownUX( nav ) {
 				sub.classList.add( 'aae-a-nav-dropdown' );
 				sub.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 			}
-			if ( item.classList.contains( 'elementor-element-selected' ) ||
-				item.querySelector( '.elementor-element-selected' ) ) {
-				openEditorDropdownChain( item );
-			}
 		} );
+
+		const selected = nav.querySelector( '.elementor-element-selected' );
+		const selectedDropdownOwner = getDirectDropdownOwner( selected );
+		const selectedItem = selectedDropdownOwner ||
+			( selected?.closest?.( '.aae-a-nav-item[data-has-dropdown="true"]' ) );
+		if ( selectedItem && nav.contains( selectedItem ) ) {
+			closeInactiveEditorDropdowns( nav, selectedItem );
+			openEditorDropdownChain( selectedItem );
+		}
 	};
 
 	let raf = null;
@@ -146,22 +197,29 @@ function initEditorDropdownUX( nav ) {
 	};
 
 	nav.addEventListener( 'pointerdown', e => {
-		const dropdown = e.target.closest( '.aae-a-nav-dropdown' );
-		if ( ! dropdown || ! nav.contains( dropdown ) ) return;
-		const owner = dropdown.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-		if ( owner ) openEditorDropdownChain( owner );
+		const owner = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( ! owner || ! nav.contains( owner ) ) return;
+		const dropdown = getSub( owner );
+		if ( ! dropdown || ( ! dropdown.contains( e.target ) && e.target !== dropdown ) ) return;
+		dropdown.classList.add( 'aae-a-nav-dropdown' );
+		dropdown.setAttribute( 'data-aae-dropdown-for', owner.getAttribute( 'data-id' ) || '' );
+		closeInactiveEditorDropdowns( nav, owner );
+		openEditorDropdownChain( owner );
 		selectEditorElementById( dropdown.getAttribute( 'data-id' ) );
 	}, { capture: true, signal: sig } );
 
 	nav.addEventListener( 'click', e => {
 		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( ! item || ! nav.contains( item ) ) return;
+		closeInactiveEditorDropdowns( nav, item );
 		openEditorDropdownChain( item );
 	}, { capture: true, signal: sig } );
 
 	const observer = new MutationObserver( schedule );
 	observer.observe( nav, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'data-has-dropdown' ] } );
 	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
+	const interval = window.setInterval( schedule, 1500 );
+	sig.addEventListener( 'abort', () => window.clearInterval( interval ), { once: true } );
 	sync();
 }
 
@@ -547,10 +605,7 @@ function initEditorMobilePreview( companion ) {
 		}
 		const proxy = e.target.closest( '[data-editor-source-id]' );
 		if ( ! proxy ) return;
-		const original = document.querySelector( `[data-id="${ proxy.dataset.editorSourceId }"]` );
-		if ( ! original ) return;
-		original.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true, view: window } ) );
-		original.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true, view: window } ) );
+		selectEditorElementById( proxy.dataset.editorSourceId );
 	}, { capture: true, signal: sig } );
 	companion.addEventListener( 'click', e => {
 		if ( e.target.closest( '.aae-mobile-nav-back' ) ) {
@@ -868,12 +923,18 @@ register( {
 		};
 
 		const closeDrawer = ( restoreFocus = true ) => {
+			const focusTarget = restoreFocus && lastFocus?.isConnected ? lastFocus : toggle;
+			if ( drawer.contains( document.activeElement ) ) {
+				focusTarget?.focus?.();
+			}
 			companion.classList.remove( 'is-open' );
 			toggle.setAttribute( 'aria-expanded', 'false' );
-			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
 			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
-			if ( restoreFocus ) lastFocus?.focus?.();
+			drawer.setAttribute( 'aria-hidden', 'true' );
+			if ( restoreFocus && ! drawer.contains( document.activeElement ) ) {
+				focusTarget?.focus?.();
+			}
 		};
 
 		const openDrawer = () => {
