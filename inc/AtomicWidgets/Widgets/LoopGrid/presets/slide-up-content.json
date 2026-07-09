@@ -1,0 +1,645 @@
+{
+  "content": [
+    {
+      "id": "item2bi6q7",
+      "settings": {
+        "classes": {
+          "$$type": "classes",
+          "value": [
+            "e-slide-item",
+            "aae-slideup-card"
+          ]
+        }
+      },
+      "elements": [
+        {
+          "id": "img2bcka1",
+          "settings": {
+            "classes": {
+              "$$type": "classes",
+              "value": [
+                "e-slide-img",
+                "aae-slideup-img"
+              ]
+            },
+            "image": {
+              "$$type": "image",
+              "value": {
+                "src": {
+                  "$$type": "dynamic",
+                  "value": {
+                    "name": "aae-post-featured-image",
+                    "group": "aae-posts",
+                    "settings": []
+                  }
+                },
+                "size": {
+                  "$$type": "string",
+                  "value": "large"
+                }
+              }
+            }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-image",
+          "elType": "widget",
+          "styles": {
+            "e-slide-img": {
+              "id": "e-slide-img",
+              "label": "local",
+              "type": "class",
+              "variants": [
+                {
+                  "meta": {
+                    "breakpoint": "desktop",
+                    "state": null
+                  },
+                  "props": {
+                    "position": {
+                      "$$type": "string",
+                      "value": "absolute"
+                    },
+                    "inset-block-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 0,
+                        "unit": "px"
+                      }
+                    },
+                    "inset-inline-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 0,
+                        "unit": "px"
+                      }
+                    },
+                    "width": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 100,
+                        "unit": "%"
+                      }
+                    },
+                    "height": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 100,
+                        "unit": "%"
+                      }
+                    },
+                    "z-index": {
+                      "$$type": "number",
+                      "value": 0
+                    },
+                    "object-fit": {
+                      "$$type": "string",
+                      "value": "cover"
+                    }
+                  },
+                  "custom_css": null
+                }
+              ],
+              "custom_css": null
+            }
+          },
+          "interactions": [],
+          "editor_settings": {
+            "title": "Featured Image"
+          },
+          "version": "0.0"
+        },
+        {
+          "id": "div2bdc0q",
+          "settings": {
+            "classes": {
+              "$$type": "classes",
+              "value": [
+                "e-slide-scrim",
+                "aae-slideup-scrim"
+              ]
+            }
+          },
+          "elements": [],
+          "isInner": false,
+          "elType": "e-div-block",
+          "styles": {
+            "e-slide-scrim": {
+              "id": "e-slide-scrim",
+              "label": "local",
+              "type": "class",
+              "variants": [
+                {
+                  "meta": {
+                    "breakpoint": "desktop",
+                    "state": null
+                  },
+                  "props": {
+                    "position": {
+                      "$$type": "string",
+                      "value": "absolute"
+                    },
+                    "inset-block-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 0,
+                        "unit": "px"
+                      }
+                    },
+                    "inset-inline-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 0,
+                        "unit": "px"
+                      }
+                    },
+                    "width": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 100,
+                        "unit": "%"
+                      }
+                    },
+                    "height": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 100,
+                        "unit": "%"
+                      }
+                    },
+                    "z-index": {
+                      "$$type": "number",
+                      "value": 1
+                    },
+                    "background": {
+                      "$$type": "background",
+                      "value": {
+                        "background-overlay": {
+                          "$$type": "background-overlay",
+                          "value": [
+                            {
+                              "$$type": "background-gradient-overlay",
+                              "value": {
+                                "type": {
+                                  "$$type": "string",
+                                  "value": "linear"
+                                },
+                                "angle": {
+                                  "$$type": "number",
+                                  "value": 180
+                                },
+                                "stops": {
+                                  "$$type": "gradient-color-stop",
+                                  "value": [
+                                    {
+                                      "$$type": "color-stop",
+                                      "value": {
+                                        "color": {
+                                          "$$type": "color",
+                                          "value": "rgba(0,0,0,0)"
+                                        },
+                                        "offset": {
+                                          "$$type": "number",
+                                          "value": 40
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "$$type": "color-stop",
+                                      "value": {
+                                        "color": {
+                                          "$$type": "color",
+                                          "value": "rgba(0,0,0,0.8)"
+                                        },
+                                        "offset": {
+                                          "$$type": "number",
+                                          "value": 100
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "custom_css": null
+                }
+              ],
+              "custom_css": null
+            }
+          },
+          "interactions": [],
+          "editor_settings": {
+            "title": "Block"
+          },
+          "version": "0.0"
+        },
+        {
+          "id": "t2be3rf",
+          "settings": {
+            "classes": {
+              "$$type": "classes",
+              "value": [
+                "e-slide-title",
+                "aae-slideup-title"
+              ]
+            },
+            "link": {
+              "$$type": "link",
+              "value": {
+                "destination": {
+                  "$$type": "dynamic",
+                  "value": {
+                    "name": "aae-post-url",
+                    "group": "aae-posts",
+                    "settings": []
+                  }
+                }
+              }
+            }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-aae-a-post-title",
+          "elType": "widget",
+          "styles": {
+            "e-slide-title": {
+              "id": "e-slide-title",
+              "label": "local",
+              "type": "class",
+              "variants": [
+                {
+                  "meta": {
+                    "breakpoint": "desktop",
+                    "state": null
+                  },
+                  "props": {
+                    "position": {
+                      "$$type": "string",
+                      "value": "relative"
+                    },
+                    "z-index": {
+                      "$$type": "number",
+                      "value": 3
+                    },
+                    "color": {
+                      "$$type": "color",
+                      "value": "#ffffff"
+                    },
+                    "font-size": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 22,
+                        "unit": "px"
+                      }
+                    },
+                    "font-weight": {
+                      "$$type": "string",
+                      "value": "700"
+                    }
+                  },
+                  "custom_css": null
+                }
+              ],
+              "custom_css": null
+            }
+          },
+          "interactions": [],
+          "editor_settings": {
+            "title": "Post Title"
+          },
+          "version": "0.0"
+        },
+        {
+          "id": "div2bhezi",
+          "settings": {
+            "classes": {
+              "$$type": "classes",
+              "value": [
+                "e-slide-reveal",
+                "aae-slideup-reveal"
+              ]
+            }
+          },
+          "elements": [
+            {
+              "id": "p2bfvi4",
+              "settings": {
+                "classes": {
+                  "$$type": "classes",
+                  "value": [
+                    "e-slide-meta"
+                  ]
+                },
+                "paragraph": {
+                  "$$type": "dynamic",
+                  "value": {
+                    "name": "aae-author-name",
+                    "group": "aae-author",
+                    "settings": []
+                  }
+                },
+                "link": {
+                  "$$type": "link",
+                  "value": []
+                }
+              },
+              "elements": [],
+              "isInner": false,
+              "widgetType": "e-paragraph",
+              "elType": "widget",
+              "styles": {
+                "e-slide-meta": {
+                  "id": "e-slide-meta",
+                  "label": "local",
+                  "type": "class",
+                  "variants": [
+                    {
+                      "meta": {
+                        "breakpoint": "desktop",
+                        "state": null
+                      },
+                      "props": {
+                        "color": {
+                          "$$type": "color",
+                          "value": "rgba(255,255,255,0.9)"
+                        },
+                        "font-size": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 13,
+                            "unit": "px"
+                          }
+                        }
+                      },
+                      "custom_css": null
+                    }
+                  ],
+                  "custom_css": null
+                }
+              },
+              "interactions": [],
+              "editor_settings": {
+                "title": "Text"
+              },
+              "version": "0.0"
+            },
+            {
+              "id": "p2bgn8t",
+              "settings": {
+                "classes": {
+                  "$$type": "classes",
+                  "value": [
+                    "e-slide-more",
+                    "aae-slideup-more"
+                  ]
+                },
+                "paragraph": {
+                  "$$type": "html-v3",
+                  "value": {
+                    "content": {
+                      "$$type": "string",
+                      "value": "Read More →"
+                    },
+                    "children": []
+                  }
+                },
+                "tag": {
+                  "$$type": "string",
+                  "value": "span"
+                }
+              },
+              "elements": [],
+              "isInner": false,
+              "widgetType": "e-paragraph",
+              "elType": "widget",
+              "styles": {
+                "e-slide-more": {
+                  "id": "e-slide-more",
+                  "label": "local",
+                  "type": "class",
+                  "variants": [
+                    {
+                      "meta": {
+                        "breakpoint": "desktop",
+                        "state": null
+                      },
+                      "props": {
+                        "color": {
+                          "$$type": "color",
+                          "value": "#ffd166"
+                        },
+                        "font-size": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 13,
+                            "unit": "px"
+                          }
+                        },
+                        "font-weight": {
+                          "$$type": "string",
+                          "value": "600"
+                        }
+                      },
+                      "custom_css": null
+                    }
+                  ],
+                  "custom_css": null
+                }
+              },
+              "interactions": [],
+              "editor_settings": {
+                "title": "Label"
+              },
+              "version": "0.0"
+            }
+          ],
+          "isInner": false,
+          "elType": "e-div-block",
+          "styles": {
+            "e-slide-reveal": {
+              "id": "e-slide-reveal",
+              "label": "local",
+              "type": "class",
+              "variants": [
+                {
+                  "meta": {
+                    "breakpoint": "desktop",
+                    "state": null
+                  },
+                  "props": {
+                    "position": {
+                      "$$type": "string",
+                      "value": "relative"
+                    },
+                    "z-index": {
+                      "$$type": "number",
+                      "value": 3
+                    },
+                    "display": {
+                      "$$type": "string",
+                      "value": "flex"
+                    },
+                    "flex-direction": {
+                      "$$type": "string",
+                      "value": "column"
+                    },
+                    "gap": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 6,
+                        "unit": "px"
+                      }
+                    },
+                    "padding": {
+                      "$$type": "dimensions",
+                      "value": {
+                        "block-start": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 10,
+                            "unit": "px"
+                          }
+                        },
+                        "inline-end": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 0,
+                            "unit": "px"
+                          }
+                        },
+                        "block-end": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 0,
+                            "unit": "px"
+                          }
+                        },
+                        "inline-start": {
+                          "$$type": "size",
+                          "value": {
+                            "size": 0,
+                            "unit": "px"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "custom_css": null
+                }
+              ],
+              "custom_css": null
+            }
+          },
+          "interactions": [],
+          "editor_settings": {
+            "title": "Block"
+          },
+          "version": "0.0"
+        }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-loop-item",
+      "isLocked": true,
+      "styles": {
+        "e-slide-item": {
+          "id": "e-slide-item",
+          "label": "local",
+          "type": "class",
+          "variants": [
+            {
+              "meta": {
+                "breakpoint": "desktop",
+                "state": null
+              },
+              "props": {
+                "height": {
+                  "$$type": "size",
+                  "value": {
+                    "size": 380,
+                    "unit": "px"
+                  }
+                },
+                "overflow": {
+                  "$$type": "string",
+                  "value": "hidden"
+                },
+                "position": {
+                  "$$type": "string",
+                  "value": "relative"
+                },
+                "border-radius": {
+                  "$$type": "size",
+                  "value": {
+                    "size": 16,
+                    "unit": "px"
+                  }
+                },
+                "display": {
+                  "$$type": "string",
+                  "value": "flex"
+                },
+                "flex-direction": {
+                  "$$type": "string",
+                  "value": "column"
+                },
+                "justify-content": {
+                  "$$type": "string",
+                  "value": "flex-end"
+                },
+                "padding": {
+                  "$$type": "dimensions",
+                  "value": {
+                    "block-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 24,
+                        "unit": "px"
+                      }
+                    },
+                    "inline-end": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 24,
+                        "unit": "px"
+                      }
+                    },
+                    "block-end": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 24,
+                        "unit": "px"
+                      }
+                    },
+                    "inline-start": {
+                      "$$type": "size",
+                      "value": {
+                        "size": 24,
+                        "unit": "px"
+                      }
+                    }
+                  }
+                }
+              },
+              "custom_css": null
+            }
+          ],
+          "custom_css": null
+        }
+      },
+      "interactions": [],
+      "editor_settings": {
+        "title": "Loop Item"
+      },
+      "version": "0.0"
+    }
+  ],
+  "page_settings": [],
+  "version": "0.4",
+  "title": "Slide-Up Content",
+  "type": "e-aae-a-loop-item"
+}

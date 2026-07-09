@@ -32,11 +32,6 @@ if (! defined('ABSPATH')) {
 
 /**
  * AAE Basic Button — an open atomic container styled like a button.
- *
- * Unlike Button / Button Pro, this widget carries no style presets or
- * hover-effect controls. It only supplies a link (href/target/nofollow)
- * and a minimal base style; everything nested inside is entirely up to
- * the user.
  */
 class AAE_A_Btn extends Atomic_Element_Base
 {

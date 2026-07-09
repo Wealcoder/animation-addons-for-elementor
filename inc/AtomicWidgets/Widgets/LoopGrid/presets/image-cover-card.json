@@ -1,0 +1,516 @@
+{
+    "content": [
+        {
+            "id": "bed6604",
+            "elType": "e-aae-a-loop-item",
+            "settings": {
+                "classes": {
+                    "$$type": "classes",
+                    "value": [
+                        "e-bed6604-9bf0d34",
+                        "aae-hover-card"
+                    ]
+                }
+            },
+            "elements": [
+                {
+                    "id": "aaeimg01",
+                    "elType": "widget",
+                    "settings": {
+                        "classes": {
+                            "$$type": "classes",
+                            "value": [
+                                "e-aaeimg-cover",
+                                "aae-hover-img"
+                            ]
+                        },
+                        "image": {
+                            "$$type": "image",
+                            "value": {
+                                "src": {
+                                    "$$type": "dynamic",
+                                    "value": {
+                                        "name": "aae-post-featured-image",
+                                        "group": "aae-posts",
+                                        "settings": []
+                                    }
+                                },
+                                "size": {
+                                    "$$type": "string",
+                                    "value": "large"
+                                }
+                            }
+                        }
+                    },
+                    "elements": [],
+                    "widgetType": "e-image",
+                    "styles": {
+                        "e-aaeimg-cover": {
+                            "id": "e-aaeimg-cover",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": {
+                                        "breakpoint": "desktop",
+                                        "state": null
+                                    },
+                                    "props": {
+                                        "position": {
+                                            "$$type": "string",
+                                            "value": "absolute"
+                                        },
+                                        "inset-block-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 0,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "inset-inline-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 0,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "width": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 100,
+                                                "unit": "%"
+                                            }
+                                        },
+                                        "height": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 100,
+                                                "unit": "%"
+                                            }
+                                        },
+                                        "object-fit": {
+                                            "$$type": "string",
+                                            "value": "cover"
+                                        },
+                                        "z-index": {
+                                            "$$type": "number",
+                                            "value": 0
+                                        }
+                                    }
+                                }
+                            ],
+                            "custom_css": null
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": {
+                        "title": "Featured Image"
+                    },
+                    "version": "0.0"
+                },
+                {
+                    "id": "aaeov001",
+                    "elType": "e-div-block",
+                    "settings": {
+                        "classes": {
+                            "$$type": "classes",
+                            "value": [
+                                "e-aaeov-grad",
+                                "aae-hover-tint"
+                            ]
+                        }
+                    },
+                    "elements": [],
+                    "styles": {
+                        "e-aaeov-grad": {
+                            "id": "e-aaeov-grad",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": {
+                                        "breakpoint": "desktop",
+                                        "state": null
+                                    },
+                                    "props": {
+                                        "position": {
+                                            "$$type": "string",
+                                            "value": "absolute"
+                                        },
+                                        "inset-block-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 0,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "inset-inline-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 0,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "width": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 100,
+                                                "unit": "%"
+                                            }
+                                        },
+                                        "height": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 100,
+                                                "unit": "%"
+                                            }
+                                        },
+                                        "z-index": {
+                                            "$$type": "number",
+                                            "value": 1
+                                        },
+                                        "background": {
+                                            "$$type": "background",
+                                            "value": {
+                                                "background-overlay": {
+                                                    "$$type": "background-overlay",
+                                                    "value": [
+                                                        {
+                                                            "$$type": "background-gradient-overlay",
+                                                            "value": {
+                                                                "type": {
+                                                                    "$$type": "string",
+                                                                    "value": "linear"
+                                                                },
+                                                                "angle": {
+                                                                    "$$type": "number",
+                                                                    "value": 180
+                                                                },
+                                                                "stops": {
+                                                                    "$$type": "gradient-color-stop",
+                                                                    "value": [
+                                                                        {
+                                                                            "$$type": "color-stop",
+                                                                            "value": {
+                                                                                "color": {
+                                                                                    "$$type": "color",
+                                                                                    "value": "rgba(0,0,0,0)"
+                                                                                },
+                                                                                "offset": {
+                                                                                    "$$type": "number",
+                                                                                    "value": 30
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "$$type": "color-stop",
+                                                                            "value": {
+                                                                                "color": {
+                                                                                    "$$type": "color",
+                                                                                    "value": "rgba(0,0,0,0.75)"
+                                                                                },
+                                                                                "offset": {
+                                                                                    "$$type": "number",
+                                                                                    "value": 100
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "custom_css": null
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": {
+                        "title": "Overlay"
+                    },
+                    "version": "0.0",
+                    "isInner": false
+                },
+                {
+                    "id": "9e45470",
+                    "elType": "widget",
+                    "settings": {
+                        "paragraph": {
+                            "$$type": "dynamic",
+                            "value": {
+                                "name": "aae-author-name",
+                                "group": "aae-author",
+                                "settings": []
+                            }
+                        },
+                        "link": {
+                            "$$type": "link",
+                            "value": {
+                                "isTargetBlank": null
+                            }
+                        },
+                        "classes": {
+                            "$$type": "classes",
+                            "value": [
+                                "e-aaelift"
+                            ]
+                        }
+                    },
+                    "elements": [],
+                    "widgetType": "e-paragraph",
+                    "styles": {
+                        "e-aaelift": {
+                            "id": "e-aaelift",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": {
+                                        "breakpoint": "desktop",
+                                        "state": null
+                                    },
+                                    "props": {
+                                        "position": {
+                                            "$$type": "string",
+                                            "value": "relative"
+                                        },
+                                        "z-index": {
+                                            "$$type": "number",
+                                            "value": 2
+                                        },
+                                        "color": {
+                                            "$$type": "color",
+                                            "value": "#ffffff"
+                                        }
+                                    }
+                                }
+                            ],
+                            "custom_css": null
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": [],
+                    "version": "0.0"
+                },
+                {
+                    "id": "658692b",
+                    "elType": "widget",
+                    "settings": {
+                        "link": {
+                            "$$type": "link",
+                            "value": {
+                                "isTargetBlank": null
+                            }
+                        },
+                        "classes": {
+                            "$$type": "classes",
+                            "value": [
+                                "e-aaelift"
+                            ]
+                        }
+                    },
+                    "elements": [],
+                    "widgetType": "e-paragraph",
+                    "styles": {
+                        "e-aaelift": {
+                            "id": "e-aaelift",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": {
+                                        "breakpoint": "desktop",
+                                        "state": null
+                                    },
+                                    "props": {
+                                        "position": {
+                                            "$$type": "string",
+                                            "value": "relative"
+                                        },
+                                        "z-index": {
+                                            "$$type": "number",
+                                            "value": 2
+                                        },
+                                        "color": {
+                                            "$$type": "color",
+                                            "value": "#ffffff"
+                                        }
+                                    }
+                                }
+                            ],
+                            "custom_css": null
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": [],
+                    "version": "0.0"
+                },
+                {
+                    "id": "89904e2",
+                    "elType": "widget",
+                    "settings": {
+                        "link": {
+                            "$$type": "link",
+                            "value": {
+                                "destination": {
+                                    "$$type": "dynamic",
+                                    "value": {
+                                        "name": "aae-post-url",
+                                        "group": "aae-posts",
+                                        "settings": []
+                                    }
+                                },
+                                "isTargetBlank": null
+                            }
+                        },
+                        "classes": {
+                            "$$type": "classes",
+                            "value": [
+                                "e-aaelift"
+                            ]
+                        }
+                    },
+                    "elements": [],
+                    "widgetType": "e-aae-a-post-title",
+                    "styles": {
+                        "e-aaelift": {
+                            "id": "e-aaelift",
+                            "label": "local",
+                            "type": "class",
+                            "variants": [
+                                {
+                                    "meta": {
+                                        "breakpoint": "desktop",
+                                        "state": null
+                                    },
+                                    "props": {
+                                        "position": {
+                                            "$$type": "string",
+                                            "value": "relative"
+                                        },
+                                        "z-index": {
+                                            "$$type": "number",
+                                            "value": 2
+                                        },
+                                        "color": {
+                                            "$$type": "color",
+                                            "value": "#ffffff"
+                                        }
+                                    }
+                                }
+                            ],
+                            "custom_css": null
+                        }
+                    },
+                    "interactions": [],
+                    "editor_settings": {
+                        "title": "Post Title"
+                    },
+                    "version": "0.0"
+                }
+            ],
+            "isInner": false,
+            "isLocked": true,
+            "styles": {
+                "e-bed6604-9bf0d34": {
+                    "id": "e-bed6604-9bf0d34",
+                    "label": "local",
+                    "type": "class",
+                    "variants": [
+                        {
+                            "meta": {
+                                "breakpoint": "desktop",
+                                "state": null
+                            },
+                            "props": {
+                                "position": {
+                                    "$$type": "string",
+                                    "value": "relative"
+                                },
+                                "overflow": {
+                                    "$$type": "string",
+                                    "value": "hidden"
+                                },
+                                "border-radius": {
+                                    "$$type": "size",
+                                    "value": {
+                                        "size": 16,
+                                        "unit": "px"
+                                    }
+                                },
+                                "height": {
+                                    "$$type": "size",
+                                    "value": {
+                                        "size": 380,
+                                        "unit": "px"
+                                    }
+                                },
+                                "display": {
+                                    "$$type": "string",
+                                    "value": "flex"
+                                },
+                                "flex-direction": {
+                                    "$$type": "string",
+                                    "value": "column"
+                                },
+                                "justify-content": {
+                                    "$$type": "string",
+                                    "value": "flex-end"
+                                },
+                                "padding": {
+                                    "$$type": "dimensions",
+                                    "value": {
+                                        "block-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 24,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "block-end": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 24,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "inline-start": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 24,
+                                                "unit": "px"
+                                            }
+                                        },
+                                        "inline-end": {
+                                            "$$type": "size",
+                                            "value": {
+                                                "size": 24,
+                                                "unit": "px"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "custom_css": null
+                        }
+                    ],
+                    "custom_css": null
+                }
+            },
+            "interactions": [],
+            "editor_settings": {
+                "title": "Loop Item"
+            },
+            "version": "0.0"
+        }
+    ],
+    "page_settings": [],
+    "version": "0.4",
+    "title": "Image Cover Card",
+    "type": "e-aae-a-loop-item"
+}

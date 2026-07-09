@@ -210,6 +210,7 @@ const config = {
 			max: 20,
 			step: 1,
 			when: showPeek,
+			help: 'Shows a sliver of the adjacent slides. If Peek doesn\'t look right, set the Slider Track element\'s padding to 0 (Track → Style → Spacing) — leftover padding shrinks the slide area and throws off the peek math.',
 			play_group: 'aae_ns_',
 			live_change: true,
 		},

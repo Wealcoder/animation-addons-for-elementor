@@ -1,0 +1,11 @@
+/* Slide-Up Content — hover: reveal block slides up + fades in, image zooms. */
+.aae-slideup-card .aae-slideup-img { transition: transform .7s ease; will-change: transform; }
+.aae-slideup-card .aae-slideup-reveal {
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
+	transform: translateY(12px);
+	transition: max-height .45s ease, opacity .4s ease, transform .45s ease;
+}
+.aae-slideup-card:hover .aae-slideup-img { transform: scale(1.06); }
+.aae-slideup-card:hover .aae-slideup-reveal { max-height: 120px; opacity: 1; transform: translateY(0); }

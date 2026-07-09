@@ -107,8 +107,13 @@ final class Bootstrap {
 		// enqueues the shared slider runtime plus the load-more bridge.
 		( new \WCF_ADDONS\Atomic\LoopGridSlider\Render() )->register();
 
-		// Style Manager
-		// ( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
+		// Style Manager — registers AAE utility classes (aae-flex, aae-a-p0,
+		// aae-a-svg, …) via the atomic styles pipeline.
+		( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
+
+		// Preset interaction styles — keyed CSS map, printed inline on demand
+		// for the presets actually used on the page (see Preset_Styles).
+		( new \WCF_ADDONS\Atomic\StyleManager\Preset_Styles() )->register();
 
 		( new Assets() )->register();
 	}

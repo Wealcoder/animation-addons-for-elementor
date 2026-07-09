@@ -1595,6 +1595,12 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Register library-document types for our atomic top-level widgets so
+		// "Save as a template" works on them (Elementor only registers types for
+		// e-flexbox / e-div-block / e-form; our roots would otherwise fail with
+		// "Invalid template type"). See inc/AtomicWidgets/Library/.
+		add_action('elementor/documents/register', [$this, 'register_library_documents']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'], 16);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_widget_scripts_in_preview']);
@@ -2561,6 +2567,26 @@ final class Atomic
 		}
 	}
 
+	/**
+	 * Register library-document types for the atomic top-level widgets, so the
+	 * editor's "Save as a template" (which sends the element's own elType as the
+	 * template type) resolves to a valid document and passes the local source's
+	 * is_valid_template_type() check. Mirrors Elementor's own registration for
+	 * e-flexbox / e-div-block.
+	 *
+	 * @param \Elementor\Core\Documents_Manager $documents_manager
+	 */
+	public function register_library_documents($documents_manager)
+	{
+		require_once __DIR__ . '/Library/class-aae-a-library-document.php';
+		require_once __DIR__ . '/Library/class-aae-a-library-documents.php';
+
+		$documents_manager
+			->register_document_type('e-aae-a-loop-grid', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Document::class)
+			->register_document_type('e-aae-a-loop-grid-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Slider_Document::class)
+			->register_document_type('e-aae-a-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Slider_Document::class);
+	}
+
 	public function register_atomic_scripts($loader)
 	{
 
@@ -3250,7 +3276,8 @@ JS,
 	private function get_widget_presets(): array
 	{
 		$presets = [];
-		
+		$scanned_dirs = [];
+
 		foreach ($this->get_available_widgets() as $widget_data) {
 			if (empty($widget_data['file'])) {
 				continue;
@@ -3262,6 +3289,15 @@ JS,
 			if (! is_dir($preset_dir)) {
 				continue;
 			}
+
+			// Many widgets share one folder (e.g. all LoopGrid parts live in
+			// Widgets/LoopGrid), so the same presets/ dir would be globbed once
+			// per sibling widget and every preset would appear N times. Scan each
+			// dir only once.
+			if (isset($scanned_dirs[$preset_dir])) {
+				continue;
+			}
+			$scanned_dirs[$preset_dir] = true;
 
 			foreach (glob($preset_dir . '/*.json') as $file) {
 				$raw = file_get_contents($file);
