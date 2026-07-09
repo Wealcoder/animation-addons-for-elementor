@@ -60,6 +60,8 @@ function getSub( item ) {
  * rendered DOM defensively. The editor control performs the same repair in the
  * saved model; this fallback also fixes already-published pages immediately. */
 function normalizeRenderedDropdowns( nav ) {
+	const canRepairDom = ! isEditor();
+
 	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 		let sub = getSub( item );
 		const stray = [ ...item.children ].filter( child =>
@@ -68,7 +70,7 @@ function normalizeRenderedDropdowns( nav ) {
 			child !== sub
 		);
 
-		if ( ! sub && stray.length ) {
+		if ( canRepairDom && ! sub && stray.length ) {
 			sub = document.createElement( 'div' );
 			sub.className = 'aae-a-nav-dropdown aae-a-nav-runtime-dropdown';
 			item.appendChild( sub );
@@ -76,8 +78,53 @@ function normalizeRenderedDropdowns( nav ) {
 		if ( ! sub ) return;
 
 		sub.classList.add( 'aae-a-nav-dropdown' );
-		stray.forEach( child => sub.appendChild( child ) );
+		if ( canRepairDom ) {
+			stray.forEach( child => sub.appendChild( child ) );
+		}
 	} );
+}
+
+function getEditorDropdownChain( item ) {
+	const chain = new Set();
+	let current = item;
+	while ( current ) {
+		chain.add( current );
+		current = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	}
+	return chain;
+}
+
+function hideEditorDropdown( item ) {
+	item.classList.remove( 'aae-editor-dropdown-open' );
+	const sub = getSub( item );
+	if ( ! sub ) return;
+	sub.style.removeProperty( 'visibility' );
+	sub.style.removeProperty( 'opacity' );
+	sub.style.removeProperty( 'pointer-events' );
+}
+
+function closeInactiveEditorDropdowns( nav, activeItem = null ) {
+	const activeChain = activeItem ? getEditorDropdownChain( activeItem ) : new Set();
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open' ).forEach( item => {
+		if ( ! activeChain.has( item ) ) {
+			hideEditorDropdown( item );
+		}
+	} );
+}
+
+function getDirectDropdownOwner( dropdown ) {
+	if ( ! dropdown?.classList ) return null;
+	const owner = dropdown.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	if ( ! owner || getSub( owner ) !== dropdown ) return null;
+	if (
+		dropdown.classList.contains( 'aae-a-nav-dropdown' ) ||
+		dropdown.classList.contains( 'e-flexbox-base' ) ||
+		dropdown.classList.contains( 'e-con' ) ||
+		dropdown.hasAttribute( 'data-aae-dropdown-for' )
+	) {
+		return owner;
+	}
+	return null;
 }
 
 function openEditorDropdownChain( item ) {
@@ -87,6 +134,7 @@ function openEditorDropdownChain( item ) {
 		const sub = getSub( current );
 		if ( sub ) {
 			sub.classList.add( 'aae-a-nav-dropdown' );
+			sub.setAttribute( 'data-aae-dropdown-for', current.getAttribute( 'data-id' ) || '' );
 			sub.style.visibility = 'visible';
 			sub.style.opacity = '1';
 			sub.style.pointerEvents = 'auto';
@@ -96,10 +144,49 @@ function openEditorDropdownChain( item ) {
 	}
 }
 
+function getActiveEditorDropdownItem( nav ) {
+	const selected = nav.querySelector( '.elementor-element-selected' );
+	const selectedDropdownOwner = getDirectDropdownOwner( selected );
+	if ( selectedDropdownOwner ) {
+		return selectedDropdownOwner;
+	}
+
+	const selectedItem = selected?.closest?.( '.aae-a-nav-item[data-has-dropdown="true"]' );
+	if ( selectedItem && nav.contains( selectedItem ) ) {
+		return selectedItem;
+	}
+
+	let activeItem = null;
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+		const itemSelected = item.classList.contains( 'elementor-element-selected' );
+
+		if ( itemSelected ) {
+			activeItem = item;
+		}
+	} );
+	return activeItem;
+}
+
+function isEditorModalOrPopoverActive() {
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		const editorDocument = editorWindow.document;
+		const active = editorDocument?.activeElement;
+
+		return !! (
+			editorDocument?.querySelector?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' ) ||
+			active?.closest?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' )
+		);
+	} catch ( error ) {
+		return false;
+	}
+}
+
 function selectEditorElementById( id ) {
 	if ( ! id ) return;
 	try {
 		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		if ( isEditorModalOrPopoverActive() ) return;
 		const container = editorWindow.elementor?.getContainer?.( id );
 		if ( ! container ) return;
 		editorWindow.$e?.run?.( 'document/elements/select', {
@@ -109,6 +196,40 @@ function selectEditorElementById( id ) {
 	} catch ( error ) {
 		/* Best effort only: editor internals may not be ready during render. */
 	}
+}
+
+/* Editor WYSIWYG fix. In edit-mode the v4 canvas renders atomic children INSIDE
+ * our custom nav element WITHOUT their generated style class (`e-<id>-<styleid>`),
+ * so Style-tab styling (background, etc.) doesn't preview in the editor — even
+ * though it renders correctly on the frontend (the model IS saved). Re-apply each
+ * element's saved style-class ids from the model onto the preview DOM so the
+ * editor canvas matches the frontend. */
+function applyEditorStyleClasses( nav ) {
+	let editorWindow;
+	try {
+		editorWindow = window.parent && window.parent !== window ? window.parent : window;
+	} catch ( error ) {
+		return;
+	}
+	const getContainer = editorWindow.elementor?.getContainer;
+	if ( typeof getContainer !== 'function' ) return;
+
+	nav.querySelectorAll( '[data-id]' ).forEach( el => {
+		const id = el.getAttribute( 'data-id' );
+		if ( ! id ) return;
+		let styles;
+		try {
+			styles = getContainer( id )?.model?.get?.( 'styles' );
+		} catch ( error ) {
+			return;
+		}
+		if ( ! styles || typeof styles !== 'object' ) return;
+		Object.keys( styles ).forEach( styleId => {
+			if ( styleId && ! el.classList.contains( styleId ) ) {
+				el.classList.add( styleId );
+			}
+		} );
+	} );
 }
 
 function initEditorDropdownUX( nav ) {
@@ -122,6 +243,13 @@ function initEditorDropdownUX( nav ) {
 	const sig = ctrl.signal;
 
 	const sync = () => {
+		/* Safe DOM-only op (adds style classes to the PREVIEW iframe; fires no
+		 * command and no panel re-render). Must run BEFORE the popover guard —
+		 * the Style-tab colour picker keeps a .MuiPopover-root mounted exactly
+		 * while the user is styling, which is precisely when the injected classes
+		 * are needed. */
+		applyEditorStyleClasses( nav );
+		if ( isEditorModalOrPopoverActive() ) return;
 		normalizeRenderedDropdowns( nav );
 		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 			const sub = getSub( item );
@@ -129,11 +257,13 @@ function initEditorDropdownUX( nav ) {
 				sub.classList.add( 'aae-a-nav-dropdown' );
 				sub.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 			}
-			if ( item.classList.contains( 'elementor-element-selected' ) ||
-				item.querySelector( '.elementor-element-selected' ) ) {
-				openEditorDropdownChain( item );
-			}
 		} );
+
+		const activeItem = getActiveEditorDropdownItem( nav );
+		if ( activeItem ) {
+			closeInactiveEditorDropdowns( nav, activeItem );
+			openEditorDropdownChain( activeItem );
+		}
 	};
 
 	let raf = null;
@@ -146,22 +276,33 @@ function initEditorDropdownUX( nav ) {
 	};
 
 	nav.addEventListener( 'pointerdown', e => {
-		const dropdown = e.target.closest( '.aae-a-nav-dropdown' );
-		if ( ! dropdown || ! nav.contains( dropdown ) ) return;
-		const owner = dropdown.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-		if ( owner ) openEditorDropdownChain( owner );
+		if ( isEditorModalOrPopoverActive() ) return;
+		const owner = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( ! owner || ! nav.contains( owner ) ) return;
+		const dropdown = getSub( owner );
+		if ( ! dropdown || ( ! dropdown.contains( e.target ) && e.target !== dropdown ) ) return;
+		dropdown.classList.add( 'aae-a-nav-dropdown' );
+		dropdown.setAttribute( 'data-aae-dropdown-for', owner.getAttribute( 'data-id' ) || '' );
+		if ( owner ) {
+			closeInactiveEditorDropdowns( nav, owner );
+			openEditorDropdownChain( owner );
+		}
 		selectEditorElementById( dropdown.getAttribute( 'data-id' ) );
 	}, { capture: true, signal: sig } );
 
 	nav.addEventListener( 'click', e => {
+		if ( isEditorModalOrPopoverActive() ) return;
 		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( ! item || ! nav.contains( item ) ) return;
+		closeInactiveEditorDropdowns( nav, item );
 		openEditorDropdownChain( item );
 	}, { capture: true, signal: sig } );
 
 	const observer = new MutationObserver( schedule );
 	observer.observe( nav, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'data-has-dropdown' ] } );
 	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
+	const interval = window.setInterval( schedule, 1500 );
+	sig.addEventListener( 'abort', () => window.clearInterval( interval ), { once: true } );
 	sync();
 }
 
@@ -189,7 +330,7 @@ function resetScroll( ...nodes ) {
 /* Drill panels cannot remain DOM descendants of their parent menu item: hiding
  * a previous level would also hide the current child level. Move every panel
  * beside the root nav items while mobile is mounted, keeping comment anchors
- * so the exact authored tree can be restored on desktop. */
+ * so each panel can be restored to its exact original position on desktop. */
 function flattenDrillPanels( nav ) {
 	const records = [];
 	[ ...nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ) ].forEach( item => {
@@ -334,6 +475,11 @@ function closeItem( item ) {
 	}
 }
 
+/* The editor never MOVES the real Nav into the drawer (that would corrupt
+ * Elementor's editing model). Instead it renders a display-only CLONE of the
+ * source Nav's DOM inside the drawer's menu-area so the user can preview the
+ * mobile menu. The clone is inert: all Elementor data-* / editable hooks are
+ * stripped so it is never mistaken for a real element. */
 function sanitizeEditorClone( clone ) {
 	[ clone, ...clone.querySelectorAll( '*' ) ].forEach( node => {
 		node.removeAttribute?.( 'data-id' );
@@ -346,8 +492,8 @@ function sanitizeEditorClone( clone ) {
 			'elementor-element-selected',
 			'elementor-element-empty',
 			'aae-editor-dropdown-open',
-			/* Source Nav carries this while mobile preview is active; the clone
-			 * is made from it, so strip it or the drawer menu is hidden too. */
+			/* The source Nav is hidden in-place while mobile (see render); the
+			 * clone must NOT inherit that hide class or the drawer shows empty. */
 			'aae-nav-editor-mobile-hidden'
 		);
 	} );
@@ -356,11 +502,13 @@ function sanitizeEditorClone( clone ) {
 	clone.classList.add( 'aae-nav-mobile-mounted', 'aae-mobile-editor-clone' );
 }
 
+/* Add accordion toggle arrows to the clone's dropdown items. Preview-only: the
+ * legacy `.is-mobile-submenu-open` accordion CSS (retained in nav.scss) drives
+ * the reveal; no drill-panel flattening is needed just to preview in editor. */
 function addEditorCloneArrows( nav, arrowTemplate ) {
 	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 		const sub = getSub( item );
 		if ( ! sub ) return;
-		sub.hidden = true;
 		const button = document.createElement( 'button' );
 		button.type = 'button';
 		button.className = 'aae-mobile-submenu-toggle';
@@ -368,7 +516,6 @@ function addEditorCloneArrows( nav, arrowTemplate ) {
 		button.setAttribute( 'aria-expanded', 'false' );
 		const icon = arrowTemplate?.cloneNode( true );
 		if ( icon ) {
-			const sourceId = arrowTemplate.getAttribute( 'data-id' );
 			[ icon, ...icon.querySelectorAll( '*' ) ].forEach( node => {
 				node.removeAttribute?.( 'data-id' );
 				node.removeAttribute?.( 'data-element_type' );
@@ -376,8 +523,9 @@ function addEditorCloneArrows( nav, arrowTemplate ) {
 			} );
 			icon.classList.remove( 'aae-mobile-nav-arrow-template' );
 			icon.classList.add( 'aae-mobile-submenu-icon' );
-			if ( sourceId ) button.dataset.editorSourceId = sourceId;
 			button.appendChild( icon );
+		} else {
+			button.textContent = '⌄';
 		}
 		item.insertBefore( button, sub );
 	} );
@@ -397,106 +545,55 @@ function initEditorMobilePreview( companion ) {
 	editorCompanionNodes.set( companionId, companion );
 	const sig = ctrl.signal;
 	let timer = null;
-	let editorClone = null;
-	let editorDrillStack = [];
-	let observedSource = null;
-	const sourceObserver = new MutationObserver( () => render() );
-	const observeSource = source => {
-		if ( source === observedSource ) return;
-		sourceObserver.disconnect();
-		observedSource = source;
-		if ( source ) sourceObserver.observe( source, { childList: true, subtree: true } );
-	};
 
 	const render = () => {
 		window.clearTimeout( timer );
 		timer = window.setTimeout( () => {
 			const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 			const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
-			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
-			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
-			if ( ! drawer ) return;
-
-			/* Orphaned companion (its source Nav was deleted but this sibling
-			 * lingers): bail BEFORE mutating so we don't drive an observer/render
-			 * loop against a missing source. healthCheck tears it down shortly. */
 			const sourceId = companion.dataset.sourceNavId;
 			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
-			observeSource( source );
-			if ( sourceId && ! source && companion.dataset.enabled === 'true' && isEditorMobileMode( breakpoint ) ) {
+			if ( sourceId && ! source && mobile ) {
 				return;
 			}
 
+			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
+			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
+			/* Drop any previous clone before re-evaluating; a fresh one is rebuilt
+			 * below while mobile so title/link/structure edits stay in sync. */
 			menuArea?.querySelector( ':scope > .aae-mobile-editor-clone' )?.remove();
-			drawer.querySelector( ':scope > .aae-mobile-editor-close' )?.remove();
+
 			companion.classList.toggle( 'is-mobile', mobile );
 			companion.classList.toggle(
 				'is-open',
 				mobile && companion.dataset.editorPreviewClosed !== 'true'
 			);
-			/* Match the frontend: below the breakpoint the desktop Nav belongs in
-			 * the drawer, not the header. The frontend MOVES it there; in the
-			 * editor we keep the model stable by cloning into the drawer instead,
-			 * so the original must be hidden while mobile preview is active (and
-			 * restored on desktop). Runtime-only class — never saved to the model. */
-			if ( source ) source.classList.toggle( 'aae-nav-editor-mobile-hidden', mobile );
-			if ( ! mobile ) return;
 
-			if ( ! source ) return;
+			/* Editor parity with the frontend: in mobile mode the real desktop Nav
+			 * would otherwise sit in the bar NEXT TO the hamburger. The frontend
+			 * hides it by MOVING it into the drawer; the editor can't move it (that
+			 * breaks Elementor's model), so hide it in place instead. */
+			if ( source ) source.classList.toggle( 'aae-nav-editor-mobile-hidden', mobile );
+
+			if ( ! mobile || ! source || ! menuArea ) return;
+
+			/* Display-only clone of the real Nav so the drawer previews the menu
+			 * in the editor (the real Nav is never moved here — see helper note). */
 			const clone = source.cloneNode( true );
 			sanitizeEditorClone( clone );
 			addEditorCloneArrows( clone, companion.querySelector( '.aae-mobile-nav-arrow-template' ) );
-			flattenDrillPanels( clone );
-			const sourceClose = companion.querySelector( '.aae-mobile-nav-close' );
-			if ( sourceClose && sourceClose.parentElement !== drawer && ! companion.querySelector( '.aae-mobile-nav-header' ) ) {
-				const sourceCloseId = sourceClose.getAttribute( 'data-id' );
-				const closeClone = sourceClose.cloneNode( true );
-				[ closeClone, ...closeClone.querySelectorAll( '*' ) ].forEach( node => {
-					node.removeAttribute?.( 'data-id' );
-					node.removeAttribute?.( 'data-element_type' );
-					node.removeAttribute?.( 'data-e-type' );
-				} );
-				closeClone.classList.add( 'aae-mobile-editor-close' );
-				if ( sourceCloseId ) closeClone.dataset.editorSourceId = sourceCloseId;
-				drawer.appendChild( closeClone );
-			}
 			menuArea.appendChild( clone );
-			editorClone = clone;
-			editorDrillStack = [];
-			clone.dataset.drillDepth = '0';
-			const editorBack = companion.querySelector( '.aae-mobile-nav-back' );
-			editorBack?.classList.remove( 'is-visible' );
 
 			clone.addEventListener( 'click', e => {
 				const button = e.target.closest( '.aae-mobile-submenu-toggle' );
 				if ( ! button ) return;
 				e.preventDefault();
 				const item = button.closest( '.aae-a-nav-item' );
-				const sub = getSub( item );
-				if ( ! sub ) return;
-				const surface = getDrillSurface( item );
-				if ( ! surface ) return;
-				const previous = editorDrillStack.at( -1 );
-				if ( previous ) {
-					previous.surface.classList.remove( 'is-active' );
-					previous.surface.hidden = true;
-				}
-				surface.hidden = false;
-				surface.classList.remove( 'is-active' );
-				surface.style.zIndex = String( 5 + editorDrillStack.length );
-				resetScroll( clone, surface, surface.firstElementChild );
-				/* Paint the translated start position before activating so forward
-				 * navigation animates instead of jumping directly to the panel. */
-				void surface.offsetWidth;
-				surface.classList.add( 'is-active' );
-				item.classList.add( 'is-mobile-submenu-open' );
-				button.setAttribute( 'aria-expanded', 'true' );
-				editorDrillStack.push( { item, sub, surface, button } );
-				clone.dataset.drillDepth = String( editorDrillStack.length );
-				if ( editorBack ) {
-					editorBack.classList.add( 'is-visible' );
-					setBackLabel( editorBack, item );
-				}
+				const open = ! item.classList.contains( 'is-mobile-submenu-open' );
+				item.parentElement?.querySelectorAll( ':scope > .aae-a-nav-item.is-mobile-submenu-open' )
+					.forEach( sibling => sibling.classList.remove( 'is-mobile-submenu-open' ) );
+				item.classList.toggle( 'is-mobile-submenu-open', open );
+				button.setAttribute( 'aria-expanded', String( open ) );
 			} );
 		}, 60 );
 	};
@@ -512,19 +609,11 @@ function initEditorMobilePreview( companion ) {
 		}
 		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 		const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
-		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
-			companion.querySelector( '.aae-mobile-nav-drawer' );
-		const sourceId = companion.dataset.sourceNavId;
-		const currentSource = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
-		const replacedSource = currentSource !== observedSource;
-		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
-		const missingPreview = mobile && menuArea &&
-			! menuArea.querySelector( ':scope > .aae-mobile-editor-clone' );
-		if ( staleMode || missingPreview || replacedSource ) render();
+		const cloneMissing = mobile && ! companion.querySelector( '.aae-mobile-editor-clone' );
+		if ( companion.classList.contains( 'is-mobile' ) !== mobile || cloneMissing ) render();
 	}, 250 );
 	sig.addEventListener( 'abort', () => {
 		window.clearInterval( healthCheck );
-		sourceObserver.disconnect();
 		if ( editorCompanionNodes.get( companionId ) === companion ) {
 			editorCompanionNodes.delete( companionId );
 		}
@@ -532,11 +621,11 @@ function initEditorMobilePreview( companion ) {
 	const previewObserver = new MutationObserver( () => {
 		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
 		if ( ! isEditorMobileMode( breakpoint ) || companion.dataset.enabled !== 'true' ) return;
-		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
-			companion.querySelector( '.aae-mobile-nav-drawer' );
-		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
-			render();
-		}
+		/* Appending the clone itself mutates the companion; without this guard the
+		 * observer would rebuild it every 60ms forever. Only rebuild when the
+		 * clone is actually gone (e.g. Elementor re-rendered the drawer). */
+		if ( companion.querySelector( '.aae-mobile-editor-clone' ) ) return;
+		render();
 	} );
 	previewObserver.observe( companion, { childList: true, subtree: true } );
 	sig.addEventListener( 'abort', () => previewObserver.disconnect(), { once: true } );
@@ -545,40 +634,8 @@ function initEditorMobilePreview( companion ) {
 			companion.dataset.editorPreviewClosed = 'true';
 			companion.classList.remove( 'is-open' );
 		}
-		const proxy = e.target.closest( '[data-editor-source-id]' );
-		if ( ! proxy ) return;
-		const original = document.querySelector( `[data-id="${ proxy.dataset.editorSourceId }"]` );
-		if ( ! original ) return;
-		original.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true, view: window } ) );
-		original.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true, view: window } ) );
 	}, { capture: true, signal: sig } );
 	companion.addEventListener( 'click', e => {
-		if ( e.target.closest( '.aae-mobile-nav-back' ) ) {
-			e.preventDefault();
-			const current = editorDrillStack.pop();
-			if ( current ) {
-				current.surface.classList.remove( 'is-active' );
-				current.surface.style.removeProperty( 'z-index' );
-				current.surface.hidden = true;
-				resetScroll( current.surface );
-				current.item.classList.remove( 'is-mobile-submenu-open' );
-				current.button.setAttribute( 'aria-expanded', 'false' );
-			}
-			if ( editorClone ) editorClone.dataset.drillDepth = String( editorDrillStack.length );
-			const back = companion.querySelector( '.aae-mobile-nav-back' );
-			const parent = editorDrillStack.at( -1 );
-			if ( parent ) {
-				parent.surface.hidden = false;
-				resetScroll( parent.surface, parent.surface.firstElementChild );
-				void parent.surface.offsetWidth;
-				parent.surface.classList.add( 'is-active' );
-			} else {
-				resetScroll( editorClone, companion.querySelector( '.aae-mobile-nav-menu-area' ), companion.querySelector( '.aae-mobile-nav-drawer' ) );
-			}
-			back?.classList.toggle( 'is-visible', !! parent );
-			setBackLabel( back, parent?.item || null );
-			return;
-		}
 		if ( e.target.closest( '.aae-mobile-nav-close' ) ) {
 			e.preventDefault();
 			companion.dataset.editorPreviewClosed = 'true';
@@ -868,12 +925,16 @@ register( {
 		};
 
 		const closeDrawer = ( restoreFocus = true ) => {
+			const focusTarget = restoreFocus && lastFocus?.isConnected ? lastFocus : toggle;
+			if ( drawer.contains( document.activeElement ) ) {
+				focusTarget?.focus?.();
+			}
 			companion.classList.remove( 'is-open' );
 			toggle.setAttribute( 'aria-expanded', 'false' );
-			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
+			drawer.setAttribute( 'aria-hidden', 'true' );
 			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
-			if ( restoreFocus ) lastFocus?.focus?.();
+			if ( restoreFocus && ! drawer.contains( document.activeElement ) ) focusTarget?.focus?.();
 		};
 
 		const openDrawer = () => {

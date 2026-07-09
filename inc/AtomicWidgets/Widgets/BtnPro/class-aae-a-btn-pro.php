@@ -31,11 +31,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * AAE Basic Button Pro — an open atomic container styled like a button.
- *
- * Same shape as the basic Btn widget (link container, no presets), kept
- * as a separate widget/type so Pro-only controls can be layered onto
- * this class without touching the free Btn widget.
+ * AAE Button Pro — an open atomic container styled like a button.
  */
 class AAE_A_Btn_Pro extends Atomic_Element_Base
 {
