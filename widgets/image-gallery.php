@@ -569,6 +569,217 @@ class Image_Gallery extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// Lightbox Icons style section.
+		// The lightbox markup is appended to <body> by JS, so styles are scoped
+		// via the per-widget class `.wcf--lightbox-scope-{id}` instead of {{WRAPPER}}.
+		$this->start_controls_section(
+			'section_style_lightbox_icons',
+			[
+				'label'     => esc_html__( 'Lightbox Icons', 'animation-addons-for-elementor' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [ 'enable_lightbox' => 'yes' ],
+			]
+		);
+
+		$lb_scope = '.wcf--lightbox-scope-{{ID}}';
+
+		$this->add_responsive_control(
+			'lightbox_icon_size',
+			[
+				'label'      => esc_html__( 'Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', 'rem' ],
+				'range'      => [
+					'px'  => [ 'min' => 8, 'max' => 100, 'step' => 1 ],
+					'em'  => [ 'min' => 0.5, 'max' => 8, 'step' => 0.1 ],
+					'rem' => [ 'min' => 0.5, 'max' => 8, 'step' => 0.1 ],
+				],
+				'selectors'  => [
+					$lb_scope . ' .wcf--lightbox-btn' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'lightbox_icon_spacing',
+			[
+				'label'      => esc_html__( 'Spacing', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', 'rem' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 60, 'step' => 1 ],
+				],
+				'selectors'  => [
+					$lb_scope . ' .wcf--lightbox-toolbar' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->start_controls_tabs( 'lightbox_icon_style_tabs' );
+
+		// Normal.
+		$this->start_controls_tab(
+			'lightbox_icon_normal_tab',
+			[
+				'label' => esc_html__( 'Normal', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn'     => 'color: {{VALUE}};',
+					$lb_scope . ' .wcf--lightbox-btn i'   => 'color: {{VALUE}};',
+					$lb_scope . ' .wcf--lightbox-btn svg' => 'fill: {{VALUE}}; color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_bg_color',
+			[
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_opacity',
+			[
+				'label'     => esc_html__( 'Opacity', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => [
+					'px' => [ 'min' => 0, 'max' => 1, 'step' => 0.05 ],
+				],
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn' => 'opacity: {{SIZE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Hover.
+		$this->start_controls_tab(
+			'lightbox_icon_hover_tab',
+			[
+				'label' => esc_html__( 'Hover', 'animation-addons-for-elementor' ),
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_hover_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn:hover'     => 'color: {{VALUE}};',
+					$lb_scope . ' .wcf--lightbox-btn:hover i'   => 'color: {{VALUE}};',
+					$lb_scope . ' .wcf--lightbox-btn:hover svg' => 'fill: {{VALUE}}; color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_hover_bg_color',
+			[
+				'label'     => esc_html__( 'Background Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_hover_opacity',
+			[
+				'label'     => esc_html__( 'Opacity', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => [
+					'px' => [ 'min' => 0, 'max' => 1, 'step' => 0.05 ],
+				],
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-btn:hover' => 'opacity: {{SIZE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_control(
+			'lightbox_icon_padding',
+			[
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'separator'  => 'before',
+				'selectors'  => [
+					$lb_scope . ' .wcf--lightbox-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_icon_border_radius',
+			[
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					$lb_scope . ' .wcf--lightbox-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_counter_heading',
+			[
+				'label'     => esc_html__( 'Counter', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'lightbox_counter' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'lightbox_counter_color',
+			[
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					$lb_scope . ' .wcf--lightbox-counter' => 'color: {{VALUE}}; opacity: 1;',
+				],
+				'condition' => [ 'lightbox_counter' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'lightbox_counter_size',
+			[
+				'label'      => esc_html__( 'Size', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', 'rem' ],
+				'range'      => [
+					'px' => [ 'min' => 8, 'max' => 60, 'step' => 1 ],
+				],
+				'selectors'  => [
+					$lb_scope . ' .wcf--lightbox-counter' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+				'condition'  => [ 'lightbox_counter' => 'yes' ],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
@@ -827,6 +1038,7 @@ class Image_Gallery extends Widget_Base {
 			?>
 			<div class="wcf--lightbox-data" style="display:none;"
 				data-images="<?php echo esc_attr( wp_json_encode( $lightbox_images ) ); ?>"
+				data-scope="wcf--lightbox-scope-<?php echo esc_attr( $this->get_id() ); ?>"
 				data-animation="<?php echo esc_attr( $settings['lightbox_animation'] ); ?>"
 				data-counter="<?php echo esc_attr( $settings['lightbox_counter'] ); ?>"
 				data-close-icon="<?php echo esc_attr( $close_icon_html ); ?>"
