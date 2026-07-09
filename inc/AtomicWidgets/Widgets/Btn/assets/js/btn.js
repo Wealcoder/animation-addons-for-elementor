@@ -1,19 +1,3 @@
-/**
- * AAE Btn — free-tier button interactions.
- *
- * Build target: ../../../../../assets/atomic/js/btn.js
- * Styles live in ../scss/btn.scss (extracted by webpack).
- *
- * Enqueued on-demand: only when an `e-aae-a-btn` element actually renders
- * on the page (see class-atomic.php's has_script/style_handle entry for
- * `aae-a-btn` + maybe_enqueue_widget_script()), same pattern as Button's
- * own bundle. Not loaded on pages with no AAE Btn instance.
- *
- * Covers: Text-flip, Border-divide, Mask — generic `.aae-btn-*` marker
- * classes you add by hand (via the Classes control) to elements built
- * inside an AAE Btn wrapper, matching the free templates in
- * Widgets/Btn/presets and z_temp/templates/Btn.
- */
 import '../scss/btn.scss';
 
 // Text-flip (pro-3)
