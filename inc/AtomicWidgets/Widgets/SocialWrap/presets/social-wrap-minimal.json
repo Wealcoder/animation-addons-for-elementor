@@ -20,7 +20,14 @@
 								{
 									"id": "swmn0fb2",
 									"settings": {
-										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] },
+										"svg": {
+											"$$type": "svg-src",
+											"value": {
+												"id": null,
+												"url": { "$$type": "url", "value": "{{AAE_ASSET_URL}}Widgets/SocialWrap/assets/svg/facebook.svg" }
+											}
+										}
 									},
 									"elements": [],
 									"isInner": false,
@@ -73,7 +80,14 @@
 								{
 									"id": "swmn0tw2",
 									"settings": {
-										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] },
+										"svg": {
+											"$$type": "svg-src",
+											"value": {
+												"id": null,
+												"url": { "$$type": "url", "value": "{{AAE_ASSET_URL}}Widgets/SocialWrap/assets/svg/twitter.svg" }
+											}
+										}
 									},
 									"elements": [],
 									"isInner": false,
@@ -126,7 +140,14 @@
 								{
 									"id": "swmn0li2",
 									"settings": {
-										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+										"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] },
+										"svg": {
+											"$$type": "svg-src",
+											"value": {
+												"id": null,
+												"url": { "$$type": "url", "value": "{{AAE_ASSET_URL}}Widgets/SocialWrap/assets/svg/linkedin.svg" }
+											}
+										}
 									},
 									"elements": [],
 									"isInner": false,

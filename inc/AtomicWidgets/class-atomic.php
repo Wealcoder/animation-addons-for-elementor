@@ -3340,6 +3340,15 @@ JS,
 					continue;
 				}
 
+				// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
+				// instead of a baked-in domain (so the JSON works on any install
+				// after this plugin is distributed) — resolve it here the same
+				// way live widget code resolves its own asset URLs via
+				// WCF_ADDONS_URL (see e.g. AAE_A_Social_Wrap_Item::get_vendor_svg_url()).
+				if (defined('WCF_ADDONS_URL')) {
+					$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
+				}
+
 				$data = json_decode($raw, true);
 				if (! is_array($data)) {
 					continue;
