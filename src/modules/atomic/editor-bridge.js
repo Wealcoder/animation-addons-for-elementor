@@ -18,6 +18,41 @@ import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
+
+/* ---------------------------------------------------------------------------
+ * Editor-only crash guard for Elementor v4's colour-picker (MUI Popover).
+ *
+ * Opening the Style-tab colour picker and interacting with it can throw
+ * `NotFoundError: Failed to execute 'removeChild' … not a child` from deep
+ * inside react-dom's commit phase (the popover is a React portal; React tries
+ * to remove a portal node the DOM no longer parents). A console diagnostic
+ * confirmed the crash stack is 100% react-dom with NO AAE frame and NO AAE
+ * document command running while the popover is open — i.e. it originates in
+ * Elementor/MUI core, not this plugin. Until core fixes it, make removeChild /
+ * insertBefore no-op instead of throwing when the node isn't actually parented
+ * by the target. This is the well-known React #11538 guard; it loads only in
+ * the editor (this bundle is editor-only) and never ships to the frontend.
+ * ------------------------------------------------------------------------- */
+( function guardReactPortalDomOps() {
+	if ( typeof Node !== 'function' || ! Node.prototype || Node.prototype.__aaeDomGuard ) {
+		return;
+	}
+	Node.prototype.__aaeDomGuard = true;
+
+	/* ONLY removeChild is guarded. A no-op removeChild is safe: it fires only
+	 * when the node is already not parented by the target (the exact crash
+	 * case), so the intended removal is effectively already done. We do NOT
+	 * guard insertBefore — a no-op insert would DROP a node React needs, which
+	 * broke selection/style rendering. The reported crash was removeChild. */
+	const originalRemoveChild = Node.prototype.removeChild;
+	Node.prototype.removeChild = function ( child ) {
+		if ( child && child.parentNode !== this ) {
+			return child;
+		}
+		return originalRemoveChild.apply( this, arguments );
+	};
+} )();
+
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *

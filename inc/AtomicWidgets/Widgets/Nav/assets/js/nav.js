@@ -198,6 +198,40 @@ function selectEditorElementById( id ) {
 	}
 }
 
+/* Editor WYSIWYG fix. In edit-mode the v4 canvas renders atomic children INSIDE
+ * our custom nav element WITHOUT their generated style class (`e-<id>-<styleid>`),
+ * so Style-tab styling (background, etc.) doesn't preview in the editor — even
+ * though it renders correctly on the frontend (the model IS saved). Re-apply each
+ * element's saved style-class ids from the model onto the preview DOM so the
+ * editor canvas matches the frontend. */
+function applyEditorStyleClasses( nav ) {
+	let editorWindow;
+	try {
+		editorWindow = window.parent && window.parent !== window ? window.parent : window;
+	} catch ( error ) {
+		return;
+	}
+	const getContainer = editorWindow.elementor?.getContainer;
+	if ( typeof getContainer !== 'function' ) return;
+
+	nav.querySelectorAll( '[data-id]' ).forEach( el => {
+		const id = el.getAttribute( 'data-id' );
+		if ( ! id ) return;
+		let styles;
+		try {
+			styles = getContainer( id )?.model?.get?.( 'styles' );
+		} catch ( error ) {
+			return;
+		}
+		if ( ! styles || typeof styles !== 'object' ) return;
+		Object.keys( styles ).forEach( styleId => {
+			if ( styleId && ! el.classList.contains( styleId ) ) {
+				el.classList.add( styleId );
+			}
+		} );
+	} );
+}
+
 function initEditorDropdownUX( nav ) {
 	const navId = nav.getAttribute( 'data-id' );
 	if ( ! navId || nav.dataset.aaeEditorDropdownUx === 'true' ) return;
@@ -209,6 +243,12 @@ function initEditorDropdownUX( nav ) {
 	const sig = ctrl.signal;
 
 	const sync = () => {
+		/* Safe DOM-only op (adds style classes to the PREVIEW iframe; fires no
+		 * command and no panel re-render). Must run BEFORE the popover guard —
+		 * the Style-tab colour picker keeps a .MuiPopover-root mounted exactly
+		 * while the user is styling, which is precisely when the injected classes
+		 * are needed. */
+		applyEditorStyleClasses( nav );
 		if ( isEditorModalOrPopoverActive() ) return;
 		normalizeRenderedDropdowns( nav );
 		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {

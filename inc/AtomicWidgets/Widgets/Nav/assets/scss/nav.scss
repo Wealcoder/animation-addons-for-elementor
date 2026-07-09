@@ -27,7 +27,7 @@
 	 * over Elementor's atomic base/document CSS regardless of stylesheet load
 	 * order — on a hard reload nav.css could otherwise lose the cascade and the
 	 * dropdown rendered unpositioned / in-flow (pushing the other menu items). */
-	.aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+	.aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
 		position: absolute !important;
 		inset-block-start: 100% !important;
 		inset-inline-start: 0 !important;
@@ -40,7 +40,7 @@
 	}
 
 	/* Shown when the runtime toggles .is-open. */
-	.aae-a-nav-item[data-has-dropdown="true"].is-open > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+	.aae-a-nav-item[data-has-dropdown="true"].is-open > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
 		visibility: visible;
 		opacity: 1;
 		pointer-events: auto;
@@ -48,7 +48,7 @@
 	}
 
 	/* Nested sub-dropdown opens to the right. */
-	.aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+	.aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
 		inset-block-start: 0;
 		inset-inline-start: 100%;
 	}
@@ -56,7 +56,7 @@
 	/* A dropdown that CONTAINS nested items is a submenu → stack vertically.
 	 * Scoped with :has(> .aae-a-nav-item) so a pure mega-menu keeps its Style-tab
 	 * direction. */
-	.aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base):has(> .aae-a-nav-item) {
+	.aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base, .elementor-element):has(> .aae-a-nav-item) {
 		flex-direction: column !important;
 		flex-wrap: nowrap !important;
 		align-items: stretch !important;
@@ -136,7 +136,7 @@
 	/* Reveal a dropdown when its item is open / selected / contains the
 	 * selection (any depth). Editor-only + behavioral → !important is safe and
 	 * matches the inline styles nav.js sets. */
-	.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"]:is(.aae-editor-dropdown-open, .elementor-element-selected, :has(> :is(.e-con, .e-flexbox-base).elementor-element-selected), :has(.elementor-element-selected)) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+	.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"]:is(.aae-editor-dropdown-open, .elementor-element-selected, :has(.elementor-element-selected)) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
 		visibility: visible !important;
 		opacity: 1 !important;
 		pointer-events: auto !important;
