@@ -41,6 +41,11 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 		return [
 			\Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg::generate()
 				->settings( [
+					// aae-a-svg (StyleManager utility) sets a sane 20px default so the
+					// arrow isn't the core Atomic_Svg 65px default inside the nav badge.
+					// It's a plain utility class, so the user's own Size (SVG Style tab)
+					// still overrides it — icon-size changes now take effect.
+					'classes' => \Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type::generate( [ 'aae-a-svg' ] ),
 					'svg' => \Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type::generate( [
 						'id' => null,
 						'url' => \Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/NestedSlider/assets/icon/next.svg' ),
@@ -101,8 +106,22 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 			'inset-block-start' => Size_Prop_Type::generate([ 'size' => 50, 'unit' => '%' ]),
 			'inset-inline-end' => Size_Prop_Type::generate([ 'size' => 20, 'unit' => 'px' ]),
 			'z-index' => Number_Prop_Type::generate( 10 ),
-			'width' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
-			'height' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
+			// Size the button to its icon, not a fixed box. The nav arrow is a core
+			// Atomic_Svg child whose own width/height (editable via the SVG's Style
+			// tab) should drive the visible icon size. A fixed width/height here
+			// clamped the flex-centered SVG to 40px no matter what the user set, so
+			// icon-size changes did nothing. Dropping width/height (they default to
+			// auto) lets the button grow with the icon; min-width/min-height keep the
+			// default round-badge footprint. padding gives breathing room around the
+			// glyph and, being symmetric, keeps the border-radius:50% circle.
+			'min-width' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
+			'min-height' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
+			'padding' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
+				'block-start' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
+				'block-end' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
+				'inline-start' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
+				'inline-end' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
+			]),
 			'background' => Background_Prop_Type::generate([
 				'color' => Color_Prop_Type::generate( '#ffffff' )
 			]),

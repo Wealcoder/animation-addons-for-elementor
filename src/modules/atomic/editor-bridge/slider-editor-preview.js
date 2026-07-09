@@ -27,6 +27,7 @@ import { track } from './disposables';
 import { getPreviewWindow } from './helpers';
 
 const SLIDER_SEL = '.aae-a-loop-grid-slider';
+const SLIDER_TYPE = 'e-aae-a-loop-grid-slider';
 const TRACK_SEL = '.aae-slider-track';
 const SLIDE_SEL = '.aae-a-slide';
 const PREVIEW_CLASS = 'aae-slide-editor-preview';
@@ -249,10 +250,266 @@ function rebind( win, slider ) {
 	}
 }
 
+/* =====================================================================
+ * "Refresh Preview" button.
+ *
+ * The clones only mirror the authored slide at the moment they were built. When
+ * the user edits a slide child's content/settings (Post Terms taxonomy, Post
+ * Image Object Fit / Aspect Ratio / Size) the clones can keep stale markup. The
+ * button is a pure REFRESH: it re-clones from the slide's CURRENT markup and
+ * rebinds the runtime, so every preview slide mirrors the latest edit. It never
+ * hides slides, nav, pagination, or breaks the layout.
+ * =================================================================== */
+
+const TOGGLE_CLASS = 'aae-lg-edit-toggle';
+// Elementor editor accent (its primary-action magenta) — reads as a native
+// editor control rather than a loud brand-orange chip. AAE brand orange is used
+// as the small logo-mark accent inside the icon instead.
+const BG = '#93003c';
+const BG_HOVER = '#b30049';
+const BRAND = '#FC6848';
+
+// Inline SVG: a small AAE brand-orange rounded mark + a white circular-arrow
+// "refresh" glyph. Inline so it renders crisp regardless of icon-font loading
+// inside the preview iframe (the wcf-logo font isn't guaranteed there).
+const ICON_MARKUP =
+	'<span class="aae-lg-icon" style="display:inline-flex;align-items:center;gap:7px;pointer-events:none">' +
+		'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex:0 0 auto">' +
+			'<rect x="2" y="2" width="20" height="20" rx="5" fill="' + BRAND + '"/>' +
+			'<path d="M7 8.5h6.2a3.3 3.3 0 1 1-3.2 4.1" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+			'<path d="M13.6 5.6 14.4 8.6 11.4 9" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+		'</svg>' +
+		'<span style="pointer-events:none">Refresh</span>' +
+	'</span>';
+
+/** localStorage key for a wrap's saved button position (keyed by its data-id). */
+function posStorageKey( anchor ) {
+	const id = anchor.getAttribute( 'data-id' ) || anchor.id || 'default';
+	return 'aae_lg_refresh_btn_pos:' + id;
+}
+
+/** The saved {left, top} for a wrap's button, or null. */
+function loadButtonPosition( anchor ) {
+	try {
+		const raw = window.localStorage.getItem( posStorageKey( anchor ) );
+		if ( ! raw ) return null;
+		const pos = JSON.parse( raw );
+		if ( pos && typeof pos.left === 'number' && typeof pos.top === 'number' ) {
+			return pos;
+		}
+	} catch ( _e ) { /* storage unavailable / bad JSON — ignore */ }
+	return null;
+}
+
+/**
+ * Where to anchor the button's top-left within its offset parent (the button's
+ * host — the slider's parent element). Defaults to 10px inside the slider's own
+ * top-left corner, expressed in the host's coordinate space.
+ */
+function defaultButtonOffset( slider, host ) {
+	try {
+		const s = slider.getBoundingClientRect();
+		const h = host.getBoundingClientRect();
+		return { left: ( s.left - h.left ) + 10, top: ( s.top - h.top ) + 10 };
+	} catch ( _e ) {
+		return { left: 10, top: 10 };
+	}
+}
+
+/**
+ * Place the button (position:absolute within `host`). A saved position wins;
+ * otherwise anchor 10px inside the slider's top-left corner. The button is
+ * absolute inside the slider's PARENT (not the slider itself) so the slider
+ * wrapper's `overflow:hidden` + `transform-style:preserve-3d` can neither clip it
+ * nor bury it behind a slide — while it still scrolls WITH the page (unlike
+ * position:fixed) and travels with the slider.
+ */
+function restoreButtonPosition( btn, slider, host ) {
+	const saved = loadButtonPosition( slider );
+	const pos = saved || defaultButtonOffset( slider, host );
+	btn.style.left = pos.left + 'px';
+	btn.style.top = pos.top + 'px';
+	btn.style.right = 'auto';
+}
+
+/** Persist an explicit {left, top} for this wrap's button. */
+function saveButtonPosition( anchor, left, top ) {
+	try {
+		window.localStorage.setItem(
+			posStorageKey( anchor ),
+			JSON.stringify( { left, top } )
+		);
+	} catch ( _e ) { /* storage unavailable — ignore */ }
+}
+
+/**
+ * Make a button draggable within its anchor by top/left, while keeping it
+ * clickable. A press that moves more than a few px is a DRAG (repositions the
+ * button, persists the new position, and suppresses the click that would
+ * follow); a press that barely moves is a CLICK (runs `onClick`).
+ */
+function makeButtonDraggable( btn, anchor, onClick ) {
+	let dragging = false;
+	let moved = false;
+	let startX = 0;
+	let startY = 0;
+	let originLeft = 0;
+	let originTop = 0;
+	let curLeft = 0;
+	let curTop = 0;
+
+	const onPointerDown = ( e ) => {
+		if ( e.button !== undefined && e.button !== 0 ) return;
+		e.stopPropagation();
+		e.preventDefault();
+		dragging = true;
+		moved = false;
+		startX = e.clientX;
+		startY = e.clientY;
+		const cs = btn.ownerDocument.defaultView.getComputedStyle( btn );
+		originLeft = parseFloat( cs.left ) || 0;
+		originTop = parseFloat( cs.top ) || 0;
+		curLeft = originLeft;
+		curTop = originTop;
+		btn.setPointerCapture?.( e.pointerId );
+	};
+
+	const onPointerMove = ( e ) => {
+		if ( ! dragging ) return;
+		const dx = e.clientX - startX;
+		const dy = e.clientY - startY;
+		if ( ! moved && Math.abs( dx ) + Math.abs( dy ) > 4 ) {
+			moved = true;
+			btn.style.cursor = 'grabbing';
+		}
+		if ( moved ) {
+			// Track the live position ourselves — reading getComputedStyle back on
+			// pointerup can lag the inline write (it saved the stale 10px default).
+			curLeft = originLeft + dx;
+			curTop = originTop + dy;
+			btn.style.left = curLeft + 'px';
+			btn.style.top = curTop + 'px';
+			btn.style.right = 'auto';
+		}
+	};
+
+	const onPointerUp = ( e ) => {
+		if ( ! dragging ) return;
+		dragging = false;
+		btn.style.cursor = 'grab';
+		btn.releasePointerCapture?.( e.pointerId );
+		e.stopPropagation();
+		if ( moved ) {
+			saveButtonPosition( anchor, curLeft, curTop ); // remember drag across reloads
+		} else {
+			e.preventDefault();
+			onClick(); // genuine click → refresh
+		}
+	};
+
+	btn.addEventListener( 'pointerdown', onPointerDown, true );
+	btn.addEventListener( 'pointermove', onPointerMove, true );
+	btn.addEventListener( 'pointerup', onPointerUp, true );
+	btn.addEventListener( 'click', ( e ) => { e.preventDefault(); e.stopPropagation(); }, true );
+	btn.addEventListener( 'mousedown', ( e ) => e.stopPropagation(), true );
+}
+
+function ensureSliderToggle( win, slider ) {
+	// The button is absolutely-positioned inside the slider's PARENT — not the
+	// slider itself and not <body>. Why not the slider: its `overflow:hidden`
+	// clips the button once dragged past an edge and its `transform-style:
+	// preserve-3d` buries it behind the transformed track (3D Z-order beats
+	// z-index). Why not fixed/<body>: fixed sticks to the viewport, so the button
+	// wouldn't scroll with the page or travel with the slider. The parent
+	// (.elementor-section-wrap / e-con) is overflow:visible + flat, so an absolute
+	// child there scrolls WITH the page, moves WITH the slider, and is never
+	// clipped or buried.
+	const host = slider.parentElement;
+	if ( ! host ) {
+		return;
+	}
+	const sliderId = slider.getAttribute( 'data-id' ) || slider.id || '';
+	if ( slider.__aaeToggleBtn && slider.__aaeToggleBtn.isConnected ) {
+		return;
+	}
+	if ( sliderId ) {
+		const existing = win.document.querySelector(
+			'.' + TOGGLE_CLASS + '[data-aae-for="' + sliderId + '"]'
+		);
+		if ( existing ) {
+			slider.__aaeToggleBtn = existing;
+			return;
+		}
+	}
+
+	// The host must be a positioning context so `position:absolute` anchors to it.
+	const hostPos = win.getComputedStyle( host ).position;
+	if ( hostPos === 'static' || ! hostPos ) {
+		host.style.position = 'relative';
+	}
+
+	const btn = win.document.createElement( 'button' );
+	btn.type = 'button';
+	btn.className = TOGGLE_CLASS;
+	btn.innerHTML = ICON_MARKUP;
+	btn.setAttribute( 'title', 'Refresh the preview slides with your latest edits — drag to move' );
+	// Inert preview chrome — never an editor element.
+	btn.setAttribute( 'data-aae-ui', '1' );
+	btn.setAttribute( 'contenteditable', 'false' );
+	if ( sliderId ) {
+		btn.setAttribute( 'data-aae-for', sliderId );
+	}
+	btn.style.cssText = [
+		'position:absolute', 'top:10px', 'left:10px', 'z-index:2147483000',
+		'display:inline-flex', 'align-items:center',
+		'padding:6px 14px', 'font:700 13px/1.3 sans-serif', 'color:#fff',
+		'background:' + BG, 'border:0', 'border-radius:6px', 'cursor:grab',
+		'box-shadow:0 2px 10px rgba(0,0,0,.3)', 'opacity:1', 'pointer-events:auto',
+		'user-select:none', 'touch-action:none',
+	].join( ';' );
+	btn.addEventListener( 'mouseenter', () => { btn.style.background = BG_HOVER; } );
+	btn.addEventListener( 'mouseleave', () => { btn.style.background = BG; } );
+
+	// Restore any dragged position; else anchor to the slider's top-left corner
+	// (expressed in the host's coordinate space).
+	restoreButtonPosition( btn, slider, host );
+
+	makeButtonDraggable( btn, slider, () => {
+		// Refresh: rebuild clones from the authored slide's CURRENT markup, then
+		// rebind. ensurePreviewSlides() always clears + re-clones, so this picks up
+		// any child content/setting edits — without hiding anything.
+		ensurePreviewSlides( win, slider );
+		rebind( win, slider );
+	} );
+
+	host.appendChild( btn );
+	slider.__aaeToggleBtn = btn;
+}
+
+/**
+ * Remove any refresh button whose slider is gone from the DOM. The button lives
+ * in the slider's PARENT (not inside the slider), so when the user deletes the
+ * slider widget the button is orphaned in the parent and would otherwise linger.
+ * We match each button back to its slider by `data-aae-for`.
+ */
+function pruneOrphanToggles( win ) {
+	win.document.querySelectorAll( '.' + TOGGLE_CLASS ).forEach( ( btn ) => {
+		const forId = btn.getAttribute( 'data-aae-for' );
+		const stillHasSlider = forId
+			? win.document.querySelector( SLIDER_SEL + '[data-id="' + forId + '"]' )
+			: btn.closest( SLIDER_SEL ); // legacy button with no id — keep only if inside a slider
+		if ( ! stillHasSlider ) {
+			btn.remove();
+		}
+	} );
+}
+
 /** Scan the preview for loop-grid sliders and top them up with preview clones. */
 function scan( win ) {
+	pruneOrphanToggles( win );
 	const sliders = win.document.querySelectorAll( SLIDER_SEL );
 	sliders.forEach( ( slider ) => {
+		ensureSliderToggle( win, slider );
 		const changed = ensurePreviewSlides( win, slider );
 		if ( changed ) {
 			rebind( win, slider );
@@ -315,7 +572,9 @@ export function startSliderEditorPreview() {
 			return ! touched.every(
 				( n ) => n.nodeType === 1 && n.classList && (
 					n.classList.contains( PREVIEW_CLASS ) ||
-					n.classList.contains( 'aae-slide-clone' )
+					n.classList.contains( 'aae-slide-clone' ) ||
+					// Our own injected Edit/Back toggle button — inert UI chrome.
+					n.classList.contains( TOGGLE_CLASS )
 				)
 			);
 		} );
@@ -325,12 +584,68 @@ export function startSliderEditorPreview() {
 	} );
 	observer.observe( win.document.body, { childList: true, subtree: true } );
 
+	// Setting-change re-sync (the fix for "editing a slide child — e.g. Post Image
+	// Object Fit / Aspect Ratio / Image Size — doesn't update the preview clones").
+	//
+	// Those settings change the real slide's image via an inline-style / attribute
+	// edit on the SAME node — an ATTRIBUTE mutation, not a childList one. The DOM
+	// observer above only watches childList (watching attributes on the whole
+	// preview subtree would fire constantly and fight the runtime's own inline
+	// style writes), so it never sees these edits and the clones keep the stale
+	// markup. Elementor's command bus, however, fires `document/elements/settings`
+	// on every panel change. We hang off it and, when the changed element lives
+	// inside a loop-grid slider, re-scan — which re-clones from the now-updated
+	// real slide, so the clones pick up the new image settings. Debounced through
+	// the same `schedule()` so a burst of edits coalesces and the loop-guard above
+	// still applies.
+	const $e = window.$e;
+	if ( $e?.commands?.on ) {
+		// Elementor's command-bus signature is (component, command, args) — the
+		// command NAME is the second argument.
+		const onCommand = ( _component, command ) => {
+			if ( command !== 'document/elements/settings' ) {
+				return;
+			}
+			// The settings command acts on the current selection; if any selected
+			// element is inside a loop-grid slider, a re-scan is warranted.
+			let inSlider = false;
+			try {
+				const els = window.elementor?.selection?.getElements?.() || [];
+				inSlider = els.some( ( c ) => {
+					let node = c;
+					while ( node ) {
+						const elType = node.model?.get?.( 'elType' ) || node.type;
+						if ( elType === SLIDER_TYPE ) {
+							return true;
+						}
+						node = node.parent;
+					}
+					return false;
+				} );
+			} catch ( _e ) {
+				// Selection unavailable — fall back to re-scanning (cheap, guarded).
+				inSlider = true;
+			}
+			if ( inSlider ) {
+				schedule();
+			}
+		};
+		$e.commands.on( 'run:after', onCommand );
+		track( () => {
+			try {
+				$e.commands.off( 'run:after', onCommand );
+			} catch ( _e ) { /* command bus gone */ }
+		} );
+	}
+
 	track( () => {
 		try {
 			win.clearTimeout( timer );
 			observer.disconnect();
 			// Leave the DOM clean on teardown.
 			win.document.querySelectorAll( SLIDER_SEL + ' ' + TRACK_SEL ).forEach( ( t ) => clearClones( t ) );
+			// The refresh button now lives in <body>, not inside the slider.
+			win.document.querySelectorAll( '.' + TOGGLE_CLASS ).forEach( ( b ) => b.remove() );
 		} catch ( _e ) { /* preview gone */ }
 	} );
 }
