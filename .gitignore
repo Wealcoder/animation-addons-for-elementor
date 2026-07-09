@@ -17,3 +17,5 @@ templates.json
 
 *.log
 *.map
+
+z_temp/
