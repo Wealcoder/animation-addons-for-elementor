@@ -116,6 +116,12 @@ function makeButton( doc ) {
 	// button would get wiped on every rebuild. loop-grid.js's observer filter treats
 	// data-aae-ui as inert too, so our own button never triggers a re-scan.
 	btn.setAttribute( 'data-aae-ui', '1' );
+	// Owner tag: the plain-grid module and the slider module BOTH use the class
+	// `aae-lg-edit-toggle`. Without this marker, this module's pruner would iterate
+	// the slider's buttons too, fail to match them to a grid wrap, and DELETE them
+	// (~every scan) — the reported button blink. Each module only ever prunes its
+	// own owner's buttons.
+	btn.setAttribute( 'data-aae-owner', 'grid' );
 	btn.setAttribute( 'contenteditable', 'false' );
 	btn.innerHTML = ICON_MARKUP;
 	btn.setAttribute( 'title', 'Refresh the preview items with your latest edits — drag to move' );
@@ -273,7 +279,10 @@ function ensureButton( wrap ) {
  * button in the parent — prune it by matching `data-aae-for` back to a live wrap.
  */
 function pruneOrphanButtons( doc ) {
-	doc.querySelectorAll( '.' + BTN_CLASS ).forEach( ( btn ) => {
+	// Only prune buttons THIS module owns (data-aae-owner="grid"). The slider
+	// module's buttons share the class but belong to sliders, not grid wraps —
+	// touching them here would wrongly delete them.
+	doc.querySelectorAll( '.' + BTN_CLASS + '[data-aae-owner="grid"]' ).forEach( ( btn ) => {
 		const forId = btn.getAttribute( 'data-aae-for' );
 		const stillHasWrap = forId
 			? doc.querySelector( WRAP_SELECTOR + '[data-id="' + forId + '"]' )
@@ -297,8 +306,14 @@ function scanButtons() {
 }
 
 /**
- * Install the Edit/Back toggle. Idempotent. Rides the same 1.5s heartbeat as the
- * loop-grid preview so the button survives preview re-renders and iframe swaps.
+ * Install the Edit/Back toggle. Idempotent. Rides a ~1.5s heartbeat so the button
+ * survives preview re-renders and iframe swaps.
+ *
+ * setInterval (not requestAnimationFrame): the button's existence is load-bearing
+ * UI that must be maintained even when the frame isn't actively painting — a rAF
+ * heartbeat pauses while the tab/iframe is hidden and would leave the button
+ * un-injected. The per-tick cost is trivial (idempotent scan), so setInterval's
+ * always-on cadence is the right tradeoff.
  */
 export function installLoopGridEditToggle() {
 	if ( state.loopGridEditToggleInstalled ) {

@@ -371,6 +371,39 @@ breakpoint and gate variants behind the same dependencies as the base.
 (`AAE_RESPONSIVE_BASES`) and maps each base label → schema key
 (`LABEL_TO_BASE`). Add new responsive settings to both.
 
+### Writing atomic settings from the editor (the `aae-rj` prop shape)
+
+When you set an AAE atomic prop **programmatically** in the editor — e.g. via
+`$e.run('document/elements/settings', { container, settings, options })` from an
+editor-bridge module — the value must be wrapped in the prop-type's `$$type`
+envelope, **not** passed raw. Passing a raw value throws
+`Settings validation failed. <prop>: invalid_value` and, worse, leaves the
+element's settings corrupted so the whole document fails to **publish**.
+
+The slider's `Responsive_JSON_Prop_Type` (used for every `aae_ns_*` slider
+setting — slidesPerView, peek, gap, …) serialises as `$$type: 'aae-rj'` with a
+per-breakpoint `value`:
+
+```js
+// WRONG — rejected as invalid_value, breaks publish:
+settings[ 'aae_ns_slides_per_view' ] = { desktop: 3 };
+
+// RIGHT — the shape a live slider actually stores:
+settings[ 'aae_ns_slides_per_view' ] = {
+  $$type: 'aae-rj',
+  value: { desktop: 3 },
+};
+```
+
+**How to find the right `$$type` for any prop:** select a real element that has
+the prop set and read it back — `container.settings.toJSON()[ propKey ]` prints
+the exact envelope (`{ $$type: '…', value: … }`) Elementor expects. Mirror that
+shape when writing. (Other prop types have their own `$$type`, e.g. `image-src`,
+`dimensions`, `size`, `classes` — never assume `aae-rj`; read it back.)
+
+Real usage: `editor-bridge/auto-preset.js` → `applySliderSettings()` seeds
+slider settings on drop using this exact envelope.
+
 ### Cleanup
 
 Anything that adds a listener / observer / timer must call `track(fn)` from
@@ -408,6 +441,9 @@ Output goes to `assets/build/`. Each entry produces:
 |---|---|
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
+| `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |
+| A whole `define_base_styles()` silently does nothing | One invalid key/value fails the entire definition. `width`/`height` are `Size_Prop_Type` — a `String_Prop_Type('fit-content')` is invalid. For CSS keywords/functions use the `custom` unit: `Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ])` (transformer emits the `size` verbatim). `auto` → `[ 'size' => 'auto', 'unit' => 'auto' ]`. |
+| Slider nav arrow renders as a huge ellipse when slidesPerView=1 | A `border-radius:50%` nav button with `width:auto` stretches to fill the full-width single slide. Give it `width/height: fit-content` (custom unit) so it hugs the icon instead of stretching — see `class-aae-a-slider-nav-{prev,next}.php`. |
 | Data-attrs not on rendered HTML | `Render::inject_into_html()` not handling the widget type, or `$attrs` empty |
 | Animation works in preview but not on frontend | `Render.php` not calling `wp_enqueue_script()` |
 | Animation works on frontend but not in editor preview | `editor-bridge/features.js` missing widget type in `widgetTypes` |

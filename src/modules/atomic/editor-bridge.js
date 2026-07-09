@@ -84,14 +84,17 @@ import { getPreviewWindow } from './editor-bridge/helpers';
 import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './editor-bridge/settings-bridge';
 import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
-
-let bootstrapped = false;
+import { startAutoPreset } from './editor-bridge/auto-preset';
 
 function bootstrap() {
-	if (bootstrapped) {
-		bootstrapped = false;
-	}
-	bootstrapped = true;
+	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
+	// responsive-mode changes, etc. Each bootstrap installs observers + heartbeats
+	// + teardown callbacks; running it again without tearing down the previous run
+	// left MULTIPLE live instances, and a stale instance's teardown/prune (bound to
+	// the OLD preview window) would remove the current run's toggle button ~200ms
+	// after it was injected → the button BLINKED. So dispose the previous run
+	// first, giving us exactly one clean set of instances per preview load.
+	disposeAll();
 
 	// Selecting a slide (Structure panel, canvas, anywhere) drives the preview
 	// slider to it — same as clicking its row in the panel's "Slides" list.
@@ -100,6 +103,10 @@ function bootstrap() {
 	// Loop Grid Slider has no query in the editor (one authored slide), so
 	// duplicate that slide client-side for a realistic multi-up / effect preview.
 	startSliderEditorPreview();
+
+	// Apply a default preset the first time certain widgets (Loop Grid Slider) are
+	// dropped, so they land styled instead of as a bare Post Image + Title card.
+	startAutoPreset();
 }
 
 if (window.elementor && window.elementor.on) {

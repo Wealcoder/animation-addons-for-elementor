@@ -106,14 +106,18 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 			'inset-block-start' => Size_Prop_Type::generate([ 'size' => 50, 'unit' => '%' ]),
 			'inset-inline-end' => Size_Prop_Type::generate([ 'size' => 20, 'unit' => 'px' ]),
 			'z-index' => Number_Prop_Type::generate( 10 ),
-			// Size the button to its icon, not a fixed box. The nav arrow is a core
-			// Atomic_Svg child whose own width/height (editable via the SVG's Style
-			// tab) should drive the visible icon size. A fixed width/height here
-			// clamped the flex-centered SVG to 40px no matter what the user set, so
-			// icon-size changes did nothing. Dropping width/height (they default to
-			// auto) lets the button grow with the icon; min-width/min-height keep the
-			// default round-badge footprint. padding gives breathing room around the
-			// glyph and, being symmetric, keeps the border-radius:50% circle.
+			// Size the button to its icon, not a fixed box, BUT never let it stretch.
+			// The nav arrow is a core Atomic_Svg child whose own width/height (editable
+			// via the SVG's Style tab) drives the visible icon size — a fixed
+			// width/height here would clamp it. So we hug the content with
+			// `width/height: fit-content` (grows with the icon) instead of leaving them
+			// `auto`: when the slider is a single 100%-wide slide the nav is a flex/
+			// absolute child in a full-width context, and `auto` let it stretch edge to
+			// edge, turning the border-radius:50% badge into a giant ellipse (the
+			// reported broken nav). min-width/min-height keep the default round-badge
+			// footprint; symmetric padding + fit-content keep it a circle.
+			'width' => Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ]),
+			'height' => Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ]),
 			'min-width' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
 			'min-height' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
 			'padding' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([

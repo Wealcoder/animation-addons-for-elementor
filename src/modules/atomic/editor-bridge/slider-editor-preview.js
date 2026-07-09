@@ -193,14 +193,45 @@ function ensurePreviewSlides( win, slider ) {
 	// configured slidesPerView so a 4-up (or higher) slider gets enough slides.
 	const cloneCount = Math.max( 0, desiredSlideCount( win, slider ) - 1 );
 
-	// Always rebuild: drop any existing clones and re-clone the authored slide
-	// from scratch on every re-render. This is the bulletproof path — when the
-	// user adds/removes/edits a child element (e.g. a Post Date button), the
-	// clones must mirror the CURRENT markup, and re-cloning guarantees that
-	// without any structural-diff bookkeeping. scan() is debounced (200ms) and
-	// skips mutations caused only by our own clones, so this doesn't loop.
-	clearClones( track );
 	const source = real[ 0 ];
+
+	// IDEMPOTENCY GUARD (fixes the hover-blink / churn loop).
+	//
+	// This function used to clearClones()+re-clone on EVERY call. But scan() is
+	// invoked from the MutationObserver, a heartbeat, settings changes AND the
+	// rebind we trigger — and every rebuild is a burst of DOM add/removes that the
+	// observer sees, re-schedules a scan, and rebuilds again. On hover the runtime
+	// nudges inline styles, feeding the same loop → the preview visibly BLINKS and
+	// churns thousands of nodes a second (a real leak). The loop-guard alone wasn't
+	// enough because clone-only mutations still cost layout + the runtime's own
+	// clones slipped through.
+	//
+	// So: only rebuild when the clone COUNT changed or the authored slide's markup
+	// actually changed. A structural signature of the source's HTML + the needed
+	// count is cached on the slider; if it matches, we already have correct clones
+	// and return WITHOUT touching the DOM — no mutation, no observer feedback, no
+	// blink. Real edits (add/remove child, setting change) change the signature and
+	// still trigger exactly one rebuild.
+	// The signature must be STYLE-IMMUNE: on hover the runtime mutates inline
+	// styles/transforms, and if those changed the signature we'd rebuild on every
+	// hover frame — the very blink we're killing. So derive it from STRUCTURE only
+	// (element count + tag skeleton + visible text), never from style/attributes.
+	const structuralSig = ( el ) => {
+		let tags = '';
+		let textLen = 0;
+		const nodes = el.querySelectorAll( '*' );
+		nodes.forEach( ( n ) => { tags += n.tagName; } );
+		textLen = ( el.textContent || '' ).length;
+		return nodes.length + ':' + tags.length + ':' + textLen;
+	};
+	const existingClones = track.querySelectorAll( '.' + PREVIEW_CLASS ).length;
+	const sig = cloneCount + '|' + structuralSig( source );
+	if ( slider.__aaePreviewSig === sig && existingClones === cloneCount ) {
+		return false; // already correct — do nothing (no DOM churn)
+	}
+	slider.__aaePreviewSig = sig;
+
+	clearClones( track );
 	const clones = [];
 	for ( let i = 0; i < cloneCount; i++ ) {
 		const clone = sanitizeClone( source.cloneNode( true ) );
@@ -301,38 +332,39 @@ function loadButtonPosition( anchor ) {
 	return null;
 }
 
+// The saved position is now a slider-RELATIVE offset (dx, dy from the slider's
+// top-left corner), NOT an absolute page coordinate. Because the button lives in
+// <body> but must travel WITH the slider, we store where it sits relative to the
+// slider and re-derive its body-absolute position from the slider's live rect on
+// every reposition. Default: 10px inside the slider's top-left.
+const DEFAULT_OFFSET = { left: 10, top: 10 };
+
+/** The saved slider-relative {left, top} offset, or the default. */
+function buttonOffset( slider ) {
+	return loadButtonPosition( slider ) || DEFAULT_OFFSET;
+}
+
 /**
- * Where to anchor the button's top-left within its offset parent (the button's
- * host — the slider's parent element). Defaults to 10px inside the slider's own
- * top-left corner, expressed in the host's coordinate space.
+ * Glue the (body-parented, position:absolute) button to the slider: its page
+ * position = the slider's top-left in the document + the saved slider-relative
+ * offset. Called on every heartbeat/scan + on scroll/resize, so the button tracks
+ * the slider as the layout shifts, without ever being an Elementor-managed node
+ * that could get wiped (the blink cause).
  */
-function defaultButtonOffset( slider, host ) {
+function positionSliderToggle( win, slider, btn ) {
 	try {
-		const s = slider.getBoundingClientRect();
-		const h = host.getBoundingClientRect();
-		return { left: ( s.left - h.left ) + 10, top: ( s.top - h.top ) + 10 };
-	} catch ( _e ) {
-		return { left: 10, top: 10 };
-	}
+		const doc = win.document;
+		const rect = slider.getBoundingClientRect();
+		const scrollX = win.pageXOffset || doc.documentElement.scrollLeft || 0;
+		const scrollY = win.pageYOffset || doc.documentElement.scrollTop || 0;
+		const off = buttonOffset( slider );
+		btn.style.left = ( rect.left + scrollX + off.left ) + 'px';
+		btn.style.top = ( rect.top + scrollY + off.top ) + 'px';
+		btn.style.right = 'auto';
+	} catch ( _e ) { /* layout unavailable */ }
 }
 
-/**
- * Place the button (position:absolute within `host`). A saved position wins;
- * otherwise anchor 10px inside the slider's top-left corner. The button is
- * absolute inside the slider's PARENT (not the slider itself) so the slider
- * wrapper's `overflow:hidden` + `transform-style:preserve-3d` can neither clip it
- * nor bury it behind a slide — while it still scrolls WITH the page (unlike
- * position:fixed) and travels with the slider.
- */
-function restoreButtonPosition( btn, slider, host ) {
-	const saved = loadButtonPosition( slider );
-	const pos = saved || defaultButtonOffset( slider, host );
-	btn.style.left = pos.left + 'px';
-	btn.style.top = pos.top + 'px';
-	btn.style.right = 'auto';
-}
-
-/** Persist an explicit {left, top} for this wrap's button. */
+/** Persist a slider-relative {left, top} offset for this slider's button. */
 function saveButtonPosition( anchor, left, top ) {
 	try {
 		window.localStorage.setItem(
@@ -400,7 +432,22 @@ function makeButtonDraggable( btn, anchor, onClick ) {
 		btn.releasePointerCapture?.( e.pointerId );
 		e.stopPropagation();
 		if ( moved ) {
-			saveButtonPosition( anchor, curLeft, curTop ); // remember drag across reloads
+			// Persist a slider-RELATIVE offset (not the absolute body coords), so the
+			// button keeps its position relative to the slider across reloads/reflows.
+			// curLeft/curTop are the button's body-absolute page position; subtract the
+			// slider's document-space top-left to get the offset.
+			try {
+				const win = btn.ownerDocument.defaultView;
+				const doc = btn.ownerDocument;
+				const rect = anchor.getBoundingClientRect();
+				const scrollX = win.pageXOffset || doc.documentElement.scrollLeft || 0;
+				const scrollY = win.pageYOffset || doc.documentElement.scrollTop || 0;
+				const offLeft = curLeft - ( rect.left + scrollX );
+				const offTop = curTop - ( rect.top + scrollY );
+				saveButtonPosition( anchor, offLeft, offTop );
+			} catch ( _e ) {
+				saveButtonPosition( anchor, curLeft, curTop ); // fallback
+			}
 		} else {
 			e.preventDefault();
 			onClick(); // genuine click → refresh
@@ -415,52 +462,48 @@ function makeButtonDraggable( btn, anchor, onClick ) {
 }
 
 function ensureSliderToggle( win, slider ) {
-	// The button is absolutely-positioned inside the slider's PARENT — not the
-	// slider itself and not <body>. Why not the slider: its `overflow:hidden`
-	// clips the button once dragged past an edge and its `transform-style:
-	// preserve-3d` buries it behind the transformed track (3D Z-order beats
-	// z-index). Why not fixed/<body>: fixed sticks to the viewport, so the button
-	// wouldn't scroll with the page or travel with the slider. The parent
-	// (.elementor-section-wrap / e-con) is overflow:visible + flat, so an absolute
-	// child there scrolls WITH the page, moves WITH the slider, and is never
-	// clipped or buried.
-	const host = slider.parentElement;
-	if ( ! host ) {
-		return;
-	}
+	// WHERE the button lives — and why it kept BLINKING before.
+	//
+	// Earlier it was an absolute child of the slider's PARENT
+	// (.elementor-section-wrap). But that element is Elementor-MANAGED: Elementor
+	// re-renders it constantly and wipes our button, so the heartbeat kept
+	// re-injecting it → the button flashed in and out (the reported blink).
+	//
+	// Fix: parent the button to the preview <body> — which Elementor never wipes —
+	// as `position:absolute`, and keep its screen position in sync with the slider
+	// ourselves. <body> is the scroll container, so an absolute child there scrolls
+	// WITH the page (unlike position:fixed) yet is never clipped/buried/wiped.
+	const doc = win.document;
 	const sliderId = slider.getAttribute( 'data-id' ) || slider.id || '';
-	if ( slider.__aaeToggleBtn && slider.__aaeToggleBtn.isConnected ) {
+
+	// One button per slider; re-query the live DOM (a stale prop could point at a
+	// removed node).
+	const live = sliderId
+		? doc.querySelector( '.' + TOGGLE_CLASS + '[data-aae-for="' + sliderId + '"]' )
+		: ( slider.__aaeToggleBtn && slider.__aaeToggleBtn.isConnected ? slider.__aaeToggleBtn : null );
+	if ( live && live.isConnected ) {
+		slider.__aaeToggleBtn = live;
+		positionSliderToggle( win, slider, live ); // keep it glued to the slider
 		return;
 	}
-	if ( sliderId ) {
-		const existing = win.document.querySelector(
-			'.' + TOGGLE_CLASS + '[data-aae-for="' + sliderId + '"]'
-		);
-		if ( existing ) {
-			slider.__aaeToggleBtn = existing;
-			return;
-		}
-	}
 
-	// The host must be a positioning context so `position:absolute` anchors to it.
-	const hostPos = win.getComputedStyle( host ).position;
-	if ( hostPos === 'static' || ! hostPos ) {
-		host.style.position = 'relative';
-	}
-
-	const btn = win.document.createElement( 'button' );
+	const btn = doc.createElement( 'button' );
 	btn.type = 'button';
 	btn.className = TOGGLE_CLASS;
 	btn.innerHTML = ICON_MARKUP;
 	btn.setAttribute( 'title', 'Refresh the preview slides with your latest edits — drag to move' );
 	// Inert preview chrome — never an editor element.
 	btn.setAttribute( 'data-aae-ui', '1' );
+	// Owner tag: the plain-grid module shares the class `aae-lg-edit-toggle`. Each
+	// module prunes only its own owner's buttons, so the grid module's pruner can't
+	// delete this slider button (which used to cause the blink).
+	btn.setAttribute( 'data-aae-owner', 'slider' );
 	btn.setAttribute( 'contenteditable', 'false' );
 	if ( sliderId ) {
 		btn.setAttribute( 'data-aae-for', sliderId );
 	}
 	btn.style.cssText = [
-		'position:absolute', 'top:10px', 'left:10px', 'z-index:2147483000',
+		'position:absolute', 'top:0', 'left:0', 'z-index:2147483000',
 		'display:inline-flex', 'align-items:center',
 		'padding:6px 14px', 'font:700 13px/1.3 sans-serif', 'color:#fff',
 		'background:' + BG, 'border:0', 'border-radius:6px', 'cursor:grab',
@@ -470,20 +513,20 @@ function ensureSliderToggle( win, slider ) {
 	btn.addEventListener( 'mouseenter', () => { btn.style.background = BG_HOVER; } );
 	btn.addEventListener( 'mouseleave', () => { btn.style.background = BG; } );
 
-	// Restore any dragged position; else anchor to the slider's top-left corner
-	// (expressed in the host's coordinate space).
-	restoreButtonPosition( btn, slider, host );
-
 	makeButtonDraggable( btn, slider, () => {
-		// Refresh: rebuild clones from the authored slide's CURRENT markup, then
-		// rebind. ensurePreviewSlides() always clears + re-clones, so this picks up
-		// any child content/setting edits — without hiding anything.
+		// Refresh: FORCE a rebuild from the authored slide's CURRENT markup by
+		// clearing the idempotency signature, so a manual refresh always re-clones
+		// even if the structural signature looks unchanged, then rebind. (The
+		// automatic scan path is idempotent to avoid the hover-blink loop; the
+		// button is the explicit "pick up my latest edits now" escape hatch.)
+		slider.__aaePreviewSig = null;
 		ensurePreviewSlides( win, slider );
 		rebind( win, slider );
 	} );
 
-	host.appendChild( btn );
+	doc.body.appendChild( btn );
 	slider.__aaeToggleBtn = btn;
+	positionSliderToggle( win, slider, btn ); // initial placement
 }
 
 /**
@@ -493,11 +536,40 @@ function ensureSliderToggle( win, slider ) {
  * We match each button back to its slider by `data-aae-for`.
  */
 function pruneOrphanToggles( win ) {
-	win.document.querySelectorAll( '.' + TOGGLE_CLASS ).forEach( ( btn ) => {
+	// Only prune buttons THIS module owns (data-aae-owner="slider"). The plain-grid
+	// module's buttons share the class but belong to grid wraps — touching them
+	// here would wrongly delete them.
+	win.document.querySelectorAll( '.' + TOGGLE_CLASS + '[data-aae-owner="slider"]' ).forEach( ( btn ) => {
 		const forId = btn.getAttribute( 'data-aae-for' );
 		const stillHasSlider = forId
 			? win.document.querySelector( SLIDER_SEL + '[data-id="' + forId + '"]' )
 			: btn.closest( SLIDER_SEL ); // legacy button with no id — keep only if inside a slider
+		if ( stillHasSlider ) {
+			btn.__aaeMiss = 0; // slider present — reset the grace counter
+			return;
+		}
+		// Grace period: Elementor briefly detaches/replaces the slider node during a
+		// re-render, so a single "missing" scan is NOT a real delete — removing the
+		// button on that transient made it flash out (the residual blink). Only prune
+		// after the slider has been gone for several consecutive scans.
+		btn.__aaeMiss = ( btn.__aaeMiss || 0 ) + 1;
+		if ( btn.__aaeMiss >= 5 ) {
+			btn.remove();
+		}
+	} );
+}
+
+/**
+ * Immediately remove every toggle whose slider is gone — NO grace period. Used on
+ * a real widget-delete command (a permanent removal), so the button vanishes at
+ * once instead of after the grace-guarded heartbeat catches up.
+ */
+function pruneOrphanTogglesNow( win ) {
+	win.document.querySelectorAll( '.' + TOGGLE_CLASS + '[data-aae-owner="slider"]' ).forEach( ( btn ) => {
+		const forId = btn.getAttribute( 'data-aae-for' );
+		const stillHasSlider = forId
+			? win.document.querySelector( SLIDER_SEL + '[data-id="' + forId + '"]' )
+			: btn.closest( SLIDER_SEL );
 		if ( ! stillHasSlider ) {
 			btn.remove();
 		}
@@ -532,6 +604,9 @@ export function syncSliderPreviewForElement( win, node ) {
 		? node
 		: node.closest( SLIDER_SEL );
 	if ( slider ) {
+		// A setting just changed (slidesPerView / a child edit) — force one rebuild
+		// past the idempotency guard so the change is reflected, then it settles.
+		slider.__aaePreviewSig = null;
 		ensurePreviewSlides( win, slider );
 	}
 }
@@ -556,6 +631,21 @@ export function startSliderEditorPreview() {
 
 	// First pass once layout settles.
 	schedule();
+
+	// Light heartbeat: ensure the toggle button + clones exist even when the
+	// observer sees no relevant mutation (e.g. the slider's parent/host wasn't
+	// ready on the first scan). This is CHEAP now that ensurePreviewSlides() is
+	// idempotent — a matching signature returns instantly with zero DOM churn, so
+	// this can't reintroduce the blink loop.
+	//
+	// This MUST be setInterval, NOT rAF: requestAnimationFrame is paused entirely
+	// while the tab/iframe is hidden (backgrounded editor, headless). The button's
+	// existence is load-bearing UI that must be maintained regardless of visibility
+	// — a rAF heartbeat left the button un-injected whenever the frame wasn't
+	// actively painting. The per-tick cost is trivial thanks to the idempotency
+	// guard, so setInterval's always-on cadence is the right tradeoff here.
+	const heartbeatId = win.setInterval( () => scan( win ), 1500 );
+	const stopHeartbeat = () => win.clearInterval( heartbeatId );
 
 	const observer = new win.MutationObserver( ( mutations ) => {
 		// Ignore mutations we caused (adding/removing our own clones) to avoid a loop.
@@ -603,6 +693,14 @@ export function startSliderEditorPreview() {
 		// Elementor's command-bus signature is (component, command, args) — the
 		// command NAME is the second argument.
 		const onCommand = ( _component, command ) => {
+			// A widget DELETE is a real, permanent removal (unlike Elementor's
+			// transient re-render detaches). Prune orphaned buttons IMMEDIATELY on
+			// delete — bypassing the grace period — so the refresh button vanishes the
+			// instant its slider is deleted, not several heartbeats later.
+			if ( command === 'document/elements/delete' ) {
+				pruneOrphanTogglesNow( win );
+				return;
+			}
 			if ( command !== 'document/elements/settings' ) {
 				return;
 			}
@@ -641,11 +739,17 @@ export function startSliderEditorPreview() {
 	track( () => {
 		try {
 			win.clearTimeout( timer );
+			stopHeartbeat();
 			observer.disconnect();
 			// Leave the DOM clean on teardown.
 			win.document.querySelectorAll( SLIDER_SEL + ' ' + TRACK_SEL ).forEach( ( t ) => clearClones( t ) );
-			// The refresh button now lives in <body>, not inside the slider.
-			win.document.querySelectorAll( '.' + TOGGLE_CLASS ).forEach( ( b ) => b.remove() );
+			// NOTE: we deliberately DO NOT remove the toggle buttons here. This
+			// teardown runs on Elementor's frequent document/preview re-inits (not
+			// just on unload), and wiping the buttons on every such churn was exactly
+			// what made them BLINK (create → ~380ms later teardown removes → heartbeat
+			// re-creates → repeat). The buttons are idempotent (one per slider,
+			// re-queried live) and get pruned by pruneOrphanToggles() once their
+			// slider is genuinely gone, so leaving them is safe and blink-free.
 		} catch ( _e ) { /* preview gone */ }
 	} );
 }
