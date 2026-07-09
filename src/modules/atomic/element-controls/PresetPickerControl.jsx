@@ -34,12 +34,24 @@ import { Stack, Typography, MenuItem, Select } from "@elementor/ui";
 // Container element types whose wrapper is unwrapped on apply.
 const CONTAINER_TYPES = ["e-flexbox", "e-div-block", "e-grid", "container"];
 
+// Some element types share another type's preset library. The Loop Grid Slider's
+// slide item (`e-aae-a-loop-slide-item`) is a subclass of the Loop Grid item
+// (`e-aae-a-loop-item`) with the same authored-card shape, so it reuses the Loop
+// Grid presets. Presets are keyed by the type detected inside each preset model
+// (always `e-aae-a-loop-item` here), so without this alias the slide item's
+// picker is empty. On apply we rewrite the created root's type to the selected
+// element's own type (see applyPreset) so a slide stays a slide.
+const PRESET_TYPE_ALIASES = {
+  "e-aae-a-loop-slide-item": "e-aae-a-loop-item",
+};
+
 function getPresetsForType(type) {
   const all = window.AAE_WIDGET_PRESETS;
   if (!all || typeof all !== "object") {
     return [];
   }
-  const list = all[type];
+  const key = all[type] ? type : PRESET_TYPE_ALIASES[type] || type;
+  const list = all[key];
   return Array.isArray(list) ? list : [];
 }
 
@@ -190,6 +202,25 @@ export function PresetPickerControl({ label }) {
 
     // Unwrap: a flex/container preset applies its children; otherwise itself.
     const root = JSON.parse(JSON.stringify(preset.model));
+
+    // Type alias (e.g. the slider slide item reusing Loop Grid presets): the
+    // preset root is `e-aae-a-loop-item`, but this element is an
+    // `e-aae-a-loop-slide-item` living in a slide track. Rewrite the root's type
+    // to the selected element's own type so the created element is a valid slide
+    // (right Twig/class), not a grid item the track won't lay out. Only when the
+    // root is NOT a container (containers get unwrapped, so their type is dropped).
+    if (!isContainerModel(root) && type && root.elType && root.elType !== type) {
+      const rootType = root.widgetType || root.elType;
+      if (rootType !== type) {
+        // Atomic elements report their type via elType; keep widgetType in sync
+        // if the model used it.
+        if (root.widgetType) {
+          root.widgetType = type;
+        }
+        root.elType = type;
+      }
+    }
+
     const models = isContainerModel(root)
       ? Array.isArray(root.elements)
         ? root.elements
