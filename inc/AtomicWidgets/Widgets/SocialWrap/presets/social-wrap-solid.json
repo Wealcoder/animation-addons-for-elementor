@@ -1,0 +1,286 @@
+{
+	"content": [
+		{
+			"id": "swslwrap1",
+			"settings": {},
+			"elements": [
+			{
+			"id": "swsl0001",
+			"settings": {},
+			"elements": [
+				{
+					"id": "swsl0fb1",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "g-socsolid01", "aae-social-pulse", "e-swsl0fb1-bg" ] },
+						"btn_url": { "$$type": "string", "value": "https://www.facebook.com/sharer/sharer.php" },
+						"btn_target": { "$$type": "string", "value": "_blank" },
+						"btn_nofollow": { "$$type": "boolean", "value": false }
+					},
+					"elements": [
+						{
+							"id": "swsl0fb2",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-svg",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": { "title": "Icon" },
+							"version": "0.0"
+						},
+						{
+							"id": "swsl0fb3",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-label" ] },
+								"tag": { "$$type": "string", "value": "span" },
+								"paragraph": {
+									"$$type": "html-v3",
+									"value": {
+										"content": { "$$type": "string", "value": "Facebook" },
+										"children": []
+									}
+								}
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-paragraph",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": [],
+							"version": "0.0"
+						}
+					],
+					"isInner": false,
+					"elType": "e-aae-a-social-wrap-item",
+					"styles": {
+						"e-swsl0fb1-bg": {
+							"id": "e-swsl0fb1-bg",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"background": {
+											"$$type": "background",
+											"value": {
+												"color": { "$$type": "color", "value": "#1877f2" }
+											}
+										}
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "Facebook" },
+					"version": "0.0"
+				},
+				{
+					"id": "swsl0tw1",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "g-socsolid01", "aae-social-pulse", "e-swsl0tw1-bg" ] },
+						"btn_url": { "$$type": "string", "value": "https://twitter.com/intent/tweet" },
+						"btn_target": { "$$type": "string", "value": "_blank" },
+						"btn_nofollow": { "$$type": "boolean", "value": false }
+					},
+					"elements": [
+						{
+							"id": "swsl0tw2",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-svg",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": { "title": "Icon" },
+							"version": "0.0"
+						},
+						{
+							"id": "swsl0tw3",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-label" ] },
+								"tag": { "$$type": "string", "value": "span" },
+								"paragraph": {
+									"$$type": "html-v3",
+									"value": {
+										"content": { "$$type": "string", "value": "Twitter" },
+										"children": []
+									}
+								}
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-paragraph",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": [],
+							"version": "0.0"
+						}
+					],
+					"isInner": false,
+					"elType": "e-aae-a-social-wrap-item",
+					"styles": {
+						"e-swsl0tw1-bg": {
+							"id": "e-swsl0tw1-bg",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"background": {
+											"$$type": "background",
+											"value": {
+												"color": { "$$type": "color", "value": "#000000" }
+											}
+										}
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "Twitter" },
+					"version": "0.0"
+				},
+				{
+					"id": "swsl0li1",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "g-socsolid01", "aae-social-pulse", "e-swsl0li1-bg" ] },
+						"btn_url": { "$$type": "string", "value": "https://www.linkedin.com/shareArticle" },
+						"btn_target": { "$$type": "string", "value": "_blank" },
+						"btn_nofollow": { "$$type": "boolean", "value": false }
+					},
+					"elements": [
+						{
+							"id": "swsl0li2",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-icon" ] }
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-svg",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": { "title": "Icon" },
+							"version": "0.0"
+						},
+						{
+							"id": "swsl0li3",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "aae-a-social-wrap-item-label" ] },
+								"tag": { "$$type": "string", "value": "span" },
+								"paragraph": {
+									"$$type": "html-v3",
+									"value": {
+										"content": { "$$type": "string", "value": "LinkedIn" },
+										"children": []
+									}
+								}
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-paragraph",
+							"elType": "widget",
+							"styles": [],
+							"interactions": [],
+							"editor_settings": [],
+							"version": "0.0"
+						}
+					],
+					"isInner": false,
+					"elType": "e-aae-a-social-wrap-item",
+					"styles": {
+						"e-swsl0li1-bg": {
+							"id": "e-swsl0li1-bg",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"background": {
+											"$$type": "background",
+											"value": {
+												"color": { "$$type": "color", "value": "#0a66c2" }
+											}
+										}
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "LinkedIn" },
+					"version": "0.0"
+				}
+			],
+			"isInner": false,
+			"elType": "e-aae-a-social-wrap",
+			"styles": [],
+			"interactions": [],
+			"editor_settings": { "title": "Social Wrap - Solid" },
+			"version": "0.0"
+			}
+			],
+			"isInner": false,
+			"elType": "e-flexbox",
+			"styles": [],
+			"interactions": [],
+			"editor_settings": { "title": "Social Wrap - Solid" },
+			"version": "0.0"
+		}
+	],
+	"page_settings": [],
+	"version": "0.4",
+	"title": "Social Wrap - Solid",
+	"type": "e-flexbox",
+	"global_classes": {
+		"items": {
+			"g-socsolid01": {
+				"id": "g-socsolid01",
+				"label": "aae-social-solid-item",
+				"type": "class",
+				"variants": [
+					{
+						"meta": { "breakpoint": "desktop", "state": null },
+						"props": {
+							"padding": {
+								"$$type": "dimensions",
+								"value": {
+									"block-start": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+									"block-end": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+									"inline-start": { "$$type": "size", "value": { "size": 18, "unit": "px" } },
+									"inline-end": { "$$type": "size", "value": { "size": 18, "unit": "px" } }
+								}
+							},
+							"border-radius": { "$$type": "size", "value": { "size": 999, "unit": "px" } },
+							"color": { "$$type": "color", "value": "#ffffff" },
+							"background": {
+								"$$type": "background",
+								"value": {
+									"color": { "$$type": "color", "value": "#1a1a1a" }
+								}
+							}
+						},
+						"custom_css": "selector { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10); transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; } selector:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18); filter: brightness(1.08); }"
+					}
+				]
+			}
+		},
+		"order": [ "g-socsolid01" ]
+	}
+}

@@ -274,6 +274,7 @@ final class Atomic
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
 			'aae-a-social-share-item',
+			'aae-a-social-wrap-item',
 			'aae-a-nav-item',
 			'aae-a-nav-sub-item',
 			'aae-a-mobile-nav',
@@ -975,6 +976,47 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-wrap' => [
+				'label'        => 'Social Wrap',
+				'description'  => 'An open, unlocked social-share row — three editable icon+label items to duplicate, restyle, or delete. Pair with the ready-made minimal/outlined/solid templates.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'wrap',
+					'atomic',
+					'aae',
+				],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-wrap-item' => [
+				'label'        => 'Social Wrap Item',
+				'description'  => 'An open icon+label link item used inside Social Wrap, or on its own.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'item',
+					'link',
+				],
+				'category'     => 'general',
+				'order'        => 13,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1939,6 +1981,19 @@ final class Atomic
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-wrap' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialWrap\AAE_A_Social_Wrap',
+			'file'       => 'Widgets/SocialWrap/class-aae-a-social-wrap.php',
+			'has_script' => false,
+			// No per-widget bundle: preset-driven custom CSS/JS (if any) lives
+			// in the shared `assets/scss/global-preset-social.scss` bundle,
+			// enqueued unconditionally alongside the Button free/pro presets.
+		],
+		'aae-a-social-wrap-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialWrap\AAE_A_Social_Wrap_Item',
+			'file'       => 'Widgets/SocialWrap/class-aae-a-social-wrap-item.php',
 			'has_script' => false,
 		],
 		'aae-a-image-compare' => [

@@ -12,7 +12,10 @@ const getAtomicWidgetEntries = () => {
     // Global button presets — split into free/pro tiers. Each imports its own
     // SCSS, so webpack extracts a matching global-preset-{free,pro}.css too.
     "../atomic/js/global-preset-free": "./inc/AtomicWidgets/assets/js/global-preset-free.js",
-    "../atomic/js/global-preset-pro": "./inc/AtomicWidgets/assets/js/global-preset-pro.js"
+    "../atomic/js/global-preset-pro": "./inc/AtomicWidgets/assets/js/global-preset-pro.js",
+    // Social Wrap presets — single tier (no free/pro split). Imports its own
+    // SCSS, so webpack extracts a matching global-preset-social.css too.
+    "../atomic/js/global-preset-social": "./inc/AtomicWidgets/assets/js/global-preset-social.js"
   };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {

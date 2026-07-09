@@ -98,10 +98,11 @@ add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page')
 if (!function_exists('aaeaddon_enqueue_global_preset_assets')) {
     function aaeaddon_enqueue_global_preset_assets()
     {
-        $free_js  = 'assets/atomic/js/global-preset-free.js';
-        $free_css = 'assets/atomic/js/global-preset-free.css';
-        $pro_js   = 'assets/atomic/js/global-preset-pro.js';
-        $pro_css  = 'assets/atomic/js/global-preset-pro.css';
+        $free_js    = 'assets/atomic/js/global-preset-free.js';
+        $free_css   = 'assets/atomic/js/global-preset-free.css';
+        $pro_js     = 'assets/atomic/js/global-preset-pro.js';
+        $pro_css    = 'assets/atomic/js/global-preset-pro.css';
+        $social_css = 'assets/atomic/js/global-preset-social.css';
 
         wp_enqueue_style(
             'aae-global-preset-free',
@@ -136,6 +137,16 @@ if (!function_exists('aaeaddon_enqueue_global_preset_assets')) {
             ['gsap'],
             file_exists(WCF_ADDONS_PATH . $pro_js) ? filemtime(WCF_ADDONS_PATH . $pro_js) : WCF_ADDONS_VERSION,
             true
+        );
+
+        // Social Wrap presets — CSS-only bundle (no JS behavior yet), so only
+        // the stylesheet is enqueued; see global-preset-social.js for why the
+        // JS entry still exists (webpack needs it to extract this .css).
+        wp_enqueue_style(
+            'aae-global-preset-social',
+            WCF_ADDONS_URL . $social_css,
+            [],
+            file_exists(WCF_ADDONS_PATH . $social_css) ? filemtime(WCF_ADDONS_PATH . $social_css) : WCF_ADDONS_VERSION
         );
     }
 }
