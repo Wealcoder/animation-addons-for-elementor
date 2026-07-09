@@ -200,4 +200,14 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 			'elementor/elements/aae-a-btn-pro' => __DIR__ . '/aae-a-btn-pro.html.twig',
 		];
 	}
+
+	public function get_script_depends(): array
+	{
+		return ['aae-a-btn-pro-js'];
+	}
+
+	public function get_style_depends(): array
+	{
+		return ['aae-a-btn-pro-css'];
+	}
 }

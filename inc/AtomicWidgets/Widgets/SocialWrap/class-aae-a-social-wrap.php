@@ -165,4 +165,8 @@ class AAE_A_Social_Wrap extends Atomic_Element_Base {
 			'elementor/elements/aae-a-social-wrap' => __DIR__ . '/aae-a-social-wrap.html.twig',
 		];
 	}
+
+	public function get_style_depends(): array {
+		return ['aae-a-social-wrap-css'];
+	}
 }

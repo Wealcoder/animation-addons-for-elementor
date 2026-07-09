@@ -2,7 +2,7 @@
    No shared CSS needed: the ripple span, arrow line and arrow tip are all
    real elements with their own Style-panel props authored in the preset
    JSON (z-temp/button-pro-style-4-ripple-gsap.json). rippleGsapSetup() in
-   global-preset-pro.js toggles their inline styles directly on hover, so
+   btn-pro.js toggles their inline styles directly on hover, so
    users can fully restyle the effect without touching this file. */
 
 /* 5  — Group Swap L */

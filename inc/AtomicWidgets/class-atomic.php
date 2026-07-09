@@ -1984,12 +1984,13 @@ final class Atomic
 			'has_script' => false,
 		],
 		'aae-a-social-wrap' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialWrap\AAE_A_Social_Wrap',
-			'file'       => 'Widgets/SocialWrap/class-aae-a-social-wrap.php',
-			'has_script' => false,
-			// No per-widget bundle: preset-driven custom CSS/JS (if any) lives
-			// in the shared `assets/scss/global-preset-social.scss` bundle,
-			// enqueued unconditionally alongside the Button free/pro presets.
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialWrap\AAE_A_Social_Wrap',
+			'file'         => 'Widgets/SocialWrap/class-aae-a-social-wrap.php',
+			'has_script'   => false,
+			// No JS behavior yet (see Widgets/SocialWrap/assets/js/social-wrap.js) —
+			// only the on-demand stylesheet is registered.
+			'style_handle' => 'aae-a-social-wrap-css',
+			'style_path'   => '/assets/atomic/js/social-wrap.css',
 		],
 		'aae-a-social-wrap-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialWrap\AAE_A_Social_Wrap_Item',
@@ -2044,15 +2045,24 @@ final class Atomic
 			],
 
 			'aae-a-btn' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
-				'file'       => 'Widgets/Btn/class-aae-a-btn.php',
-				'has_script' => false,
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
+				'file'          => 'Widgets/Btn/class-aae-a-btn.php',
+				'script_handle' => 'aae-a-btn-js',
+				'script_path'   => '/assets/atomic/js/btn.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-btn-css',
+				'style_path'    => '/assets/atomic/js/btn.css',
 			],
 
 			'aae-a-btn-pro' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
-				'file'       => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
-				'has_script' => false,
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
+				'file'          => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
+				'script_handle' => 'aae-a-btn-pro-js',
+				'script_path'   => '/assets/atomic/js/btn-pro.js',
+				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-btn-pro-css',
+				'style_path'    => '/assets/atomic/js/btn-pro.css',
 			],
 
 			'aae-a-advanced-heading' => [
