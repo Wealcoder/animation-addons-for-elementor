@@ -95,6 +95,13 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
+		// Global Lightbox — image + gallery (Phase 1). Auto-injected onto core
+		// e-image via Render; custom AAE widgets opt in through Lightbox_Manager.
+		// Frontend reads window.AAE_INTERACTIONS_LB[<id>].
+		( new \WCF_ADDONS\Atomic\Lightbox\Schema() )->register();
+		( new \WCF_ADDONS\Atomic\Lightbox\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\Lightbox\Render() )->register();
+
 		// Nested Slider. (No Controls class — the slider's panel section is built
 		// directly in AAE_A_Slider::define_atomic_controls(), so there's nothing
 		// to inject via the controls filter.)

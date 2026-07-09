@@ -82,6 +82,7 @@ module.exports = {
     "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
     "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
+    "modules/atomic/effects/lightbox": "./src/modules/atomic/effects/lightbox/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory
