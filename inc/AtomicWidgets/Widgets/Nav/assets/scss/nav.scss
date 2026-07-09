@@ -47,10 +47,16 @@
 		transition: opacity 150ms ease, visibility 0s;
 	}
 
-	/* Nested sub-dropdown opens to the right. */
+	/* Nested sub-dropdown opens to the RIGHT (Bootstrap-style cascade): top-
+	 * aligned with its trigger row, at the parent dropdown's right edge. The
+	 * `!important` is REQUIRED — it must override the base rule's own
+	 * `!important` top/left above; without it the base wins and nested dropdowns
+	 * open below-left and overlap. inset-inline-start:100% follows the full-width
+	 * trigger row (see submenu-column rule), so it tracks whatever width the user
+	 * gives each dropdown — nothing is hardcoded. */
 	.aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"] > :is(.aae-a-nav-dropdown, .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
-		inset-block-start: 0;
-		inset-inline-start: 100%;
+		inset-block-start: 0 !important;
+		inset-inline-start: 100% !important;
 	}
 
 	/* A dropdown that CONTAINS nested items is a submenu → stack vertically.
@@ -66,6 +72,17 @@
 			flex: 0 0 auto !important;
 		}
 	}
+}
+
+/* A NESTED item must not create its own positioning context, so its dropdown
+ * anchors to the PARENT DROPDOWN (position:absolute) instead of the item. Then
+ * inset-inline-start:100% lands at the parent dropdown's RIGHT EDGE — following
+ * whatever width the user gave that dropdown — regardless of the item's own
+ * width. The item is full-width on the frontend but NOT in the editor edit-mode
+ * (different wrapper/layout), so anchoring to the item made nested dropdowns
+ * overlap in the editor; anchoring to the parent dropdown fixes both. */
+.aae-a-nav .aae-a-nav-item .aae-a-nav-item {
+	position: static !important;
 }
 
 .aae-a-nav-runtime-dropdown {
