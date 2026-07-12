@@ -273,6 +273,7 @@ final class Atomic
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
+			'aae-a-social-share-main-item',
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
 			'aae-a-nav-sub-item',
@@ -940,6 +941,47 @@ final class Atomic
 
 			'aae-a-social-share' => [
 				'label'        => 'Social Share',
+				'description'  => 'An open, unlocked social-share row — three editable icon+label items to duplicate, restyle, or delete. Pair with the ready-made minimal/outlined/solid templates.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'atomic',
+					'aae',
+					'open',
+				],
+				'category'     => 'general',
+				'order'        => 10,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item' => [
+				'label'        => 'Social Share Item',
+				'description'  => 'An open icon+label link item used inside Social Share, or on its own.',
+				'icon'         => 'eicon-share',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'social',
+					'share',
+					'item',
+					'link',
+				],
+				'category'     => 'general',
+				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-main' => [
+				'label'        => 'Social Share Main',
 				'description'  => 'Atomic post social share widget with multiple vendors and AJAX share counts.',
 				'icon'         => 'eicon-share',
 				'is_pro'       => false,
@@ -952,16 +994,17 @@ final class Atomic
 					'post',
 					'atomic',
 					'aae',
+					'main',
 				],
 				'category'     => 'general',
-				'order'        => 10,
+				'order'        => 12,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
 
-			'aae-a-social-share-item' => [
-				'label'        => 'Social Share Item',
-				'description'  => 'Internal child item for Social Share.',
+			'aae-a-social-share-main-item' => [
+				'label'        => 'Social Share Main Item',
+				'description'  => 'Internal child item for Social Share Main.',
 				'icon'         => 'eicon-share',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -974,7 +1017,7 @@ final class Atomic
 					'internal',
 				],
 				'category'     => 'general',
-				'order'        => 11,
+				'order'        => 13,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1930,15 +1973,29 @@ final class Atomic
 		],
 
 		'aae-a-social-share' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
-			'file'          => 'Widgets/SocialShare/class-aae-a-social-share.php',
-			'script_handle' => 'aae-a-social-share-js',
-			'script_path'   => '/assets/atomic/js/social-share.js',
-			'has_script'    => true,
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
+			'file'         => 'Widgets/SocialShare/class-aae-a-social-share.php',
+			'has_script'   => false,
+			// No JS behavior yet (see Widgets/SocialShare/assets/js/social-share.js) —
+			// only the on-demand stylesheet is registered.
+			'style_handle' => 'aae-a-social-share-css',
+			'style_path'   => '/assets/atomic/js/social-share.css',
 		],
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-main' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main',
+			'file'          => 'Widgets/SocialShareMain/class-aae-a-social-share-main.php',
+			'script_handle' => 'aae-a-social-share-main-js',
+			'script_path'   => '/assets/atomic/js/social-share-main.js',
+			'has_script'    => true,
+		],
+		'aae-a-social-share-main-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main_Item',
+			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
 			'has_script' => false,
 		],
 		'aae-a-image-compare' => [
@@ -1989,15 +2046,24 @@ final class Atomic
 			],
 
 			'aae-a-btn' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
-				'file'       => 'Widgets/Btn/class-aae-a-btn.php',
-				'has_script' => false,
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
+				'file'          => 'Widgets/Btn/class-aae-a-btn.php',
+				'script_handle' => 'aae-a-btn-js',
+				'script_path'   => '/assets/atomic/js/btn.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-btn-css',
+				'style_path'    => '/assets/atomic/js/btn.css',
 			],
 
 			'aae-a-btn-pro' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
-				'file'       => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
-				'has_script' => false,
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
+				'file'          => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
+				'script_handle' => 'aae-a-btn-pro-js',
+				'script_path'   => '/assets/atomic/js/btn-pro.js',
+				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-btn-pro-css',
+				'style_path'    => '/assets/atomic/js/btn-pro.css',
 			],
 
 			'aae-a-advanced-heading' => [
@@ -3303,6 +3369,15 @@ JS,
 				$raw = file_get_contents($file);
 				if (false === $raw) {
 					continue;
+				}
+
+				// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
+				// instead of a baked-in domain (so the JSON works on any install
+				// after this plugin is distributed) — resolve it here the same
+				// way live widget code resolves its own asset URLs via
+				// WCF_ADDONS_URL (see e.g. AAE_A_Social_Share_Item::get_vendor_svg_url()).
+				if (defined('WCF_ADDONS_URL')) {
+					$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
 				}
 
 				$data = json_decode($raw, true);

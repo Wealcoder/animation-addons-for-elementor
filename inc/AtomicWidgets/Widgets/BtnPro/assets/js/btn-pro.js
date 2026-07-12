@@ -1,4 +1,20 @@
-import '../scss/global-preset-pro.scss';
+/**
+ * AAE Btn Pro — pro-tier button interactions.
+ *
+ * Build target: ../../../../../assets/atomic/js/btn-pro.js
+ * Styles live in ../scss/btn-pro.scss (extracted by webpack).
+ *
+ * Enqueued on-demand: only when an `e-aae-a-btn-pro` element actually
+ * renders on the page (see class-atomic.php's has_script/style_handle
+ * entry for `aae-a-btn-pro` + maybe_enqueue_widget_script()). Not loaded
+ * on pages with no AAE Btn Pro instance.
+ *
+ * Covers: Ripple (GSAP), Group Swap L/R, Polygon fill + magnetic move —
+ * generic `.aae-btn-*` marker classes you add by hand to elements built
+ * inside an AAE Btn Pro wrapper, matching the pro templates in
+ * Widgets/BtnPro/presets and z_temp/templates/BtnPro.
+ */
+import '../scss/btn-pro.scss';
 
 // 4  — Ripple (GSAP)
 function rippleGsapSetup(container) {

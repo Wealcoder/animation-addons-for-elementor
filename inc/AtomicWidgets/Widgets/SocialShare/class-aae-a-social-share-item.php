@@ -10,37 +10,35 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
- * Single social share item inside AAE_A_Social_Share.
+ * AAE Social Share Item — a single OPEN link container (icon + label) meant
+ * to live inside AAE_A_Social_Share, or stand on its own.
  *
- * Locked composite child tree per item:
- *   1. Atomic_Svg       (icon — class `aae-a-social-share-item-icon`)
- *   2. Atomic_Paragraph (title — class `aae-a-social-share-item-title`)
- *
- * Per-element visual defaults are NOT defined here — they live in the
- * PARENT's Twig <style> block scoped via `[data-id][data-preset]` and
- * wrapped in `:where()` so the user's Style panel rules at (0,1,0)
- * always beat them. The item's own `define_base_styles()` is limited
- * to minimal structural layout (display, position, gap, cursor) so
- * Style-panel overrides remain free.
+ * Unlike AAE_A_Social_Share_Main_Item (locked, vendor-enum driven, styled from
+ * the parent's baked-in preset CSS), nothing here is locked and there is
+ * no `vendor` prop — swap the icon, edit the label, or restyle from this
+ * item's own Style panel exactly like the AAE Btn wrapper pattern.
  */
 class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 
@@ -48,7 +46,7 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'A single social share item — icon + title — inside an AAE Social Share parent.';
+	public static $widget_description = 'An open, freely editable share-link item (icon + label). Duplicate it inside an AAE Social Share to build a custom social-share row, or use it standalone as any icon+label link.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -64,50 +62,48 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Social Share Item', 'animation-addons-for-elementor' );
-	}
-
-	public function get_keywords() {
-		return [ 'social', 'share', 'item', 'atomic', 'aae' ];
+		return esc_html__( 'AAE Social Share Item', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
 		return 'eicon-share';
 	}
 
-	public function should_show_in_panel() {
-		return false;
+	public function get_keywords() {
+		return [ 'social', 'share', 'item', 'aae', 'atomic', 'link', 'container' ];
 	}
 
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'vendor'     => String_Prop_Type::make()
-				->enum( [ 'facebook', 'twitter', 'linkedin', 'instagram', 'pinterest', 'tumblr', 'blogger', 'reddit' ] )
-				->default( 'facebook' ),
+
+			'btn_url'      => String_Prop_Type::make()->default( '#' ),
+			'btn_target'   => String_Prop_Type::make()->default( '_blank' ),
+			'btn_nofollow' => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
-				->set_label( __( 'Social Item', 'animation-addons-for-elementor' ) )
-				->set_id( 'item_settings' )
+				->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+				->set_id( 'content' )
 				->set_items( [
-					Select_Control::bind_to( 'vendor' )
-						->set_label( __( 'Vendor', 'animation-addons-for-elementor' ) )
+					Text_Control::bind_to( 'btn_url' )
+						->set_label( __( 'URL', 'animation-addons-for-elementor' ) ),
+
+					Select_Control::bind_to( 'btn_target' )
+						->set_label( __( 'Open In', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'facebook',  'label' => __( 'Facebook',  'animation-addons-for-elementor' ) ],
-							[ 'value' => 'twitter',   'label' => __( 'Twitter',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'linkedin',  'label' => __( 'LinkedIn',  'animation-addons-for-elementor' ) ],
-							[ 'value' => 'instagram', 'label' => __( 'Instagram', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'pinterest', 'label' => __( 'Pinterest', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'tumblr',    'label' => __( 'Tumblr',    'animation-addons-for-elementor' ) ],
-							[ 'value' => 'blogger',   'label' => __( 'Blogger',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'reddit',    'label' => __( 'Reddit',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '_self',  'label' => __( 'Same Window', 'animation-addons-for-elementor' ) ],
+							[ 'value' => '_blank', 'label' => __( 'New Window',  'animation-addons-for-elementor' ) ],
 						] ),
+
+					Switch_Control::bind_to( 'btn_nofollow' )
+						->set_label( __( 'Add Nofollow', 'animation-addons-for-elementor' ) ),
 				] ),
+
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
@@ -120,40 +116,30 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Item-wrapper base style — STRUCTURAL ONLY.
-	 *
-	 * No colors, typography, sizing — all of that lives in the parent's
-	 * Twig <style> block wrapped in `:where()` so Style-panel overrides
-	 * always win. Compound child selectors are forbidden here too: each
-	 * inner SVG/Paragraph has its own Style panel and any rule emitted
-	 * at (0,2,0) here would silently block their (0,1,0) panel rules.
+	 * Structural-only base style — no colors/typography beyond a sane
+	 * neutral default, so preset templates and per-item Style panel edits
+	 * both start from a clean, low-opinion baseline.
 	 */
 	protected function define_base_styles(): array {
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'position',    String_Prop_Type::generate( 'relative' ) )
-						->add_prop( 'display',    String_Prop_Type::generate( 'inline-flex' ) )
-						->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',        Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ) )
-						->add_prop( 'cursor',     String_Prop_Type::generate( 'pointer' ) )
+						->add_prop( 'display',         String_Prop_Type::generate( 'inline-flex' ) )
+						->add_prop( 'align-items',      String_Prop_Type::generate( 'center' ) )
+						->add_prop( 'gap',              Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ) )
+						->add_prop( 'cursor',           String_Prop_Type::generate( 'pointer' ) )
+						->add_prop( 'text-decoration',  String_Prop_Type::generate( 'none' ) )
+						->add_prop( 'color',            Color_Prop_Type::generate( '#1a1a1a' ) )
 				),
 		];
 	}
 
 	/**
-	 * Static fallback children — used only when an item is instantiated
-	 * WITHOUT the parent pre-supplying a `->children([...])` tree.
-	 *
-	 * Helper exposed publicly so the parent can call it with per-vendor
-	 * defaults when composing each locked instance.
+	 * Prefilled icon + label pair. Exposed publicly so the parent's
+	 * define_default_children() can seed each fresh (unlocked) instance.
 	 */
-	public static function build_default_inner_children( string $vendor = 'facebook', string $label = 'Facebook' ): array {
-		// 1. Icon (Atomic_Svg) — pre-filled with the brand SVG file shipped
-		//    inside `assets/svg/<vendor>.svg`. User can swap from Style panel
-		//    by uploading a custom SVG; without an override our default file
-		//    is what renders.
+	public static function build_default_inner_children( string $vendor = 'facebook', string $label = 'Share' ): array {
 		$svg_settings = [
 			'classes' => Classes_Prop_Type::generate( [ 'aae-a-social-share-item-icon' ] ),
 		];
@@ -166,22 +152,19 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 		}
 
 		$icon = Atomic_Svg::generate()
-			->is_locked( true )
 			->editor_settings( [ 'title' => 'Icon' ] )
 			->settings( $svg_settings )
 			->build();
 
-		// 2. Title (Atomic_Paragraph)
 		$title = Atomic_Paragraph::generate()
-			->is_locked( true )
-			->editor_settings( [ 'title' => 'Title' ] )
+			->editor_settings( [ 'title' => 'Label' ] )
 			->settings( [
-				'classes'   => Classes_Prop_Type::generate( [ 'aae-a-social-share-item-title' ] ),
+				'classes'   => Classes_Prop_Type::generate( [ 'aae-a-social-share-item-label' ] ),
 				'paragraph' => Html_V3_Prop_Type::generate( [
 					'content'  => String_Prop_Type::generate( $label ),
 					'children' => [],
 				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
+				'tag' => String_Prop_Type::generate( 'span' ),
 			] )
 			->build();
 
@@ -193,11 +176,11 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading' ];
+		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading', 'e-image' ];
 	}
 
 	protected function define_default_html_tag() {
-		return 'li';
+		return 'a';
 	}
 
 	protected function get_templates(): array {
@@ -206,18 +189,7 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 		];
 	}
 
-	public function get_atomic_settings(): array {
-		$settings = parent::get_atomic_settings();
-
-		$vendor = isset( $settings['vendor'] ) ? $settings['vendor'] : 'facebook';
-
-		$settings['share_url']   = self::build_share_url( $vendor );
-		$settings['share_count'] = self::get_share_count( $vendor );
-
-		return $settings;
-	}
-
-	public static function get_vendor_svg_url( $vendor ) {
+	public static function get_vendor_svg_url( string $vendor ): string {
 		$allowed = [ 'facebook', 'twitter', 'linkedin', 'instagram', 'pinterest', 'tumblr', 'blogger', 'reddit' ];
 		if ( ! in_array( $vendor, $allowed, true ) ) {
 			return '';
@@ -233,66 +205,5 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 		}
 
 		return WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/SocialShare/assets/svg/' . $vendor . '.svg';
-	}
-
-	private static function build_share_url( $vendor ) {
-		$permalink = get_the_permalink();
-		$title     = get_the_title();
-
-		if ( ! $permalink ) {
-			return '#';
-		}
-
-		switch ( $vendor ) {
-			case 'facebook':
-				return add_query_arg( [ 'u' => $permalink ], 'https://www.facebook.com/sharer/sharer.php' );
-			case 'twitter':
-				return add_query_arg( [ 'url' => $permalink, 'text' => $title ], 'https://twitter.com/intent/tweet' );
-			case 'linkedin':
-				return add_query_arg( [
-					'url'     => $permalink,
-					'mini'    => true,
-					'title'   => $title,
-					'summary' => $title,
-					'source'  => $permalink,
-				], 'https://www.linkedin.com/shareArticle' );
-			case 'pinterest':
-				return add_query_arg( [
-					'media'       => get_the_post_thumbnail_url( get_the_ID(), 'full' ),
-					'url'         => $permalink,
-					'description' => $title,
-				], 'https://pinterest.com/pin/create/button/' );
-			case 'reddit':
-				return add_query_arg( [ 'url' => $permalink, 'title' => $title ], 'https://www.reddit.com/submit' );
-			case 'tumblr':
-				return add_query_arg( [ 'url' => $permalink, 'name' => $title ], 'https://www.tumblr.com/share/link' );
-			case 'blogger':
-				return add_query_arg( [ 'u' => $permalink, 'n' => $title ], 'https://www.blogger.com/blog-this.g' );
-			case 'instagram':
-				return 'https://www.instagram.com/';
-		}
-
-		return '#';
-	}
-
-	private static function get_share_count( $vendor ) {
-		$post_id = get_the_ID();
-		if ( ! $post_id ) {
-			return 0;
-		}
-
-		$current_shares = get_post_meta( $post_id, 'aae_post_shares', true );
-
-		if ( is_array( $current_shares ) && isset( $current_shares[ $vendor ] ) ) {
-			$count = (int) $current_shares[ $vendor ];
-		} else {
-			$count = 0;
-		}
-
-		if ( function_exists( 'aaeaddon_format_number_count' ) ) {
-			return aaeaddon_format_number_count( $count );
-		}
-
-		return $count;
 	}
 }
