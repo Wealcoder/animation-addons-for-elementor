@@ -23,8 +23,10 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-timeline-item.php';
+require_once __DIR__ . '/class-aae-a-timeline-items-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Items_Control;
 
 /**
  * AAE Timeline — an open composite timeline container (Btn pattern).
@@ -80,6 +82,21 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [
+			// "Items": a live projection of the timeline's real
+			// <e-aae-a-timeline-item> children — one repeater row each, with
+			// drag-reorder, duplicate, remove and rename. Mirrors the
+			// Accordion's "Items" element-control. Rendered by the React
+			// component registered under 'aae-timeline-items'
+			// (src/modules/atomic/element-controls).
+			Section::make()
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'items' )
+				->set_items( [
+					AAE_A_Timeline_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
