@@ -3366,65 +3366,104 @@ JS,
 			$scanned_dirs[$preset_dir] = true;
 
 			foreach (glob($preset_dir . '/*.json') as $file) {
-				$raw = file_get_contents($file);
-				if (false === $raw) {
-					continue;
-				}
-
-				// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
-				// instead of a baked-in domain (so the JSON works on any install
-				// after this plugin is distributed) — resolve it here the same
-				// way live widget code resolves its own asset URLs via
-				// WCF_ADDONS_URL (see e.g. AAE_A_Social_Share_Item::get_vendor_svg_url()).
-				if (defined('WCF_ADDONS_URL')) {
-					$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
-				}
-
-				$data = json_decode($raw, true);
-				if (! is_array($data)) {
-					continue;
-				}
-
-				// Resolve the root model + name from either supported format.
-				$model = null;
-				$name  = basename($file, '.json');
-
-				if (! empty($data['model']) && is_array($data['model'])) {
-					// Plugin format.
-					$model = $data['model'];
-					if (isset($data['name'])) {
-						$name = (string) $data['name'];
-					}
-				} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
-					// Elementor native export: content[] holds top-level elements;
-					// the first is the wrapper we treat as the preset model.
-					$model = $data['content'][0];
-					if (! empty($data['title'])) {
-						$name = (string) $data['title'];
-					}
-				}
-
-				if (! $model) {
+				$preset = $this->parse_preset_file($file);
+				if (! $preset) {
 					continue;
 				}
 
 				// Key by the primary atomic widget inside the model (so a
 				// flex-wrapped heading preset shows when a heading is selected),
 				// falling back to the model's own type.
-				$type = $this->detect_primary_widget_type($model);
+				$type = $this->detect_primary_widget_type($preset['model']);
 				if ('' === $type) {
 					continue;
 				}
 
-				$presets[$type][] = [
-					'id'    => sanitize_key(basename($file, '.json')),
-					'name'  => $name,
-					'model' => $model,
-				];
+				$presets[$type][] = $preset;
+			}
+		}
+
+		// Native atomic widgets (e-heading, e-button, …) have no widget dir of
+		// ours to host a presets/ folder, and detect_primary_widget_type() only
+		// recognises e-aae-a-* widgets. So their presets live in one shared root,
+		// one sub-folder per element type — the FOLDER NAME is the key:
+		//   inc/AtomicWidgets/Presets/e-heading/*.json  =>  presets['e-heading']
+		// The matching panel section is injected by Atomic\Presets\Controls,
+		// which checks the same folders (keep the path in sync with it).
+		$native_root = wp_normalize_path(WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets');
+		if (is_dir($native_root)) {
+			foreach (glob($native_root . '/*', GLOB_ONLYDIR) as $type_dir) {
+				$type = basename($type_dir);
+
+				foreach (glob($type_dir . '/*.json') as $file) {
+					$preset = $this->parse_preset_file($file);
+					if ($preset) {
+						$presets[$type][] = $preset;
+					}
+				}
 			}
 		}
 
 		return $presets;
+	}
+
+	/**
+	 * Parse one preset .json file into [ id, name, model ], accepting both the
+	 * Elementor native export format ({ content:[<model>], title }) and the
+	 * plugin format ({ name, model }). Returns null when unreadable/invalid.
+	 *
+	 * @param string $file Absolute path to the .json file.
+	 * @return array{id:string,name:string,model:array}|null
+	 */
+	private function parse_preset_file(string $file): ?array
+	{
+		$raw = file_get_contents($file);
+		if (false === $raw) {
+			return null;
+		}
+
+		// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
+		// instead of a baked-in domain (so the JSON works on any install
+		// after this plugin is distributed) — resolve it here the same
+		// way live widget code resolves its own asset URLs via
+		// WCF_ADDONS_URL (see e.g. AAE_A_Social_Share_Item::get_vendor_svg_url()).
+		if (defined('WCF_ADDONS_URL')) {
+			$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
+		}
+
+		$data = json_decode($raw, true);
+		if (! is_array($data)) {
+			return null;
+		}
+
+		// Resolve the root model + name from either supported format.
+		$model = null;
+		$name  = basename($file, '.json');
+
+		if (! empty($data['model']) && is_array($data['model'])) {
+			// Plugin format.
+			$model = $data['model'];
+			if (isset($data['name'])) {
+				$name = (string) $data['name'];
+			}
+		} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
+			// Elementor native export: content[] holds top-level elements;
+			// the first is the wrapper we treat as the preset model.
+			$model = $data['content'][0];
+			if (! empty($data['title'])) {
+				$name = (string) $data['title'];
+			}
+		}
+
+		if (! $model) {
+			return null;
+		}
+
+		return [
+			'id'    => sanitize_key(basename($file, '.json')),
+			'name'  => $name,
+			'model' => $model,
+		];
 	}
 
 	/**

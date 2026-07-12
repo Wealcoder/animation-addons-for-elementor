@@ -424,9 +424,13 @@ async function hydrate(wrap) {
 	const preCached = cachedPosts(sig);
 	if (!preCached) {
 		removeClones(grid);
+		// While the fresh fetch is in flight the grid holds ONLY the authored
+		// card — visually identical to a broken grid. Flag the grid so
+		// loop-grid-editor.scss renders inert ghost shimmer cells after the card
+		// until the posts land. Class toggles are safe here: the mutation
+		// observer watches childList only, so this never re-feeds scan().
+		grid.classList.add('aae-loop-fetching');
 	}
-
-
 
 	let posts = preCached;
 	if (!posts) {
@@ -434,6 +438,9 @@ async function hydrate(wrap) {
 			posts = await fetchPosts(s, sig);
 		} finally {
 			wrap.__aaeBusy = false;
+			// Every exit path (posts, empty result, AJAX error) must drop the
+			// ghosts — a stale flag would shimmer forever.
+			grid.classList.remove('aae-loop-fetching');
 		}
 	} else {
 		wrap.__aaeBusy = false;

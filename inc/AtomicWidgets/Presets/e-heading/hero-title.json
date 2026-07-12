@@ -1,0 +1,77 @@
+{
+	"content": [
+		{
+			"id": "aaenh01",
+			"settings": {
+				"classes": { "$$type": "classes", "value": [ "e-aaenh01-flex" ] }
+			},
+			"elements": [
+				{
+					"id": "aaenh02",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "e-aaenh02-title" ] },
+						"title": {
+							"$$type": "html-v3",
+							"value": {
+								"content": { "$$type": "string", "value": "Design Faster With Presets" },
+								"children": []
+							}
+						},
+						"tag": { "$$type": "string", "value": "h2" }
+					},
+					"elements": [],
+					"isInner": false,
+					"widgetType": "e-heading",
+					"elType": "widget",
+					"styles": {
+						"e-aaenh02-title": {
+							"id": "e-aaenh02-title",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"font-size": { "$$type": "size", "value": { "size": 48, "unit": "px" } },
+										"font-weight": { "$$type": "string", "value": "700" },
+										"color": { "$$type": "color", "value": "#5624d0" },
+										"text-align": { "$$type": "string", "value": "center" }
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "Heading" },
+					"version": "0.0"
+				}
+			],
+			"isInner": false,
+			"elType": "e-flexbox",
+			"styles": {
+				"e-aaenh01-flex": {
+					"id": "e-aaenh01-flex",
+					"label": "local",
+					"type": "class",
+					"variants": [
+						{
+							"meta": { "breakpoint": "desktop", "state": null },
+							"props": {
+								"flex-direction": { "$$type": "string", "value": "column" }
+							},
+							"custom_css": null
+						}
+					]
+				}
+			},
+			"interactions": [],
+			"editor_settings": [],
+			"version": "0.0"
+		}
+	],
+	"page_settings": [],
+	"version": "0.4",
+	"title": "Hero Title (Sample)",
+	"type": "e-flexbox"
+}
