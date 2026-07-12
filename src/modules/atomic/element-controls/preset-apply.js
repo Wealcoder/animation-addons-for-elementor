@@ -19,6 +19,8 @@ import {
   selectElement,
 } from '@elementor/editor-elements';
 
+import { applySettingsToDoms } from '../editor-bridge/settings-bridge';
+
 // Container element types whose wrapper is unwrapped on apply.
 export const CONTAINER_TYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
 
@@ -164,6 +166,113 @@ function stripRootPadding(model) {
 }
 
 /**
+ * Editor-preview sync for AAE interaction settings baked into presets
+ * (e.g. the Custom CSS extension props carrying a preset's hover/keyframe
+ * CSS). The editor bridge bulk-syncs every element's settings into the
+ * preview iframe's interaction maps ONCE on document:loaded — elements
+ * created later (a preset apply) never get synced, so their effects stay
+ * dead until reload. Mirror the boot pass here for the created subtree,
+ * then rescan so the runtime binds the new nodes. Retried because the
+ * preview nodes mount asynchronously (bind needs the node present).
+ */
+function syncAaeInteractionsToPreview(createdElements) {
+  const syncTree = (container) => {
+    if (!container || !container.model) {
+      return;
+    }
+    try {
+      applySettingsToDoms(container);
+    } catch (_) {
+      /* per-element sync is best-effort */
+    }
+    const kids = container.children;
+    if (kids && typeof kids.forEach === 'function') {
+      kids.forEach(syncTree);
+    }
+  };
+
+  const run = () => {
+    try {
+      createdElements.forEach(({ containerId }) => syncTree(getContainer(containerId)));
+      const win =
+        window.elementor?.$preview?.[0]?.contentWindow ||
+        document.querySelector('#elementor-preview-iframe')?.contentWindow;
+      if (win?.aaeAtomicAnimations?.scan) {
+        win.aaeAtomicAnimations.scan(win.document);
+      }
+    } catch (_) {
+      /* cosmetic only — never break the apply */
+    }
+  };
+
+  [0, 400, 1200, 2400].forEach((delay) => setTimeout(run, delay));
+}
+
+/**
+ * Cosmetic canvas fix for live-created atomic CONTAINERS (e-flexbox /
+ * e-div-block / e-grid): the editor canvas does not stamp their `classes`
+ * prop onto the preview node when they are created programmatically — the
+ * class attribute only renders on a full document render. The saved model is
+ * correct (frontend Twig renders the classes), but until a reload the preset
+ * would look unstyled and marker-class CSS (hover overlays) would not match.
+ * So after apply we mirror each created container's classes onto its preview
+ * node. Widgets are skipped — their own markup already renders classes, and
+ * duplicating e.g. a ::after marker onto the wrapper div would double the
+ * effect.
+ *
+ * Retries a few times because the preview nodes mount asynchronously.
+ */
+function stampContainerClassesIntoPreview(createdElements) {
+  const CONTAINER_ELTYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
+
+  const stampModel = (model, previewDoc) => {
+    if (!model || !model.get) {
+      return;
+    }
+    const elType = model.get('elType');
+    if (CONTAINER_ELTYPES.indexOf(elType) !== -1) {
+      const id = model.get('id');
+      const classesProp = model.get('settings')?.get?.('classes');
+      const list = classesProp && Array.isArray(classesProp.value) ? classesProp.value : null;
+      const node = id && previewDoc.querySelector(`[data-id="${id}"]`);
+      if (node && list) {
+        list.forEach((cls) => {
+          if (typeof cls === 'string' && cls) {
+            node.classList.add(cls);
+          }
+        });
+      }
+    }
+    const children = model.get('elements');
+    if (children && children.each) {
+      children.each((child) => stampModel(child, previewDoc));
+    }
+  };
+
+  const stampAll = () => {
+    try {
+      const previewDoc =
+        window.elementor?.$preview?.[0]?.contentDocument ||
+        document.querySelector('#elementor-preview-iframe')?.contentDocument;
+      if (!previewDoc) {
+        return;
+      }
+      createdElements.forEach(({ containerId }) => {
+        const container = getContainer(containerId);
+        if (container && container.model) {
+          stampModel(container.model, previewDoc);
+        }
+      });
+    } catch (_) {
+      /* cosmetic only — never break the apply */
+    }
+  };
+
+  // Nodes mount async; classList.add is idempotent, so just fire a few times.
+  [0, 300, 900, 1800].forEach((delay) => setTimeout(stampAll, delay));
+}
+
+/**
  * Resolve the target element's parent container + its index within it (V1
  * container model, not the DOM).
  */
@@ -214,12 +323,20 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
 
   // Type alias (e.g. the slider slide item reusing Loop Grid presets): rewrite a
   // non-container root's type to the target element's own type so the created
-  // element is valid where it lands (right Twig/class).
-  if (!isContainerModel(root) && targetType && root.elType && root.elType !== targetType) {
+  // element is valid where it lands (right Twig/class). Compare the EFFECTIVE
+  // type (widgetType wins over elType): native atomic widgets export as
+  // { elType: 'widget', widgetType: 'e-heading' } and that shape must be kept
+  // as-is — rewriting elType to 'e-heading' makes the v1 addElement child-type
+  // check delegate into a widget view and crash ("addElement is not a
+  // function"), because atomic containers only whitelist 'widget', not the
+  // native atomic type names.
+  const rootType = root.widgetType || root.elType;
+  if (!isContainerModel(root) && targetType && rootType && rootType !== targetType) {
     if (root.widgetType) {
       root.widgetType = targetType;
+    } else {
+      root.elType = targetType;
     }
-    root.elType = targetType;
   }
 
   // Neutralise the preset's card padding when the applied root is a slide/loop
@@ -262,6 +379,11 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     result && Array.isArray(result.createdElements) && result.createdElements[0]
       ? result.createdElements[0].containerId
       : null;
+
+  if (result && Array.isArray(result.createdElements)) {
+    stampContainerClassesIntoPreview(result.createdElements);
+    syncAaeInteractionsToPreview(result.createdElements);
+  }
 
   removeElements({
     elementIds: [elementId],

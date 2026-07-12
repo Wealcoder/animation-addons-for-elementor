@@ -35,6 +35,12 @@ implementation — copy its shape.
 >   `detect_primary_widget_type()` can't detect them).
 > - It deliberately skips `e-aae-a-*` types — AAE widgets use the
 >   per-widget steps below.
+> - **Model shape:** keep native widgets in the export shape
+>   `{ "elType": "widget", "widgetType": "e-heading", … }`. Hand-converting
+>   to `"elType": "e-heading"` crashes the apply — atomic containers'
+>   `getChildType()` whitelists `'widget'`, not native atomic type names.
+> - Regression test: `E:\Local Testing\tests-wp-local\native-widget-presets.spec.js`
+>   (run with `npx playwright test --config=playwright.wp-local.config.js`).
 >
 > The rest of this skill is the **AAE-widget** path.
 

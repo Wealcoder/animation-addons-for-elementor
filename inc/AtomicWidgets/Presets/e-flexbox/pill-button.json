@@ -1,0 +1,129 @@
+{
+	"content": [
+		{
+			"id": "aaefb01",
+			"settings": {
+				"classes": { "$$type": "classes", "value": [ "e-aaefb01-wrap" ] }
+			},
+			"elements": [
+				{
+					"id": "aaefb02",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "e-aaefb02-box" ] }
+					},
+					"elements": [
+						{
+							"id": "aaefb03",
+							"settings": {
+								"classes": { "$$type": "classes", "value": [ "e-aaefb03-btn" ] },
+								"text": {
+									"$$type": "html-v3",
+									"value": {
+										"content": { "$$type": "string", "value": "Hover Me" },
+										"children": []
+									}
+								},
+								"tag": { "$$type": "string", "value": "button" },
+								"aae_custom_css_enable": { "$$type": "aae-rj", "value": { "desktop": true } },
+								"aae_custom_css_css": {
+									"$$type": "aae-rj",
+									"value": {
+										"desktop": "selector{position:relative;overflow:hidden;z-index:0}selector::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:0;background:#111827;z-index:-1;transition:height .3s ease}selector:hover::after{height:100%}"
+									}
+								}
+							},
+							"elements": [],
+							"isInner": false,
+							"widgetType": "e-button",
+							"elType": "widget",
+							"styles": {
+								"e-aaefb03-btn": {
+									"id": "e-aaefb03-btn",
+									"label": "local",
+									"type": "class",
+									"variants": [
+										{
+											"meta": { "breakpoint": "desktop", "state": null },
+											"props": {
+												"background": {
+													"$$type": "background",
+													"value": {
+														"color": { "$$type": "color", "value": "#5624d0" }
+													}
+												},
+												"color": { "$$type": "color", "value": "#ffffff" },
+												"font-size": { "$$type": "size", "value": { "size": 16, "unit": "px" } },
+												"font-weight": { "$$type": "string", "value": "600" },
+												"border-radius": { "$$type": "size", "value": { "size": 50, "unit": "px" } },
+												"cursor": { "$$type": "string", "value": "pointer" },
+												"padding": {
+													"$$type": "dimensions",
+													"value": {
+														"block-start": { "$$type": "size", "value": { "size": 14, "unit": "px" } },
+														"inline-end": { "$$type": "size", "value": { "size": 32, "unit": "px" } },
+														"block-end": { "$$type": "size", "value": { "size": 14, "unit": "px" } },
+														"inline-start": { "$$type": "size", "value": { "size": 32, "unit": "px" } }
+													}
+												}
+											},
+											"custom_css": null
+										}
+									]
+								}
+							},
+							"interactions": [],
+							"editor_settings": { "title": "Slide Fill Button" },
+							"version": "0.0"
+						}
+					],
+					"isInner": false,
+					"elType": "e-flexbox",
+					"styles": {
+						"e-aaefb02-box": {
+							"id": "e-aaefb02-box",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"flex-direction": { "$$type": "string", "value": "row" }
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "Button Box" },
+					"version": "0.0"
+				}
+			],
+			"isInner": false,
+			"elType": "e-flexbox",
+			"styles": {
+				"e-aaefb01-wrap": {
+					"id": "e-aaefb01-wrap",
+					"label": "local",
+					"type": "class",
+					"variants": [
+						{
+							"meta": { "breakpoint": "desktop", "state": null },
+							"props": {
+								"flex-direction": { "$$type": "string", "value": "row" }
+							},
+							"custom_css": null
+						}
+					]
+				}
+			},
+			"interactions": [],
+			"editor_settings": [],
+			"version": "0.0"
+		}
+	],
+	"page_settings": [],
+	"version": "0.4",
+	"title": "Slide Fill Button",
+	"type": "e-flexbox"
+}

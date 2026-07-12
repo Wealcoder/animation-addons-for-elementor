@@ -101,6 +101,10 @@ class WCF_Admin_Init
 
 		add_action('wp_ajax_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
 
+		// Prune AAE widgets only when Elementor's Element Manager list actually changes.
+		add_action('add_option_elementor_disabled_elements', array($this, 'disable_widgets_by_element_manager'));
+		add_action('update_option_elementor_disabled_elements', array($this, 'disable_widgets_by_element_manager'));
+
 		add_filter('admin_body_class', array($this, 'admin_classes'), 100);
 		add_filter('wcf_addons_dashboard_config', array($this, 'dashboard_db_widgets_config'), 11);
 		add_filter('wcf_addons_dashboard_config', array($this, 'dashboard_db_extnsions_config'), 10);
@@ -158,6 +162,23 @@ class WCF_Admin_Init
 
 
 	/**
+	 * Saved widget key => Elementor element manager widget name, for the
+	 * widgets whose element name is not simply 'wcf--' . key.
+	 */
+	const ELEMENT_MANAGER_NAME_FIXES = array(
+		'post-paginate'      => 'wcf--blog--post--paginate',
+		'post-social-share'  => 'wcf--blog--post--social-share',
+		'post-title'         => 'wcf--blog--post--title',
+		'search-form'        => 'wcf--blog--search--form',
+		'search-query'       => 'wcf--blog--search--query',
+		'text-hover-image'   => 'wcf--t-h-image',
+		'post-meta-info'     => 'wcf--blog--post--meta-info',
+		'post-excerpt'       => 'wcf--blog--post--excerpt',
+		'post-feature-image' => 'wcf--theme-post-image',
+		'social-icons'       => 'social-icons',
+	);
+
+	/**
 	 * Summary of elementor_disabled_elements
 	 *
 	 * @return void
@@ -165,20 +186,21 @@ class WCF_Admin_Init
 	public function disable_widgets_by_element_manager()
 	{
 
+		if (! class_exists('\Elementor\Modules\ElementManager\Options')) {
+			return;
+		}
+
 		$disable_widgets = Options::get_disabled_elements();
 		$saved_widgets   = get_option('wcf_save_widgets');
-		$pattern         = '/^wcf--\w+/';
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
 			foreach ($disable_widgets as $item) {
 
-				if (preg_match($pattern, $item)) {
+				$key = $this->element_name_to_widget_key($item);
 
-					$toberemove = trim($item, 'wcf--');
-					if (isset($saved_widgets[$toberemove])) {
-						unset($saved_widgets[$toberemove]);
-					}
+				if ($key !== null && isset($saved_widgets[$key])) {
+					unset($saved_widgets[$key]);
 				}
 			}
 
@@ -188,50 +210,69 @@ class WCF_Admin_Init
 
 	public function sync_widgets_by_element_manager()
 	{
-		$namefixs        = array(
-			'post-paginate'      => 'wcf--blog--post--paginate',
-			'post-social-share'  => 'wcf--blog--post--social-share',
-			'post-title'         => 'wcf--blog--post--title',
-			'search-form'        => 'wcf--blog--search--form',
-			'search-query'       => 'wcf--blog--search--query',
-			'text-hover-image'   => 'wcf--t-h-image',
-			'post-meta-info'     => 'wcf--blog--post--meta-info',
-			'post-excerpt'       => 'wcf--blog--post--excerpt',
-			'post-feature-image' => 'wcf--theme-post-image',
-			'social-icons'       => 'social-icons',
-		);
+
+		if (! class_exists('\Elementor\Modules\ElementManager\Options')) {
+			return;
+		}
+
 		$disable_widgets = Options::get_disabled_elements();
 		$saved_widgets   = get_option('wcf_save_widgets');
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
-			foreach ($saved_widgets as $key => $state) {
+			foreach ($disable_widgets as $index => $item) {
 
-				$index = false;
-				$index = array_search('wcf--' . $key, $disable_widgets); // Find the index of the element
-				if ($index !== false) {
-					unset($disable_widgets[$index]); // Remove element if found
-				}
+				$key = $this->element_name_to_widget_key($item);
 
-				$index = array_search('wcf--blog--' . $key, $disable_widgets); // Find the index of the element
-				if ($index !== false) {
-					unset($disable_widgets[$index]); // Remove element if found
-				}
-
-				if (array_key_exists($key, $namefixs)) {
-
-					$slug  = $namefixs[$key];
-					$index = array_search($slug, $disable_widgets); // Find the index of the element
-					if ($index !== false) {
-						unset($disable_widgets[$index]); // Remove element if found
-					}
+				// Widget re-enabled in the AAE dashboard: lift the
+				// Element Manager block so it can register again.
+				if ($key !== null && isset($saved_widgets[$key])) {
+					unset($disable_widgets[$index]);
 				}
 			}
 
-			array_unshift($disable_widgets);
-
-			Options::update_disabled_elements($disable_widgets);
+			Options::update_disabled_elements(array_values($disable_widgets));
 		}
+	}
+
+	/**
+	 * Resolve an Element Manager element name to its AAE dashboard widget key.
+	 * Primary source is the live map filled while widgets register; the
+	 * name-fix table and prefix strips cover widgets registered outside
+	 * register_widgets() (theme builder blog widgets).
+	 *
+	 * @param string $element_name Widget name as registered with Elementor.
+	 * @return string|null Dashboard widget key, or null for non-AAE elements.
+	 */
+	private function element_name_to_widget_key($element_name)
+	{
+		static $element_to_key = null;
+
+		if ($element_to_key === null) {
+
+			// Force widget registration so register_widgets() fills the
+			// element-name => key map. Widgets the Element Manager just
+			// disabled are still constructed (Elementor only blocks them
+			// from its registry), so they land in the map too.
+			if (did_action('elementor/loaded')) {
+				Plugin::instance()->widgets_manager->get_widget_types();
+			}
+
+			$element_to_key  = \WCF_ADDONS\Plugin::$widget_element_keys;
+			$element_to_key += array_flip(self::ELEMENT_MANAGER_NAME_FIXES);
+		}
+
+		if (isset($element_to_key[$element_name])) {
+			return $element_to_key[$element_name];
+		}
+
+		foreach (array('wcf--blog--', 'wcf--', 'aae--') as $prefix) {
+			if (strpos($element_name, $prefix) === 0) {
+				return substr($element_name, strlen($prefix));
+			}
+		}
+
+		return null;
 	}
 	/**
 	 * merge database saved data with dasboard widgets config
@@ -340,9 +381,6 @@ class WCF_Admin_Init
 
 		// Load config once
 		$config = wcf_get_config();
-
-		// sync element manager
-		$this->disable_widgets_by_element_manager();
 
 		// CSS
 		wp_enqueue_style(
