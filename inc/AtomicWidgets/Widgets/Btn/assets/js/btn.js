@@ -1,12 +1,4 @@
-/**
- * AAE Global Preset — Free button interactions.
- *
- * Build target: ../../../../../assets/atomic/js/global-preset-free.js
- * Styles live in ../scss/global-preset-free.scss (extracted by webpack).
- *
- * Covers: ripple hover span, Text-flip, Border-divide.
- */
-import '../scss/global-preset-free.scss';
+import '../scss/btn.scss';
 
 // Text-flip (pro-3)
 function textFlipSync(container) {
@@ -81,4 +73,3 @@ const freeButtonObserver = new MutationObserver(() => {
   freeButtonObserver.observe(document.body, { childList: true, subtree: true });
 });
 freeButtonObserver.observe(document.body, { childList: true, subtree: true });
-

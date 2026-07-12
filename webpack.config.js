@@ -9,10 +9,9 @@ const fs = require('fs');
 const getAtomicWidgetEntries = () => {
   const entries = {
     "../atomic/js/atomic-editor": "./inc/AtomicWidgets/assets/js/atomic-editor.js",
-    // Global button presets — split into free/pro tiers. Each imports its own
-    // SCSS, so webpack extracts a matching global-preset-{free,pro}.css too.
-    "../atomic/js/global-preset-free": "./inc/AtomicWidgets/assets/js/global-preset-free.js",
-    "../atomic/js/global-preset-pro": "./inc/AtomicWidgets/assets/js/global-preset-pro.js"
+    // Btn/BtnPro/SocialShare preset bundles now live under each widget's own
+    // Widgets/<Name>/assets/js/ — auto-discovered by the loop below, same as
+    // Button's and SocialShareMain's own bundles. No manual entries needed here.
   };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {
