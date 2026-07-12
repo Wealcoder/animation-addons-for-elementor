@@ -522,3 +522,19 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
 ### To turn auto-replay on/off for an effect
 - Set `autoReplaySetting` to the Boolean prop name in `features.js` (e.g.
   `'aae_text_enable_editor'`) to enable, or `null` to disable.
+
+### To add presets to a NATIVE atomic widget (e-heading, e-button, …)
+No code needed — drop JSONs in a folder named after the element type:
+```
+inc/AtomicWidgets/Presets/<element-type>/*.json   ← folder name IS the key
+```
+- `Atomic\Presets\Controls` (inc/Atomic/Presets/) injects the "Presets"
+  section via `elementor/atomic-widgets/controls` for any native type that
+  has ≥1 JSON there; `class-atomic.php::get_widget_presets()` scans the
+  same folders and keys each preset by the folder name (no
+  `detect_primary_widget_type()` detection — native types aren't `e-aae-a-*`).
+- JSON format: same two formats as AAE-widget presets (Elementor native
+  export with a flex wrapper preferred). Reload the editor — no build.
+- AAE's own widgets (`e-aae-a-*`) are deliberately skipped by the injector;
+  they place the section themselves in `define_atomic_controls()` and keep
+  their JSONs in `Widgets/<Name>/presets/` (see the add-widget-presets skill).
