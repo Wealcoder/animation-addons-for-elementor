@@ -3215,6 +3215,7 @@ final class Atomic
 	 */
 	public function enqueue_atomic_editor_scripts(): void
 	{
+		// it break design in editor so i commented it
 		//$this->guard_elementor_core_atomic_types();
 
 		$suffix = $this->is_dev_environment() ? '' : '.min';
