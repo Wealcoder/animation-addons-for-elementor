@@ -6,17 +6,17 @@
  * only after load, so dropdowns must be hidden by class OR core-container. */
 
 /* ══ Desktop menu + dropdown + nested dropdown ══ */
+/* Bare-drop structural props (position:relative + overflow:visible on the nav
+ * root AND item) now live in each element's define_base_styles() — see
+ * class-aae-a-nav.php / class-aae-a-nav-item.php. What a base style CANNOT
+ * express stays here: `min-height: unset` (no `unset` Size prop), `flex: 0 0
+ * auto` (Flex_Prop_Type's nested shape is finicky — left external), and the
+ * attribute-conditional `cursor: pointer`. */
 .aae-a-nav {
-	position: relative !important;
 	min-height: unset !important;
-	overflow: visible !important;
 
 	.aae-a-nav-item {
-		position: relative;
-		list-style: none;
-		width: auto;
 		flex: 0 0 auto;
-		overflow: visible !important;
 
 		&[data-has-dropdown="true"] {
 			cursor: pointer;
