@@ -1,0 +1,114 @@
+{
+	"content": [
+		{
+			"id": "aaenb11",
+			"settings": {
+				"classes": { "$$type": "classes", "value": [ "e-aaenb11-flex" ] }
+			},
+			"elements": [
+				{
+					"id": "aaenb12",
+					"settings": {
+						"classes": { "$$type": "classes", "value": [ "e-aaenb12-btn" ] },
+						"text": {
+							"$$type": "html-v3",
+							"value": {
+								"content": { "$$type": "string", "value": "Start Free Trial" },
+								"children": []
+							}
+						},
+						"tag": { "$$type": "string", "value": "button" },
+						"aae_custom_css_enable": { "$$type": "aae-rj", "value": { "desktop": true } },
+						"aae_custom_css_css": {
+							"$$type": "aae-rj",
+							"value": {
+								"desktop": "selector{position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}selector::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);pointer-events:none}selector:hover{transform:translateY(-2px)}@media (prefers-reduced-motion: no-preference){selector{animation:aae-btn-pulse 2.4s ease-in-out infinite}selector::before{animation:aae-btn-sweep 3s ease-in-out infinite}}@keyframes aae-btn-sweep{0%{left:-80%}55%{left:130%}100%{left:130%}}@keyframes aae-btn-pulse{0%,100%{box-shadow:0 4px 14px rgba(86,36,208,.35)}50%{box-shadow:0 8px 28px rgba(86,36,208,.65)}}"
+							}
+						}
+					},
+					"elements": [],
+					"isInner": false,
+					"widgetType": "e-button",
+					"elType": "widget",
+					"styles": {
+						"e-aaenb12-btn": {
+							"id": "e-aaenb12-btn",
+							"label": "local",
+							"type": "class",
+							"variants": [
+								{
+									"meta": { "breakpoint": "desktop", "state": null },
+									"props": {
+										"background": {
+											"$$type": "background",
+											"value": {
+												"color": { "$$type": "color", "value": "#5624d0" }
+											}
+										},
+										"color": { "$$type": "color", "value": "#ffffff" },
+										"font-size": { "$$type": "size", "value": { "size": 16, "unit": "px" } },
+										"font-weight": { "$$type": "string", "value": "600" },
+										"letter-spacing": { "$$type": "size", "value": { "size": 0.4, "unit": "px" } },
+										"border-radius": { "$$type": "size", "value": { "size": 50, "unit": "px" } },
+										"cursor": { "$$type": "string", "value": "pointer" },
+										"padding": {
+											"$$type": "dimensions",
+											"value": {
+												"block-start": { "$$type": "size", "value": { "size": 14, "unit": "px" } },
+												"inline-end": { "$$type": "size", "value": { "size": 32, "unit": "px" } },
+												"block-end": { "$$type": "size", "value": { "size": 14, "unit": "px" } },
+												"inline-start": { "$$type": "size", "value": { "size": 32, "unit": "px" } }
+											}
+										}
+									},
+									"custom_css": null
+								},
+								{
+									"meta": { "breakpoint": "desktop", "state": "hover" },
+									"props": {
+										"background": {
+											"$$type": "background",
+											"value": {
+												"color": { "$$type": "color", "value": "#3b12a8" }
+											}
+										},
+										"color": { "$$type": "color", "value": "#ffffff" }
+									},
+									"custom_css": null
+								}
+							]
+						}
+					},
+					"interactions": [],
+					"editor_settings": { "title": "Shine Pulse Button" },
+					"version": "0.0"
+				}
+			],
+			"isInner": false,
+			"elType": "e-flexbox",
+			"styles": {
+				"e-aaenb11-flex": {
+					"id": "e-aaenb11-flex",
+					"label": "local",
+					"type": "class",
+					"variants": [
+						{
+							"meta": { "breakpoint": "desktop", "state": null },
+							"props": {
+								"flex-direction": { "$$type": "string", "value": "row" }
+							},
+							"custom_css": null
+						}
+					]
+				}
+			},
+			"interactions": [],
+			"editor_settings": [],
+			"version": "0.0"
+		}
+	],
+	"page_settings": [],
+	"version": "0.4",
+	"title": "Shine Pulse (Animated)",
+	"type": "e-flexbox"
+}

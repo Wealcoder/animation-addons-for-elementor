@@ -522,3 +522,37 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
 ### To turn auto-replay on/off for an effect
 - Set `autoReplaySetting` to the Boolean prop name in `features.js` (e.g.
   `'aae_text_enable_editor'`) to enable, or `null` to disable.
+
+### To add presets to a NATIVE atomic widget (e-heading, e-button, …)
+No code needed — drop JSONs in a folder named after the element type:
+```
+inc/AtomicWidgets/Presets/<element-type>/*.json   ← folder name IS the key
+```
+- `Atomic\Presets\Controls` (inc/Atomic/Presets/) injects the "Presets"
+  section via `elementor/atomic-widgets/controls` for any native type that
+  has ≥1 JSON there; `class-atomic.php::get_widget_presets()` scans the
+  same folders and keys each preset by the folder name (no
+  `detect_primary_widget_type()` detection — native types aren't `e-aae-a-*`).
+- JSON format: same two formats as AAE-widget presets (Elementor native
+  export with a flex wrapper preferred). Reload the editor — no build.
+- **Model shape:** native atomic widgets inside the JSON must keep the
+  export shape `{ "elType": "widget", "widgetType": "e-heading", … }`
+  (exports produce this automatically). Do NOT hand-convert to
+  `"elType": "e-heading"` — atomic containers' `getChildType()` whitelists
+  `'widget'`, not the native atomic type names, so the atomic shape makes
+  the v1 `addElement` delegate into a widget view and crash
+  (`addElement is not a function` → apply silently does nothing).
+- AAE's own widgets (`e-aae-a-*`) are deliberately skipped by the injector;
+  they place the section themselves in `define_atomic_controls()` and keep
+  their JSONs in `Widgets/<Name>/presets/` (see the add-widget-presets skill).
+- **Animated presets** (keyframes, ::before/::after layers, descendant
+  :hover — things atomic styles can't express): bake the CSS into the
+  preset via the AAE **Custom CSS extension** props on the element that
+  owns the effect — `aae_custom_css_enable: {$$type:'aae-rj',
+  value:{desktop:true}}` + `aae_custom_css_css: {…value:{desktop:'<css>'}}`.
+  Use the literal token `selector` in the CSS; the runtime replaces it with
+  `[data-interaction-id="<id>"]`, so `selector:hover .child {…}` and
+  top-level `@keyframes` both work. To target a child, give it a plain hook
+  class in `classes` (e.g. `aae-team-overlay`) — hook classes survive style
+  id regeneration. NO .css files, no Preset_Styles entry. References:
+  `e-button/shine-pulse.json`, `e-flexbox/team-card.json`.

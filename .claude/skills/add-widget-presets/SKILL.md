@@ -22,6 +22,28 @@ map and conventions. The Advanced Heading widget
 (`inc/AtomicWidgets/Widgets/AdvancedHeading/`) is the reference
 implementation — copy its shape.
 
+> **NATIVE atomic widgets (e-heading, e-button, e-image, …) are already
+> wired — zero code.** We don't own their classes, so the per-widget steps
+> below don't apply. Instead:
+> - Drop JSONs (same two formats) into
+>   `inc/AtomicWidgets/Presets/<element-type>/*.json` — the **folder name
+>   is the key** (e.g. `Presets/e-heading/`). Reload the editor; no build.
+> - `Atomic\Presets\Controls` (`inc/Atomic/Presets/`) injects the
+>   "Presets" section via the `elementor/atomic-widgets/controls` filter
+>   for any native type with ≥1 JSON bundled; the scanner keys those
+>   presets by folder name (native types aren't `e-aae-a-*`, so
+>   `detect_primary_widget_type()` can't detect them).
+> - It deliberately skips `e-aae-a-*` types — AAE widgets use the
+>   per-widget steps below.
+> - **Model shape:** keep native widgets in the export shape
+>   `{ "elType": "widget", "widgetType": "e-heading", … }`. Hand-converting
+>   to `"elType": "e-heading"` crashes the apply — atomic containers'
+>   `getChildType()` whitelists `'widget'`, not native atomic type names.
+> - Regression test: `E:\Local Testing\tests-wp-local\native-widget-presets.spec.js`
+>   (run with `npx playwright test --config=playwright.wp-local.config.js`).
+>
+> The rest of this skill is the **AAE-widget** path.
+
 ---
 
 ## How it works (the shipped architecture)

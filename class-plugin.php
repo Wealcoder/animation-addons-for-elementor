@@ -21,6 +21,13 @@ class Plugin
 {
 
 	public $categories;
+
+	/**
+	 * Registered widget element name => dashboard widget key.
+	 * Filled while widgets register (free and pro), so Elementor's
+	 * Element Manager names can be translated back to wcf_save_widgets keys.
+	 */
+	public static $widget_element_keys = array();
 	/**
 	 * Plugin version.
 	 *
@@ -321,8 +328,7 @@ class Plugin
 	 */
 	public static function get_widget_scripts()
 	{
-
-		return null;
+		
 
 		return apply_filters(
 			'aae/lite/widgets/scripts',
@@ -574,8 +580,6 @@ class Plugin
 	 */
 	public static function get_widget_style()
 	{
-
-		return [];
 
 		return array(
 			'icon-box'           => array(
@@ -937,9 +941,7 @@ class Plugin
 	 */
 	public function register_widgets()
 	{
-
-		return null;
-
+	
 		foreach (self::get_widgets() as $slug => $data) {
 
 			// If upcoming don't register.
@@ -965,7 +967,10 @@ class Plugin
 					$class = array_map('ucfirst', $class);
 					$class = implode('_', $class);
 					$class = 'WCF_ADDONS\\Widgets\\' . $class;
-					ElementorPlugin::instance()->widgets_manager->register(new $class());
+
+					$widget = new $class();
+					self::$widget_element_keys[$widget->get_name()] = $slug;
+					ElementorPlugin::instance()->widgets_manager->register($widget);
 				}
 			}
 		}
@@ -983,9 +988,7 @@ class Plugin
 	 */
 	public function register_extensions()
 	{
-
-		return null;
-
+		
 		foreach (self::get_extensions() as $slug => $data) {
 
 			// If upcoming don't register.
@@ -1009,7 +1012,7 @@ class Plugin
 	public function widget_categories($elements_manager)
 	{
 
-		return null;
+	
 
 		$categories = array();
 
@@ -1497,10 +1500,22 @@ class Plugin
 	 */
 	private function include_skins_files()
 	{
+		// The pro plugin ships the same widgets with the same skin ids; two
+		// skin sources on one element name duplicate every skin control
+		// ("Cannot redeclare control with same name").
+		$pro_skins = class_exists('\WCFAddonsPro\Plugin')
+			? \WCFAddonsPro\Plugin::get_widget_skins()
+			: array();
+
 		foreach (self::get_widget_skins() as $slug => $data) {
 
 			// is widget all skins are not active
 			if (! $data['is_active']) {
+				continue;
+			}
+
+			// Pro provides this widget's skins.
+			if (isset($pro_skins[$slug])) {
 				continue;
 			}
 
@@ -1524,6 +1539,15 @@ class Plugin
 				add_action(
 					'elementor/widget/' . $data['widget_name'] . '/skins_init',
 					function ($widget) use ($class) {
+						// skins_init fires on every constructed type instance;
+						// attach the skin (and its control hooks) only once.
+						static $added = false;
+
+						if ($added) {
+							return;
+						}
+						$added = true;
+
 						$widget->add_skin(new $class($widget));
 					}
 				);

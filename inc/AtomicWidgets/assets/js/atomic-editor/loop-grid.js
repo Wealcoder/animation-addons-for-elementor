@@ -28,17 +28,6 @@ import { applyTitleLimit, readTitleLimit } from './post-title-limit.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
 
-function isLoopGridSelection(doc) {
-	const selected = doc.querySelector('.elementor-element-selected');
-	if (!selected) {
-		return false;
-	}
-	return !!(
-		selected.closest(WRAP_SELECTOR) ||
-		(selected.querySelector && selected.querySelector(WRAP_SELECTOR))
-	);
-}
-
 /**
  * While we mutate the preview ourselves (append/remove clones), our own DOM
  * writes MUST NOT feed back into the MutationObserver → scan → hydrate loop.
@@ -435,9 +424,13 @@ async function hydrate(wrap) {
 	const preCached = cachedPosts(sig);
 	if (!preCached) {
 		removeClones(grid);
+		// While the fresh fetch is in flight the grid holds ONLY the authored
+		// card — visually identical to a broken grid. Flag the grid so
+		// loop-grid-editor.scss renders inert ghost shimmer cells after the card
+		// until the posts land. Class toggles are safe here: the mutation
+		// observer watches childList only, so this never re-feeds scan().
+		grid.classList.add('aae-loop-fetching');
 	}
-
-
 
 	let posts = preCached;
 	if (!posts) {
@@ -445,6 +438,9 @@ async function hydrate(wrap) {
 			posts = await fetchPosts(s, sig);
 		} finally {
 			wrap.__aaeBusy = false;
+			// Every exit path (posts, empty result, AJAX error) must drop the
+			// ghosts — a stale flag would shimmer forever.
+			grid.classList.remove('aae-loop-fetching');
 		}
 	} else {
 		wrap.__aaeBusy = false;
@@ -644,9 +640,10 @@ function scan() {
 	if (!doc) {
 		return;
 	}
-	if (!isLoopGridSelection(doc)) {
-		return;
-	}
+	// NOTE: do NOT gate this on a "loop grid is selected" check against
+	// `.elementor-element-selected` — the atomic (v4) canvas never applies that
+	// class (verified empirically on Elementor 4.1.4), so such a gate is always
+	// false and the grid stays stuck at a single item on editor load.
 	// Cheap early-out: on any page WITHOUT a loop grid (the common case), do zero
 	// work beyond this one querySelector. Without it, the 1.5s poll would run
 	// previewNumbers + pageSamplePostId every tick for the life of the editor,

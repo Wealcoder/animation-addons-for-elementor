@@ -95,6 +95,13 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
 
+		// Presets — "Apply Preset" picker section for NATIVE atomic widgets
+		// (e-heading, e-button, …). Preset JSONs live one folder per element
+		// type under inc/AtomicWidgets/Presets/; the section only appears for
+		// types that have at least one preset bundled. AAE's own widgets add
+		// the section themselves in define_atomic_controls().
+		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
+
 		// Nested Slider. (No Controls class — the slider's panel section is built
 		// directly in AAE_A_Slider::define_atomic_controls(), so there's nothing
 		// to inject via the controls filter.)
