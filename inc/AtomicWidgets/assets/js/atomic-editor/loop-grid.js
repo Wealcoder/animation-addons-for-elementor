@@ -28,6 +28,17 @@ import { applyTitleLimit, readTitleLimit } from './post-title-limit.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
 
+function isLoopGridSelection(doc) {
+	const selected = doc.querySelector('.elementor-element-selected');
+	if (!selected) {
+		return false;
+	}
+	return !!(
+		selected.closest(WRAP_SELECTOR) ||
+		(selected.querySelector && selected.querySelector(WRAP_SELECTOR))
+	);
+}
+
 /**
  * While we mutate the preview ourselves (append/remove clones), our own DOM
  * writes MUST NOT feed back into the MutationObserver → scan → hydrate loop.
@@ -633,6 +644,9 @@ function scan() {
 	if (!doc) {
 		return;
 	}
+	if (!isLoopGridSelection(doc)) {
+		return;
+	}
 	// Cheap early-out: on any page WITHOUT a loop grid (the common case), do zero
 	// work beyond this one querySelector. Without it, the 1.5s poll would run
 	// previewNumbers + pageSamplePostId every tick for the life of the editor,
@@ -668,12 +682,42 @@ function isLoopGridRecord(record) {
 	}
 	// Our own clone subtree is inert preview scaffolding — never react to it, or
 	// the append/remove cycle re-feeds scan() (the class-drop feedback loop).
-	if (t.closest('[data-aae-clone], [data-aae-num-clone]')) {
+	// data-aae-ui is our injected Edit/Back toggle button — equally inert.
+	if (t.closest('[data-aae-clone], [data-aae-num-clone], [data-aae-ui]')) {
 		return false;
 	}
 	// Only mutations inside a loop-grid wrap matter. An unrelated Flexbox being
 	// edited elsewhere in the canvas must not trigger a hydrate.
 	return !!(t.closest(WRAP_SELECTOR) || (t.querySelector && t.querySelector(WRAP_SELECTOR)));
+}
+
+/**
+ * Force a full clone rebuild for one wrap, bypassing every idempotency guard.
+ *
+ * The normal hydrate() only rebuilds when the QUERY signature changes — so
+ * editing a child widget's CONTENT/SETTINGS (e.g. Post Terms taxonomy, Post
+ * Image object-fit) never refreshes the clones, because the query is unchanged
+ * and none of the drift checks (structure / img-count / title-limit) notice a
+ * pure content edit. The "Refresh" button calls this to explicitly re-clone the
+ * authored card as-is, so the clones mirror whatever the user just changed. It
+ * rebuilds the full clone set in place — it never hides items, nav, or
+ * pagination and never collapses the grid layout.
+ */
+export function forceResyncWrap(wrap) {
+	if (!wrap) {
+		return;
+	}
+	const { grid } = findGridAndItem(wrap);
+	if (grid) {
+		removeClones(grid);
+	}
+	// Invalidate all cached signatures so hydrate() treats this as brand new and
+	// rebuilds from the current authored markup (clears the "in sync" early-out).
+	wrap.__aaeSig = null;
+	wrap.__aaeSingle = false;
+	wrap.__aaeTitleSig = null;
+	wrap.__aaeDirty = false;
+	hydrate(wrap);
 }
 
 export function installLoopGrid() {

@@ -65,7 +65,48 @@ function readProp( value, fallback = '' ) {
 	return value;
 }
 
+function normalizeClassesValue( classes ) {
+	const raw = readProp( classes, [] );
+	if ( Array.isArray( raw ) ) {
+		return raw;
+	}
+	if ( typeof raw === 'string' ) {
+		return raw.split( /\s+/ ).filter( Boolean );
+	}
+	return [];
+}
+
+function classToken( item ) {
+	if ( typeof item === 'string' ) {
+		return item;
+	}
+	return item?.value || item?.label || item?.name || item?.id || '';
+}
+
+function isEditorModalOrPopoverActive() {
+	const editorDocument = window.document;
+	const active = editorDocument.activeElement;
+
+	return !! (
+		editorDocument.querySelector( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' ) ||
+		active?.closest?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' )
+	);
+}
+
+function getSelectedElementId() {
+	try {
+		const selected = window.elementor?.selection?.getElements?.();
+		return selected?.[ 0 ]?.id || selected?.[ 0 ]?.model?.get?.( 'id' ) || null;
+	} catch ( error ) {
+		return null;
+	}
+}
+
 function syncEditorDropdownPreview( navId, itemId ) {
+	if ( isEditorModalOrPopoverActive() ) {
+		return;
+	}
+
 	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
 	const nav = previewDocument?.querySelector( `.aae-a-nav[data-id="${ navId }"]` );
 	if ( ! nav ) {
@@ -78,8 +119,9 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		);
 		item?.classList.toggle( 'aae-editor-dropdown-open', open );
 		if ( ! dropdown ) return;
+		dropdown.classList.add( DROPDOWN_CLASS );
+		dropdown.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 		if ( open ) {
-			dropdown.classList.add( DROPDOWN_CLASS );
 			dropdown.style.visibility = 'visible';
 			dropdown.style.opacity = '1';
 			dropdown.style.pointerEvents = 'auto';
@@ -90,17 +132,11 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		}
 	};
 
-	const currentlyOpen = nav.querySelector(
-		':scope > .aae-a-nav-item.aae-editor-dropdown-open'
-	);
-	const currentOpenId = currentlyOpen?.getAttribute( 'data-id' ) || null;
-	if ( currentOpenId === ( itemId || null ) ) {
-		return;
-	}
-
-	if ( currentlyOpen ) {
-		revealDropdown( currentlyOpen, false );
-	}
+	nav.querySelectorAll( ':scope > .aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
+		if ( item.getAttribute( 'data-id' ) !== itemId ) {
+			revealDropdown( item, false );
+		}
+	} );
 	if ( itemId ) {
 		revealDropdown(
 			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` ),
@@ -110,6 +146,10 @@ function syncEditorDropdownPreview( navId, itemId ) {
 }
 
 function syncEditorNestedPreview( itemId, open ) {
+	if ( isEditorModalOrPopoverActive() ) {
+		return;
+	}
+
 	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
 	const item = previewDocument?.querySelector( `.aae-a-nav-item[data-id="${ itemId }"]` );
 	if ( ! item ) return;
@@ -118,11 +158,19 @@ function syncEditorNestedPreview( itemId, open ) {
 	const dropdown = item.querySelector(
 		':scope > .aae-a-nav-dropdown, :scope > .e-flexbox-base, :scope > .e-con'
 	);
-	if ( dropdown && open ) {
+	if ( dropdown ) {
 		dropdown.classList.add( DROPDOWN_CLASS );
+		dropdown.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
+	}
+	if ( dropdown && open ) {
 		dropdown.style.visibility = 'visible';
 		dropdown.style.opacity = '1';
 		dropdown.style.pointerEvents = 'auto';
+	}
+	if ( dropdown && ! open ) {
+		dropdown.style.removeProperty( 'visibility' );
+		dropdown.style.removeProperty( 'opacity' );
+		dropdown.style.removeProperty( 'pointer-events' );
 	}
 	if ( ! open ) return;
 
@@ -134,6 +182,7 @@ function syncEditorNestedPreview( itemId, open ) {
 		);
 		if ( ancestorDropdown ) {
 			ancestorDropdown.classList.add( DROPDOWN_CLASS );
+			ancestorDropdown.setAttribute( 'data-aae-dropdown-for', ancestor.getAttribute( 'data-id' ) || '' );
 			ancestorDropdown.style.visibility = 'visible';
 			ancestorDropdown.style.opacity = '1';
 			ancestorDropdown.style.pointerEvents = 'auto';
@@ -143,7 +192,7 @@ function syncEditorNestedPreview( itemId, open ) {
 }
 
 function syncEditorDropdownPreviewAfterRender( navId, itemId ) {
-	const delays = [ 0, 80, 200, 400 ];
+	const delays = [ 0, 80, 200, 400, 800, 1200 ];
 	const timers = delays.map( ( delay ) => window.setTimeout(
 		() => syncEditorDropdownPreview( navId, itemId ),
 		delay
@@ -226,50 +275,51 @@ function findDropdownContainer( itemId ) {
 	return dropdown;
 }
 
-function selectDropdownContainer( itemId ) {
-	const dropdown = normalizeDropdownModel( itemId ) || findDropdownContainer( itemId );
-	const dropdownId = getElementId( dropdown );
-	if ( ! dropdownId ) return;
-
-	syncEditorNestedPreview( itemId, true );
-
+/* Select a dropdown flexbox by its id — SYNCHRONOUSLY. This is the single
+ * source of truth for dropdown selection. `selectElement()` from
+ * @elementor/editor-elements is the reliable v4 primitive (raw
+ * $e.run('document/elements/select') is not — see nav.js). Called with a KNOWN
+ * id in the same tick it was created/resolved, so it never races a re-find. */
+function selectDropdownById( dropdownId ) {
+	if ( ! dropdownId || isEditorModalOrPopoverActive() ) {
+		return;
+	}
+	if ( getSelectedElementId() === dropdownId ) {
+		return;
+	}
 	try {
 		selectElement( dropdownId );
 	} catch ( error ) {
-		/* The package helper occasionally races during v4 panel re-render.
-		 * Fall through to Elementor's lower-level command. */
+		/* best effort */
 	}
+}
 
-	const container = getContainer( dropdownId );
-	if ( container ) {
-		try {
-			window.$e?.run?.( 'document/elements/select', {
-				container: typeof container.lookup === 'function' ? container.lookup() : container,
-				append: false,
-			} );
-		} catch ( error ) {
-			/* best effort */
-		}
+/* Resolve (creating/repairing if needed) the item's dropdown flexbox and select
+ * it. createElements/normalizeDropdownModel commit in the same tick and return
+ * the real container, so this is fully synchronous — the old 80ms timer raced
+ * model readiness and silently missed on cold load / slow render, which is why
+ * selection "worked only sometimes". */
+function selectDropdownContainer( itemId ) {
+	const dropdown = findDropdownContainer( itemId ) || normalizeDropdownModel( itemId );
+	const dropdownId = getElementId( dropdown );
+	if ( ! dropdownId ) {
+		return;
 	}
-
-	const previewDocument = window.elementor?.$preview?.[ 0 ]?.contentDocument;
-	const node = previewDocument?.querySelector( `[data-id="${ dropdownId }"]` );
-	if ( node ) {
-		node.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true } ) );
-		node.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true } ) );
-	}
+	markDropdownFlexbox( dropdown );
+	syncEditorNestedPreview( itemId, true );
+	selectDropdownById( dropdownId );
 }
 
 function markDropdownFlexbox( flexbox ) {
 	if ( ! flexbox || hasElementClass( flexbox, DROPDOWN_CLASS ) ) {
 		return;
 	}
-	const classes = readProp( flexbox.settings?.get?.( 'classes' ), [] );
+	const classes = normalizeClassesValue( flexbox.settings?.get?.( 'classes' ) );
 	updateElementSettings( {
 		id: flexbox.id,
 		props: {
 			classes: prop( 'classes', [
-				...( Array.isArray( classes ) ? classes : [] ),
+				...classes,
 				DROPDOWN_CLASS,
 			] ),
 		},
@@ -468,8 +518,8 @@ function findMobileCompanion( nav ) {
 }
 
 function hasElementClass( container, className ) {
-	const classes = readProp( container?.settings?.get?.( 'classes' ), [] );
-	return Array.isArray( classes ) && classes.includes( className );
+	return normalizeClassesValue( container?.settings?.get?.( 'classes' ) )
+		.some( item => classToken( item ) === className );
 }
 
 function flattenLegacyMobileCompanion( companion ) {
@@ -594,6 +644,13 @@ export function MobileNavLifecycleControl() {
 	 * create. */
 	React.useEffect( () => {
 		const reconcile = () => {
+			/* Never mutate the document (create/remove/update element) while a MUI
+			 * popover/modal is open — e.g. the Style-tab colour picker. A mutation
+			 * re-renders the editing panel and yanks the open popover's portal node
+			 * out from under React, throwing "removeChild … not a child" and
+			 * crashing the panel. Resume on the next tick after it closes. */
+			if ( isEditorModalOrPopoverActive() ) return;
+
 			const nav = getContainer( navId );
 			if ( ! nav?.parent ) return;
 
@@ -1281,49 +1338,72 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 	};
 
 	const toggleDropdown = ( enabled ) => {
+		/* React state only — safe to run synchronously in the Switch onChange. */
 		setDropdownEnabled( enabled );
 		onDropdownToggle( enabled );
 
-		const container = getContainer( elementId );
-		const existingChildren = container?.model?.get?.( 'elements' );
-		const childIds = [];
-		existingChildren?.each?.( ( child ) => {
-			const id = child.get?.( 'id' );
-			if ( id ) {
-				childIds.push( id );
+		/* Defer every document mutation out of the onChange commit. Running
+		 * createElements/updateElementSettings synchronously here — while
+		 * onDropdownToggle is also collapsing this row via setExpandedId —
+		 * re-enters Elementor's React panel mid-commit and throws
+		 * "removeChild … not a child", crashing the panel. A rAF lets React
+		 * finish committing first. */
+		window.requestAnimationFrame( () => {
+			const container = getContainer( elementId );
+			if ( ! container ) {
+				return;
 			}
-		} );
 
-		if ( enabled ) {
-			if ( container && childIds.length === 0 ) {
-				/* Create an EMPTY core Flexbox as the dropdown wrapper. User
-				 * fills it with widgets or clicks "Add dropdown item" in this
-				 * panel. Nested `elements` in createElements silently fails
-				 * for atomic containers, so we ship empty and let the user
-				 * populate it themselves. */
-				createElements( {
-					title: 'Dropdown',
-					subtitle: 'Dropdown added',
-					elements: [ {
-						container,
-						model: {
-							elType: 'e-flexbox',
-							editor_settings: { title: 'Dropdown' },
-							settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
-						},
-						options: { at: 0 },
-					} ],
+			let dropdownId = null;
+
+			if ( enabled ) {
+				const childIds = [];
+				container.model?.get?.( 'elements' )?.each?.( ( child ) => {
+					const id = child.get?.( 'id' );
+					if ( id ) {
+						childIds.push( id );
+					}
 				} );
-			}
-		}
 
-		updateElementSettings( {
-			id: elementId,
-			props: { has_dropdown: prop( 'boolean', enabled ) },
+				if ( childIds.length === 0 ) {
+					/* Create an EMPTY core Flexbox as the dropdown wrapper.
+					 * createElements returns the REAL containerId in the same tick
+					 * (see PresetPickerControl), which we select synchronously
+					 * below — no timer, no re-find, so it can't miss. */
+					const result = createElements( {
+						title: 'Dropdown',
+						subtitle: 'Dropdown added',
+						elements: [ {
+							container,
+							model: {
+								elType: 'e-flexbox',
+								editor_settings: { title: 'Dropdown' },
+								settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+							},
+							options: { at: 0 },
+						} ],
+					} );
+					dropdownId = result?.createdElements?.[ 0 ]?.containerId || null;
+				} else {
+					dropdownId = getElementId( normalizeDropdownModel( elementId ) );
+				}
+			}
+
+			updateElementSettings( {
+				id: elementId,
+				props: { has_dropdown: prop( 'boolean', enabled ) },
+			} );
+
+			if ( enabled ) {
+				if ( ! dropdownId ) {
+					dropdownId = getElementId( findDropdownContainer( elementId ) );
+				}
+				/* Select the placeholder synchronously. Reveal then follows for
+				 * free via the editor CSS `.elementor-element-selected` rule and
+				 * nav.js's selection sync — no inline-style reveal timers to race. */
+				selectDropdownById( dropdownId );
+			}
 		} );
-		if ( enabled && childIds.length > 0 ) {
-			normalizeDropdownModel( elementId );
-		}
 	};
 
 	const updateDropdownSetting = ( key, value, setter ) => {
@@ -1335,13 +1415,10 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 	};
 
 	const editDropdownStyle = () => {
-		/* normalizeDropdownModel can dispatch settings/move commands that replace
-		 * the editing-panel tree without throwing. Re-select across that short
-		 * render window so the user always lands on the actual Flexbox Style tab. */
-		[ 0, 80, 200, 400, 800 ].forEach( delay => window.setTimeout(
-			() => selectDropdownContainer( elementId ),
-			delay
-		) );
+		/* Resolve + select synchronously — the flexbox already exists, so
+		 * findDropdownContainer returns it in the same tick and selectElement
+		 * lands reliably (no fixed-delay re-find that could miss). */
+		selectDropdownContainer( elementId );
 	};
 
 	return (

@@ -2554,13 +2554,33 @@ final class Atomic
 		if ( ! wp_style_is( 'editor-preview', 'registered' ) ) {
 			return;
 		}
+
+		// Our own atomic widget stylesheets (e.g. aae-a-nav-css) must ALSO print
+		// after editor-preview. The early add_style_dependency() in
+		// enqueue_atomic_preview_styles() silently bails when editor-preview isn't
+		// registered yet at preview/enqueue_styles time, so on some hard reloads
+		// the widget CSS printed before editor-preview and its positioning lost —
+		// the Nav dropdown rendered unpositioned / in-flow ("styles missing on
+		// reload"). Patching here (wp_print_styles, when every handle is finally
+		// registered) makes the dependency reliable.
+		$atomic_handles = [];
+		foreach ( $this->get_available_widgets() as $widget_data ) {
+			if ( ! empty( $widget_data['style_handle'] ) ) {
+				$atomic_handles[] = $widget_data['style_handle'];
+			}
+			if ( ! empty( $widget_data['editor_style_handle'] ) ) {
+				$atomic_handles[] = $widget_data['editor_style_handle'];
+			}
+		}
+
 		$styles = wp_styles();
 		foreach ( $styles->registered as $handle => $style ) {
 			if ( 'editor-preview' === $handle ) {
 				continue;
 			}
-			// Elementor per-document CSS handles only.
-			if ( ! preg_match( '/^(local-\d+-preview|elementor-post-\d+)/', $handle ) ) {
+			// Elementor per-document CSS handles + our atomic widget stylesheets.
+			$is_document = preg_match( '/^(local-\d+-preview|elementor-post-\d+)/', $handle );
+			if ( ! $is_document && ! in_array( $handle, $atomic_handles, true ) ) {
 				continue;
 			}
 			if ( ! in_array( 'editor-preview', $style->deps, true ) ) {
