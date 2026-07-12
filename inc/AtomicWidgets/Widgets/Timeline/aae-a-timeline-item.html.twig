@@ -13,9 +13,33 @@
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
-    {# All per-child default appearance now lives in the PARENT's Twig
-       <style> block under `:where()` so the Style panel can override
-       every property. No inline <style> here. #}
+    {#
+        Two things the native Style panel can't express, so they're baked
+        in as sensible defaults here instead:
+
+          1. The connecting "spine" — a single-side border (inline-start
+             only). The atomic Border control only exposes uniform
+             all-side width/style/color, not a per-side shorthand, so a
+             left-only rail has to be set directly. `currentColor` keeps
+             it controllable from the native Text Color control on this
+             element's own Style panel.
+
+          2. The marker's negative-inset default position, so a freshly
+             dropped item already reads as a timeline dot instead of
+             sitting flush at (0,0). Every ready-made template in
+             z_temp/templates/Timeline overrides both via its own local
+             per-element styles — this is only the out-of-the-box look.
+    #}
+    <style>
+        :where([data-id="{{ id }}"]) {
+            border-inline-start: 2px solid currentColor;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: -11px;
+        }
+    </style>
 
     {{ children_placeholder | raw }}
 </div>
