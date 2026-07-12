@@ -9,9 +9,9 @@ const fs = require('fs');
 const getAtomicWidgetEntries = () => {
   const entries = {
     "../atomic/js/atomic-editor": "./inc/AtomicWidgets/assets/js/atomic-editor.js",
-    // Btn/BtnPro/SocialWrap preset bundles now live under each widget's own
+    // Btn/BtnPro/SocialShare preset bundles now live under each widget's own
     // Widgets/<Name>/assets/js/ — auto-discovered by the loop below, same as
-    // Button's and SocialShare's own bundles. No manual entries needed here.
+    // Button's and SocialShareMain's own bundles. No manual entries needed here.
   };
   const widgetsPath = path.resolve(__dirname, "inc/AtomicWidgets/Widgets");
   if (fs.existsSync(widgetsPath)) {

@@ -1,11 +1,3 @@
-/* aae-social-pulse */
-/* =================================== social wrap =================================== */
-
-/* Pulse ring — expanding ::after ring on hover/focus. Pseudo-element +
-   keyframe animation aren't expressible from Elementor's Style panel, so
-   this lives here. Add the `aae-social-pulse` class to any AAE Social
-   Wrap Item (from its Classes control) to opt in — see the "solid"
-   template for a live example. */
 .aae-social-pulse {
 	position: relative;
 }

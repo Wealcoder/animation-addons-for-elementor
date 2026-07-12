@@ -90,13 +90,13 @@ function aaeaddon_custom_hide_admin_notices_for_specific_page()
 }
 add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 
-// Btn / BtnPro / Social Wrap preset interactions used to load unconditionally
+// Btn / BtnPro / Social Share preset interactions used to load unconditionally
 // on every page via a shared "global preset" bundle. They're now registered
 // like any other atomic widget (has_script/style_handle in class-atomic.php's
-// widget table under 'aae-a-btn', 'aae-a-btn-pro', 'aae-a-social-wrap') and
+// widget table under 'aae-a-btn', 'aae-a-btn-pro', 'aae-a-social-share') and
 // load on-demand — only enqueued when that specific element type actually
 // renders on the page (register_atomic_scripts/register_atomic_styles +
-// maybe_enqueue_widget_script), same as Button's and SocialShare's own
+// maybe_enqueue_widget_script), same as Button's and SocialShareMain's own
 // bundles. The editor preview iframe still gets them blanket-enqueued via
 // the existing generic enqueue_widget_scripts_in_preview() hook, so no
 // separate wiring is needed here.
