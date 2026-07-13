@@ -30,7 +30,7 @@
              z_temp/templates/Timeline overrides both via its own local
              per-element styles — this is only the out-of-the-box look.
     #}
-    <style>
+    {# <style>
         :where([data-id="{{ id }}"]) {
             border-inline-start: 2px solid currentColor;
         }
@@ -39,7 +39,7 @@
             inset-block-start: 0;
             inset-inline-start: -11px;
         }
-    </style>
+    </style> #}
 
     {{ children_placeholder | raw }}
 </div>
