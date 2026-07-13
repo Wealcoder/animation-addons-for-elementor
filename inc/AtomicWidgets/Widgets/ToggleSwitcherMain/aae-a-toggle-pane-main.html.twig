@@ -1,4 +1,4 @@
-{% set classes = ['aae-a-toggle-pane', 'aae-ts-pane', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+{% set classes = ['aae-a-toggle-pane-main', 'toggle-pane', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"
      data-element_type="{{ type }}"

@@ -268,6 +268,7 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-toggle-pane-main',
 			'aae-a-video-mask-btn',
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
@@ -1252,6 +1253,47 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-toggle-switcher-main' => [
+				'label'        => 'Toggle Switcher Main',
+				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle',
+					'switch',
+					'tabs',
+					'atomic',
+					'switcher',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'label'        => 'Toggle Pane Main (Internal)',
+				'description'  => 'Internal child container for Toggle Switcher Main.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle pane',
+					'internal',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-offcanvas' => [
 				'label'        => 'Offcanvas',
 				'description'  => 'Animated offcanvas drawer with trigger button and panel — vanilla JS, no GSAP.',
@@ -2155,6 +2197,22 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-toggle-switcher-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
+				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
+				'script_handle' => 'aae-a-toggle-switcher-main-js',
+				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-toggle-switcher-main-css',
+				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
+				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 

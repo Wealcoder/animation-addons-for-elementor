@@ -12,16 +12,6 @@ __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
 
-/***/ }),
-
-/***/ "@elementor/frontend-handlers":
-/*!***************************************************!*\
-  !*** external ["elementorV2","frontendHandlers"] ***!
-  \***************************************************/
-/***/ (function(module) {
-
-module.exports = elementorV2.frontendHandlers;
-
 /***/ })
 
 /******/ 	});
@@ -57,35 +47,6 @@ module.exports = elementorV2.frontendHandlers;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	!function() {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = function(module) {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				function() { return module['default']; } :
-/******/ 				function() { return module; };
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	!function() {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = function(exports, definition) {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
@@ -105,102 +66,90 @@ var __webpack_exports__ = {};
   !*** ./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/js/toggle-switcher.js ***!
   \*******************************************************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @elementor/frontend-handlers */ "@elementor/frontend-handlers");
-/* harmony import */ var _elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _scss_toggle_switcher_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/toggle-switcher.scss */ "./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss");
+/* harmony import */ var _scss_toggle_switcher_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../scss/toggle-switcher.scss */ "./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss");
 
 
-
-// Persists toggle state across editor re-initializations, keyed by element data-id.
-const toggleState = new Map();
-const initToggleSwitcher = (container, signal) => {
-  const input = container.querySelector('input[type="checkbox"]');
-  const beforeLabel = container.querySelector('.before_label');
-  const afterLabel = container.querySelector('.after_label');
-  const switchLabel = container.querySelector('label.switcher');
-  if (!input) return;
-  const elementId = container.dataset.id || '';
-
-  // Re-queries panes on every call so the function works regardless of when
-  // child panes appear in the DOM (editor renders children asynchronously).
-  const applyState = checked => {
-    if (elementId) toggleState.set(elementId, checked);
-    input.checked = checked;
-    const panes = container.querySelectorAll('.aae-a-toggle-pane');
-    const labels = container.querySelectorAll('.before_label, .after_label');
-    panes.forEach((pane, i) => {
-      const show = checked ? i === 1 : i === 0;
-      pane.classList.toggle('show', show);
-      // Use inline !important so Elementor's editor CSS (display:flex on
-      // .e-con containers) cannot override the hidden state.
-      if (show) {
-        pane.style.removeProperty('display');
-      } else {
-        pane.style.setProperty('display', 'none', 'important');
-      }
-    });
-    labels.forEach((label, i) => label.classList.toggle('active', checked ? i === 1 : i === 0));
-  };
-
-  // Capture phase fires before any ancestor/Elementor click handler that may
-  // call preventDefault() and break the native label→checkbox link.
-  // e.preventDefault() here stops the browser from also toggling the checkbox
-  // via the `for` attribute, preventing a double-toggle.
-  const captureOpts = signal ? {
-    signal,
-    capture: true
-  } : {
-    capture: true
-  };
-  beforeLabel?.addEventListener('click', e => {
-    e.preventDefault();
-    applyState(false);
-  }, captureOpts);
-  afterLabel?.addEventListener('click', e => {
-    e.preventDefault();
-    applyState(true);
-  }, captureOpts);
-  switchLabel?.addEventListener('click', e => {
-    e.preventDefault();
-    applyState(!input.checked);
-  }, captureOpts);
-
-  // Show the correct pane on init. Restores the last-known state so that
-  // editor re-initializations (on settings change, etc.) don't reset the
-  // visible pane back to the first one.
-  const syncInitialState = () => {
-    var _toggleState$get;
-    const panes = container.querySelectorAll('.aae-a-toggle-pane');
-    if (!panes.length) return false;
-    const saved = elementId ? (_toggleState$get = toggleState.get(elementId)) !== null && _toggleState$get !== void 0 ? _toggleState$get : false : false;
-    applyState(saved);
-    return true;
-  };
-  if (!syncInitialState()) {
-    const observer = new MutationObserver(() => {
-      if (syncInitialState()) observer.disconnect();
-    });
-    observer.observe(container, {
-      childList: true,
-      subtree: true
-    });
-    if (signal) {
-      signal.addEventListener('abort', () => observer.disconnect(), {
-        once: true
-      });
+// Persists active state across editor re-initializations, keyed by
+// switcher data-id — mirrors ToggleSwitcherMain's toggleState map.
+const tsState = new Map();
+function findSwitcher(el) {
+  return el.closest('.aae-a-toggle-switcher');
+}
+function applyTsState(wrapper, checked) {
+  const id = wrapper.dataset.id || '';
+  if (id) tsState.set(id, checked);
+  const panes = wrapper.querySelectorAll('.aae-ts-pane');
+  panes.forEach((pane, i) => {
+    const show = checked ? i === 1 : i === 0;
+    pane.classList.toggle('show', show);
+    // Inline !important so Elementor's editor CSS (display:flex on .e-con
+    // containers) cannot override the hidden state.
+    if (show) {
+      pane.style.removeProperty('display');
+    } else {
+      pane.style.setProperty('display', 'none', 'important');
     }
+  });
+  const before = wrapper.querySelector('.aae-ts-label-before');
+  const after = wrapper.querySelector('.aae-ts-label-after');
+  before?.classList.toggle('active', !checked);
+  after?.classList.toggle('active', checked);
+  wrapper.querySelectorAll('.aae-ts-switch').forEach(el => el.classList.toggle('active', checked));
+}
+function syncInitialState(wrapper) {
+  var _tsState$get;
+  const panes = wrapper.querySelectorAll('.aae-ts-pane');
+  if (!panes.length) return false;
+  const id = wrapper.dataset.id || '';
+  const saved = id ? (_tsState$get = tsState.get(id)) !== null && _tsState$get !== void 0 ? _tsState$get : false : false;
+  applyTsState(wrapper, saved);
+  return true;
+}
+function initAllSwitchers() {
+  document.querySelectorAll('.aae-a-toggle-switcher').forEach(syncInitialState);
+}
+
+// Capture phase fires before any ancestor/Elementor click handler that may
+// call preventDefault(). Delegation on document means newly-inserted labels,
+// switches, or panes (editor mounts atomic widgets asynchronously) work
+// without any per-element rebinding.
+document.addEventListener('click', e => {
+  const trigger = e.target.closest('.aae-ts-label-before, .aae-ts-label-after, .aae-ts-switch');
+  if (!trigger) return;
+  const wrapper = findSwitcher(trigger);
+  if (!wrapper) return;
+  e.preventDefault();
+  if (trigger.classList.contains('aae-ts-label-before')) {
+    applyTsState(wrapper, false);
+  } else if (trigger.classList.contains('aae-ts-label-after')) {
+    applyTsState(wrapper, true);
+  } else {
+    var _tsState$get2;
+    const id = wrapper.dataset.id || '';
+    const current = id ? (_tsState$get2 = tsState.get(id)) !== null && _tsState$get2 !== void 0 ? _tsState$get2 : false : false;
+    applyTsState(wrapper, !current);
   }
-};
-(0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
-  elementType: 'e-aae-a-toggle-switcher',
-  id: 'aae-a-toggle-switcher-handler',
-  callback: ({
-    element,
-    signal
-  }) => {
-    const container = element.classList.contains('aae-a-toggle-switcher') ? element : element.querySelector('.aae-a-toggle-switcher');
-    if (container) initToggleSwitcher(container, signal);
-  }
+}, true);
+
+// Run once for whatever is already in the DOM…
+initAllSwitchers();
+
+// …and again whenever the DOM changes. Elementor's editor preview mounts
+// atomic widgets asynchronously (they may not exist yet on first run above),
+// and can also replace a widget's markup on selection/setting changes,
+// wiping the pane's inline display override. Disconnect while mutating so
+// this observer doesn't react to its own changes.
+const tsObserver = new MutationObserver(() => {
+  tsObserver.disconnect();
+  initAllSwitchers();
+  tsObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+});
+tsObserver.observe(document.body, {
+  childList: true,
+  subtree: true
 });
 }();
 /******/ })()
