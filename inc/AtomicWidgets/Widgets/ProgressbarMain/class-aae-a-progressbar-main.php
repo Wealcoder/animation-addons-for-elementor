@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -28,7 +28,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 
-class AAE_A_Progressbar extends Atomic_Element_Base
+class AAE_A_Progressbar_Main extends Atomic_Element_Base
 {
 
 	use Has_Element_Template;
@@ -43,17 +43,17 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 
 	public static function get_type(): string
 	{
-		return 'e-aae-a-progressbar';
+		return 'e-aae-a-progressbar-main';
 	}
 
 	public static function get_element_type(): string
 	{
-		return 'e-aae-a-progressbar';
+		return 'e-aae-a-progressbar-main';
 	}
 
 	public function get_title(): string
 	{
-		return esc_html__('AAE Progress Bar', 'animation-addons-for-elementor');
+		return esc_html__('AAE Progress Bar Main', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon(): string
@@ -175,17 +175,6 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	protected function define_default_children(): array
 	{
 		return [
-			// // Editable label — user can change this text in the panel.
-			// Atomic_Paragraph::generate()
-			// 	->settings([
-			// 		'paragraph' => \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::generate([
-			// 			'content'  => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('Progress Label'),
-			// 			'children' => [],
-			// 		]),
-			// 		'tag' => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate('span'),
-			// 	])
-			// 	->build(),
-
 			// Percentage counter — JS writes the animated value into this element.
 			Atomic_Paragraph::generate()
 				->settings([
@@ -213,17 +202,17 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	protected function get_templates(): array
 	{
 		return [
-			'elementor/elements/aae-a-progressbar' => __DIR__ . '/aae-a-progressbar.html.twig',
+			'elementor/elements/aae-a-progressbar-main' => __DIR__ . '/aae-a-progressbar-main.html.twig',
 		];
 	}
 
 	public function get_script_depends(): array
 	{
-		return ['aae-a-progressbar-js'];
+		return ['aae-a-progressbar-main-js'];
 	}
 
 	public function get_style_depends(): array
 	{
-		return ['aae-a-progressbar-css'];
+		return ['aae-a-progressbar-main-css'];
 	}
 }

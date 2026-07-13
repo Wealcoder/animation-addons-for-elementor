@@ -1214,6 +1214,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-progressbar-main' => [
+				'label'        => 'Progress Bar Main',
+				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'progress',
+					'progressbar',
+					'bar',
+					'circle',
+					'skill',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 13,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-toggle-switcher' => [
 				'label'        => 'Toggle Switcher',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -2182,6 +2204,16 @@ final class Atomic
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
 				'style_path'    => '/assets/atomic/js/progressbar.css',
+			],
+
+			'aae-a-progressbar-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
+				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
+				'script_handle' => 'aae-a-progressbar-main-js',
+				'script_path'   => '/assets/atomic/js/progressbar-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-progressbar-main-css',
+				'style_path'    => '/assets/atomic/js/progressbar-main.css',
 			],
 
 			'aae-a-toggle-switcher' => [

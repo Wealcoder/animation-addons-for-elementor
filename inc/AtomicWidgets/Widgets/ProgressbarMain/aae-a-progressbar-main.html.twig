@@ -17,7 +17,7 @@
     {% set inline_style = 'position:relative;display:block;' %}
 {% endif %}
 
-{% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar', 'style-' ~ pb_style] | merge(settings.classes | default([])) | join(' ') %}
+{% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar-main', 'style-' ~ pb_style] | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"

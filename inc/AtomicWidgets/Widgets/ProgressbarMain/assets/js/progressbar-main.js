@@ -1,5 +1,5 @@
 import { register } from '@elementor/frontend-handlers';
-import '../scss/progressbar.scss';
+import '../scss/progressbar-main.scss';
 
 const DURATION           = 1400;
 const CIRCLE_RADIUS      = 40;
@@ -19,8 +19,8 @@ function animateCounter( el, to, duration ) {
 }
 
 register( {
-	elementType: 'e-aae-a-progressbar',
-	id:          'e-aae-a-progressbar-handler',
+	elementType: 'e-aae-a-progressbar-main',
+	id:          'e-aae-a-progressbar-main-handler',
 	callback: ( { element } ) => {
 		const el = element;
 		if ( ! el ) return;

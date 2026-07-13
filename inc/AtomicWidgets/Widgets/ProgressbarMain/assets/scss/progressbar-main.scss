@@ -1,4 +1,4 @@
-.wcf__progressbar {
+.wcf__progressbar-main {
     --aae-pb-color:        currentColor;    // progress fill / stroke
     --aae-pb-trail:        rgba(0,0,0,.12); // track / trail
     --aae-pb-stroke-width: 10;              // fallback — overridden by pb_stroke_width control
@@ -6,7 +6,7 @@
 }
 
 // ── Line ─────────────────────────────────────────────────────────────────────
-.wcf__progressbar.style-1 {
+.wcf__progressbar-main.style-1 {
 
     .progressbar {
         height:        var(--aae-pb-track-height);
@@ -35,7 +35,7 @@
 }
 
 // ── Circle ───────────────────────────────────────────────────────────────────
-.wcf__progressbar.style-2 {
+.wcf__progressbar-main.style-2 {
     width:  150px;
     height: 150px;
 
@@ -46,7 +46,7 @@
         overflow: visible;
     }
 
-    // trail ring — style via CSS: .wcf__progressbar.style-2 .progressbar-trail { stroke: #ccc; }
+    // trail ring — style via CSS: .wcf__progressbar-main.style-2 .progressbar-trail { stroke: #ccc; }
     .progressbar-trail {
         stroke:       var(--aae-pb-trail);
         stroke-width: var(--aae-pb-stroke-width);
@@ -71,7 +71,7 @@
 }
 
 // ── Dot ──────────────────────────────────────────────────────────────────────
-.wcf__progressbar.style-3 {
+.wcf__progressbar-main.style-3 {
 
     .aae-pb-pct {
         display: none;
