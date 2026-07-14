@@ -1,4 +1,4 @@
-{% set classes = ['aae-a-timeline', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set classes = ['aae-a-timeline-main-item', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -12,6 +12,10 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
+
+    {# All per-child default appearance now lives in the PARENT's Twig
+       <style> block under `:where()` so the Style panel can override
+       every property. No inline <style> here. #}
 
     {{ children_placeholder | raw }}
 </div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Timeline;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -16,6 +16,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
@@ -25,22 +26,13 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-/**
- * AAE Timeline — Item (open template wrapper).
- *
- * Minimal counterpart of TimelineMain_Item: same structural base styles
- * (position/flex/gap), but no preset-driven appearance of its own. Visual
- * skin comes entirely from the ready-made JSON templates in
- * z_temp/templates/Timeline — each one sets its own local per-element
- * styles on the marker/date/title/desc children directly.
- */
-class AAE_A_Timeline_Item extends Atomic_Element_Base {
+class AAE_A_Timeline_Main_Item extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'A single event row inside an AAE Timeline — contains marker, date, title, and description as atomic children.';
+	public static $widget_description = 'A single event row inside an AAE Timeline Main — contains marker, date, title, and description as atomic children.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -48,15 +40,15 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 	}
 
 	public static function get_type() {
-		return 'e-aae-a-timeline-item';
+		return 'e-aae-a-timeline-main-item';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-timeline-item';
+		return 'e-aae-a-timeline-main-item';
 	}
 
 	public function get_title() {
-		return esc_html__( 'Timeline Item', 'animation-addons-for-elementor' );
+		return esc_html__( 'Timeline Main Item', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
@@ -116,7 +108,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Marker' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-marker' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-main-item-marker' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $number ),
 						'children' => [],
@@ -125,11 +117,12 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
+			// 2. Date — small uppercase label above the title.
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Date' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-date' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-main-item-date' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $date ),
 						'children' => [],
@@ -137,12 +130,11 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-
 			Atomic_Heading::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-title' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-main-item-title' ] ),
 					'title'   => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $title ),
 						'children' => [],
@@ -151,11 +143,12 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
+			// 4. Description — body copy paragraph.
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Description' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-desc' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-main-item-desc' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $desc ),
 						'children' => [],
@@ -190,7 +183,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-timeline-item' => __DIR__ . '/aae-a-timeline-item.html.twig',
+			'elementor/elements/aae-a-timeline-main-item' => __DIR__ . '/aae-a-timeline-main-item.html.twig',
 		];
 	}
 }
