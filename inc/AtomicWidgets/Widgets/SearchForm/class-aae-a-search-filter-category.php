@@ -48,6 +48,10 @@ class AAE_A_Search_Filter_Category extends Atomic_Widget_Base {
 		return 'eicon-folder';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function should_show_in_panel() {
 		return false;
 	}

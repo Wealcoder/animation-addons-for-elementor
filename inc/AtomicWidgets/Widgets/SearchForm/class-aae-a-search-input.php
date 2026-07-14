@@ -51,6 +51,10 @@ class AAE_A_Search_Input extends Atomic_Widget_Base {
 		return 'eicon-form-horizontal';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function should_show_in_panel() {
 		return false;
 	}

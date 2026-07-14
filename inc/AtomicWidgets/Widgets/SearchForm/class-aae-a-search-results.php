@@ -47,6 +47,10 @@ class AAE_A_Search_Results extends Atomic_Widget_Base {
 		return 'eicon-post-list';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function should_show_in_panel() {
 		return false;
 	}

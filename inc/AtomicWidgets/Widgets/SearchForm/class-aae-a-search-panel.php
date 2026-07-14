@@ -59,6 +59,10 @@ class AAE_A_Search_Panel extends Atomic_Element_Base {
 		return 'eicon-container';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function should_show_in_panel() {
 		return false;
 	}
