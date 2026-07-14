@@ -1,0 +1,26 @@
+{% set classes = ['aae-a-search-toggle', 'e-atomic-element', base_styles.base|default('')] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    role="button"
+    tabindex="0"
+    aria-label="Toggle search"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    <span class="aae-a-search-toggle__open" style="display:inline-flex;line-height:0;">
+        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </span>
+    <span class="aae-a-search-toggle__close" style="display:none;line-height:0;">
+        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </span>
+</div>

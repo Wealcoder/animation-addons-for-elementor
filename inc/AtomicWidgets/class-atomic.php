@@ -304,6 +304,17 @@ final class Atomic
 			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
+			// Search Form composite sub-elements — seeded as locked default
+			// children of the Search Form root; always-on so the editor never
+			// throws ElementTypeNotFound on drop.
+			'aae-a-search-toggle',
+			'aae-a-search-panel',
+			'aae-a-search-field',
+			'aae-a-search-input',
+			'aae-a-search-filter-date',
+			'aae-a-search-filter-category',
+			'aae-a-search-submit',
+			'aae-a-search-results',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -561,6 +572,78 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
 				'icon'         => 'eicon-navigation-horizontal',
 				'keywords'     => [ 'loop', 'nav', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-search-form' => [
+				'label'        => 'Search Form',
+				'description'  => 'Composite Ajax search form (inline / dropdown / fullscreen) with category & date filters — every part is a styleable atomic element.',
+				'icon'         => 'eicon-search',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-search-toggle' => [
+				'label'        => 'Search Toggle',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'icon'         => 'eicon-search',
+				'keywords'     => [ 'search', 'toggle' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-panel' => [
+				'label'        => 'Search Panel',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'icon'         => 'eicon-container',
+				'keywords'     => [ 'search', 'panel' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-field' => [
+				'label'        => 'Search Field',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'icon'         => 'eicon-form-horizontal',
+				'keywords'     => [ 'search', 'field', 'form' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-input' => [
+				'label'        => 'Search Input',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'icon'         => 'eicon-form-horizontal',
+				'keywords'     => [ 'search', 'input' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-filter-date' => [
+				'label'        => 'Date Filter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'icon'         => 'eicon-calendar',
+				'keywords'     => [ 'search', 'filter', 'date' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-filter-category' => [
+				'label'        => 'Category Filter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'icon'         => 'eicon-folder',
+				'keywords'     => [ 'search', 'filter', 'category' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-submit' => [
+				'label'        => 'Search Submit',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'icon'         => 'eicon-button',
+				'keywords'     => [ 'search', 'submit', 'button' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-results' => [
+				'label'        => 'Search Results',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'icon'         => 'eicon-post-list',
+				'keywords'     => [ 'search', 'results', 'ajax' ],
 				'hide_from_panel' => true,
 			],
 
@@ -1951,6 +2034,54 @@ final class Atomic
 			'aae-a-loop-nav-wrap' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-nav-wrap.php',
+				'has_script' => false,
+			],
+
+			'aae-a-search-form' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-form.php',
+				'script_handle' => 'aae-a-search-form-js',
+				'script_path' => '/assets/atomic/js/search-form.js',
+				'has_script' => true,
+			],
+			'aae-a-search-toggle' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle.php',
+				'has_script' => false,
+			],
+			'aae-a-search-panel' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-panel.php',
+				'has_script' => false,
+			],
+			'aae-a-search-field' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-field.php',
+				'has_script' => false,
+			],
+			'aae-a-search-input' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-input.php',
+				'has_script' => false,
+			],
+			'aae-a-search-filter-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-date.php',
+				'has_script' => false,
+			],
+			'aae-a-search-filter-category' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-category.php',
+				'has_script' => false,
+			],
+			'aae-a-search-submit' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-submit.php',
+				'has_script' => false,
+			],
+			'aae-a-search-results' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-results.php',
 				'has_script' => false,
 			],
 
