@@ -1,52 +1,14 @@
-// Kept intentionally tiny — every bundled JSON preset
-// (z_temp/templates/Progressbar) styles its own track/fill/dot/label
-// children with real Elementor local styles (Background, Border-Radius,
-// Transition, etc. props), editable from the Style tab like any other
-// element. Only two things live here because there's genuinely no native
-// way to reach them:
-//
-// 1. `.progressbar-trail` / `.progressbar-path` — these are raw <circle>
-//    nodes inside an Atomic_Svg's injected SVG markup, not separate
-//    Elementor-managed elements, so there is no Style tab for them.
-//
-// 2. `.aae-pb-default` — the widget's own PHP-built fallback children (see
-//    define_default_children() in class-aae-a-progressbar.php). Those are
-//    spawned via Element_Builder, whose PHP API has no equivalent of a
-//    preset's local `styles` block, so this bare look can't be authored
-//    natively the way a JSON preset can. Presets never carry this class,
-//    so these rules never touch a preset-applied instance.
-
-.wcf__progressbar {
-    .progressbar-trail {
-        stroke: rgba(0, 0, 0, .12);
-    }
-
-    .progressbar-path {
+.aae-progressbar {
+    .aae-progressbar-path {
         stroke: currentColor;
         transition: stroke-dashoffset 1.4s ease-in-out;
     }
-
-    // .progressbar.aae-pb-default {
-    //     height: 8px;
-    //     border-radius: 4px;
-    //     overflow: hidden;
-    //     background: rgba(0, 0, 0, .12);
+    // .aae-progressbar-fill {
+    //     width: 0%;
     // }
-
-    .progressbar-fill.aae-pb-default {
+    .aae-progressbar-fill.aae-pb-default {
         height: 100%;
-        width: 0%;
         background: currentColor;
         border-radius: inherit;
-        transition: width 1.4s ease-in-out;
     }
-
-    // .aae-pb-pct.aae-pb-default {
-    //     position: absolute;
-    //     top: 0;
-    //     left: 50%;
-    //     transform: translateX(-50%);
-    //     white-space: nowrap;
-    //     pointer-events: none;
-    // }
 }

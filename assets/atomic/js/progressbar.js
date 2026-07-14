@@ -110,17 +110,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scss_progressbar_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/progressbar.scss */ "./inc/AtomicWidgets/Widgets/Progressbar/assets/scss/progressbar.scss");
 
 
-
-/**
- * Generic marker-class handler for the AAE Progress Bar wrapper — no stored
- * `style` setting to branch on (see class-aae-a-progressbar.php), so unlike
- * ProgressbarMain's handler this one auto-detects the shape from whichever
- * children a preset (or hand-editing) actually supplied:
- *   .progressbar-path  → circle (stroke-dashoffset ring)
- *   .dot                → dot (sequential reveal)
- *   .progressbar-fill  → line (width fill) — the fallback/default look
- */
-
 const DURATION = 1400;
 const CIRCLE_RADIUS = 40;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS; // ≈ 251.327
@@ -137,6 +126,19 @@ function animateCounter(el, to, duration) {
     if (progress < 1) requestAnimationFrame(tick);
   })(performance.now());
 }
+function easeInOutQuad(t) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+function animateWidth(el, toPercent, duration) {
+  el.style.transition = 'none';
+  el.style.width = '0%';
+  const startTime = performance.now();
+  (function tick(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    el.style.width = easeInOutQuad(progress) * toPercent + '%';
+    if (progress < 1) requestAnimationFrame(tick);
+  })(performance.now());
+}
 (0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
   elementType: 'e-aae-a-progressbar',
   id: 'e-aae-a-progressbar-handler',
@@ -150,7 +152,7 @@ function animateCounter(el, to, duration) {
     const pctEl = showPct ? el.querySelector('.aae-pb-pct') : null;
 
     // ── Circle ───────────────────────────────────────────────────────────
-    const path = el.querySelector('.progressbar-path');
+    const path = el.querySelector('.aae-progressbar-path');
     if (path) {
       path.style.transition = 'none';
       path.style.strokeDasharray = String(CIRCLE_CIRCUMFERENCE);
@@ -166,12 +168,7 @@ function animateCounter(el, to, duration) {
     }
 
     // ── Dot ──────────────────────────────────────────────────────────────
-    // No `.dot.active` CSS rule on purpose: "active" isn't a real pseudo
-    // class Elementor's Style tab can target, so instead of hardcoding a
-    // fill colour here we borrow whatever native border-color the user
-    // already set per dot — the active fill always matches it, and it
-    // stays editable from the Style tab like everything else.
-    const dots = el.querySelectorAll('.dot');
+    const dots = el.querySelectorAll('.aae-progressbar-dot');
     if (dots.length) {
       const active = Math.round(pct * dots.length);
       dots.forEach((dot, i) => {
@@ -189,27 +186,9 @@ function animateCounter(el, to, duration) {
     }
 
     // ── Line ─────────────────────────────────────────────────────────────
-    const fill = el.querySelector('.progressbar-fill');
+    const fill = el.querySelector('.aae-progressbar-fill');
     if (!fill) return;
-
-    // Elementor's frontend CSS shrinks the span to its natural content width, so
-    // width:100% computes to the span's own text width rather than the container.
-    // translateX(-50%) centres without depending on any percentage-based width.
-    // if ( pctEl ) {
-    // 	pctEl.style.position  = 'absolute';
-    // 	pctEl.style.top       = '0';
-    // 	pctEl.style.left      = '50%';
-    // 	pctEl.style.transform = 'translateX(-50%)';
-    // }
-
-    fill.style.transition = 'none';
-    fill.style.width = '0%';
-    requestAnimationFrame(() => {
-      fill.style.transition = '';
-      requestAnimationFrame(() => {
-        fill.style.width = pct * 100 + '%';
-      });
-    });
+    animateWidth(fill, pct * 100, DURATION);
     if (pctEl) animateCounter(pctEl, Math.round(pct * 100), DURATION);
   }
 });

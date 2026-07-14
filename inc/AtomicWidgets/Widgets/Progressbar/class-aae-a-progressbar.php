@@ -37,9 +37,10 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * needs JS (the percentage + whether to show it); everything cosmetic is a
  * native child element the user can restyle with Elementor's own Style tab.
  *
- * The bundled JS auto-detects which shape is present (.progressbar-fill /
- * .progressbar-path / .dot) rather than branching on a stored style setting,
- * so it animates correctly no matter which preset supplied the children.
+ * The bundled JS auto-detects which shape is present (.aae-progressbar-fill /
+ * .aae-progressbar-path / .aae-progressbar-dot) rather than branching on a
+ * stored style setting, so it animates correctly no matter which preset
+ * supplied the children.
  */
 class AAE_A_Progressbar extends Atomic_Element_Base
 {
@@ -147,13 +148,13 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 			// never touches a preset-applied instance.
 			Div_Block::generate()
 				->settings([
-					'classes' => Classes_Prop_Type::generate(['progressbar', 'aae-pb-default']),
+					'classes' => Classes_Prop_Type::generate(['aae-progressbar-track', 'aae-pb-default']),
 				])
 				->children([
 					Div_Block::generate()
 						->editor_settings(['title' => 'Fill'])
 						->settings([
-							'classes' => Classes_Prop_Type::generate(['progressbar-fill', 'aae-pb-default']),
+							'classes' => Classes_Prop_Type::generate(['aae-progressbar-fill', 'aae-pb-default']),
 						])
 						->build(),
 				])

@@ -1,0 +1,462 @@
+{
+  "content": [
+    {
+      "id": "b1000001",
+      "settings": {
+        "classes": { "$$type": "classes", "value": ["e-b1000001-highlt01"] }
+      },
+      "elements": [
+        {
+          "id": "b1000002",
+          "settings": {},
+          "elements": [
+            {
+              "id": "b1000010",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "b1000003",
+                  "settings": {
+                    "classes": { "$$type": "classes", "value": ["e-b1000003-labelb1", "aae-ts-label-before"] }
+                  },
+                  "elements": [
+                    {
+                      "id": "b1000004",
+                      "settings": {
+                        "paragraph": {
+                          "$$type": "html-v3",
+                          "value": {
+                            "content": { "$$type": "string", "value": "Monthly" },
+                            "children": []
+                          }
+                        }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "widgetType": "e-paragraph",
+                      "elType": "widget",
+                      "styles": [],
+                      "interactions": [],
+                      "editor_settings": { "title": "Text" },
+                      "version": "0.0"
+                    },
+                    {
+                      "id": "b1000005",
+                      "settings": {
+                        "classes": { "$$type": "classes", "value": ["e-b1000005-highl01", "aae-ts-highlight"] }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "elType": "e-div-block",
+                      "styles": {
+                        "e-b1000005-highl01": {
+                          "id": "e-b1000005-highl01",
+                          "label": "local",
+                          "type": "class",
+                          "variants": [
+                            {
+                              "meta": { "breakpoint": "desktop", "state": null },
+                              "props": {
+                                "position": { "$$type": "string", "value": "absolute" },
+                                "inset-block-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-inline-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-block-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-inline-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "z-index": { "$$type": "number", "value": -1 },
+                                "opacity": { "$$type": "size", "value": { "size": 0, "unit": "%" } },
+                                "padding": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "min-width": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "background": {
+                                  "$$type": "background",
+                                  "value": { "color": { "$$type": "color", "value": "#000000" } }
+                                },
+                                "transform": {
+                                  "$$type": "transform",
+                                  "value": {
+                                    "transform-functions": {
+                                      "$$type": "transform-functions",
+                                      "value": [
+                                        {
+                                          "$$type": "transform-move",
+                                          "value": {
+                                            "x": { "$$type": "size", "value": { "size": 100, "unit": "%" } },
+                                            "y": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                            "z": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "transition": {
+                                  "$$type": "transition",
+                                  "value": [
+                                    {
+                                      "$$type": "selection-size",
+                                      "value": {
+                                        "selection": {
+                                          "$$type": "key-value",
+                                          "value": {
+                                            "key": { "$$type": "string", "value": "Transform" },
+                                            "value": { "$$type": "string", "value": "transform" }
+                                          }
+                                        },
+                                        "size": { "$$type": "size", "value": { "size": 300, "unit": "ms" } }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "custom_css": null
+                            }
+                          ]
+                        }
+                      },
+                      "interactions": [],
+                      "editor_settings": { "title": "Highlight" },
+                      "version": "0.0"
+                    }
+                  ],
+                  "isInner": false,
+                  "elType": "e-div-block",
+                  "styles": {
+                    "e-b1000003-labelb1": {
+                      "id": "e-b1000003-labelb1",
+                      "label": "local",
+                      "type": "class",
+                      "variants": [
+                        {
+                          "meta": { "breakpoint": "desktop", "state": null },
+                          "props": {
+                            "width": { "$$type": "size", "value": { "size": "", "unit": "auto" } },
+                            "position": { "$$type": "string", "value": "relative" },
+                            "z-index": { "$$type": "number", "value": 2 },
+                            "cursor": { "$$type": "string", "value": "pointer" },
+                            "padding": {
+                              "$$type": "dimensions",
+                              "value": {
+                                "block-start": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                                "inline-end": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
+                                "block-end": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                                "inline-start": { "$$type": "size", "value": { "size": 20, "unit": "px" } }
+                              }
+                            }
+                          },
+                          "custom_css": null
+                        }
+                      ]
+                    }
+                  },
+                  "interactions": [],
+                  "editor_settings": { "title": "Label Before" },
+                  "version": "0.0"
+                },
+                {
+                  "id": "b1000006",
+                  "settings": {
+                    "classes": { "$$type": "classes", "value": ["e-b1000006-labela1", "aae-ts-label-after"] }
+                  },
+                  "elements": [
+                    {
+                      "id": "b1000007",
+                      "settings": {
+                        "paragraph": {
+                          "$$type": "html-v3",
+                          "value": {
+                            "content": { "$$type": "string", "value": "Yearly" },
+                            "children": []
+                          }
+                        }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "widgetType": "e-paragraph",
+                      "elType": "widget",
+                      "styles": [],
+                      "interactions": [],
+                      "editor_settings": { "title": "Text" },
+                      "version": "0.0"
+                    },
+                    {
+                      "id": "b1000008",
+                      "settings": {
+                        "classes": { "$$type": "classes", "value": ["e-b1000008-highl02", "aae-ts-highlight"] }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "elType": "e-div-block",
+                      "styles": {
+                        "e-b1000008-highl02": {
+                          "id": "e-b1000008-highl02",
+                          "label": "local",
+                          "type": "class",
+                          "variants": [
+                            {
+                              "meta": { "breakpoint": "desktop", "state": null },
+                              "props": {
+                                "position": { "$$type": "string", "value": "absolute" },
+                                "inset-block-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-inline-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-block-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "inset-inline-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "z-index": { "$$type": "number", "value": -1 },
+                                "opacity": { "$$type": "size", "value": { "size": 0, "unit": "%" } },
+                                "padding": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "min-width": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "background": {
+                                  "$$type": "background",
+                                  "value": { "color": { "$$type": "color", "value": "#000000" } }
+                                },
+                                "transform": {
+                                  "$$type": "transform",
+                                  "value": {
+                                    "transform-functions": {
+                                      "$$type": "transform-functions",
+                                      "value": [
+                                        {
+                                          "$$type": "transform-move",
+                                          "value": {
+                                            "x": { "$$type": "size", "value": { "size": -100, "unit": "%" } },
+                                            "y": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                            "z": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "transition": {
+                                  "$$type": "transition",
+                                  "value": [
+                                    {
+                                      "$$type": "selection-size",
+                                      "value": {
+                                        "selection": {
+                                          "$$type": "key-value",
+                                          "value": {
+                                            "key": { "$$type": "string", "value": "Transform" },
+                                            "value": { "$$type": "string", "value": "transform" }
+                                          }
+                                        },
+                                        "size": { "$$type": "size", "value": { "size": 300, "unit": "ms" } }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "custom_css": null
+                            }
+                          ]
+                        }
+                      },
+                      "interactions": [],
+                      "editor_settings": { "title": "Highlight" },
+                      "version": "0.0"
+                    }
+                  ],
+                  "isInner": false,
+                  "elType": "e-div-block",
+                  "styles": {
+                    "e-b1000006-labela1": {
+                      "id": "e-b1000006-labela1",
+                      "label": "local",
+                      "type": "class",
+                      "variants": [
+                        {
+                          "meta": { "breakpoint": "desktop", "state": null },
+                          "props": {
+                            "width": { "$$type": "size", "value": { "size": "", "unit": "auto" } },
+                            "position": { "$$type": "string", "value": "relative" },
+                            "z-index": { "$$type": "number", "value": 2 },
+                            "cursor": { "$$type": "string", "value": "pointer" },
+                            "padding": {
+                              "$$type": "dimensions",
+                              "value": {
+                                "block-start": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                                "inline-end": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
+                                "block-end": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                                "inline-start": { "$$type": "size", "value": { "size": 20, "unit": "px" } }
+                              }
+                            }
+                          },
+                          "custom_css": null
+                        }
+                      ]
+                    }
+                  },
+                  "interactions": [],
+                  "editor_settings": { "title": "Label After" },
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-flexbox",
+              "styles": {
+                "e-b1000010-labels1": {
+                  "id": "e-b1000010-labels1",
+                  "label": "local",
+                  "type": "class",
+                  "variants": [
+                    {
+                      "meta": { "breakpoint": "desktop", "state": null },
+                      "props": {
+                        "flex-direction": { "$$type": "string", "value": "row" },
+                        "gap": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
+                        "justify-content": { "$$type": "string", "value": "center" }
+                      },
+                      "custom_css": null
+                    }
+                  ]
+                }
+              },
+              "interactions": [],
+              "editor_settings": { "title": "Labels" },
+              "version": "0.0"
+            },
+            {
+              "id": "b1000009",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "b100000a",
+                  "settings": {
+                    "title": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "Monthly Plan" },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "h3" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-heading",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                },
+                {
+                  "id": "b100000b",
+                  "settings": {
+                    "paragraph": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "$9/month — billed monthly." },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "p" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-paragraph",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-aae-a-toggle-pane",
+              "styles": [],
+              "interactions": [],
+              "editor_settings": { "title": "Pane 1" },
+              "version": "0.0"
+            },
+            {
+              "id": "b100000c",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "b100000d",
+                  "settings": {
+                    "title": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "Yearly Plan" },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "h3" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-heading",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                },
+                {
+                  "id": "b100000e",
+                  "settings": {
+                    "paragraph": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "$90/year — save 2 months." },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "p" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-paragraph",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-aae-a-toggle-pane",
+              "styles": [],
+              "interactions": [],
+              "editor_settings": { "title": "Pane 2" },
+              "version": "0.0"
+            }
+          ],
+          "isInner": false,
+          "elType": "e-aae-a-toggle-switcher",
+          "styles": [],
+          "interactions": [],
+          "editor_settings": { "title": "toggle-switcher-highlight" },
+          "version": "0.0"
+        }
+      ],
+      "isInner": false,
+      "elType": "e-flexbox",
+      "styles": {
+        "e-b1000001-highlt01": {
+          "id": "e-b1000001-highlt01",
+          "label": "local",
+          "type": "class",
+          "variants": [
+            {
+              "meta": { "breakpoint": "desktop", "state": null },
+              "props": {
+                "flex-direction": { "$$type": "string", "value": "column" },
+                "gap": { "$$type": "size", "value": { "size": 16, "unit": "px" } }
+              },
+              "custom_css": null
+            }
+          ]
+        }
+      },
+      "interactions": [],
+      "editor_settings": { "title": "toggle-switcher-style-highlight-div" },
+      "version": "0.0"
+    }
+  ],
+  "page_settings": [],
+  "version": "0.4",
+  "title": "toggle-switcher-style-highlight",
+  "type": "e-flexbox",
+  "global_classes": { "items": {}, "order": [] }
+}

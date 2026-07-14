@@ -1,11 +1,11 @@
 {#
   No pb_style branching here on purpose — unlike ProgressbarMain, this
   wrapper doesn't know its own shape. Whichever marker classes the children
-  carry (.progressbar-fill / .progressbar-path / .dot), the bundled CSS/JS
-  detect and animate them. See ProgressbarMain for the original all-in-one
-  implementation this was split from.
+  carry (.aae-progressbar-fill / .aae-progressbar-path / .aae-progressbar-dot),
+  the bundled CSS/JS detect and animate them. See ProgressbarMain for the
+  original all-in-one implementation this was split from.
 #}
-{% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'wcf__progressbar'] | merge(settings.classes | default([])) | join(' ') %}
+{% set wrapper_classes = ['e-con', 'e-atomic-element', base_styles.base, 'aae-progressbar'] | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"
