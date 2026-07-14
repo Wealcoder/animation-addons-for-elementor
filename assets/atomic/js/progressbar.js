@@ -110,6 +110,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scss_progressbar_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../scss/progressbar.scss */ "./inc/AtomicWidgets/Widgets/Progressbar/assets/scss/progressbar.scss");
 
 
+
+/**
+ * Generic marker-class handler for the AAE Progress Bar wrapper — no stored
+ * `style` setting to branch on (see class-aae-a-progressbar.php), so unlike
+ * ProgressbarMain's handler this one auto-detects the shape from whichever
+ * children a preset (or hand-editing) actually supplied:
+ *   .progressbar-path  → circle (stroke-dashoffset ring)
+ *   .dot                → dot (sequential reveal)
+ *   .progressbar-fill  → line (width fill) — the fallback/default look
+ */
+
 const DURATION = 1400;
 const CIRCLE_RADIUS = 40;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS; // ≈ 251.327
@@ -134,42 +145,46 @@ function animateCounter(el, to, duration) {
   }) => {
     const el = element;
     if (!el) return;
-    const type = el.dataset.pbType || 'line';
     const pct = parseFloat(el.dataset.pbPercentage || 50) / 100;
     const showPct = el.dataset.pbDisplayPercentage === 'true';
     const pctEl = showPct ? el.querySelector('.aae-pb-pct') : null;
-    const trackHeight = parseFloat(el.dataset.pbTrackHeight || 8);
-    const strokeWidth = parseFloat(el.dataset.pbStrokeWidth || 10);
-
-    // Apply configurable values as CSS custom properties.
-    el.style.setProperty('--aae-pb-track-height', trackHeight + 'px');
-    el.style.setProperty('--aae-pb-stroke-width', String(strokeWidth));
-
-    // ── Dot ──────────────────────────────────────────────────────────────
-    if (type === 'dot') {
-      const dots = el.querySelectorAll('.dot');
-      const active = Math.round(pct * dots.length);
-      dots.forEach((dot, i) => {
-        setTimeout(() => dot.classList.toggle('active', i < active), i * 150);
-      });
-      return;
-    }
 
     // ── Circle ───────────────────────────────────────────────────────────
-    if (type === 'circle') {
-      const path = el.querySelector('.progressbar-path');
-      if (!path) return;
-
-      // Reset for clean editor re-runs, then animate.
+    const path = el.querySelector('.progressbar-path');
+    if (path) {
       path.style.transition = 'none';
-      path.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE;
+      path.style.strokeDasharray = String(CIRCLE_CIRCUMFERENCE);
+      path.style.strokeDashoffset = String(CIRCLE_CIRCUMFERENCE);
       requestAnimationFrame(() => {
         path.style.transition = '';
         requestAnimationFrame(() => {
-          path.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE * (1 - pct);
+          path.style.strokeDashoffset = String(CIRCLE_CIRCUMFERENCE * (1 - pct));
         });
       });
       if (pctEl) animateCounter(pctEl, Math.round(pct * 100), DURATION);
+      return;
+    }
+
+    // ── Dot ──────────────────────────────────────────────────────────────
+    // No `.dot.active` CSS rule on purpose: "active" isn't a real pseudo
+    // class Elementor's Style tab can target, so instead of hardcoding a
+    // fill colour here we borrow whatever native border-color the user
+    // already set per dot — the active fill always matches it, and it
+    // stays editable from the Style tab like everything else.
+    const dots = el.querySelectorAll('.dot');
+    if (dots.length) {
+      const active = Math.round(pct * dots.length);
+      dots.forEach((dot, i) => {
+        setTimeout(() => {
+          if (i < active) {
+            dot.style.backgroundColor = getComputedStyle(dot).borderColor;
+            dot.style.opacity = '1';
+          } else {
+            dot.style.backgroundColor = '';
+            dot.style.opacity = '';
+          }
+        }, i * 150);
+      });
       return;
     }
 
@@ -180,14 +195,13 @@ function animateCounter(el, to, duration) {
     // Elementor's frontend CSS shrinks the span to its natural content width, so
     // width:100% computes to the span's own text width rather than the container.
     // translateX(-50%) centres without depending on any percentage-based width.
-    if (pctEl) {
-      pctEl.style.position = 'absolute';
-      pctEl.style.top = '0';
-      pctEl.style.left = '50%';
-      pctEl.style.transform = 'translateX(-50%)';
-    }
+    // if ( pctEl ) {
+    // 	pctEl.style.position  = 'absolute';
+    // 	pctEl.style.top       = '0';
+    // 	pctEl.style.left      = '50%';
+    // 	pctEl.style.transform = 'translateX(-50%)';
+    // }
 
-    // Reset for clean editor re-runs, then animate.
     fill.style.transition = 'none';
     fill.style.width = '0%';
     requestAnimationFrame(() => {

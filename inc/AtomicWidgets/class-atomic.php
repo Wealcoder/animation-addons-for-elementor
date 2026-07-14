@@ -1193,8 +1193,8 @@ final class Atomic
 			],
 
 			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar',
-				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
+				'label'        => 'Progress Bar Template',
+				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -1204,8 +1204,8 @@ final class Atomic
 					'progress',
 					'progressbar',
 					'bar',
-					'circle',
-					'skill',
+					'template',
+					'container',
 					'atomic',
 				],
 				'category'     => 'general',
