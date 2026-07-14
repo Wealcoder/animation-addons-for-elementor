@@ -58,8 +58,6 @@ final class Schema {
 			return $schema;
 		}
 
-		$schema[ self::LB_SECTION_ANCHOR ] = Section_Anchor_Prop_Type::make()->default( '' );
-
 		// Enable switch — bound to a Switch_Control, so it MUST be a Boolean
 		// prop (a Switch emits a bool; a responsive/aae-rj prop would reject it
 		// with "invalid value" on save).

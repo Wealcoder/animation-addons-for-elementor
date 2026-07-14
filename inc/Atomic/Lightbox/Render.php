@@ -35,38 +35,27 @@ final class Render {
 
 		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
 
-		// TEMP DEBUG — remove after diagnosis.
-		if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-			error_log( '[AAE-LB] e-image seen. enable_raw=' . wp_json_encode( $settings[ Schema::LB_ENABLE ] ?? '(unset)' ) );
-			error_log( '[AAE-LB] image_raw=' . wp_json_encode( $settings['image'] ?? '(unset)' ) );
-		}
-
 		if ( ! Lightbox_Manager::is_enabled( $settings ) ) {
-			if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-				error_log( '[AAE-LB] BAILED: is_enabled() false' );
-			}
 			return;
 		}
 
 		$img = $this->resolve_image( $settings );
 		if ( '' === $img['url'] ) {
-			if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-				error_log( '[AAE-LB] BAILED: no image url resolved' );
-			}
 			return;
 		}
 
-		if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-			error_log( '[AAE-LB] OK publishing. url=' . $img['url'] . ' id=' . ( method_exists( $element, 'get_id' ) ? $element->get_id() : '?' ) );
-		}
-
-		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
+		// CRITICAL: key the config by the element's INTERACTION id, which is what
+		// the twig emits as data-interaction-id (= origin_id ?? get_id()). Inside
+		// components / global widgets / templates, origin_id differs from get_id(),
+		// so keying by get_id() would produce a map key the DOM never matches.
+		// The runtime looks up window.AAE_INTERACTIONS_LB[data-interaction-id].
+		$id = $this->interaction_id( $element );
 		if ( '' === $id ) {
 			return;
 		}
 
 		// get_attributes() publishes the config to InteractionsMap('lb', $id, …)
-		// and enqueues the runtime; keyed by element id so the rendered tag's
+		// and enqueues the runtime; keyed by interaction id so the rendered tag's
 		// own data-interaction-id becomes the trigger. We discard the returned
 		// attribute array here because the element already carries the id — the
 		// runtime binds via the map, not a spliced attribute.
@@ -111,20 +100,24 @@ final class Render {
 			$src_shape = $image;
 		}
 
+		// Real stored shape (from actual e-image data):
+		//   image → { src → { id → {value:6973}, url: null } }
+		// Every leaf is itself a { $$type, value } envelope, so unwrap the
+		// id and url individually — NOT just the outer wrappers.
 		$attach_id = null;
-		if ( isset( $src_shape['id'] ) && is_numeric( $src_shape['id'] ) ) {
-			$attach_id = (int) $src_shape['id'];
+		$id_field  = $this->unwrap( $src_shape['id'] ?? null );
+		if ( is_numeric( $id_field ) ) {
+			$attach_id = (int) $id_field;
 		}
 
-		// Thumbnail / inline URL = whatever the element renders.
-		$thumb = '';
+		// Thumbnail / inline URL = whatever the element renders (often null when
+		// only an attachment id is stored — then we resolve from the id below).
+		$thumb     = '';
 		$url_field = $this->unwrap( $src_shape['url'] ?? null );
-		if ( is_string( $url_field ) ) {
+		if ( is_string( $url_field ) && '' !== $url_field ) {
 			$thumb = $url_field;
-		} elseif ( is_array( $url_field ) && isset( $url_field['url'] ) ) {
+		} elseif ( is_array( $url_field ) && ! empty( $url_field['url'] ) ) {
 			$thumb = (string) $url_field['url'];
-		} elseif ( isset( $src_shape['url'] ) && is_string( $src_shape['url'] ) ) {
-			$thumb = (string) $src_shape['url'];
 		}
 
 		$full = '';
@@ -140,6 +133,30 @@ final class Render {
 		$out['thumb'] = '' !== $thumb ? $thumb : $out['url'];
 
 		return $out;
+	}
+
+	/**
+	 * Resolve the value Elementor renders as data-interaction-id:
+	 *   get_interaction_id() === origin_id ?? get_id()
+	 *
+	 * get_interaction_id() is public on atomic widgets but protected on the
+	 * element base, so try it, then the public origin_id property, then get_id().
+	 */
+	private function interaction_id( $element ): string {
+		if ( method_exists( $element, 'get_interaction_id' ) ) {
+			try {
+				$iid = $element->get_interaction_id();
+				if ( is_string( $iid ) && '' !== $iid ) {
+					return $iid;
+				}
+			} catch ( \Throwable $e ) {
+				// protected in this context — fall through.
+			}
+		}
+		if ( isset( $element->origin_id ) && is_string( $element->origin_id ) && '' !== $element->origin_id ) {
+			return $element->origin_id;
+		}
+		return method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
 	}
 
 	/** Peel a { $$type, value } atomic envelope down to its inner value. */

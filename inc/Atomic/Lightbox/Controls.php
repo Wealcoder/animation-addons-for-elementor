@@ -63,11 +63,10 @@ final class Controls {
 			->set_id( 'aae_lightbox' )
 			->set_label( Bootstrap::get_label( $label ) )
 			->set_items( [
-				// Anchor for a future React replacement (kept for parity with
-				// the plugin's other atomic effects).
-				Text_Control::bind_to( Schema::LB_SECTION_ANCHOR )
-					->set_meta( [ 'layout' => 'custom' ] ),
-
+				// NOTE: no Section_Anchor here. The anchor pattern is only for
+				// effects that swap in a React ResponsiveSection replacement; the
+				// lightbox uses native controls, and an unpaired custom-layout
+				// anchor makes the atomic panel fail save validation.
 				Switch_Control::bind_to( Schema::LB_ENABLE )
 					->set_label( __( 'Enable Lightbox', self::TD ) ),
 

@@ -74,7 +74,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 			Lightbox_Schema::LB_TITLE   => String_Prop_Type::make()->default( '' ),
 			Lightbox_Schema::LB_CAPTION => String_Prop_Type::make()->default( '' ),
 			Lightbox_Schema::LB_ANIM    => String_Prop_Type::make()->default( 'zoom' ),
-			Lightbox_Schema::LB_SECTION_ANCHOR => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -261,7 +260,19 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 			if ( $is_image ) {
 				$cs  = method_exists( $child, 'get_settings' ) ? $child->get_settings() : [];
 				$url = $this->image_url_from_settings( $cs );
-				$cid = method_exists( $child, 'get_id' ) ? (string) $child->get_id() : '';
+				// Key by the interaction id the child renders as data-interaction-id
+				// (origin_id ?? get_id()), not get_id() — they differ inside
+				// components/templates and the runtime looks up by data-interaction-id.
+				$cid = '';
+				if ( method_exists( $child, 'get_interaction_id' ) ) {
+					try { $cid = (string) $child->get_interaction_id(); } catch ( \Throwable $e ) { $cid = ''; }
+				}
+				if ( '' === $cid && isset( $child->origin_id ) && is_string( $child->origin_id ) ) {
+					$cid = $child->origin_id;
+				}
+				if ( '' === $cid && method_exists( $child, 'get_id' ) ) {
+					$cid = (string) $child->get_id();
+				}
 
 				if ( '' !== $url && '' !== $cid ) {
 					// Reuse the accordion's own settings so the enable gate,
@@ -302,21 +313,23 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 			$src = $image;
 		}
 
-		if ( isset( $src['id'] ) && is_numeric( $src['id'] ) ) {
-			$full = wp_get_attachment_image_url( (int) $src['id'], 'full' );
+		// Each leaf is itself a { $$type, value } envelope — unwrap id/url too.
+		$id_field = $unwrap( $src['id'] ?? null );
+		if ( is_numeric( $id_field ) ) {
+			$full = wp_get_attachment_image_url( (int) $id_field, 'full' );
 			if ( $full ) {
 				return (string) $full;
 			}
 		}
 
 		$url = $unwrap( $src['url'] ?? null );
-		if ( is_string( $url ) ) {
+		if ( is_string( $url ) && '' !== $url ) {
 			return $url;
 		}
-		if ( is_array( $url ) && isset( $url['url'] ) ) {
+		if ( is_array( $url ) && ! empty( $url['url'] ) ) {
 			return (string) $url['url'];
 		}
-		return isset( $src['url'] ) && is_string( $src['url'] ) ? (string) $src['url'] : '';
+		return '';
 	}
 
 	public function get_script_depends(): array {
