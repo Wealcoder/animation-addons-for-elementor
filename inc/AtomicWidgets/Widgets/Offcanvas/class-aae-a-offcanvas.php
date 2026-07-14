@@ -126,6 +126,10 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 				->set_id( 'offcanvas' )
 				->set_label( __( 'Offcanvas', 'animation-addons-for-elementor' ) )
 				->set_items( [
+					// Editor-only helper, placed first so it's the first thing the
+					// user sees on drop: toggle it to open the panel for editing.
+					Switch_Control::bind_to( 'editor_open' )
+						->set_label( __( 'Open Panel (Editor)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'position' )
 						->set_label( __( 'Position', 'animation-addons-for-elementor' ) )
 						->set_options( [
@@ -153,8 +157,6 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 						->set_label( __( 'Close on Overlay Click', 'animation-addons-for-elementor' ) ),
 					Switch_Control::bind_to( 'close_on_esc' )
 						->set_label( __( 'Close on Esc Key', 'animation-addons-for-elementor' ) ),
-					Switch_Control::bind_to( 'editor_open' )
-						->set_label( __( 'Open Panel (Editor)', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
