@@ -86,10 +86,20 @@ function emit(name, detail) {
 }
 
 function buildToolbar() {
+	// Behaviour flags come from the slides (uniform across a gallery). Default
+	// to on for zoom, off for download when a slide omits them.
+	const opt = state.slides[0] || {};
+	const wantZoom = opt.zoom !== false;
+	const wantDownload = opt.download === true;
+
 	const buttons = [];
-	buttons.push({ id: 'zoom', icon: ICONS.zoom, title: 'Zoom', onClick: () => state.zoom.toggle() });
+	if (wantZoom) {
+		buttons.push({ id: 'zoom', icon: ICONS.zoom, title: 'Zoom', onClick: () => state.zoom.toggle() });
+	}
 	buttons.push({ id: 'fullscreen', icon: ICONS.full, title: 'Fullscreen', onClick: toggleFullscreen });
-	buttons.push({ id: 'download', icon: ICONS.download, title: 'Download', onClick: downloadCurrent });
+	if (wantDownload) {
+		buttons.push({ id: 'download', icon: ICONS.download, title: 'Download', onClick: downloadCurrent });
+	}
 	if (state.slides.length > 1) {
 		buttons.push({ id: 'slideshow', icon: ICONS.play, title: 'Slideshow', onClick: toggleSlideshow });
 	}
@@ -184,10 +194,11 @@ function renderSlide() {
 	ui.desc.textContent = slide.caption || slide.desc || '';
 	ui.desc.hidden = !(slide.caption || slide.desc);
 
-	// Counter.
+	// Counter (honors the per-gallery `counter` flag; default on).
 	const multi = state.slides.length > 1;
-	ui.counter.hidden = !multi;
-	if (multi) ui.counter.textContent = `${state.i + 1} / ${state.slides.length}`;
+	const showCounter = multi && slide.counter !== false;
+	ui.counter.hidden = !showCounter;
+	if (showCounter) ui.counter.textContent = `${state.i + 1} / ${state.slides.length}`;
 
 	// Nav visibility (hidden for single, always shown for loop).
 	ui.prev.hidden = !multi;
@@ -254,7 +265,12 @@ export function openLightbox(slides, startIndex, opts = {}) {
 		prev() { state.api.goTo(state.i - 1); },
 		goTo(idx) {
 			const n = state.slides.length;
-			state.i = ((idx % n) + n) % n; // loop
+			// Honor the per-gallery `loop` flag: wrap when looping (default),
+			// clamp to [0, n-1] when loop is disabled.
+			const loop = (state.slides[0] || {}).loop !== false;
+			state.i = loop
+				? ((idx % n) + n) % n
+				: Math.max(0, Math.min(idx, n - 1));
 			renderSlide();
 			state.changeSubs.forEach((fn) => { try { fn(); } catch (_) { /* ignore */ } });
 		},

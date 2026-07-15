@@ -18,6 +18,7 @@
 import './index.css';
 import { openLightbox } from './overlay';
 import { collectGroup } from './gallery';
+import { containerFor, collectContainer } from './container';
 import { exposeApi } from './registry';
 
 const { configFor } = window.AAEADDON;
@@ -52,10 +53,37 @@ function findTrigger(node) {
 	return null;
 }
 
-function open(trigger) {
-	const { slides, startIndex, groupId } = collectGroup(trigger, LB_MAP);
-	if (!slides.length) return;
-	openLightbox(slides, startIndex, { groupId });
+/**
+ * Resolve a click into a lightbox open, trying both models:
+ *   1. Per-element trigger (e-image / custom widget) — precise, config-backed.
+ *   2. Container-level     (parent enabled) — discover child images from DOM.
+ * Per-element wins when both match (a configured image inside a lightbox
+ * container opens as its own precise slide set).
+ *
+ * @returns {boolean} whether a lightbox was opened.
+ */
+function resolveAndOpen(target) {
+	// 1) Per-element.
+	const trigger = findTrigger(target);
+	if (trigger) {
+		const { slides, startIndex, groupId } = collectGroup(trigger, LB_MAP);
+		if (slides.length) {
+			openLightbox(slides, startIndex, { groupId });
+			return true;
+		}
+	}
+
+	// 2) Container-level.
+	const hit = containerFor(target);
+	if (hit) {
+		const { slides, startIndex, groupId } = collectContainer(hit.el, hit.cfg, target);
+		if (slides.length) {
+			openLightbox(slides, startIndex, { groupId });
+			return true;
+		}
+	}
+
+	return false;
 }
 
 function ensureDelegation() {
@@ -66,19 +94,19 @@ function ensureDelegation() {
 	const onClick = (e) => {
 		if (isEditMode()) return;
 		if (e.button !== undefined && e.button !== 0) return;
-		const trigger = findTrigger(e.target);
-		if (!trigger) return;
-		e.preventDefault();
-		open(trigger);
+		// resolveAndOpen only opens on a real match, so ordinary links/buttons
+		// are left untouched; we preventDefault only when we actually open.
+		if (resolveAndOpen(e.target)) {
+			e.preventDefault();
+		}
 	};
 
 	const onKey = (e) => {
 		if (isEditMode()) return;
 		if (e.key !== 'Enter' && e.key !== ' ') return;
-		const trigger = findTrigger(e.target);
-		if (!trigger) return;
-		e.preventDefault();
-		open(trigger);
+		if (resolveAndOpen(e.target)) {
+			e.preventDefault();
+		}
 	};
 
 	document.addEventListener('click', onClick);

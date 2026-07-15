@@ -101,6 +101,9 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\Lightbox\Schema() )->register();
 		( new \WCF_ADDONS\Atomic\Lightbox\Controls() )->register();
 		( new \WCF_ADDONS\Atomic\Lightbox\Render() )->register();
+		// Container-level lightbox — enable once on a container (flexbox / grid /
+		// div-block) and every eligible child image becomes a grouped trigger.
+		( new \WCF_ADDONS\Atomic\Lightbox\Container_Render() )->register();
 
 		// Nested Slider. (No Controls class — the slider's panel section is built
 		// directly in AAE_A_Slider::define_atomic_controls(), so there's nothing

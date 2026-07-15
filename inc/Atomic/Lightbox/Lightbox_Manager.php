@@ -106,6 +106,44 @@ final class Lightbox_Manager {
 		return $attrs;
 	}
 
+	/**
+	 * Publish container-level options into the 'lbc' interactions map, keyed by
+	 * the container's interaction id, and enqueue the runtime. The JS reads
+	 * window.AAE_INTERACTIONS_LBC[<interactionId>] when a click lands inside a
+	 * container carrying that id, then discovers + groups the child images.
+	 *
+	 * @param string $iid     Container interaction id (= data-interaction-id).
+	 * @param array  $options Normalized option bag (see Container_Render).
+	 */
+	public static function register_container( string $iid, array $options ): void {
+		if ( '' === $iid ) {
+			return;
+		}
+		InteractionsMap::register( 'lbc', $iid, $options );
+		self::enqueue();
+	}
+
+	/** Read a Boolean prop from raw settings (unwraps the atomic envelope). */
+	public static function bool( array $settings, string $key, bool $default = false ): bool {
+		$raw = $settings[ $key ] ?? null;
+		if ( null === $raw ) {
+			return $default;
+		}
+		if ( is_array( $raw ) && array_key_exists( 'value', $raw ) ) {
+			$raw = $raw['value'];
+		}
+		return self::truthy( $raw );
+	}
+
+	/** Read a String prop from raw settings (unwraps the atomic envelope). */
+	public static function string( array $settings, string $key, string $default = '' ): string {
+		$raw = $settings[ $key ] ?? null;
+		if ( is_array( $raw ) && array_key_exists( 'value', $raw ) ) {
+			$raw = $raw['value'];
+		}
+		return is_string( $raw ) && '' !== $raw ? $raw : $default;
+	}
+
 	/** Register (once) then enqueue the runtime + stylesheet. Frontend only. */
 	public static function enqueue(): void {
 		if ( is_admin() ) {
