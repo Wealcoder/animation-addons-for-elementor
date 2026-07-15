@@ -31,6 +31,18 @@ final class Container_Render {
 	}
 
 	public function maybe_register( $element ): void {
+		// The atomic editor re-renders an element over an admin-ajax / REST
+		// request on every prop change (e.g. switching Content Mode). Doing our
+		// work there adds server latency to that synchronous round-trip — which
+		// is what stalls the panel — and it's wasted: the container's own
+		// data-interaction-id already renders, and the runtime reads the config
+		// map from the preview footer. Match every other AAE Render and skip
+		// admin/editor render passes; the frontend + preview-footer paths still
+		// publish. Cheapest checks first so unrelated elements bail immediately.
+		if ( is_admin() || wp_doing_ajax() ) {
+			return;
+		}
+
 		if ( ! is_object( $element ) || ! method_exists( $element, 'get_element_type' ) ) {
 			return;
 		}

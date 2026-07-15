@@ -166,11 +166,25 @@ function buildThumbs() {
 	ui.thumbs.hidden = false;
 	ui.thumbs.innerHTML = '';
 	state.slides.forEach((slide, idx) => {
-		const t = document.createElement('img');
-		t.className = 'aae-lb-thumb';
-		t.src = slide.thumb || slide.src;
-		t.alt = '';
-		t.loading = 'lazy';
+		// Prefer an explicit thumb, then an image slide's own src. Full-content
+		// and video slides may have neither — render a numbered placeholder tile
+		// instead of an <img> that would show a broken-image icon.
+		const thumbSrc = slide.thumb || (slide.type === 'image' ? slide.src : '') || '';
+
+		let t;
+		if (thumbSrc) {
+			t = document.createElement('img');
+			t.className = 'aae-lb-thumb';
+			t.src = thumbSrc;
+			t.alt = '';
+			t.loading = 'lazy';
+		} else {
+			t = document.createElement('button');
+			t.type = 'button';
+			t.className = 'aae-lb-thumb aae-lb-thumb-empty';
+			t.textContent = String(idx + 1);
+			t.setAttribute('aria-label', `Slide ${idx + 1}`);
+		}
 		t.addEventListener('click', () => state.api.goTo(idx));
 		ui.thumbs.appendChild(t);
 	});
@@ -219,7 +233,7 @@ function preload(idx) {
 	const n = state.slides.length;
 	const wrapped = ((idx % n) + n) % n;
 	const slide = state.slides[wrapped];
-	if (slide && (!slide.type || slide.type === 'image')) {
+	if (slide && (!slide.type || slide.type === 'image') && slide.src) {
 		const im = new Image();
 		im.src = slide.src;
 	}

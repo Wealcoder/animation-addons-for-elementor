@@ -194,9 +194,18 @@ function collectFull(containerEl, cfg, clicked) {
 
 	kids.forEach((child) => {
 		if (child === clicked || child.contains(clicked)) startIndex = slides.length;
+
+		// Thumb for the strip: the child's first real image, if it has one. Full
+		// slides have no single `src`, so without this the thumbnail <img> would
+		// point at nothing and render broken. '' → overlay renders a text tile.
+		const img = child.tagName === 'IMG' ? child : child.querySelector('img');
+		const rawThumb = img ? (img.currentSrc || img.getAttribute('src') || '') : '';
+		const thumb = rawThumb && !PLACEHOLDER.test(rawThumb) ? rawThumb : '';
+
 		slides.push({
 			type: 'html',
 			node: child.cloneNode(true),
+			thumb,
 			anim: cfg.anim || 'zoom',
 			zoom: false,
 			loop: cfg.loop !== false,
