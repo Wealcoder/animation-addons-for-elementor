@@ -1,19 +1,5 @@
 <?php
 /**
- * AAE Offcanvas Panel — atomic NESTED element (locked child of AAE_A_Offcanvas).
- *
- * This is the sliding drawer surface AND the drop-zone: users add their own
- * atomic widgets here (nav menu, image, icon list, social icons, search, …).
- * That's the v4 replacement for the v3 drawer's hard-coded content repeaters.
- *
- * The panel OWNS the drawer's visual defaults through define_base_styles()
- * (width / height / background / padding / column layout), so every one of
- * them is overridable from the Style panel. The base-style classes are global,
- * so they survive the runtime teleport to <body> (unlike descendant-scoped
- * CSS). The only inline rule in its Twig is a structural reset for the plain
- * close button — the close button is not an atomic element, so it can't carry
- * a base style.
- *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
  */
@@ -74,7 +60,7 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 	}
 
 	public function should_show_in_panel() {
-		return false; // Only added via the parent Offcanvas — never dragged alone.
+		return false;
 	}
 
 	protected static function define_props_schema(): array {
@@ -105,17 +91,6 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 	protected function define_allowed_child_types(): array {
 		return [ 'widget', 'e-con', 'e-flexbox', 'e-div-block', 'e-grid', 'e-heading', 'e-paragraph', 'e-svg', 'e-button', 'e-image', 'e-divider' ];
 	}
-
-	/**
-	 * The drawer's full default look. Every declaration here is a Style-panel
-	 * default the user can override. Height is 100vh (a full-height side drawer);
-	 * the JS overrides height/width inline only for the top/bottom positions
-	 * (a horizontal drawer is content-height, full-width). See offcanvas.js.
-	 *
-	 * NOTE (from CLAUDE.md): one invalid key fails the WHOLE definition. width /
-	 * height / max-width are Size_Prop_Type; display / flex-direction /
-	 * overflow-y are plain strings.
-	 */
 	protected function define_base_styles(): array {
 		return [
 			'base' => Style_Definition::make()

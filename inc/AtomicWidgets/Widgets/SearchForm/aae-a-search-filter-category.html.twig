@@ -1,0 +1,32 @@
+{% set classes = ['aae-a-search-filter-category', 'category-container', 'e-atomic-element', base_styles.base|default('')] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    <div class="category-toggle" role="button" tabindex="0" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+        <span class="aae-a-search-filter-category__label">{{ settings.label | default('Category') }}</span>
+        <span class="icon" style="line-height:0;">
+            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+    </div>
+    <div class="category-dropdown" style="display:none;position:absolute;top:100%;right:0;z-index:100;min-width:240px;">
+        <ul class="category-list" style="list-style:none;margin:0;padding:0;">
+            <li data-value="" class="selected" style="cursor:pointer;">All Categories</li>
+            {% for cat in settings.categories | default([]) %}
+                <li data-value="{{ cat.id }}" style="cursor:pointer;">{{ cat.name }}</li>
+            {% endfor %}
+        </ul>
+        <div class="category-footer" style="display:flex;gap:15px;justify-content:flex-end;">
+            <button type="button" class="clear-cat-btn">Clear</button>
+            <button type="button" class="apply-cat-btn">Apply</button>
+        </div>
+    </div>
+    <input type="hidden" name="category[]" class="aae-selected-category" value="">
+</div>
