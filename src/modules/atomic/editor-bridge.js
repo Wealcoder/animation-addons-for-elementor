@@ -120,6 +120,7 @@ import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './edit
 import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
+import { startFormGuards } from './editor-bridge/form-guards';
 
 function bootstrap() {
 	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
@@ -142,6 +143,10 @@ function bootstrap() {
 	// Apply a default preset the first time certain widgets (Loop Grid Slider) are
 	// dropped, so they land styled instead of as a bare Post Image + Title card.
 	startAutoPreset();
+
+	// Save-time warnings: form without a Submit button / nested forms
+	// (spec hard rules — warn, never block the save).
+	startFormGuards();
 }
 
 if (window.elementor && window.elementor.on) {

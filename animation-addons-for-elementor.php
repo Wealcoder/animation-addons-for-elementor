@@ -179,6 +179,12 @@ final class WCF_ADDONS_Plugin
 		update_option('aae_deactivation_count', $count + 1, false);
 		update_option('aae_last_deactivated', current_time('mysql'), false);
 
+		// AAE Forms: stop the action-queue cron while the plugin is off.
+		// Re-activation reschedules it (Dispatcher::init on init) and any
+		// pending jobs are picked up from the aae_action_jobs table.
+		wp_clear_scheduled_hook('aae_form/process_queue');
+		wp_clear_scheduled_hook('aae_form/process_queue_sweep');
+
 		flush_rewrite_rules();
 	}
 
@@ -211,6 +217,13 @@ final class WCF_ADDONS_Plugin
 
 		foreach ($options as $option) {
 			delete_option($option);
+		}
+
+		// AAE Forms cleanup — cron + housekeeping options always; the six
+		// aae_* tables only when 'aae_forms_delete_data_on_uninstall' is set
+		// (submissions are leads — never dropped without explicit opt-in).
+		if (class_exists('\WCF_ADDONS\Forms\Database')) {
+			\WCF_ADDONS\Forms\Database::uninstall();
 		}
 	}
 
