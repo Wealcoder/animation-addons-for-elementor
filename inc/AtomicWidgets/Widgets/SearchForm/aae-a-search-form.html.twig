@@ -1,0 +1,53 @@
+{% set classes = ['aae-a-search-form', 'e-con', 'e-atomic-element', base_styles.base|default('')] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
+    data-mode="{{ settings.mode | default('inline') | e('html_attr') }}"
+    data-position="{{ settings.position | default('left') | e('html_attr') }}"
+    data-ajax="{{ settings.enable_ajax ? 'true' : 'false' }}"
+    data-show-filter="{{ settings.show_filter ? 'true' : 'false' }}"
+    data-show-date="{{ settings.show_date ? 'true' : 'false' }}"
+    data-show-cat="{{ settings.show_cat ? 'true' : 'false' }}"
+    data-editor-show-panel="{{ settings.editor_show_panel ? 'true' : 'false' }}"
+    data-config="{{ settings.search_config | default('{}') | e('html_attr') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    {# Placeholder colour can't go through base styles (no pseudo-elements) and the
+       search input's own custom class is stripped in edit-mode — so scope by the
+       native input[type="search"] (never stripped) under this form's data-id, and
+       make the placeholder inherit the input's Text Color (Style panel), kept
+       slightly faded like the v3 widget. Renders on editor + frontend. #}
+    <style>
+        [data-id="{{ id }}"] input[type="search"]::placeholder { color: inherit; opacity: 0.6; }
+        [data-id="{{ id }}"] input[type="search"]::-webkit-input-placeholder { color: inherit; opacity: 0.6; }
+        [data-id="{{ id }}"] input[type="search"]::-moz-placeholder { color: inherit; opacity: 0.6; }
+    </style>
+    {# Editor-only: in dropdown / fullscreen keep the canvas clean — only the search
+       icon shows; flip "Show Panel In Editor" on to reveal the panel for editing.
+       Scoped to .elementor-editor-active so it takes effect ONLY inside the editor
+       (never on the frontend, where the JS owns panel visibility). Targets both the
+       class and data-e-type because edit-mode can strip custom classes. #}
+    {% if settings.mode|default('inline') != 'inline' and not settings.editor_show_panel %}
+        <style>
+            .elementor-editor-active [data-id="{{ id }}"] .aae-a-search-panel,
+            .elementor-editor-active [data-id="{{ id }}"] [data-e-type="e-aae-a-search-panel"] { display: none; }
+        </style>
+    {% endif %}
+    {# Inline mode has an always-visible panel, so the search-icon toggle is
+       redundant — hide it everywhere (editor + frontend). Targets class and
+       data-e-type since edit-mode can strip custom classes. #}
+    {% if settings.mode|default('inline') == 'inline' %}
+        <style>
+            [data-id="{{ id }}"] .aae-a-search-toggle,
+            [data-id="{{ id }}"] [data-e-type="e-aae-a-search-toggle"] { display: none; }
+        </style>
+    {% endif %}
+    {{ children_placeholder | raw }}
+</div>

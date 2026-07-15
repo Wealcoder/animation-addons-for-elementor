@@ -12,30 +12,41 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-timeline-item.php';
+require_once __DIR__ . '/class-aae-a-timeline-items-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Items_Control;
 
+/**
+ * AAE Timeline — an open composite timeline container (Btn pattern).
+ *
+ * Minimal counterpart of TimelineMain: no `preset` prop/control, no
+ * preset-driven <style> block. Out of the box it renders a plain vertical
+ * list; drop in one of the ready-made JSON templates under
+ * z_temp/templates/Timeline (editorial-rail, heritage-split,
+ * roadmap-track, case-study, social) to get a fully designed look —
+ * those templates carry their own local per-element styles on top of
+ * this widget's generic base styles, styled with Elementor's native
+ * builder wherever possible.
+ */
 class AAE_A_Timeline extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'A composite vertical timeline with four locked event items. Each item, marker, date, title, and description is an independent atomic child styleable from its own Style panel.';
+	public static $widget_description = 'An open vertical timeline container — four editable event items to duplicate, restyle, or delete. Pair with the ready-made editorial-rail/heritage-split/roadmap-track/case-study/social templates.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -55,7 +66,7 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'atomic', 'timeline', 'history', 'roadmap', 'composite', 'aae' ];
+		return [ 'atomic', 'timeline', 'history', 'roadmap', 'aae' ];
 	}
 
 	public function get_icon() {
@@ -66,33 +77,24 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'preset'     => String_Prop_Type::make()
-				->enum( [
-					'editorial-rail',
-					'heritage-split',
-					'roadmap-track',
-					'case-study',
-					'social',
-				] )
-				->default( 'editorial-rail' ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
 		return [
+			// "Items": a live projection of the timeline's real
+			// <e-aae-a-timeline-item> children — one repeater row each, with
+			// drag-reorder, duplicate, remove and rename. Mirrors the
+			// Accordion's "Items" element-control. Rendered by the React
+			// component registered under 'aae-timeline-items'
+			// (src/modules/atomic/element-controls).
 			Section::make()
-				->set_label( __( 'Timeline', 'animation-addons-for-elementor' ) )
-				->set_id( 'content' )
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'items' )
 				->set_items( [
-					Select_Control::bind_to( 'preset' )
-						->set_label( __( 'Preset', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'editorial-rail', 'label' => __( 'Editorial Rail — green vertical',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'heritage-split', 'label' => __( 'Heritage Split — warm alternating', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'roadmap-track',  'label' => __( 'Roadmap Track — purple horizontal', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'case-study',     'label' => __( 'Case Study Steps — bold navy',      'animation-addons-for-elementor' ) ],
-							[ 'value' => 'social',         'label' => __( 'Social — purple dotted split',      'animation-addons-for-elementor' ) ],
-						] ),
+					AAE_A_Timeline_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 
 			Section::make()
@@ -112,7 +114,9 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'width',         Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
-						->add_prop( 'margin-inline', String_Prop_Type::generate( 'auto' ) )
+						->add_prop( 'margin-inline',  String_Prop_Type::generate( 'auto' ) )
+						->add_prop( 'display',        String_Prop_Type::generate( 'flex' ) )
+						->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
 				),
 		];
 	}
@@ -122,26 +126,26 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 			[
 				'date'   => '2022',
 				'number' => '01',
-				'title'  => __( 'Foundation System', 'animation-addons-for-elementor' ),
-				'desc'   => __( 'Define the timeline item structure, repeatable content slots, and clean visual hierarchy.', 'animation-addons-for-elementor' ),
+				'title'  => __( 'Getting Started', 'animation-addons-for-elementor' ),
+				'desc'   => __( 'Describe the first milestone of your timeline here.', 'animation-addons-for-elementor' ),
 			],
 			[
 				'date'   => '2023',
 				'number' => '02',
-				'title'  => __( 'Visual Presets', 'animation-addons-for-elementor' ),
-				'desc'   => __( 'Create a stronger set of timeline styles that feel like selectable design presets.', 'animation-addons-for-elementor' ),
+				'title'  => __( 'Building Momentum', 'animation-addons-for-elementor' ),
+				'desc'   => __( 'Describe the second milestone of your timeline here.', 'animation-addons-for-elementor' ),
 			],
 			[
 				'date'   => '2024',
 				'number' => '03',
-				'title'  => __( 'Responsive Layouts', 'animation-addons-for-elementor' ),
-				'desc'   => __( 'Support vertical, split, horizontal, tile, archive, and case-study timeline shapes.', 'animation-addons-for-elementor' ),
+				'title'  => __( 'Major Expansion', 'animation-addons-for-elementor' ),
+				'desc'   => __( 'Describe the third milestone of your timeline here.', 'animation-addons-for-elementor' ),
 			],
 			[
 				'date'   => '2025',
 				'number' => '04',
-				'title'  => __( 'Widget Ready', 'animation-addons-for-elementor' ),
-				'desc'   => __( 'Map each visual layer into editable Elementor child elements without generated decoration.', 'animation-addons-for-elementor' ),
+				'title'  => __( 'Where We Are Now', 'animation-addons-for-elementor' ),
+				'desc'   => __( 'Describe the fourth milestone of your timeline here.', 'animation-addons-for-elementor' ),
 			],
 		];
 
@@ -159,19 +163,6 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 				)
 				->build();
 		}
-
-		$children[] = Atomic_Paragraph::generate()
-			->is_locked( true )
-			->editor_settings( [ 'title' => 'Spine' ] )
-			->settings( [
-				'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-spine' ] ),
-				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( "\u{00A0}" ),
-					'children' => [],
-				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
-			] )
-			->build();
 
 		return $children;
 	}

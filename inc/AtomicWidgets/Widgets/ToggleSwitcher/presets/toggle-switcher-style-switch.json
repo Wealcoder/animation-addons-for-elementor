@@ -1,0 +1,417 @@
+{
+  "content": [
+    {
+      "id": "a1000001",
+      "settings": {
+        "classes": { "$$type": "classes", "value": ["e-a1000001-switch01"] }
+      },
+      "elements": [
+        {
+          "id": "a1000002",
+          "settings": {},
+          "elements": [
+            {
+              "id": "a1000010",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "a1000003",
+                  "settings": {
+                    "classes": { "$$type": "classes", "value": ["e-a1000003-labelb1", "aae-ts-label-before"] }
+                  },
+                  "elements": [
+                    {
+                      "id": "a1000004",
+                      "settings": {
+                        "paragraph": {
+                          "$$type": "html-v3",
+                          "value": {
+                            "content": { "$$type": "string", "value": "Monthly" },
+                            "children": []
+                          }
+                        }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "widgetType": "e-paragraph",
+                      "elType": "widget",
+                      "styles": [],
+                      "interactions": [],
+                      "editor_settings": { "title": "Text" },
+                      "version": "0.0"
+                    }
+                  ],
+                  "isInner": false,
+                  "elType": "e-div-block",
+                  "styles": {
+                    "e-a1000003-labelb1": {
+                      "id": "e-a1000003-labelb1",
+                      "label": "local",
+                      "type": "class",
+                      "variants": [
+                        {
+                          "meta": { "breakpoint": "desktop", "state": null },
+                          "props": {
+                            "width": { "$$type": "size", "value": { "size": "", "unit": "auto" } },
+                            "cursor": { "$$type": "string", "value": "pointer" }
+                          },
+                          "custom_css": null
+                        }
+                      ]
+                    }
+                  },
+                  "interactions": [],
+                  "editor_settings": { "title": "Label Before" },
+                  "version": "0.0"
+                },
+                {
+                  "id": "a1000005",
+                  "settings": {
+                    "classes": { "$$type": "classes", "value": ["e-a1000005-switch02", "aae-ts-switch"] }
+                  },
+                  "elements": [
+                    {
+                      "id": "a1000006",
+                      "settings": {
+                        "classes": { "$$type": "classes", "value": ["e-a1000006-knob01", "aae-ts-knob"] }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "elType": "e-div-block",
+                      "styles": {
+                        "e-a1000006-knob01": {
+                          "id": "e-a1000006-knob01",
+                          "label": "local",
+                          "type": "class",
+                          "variants": [
+                            {
+                              "meta": { "breakpoint": "desktop", "state": null },
+                              "props": {
+                                "position": { "$$type": "string", "value": "absolute" },
+                                "inset-block-start": { "$$type": "size", "value": { "size": 50, "unit": "%" } },
+                                "inset-inline-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "width": { "$$type": "size", "value": { "size": 16, "unit": "px" } },
+                                "height": { "$$type": "size", "value": { "size": 16, "unit": "px" } },
+                                "border-radius": { "$$type": "size", "value": { "size": 50, "unit": "%" } },
+                                "padding": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "min-width": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                "background": {
+                                  "$$type": "background",
+                                  "value": { "color": { "$$type": "color", "value": "#ffffff" } }
+                                },
+                                "transform": {
+                                  "$$type": "transform",
+                                  "value": {
+                                    "transform-functions": {
+                                      "$$type": "transform-functions",
+                                      "value": [
+                                        {
+                                          "$$type": "transform-move",
+                                          "value": {
+                                            "x": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                                            "y": { "$$type": "size", "value": { "size": -50, "unit": "%" } },
+                                            "z": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "transition": {
+                                  "$$type": "transition",
+                                  "value": [
+                                    {
+                                      "$$type": "selection-size",
+                                      "value": {
+                                        "selection": {
+                                          "$$type": "key-value",
+                                          "value": {
+                                            "key": { "$$type": "string", "value": "Transform" },
+                                            "value": { "$$type": "string", "value": "transform" }
+                                          }
+                                        },
+                                        "size": { "$$type": "size", "value": { "size": 300, "unit": "ms" } }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "custom_css": null
+                            }
+                          ]
+                        }
+                      },
+                      "interactions": [],
+                      "editor_settings": { "title": "Knob" },
+                      "version": "0.0"
+                    }
+                  ],
+                  "isInner": false,
+                  "elType": "e-div-block",
+                  "styles": {
+                    "e-a1000005-switch02": {
+                      "id": "e-a1000005-switch02",
+                      "label": "local",
+                      "type": "class",
+                      "variants": [
+                        {
+                          "meta": { "breakpoint": "desktop", "state": null },
+                          "props": {
+                            "position": { "$$type": "string", "value": "relative" },
+                            "display": { "$$type": "string", "value": "inline-block" },
+                            "cursor": { "$$type": "string", "value": "pointer" },
+                            "width": { "$$type": "size", "value": { "size": 40, "unit": "px" } },
+                            "height": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
+                            "border-radius": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                            "border-width": { "$$type": "size", "value": { "size": 2, "unit": "px" } },
+                            "border-style": { "$$type": "string", "value": "solid" },
+                            "border-color": { "$$type": "color", "value": "#999999" },
+                            "padding": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                            "min-width": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                            "background": {
+                              "$$type": "background",
+                              "value": { "color": { "$$type": "color", "value": "#999999" } }
+                            }
+                          },
+                          "custom_css": null
+                        }
+                      ]
+                    }
+                  },
+                  "interactions": [],
+                  "editor_settings": { "title": "Switch" },
+                  "version": "0.0"
+                },
+                {
+                  "id": "a1000007",
+                  "settings": {
+                    "classes": { "$$type": "classes", "value": ["e-a1000007-labela1", "aae-ts-label-after"] }
+                  },
+                  "elements": [
+                    {
+                      "id": "a1000008",
+                      "settings": {
+                        "paragraph": {
+                          "$$type": "html-v3",
+                          "value": {
+                            "content": { "$$type": "string", "value": "Yearly" },
+                            "children": []
+                          }
+                        }
+                      },
+                      "elements": [],
+                      "isInner": false,
+                      "widgetType": "e-paragraph",
+                      "elType": "widget",
+                      "styles": [],
+                      "interactions": [],
+                      "editor_settings": { "title": "Text" },
+                      "version": "0.0"
+                    }
+                  ],
+                  "isInner": false,
+                  "elType": "e-div-block",
+                  "styles": {
+                    "e-a1000007-labela1": {
+                      "id": "e-a1000007-labela1",
+                      "label": "local",
+                      "type": "class",
+                      "variants": [
+                        {
+                          "meta": { "breakpoint": "desktop", "state": null },
+                          "props": {
+                            "width": { "$$type": "size", "value": { "size": "", "unit": "auto" } },
+                            "cursor": { "$$type": "string", "value": "pointer" }
+                          },
+                          "custom_css": null
+                        }
+                      ]
+                    }
+                  },
+                  "interactions": [],
+                  "editor_settings": { "title": "Label After" },
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-flexbox",
+              "styles": {
+                "e-a1000010-switchrow1": {
+                  "id": "e-a1000010-switchrow1",
+                  "label": "local",
+                  "type": "class",
+                  "variants": [
+                    {
+                      "meta": { "breakpoint": "desktop", "state": null },
+                      "props": {
+                        "width": { "$$type": "size", "value": { "size": 100, "unit": "%" } },
+                        "flex-direction": { "$$type": "string", "value": "row" },
+                        "align-items": { "$$type": "string", "value": "center" },
+                        "justify-content": { "$$type": "string", "value": "center" },
+                        "gap": { "$$type": "size", "value": { "size": 10, "unit": "px" } },
+                        "margin": {
+                          "$$type": "dimensions",
+                          "value": {
+                            "block-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                            "inline-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+                            "block-end": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
+                            "inline-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+                          }
+                        }
+                      },
+                      "custom_css": null
+                    }
+                  ]
+                }
+              },
+              "interactions": [],
+              "editor_settings": { "title": "Switch Row" },
+              "version": "0.0"
+            },
+            {
+              "id": "a1000009",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "a100000a",
+                  "settings": {
+                    "title": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "Monthly Plan" },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "h3" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-heading",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                },
+                {
+                  "id": "a100000b",
+                  "settings": {
+                    "paragraph": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "$9/month — billed monthly." },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "p" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-paragraph",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-aae-a-toggle-pane",
+              "styles": [],
+              "interactions": [],
+              "editor_settings": { "title": "Pane 1" },
+              "version": "0.0"
+            },
+            {
+              "id": "a100000c",
+              "settings": {},
+              "elements": [
+                {
+                  "id": "a100000d",
+                  "settings": {
+                    "title": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "Yearly Plan" },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "h3" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-heading",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                },
+                {
+                  "id": "a100000e",
+                  "settings": {
+                    "paragraph": {
+                      "$$type": "html-v3",
+                      "value": {
+                        "content": { "$$type": "string", "value": "$90/year — save 2 months." },
+                        "children": []
+                      }
+                    },
+                    "tag": { "$$type": "string", "value": "p" }
+                  },
+                  "elements": [],
+                  "isInner": false,
+                  "widgetType": "e-paragraph",
+                  "elType": "widget",
+                  "styles": [],
+                  "interactions": [],
+                  "editor_settings": [],
+                  "version": "0.0"
+                }
+              ],
+              "isInner": false,
+              "elType": "e-aae-a-toggle-pane",
+              "styles": [],
+              "interactions": [],
+              "editor_settings": { "title": "Pane 2" },
+              "version": "0.0"
+            }
+          ],
+          "isInner": false,
+          "elType": "e-aae-a-toggle-switcher",
+          "styles": [],
+          "interactions": [],
+          "editor_settings": { "title": "toggle-switcher-switch" },
+          "version": "0.0"
+        }
+      ],
+      "isInner": false,
+      "elType": "e-flexbox",
+      "styles": {
+        "e-a1000001-switch01": {
+          "id": "e-a1000001-switch01",
+          "label": "local",
+          "type": "class",
+          "variants": [
+            {
+              "meta": { "breakpoint": "desktop", "state": null },
+              "props": {
+                "flex-direction": { "$$type": "string", "value": "column" },
+                "gap": { "$$type": "size", "value": { "size": 16, "unit": "px" } }
+              },
+              "custom_css": null
+            }
+          ]
+        }
+      },
+      "interactions": [],
+      "editor_settings": { "title": "toggle-switcher-style-switch-div" },
+      "version": "0.0"
+    }
+  ],
+  "page_settings": [],
+  "version": "0.4",
+  "title": "toggle-switcher-style-switch",
+  "type": "e-flexbox",
+  "global_classes": { "items": {}, "order": [] }
+}

@@ -268,11 +268,13 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-toggle-pane-main',
 			'aae-a-video-mask-btn',
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
+			'aae-a-timeline-main-item',
 			'aae-a-social-share-main-item',
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
@@ -314,6 +316,17 @@ final class Atomic
 			'aae-a-form-submit',
 			'aae-a-form-success-message',
 			'aae-a-form-error-message',
+			// Search Form composite sub-elements — seeded as locked default
+			// children of the Search Form root; always-on so the editor never
+			// throws ElementTypeNotFound on drop.
+			'aae-a-search-toggle',
+			'aae-a-search-panel',
+			'aae-a-search-field',
+			'aae-a-search-input',
+			'aae-a-search-filter-date',
+			'aae-a-search-filter-category',
+			'aae-a-search-submit',
+			'aae-a-search-results',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -571,6 +584,78 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
 				'icon'         => 'eicon-navigation-horizontal',
 				'keywords'     => [ 'loop', 'nav', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-search-form' => [
+				'label'        => 'Search Form',
+				'description'  => 'Composite Ajax search form (inline / dropdown / fullscreen) with category & date filters — every part is a styleable atomic element.',
+				'icon'         => 'eicon-search',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-search-toggle' => [
+				'label'        => 'Search Toggle',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'icon'         => 'eicon-search',
+				'keywords'     => [ 'search', 'toggle' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-panel' => [
+				'label'        => 'Search Panel',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'icon'         => 'eicon-container',
+				'keywords'     => [ 'search', 'panel' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-field' => [
+				'label'        => 'Search Field',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'icon'         => 'eicon-form-horizontal',
+				'keywords'     => [ 'search', 'field', 'form' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-input' => [
+				'label'        => 'Search Input',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'icon'         => 'eicon-form-horizontal',
+				'keywords'     => [ 'search', 'input' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-filter-date' => [
+				'label'        => 'Date Filter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'icon'         => 'eicon-calendar',
+				'keywords'     => [ 'search', 'filter', 'date' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-filter-category' => [
+				'label'        => 'Category Filter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'icon'         => 'eicon-folder',
+				'keywords'     => [ 'search', 'filter', 'category' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-submit' => [
+				'label'        => 'Search Submit',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'icon'         => 'eicon-button',
+				'keywords'     => [ 'search', 'submit', 'button' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-results' => [
+				'label'        => 'Search Results',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'icon'         => 'eicon-post-list',
+				'keywords'     => [ 'search', 'results', 'ajax' ],
 				'hide_from_panel' => true,
 			],
 
@@ -1137,6 +1222,49 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-timeline-main' => [
+				'label'        => 'Timeline Main',
+				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
+				'icon'         => 'eicon-time-line',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'history',
+					'roadmap',
+					'atomic',
+					'composite',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline-main-item' => [
+				'label'        => 'Timeline Main — Item',
+				'description'  => 'Internal event-row sub-element used by Timeline Main (marker + date + title + description).',
+				'icon'         => 'eicon-bullet-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'timeline',
+					'item',
+					'event',
+					'atomic',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-button' => [
 				'label'        => 'Button',
 				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
@@ -1159,7 +1287,29 @@ final class Atomic
 			],
 
 			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar',
+				'label'        => 'Progress Bar Template',
+				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'progress',
+					'progressbar',
+					'bar',
+					'template',
+					'container',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-main' => [
+				'label'        => 'Progress Bar Main',
 				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
@@ -1175,7 +1325,7 @@ final class Atomic
 					'atomic',
 				],
 				'category'     => 'general',
-				'order'        => 12,
+				'order'        => 13,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1215,6 +1365,47 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-main' => [
+				'label'        => 'Toggle Switcher Main',
+				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle',
+					'switch',
+					'tabs',
+					'atomic',
+					'switcher',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'label'        => 'Toggle Pane Main (Internal)',
+				'description'  => 'Internal child container for Toggle Switcher Main.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle pane',
+					'internal',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 16,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2101,6 +2292,54 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-search-form' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-form.php',
+				'script_handle' => 'aae-a-search-form-js',
+				'script_path' => '/assets/atomic/js/search-form.js',
+				'has_script' => true,
+			],
+			'aae-a-search-toggle' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle.php',
+				'has_script' => false,
+			],
+			'aae-a-search-panel' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-panel.php',
+				'has_script' => false,
+			],
+			'aae-a-search-field' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-field.php',
+				'has_script' => false,
+			],
+			'aae-a-search-input' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-input.php',
+				'has_script' => false,
+			],
+			'aae-a-search-filter-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-date.php',
+				'has_script' => false,
+			],
+			'aae-a-search-filter-category' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-category.php',
+				'has_script' => false,
+			],
+			'aae-a-search-submit' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-submit.php',
+				'has_script' => false,
+			],
+			'aae-a-search-results' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-results.php',
+				'has_script' => false,
+			],
+
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
 			// (paging appends slides then re-binds the shared slider runtime).
@@ -2225,6 +2464,20 @@ final class Atomic
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
 			'has_script' => false,
 		],
+		'aae-a-timeline-main' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main',
+			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main.php',
+			'has_script' => false,
+			// No external CSS: all per-element styles live in the widget's
+			// define_base_styles() (compound selectors) + a tiny inline
+			// <style> in the item Twig for the spine shorthand + the
+			// marker's negative-inset positioning. No `style_handle`.
+		],
+		'aae-a-timeline-main-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main_Item',
+			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main-item.php',
+			'has_script' => false,
+		],
 		// Add new atomic widgets below...
 			'aae-a-button' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
@@ -2275,6 +2528,16 @@ final class Atomic
 				'style_path'    => '/assets/atomic/js/progressbar.css',
 			],
 
+			'aae-a-progressbar-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
+				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
+				'script_handle' => 'aae-a-progressbar-main-js',
+				'script_path'   => '/assets/atomic/js/progressbar-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-progressbar-main-css',
+				'style_path'    => '/assets/atomic/js/progressbar-main.css',
+			],
+
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -2288,6 +2551,22 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-toggle-switcher-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
+				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
+				'script_handle' => 'aae-a-toggle-switcher-main-js',
+				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-toggle-switcher-main-css',
+				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
+				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
