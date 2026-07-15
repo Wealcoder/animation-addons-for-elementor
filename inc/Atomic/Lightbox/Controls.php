@@ -76,8 +76,11 @@ final class Controls {
 						// 'content' — one slide per direct child; each child opens
 						//             its image OR video (children with neither are
 						//             skipped).
+						// 'full'    — one slide per direct child, showing the child's
+						//             whole markup (heading + text + button + image…).
 						[ 'value' => 'images',  'label' => __( 'Images (scan)', self::TD ) ],
 						[ 'value' => 'content', 'label' => __( 'Per Child (Image / Video)', self::TD ) ],
+						[ 'value' => 'full',    'label' => __( 'Full Child Content', self::TD ) ],
 					] ),
 
 				Text_Control::bind_to( Schema::LB_GROUP )

@@ -24,9 +24,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Schema {
 
-	/* ---- section anchor ---- */
-	const LB_SECTION_ANCHOR = 'aae_lb_section_anchor';
-
 	/* ---- responsive enable switch ---- */
 	const LB_ENABLE = 'aae_lb_enable';
 
@@ -46,10 +43,13 @@ final class Schema {
 	/* ---- container mode ---- */
 	// When enabled on a container, its children become grouped triggers.
 	//   'images'  → only child images become slides (default).
-	//   'content' → each DIRECT child becomes a slide showing its full HTML
-	//               (heading + text + button + image, whatever it contains);
-	//               clicking anywhere on a child opens it.
-	const LB_CONTAINER_MODE = 'aae_lb_container_mode'; // images | content
+	//   'content' → each DIRECT child becomes an image OR video slide (its first
+	//               image, or a video it links/embeds); children with neither
+	//               are skipped. Clicking anywhere on a child opens it.
+	//   'full'    → each DIRECT child becomes a slide showing its WHOLE markup
+	//               (heading + text + button + image, whatever it contains),
+	//               cloned into the lightbox. Clicking anywhere on a child opens it.
+	const LB_CONTAINER_MODE = 'aae_lb_container_mode'; // images | content | full
 	const LB_CHILD_SELECTOR = 'aae_lb_child_selector'; // CSS selector override ('' = default)
 	const LB_CAPTION_SRC    = 'aae_lb_caption_src';    // none | alt | title | caption
 

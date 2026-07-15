@@ -87,6 +87,22 @@
 }
 .aae-lb-video-el { object-fit: contain; background: #000; }
 
+/* ---- Full-content slides (container "Full Child Content" mode) ---- */
+.aae-lb-html {
+	width: min(1100px, 92vw);
+	max-height: 86vh;
+	overflow: auto;
+	padding: clamp(20px, 4vw, 48px);
+	background: #fff;
+	color: #111;
+	border-radius: 6px;
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+	-webkit-overflow-scrolling: touch;
+}
+.aae-lb-html img { max-width: 100%; height: auto; }
+.aae-lb-html > :first-child { margin-top: 0; }
+.aae-lb-html > :last-child { margin-bottom: 0; }
+
 .aae-lb-loading {
 	position: absolute;
 	width: 42px; height: 42px;

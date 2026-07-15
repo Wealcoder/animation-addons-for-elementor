@@ -41,36 +41,29 @@ final class Container_Render {
 
 		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
 
-		// TEMP DEBUG — remove after diagnosis.
-		if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-			error_log( '[AAE-LBC] container seen: ' . $element->get_element_type()
-				. ' enable_raw=' . wp_json_encode( $settings[ Schema::LB_ENABLE ] ?? '(unset)' )
-				. ' mode_raw=' . wp_json_encode( $settings[ Schema::LB_CONTAINER_MODE ] ?? '(unset)' ) );
-		}
-
 		if ( ! Lightbox_Manager::is_enabled( $settings ) ) {
-			if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-				error_log( '[AAE-LBC] BAILED: is_enabled() false' );
-			}
 			return;
 		}
 
 		$iid = $this->interaction_id( $element );
 		if ( '' === $iid ) {
-			if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-				error_log( '[AAE-LBC] BAILED: empty interaction id' );
-			}
 			return;
 		}
 
-		$mode     = Lightbox_Manager::string( $settings, Schema::LB_CONTAINER_MODE, 'images' );
-		$mode     = ( 'content' === $mode ) ? 'content' : 'images';
+		// images  → scan the container for image nodes.
+		// content → each direct child opens its image OR video.
+		// full    → each direct child opens its whole markup (HTML slide).
+		$mode = Lightbox_Manager::string( $settings, Schema::LB_CONTAINER_MODE, 'images' );
+		if ( ! in_array( $mode, [ 'images', 'content', 'full' ], true ) ) {
+			$mode = 'images';
+		}
 		$selector = Lightbox_Manager::string( $settings, Schema::LB_CHILD_SELECTOR, '' );
 		$group    = Lightbox_Manager::string( $settings, Schema::LB_GROUP, '' );
 
 		// Default selector differs per mode: images mode scans for image nodes;
-		// content mode leaves it blank (runtime uses direct children).
-		$default_selector = ( 'content' === $mode ) ? '' : Schema::DEFAULT_CHILD_SELECTOR;
+		// per-child modes (content / full) leave it blank so the runtime walks
+		// the container's direct children.
+		$default_selector = ( 'images' === $mode ) ? Schema::DEFAULT_CHILD_SELECTOR : '';
 
 		$options = [
 			// Discovery.
@@ -94,10 +87,6 @@ final class Container_Render {
 		 * @param object $element  The container element.
 		 */
 		$options = apply_filters( 'aae/lightbox/container_options', $options, $element );
-
-		if ( defined( 'AAE_LB_DEBUG' ) && AAE_LB_DEBUG ) {
-			error_log( '[AAE-LBC] OK publishing. iid=' . $iid . ' mode=' . $mode . ' selector=' . $options['selector'] );
-		}
 
 		Lightbox_Manager::register_container( $iid, $options );
 	}

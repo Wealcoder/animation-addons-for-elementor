@@ -14,6 +14,7 @@
 
 import { imageType } from './content-types/image';
 import { videoType } from './content-types/video';
+import { htmlType } from './content-types/html';
 
 const types = [];
 const toolbarButtons = [];
@@ -44,10 +45,11 @@ export function customToolbarButtons() {
 }
 
 // Register core types. imageType is registered first so it stays the safe
-// default (resolveType falls back to types[0]); videoType matches explicitly
-// on type 'video'.
+// default (resolveType falls back to types[0]); videoType matches on type
+// 'video', htmlType on type 'html'/'content' (container "Full Child Content").
 registerType(imageType);
 registerType(videoType);
+registerType(htmlType);
 
 // Public extension surface.
 export function exposeApi() {

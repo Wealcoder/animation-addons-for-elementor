@@ -179,6 +179,36 @@ function collectContent(containerEl, cfg, clicked) {
 }
 
 /**
+ * Full-content mode: each direct child becomes a slide that shows the child's
+ * whole markup. We clone the live child (so what shows in the lightbox matches
+ * the page) and hand it to the 'html' content-type via slide.node.
+ *
+ * Every child qualifies — there's no image/video requirement — so the start
+ * index maps 1:1 to the clicked child.
+ */
+function collectFull(containerEl, cfg, clicked) {
+	const kids = directChildren(containerEl, cfg.selector);
+
+	const slides = [];
+	let startIndex = 0;
+
+	kids.forEach((child) => {
+		if (child === clicked || child.contains(clicked)) startIndex = slides.length;
+		slides.push({
+			type: 'html',
+			node: child.cloneNode(true),
+			anim: cfg.anim || 'zoom',
+			zoom: false,
+			loop: cfg.loop !== false,
+			download: false,
+			counter: cfg.counter !== false,
+		});
+	});
+
+	return { slides, startIndex, groupId: cfg.group || '' };
+}
+
+/**
  * Build the slide list for a container. Returns slides in DOM order plus the
  * index of the clicked child. Dispatches on cfg.mode.
  *
@@ -188,6 +218,9 @@ function collectContent(containerEl, cfg, clicked) {
  * @returns {{ slides: object[], startIndex: number, groupId: string }}
  */
 export function collectContainer(containerEl, cfg, clicked) {
+	if (cfg.mode === 'full') {
+		return collectFull(containerEl, cfg, clicked);
+	}
 	if (cfg.mode === 'content') {
 		return collectContent(containerEl, cfg, clicked);
 	}
