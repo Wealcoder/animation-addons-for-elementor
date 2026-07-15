@@ -225,12 +225,23 @@ function syncAaeInteractionsToPreview(createdElements) {
 function stampContainerClassesIntoPreview(createdElements) {
   const CONTAINER_ELTYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
 
+  // Every AAE widget (e-aae-a-*) extends the same Atomic_Element_Base /
+  // is_container:true base as the core layout containers above, so it is
+  // rendered through the same canvas path and hits the same "classes prop
+  // isn't stamped on programmatic create" gap — not just the three core
+  // container types. Without this, a preset whose root IS an AAE widget
+  // (e.g. e-aae-a-btn itself) renders unstyled in the builder until reload,
+  // even though the saved model — and the frontend Twig render — are correct.
+  const isContainerLikeType = (elType) =>
+    typeof elType === 'string' &&
+    (CONTAINER_ELTYPES.indexOf(elType) !== -1 || elType.indexOf('e-aae-a-') === 0);
+
   const stampModel = (model, previewDoc) => {
     if (!model || !model.get) {
       return;
     }
     const elType = model.get('elType');
-    if (CONTAINER_ELTYPES.indexOf(elType) !== -1) {
+    if (isContainerLikeType(elType)) {
       const id = model.get('id');
       const classesProp = model.get('settings')?.get?.('classes');
       const list = classesProp && Array.isArray(classesProp.value) ? classesProp.value : null;
