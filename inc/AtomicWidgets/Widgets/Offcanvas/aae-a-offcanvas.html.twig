@@ -17,7 +17,6 @@
 {% set close_on_overlay = (settings.close_on_overlay is not defined or settings.close_on_overlay) ? 'true' : 'false' %}
 {% set close_on_esc = (settings.close_on_esc is not defined or settings.close_on_esc) ? 'true' : 'false' %}
 {% set editor_open = (settings.editor_open is defined and settings.editor_open) ? 'true' : 'false' %}
-{% set trigger_icon_url = settings.trigger_icon.url | default('') %}
 {% set classes = ['aae-a-offcanvas', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'position-' ~ position] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
@@ -47,15 +46,6 @@
             vertical-align: top;
         }
 
-        /* 1. Trigger reset — plain <button>, low specificity so Style edits win. */
-        :where([data-id="{{ id }}"]) .aae-offcanvas-trigger {
-            display: inline-flex; align-items: center; justify-content: center;
-            cursor: pointer; background: transparent; border: 0; color: inherit; padding: 0;
-        }
-        :where([data-id="{{ id }}"]) .aae-offcanvas-trigger :is(img, svg) {
-            display: block; width: 24px; height: 24px;
-        }
-
         /* 2. Flash-guard — panel/overlay ALWAYS hidden by this rule (frontend
               needs it every load; the editor uses it as the closed state).
               Targeted by `data-element_type` (NOT class): the v4 editor strips
@@ -77,19 +67,17 @@
             display: flex !important; position: static !important; transform: none !important;
             visibility: visible !important; max-width: none !important;
             height: auto !important; min-height: 160px; margin-top: 12px;
+            /* Editor-only: outline so the (often white) panel is visible on the
+               canvas even when empty — helps distinguish it as the drop-zone. */
+            outline: 1px dashed rgba(0, 0, 0, 0.25) !important; outline-offset: -1px;
         }
         {% endif %}
     </style>
 
-    <button class="aae-offcanvas-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="{{ 'Open panel' | e('html_attr') }}">
-        {% if trigger_icon_url is not empty %}
-            <img src="{{ trigger_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
-        {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        {% endif %}
-    </button>
-
     <div class="aae-offcanvas-overlay" aria-hidden="true"></div>
 
+    {# Trigger (icon) + Panel are locked atomic children — rendered here. Each is
+       individually selectable / styleable; the Trigger keeps the .aae-offcanvas-trigger
+       hook class the JS binds "open" to. #}
     {{ children_placeholder | raw }}
 </div>

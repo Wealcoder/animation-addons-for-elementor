@@ -55,8 +55,10 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
+require_once __DIR__ . '/class-aae-a-offcanvas-trigger.php';
 require_once __DIR__ . '/class-aae-a-offcanvas-panel.php';
 
+use WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger;
 use WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel;
 
 class AAE_A_Offcanvas extends Atomic_Element_Base {
@@ -99,9 +101,9 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 			// slide transform applied by the JS (POS / TRANSFORMS tables).
 			'position'         => String_Prop_Type::make()->enum( [ 'left', 'right', 'top', 'bottom' ] )->default( 'left' ),
 
-			// Trigger icon. The default hamburger ships as an SVG asset so the
-			// widget is usable the moment it's dropped.
-			'trigger_icon'     => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Offcanvas/assets/icons/hamburger.svg' ),
+			// Trigger + Close icons are now their own selectable atomic elements
+			// (e-aae-a-offcanvas-trigger / e-aae-a-offcanvas-close) — each with its
+			// own SVG upload + Style tab. Nothing icon-related lives on the parent.
 
 			// Scrim intensity behind the open panel. Structural, not a design
 			// choice — no color control exists in atomic content controls, and a
@@ -138,8 +140,6 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 							[ 'value' => 'top',    'label' => __( 'Top',    'animation-addons-for-elementor' ) ],
 							[ 'value' => 'bottom', 'label' => __( 'Bottom', 'animation-addons-for-elementor' ) ],
 						] ),
-					Svg_Control::bind_to( 'trigger_icon' )
-						->set_label( __( 'Trigger Icon', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -188,6 +188,11 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 
 	protected function define_default_children(): array {
 		return [
+			AAE_A_Offcanvas_Trigger::generate()
+				->is_locked( true )
+				->editor_settings( [ 'title' => 'Trigger' ] )
+				->build(),
+
 			AAE_A_Offcanvas_Panel::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Panel' ] )
@@ -196,7 +201,7 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'e-aae-a-offcanvas-panel' ];
+		return [ 'e-aae-a-offcanvas-trigger', 'e-aae-a-offcanvas-panel' ];
 	}
 
 	protected function define_default_html_tag() {

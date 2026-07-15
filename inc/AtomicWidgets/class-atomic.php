@@ -272,6 +272,8 @@ final class Atomic
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
+			'aae-a-offcanvas-trigger',
+			'aae-a-offcanvas-close',
 			'aae-a-timeline-item',
 			'aae-a-timeline-main-item',
 			'aae-a-social-share-main-item',
@@ -1374,6 +1376,21 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-offcanvas-trigger' => [
+				'label'           => 'Offcanvas Trigger',
+				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
+				'icon'            => 'eicon-menu-bar',
+				'keywords'        => [ 'offcanvas', 'trigger', 'icon' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-offcanvas-close' => [
+				'label'           => 'Offcanvas Close',
+				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
+				'icon'            => 'eicon-close',
+				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
+				'hide_from_panel' => true,
+			],
+
 			'aae-a-nav' => [
 				'label'        => 'Nav',
 				'description'  => 'Atomic navbar with fully styleable items and dropdown support.',
@@ -2300,6 +2317,17 @@ final class Atomic
 			'aae-a-offcanvas-panel' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
 				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
+				'has_script' => false,
+			],
+
+			'aae-a-offcanvas-trigger' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-trigger.php',
+				'has_script' => false,
+			],
+			'aae-a-offcanvas-close' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
 				'has_script' => false,
 			],
 

@@ -76,10 +76,46 @@ const initOffcanvas = ( root ) => {
 			? bgColor
 			: '#ffffff';
 
+	// Teleporting the panel out of the document wrapper drops ALL its scoped
+	// atomic styles (base + Style-panel), not just the background — so the width /
+	// height / padding / border the user set from the Style tab vanish on the
+	// frontend. Snapshot the whole box-model now and re-apply it inline after the
+	// move. Per-edge geometry (POS) is applied AFTER this, so top/bottom still win
+	// with their forced full-width sizing.
+	const PRESERVE = [
+		'width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight',
+		'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+		'borderTopWidth', 'borderTopStyle', 'borderTopColor',
+		'borderRightWidth', 'borderRightStyle', 'borderRightColor',
+		'borderBottomWidth', 'borderBottomStyle', 'borderBottomColor',
+		'borderLeftWidth', 'borderLeftStyle', 'borderLeftColor',
+		'borderTopLeftRadius', 'borderTopRightRadius',
+		'borderBottomRightRadius', 'borderBottomLeftRadius',
+		'boxShadow',
+	];
+	const panelBox = {};
+	PRESERVE.forEach( function ( prop ) { panelBox[ prop ] = cs[ prop ]; } );
+
+	// The Close icon is an atomic child INSIDE the panel, so it loses its scoped
+	// base / Style-panel styles when the panel teleports out of the document
+	// wrapper (same root cause as the panel background above). Snapshot its
+	// computed size + colour now, re-apply inline after the move — otherwise the
+	// svg (width/height:100%) has no sized parent and blows up to a giant icon.
+	let closeStyle = null;
+	if ( closeBtn ) {
+		const ccs = window.getComputedStyle( closeBtn );
+		closeStyle = { width: ccs.width, height: ccs.height, color: ccs.color };
+	}
+
 	// Teleport to <body> so fixed positioning uses the viewport.
 	document.body.appendChild( panel );
 	if ( overlay ) {
 		document.body.appendChild( overlay );
+	}
+
+	// Restore the close icon's size/colour inline so it survives the teleport.
+	if ( closeBtn && closeStyle ) {
+		Object.assign( closeBtn.style, closeStyle );
 	}
 
 	// Place the panel off-screen. Transition off for the initial placement so it
@@ -94,6 +130,7 @@ const initOffcanvas = ( root ) => {
 		pointerEvents: 'none',
 		transition:    'none',
 		background:    panelBg,
+		...panelBox,
 		...posStyles,
 		transform:     closedTransform,
 	} );
