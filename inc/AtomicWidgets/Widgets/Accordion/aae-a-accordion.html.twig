@@ -13,9 +13,6 @@
     data-default-state="{{ settings.default_state | default('first') }}"
     data-animation-speed="{{ settings.animation_duration.size | default(400) }}"
     data-faq-schema="{{ settings.faq_schema ? 'true' : 'false' }}"
-    {% if lb_group is defined and lb_group is not empty %}
-        data-aae-lb-group="{{ lb_group | e('html_attr') }}"
-    {% endif %}
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}

@@ -21,8 +21,6 @@ require_once __DIR__ . '/class-aae-a-accordion-item.php';
 require_once __DIR__ . '/class-aae-a-items-control.php';
 use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item;
 use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Items_Control;
-use WCF_ADDONS\Atomic\Lightbox\Lightbox_Manager;
-use WCF_ADDONS\Atomic\Lightbox\Schema as Lightbox_Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -64,16 +62,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 			'max_items_expanded' => String_Prop_Type::make()->enum( [ 'one', 'multiple' ] )->default( 'one' ),
 			'animation_duration' => Size_Prop_Type::make()->default( [ 'size' => 400, 'unit' => 'ms' ] ),
 			'faq_schema' => Boolean_Prop_Type::make()->default( false ),
-
-			// Lightbox — the shared props, defined locally so a custom widget
-			// carries them without depending on the global props-schema filter
-			// (which only targets core element types). LB_ENABLE is a plain
-			// Boolean because it binds to a Switch_Control.
-			Lightbox_Schema::LB_ENABLE  => Boolean_Prop_Type::make()->default( false ),
-			Lightbox_Schema::LB_GROUP   => String_Prop_Type::make()->default( '' ),
-			Lightbox_Schema::LB_TITLE   => String_Prop_Type::make()->default( '' ),
-			Lightbox_Schema::LB_CAPTION => String_Prop_Type::make()->default( '' ),
-			Lightbox_Schema::LB_ANIM    => String_Prop_Type::make()->default( 'zoom' ),
 		];
 	}
 
@@ -126,13 +114,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 					Number_Control::bind_to( 'animation_duration.size' )
 						->set_label( __( 'Animation Speed (ms)', 'animation-addons-for-elementor' ) ),
 				] ),
-
-			// ① Shared Lightbox controls — one call, identical to every other
-			// widget. Enabling this auto-groups every image inside the accordion
-			// into a single navigable gallery.
-			Lightbox_Manager::register_lightbox_controls( [
-				'label' => __( 'Lightbox (Item Images)', 'animation-addons-for-elementor' ),
-			] ),
 		];
 	}
 
@@ -181,18 +162,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		$context = $this->build_base_template_context();
 		$settings = $this->get_atomic_settings();
 
-		// ②+③ Lightbox: when enabled, auto-group every image inside the
-		// accordion. We publish a config for each descendant image (keyed by
-		// that image's own interaction id, so the rendered <img> becomes the
-		// trigger) and stamp the group id on the wrapper — the runtime's
-		// group-fallback then binds all of them into one gallery.
-		if ( Lightbox_Manager::is_enabled( $settings ) ) {
-			$group = 'aae-acc-' . $this->get_id();
-			$context['lb_group'] = $group;
-
-			$this->publish_lightbox_for_images( $this, $settings, $group );
-		}
-
 		if ( ! empty( $settings['faq_schema'] ) ) {
 			$faq_data = [
 				'@context' => 'https://schema.org',
@@ -232,104 +201,6 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		}
 
 		return $context;
-	}
-
-	/**
-	 * Recursively walk descendant elements; for every image element, publish a
-	 * Lightbox config keyed by that element's id and add it to the shared group.
-	 * Runs during render, so InteractionsMap + on-demand enqueue happen exactly
-	 * as they do for a standalone core image.
-	 *
-	 * @param object $element  Element whose children to walk.
-	 * @param array  $settings Accordion settings (for title/caption/anim defaults).
-	 * @param string $group    Gallery id shared by all images in this accordion.
-	 */
-	private function publish_lightbox_for_images( $element, array $settings, string $group ): void {
-		if ( ! method_exists( $element, 'get_children' ) ) {
-			return;
-		}
-
-		foreach ( $element->get_children() as $child ) {
-			if ( ! is_object( $child ) || ! method_exists( $child, 'get_element_type' ) ) {
-				continue;
-			}
-
-			$type = $child->get_element_type();
-			$is_image = ( 'e-image' === $type || 'e-aae-a-post-image' === $type );
-
-			if ( $is_image ) {
-				$cs  = method_exists( $child, 'get_settings' ) ? $child->get_settings() : [];
-				$url = $this->image_url_from_settings( $cs );
-				// Key by the interaction id the child renders as data-interaction-id
-				// (origin_id ?? get_id()), not get_id() — they differ inside
-				// components/templates and the runtime looks up by data-interaction-id.
-				$cid = '';
-				if ( method_exists( $child, 'get_interaction_id' ) ) {
-					try { $cid = (string) $child->get_interaction_id(); } catch ( \Throwable $e ) { $cid = ''; }
-				}
-				if ( '' === $cid && isset( $child->origin_id ) && is_string( $child->origin_id ) ) {
-					$cid = $child->origin_id;
-				}
-				if ( '' === $cid && method_exists( $child, 'get_id' ) ) {
-					$cid = (string) $child->get_id();
-				}
-
-				if ( '' !== $url && '' !== $cid ) {
-					// Reuse the accordion's own settings so the enable gate,
-					// title/caption defaults and animation flavour apply.
-					Lightbox_Manager::get_attributes(
-						$settings,
-						[
-							'src'     => $url,
-							'gallery' => $group,
-							'type'    => 'image',
-						],
-						$cid
-					);
-				}
-			}
-
-			// Recurse into containers (accordion item, div-block, etc.).
-			$this->publish_lightbox_for_images( $child, $settings, $group );
-		}
-	}
-
-	/** Best-effort full-size URL from an atomic image element's settings. */
-	private function image_url_from_settings( array $cs ): string {
-		$unwrap = static function ( $v ) {
-			if ( is_array( $v ) && array_key_exists( 'value', $v ) && array_key_exists( '$$type', $v ) ) {
-				return $v['value'];
-			}
-			return $v;
-		};
-
-		// Image_Prop_Type shape: { src: { id, url }, size }.
-		$image = $unwrap( $cs['image'] ?? ( $cs['src'] ?? null ) );
-		if ( ! is_array( $image ) ) {
-			return '';
-		}
-		$src = $unwrap( $image['src'] ?? null );
-		if ( ! is_array( $src ) ) {
-			$src = $image;
-		}
-
-		// Each leaf is itself a { $$type, value } envelope — unwrap id/url too.
-		$id_field = $unwrap( $src['id'] ?? null );
-		if ( is_numeric( $id_field ) ) {
-			$full = wp_get_attachment_image_url( (int) $id_field, 'full' );
-			if ( $full ) {
-				return (string) $full;
-			}
-		}
-
-		$url = $unwrap( $src['url'] ?? null );
-		if ( is_string( $url ) && '' !== $url ) {
-			return $url;
-		}
-		if ( is_array( $url ) && ! empty( $url['url'] ) ) {
-			return (string) $url['url'];
-		}
-		return '';
 	}
 
 	public function get_script_depends(): array {
