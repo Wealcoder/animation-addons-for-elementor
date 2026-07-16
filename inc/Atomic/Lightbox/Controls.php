@@ -97,7 +97,7 @@ final class Controls {
 						//             skipped).
 						// 'full'    — one slide per direct child, showing the child's
 						//             whole markup (heading + text + button + image…).
-						[ 'value' => 'images',  'label' => __( 'Images (scan)', self::TD ) ],
+						[ 'value' => 'images',  'label' => __( 'Images', self::TD ) ],
 						[ 'value' => 'content', 'label' => __( 'Per Child (Image / Video)', self::TD ) ],
 						[ 'value' => 'full',    'label' => __( 'Full Child Content', self::TD ) ],
 					] ),
