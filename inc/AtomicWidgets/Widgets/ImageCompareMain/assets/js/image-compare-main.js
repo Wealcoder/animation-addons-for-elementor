@@ -8,7 +8,7 @@ const { register } = window.elementorV2?.frontendHandlers || window.elementorFro
  * mode without changing its value semantics — top = min, bottom = max).
  *
  * This handler only:
- *   1. Mirrors the range value into the `--aae-image-compare-position`
+ *   1. Mirrors the range value into the `--aae-image-compare-main-position`
  *      CSS variable. Everything visual — divider/thumb position AND the
  *      clip-path direction on the Before image + Before label — reads
  *      that variable through CSS rules scoped by `[data-direction]`, so
@@ -43,7 +43,7 @@ const initImageCompare = ( container ) => {
 		const value    = Math.min( 100, Math.max( 0, Number.isFinite( rawValue ) ? rawValue : getDefaultPosition() ) );
 
 		range.value = value;
-		container.style.setProperty( '--aae-image-compare-position', value + '%' );
+		container.style.setProperty( '--aae-image-compare-main-position', value + '%' );
 
 		container.dataset.beforeLabelHidden = value < 12 ? 'true' : 'false';
 		container.dataset.afterLabelHidden  = value > 88 ? 'true' : 'false';
