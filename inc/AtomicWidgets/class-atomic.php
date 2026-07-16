@@ -318,6 +318,9 @@ final class Atomic
 			'aae-a-form-submit',
 			'aae-a-form-success-message',
 			'aae-a-form-error-message',
+			// Style source for injected validation errors — forms saved with
+			// one must never hit ElementTypeNotFound.
+			'aae-a-form-field-error',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -1628,6 +1631,25 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form-field-error' => [
+				'label'        => 'Form Field Error',
+				'description'  => 'Style source for inline validation messages — its look and text are copied onto every "This field is required." error the form shows. Deleting it never removes validation; errors just fall back to the default look.',
+				'icon'         => 'eicon-warning',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form error',
+					'validation',
+					'required',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-form-submit' => [
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
@@ -2673,6 +2695,12 @@ final class Atomic
 			'aae-a-form-submit' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit',
 				'file'       => 'Widgets/Form/class-aae-a-form-submit.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-field-error' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Field_Error',
+				'file'       => 'Widgets/Form/class-aae-a-form-field-error.php',
 				'has_script' => false,
 			],
 

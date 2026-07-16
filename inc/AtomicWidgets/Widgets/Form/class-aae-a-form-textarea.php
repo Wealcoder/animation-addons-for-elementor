@@ -70,6 +70,9 @@ class AAE_A_Form_Textarea extends Atomic_Widget_Base {
 			'rows'        => Number_Prop_Type::make()->default( 4 ),
 			'required'    => Boolean_Prop_Type::make()->default( false ),
 			'readonly'    => Boolean_Prop_Type::make()->default( false ),
+
+			// Per-field validation message — overrides the form-wide default.
+			'error_message' => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -88,6 +91,12 @@ class AAE_A_Form_Textarea extends Atomic_Widget_Base {
 							->set_label( __( 'Required', 'animation-addons-for-elementor' ) ),
 						Switch_Control::bind_to( 'readonly' )
 							->set_label( __( 'Read only', 'animation-addons-for-elementor' ) ),
+						Text_Control::bind_to( 'error_message' )
+							->set_label( __( 'Error message', 'animation-addons-for-elementor' ) )
+							->set_placeholder( __( 'This field is required.', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Shown when this field fails validation. Leave blank to use the form-wide message.', 'animation-addons-for-elementor' )
+							),
 					]
 				),
 
@@ -156,6 +165,7 @@ class AAE_A_Form_Textarea extends Atomic_Widget_Base {
 							]
 						)
 				),
+
 		];
 	}
 

@@ -1,0 +1,21 @@
+{#
+  AAE Form Field Error — the style-source sample for injected validation
+  messages. Visible in the editor canvas (style/edit it there); hidden on the
+  frontend by form.css ([data-element_type="e-aae-a-form-field-error"]).
+  form.js copies this span's classes + text onto every runtime-injected
+  .aae-form-field-error span in the same form.
+#}
+{% set classes = ['aae-a-form-field-error', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set allowed_tags = '<b><strong><sup><sub><s><em><i><u><del><span><br>' %}
+
+<span
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    aria-hidden="true"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+>{{ settings.text | striptags(allowed_tags) | raw }}</span>
