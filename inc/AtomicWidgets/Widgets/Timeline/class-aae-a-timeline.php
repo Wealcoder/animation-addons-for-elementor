@@ -31,13 +31,12 @@ use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Items_Control;
 /**
  * AAE Timeline — an open composite timeline container (Btn pattern).
  *
- * Minimal counterpart of TimelineMain: no `preset` prop/control, no
- * preset-driven <style> block. Out of the box it renders a plain vertical
- * list; drop in one of the ready-made JSON templates under
- * z_temp/templates/Timeline (editorial-rail, heritage-split,
- * roadmap-track, case-study, social) to get a fully designed look —
- * those templates carry their own local per-element styles on top of
- * this widget's generic base styles, styled with Elementor's native
+ * Minimal counterpart of TimelineMain: no `preset` prop, no preset-driven
+ * <style> block. Out of the box it renders a plain vertical list; the
+ * "Presets" section (Apply Preset picker, presets/*.json) swaps it for a
+ * fully designed look — editorial-rail, heritage-split, roadmap-track,
+ * case-study, social — each carrying its own local per-element styles on
+ * top of this widget's generic base styles, styled with Elementor's native
  * builder wherever possible.
  */
 class AAE_A_Timeline extends Atomic_Element_Base {
@@ -81,7 +80,18 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items( [
+					AAE_A_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			// "Items": a live projection of the timeline's real
 			// <e-aae-a-timeline-item> children — one repeater row each, with
 			// drag-reorder, duplicate, remove and rename. Mirrors the

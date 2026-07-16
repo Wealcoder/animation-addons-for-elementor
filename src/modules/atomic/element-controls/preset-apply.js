@@ -97,12 +97,22 @@ function randomStyleId() {
   return `e-${rand()}-${rand()}`;
 }
 
+// Elementor's own auto-generated local style ids always look like
+// "e-<hash>-<hash>". Some presets deliberately key a style under a literal,
+// human-readable name instead (e.g. "aae-btn-txtflip-content") so it doubles
+// as the widget's own compiled JS/CSS hook class (see btn.js / btn.scss).
+// Those must never be renamed — doing so silently detaches the element from
+// the hook it needs to function. Only ids matching Elementor's own generated
+// shape are safe to regenerate for collision-avoidance.
+const AUTO_STYLE_ID_RE = /^e-[a-z0-9]+-[a-z0-9]+$/i;
+
 /**
  * Recursively regenerate every element's LOCAL style ids in a preset model and
  * rewrite the matching `classes` references, so applying the same styled preset
  * to multiple widgets never shares (collides on) style-id classes. `create` does
  * NOT auto-regenerate style ids (only paste/import/duplicate hooks do), so we do
- * it here before createElements().
+ * it here before createElements(). Literal hook-class-keyed styles are left
+ * untouched — see AUTO_STYLE_ID_RE above.
  */
 export function regenerateModelStyleIds(model) {
   if (!model || typeof model !== 'object') {
@@ -115,6 +125,10 @@ export function regenerateModelStyleIds(model) {
     const newStyles = {};
 
     Object.keys(styles).forEach((oldId) => {
+      if (!AUTO_STYLE_ID_RE.test(oldId)) {
+        newStyles[oldId] = styles[oldId];
+        return;
+      }
       const newId = randomStyleId();
       changed[oldId] = newId;
       newStyles[newId] = { ...styles[oldId], id: newId };
@@ -225,12 +239,23 @@ function syncAaeInteractionsToPreview(createdElements) {
 function stampContainerClassesIntoPreview(createdElements) {
   const CONTAINER_ELTYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
 
+  // Every AAE widget (e-aae-a-*) extends the same Atomic_Element_Base /
+  // is_container:true base as the core layout containers above, so it is
+  // rendered through the same canvas path and hits the same "classes prop
+  // isn't stamped on programmatic create" gap — not just the three core
+  // container types. Without this, a preset whose root IS an AAE widget
+  // (e.g. e-aae-a-btn itself) renders unstyled in the builder until reload,
+  // even though the saved model — and the frontend Twig render — are correct.
+  const isContainerLikeType = (elType) =>
+    typeof elType === 'string' &&
+    (CONTAINER_ELTYPES.indexOf(elType) !== -1 || elType.indexOf('e-aae-a-') === 0);
+
   const stampModel = (model, previewDoc) => {
     if (!model || !model.get) {
       return;
     }
     const elType = model.get('elType');
-    if (CONTAINER_ELTYPES.indexOf(elType) !== -1) {
+    if (isContainerLikeType(elType)) {
       const id = model.get('id');
       const classesProp = model.get('settings')?.get?.('classes');
       const list = classesProp && Array.isArray(classesProp.value) ? classesProp.value : null;
