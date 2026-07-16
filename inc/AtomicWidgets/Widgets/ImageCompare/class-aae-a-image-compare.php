@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageCompareMain;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -28,14 +28,11 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Button\Atomic_Button;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Divider\Atomic_Divider;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
-use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
-use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
+class AAE_A_Image_Compare extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -49,19 +46,19 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 	}
 
 	public static function get_type() {
-		return 'e-aae-a-image-compare-main';
+		return 'e-aae-a-image-compare';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-image-compare-main';
+		return 'e-aae-a-image-compare';
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Image Compare Main', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Image Compare', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
-		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider', 'main' ];
+		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider' ];
 	}
 
 	public function get_icon() {
@@ -126,7 +123,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 		$size_0_px     = Size_Prop_Type::generate( [ 'size' => 0,   'unit' => 'px' ] );
 		$size_16_px    = Size_Prop_Type::generate( [ 'size' => 16,  'unit' => 'px' ] );
 		$size_1_em     = Size_Prop_Type::generate( [ 'size' => 1,   'unit' => 'em' ] );
-		$caption_clip  = String_Prop_Type::generate( 'inset(0 calc(100% - var(--aae-image-compare-main-position, 50%)) 0 0)' );
+		$caption_clip  = String_Prop_Type::generate( 'inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0)' );
 
 		return [
 			// Parent container.
@@ -144,7 +141,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			// AFTER image — natural flow, defines the widget's height.
 			// `height: auto` can't go through Size_Prop_Type (no keyword
 			// support) so it lives in the Twig <style> block instead.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-after' => Style_Definition::make()
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-after' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',        String_Prop_Type::generate( 'relative' ) )
@@ -158,7 +155,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 				),
 
 			// BEFORE image — absolutely positioned overlay, clipped by handle %.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-before' => Style_Definition::make()
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-before' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',           String_Prop_Type::generate( 'absolute' ) )
@@ -176,7 +173,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 				),
 
 			// BEFORE caption.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-caption-before' => Style_Definition::make()
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-caption-before' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',           String_Prop_Type::generate( 'absolute' ) )
@@ -189,7 +186,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 				),
 
 			// AFTER caption.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-caption-after' => Style_Definition::make()
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-caption-after' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
@@ -206,7 +203,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			// Default geometry: 2px wide × full height (horizontal slider).
 			// Twig flips this to full width × 2px tall when direction is
 			// vertical via `[data-direction="vertical"]`.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-divider' => Style_Definition::make()
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-divider' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
@@ -217,18 +214,13 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 						->add_prop( 'z-index',           Number_Prop_Type::generate( 10 ) )
 				),
 
-			// Slider thumb (Div_Block, holding the Handle Icon svg child by
-			// default). The `left: var(...)` and `transform: translate(-50%,
-			// -50%)` live in the Twig <style> (CSS-var value + sibling
-			// combinator hover effects) — along with the cosmetic look
-			// (background/padding/border-radius/flex-centering), which is
-			// wrapped in `:where()` there so it never out-ranks the Handle's
-			// own Style-panel overrides. Only truly non-negotiable structural
-			// props live here. z-index needs to clear the editor
-			// element-overlay (30) and the invisible range input (20), so
-			// the thumb is visible by default without users hand-bumping it
-			// from the Style panel.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-thumb' => Style_Definition::make()
+			// Slider thumb (Atomic_Button). The `left: var(...)` and
+			// `transform: translate(-50%, -50%)` live in the Twig <style>
+			// (CSS-var value + sibling combinator hover effects).
+			// z-index needs to clear the editor element-overlay (30) and
+			// the invisible range input (20), so the thumb is visible by
+			// default without users hand-bumping it from the Style panel.
+			self::BASE_STYLE_KEY . ' .aae-a-image-compare-thumb' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
@@ -244,7 +236,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 	 *   1. Before Image  (Atomic_Image — clipped overlay)
 	 *   2. After Image   (Atomic_Image — natural-flow baseline)
 	 *   3. Divider       (Atomic_Divider — slider line)
-	 *   4. Handle        (Div_Block + Atomic_Svg child — draggable thumb)
+	 *   4. Handle        (Atomic_Button — draggable thumb)
 	 *   5. Before Label  (Atomic_Paragraph — optional caption)
 	 *   6. After Label   (Atomic_Paragraph — optional caption)
 	 *
@@ -260,7 +252,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'Before Image' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-before' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-before' ] ),
 				] )
 				->build(),
 
@@ -268,7 +260,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'After Image' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-after' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-after' ] ),
 				] )
 				->build(),
 
@@ -277,37 +269,21 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			Atomic_Divider::generate()
 				->editor_settings( [ 'title' => 'Divider' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-divider' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-divider' ] ),
 				] )
 				->build(),
 
-			// 4. Handle — the draggable thumb at the divider's midpoint. A Div
-			//    block (not a Button) so its child slot is freely swappable —
-			//    default is an SVG icon, but the user can delete it and drop
-			//    in a Paragraph (or both) instead. User styles background,
-			//    border, padding, icon size/colour via each element's own
-			//    Style panel; the cosmetic look below (in the Twig <style>
-			//    `:where()` block) is a zero-specificity fallback that only
-			//    applies until the user styles the Handle/icon themselves.
-			Div_Block::generate()
+			// 4. Handle — the draggable thumb at the divider's midpoint.
+			//    User styles background, border, padding, typography, arrow
+			//    colour (= button text colour) via Style panel.
+			Atomic_Button::generate()
 				->editor_settings( [ 'title' => 'Handle' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-thumb' ] ),
-				] )
-				->children( [
-					Atomic_Svg::generate()
-						->editor_settings( [ 'title' => 'Handle Icon' ] )
-						->settings( [
-							// aae-a-svg (StyleManager utility) sets a sane 20px
-							// default so the icon isn't the core Atomic_Svg 65px
-							// default — same pattern as the slider nav arrows.
-							'classes' => Classes_Prop_Type::generate( [ 'aae-a-svg' ] ),
-							'svg'     => Svg_Src_Prop_Type::generate( [
-								'id'  => null,
-								'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompareMain/assets/icon/handle.svg' ),
-							] ),
-						] )
-						->build(),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-thumb' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( '‹ ›' ),
+						'children' => [],
+					] ),
 				] )
 				->build(),
 
@@ -316,7 +292,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Before Label' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-caption-before' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-before' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'Before' ),
 						'children' => [],
@@ -329,7 +305,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'After Label' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-caption-after' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-after' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'After' ),
 						'children' => [],
@@ -341,7 +317,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider', 'e-div-block', 'e-svg' ];
+		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider' ];
 	}
 
 	protected function define_default_html_tag() {
@@ -350,11 +326,11 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-image-compare-main' => __DIR__ . '/aae-a-image-compare-main.html.twig',
+			'elementor/elements/aae-a-image-compare' => __DIR__ . '/aae-a-image-compare.html.twig',
 		];
 	}
 
 	public function get_script_depends(): array {
-		return [ 'aae-a-image-compare-main-js' ];
+		return [ 'aae-a-image-compare-js' ];
 	}
 }
