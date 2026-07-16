@@ -28,8 +28,11 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Button\Atomic_Button;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Divider\Atomic_Divider;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
@@ -214,12 +217,17 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 						->add_prop( 'z-index',           Number_Prop_Type::generate( 10 ) )
 				),
 
-			// Slider thumb (Atomic_Button). The `left: var(...)` and
-			// `transform: translate(-50%, -50%)` live in the Twig <style>
-			// (CSS-var value + sibling combinator hover effects).
-			// z-index needs to clear the editor element-overlay (30) and
-			// the invisible range input (20), so the thumb is visible by
-			// default without users hand-bumping it from the Style panel.
+			// Slider thumb (Div_Block, holding the Handle Icon svg child by
+			// default). The `left: var(...)` and `transform: translate(-50%,
+			// -50%)` live in the Twig <style> (CSS-var value + sibling
+			// combinator hover effects) — along with the cosmetic look
+			// (background/padding/border-radius/flex-centering), which is
+			// wrapped in `:where()` there so it never out-ranks the Handle's
+			// own Style-panel overrides. Only truly non-negotiable structural
+			// props live here. z-index needs to clear the editor
+			// element-overlay (30) and the invisible range input (20), so
+			// the thumb is visible by default without users hand-bumping it
+			// from the Style panel.
 			self::BASE_STYLE_KEY . ' .aae-a-image-compare-main-thumb' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
@@ -236,7 +244,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 	 *   1. Before Image  (Atomic_Image — clipped overlay)
 	 *   2. After Image   (Atomic_Image — natural-flow baseline)
 	 *   3. Divider       (Atomic_Divider — slider line)
-	 *   4. Handle        (Atomic_Button — draggable thumb)
+	 *   4. Handle        (Div_Block + Atomic_Svg child — draggable thumb)
 	 *   5. Before Label  (Atomic_Paragraph — optional caption)
 	 *   6. After Label   (Atomic_Paragraph — optional caption)
 	 *
@@ -273,17 +281,33 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			// 4. Handle — the draggable thumb at the divider's midpoint.
-			//    User styles background, border, padding, typography, arrow
-			//    colour (= button text colour) via Style panel.
-			Atomic_Button::generate()
+			// 4. Handle — the draggable thumb at the divider's midpoint. A Div
+			//    block (not a Button) so its child slot is freely swappable —
+			//    default is an SVG icon, but the user can delete it and drop
+			//    in a Paragraph (or both) instead. User styles background,
+			//    border, padding, icon size/colour via each element's own
+			//    Style panel; the cosmetic look below (in the Twig <style>
+			//    `:where()` block) is a zero-specificity fallback that only
+			//    applies until the user styles the Handle/icon themselves.
+			Div_Block::generate()
 				->editor_settings( [ 'title' => 'Handle' ] )
 				->settings( [
 					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-main-thumb' ] ),
-					'text'    => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '‹ ›' ),
-						'children' => [],
-					] ),
+				] )
+				->children( [
+					Atomic_Svg::generate()
+						->editor_settings( [ 'title' => 'Handle Icon' ] )
+						->settings( [
+							// aae-a-svg (StyleManager utility) sets a sane 20px
+							// default so the icon isn't the core Atomic_Svg 65px
+							// default — same pattern as the slider nav arrows.
+							'classes' => Classes_Prop_Type::generate( [ 'aae-a-svg' ] ),
+							'svg'     => Svg_Src_Prop_Type::generate( [
+								'id'  => null,
+								'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompareMain/assets/icon/handle.svg' ),
+							] ),
+						] )
+						->build(),
 				] )
 				->build(),
 
@@ -317,7 +341,7 @@ class AAE_A_Image_Compare_Main extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider' ];
+		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider', 'e-div-block', 'e-svg' ];
 	}
 
 	protected function define_default_html_tag() {

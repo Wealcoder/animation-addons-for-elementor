@@ -89,6 +89,37 @@
             transform: translate(-50%, -50%);
             pointer-events: none !important;
             transition: transform 0.3s ease-in-out;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            box-shadow: none;
+            color: #333333;
+            cursor: ew-resize;
+            background: orange;
+            width: auto;
+        }
+
+        {#
+            Cosmetic fallback ONLY — wrapped in :where() so it carries ZERO
+            specificity. Just enough to center the Handle's icon child inside
+            the Div block; no background/border/shadow of its own, so the
+            wrapper stays invisible and only the icon (or whatever the user
+            drops in) is what's actually seen. :where() guarantees the
+            Handle's OR its icon's own Style-panel overrides (even a single
+            class, same specificity as a normal rule) always win the moment
+            the user styles them — it never fights back like the
+            divider/thumb positioning rules above deliberately do.
+        #}
+        :where([data-id="{{ id }}"] .aae-a-image-compare-main-thumb) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            box-shadow: none;
+            color: #333333;
+            cursor: ew-resize;
         }
 
         [data-id="{{ id }}"] .aae-a-image-compare-main__label {
