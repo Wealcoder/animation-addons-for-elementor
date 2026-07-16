@@ -1464,6 +1464,8 @@ final class Atomic
 				'icon'            => 'eicon-close',
 				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
 				'hide_from_panel' => true,
+			],
+
 			'aae-a-form' => [
 				'label'        => 'Form',
 				'description'  => 'Atomic-first form: real child fields, locked submit button. Milestone 1 skeleton — no submit logic yet.',
@@ -2607,6 +2609,9 @@ final class Atomic
 			'aae-a-offcanvas-close' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
 				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
+				'has_script' => false,
+			],
+
 			'aae-a-form' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form',
 				'file'          => 'Widgets/Form/class-aae-a-form.php',
