@@ -210,6 +210,27 @@ final class Assets
 				true
 			);
 		}
+		// DrawSVG + MotionPath: needed by the DrawSVG atomic widget. Pro only
+		// registers these when its GSAP-library dashboard toggle is on, so
+		// register them here too (no-op if already registered).
+		if (! wp_script_is('DrawSVGPlugin', 'registered')) {
+			wp_register_script(
+				'DrawSVGPlugin',
+				WCF_ADDONS_PRO_URL . 'assets/lib/DrawSVGPlugin.min.js',
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+		if (! wp_script_is('MotionPathPlugin', 'registered')) {
+			wp_register_script(
+				'MotionPathPlugin',
+				WCF_ADDONS_PRO_URL . 'assets/lib/MotionPathPlugin.min.js',
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
 	}
 
 	/**

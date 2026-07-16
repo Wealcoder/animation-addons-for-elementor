@@ -132,17 +132,32 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		}
 	};
 
-	nav.querySelectorAll( ':scope > .aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
-		if ( item.getAttribute( 'data-id' ) !== itemId ) {
+	/* Build the chain to keep open: the item itself PLUS every ancestor nav-item up
+	 * to the nav. Revealing the chain means a nested sub-item also reveals the parent
+	 * dropdown that contains it — so adding/opening a sub-item shows the dropdown
+	 * under its main item on the canvas. (The old `:scope >` version only matched
+	 * top-level items, so a nested itemId revealed nothing and closed its parent.) */
+	const openChain = new Set();
+	if ( itemId ) {
+		let el = nav.querySelector( `.aae-a-nav-item[data-id="${ itemId }"]` );
+		while ( el && nav.contains( el ) ) {
+			const id = el.getAttribute( 'data-id' );
+			if ( id ) {
+				openChain.add( id );
+			}
+			el = el.parentElement?.closest( '.aae-a-nav-item' );
+		}
+	}
+
+	/* Close every currently-open dropdown that isn't part of the active chain. */
+	nav.querySelectorAll( '.aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
+		if ( ! openChain.has( item.getAttribute( 'data-id' ) ) ) {
 			revealDropdown( item, false );
 		}
 	} );
-	if ( itemId ) {
-		revealDropdown(
-			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` ),
-			true
-		);
-	}
+	/* Open the whole chain (parent dropdowns first is not required — each is
+	 * revealed independently by class + inline styles). */
+	openChain.forEach( id => revealDropdown( nav.querySelector( `.aae-a-nav-item[data-id="${ id }"]` ), true ) );
 }
 
 function syncEditorNestedPreview( itemId, open ) {
@@ -1000,23 +1015,46 @@ export function NavItemsControl( { label } ) {
 	};
 
 	const handleAddChild = ( parentRow ) => {
+		/* Whether the item ALREADY owned a dropdown flexbox before this click. */
+		const hadFlex = !! findFirstChildOfType( getContainer( parentRow.id ), 'e-flexbox' );
 		const flexbox = ensureItemFlexbox( parentRow.id );
 		if ( ! flexbox ) {
 			return;
 		}
-		const count = flexbox.model?.get?.( 'elements' )?.length ?? 0;
-		const result = createElements( {
-			title: 'Sub Item',
-			subtitle: 'Sub-menu item added',
-			elements: [ {
-				container: flexbox,
-				model: buildSubItemModel( count + 1 ),
-				options: { at: count },
-			} ],
-		} );
-		const id = result?.createdElements?.[ 0 ]?.containerId;
-		if ( id ) {
-			setExpandedId( id );
+		const flexId = getElementId( flexbox );
+
+		const addSub = () => {
+			/* Re-fetch: ensureItemFlexbox flips has_dropdown, which re-renders the
+			 * item subtree and detaches the original flexbox container instance. */
+			const fresh = getContainer( flexId );
+			if ( ! fresh ) {
+				return;
+			}
+			const count = fresh.model?.get?.( 'elements' )?.length ?? 0;
+			const result = createElements( {
+				title: 'Sub Item',
+				subtitle: 'Sub-menu item added',
+				elements: [ {
+					container: fresh,
+					model: buildSubItemModel( count + 1 ),
+					options: { at: count },
+				} ],
+			} );
+			const id = result?.createdElements?.[ 0 ]?.containerId;
+			if ( id ) {
+				setExpandedId( id );
+			}
+		};
+
+		if ( hadFlex ) {
+			addSub();
+		} else {
+			/* The dropdown flexbox was just created THIS tick, so its Navigator
+			 * (Structure panel) node isn't registered yet — a child added now gets
+			 * dropped from the Navigator (the first sub-item went missing while the
+			 * model/canvas/frontend were correct). Defer to the next frame so the
+			 * Navigator has attached the new flexbox before we nest into it. */
+			window.requestAnimationFrame( () => window.requestAnimationFrame( addSub ) );
 		}
 	};
 
@@ -1044,13 +1082,15 @@ export function NavItemsControl( { label } ) {
 	 * no forced tab). If it has none, just expand the inline settings so the user
 	 * can enable one. Settings for a dropdown item stay reachable via the ✎ icon. */
 	const handleRowActivate = ( row ) => {
-		const flexbox = findFirstChildOfType( getContainer( row.id ), 'e-flexbox' );
-		if ( flexbox?.id ) {
-			markDropdownFlexbox( flexbox );
-			syncEditorNestedPreview( row.id, true );
-			selectDropdownById( flexbox.id );
-			return;
-		}
+		/* Clicking a row ONLY toggles expandedId. That both shows the row's inline
+		 * settings AND — via the reveal effect keyed on expandedId — reveals its
+		 * dropdown container on the canvas (the effect is chain-aware, so a dropdown
+		 * item reveals its own container and a sub-item reveals its parent's).
+		 *
+		 * We deliberately do NOT select the dropdown container here. Selecting swaps
+		 * the editing panel over to that container — which reads as a forced tab
+		 * change / navigation away from the Menu Items list. The user only wants the
+		 * container to APPEAR; they can click it on the canvas to style it. */
 		setExpandedId( expandedId === row.id ? null : row.id );
 	};
 
