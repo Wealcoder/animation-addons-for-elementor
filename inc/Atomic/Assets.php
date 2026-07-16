@@ -36,6 +36,16 @@ final class Assets
 		'aae-effect-parallax'        => 'effects/parallax.js',
 		'aae-effect-custom-css'      => 'effects/custom-css.js',
 		'aae-effect-nested-slider'   => 'effects/nested-slider.js',
+		'aae-effect-lightbox'        => 'effects/lightbox.js',
+	];
+
+	/**
+	 * Per-effect stylesheets registered (not enqueued) on wp_enqueue_scripts.
+	 * Render/Manager enqueue the handle on demand alongside the JS bundle.
+	 * Maps handle => build path (relative to BUILD_DIR).
+	 */
+	const EFFECT_STYLES = [
+		'aae-lightbox-css' => 'effects/lightbox.css',
 	];
 
 	public function register(): void
@@ -122,6 +132,16 @@ final class Assets
 				true
 			);
 		}
+
+		// Register per-effect stylesheets (enqueued on demand by Render/Manager).
+		foreach (self::EFFECT_STYLES as $handle => $relative) {
+			wp_register_style(
+				$handle,
+				WCF_ADDONS_URL . self::BUILD_DIR . $relative,
+				[],
+				WCF_ADDONS_VERSION
+			);
+		}
 	}
 
 	/**
@@ -137,6 +157,9 @@ final class Assets
 		wp_enqueue_script(self::HANDLE);
 		foreach (array_keys(self::EFFECT_BUNDLES) as $handle) {
 			wp_enqueue_script($handle);
+		}
+		foreach (array_keys(self::EFFECT_STYLES) as $handle) {
+			wp_enqueue_style($handle);
 		}
 	}
 

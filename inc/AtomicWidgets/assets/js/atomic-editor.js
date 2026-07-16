@@ -27,7 +27,6 @@ import { installRunWrapper } from './atomic-editor/command-bridge.js';
 // section now renders the React AccordionItemsControl registered under
 // 'aae-items' in src/modules/atomic/element-controls (drag/duplicate/remove).
 import { installLoopGrid } from './atomic-editor/loop-grid.js';
-import { installLoopGridEditToggle } from './atomic-editor/loop-grid-edit-toggle.js';
 import { installPostTitleLimit } from './atomic-editor/post-title-limit.js';
 
 function boot() {
@@ -47,6 +46,5 @@ function boot() {
 
 boot();
 installLoopGrid();
-installLoopGridEditToggle();
 installPostTitleLimit();
 

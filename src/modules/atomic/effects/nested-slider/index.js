@@ -76,16 +76,8 @@ function bind(container, config) {
 		if (peek > 0 && !singleCentered) {
 			spv += (peek / 100) * 2;
 		}
-		// Clamp slidesPerView to the number of slides present, so a 3-up slider with
-		// only 2 slides doesn't leave a gap. But NOT in the editor: there the widget
-		// renders a single authored slide (no WP_Query) and the editor-preview module
-		// injects clones a beat later. If we clamped on that transient 1-slide state,
-		// a freshly-dropped slider would bind at slidesPerView=1 and only correct
-		// itself on the next rebind — the reported "first drop shows 1, not 3". Trust
-		// the configured value in the editor; the clones catch up.
-		const inEditor = document.body.classList.contains('elementor-editor-active');
 		const count = getSlides().length;
-		if (!inEditor && count > 0 && spv > count && !isCenterMode() && !['coverflow', 'card', 'perspective'].includes(effect)) {
+		if (count > 0 && spv > count && !isCenterMode() && !['coverflow', 'card', 'perspective'].includes(effect)) {
 			spv = count;
 		}
 		return spv;
