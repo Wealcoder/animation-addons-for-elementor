@@ -17,6 +17,7 @@ import { resolveType, customToolbarButtons } from './registry';
 import {
 	attachKeyboard, attachWheel, attachTouch, attachHash, attachZoom,
 } from './controllers';
+import { applyStyleVars, clearStyleVars } from './style-vars';
 
 const ICONS = {
 	close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
@@ -259,6 +260,11 @@ export function openLightbox(slides, startIndex, opts = {}) {
 	if (!slides || !slides.length) return;
 	buildUi();
 
+	// Per-container style → CSS vars on the shared overlay root. Applied fresh
+	// each open (and cleared on close) so containers with different styles never
+	// leak into one another.
+	const styleVarNames = applyStyleVars(ui.root, opts.style || null);
+
 	const restoreFocus = document.activeElement;
 
 	state = {
@@ -271,6 +277,7 @@ export function openLightbox(slides, startIndex, opts = {}) {
 		disposers: [],
 		changeSubs: [],
 		restoreFocus,
+		styleVarNames,
 	};
 
 	// The API handed to controllers + toolbar buttons + custom code.
@@ -352,6 +359,8 @@ function closeLightbox(fromHistory) {
 	const finish = () => {
 		if (state && state.content && state.content.destroy) state.content.destroy();
 		ui.stage.innerHTML = '';
+		// Reset per-container style vars so the next open starts from CSS defaults.
+		clearStyleVars(ui.root, state && state.styleVarNames);
 		emit('close', {});
 		const rf = state && state.restoreFocus;
 		if (rf && typeof rf.focus === 'function') { try { rf.focus(); } catch (_) { /* ignore */ } }

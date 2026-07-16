@@ -47,9 +47,28 @@ final class Controls {
 
 		if ( in_array( $type, Schema::lightbox_containers(), true ) ) {
 			$controls[] = $this->build_container_section();
+			$controls[] = $this->build_style_section();
 		}
 
 		return $controls;
+	}
+
+	/**
+	 * "Lightbox Style" — a responsive React section (anchor only). The
+	 * editor-bridge config (extensions/lightbox-style) renders every styling
+	 * control (arrows, close, overlay, content container, offsets) in its
+	 * place, with per-breakpoint variants for sizing/spacing fields. Values
+	 * become CSS vars on the shared overlay at open time.
+	 */
+	public function build_style_section( array $args = [] ): Section {
+		$label = $args['label'] ?? __( 'Lightbox Style', self::TD );
+
+		return Section::make()
+			->set_id( 'aae_lightbox_style' )
+			->set_label( Bootstrap::get_label( $label ) )
+			->set_items( [
+				Text_Control::bind_to( Schema::LB_STYLE_ANCHOR ),
+			] );
 	}
 
 	/**

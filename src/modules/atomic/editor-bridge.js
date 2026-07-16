@@ -18,6 +18,7 @@ import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
+import lightboxStyleSection from './extensions/lightbox-style/config';
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
@@ -50,6 +51,7 @@ registerResponsiveSection( tilt );
 registerResponsiveSection( scrollTo );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
+registerResponsiveSection( lightboxStyleSection );
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the

@@ -135,6 +135,19 @@ final class Lightbox_Manager {
 		return self::truthy( $raw );
 	}
 
+	/**
+	 * Read a Responsive_Json prop as a plain { desktop, tablet, … } map.
+	 * Unwraps the { $$type:'aae-rj', value:{…} } envelope. Returns [] when the
+	 * prop is unset/empty. Per-bp payloads are returned as-is (scalar/array).
+	 */
+	public static function responsive( array $settings, string $key ): array {
+		$raw = $settings[ $key ] ?? null;
+		if ( is_array( $raw ) && array_key_exists( 'value', $raw ) ) {
+			$raw = $raw['value'];
+		}
+		return is_array( $raw ) ? $raw : [];
+	}
+
 	/** Read a String prop from raw settings (unwraps the atomic envelope). */
 	public static function string( array $settings, string $key, string $default = '' ): string {
 		$raw = $settings[ $key ] ?? null;

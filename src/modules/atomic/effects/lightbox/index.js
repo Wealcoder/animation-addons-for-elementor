@@ -78,7 +78,8 @@ function resolveAndOpen(target) {
 	if (hit) {
 		const { slides, startIndex, groupId } = collectContainer(hit.el, hit.cfg, target);
 		if (slides.length) {
-			openLightbox(slides, startIndex, { groupId });
+			// Per-container style bag → CSS vars on the shared overlay (opts.style).
+			openLightbox(slides, startIndex, { groupId, style: hit.cfg.style || null });
 			return true;
 		}
 	}

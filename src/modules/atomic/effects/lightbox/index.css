@@ -29,7 +29,10 @@
 .aae-lb-backdrop {
 	position: absolute;
 	inset: 0;
-	background: rgba(8, 10, 14, 0.92);
+	/* Overlay color + opacity are user-styleable. Default matches the original
+	 * near-black 0.92. When only a color is set, opacity var still applies. */
+	background: var(--aae-lb-overlay-color, rgba(8, 10, 14, 1));
+	opacity: var(--aae-lb-overlay-opacity, 0.92);
 	cursor: zoom-out;
 }
 
@@ -104,7 +107,10 @@
 
 /* ---- Full-content slides (container "Full Child Content" mode) ---- */
 .aae-lb-html {
-	width: min(1100px, 92vw);
+	/* User-styleable width / max-width / padding / radius / bg / shadow, each
+	 * falling back to the original values when unset. */
+	width: var(--aae-lb-content-width, min(1100px, 92vw));
+	max-width: var(--aae-lb-content-maxwidth, 92vw);
 	max-height: 86vh;
 	/* Overtall content scrolls inside the panel; overscroll-behavior keeps the
 	 * scroll from chaining to the page even at the top/bottom edge (the page is
@@ -112,13 +118,20 @@
 	overflow-y: auto;
 	overflow-x: hidden;
 	overscroll-behavior: contain;
-	padding: clamp(20px, 4vw, 48px);
-	background: #fff;
+	padding: var(--aae-lb-content-padding, clamp(20px, 4vw, 48px));
+	background: var(--aae-lb-content-bg, #fff);
 	color: #111;
-	border-radius: 6px;
-	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+	border-radius: var(--aae-lb-content-radius, 6px);
+	box-shadow: var(--aae-lb-content-shadow, 0 24px 80px rgba(0, 0, 0, 0.55));
 	-webkit-overflow-scrolling: touch;
 }
+
+/* Full-width content: fill the stage's available width, ignore max-width. */
+.aae-lb-root[data-lb-fullwidth] .aae-lb-html {
+	width: 100%;
+	max-width: none;
+}
+.aae-lb-root[data-lb-fullwidth] .aae-lb-stage { max-width: 96vw; width: 96vw; }
 .aae-lb-html img { max-width: 100%; height: auto; }
 .aae-lb-html > :first-child { margin-top: 0; }
 .aae-lb-html > :last-child { margin-bottom: 0; }
@@ -154,7 +167,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	transition: background 160ms ease, transform 120ms ease;
+	transition: background 160ms ease, color 160ms ease, transform 120ms ease;
 	line-height: 1;
 	font-size: 18px;
 }
@@ -163,17 +176,52 @@
 .aae-lb-btn:focus-visible { outline: 2px solid #2ee6a6; outline-offset: 2px; }
 .aae-lb-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ---- prev / next ---- */
+/* ---- Close button (styleable: color / bg / size / radius / border / hover) ---- */
+.aae-lb-btn[data-lb-action="close"] {
+	width: var(--aae-lb-close-box, 40px);
+	height: var(--aae-lb-close-box, 40px);
+	color: var(--aae-lb-close-color, #fff);
+	background: var(--aae-lb-close-bg, rgba(255, 255, 255, 0.08));
+	border-radius: var(--aae-lb-close-radius, 8px);
+	border-width: var(--aae-lb-close-border-w, 1px);
+	border-color: var(--aae-lb-close-border-c, rgba(255, 255, 255, 0.14));
+	border-style: solid;
+}
+.aae-lb-btn[data-lb-action="close"] svg {
+	width: var(--aae-lb-close-size, 20px);
+	height: var(--aae-lb-close-size, 20px);
+}
+.aae-lb-btn[data-lb-action="close"]:hover {
+	color: var(--aae-lb-close-color-hover, var(--aae-lb-close-color, #fff));
+	background: var(--aae-lb-close-bg-hover, rgba(255, 255, 255, 0.18));
+}
+
+/* ---- prev / next (styleable: color / bg / size / radius / border / hover / offset) ---- */
 .aae-lb-nav {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
 	z-index: 3;
-	width: 52px; height: 52px;
+	width: var(--aae-lb-arrow-box, 52px);
+	height: var(--aae-lb-arrow-box, 52px);
 	font-size: 26px;
+	color: var(--aae-lb-arrow-color, #fff);
+	background: var(--aae-lb-arrow-bg, rgba(255, 255, 255, 0.08));
+	border-radius: var(--aae-lb-arrow-radius, 8px);
+	border-width: var(--aae-lb-arrow-border-w, 1px);
+	border-color: var(--aae-lb-arrow-border-c, rgba(255, 255, 255, 0.14));
+	border-style: solid;
 }
-.aae-lb-prev { left: 16px; }
-.aae-lb-next { right: 16px; }
+.aae-lb-nav svg {
+	width: var(--aae-lb-arrow-size, 20px);
+	height: var(--aae-lb-arrow-size, 20px);
+}
+.aae-lb-nav:hover {
+	color: var(--aae-lb-arrow-color-hover, var(--aae-lb-arrow-color, #fff));
+	background: var(--aae-lb-arrow-bg-hover, rgba(255, 255, 255, 0.18));
+}
+.aae-lb-prev { left: var(--aae-lb-arrow-offset, 16px); }
+.aae-lb-next { right: var(--aae-lb-arrow-offset, 16px); }
 .aae-lb-nav[hidden] { display: none; }
 
 /* ---- caption ---- */

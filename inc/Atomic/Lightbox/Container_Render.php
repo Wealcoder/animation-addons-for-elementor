@@ -90,6 +90,10 @@ final class Container_Render {
 			'loop'       => Lightbox_Manager::bool( $settings, Schema::LB_LOOP, true ),
 			'download'   => Lightbox_Manager::bool( $settings, Schema::LB_DOWNLOAD, false ),
 			'counter'    => Lightbox_Manager::bool( $settings, Schema::LB_COUNTER, true ),
+			// Style: per-breakpoint value maps the runtime resolves to CSS vars
+			// on the shared overlay at open time. Empty when nothing was styled
+			// (default CSS keeps applying).
+			'style'      => $this->collect_style( $settings ),
 		];
 
 		/**
@@ -101,6 +105,75 @@ final class Container_Render {
 		$options = apply_filters( 'aae/lightbox/container_options', $options, $element );
 
 		Lightbox_Manager::register_container( $iid, $options );
+	}
+
+	/**
+	 * Style prop → runtime key. The runtime maps each key to a CSS custom
+	 * property (`--aae-lb-<key>`) on the overlay root at open time. Only
+	 * sizing/spacing keys carry per-breakpoint variants; the rest resolve to
+	 * their desktop value (cascaded). Keeping the map here makes the published
+	 * `style` bag small and the JS side a dumb var-writer.
+	 */
+	private function style_map(): array {
+		return [
+			Schema::LB_OVERLAY_COLOR     => 'overlay-color',
+			Schema::LB_OVERLAY_OPACITY   => 'overlay-opacity',
+			Schema::LB_CONTENT_FULLWIDTH => 'content-fullwidth',
+			Schema::LB_CONTENT_WIDTH     => 'content-width',
+			Schema::LB_CONTENT_MAXWIDTH  => 'content-maxwidth',
+			Schema::LB_CONTENT_PADDING   => 'content-padding',
+			Schema::LB_CONTENT_RADIUS    => 'content-radius',
+			Schema::LB_CONTENT_BG        => 'content-bg',
+			Schema::LB_CONTENT_SHADOW    => 'content-shadow',
+			Schema::LB_ARROW_SIZE        => 'arrow-size',
+			Schema::LB_ARROW_BOX         => 'arrow-box',
+			Schema::LB_ARROW_COLOR       => 'arrow-color',
+			Schema::LB_ARROW_BG          => 'arrow-bg',
+			Schema::LB_ARROW_RADIUS      => 'arrow-radius',
+			Schema::LB_ARROW_BORDER_W    => 'arrow-border-w',
+			Schema::LB_ARROW_BORDER_C    => 'arrow-border-c',
+			Schema::LB_ARROW_COLOR_HOVER => 'arrow-color-hover',
+			Schema::LB_ARROW_BG_HOVER    => 'arrow-bg-hover',
+			Schema::LB_ARROW_OFFSET      => 'arrow-offset',
+			Schema::LB_CLOSE_SIZE        => 'close-size',
+			Schema::LB_CLOSE_BOX         => 'close-box',
+			Schema::LB_CLOSE_COLOR       => 'close-color',
+			Schema::LB_CLOSE_BG          => 'close-bg',
+			Schema::LB_CLOSE_RADIUS      => 'close-radius',
+			Schema::LB_CLOSE_BORDER_W    => 'close-border-w',
+			Schema::LB_CLOSE_BORDER_C    => 'close-border-c',
+			Schema::LB_CLOSE_COLOR_HOVER => 'close-color-hover',
+			Schema::LB_CLOSE_BG_HOVER    => 'close-bg-hover',
+		];
+	}
+
+	/**
+	 * Build the published `style` bag: { <key>: { desktop, tablet, … } } for
+	 * every styled prop, skipping props the user never touched (all-empty
+	 * breakpoints) so the JS writes vars only for real overrides.
+	 */
+	private function collect_style( array $settings ): array {
+		$out = [];
+		foreach ( $this->style_map() as $prop => $key ) {
+			$map = Lightbox_Manager::responsive( $settings, $prop );
+			$clean = [];
+			foreach ( $map as $bp => $val ) {
+				// Keep booleans (fullwidth) and any non-empty scalar/array.
+				if ( is_bool( $val ) ) {
+					if ( $val ) {
+						$clean[ $bp ] = true;
+					}
+					continue;
+				}
+				if ( null !== $val && '' !== $val && [] !== $val ) {
+					$clean[ $bp ] = $val;
+				}
+			}
+			if ( ! empty( $clean ) ) {
+				$out[ $key ] = $clean;
+			}
+		}
+		return $out;
 	}
 
 	/**

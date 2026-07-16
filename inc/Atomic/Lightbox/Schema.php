@@ -2,6 +2,8 @@
 namespace WCF_ADDONS\Atomic\Lightbox;
 
 use WCF_ADDONS\Atomic\Bootstrap;
+use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use WCF_ADDONS\Atomic\Lightbox\Section_Anchor_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
@@ -52,6 +54,93 @@ final class Schema {
 	const LB_CONTAINER_MODE = 'aae_lb_container_mode'; // images | content | full
 	const LB_CHILD_SELECTOR = 'aae_lb_child_selector'; // CSS selector override ('' = default)
 	const LB_CAPTION_SRC    = 'aae_lb_caption_src';    // none | alt | title | caption
+
+	/* ================================================================
+	 * Style controls (responsive React section — "Lightbox Style").
+	 *
+	 * Every value below is a Responsive_Json_Prop_Type: a { desktop, tablet,
+	 * mobile, … } object. The runtime resolves the active breakpoint at open
+	 * time and writes the result as CSS custom properties on the overlay root,
+	 * so each container can style the ONE shared overlay independently.
+	 *
+	 * Only sizing/spacing props are meaningfully responsive; colors/borders
+	 * carry a desktop value that cascades to every breakpoint.
+	 * ============================================================== */
+	const LB_STYLE_ANCHOR = 'aae_lb_style_anchor';
+
+	/* overlay backdrop */
+	const LB_OVERLAY_COLOR   = 'aae_lb_overlay_color';   // rgba/hex
+	const LB_OVERLAY_OPACITY = 'aae_lb_overlay_opacity'; // 0–100
+
+	/* content container */
+	const LB_CONTENT_FULLWIDTH = 'aae_lb_content_fullwidth'; // bool
+	const LB_CONTENT_WIDTH     = 'aae_lb_content_width';      // px (responsive)
+	const LB_CONTENT_MAXWIDTH  = 'aae_lb_content_maxwidth';   // vw/px (responsive)
+	const LB_CONTENT_PADDING   = 'aae_lb_content_padding';    // px (responsive)
+	const LB_CONTENT_RADIUS    = 'aae_lb_content_radius';     // px (responsive)
+	const LB_CONTENT_BG        = 'aae_lb_content_bg';         // color
+	const LB_CONTENT_SHADOW    = 'aae_lb_content_shadow';     // css box-shadow string
+
+	/* nav arrows (prev / next) */
+	const LB_ARROW_SIZE        = 'aae_lb_arrow_size';        // icon px (responsive)
+	const LB_ARROW_BOX         = 'aae_lb_arrow_box';         // button px (responsive)
+	const LB_ARROW_COLOR       = 'aae_lb_arrow_color';
+	const LB_ARROW_BG          = 'aae_lb_arrow_bg';
+	const LB_ARROW_RADIUS      = 'aae_lb_arrow_radius';      // px
+	const LB_ARROW_BORDER_W    = 'aae_lb_arrow_border_w';    // px
+	const LB_ARROW_BORDER_C    = 'aae_lb_arrow_border_c';
+	const LB_ARROW_COLOR_HOVER = 'aae_lb_arrow_color_hover';
+	const LB_ARROW_BG_HOVER    = 'aae_lb_arrow_bg_hover';
+	const LB_ARROW_OFFSET      = 'aae_lb_arrow_offset';      // px from edge (responsive)
+
+	/* close button */
+	const LB_CLOSE_SIZE        = 'aae_lb_close_size';        // icon px (responsive)
+	const LB_CLOSE_BOX         = 'aae_lb_close_box';         // button px (responsive)
+	const LB_CLOSE_COLOR       = 'aae_lb_close_color';
+	const LB_CLOSE_BG          = 'aae_lb_close_bg';
+	const LB_CLOSE_RADIUS      = 'aae_lb_close_radius';      // px
+	const LB_CLOSE_BORDER_W    = 'aae_lb_close_border_w';    // px
+	const LB_CLOSE_BORDER_C    = 'aae_lb_close_border_c';
+	const LB_CLOSE_COLOR_HOVER = 'aae_lb_close_color_hover';
+	const LB_CLOSE_BG_HOVER    = 'aae_lb_close_bg_hover';
+
+	/**
+	 * All Responsive_Json style props, so add_props() and Container_Render can
+	 * loop them instead of repeating the list. bind key (without the aae_lb_
+	 * prefix) => desktop default.
+	 */
+	public static function style_props(): array {
+		return [
+			self::LB_OVERLAY_COLOR   => '',
+			self::LB_OVERLAY_OPACITY => '',
+			self::LB_CONTENT_FULLWIDTH => false,
+			self::LB_CONTENT_WIDTH   => '',
+			self::LB_CONTENT_MAXWIDTH => '',
+			self::LB_CONTENT_PADDING => '',
+			self::LB_CONTENT_RADIUS  => '',
+			self::LB_CONTENT_BG      => '',
+			self::LB_CONTENT_SHADOW  => '',
+			self::LB_ARROW_SIZE      => '',
+			self::LB_ARROW_BOX       => '',
+			self::LB_ARROW_COLOR     => '',
+			self::LB_ARROW_BG        => '',
+			self::LB_ARROW_RADIUS    => '',
+			self::LB_ARROW_BORDER_W  => '',
+			self::LB_ARROW_BORDER_C  => '',
+			self::LB_ARROW_COLOR_HOVER => '',
+			self::LB_ARROW_BG_HOVER  => '',
+			self::LB_ARROW_OFFSET    => '',
+			self::LB_CLOSE_SIZE      => '',
+			self::LB_CLOSE_BOX       => '',
+			self::LB_CLOSE_COLOR     => '',
+			self::LB_CLOSE_BG        => '',
+			self::LB_CLOSE_RADIUS    => '',
+			self::LB_CLOSE_BORDER_W  => '',
+			self::LB_CLOSE_BORDER_C  => '',
+			self::LB_CLOSE_COLOR_HOVER => '',
+			self::LB_CLOSE_BG_HOVER  => '',
+		];
+	}
 
 	/** Default child selector used when a container leaves the override blank. */
 	const DEFAULT_CHILD_SELECTOR = 'img, a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"], a[href$=".webp"], a[href$=".gif"], .gallery-item img';
@@ -113,6 +202,17 @@ final class Schema {
 		$schema[ self::LB_CONTAINER_MODE ] = String_Prop_Type::make()->default( 'images' );
 		$schema[ self::LB_CHILD_SELECTOR ] = String_Prop_Type::make()->default( '' );
 		$schema[ self::LB_CAPTION_SRC ]    = String_Prop_Type::make()->default( 'none' );
+
+		// Style section (responsive React). The anchor gives the section its
+		// replaceable row; every style value is a permissive responsive-json
+		// object resolved to CSS vars at open time.
+		if ( class_exists( Responsive_Json_Prop_Type::class ) ) {
+			$schema[ self::LB_STYLE_ANCHOR ] = Section_Anchor_Prop_Type::make()->default( '' );
+
+			foreach ( self::style_props() as $key => $default ) {
+				$schema[ $key ] = Responsive_Json_Prop_Type::make()->default( [ 'desktop' => $default ] );
+			}
+		}
 
 		return $schema;
 	}
