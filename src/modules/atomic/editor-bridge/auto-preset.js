@@ -3,11 +3,12 @@
 /**
  * Auto-apply a default preset when a widget is freshly dropped.
  *
- * A bare Loop Grid Slider drops as a plain Post Image + Post Title card, which
- * looks unstyled. To give a good out-of-the-box result we apply a chosen default
- * preset to the slide item the first time the slider is created — the same
- * transform the "Apply Preset" dropdown runs, so the outcome is identical to
- * picking that preset by hand.
+ * A bare AAE widget (Loop Grid Slider, Progress Bar, Button, Button Pro,
+ * Timeline, Toggle Switcher, Social Share, …) drops with its plain
+ * define_default_children() output, which looks unstyled. To give a good
+ * out-of-the-box result we apply a chosen default preset the first time each
+ * one is created — the same transform the "Apply Preset" dropdown runs, so
+ * the outcome is identical to picking that preset by hand.
  *
  * We hook Elementor's command bus (`document/elements/create`) rather than a DOM
  * observer: create fires once per drop with the new element in the model, and we
@@ -25,6 +26,13 @@ import { applyPresetModel, getPresetsForType } from '../element-controls/preset-
 // { $$type: 'aae-rj', value: { desktop: <n> } } — see applySliderSettings. (An
 // earlier attempt wrote a bare { desktop: <n> } and Elementor rejected it as
 // invalid_value, corrupting the slider settings so publish threw.)
+//
+// Two shapes of rule:
+//  - `slideItemType` set: the preset targets a nested item inside the dropped
+//    container (e.g. the slider's slide item), located via findByType().
+//  - `slideItemType` absent: the dropped widget itself is the preset target
+//    (e.g. the progress bar) — `isDefault(container)` decides whether it still
+//    holds its untouched default children and is safe to replace.
 const AUTO_PRESETS = {
   'e-aae-a-loop-grid-slider': {
     slideItemType: 'e-aae-a-loop-slide-item',
@@ -36,6 +44,43 @@ const AUTO_PRESETS = {
       aae_ns_peek: 0,
       aae_ns_gap: 16,
     },
+  },
+  'e-aae-a-progressbar': {
+    presetId: 'progressbar-line',
+    // A fresh drop's children (Track/Fill/Percentage) all carry `aae-pb-default`
+    // — see AAE_A_Progressbar::define_default_children(). Any preset apply, or
+    // hand-built children, drop that class, so this only ever matches an
+    // untouched instance.
+    isDefault: (container) => {
+      const kids = container.children || [];
+      return kids.length > 0 && kids.every((kid) => getClassesList(kid).includes('aae-pb-default'));
+    },
+  },
+  // These widgets carry no marker class on their default children, so
+  // "still default" is decided structurally instead — the exact multiset of
+  // child types define_default_children() seeds. See matchesDefaultShape().
+  'e-aae-a-btn': {
+    presetId: 'button-free-default-divide-div',
+    isDefault: (container) => matchesDefaultShape(container, ['e-paragraph', 'e-svg']),
+  },
+  'e-aae-a-timeline': {
+    presetId: 'timeline-social',
+    isDefault: (container) => matchesDefaultShape(container, Array(4).fill('e-aae-a-timeline-item')),
+  },
+  'e-aae-a-toggle-switcher': {
+    presetId: 'toggle-switcher-style-switch',
+    isDefault: (container) =>
+      matchesDefaultShape(container, [
+        'e-paragraph',
+        'e-div-block',
+        'e-paragraph',
+        'e-aae-a-toggle-pane',
+        'e-aae-a-toggle-pane',
+      ]),
+  },
+  'e-aae-a-social-share': {
+    presetId: 'social-share-outlined',
+    isDefault: (container) => matchesDefaultShape(container, Array(3).fill('e-aae-a-social-share-item')),
   },
 };
 
@@ -50,6 +95,28 @@ const handled = new Set();
 // contains ONLY these (in any order, nothing else) is unstyled and safe to
 // auto-preset. Anything more/different means it's already been styled.
 const DEFAULT_CARD_WIDGETS = ['e-aae-a-post-image', 'e-aae-a-post-title'];
+
+/** The `classes` prop value (array of class names) a container currently carries. */
+function getClassesList(container) {
+  const classes = container?.settings?.attributes?.classes;
+  return classes && Array.isArray(classes.value) ? classes.value : [];
+}
+
+/**
+ * True when `container`'s direct children are exactly `expectedTypes` — same
+ * length, same widget/elType values, order-independent (a multiset match).
+ * Used to detect "still holds its untouched define_default_children() output"
+ * for widgets whose defaults carry no marker class to check instead.
+ */
+function matchesDefaultShape(container, expectedTypes) {
+  const kids = container.children || [];
+  if (kids.length !== expectedTypes.length) {
+    return false;
+  }
+  const kinds = kids.map((c) => c.model?.get?.('widgetType') || c.model?.get?.('elType')).sort();
+  const expected = [...expectedTypes].sort();
+  return kinds.every((k, i) => k === expected[i]);
+}
 
 /**
  * True when `slideItem` still holds exactly the plain default children (Post
@@ -152,31 +219,38 @@ function maybeAutoApply() {
       return;
     }
 
-    // The default children (track → slide item → post image/title) are seeded
-    // asynchronously after create. Poll briefly for the slide item, then apply.
+    // The default children are seeded asynchronously after create. Poll
+    // briefly for the actual preset target (a nested item, or the dropped
+    // container itself), then apply.
     let attempts = 0;
     const tryApply = () => {
       attempts += 1;
-      const slideItem = findByType(container, rule.slideItemType);
-      if (!slideItem) {
-        if (attempts < 20) {
-          window.setTimeout(tryApply, 100);
+
+      // Rules with `slideItemType` target a nested item; rules without it
+      // target the dropped container directly (e.g. the progress bar).
+      const target = rule.slideItemType ? findByType(container, rule.slideItemType) : container;
+      const targetType = rule.slideItemType || type;
+
+      if (!target || !(target.children || []).length) {
+        if (attempts < 40) {
+          window.setTimeout(tryApply, 50);
         }
         return;
       }
 
-      // Belt-and-braces guard: only auto-apply when the slide item still holds its
-      // PLAIN default children (a fresh drop is Post Image + Post Title, nothing
-      // else). If it already carries preset structure — an existing, user-styled
-      // slider that slipped past the load-time baseline due to a model-ready race —
-      // we must NOT clobber it. This makes the feature safe even if the baseline
-      // missed: styled sliders are never restyled, only genuinely-default ones.
-      if (!hasOnlyDefaultChildren(slideItem)) {
+      // Belt-and-braces guard: only auto-apply when the target still holds its
+      // PLAIN default children. If it already carries preset structure — an
+      // existing, user-styled element that slipped past the load-time baseline
+      // due to a model-ready race — we must NOT clobber it. This makes the
+      // feature safe even if the baseline missed: styled elements are never
+      // restyled, only genuinely-default ones.
+      const isDefault = rule.isDefault ? rule.isDefault(target) : hasOnlyDefaultChildren(target);
+      if (!isDefault) {
         handled.add(container.id); // styled already — stop reconsidering it
         return;
       }
 
-      const presets = getPresetsForType(rule.slideItemType);
+      const presets = getPresetsForType(targetType);
       const preset = presets.find((p) => p.id === rule.presetId) || presets[0];
       if (!preset || !preset.model) {
         return;
@@ -184,13 +258,13 @@ function maybeAutoApply() {
 
       handled.add(container.id);
 
-      // Seed slider settings (correct aae-rj shape) BEFORE the preset apply below
+      // Seed extra settings (correct aae-rj shape) BEFORE the preset apply below
       // (which re-selects a new element). Best-effort — never blocks the preset.
       if (rule.settings) {
         applySliderSettings(container, rule.settings);
       }
 
-      applyPresetModel(preset.model, slideItem.id, rule.slideItemType, {
+      applyPresetModel(preset.model, target.id, targetType, {
         title: 'Default preset',
         subtitle: `Applied "${preset.name}"`,
       });
@@ -248,8 +322,14 @@ export function startAutoPreset() {
   // first successful tick establishes the baseline; subsequent ticks apply to
   // genuinely new drops. setInterval (not rAF) so drop detection keeps working
   // even if the frame isn't actively painting; the per-tick scan is cheap.
+  //
+  // 150ms (not the original 1000ms): at 1s, a freshly dropped widget visibly
+  // renders with its bare default children for up to a full second before the
+  // watcher notices and swaps in the preset — a jarring flash of unstyled
+  // content. 150ms keeps that window imperceptible while still being cheap
+  // (a single small tree walk) for any document size in practice.
   establishBaseline();
-  const intervalId = window.setInterval(tick, 1000);
+  const intervalId = window.setInterval(tick, 150);
   stopHeartbeat = () => window.clearInterval(intervalId);
 
   track(() => {
