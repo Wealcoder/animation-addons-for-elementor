@@ -41,14 +41,29 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transform: scale(0.94);
-	transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+		opacity 300ms ease;
 }
 
-.aae-lb-root.is-open .aae-lb-stage { transform: scale(1); }
-.aae-lb-root.anim-fade .aae-lb-stage { transform: none; }
-.aae-lb-root.anim-slide .aae-lb-stage { transform: translateY(24px); }
-.aae-lb-root.anim-slide.is-open .aae-lb-stage { transform: translateY(0); }
+/* Open-animation flavors. Each flavor pairs a CLOSED transform with an
+ * OPEN one, and BOTH selectors carry the `.anim-<flavor>` class so their
+ * specificity beats a lone `.is-open` rule — otherwise fade/zoom/slide all
+ * collapse to the same open state and every option looks identical.
+ *
+ * The overlay adds exactly one `.anim-<flavor>` class from the slide config;
+ * `zoom` is the default when no valid flavor is set. */
+
+/* Zoom (default): scale up from 0.94 → 1. */
+.aae-lb-root.anim-zoom .aae-lb-stage { transform: scale(0.94); opacity: 0; }
+.aae-lb-root.anim-zoom.is-open .aae-lb-stage { transform: scale(1); opacity: 1; }
+
+/* Fade: opacity only, no movement. */
+.aae-lb-root.anim-fade .aae-lb-stage { transform: none; opacity: 0; }
+.aae-lb-root.anim-fade.is-open .aae-lb-stage { transform: none; opacity: 1; }
+
+/* Slide: rise up from below. */
+.aae-lb-root.anim-slide .aae-lb-stage { transform: translateY(40px); opacity: 0; }
+.aae-lb-root.anim-slide.is-open .aae-lb-stage { transform: translateY(0); opacity: 1; }
 
 .aae-lb-media {
 	max-width: 92vw;
@@ -91,7 +106,12 @@
 .aae-lb-html {
 	width: min(1100px, 92vw);
 	max-height: 86vh;
-	overflow: auto;
+	/* Overtall content scrolls inside the panel; overscroll-behavior keeps the
+	 * scroll from chaining to the page even at the top/bottom edge (the page is
+	 * also locked while the lightbox is open). */
+	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
 	padding: clamp(20px, 4vw, 48px);
 	background: #fff;
 	color: #111;
