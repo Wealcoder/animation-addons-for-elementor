@@ -152,7 +152,11 @@ final class Schema {
 		 *
 		 * @param string[] $types Default target element types.
 		 */
-		return apply_filters( 'aae/lightbox/target_types', [ 'e-image' ] );
+		return apply_filters( 
+				'aae/lightbox/target_types',
+				 [],//[ 'e-image' ] 
+				 
+				);
 	}
 
 	/**
