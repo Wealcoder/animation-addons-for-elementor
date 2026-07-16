@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Flip_Box_Face extends Atomic_Element_Base {
+class AAE_A_Flip_Box_Main_Face extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -28,15 +28,15 @@ class AAE_A_Flip_Box_Face extends Atomic_Element_Base {
 	}
 
 	public static function get_type(): string {
-		return 'e-aae-a-flip-box-face';
+		return 'e-aae-a-flip-box-main-face';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-flip-box-face';
+		return 'e-aae-a-flip-box-main-face';
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'Flip Box Face', 'animation-addons-for-elementor' );
+		return esc_html__( 'Flip Box Main Face', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -113,7 +113,7 @@ class AAE_A_Flip_Box_Face extends Atomic_Element_Base {
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-flip-box-face' => __DIR__ . '/aae-a-flip-box-face.html.twig',
+			'elementor/elements/aae-a-flip-box-main-face' => __DIR__ . '/aae-a-flip-box-main-face.html.twig',
 		];
 	}
 }

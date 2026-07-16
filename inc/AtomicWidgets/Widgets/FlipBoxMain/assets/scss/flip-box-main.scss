@@ -1,4 +1,4 @@
-.aae-a-flip-box {
+.aae-a-flip-box-main {
 	display: block !important;
 	height: var( --aae-flip-height, 300px );
 
@@ -8,7 +8,7 @@
 		height: 100%;
 	}
 
-	.aae-a-flip-box-face {
+	.aae-a-flip-box-main-face {
 		position: absolute !important;
 		inset: 0 !important;
 		width: 100% !important;
@@ -43,7 +43,7 @@
 
 	// 3D depth — push inner content slightly toward the viewer.
 	&.flip-box--3d {
-		.aae-a-flip-box-face {
+		.aae-a-flip-box-main-face {
 			-webkit-transform-style: preserve-3d;
 			transform-style: preserve-3d;
 		}
@@ -160,7 +160,7 @@
 
 		// Allow the front face's reverse side to be seen when it rotates
 		// past 90°. Without this override the face would vanish at 90°.
-		.aae-a-flip-box-face.flip-box-front {
+		.aae-a-flip-box-main-face.flip-box-front {
 			-webkit-backface-visibility: visible !important;
 			backface-visibility: visible !important;
 		}

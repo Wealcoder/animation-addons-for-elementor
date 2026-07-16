@@ -493,7 +493,7 @@ questions.
 This is a **new atomic widget family**, not an animation effect. Do not use
 the [Adding a new effect](#adding-a-new-effect) recipe (Schema/Controls/Render
 layered onto an *existing* widget) — instead follow the **Widgets/** pattern
-used by `Offcanvas`, `NestedSlider`, `FlipBox` (container widget + real child
+used by `Offcanvas`, `NestedSlider`, `FlipBoxMain` (container widget + real child
 element widgets registered independently in `class-atomic.php`'s
 `widgets_registry`, PHP twig render via `Has_Element_Template`, own JS bundle).
 See [File map](#file-map) and `inc/AtomicWidgets/Widgets/` for the shape to

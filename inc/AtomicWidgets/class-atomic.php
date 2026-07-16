@@ -270,7 +270,7 @@ final class Atomic
 			'aae-a-toggle-pane',
 			'aae-a-toggle-pane-main',
 			'aae-a-video-mask-btn',
-			'aae-a-flip-box-face',
+			'aae-a-flip-box-main-face',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-timeline-item',
@@ -1660,8 +1660,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-flip-box' => [
-				'label'        => 'Flip Box',
+			'aae-a-flip-box-main' => [
+				'label'        => 'Flip Box Main',
 				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
 				'icon'         => 'eicon-flip-box',
 				'is_pro'       => false,
@@ -1682,9 +1682,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-flip-box-face' => [
-				'label'        => 'Flip Box Face (Internal)',
-				'description'  => 'Internal front/back face container for Flip Box.',
+			'aae-a-flip-box-main-face' => [
+				'label'        => 'Flip Box Main Face (Internal)',
+				'description'  => 'Internal front/back face container for Flip Box Main.',
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -2678,19 +2678,19 @@ final class Atomic
 			'style_path'    => '/assets/atomic/css/nav.css',
 		],
 
-		'aae-a-flip-box' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
-			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
-			'script_handle' => 'aae-a-flip-box-js',
-			'script_path'   => '/assets/atomic/js/flip-box.js',
+		'aae-a-flip-box-main' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main',
+			'file'          => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main.php',
+			'script_handle' => 'aae-a-flip-box-main-js',
+			'script_path'   => '/assets/atomic/js/flip-box-main.js',
 			'has_script'    => true,
-			'style_handle'  => 'aae-a-flip-box-css',
-			'style_path'    => '/assets/atomic/js/flip-box.css',
+			'style_handle'  => 'aae-a-flip-box-main-css',
+			'style_path'    => '/assets/atomic/js/flip-box-main.css',
 		],
 
-		'aae-a-flip-box-face' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
-			'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
+		'aae-a-flip-box-main-face' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main_Face',
+			'file'       => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main-face.php',
 			'has_script' => false,
 		],
 

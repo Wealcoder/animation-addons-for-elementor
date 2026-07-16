@@ -3,7 +3,7 @@
 {% set height         = settings.flip_height | default(300) %}
 {% set show_back_face = settings.show_back_face is defined ? settings.show_back_face : true %}
 
-{% set classes_arr = ['aae-a-flip-box', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'flip-box-' ~ flip_type] %}
+{% set classes_arr = ['aae-a-flip-box-main', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'flip-box-' ~ flip_type] %}
 {% if flip_3d %}{% set classes_arr = classes_arr | merge([flip_3d]) %}{% endif %}
 {% if not show_back_face %}{% set classes_arr = classes_arr | merge(['flip-box--back-hidden']) %}{% endif %}
 {% set classes = classes_arr | merge(settings.classes | default([])) | join(' ') %}

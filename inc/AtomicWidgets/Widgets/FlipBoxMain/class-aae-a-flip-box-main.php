@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -18,13 +18,13 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-require_once __DIR__ . '/class-aae-a-flip-box-face.php';
+require_once __DIR__ . '/class-aae-a-flip-box-main-face.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Flip_Box extends Atomic_Element_Base {
+class AAE_A_Flip_Box_Main extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -33,15 +33,15 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 	}
 
 	public static function get_type(): string {
-		return 'e-aae-a-flip-box';
+		return 'e-aae-a-flip-box-main';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-flip-box';
+		return 'e-aae-a-flip-box-main';
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Flip Box', 'animation-addons-for-elementor' );
+		return esc_html__( 'AAE Flip Box Main', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -124,39 +124,39 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 
 	protected function define_default_children(): array {
 		return [
-			AAE_A_Flip_Box_Face::generate()
+			AAE_A_Flip_Box_Main_Face::generate()
 				->settings( [
 					'face_side' => String_Prop_Type::generate( 'front' ),
 				] )
 				->editor_settings( [ 'title' => 'Front Face' ] )
-				->children( AAE_A_Flip_Box_Face::build_default_children( 'Front Title', 'This is front side content.' ) )
+				->children( AAE_A_Flip_Box_Main_Face::build_default_children( 'Front Title', 'This is front side content.' ) )
 				->build(),
 
-			AAE_A_Flip_Box_Face::generate()
+			AAE_A_Flip_Box_Main_Face::generate()
 				->settings( [
 					'face_side' => String_Prop_Type::generate( 'back' ),
 				] )
 				->editor_settings( [ 'title' => 'Back Face' ] )
-				->children( AAE_A_Flip_Box_Face::build_default_children( 'Back Title', 'This is back side content.' ) )
+				->children( AAE_A_Flip_Box_Main_Face::build_default_children( 'Back Title', 'This is back side content.' ) )
 				->build(),
 		];
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'e-aae-a-flip-box-face' ];
+		return [ 'e-aae-a-flip-box-main-face' ];
 	}
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-flip-box' => __DIR__ . '/aae-a-flip-box.html.twig',
+			'elementor/elements/aae-a-flip-box-main' => __DIR__ . '/aae-a-flip-box-main.html.twig',
 		];
 	}
 
 	public function get_script_depends(): array {
-		return [ 'aae-a-flip-box-js' ];
+		return [ 'aae-a-flip-box-main-js' ];
 	}
 
 	public function get_style_depends(): array {
-		return [ 'aae-a-flip-box-css' ];
+		return [ 'aae-a-flip-box-main-css' ];
 	}
 }
