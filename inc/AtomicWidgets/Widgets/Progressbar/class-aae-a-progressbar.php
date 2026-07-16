@@ -27,6 +27,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use WCF_ADDONS\Atomic\CustomCss\Schema as CustomCss_Schema;
 
 /**
  * AAE Basic Progress Bar — an open atomic container styled like a progress
@@ -152,11 +154,13 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 			// `aae-pb-default` marks these as the widget's own fallback children
 			// (not preset-applied): Element_Builder has no way to attach a real
 			// local `styles` block the way a hand-authored JSON preset can, so
-			// this bare look is carried by the small scoped fallback in
-			// progressbar.scss instead of a native Style-tab value. Every
-			// bundled preset styles its own track/fill/dot/label children
-			// natively and does NOT carry this class, so the fallback CSS
-			// never touches a preset-applied instance.
+			// this bare look is carried via the Custom CSS extension props
+			// (aae_custom_css_enable/_css — see WCF_ADDONS\Atomic\CustomCss\Schema)
+			// baked straight into the Fill child's settings below, instead of a
+			// native Style-tab value or a shipped CSS file. Every bundled preset
+			// styles its own track/fill/dot/label children natively and does NOT
+			// carry this class, so this fallback never touches a preset-applied
+			// instance.
 			Div_Block::generate()
 				->settings([
 					'classes' => Classes_Prop_Type::generate(['aae-progressbar-track', 'aae-pb-default']),
@@ -166,6 +170,10 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 						->editor_settings(['title' => 'Fill'])
 						->settings([
 							'classes' => Classes_Prop_Type::generate(['aae-progressbar-fill', 'aae-pb-default']),
+							CustomCss_Schema::ENABLE => Responsive_Json_Prop_Type::generate(['desktop' => true]),
+							CustomCss_Schema::CSS    => Responsive_Json_Prop_Type::generate([
+								'desktop' => 'selector{height:100%;width:0%;background:currentColor;border-radius:inherit;transition:width 1.4s ease-in-out}',
+							]),
 						])
 						->build(),
 				])

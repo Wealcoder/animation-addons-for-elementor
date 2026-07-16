@@ -1,18 +1,13 @@
-.aae-progressbar {
-    .aae-progressbar-path {
-        stroke: currentColor;
-        transition: stroke-dashoffset 1.4s ease-in-out;
-    }
-    .aae-progressbar-fill.aae-pb-default {
-        height: 100%;
-        background: currentColor;
-        border-radius: inherit;
-    }
- .aae-progressbar-fill.aae-pb-default {
-        height: 100%;
-        width: 0%;
-        background: currentColor;
-        border-radius: inherit;
-        transition: width 1.4s ease-in-out;
-    }
-}
+// Intentionally empty: this widget ships with no hand-written CSS.
+//
+// - Circle preset's `.aae-progressbar-path` stroke/transition now lives in
+//   presets/progressbar-circle.json via the Custom CSS extension props
+//   (aae_custom_css_enable/_css) on the e-svg element.
+// - The bare/no-preset fallback's `.aae-progressbar-fill.aae-pb-default`
+//   rule now lives the same way, set directly in
+//   class-aae-a-progressbar.php's define_default_children().
+// - Line/Dot preset children already carry full native atomic styles and
+//   never needed this file.
+//
+// Kept as an empty import (rather than removed) so the registered
+// `aae-a-progressbar-css` style handle / build output stays intact.
