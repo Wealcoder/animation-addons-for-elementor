@@ -1,0 +1,38 @@
+{% set classes = ['aae-a-toggle-switcher-main', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'style-' ~ (settings.ts_style | default('1'))] | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-element_type="{{ type }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+
+    {% set ts_style_vars = '' %}
+    {% if settings.ts_label_color        is defined and settings.ts_label_color        is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-color:'        ~ settings.ts_label_color        ~ ';' %}{% endif %}
+    {% if settings.ts_label_active_color is defined and settings.ts_label_active_color is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-active-color:' ~ settings.ts_label_active_color ~ ';' %}{% endif %}
+    {% if settings.ts_label_active_bg    is defined and settings.ts_label_active_bg    is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-label-active-bg:'    ~ settings.ts_label_active_bg    ~ ';' %}{% endif %}
+    {% if settings.ts_switcher_bg        is defined and settings.ts_switcher_bg        is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-switcher-bg:'        ~ settings.ts_switcher_bg        ~ ';' %}{% endif %}
+    {% if settings.ts_switcher_active_bg is defined and settings.ts_switcher_active_bg is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-switcher-active-bg:' ~ settings.ts_switcher_active_bg ~ ';' %}{% endif %}
+    {% if settings.ts_indicator_color    is defined and settings.ts_indicator_color    is not empty %}{% set ts_style_vars = ts_style_vars ~ '--aae-ts-indicator-color:'    ~ settings.ts_indicator_color    ~ ';' %}{% endif %}
+
+    <div class="slide-toggle-wrapper"{% if ts_style_vars is not empty %} style="{{ ts_style_vars }}"{% endif %}>
+        <label for="ts-{{ id }}" class="before_label active">
+            {{ settings.ts_label_before | default('Monthly') | e }}
+        </label>
+        <input type="checkbox" id="ts-{{ id }}">
+        <label for="ts-{{ id }}" class="switcher"></label>
+        <label for="ts-{{ id }}" class="after_label">
+            {{ settings.ts_label_after | default('Yearly') | e }}
+        </label>
+    </div>
+
+    <div class="toggle-content">
+        {{ children_placeholder | raw }}
+    </div>
+</div>

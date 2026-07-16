@@ -268,6 +268,7 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
+			'aae-a-toggle-pane-main',
 			'aae-a-video-mask-btn',
 			'aae-a-flip-box-face',
 			'aae-a-post-card',
@@ -306,6 +307,17 @@ final class Atomic
 			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
+			// AAE Form parts — seeded as the form's default children, so they
+			// must always be registered (same reasoning as the Loop pieces).
+			'aae-a-form-label',
+			'aae-a-form-input',
+			'aae-a-form-textarea',
+			'aae-a-form-checkbox',
+			'aae-a-form-radio',
+			'aae-a-form-select',
+			'aae-a-form-submit',
+			'aae-a-form-success-message',
+			'aae-a-form-error-message',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -1277,7 +1289,29 @@ final class Atomic
 			],
 
 			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar',
+				'label'        => 'Progress Bar Template',
+				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'progress',
+					'progressbar',
+					'bar',
+					'template',
+					'container',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-main' => [
+				'label'        => 'Progress Bar Main',
 				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
@@ -1293,7 +1327,7 @@ final class Atomic
 					'atomic',
 				],
 				'category'     => 'general',
-				'order'        => 12,
+				'order'        => 13,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1333,6 +1367,47 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-main' => [
+				'label'        => 'Toggle Switcher Main',
+				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle',
+					'switch',
+					'tabs',
+					'atomic',
+					'switcher',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 15,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'label'        => 'Toggle Pane Main (Internal)',
+				'description'  => 'Internal child container for Toggle Switcher Main.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toggle pane',
+					'internal',
+					'main',
+				],
+				'category'     => 'general',
+				'order'        => 16,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1389,6 +1464,184 @@ final class Atomic
 				'icon'            => 'eicon-close',
 				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
 				'hide_from_panel' => true,
+			'aae-a-form' => [
+				'label'        => 'Form',
+				'description'  => 'Atomic-first form: real child fields, locked submit button. Milestone 1 skeleton — no submit logic yet.',
+				'icon'         => 'eicon-form-horizontal',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form',
+					'contact',
+					'lead',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-label' => [
+				'label'        => 'Form Label',
+				'description'  => 'Label widget for AAE Form — linked to an input by ID; drag from the panel to add more fields.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form label',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-input' => [
+				'label'        => 'Form Input',
+				'description'  => 'Input widget for AAE Form — text/email/number/tel/password via a type prop.',
+				'icon'         => 'eicon-form-horizontal',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form input',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-textarea' => [
+				'label'        => 'Form Textarea',
+				'description'  => 'Textarea widget for AAE Form.',
+				'icon'         => 'eicon-textarea',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form textarea',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-checkbox' => [
+				'label'        => 'Form Checkbox',
+				'description'  => 'Checkbox widget for AAE Form — fully styleable, with checked state.',
+				'icon'         => 'eicon-check-circle',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form checkbox',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-radio' => [
+				'label'        => 'Form Radio',
+				'description'  => 'Radio button widget for AAE Form — radios sharing a group name are exclusive.',
+				'icon'         => 'eicon-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form radio',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-select' => [
+				'label'        => 'Form Select',
+				'description'  => 'Select/dropdown widget for AAE Form — options one per line, value|Label.',
+				'icon'         => 'eicon-select',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form select',
+					'dropdown',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-success-message' => [
+				'label'        => 'Form Success Message (Internal)',
+				'description'  => 'Locked status container shown when the form submits successfully.',
+				'icon'         => 'eicon-check',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form success',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-error-message' => [
+				'label'        => 'Form Error Message (Internal)',
+				'description'  => 'Locked status container shown when the form submission fails.',
+				'icon'         => 'eicon-close',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form error',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-submit' => [
+				'label'        => 'Form Submit Button',
+				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form submit',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
 			],
 
 			'aae-a-nav' => [
@@ -2290,6 +2543,16 @@ final class Atomic
 				'style_path'    => '/assets/atomic/js/progressbar.css',
 			],
 
+			'aae-a-progressbar-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
+				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
+				'script_handle' => 'aae-a-progressbar-main-js',
+				'script_path'   => '/assets/atomic/js/progressbar-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-progressbar-main-css',
+				'style_path'    => '/assets/atomic/js/progressbar-main.css',
+			],
+
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -2303,6 +2566,22 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-toggle-switcher-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
+				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
+				'script_handle' => 'aae-a-toggle-switcher-main-js',
+				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-toggle-switcher-main-css',
+				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
+				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
@@ -2328,6 +2607,67 @@ final class Atomic
 			'aae-a-offcanvas-close' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
 				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
+			'aae-a-form' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form',
+				'file'          => 'Widgets/Form/class-aae-a-form.php',
+				'script_handle' => 'aae-a-form-js',
+				'script_path'   => '/assets/atomic/js/form.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-form-css',
+				'style_path'    => '/assets/atomic/css/form.css',
+			],
+
+			'aae-a-form-label' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Label',
+				'file'       => 'Widgets/Form/class-aae-a-form-label.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-input' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Input',
+				'file'       => 'Widgets/Form/class-aae-a-form-input.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-textarea' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Textarea',
+				'file'       => 'Widgets/Form/class-aae-a-form-textarea.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-checkbox' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Checkbox',
+				'file'       => 'Widgets/Form/class-aae-a-form-checkbox.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-radio' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Radio',
+				'file'       => 'Widgets/Form/class-aae-a-form-radio.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-select' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Select',
+				'file'       => 'Widgets/Form/class-aae-a-form-select.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-success-message' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Success_Message',
+				'file'       => 'Widgets/Form/class-aae-a-form-success-message.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-error-message' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Error_Message',
+				'file'       => 'Widgets/Form/class-aae-a-form-error-message.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-submit' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit',
+				'file'       => 'Widgets/Form/class-aae-a-form-submit.php',
 				'has_script' => false,
 			],
 

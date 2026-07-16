@@ -1,0 +1,91 @@
+// AAE Form — minimal structural CSS only. Layout (flex-wrap, gap, padding)
+// and per-part looks (input borders, button colors, checkbox checkmark)
+// come from each element's define_base_styles() so they stay
+// user-overridable in the Style panel. This file only covers the bits
+// atomic base styles can't express.
+
+// cursor isn't worth a base-style slot (native ships it inline), and
+// box-sizing isn't a style-schema key at all.
+.aae-a-form-submit {
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.aae-a-form-checkbox,
+.aae-a-form-radio,
+.aae-a-form-select {
+    cursor: pointer;
+}
+
+// Status-message reveal (native e-form pattern): the message containers are
+// display:none via their base style; the form's form-state-{value} class —
+// set by the States toggle now, by the submit runtime in Milestone 5 —
+// shows the matching one. Mirrors the inline CSS Elementor core adds for
+// e-form (modules/atomic-widgets/module.php).
+form[data-element_type="e-aae-a-form"].form-state-success [data-element_type="e-aae-a-form-success-message"],
+form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aae-a-form-error-message"] {
+    display: block;
+}
+
+// Bot Shield honeypot (Milestone 8): off-screen, zero-footprint. NOT
+// display:none — some fillers skip display:none fields, defeating the trap.
+.aae-form-hp {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------
+// Milestone 5 — submit runtime states (form.js). No GSAP, no keyframes;
+// motion is a single opt-in transition gated by prefers-reduced-motion.
+// ---------------------------------------------------------------------
+
+// Inline field error, injected after the invalid control (or after the
+// checkbox row). aria-describedby links it to the field.
+.aae-form-field-error {
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: -6px; // pull toward its field across the form's gap.
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #870000;
+}
+
+.aae-a-form .aae-form-invalid {
+    border-color: #870000 !important;
+}
+
+// Network/state copy (slow / offline / timeout / duplicate / rate-limit).
+// Distinct from the editor-authored success/error message containers.
+.aae-form-runtime-message {
+    flex-basis: 100%;
+    width: 100%;
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: #870000;
+
+    &[data-tone="info"] {
+        color: inherit;
+        opacity: 0.75;
+    }
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+// In-flight submit: disabled + aria-busy while the request runs.
+.aae-a-form-submit[aria-busy="true"] {
+    opacity: 0.7;
+    cursor: progress;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .aae-form-field-error,
+    .aae-form-runtime-message {
+        transition: opacity 0.15s ease;
+    }
+}

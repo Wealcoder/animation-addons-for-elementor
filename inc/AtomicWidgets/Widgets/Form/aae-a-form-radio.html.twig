@@ -1,0 +1,23 @@
+{#
+  AAE Form Radio — renders <input type="radio">.
+  Radios sharing the same name form one exclusive group; name falls back to
+  radio_<_cssid>, then radio_<element id>.
+#}
+{% set classes = ['aae-a-form-radio', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? 'radio_' ~ settings._cssid : 'radio_' ~ id) %}
+
+<input
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    type="radio"
+    name="{{ input_name | e('html_attr') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.value is defined and settings.value is not empty %}value="{{ settings.value | e('html_attr') }}"{% endif %}
+    {% if settings.required %}required aria-required="true"{% endif %}
+    {% if settings.checked %}checked{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+/>

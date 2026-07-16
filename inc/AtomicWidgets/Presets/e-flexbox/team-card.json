@@ -10,25 +10,36 @@
 					"id": "aaefx02",
 					"settings": {
 						"classes": { "$$type": "classes", "value": [ "e-aaefx02-card" ] },
-						"aae_custom_css_enable": { "$$type": "aae-rj", "value": { "desktop": true } },
-						"aae_custom_css_css": {
-							"$$type": "aae-rj",
-							"value": {
-								"desktop": "selector{position:relative;overflow:hidden}selector img{display:block;width:100%;height:auto}selector .aae-team-overlay{position:absolute;left:0;right:0;bottom:0;transform:translateY(101%);transition:transform .35s ease}selector:hover .aae-team-overlay,selector:focus-within .aae-team-overlay{transform:translateY(0)}@media (prefers-reduced-motion: reduce){selector .aae-team-overlay{transition:none}}"
-							}
-						}
+						"aae_v4_fch_source": { "$$type": "boolean", "value": true },
+						"aae_v4_fch_scope": { "$$type": "string", "value": "direct" }
 					},
 					"elements": [
 						{
 							"id": "aaefx03",
 							"settings": {
-								"classes": { "$$type": "classes", "value": [] }
+								"classes": { "$$type": "classes", "value": [ "e-aaefx03-photo" ] }
 							},
 							"elements": [],
 							"isInner": false,
 							"widgetType": "e-image",
 							"elType": "widget",
-							"styles": [],
+							"styles": {
+								"e-aaefx03-photo": {
+									"id": "e-aaefx03-photo",
+									"label": "local",
+									"type": "class",
+									"variants": [
+										{
+											"meta": { "breakpoint": "desktop", "state": null },
+											"props": {
+												"display": { "$$type": "string", "value": "block" },
+												"width": { "$$type": "size", "value": { "size": 100, "unit": "%" } }
+											},
+											"custom_css": null
+										}
+									]
+								}
+							},
 							"interactions": [],
 							"editor_settings": { "title": "Photo" },
 							"version": "0.0"
@@ -36,7 +47,8 @@
 						{
 							"id": "aaefx04",
 							"settings": {
-								"classes": { "$$type": "classes", "value": [ "e-aaefx04-overlay", "aae-team-overlay" ] }
+								"classes": { "$$type": "classes", "value": [ "e-aaefx04-overlay" ] },
+								"aae_v4_fch_target": { "$$type": "boolean", "value": true }
 							},
 							"elements": [
 								{
@@ -126,9 +138,13 @@
 									"variants": [
 										{
 											"meta": { "breakpoint": "desktop", "state": null },
-											"props": {
-												"flex-direction": { "$$type": "string", "value": "column" },
-												"background": {
+										"props": {
+											"flex-direction": { "$$type": "string", "value": "column" },
+											"position": { "$$type": "string", "value": "absolute" },
+											"inset-inline-start": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+											"inset-inline-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+											"inset-block-end": { "$$type": "size", "value": { "size": 0, "unit": "px" } },
+											"background": {
 													"$$type": "background",
 													"value": {
 														"color": { "$$type": "color", "value": "rgba(17, 24, 39, 0.88)" }
@@ -141,6 +157,66 @@
 														"inline-end": { "$$type": "size", "value": { "size": 20, "unit": "px" } },
 														"block-end": { "$$type": "size", "value": { "size": 18, "unit": "px" } },
 														"inline-start": { "$$type": "size", "value": { "size": 20, "unit": "px" } }
+													}
+												},
+												"transform": {
+													"$$type": "transform",
+													"value": {
+														"transform-functions": {
+															"$$type": "transform-functions",
+															"value": [
+																{
+																	"$$type": "transform-move",
+																	"value": {
+																		"x": { "$$type": "size", "value": { "size": 0, "unit": "%" } },
+																		"y": { "$$type": "size", "value": { "size": 101, "unit": "%" } },
+																		"z": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+																	}
+																}
+															]
+														}
+													}
+												},
+												"transition": {
+													"$$type": "transition",
+													"value": [
+														{
+															"$$type": "selection-size",
+															"value": {
+																"selection": {
+																	"$$type": "key-value",
+																	"value": {
+																		"key": { "$$type": "string", "value": "All properties" },
+																		"value": { "$$type": "string", "value": "all" }
+																	}
+																},
+																"size": { "$$type": "size", "value": { "size": 350, "unit": "ms" } }
+															}
+														}
+													]
+												}
+											},
+											"custom_css": null
+										},
+										{
+											"meta": { "breakpoint": "desktop", "state": "e--selected" },
+											"props": {
+												"transform": {
+													"$$type": "transform",
+													"value": {
+														"transform-functions": {
+															"$$type": "transform-functions",
+															"value": [
+																{
+																	"$$type": "transform-move",
+																	"value": {
+																		"x": { "$$type": "size", "value": { "size": 0, "unit": "%" } },
+																		"y": { "$$type": "size", "value": { "size": 0, "unit": "%" } },
+																		"z": { "$$type": "size", "value": { "size": 0, "unit": "px" } }
+																	}
+																}
+															]
+														}
 													}
 												}
 											},
@@ -164,11 +240,13 @@
 							"variants": [
 								{
 									"meta": { "breakpoint": "desktop", "state": null },
-									"props": {
-										"flex-direction": { "$$type": "string", "value": "column" },
-										"width": { "$$type": "size", "value": { "size": 320, "unit": "px" } },
-										"border-radius": { "$$type": "size", "value": { "size": 14, "unit": "px" } }
-									},
+							"props": {
+								"flex-direction": { "$$type": "string", "value": "column" },
+								"width": { "$$type": "size", "value": { "size": 320, "unit": "px" } },
+								"border-radius": { "$$type": "size", "value": { "size": 14, "unit": "px" } },
+								"position": { "$$type": "string", "value": "relative" },
+								"overflow": { "$$type": "string", "value": "hidden" }
+							},
 									"custom_css": null
 								}
 							]
