@@ -280,18 +280,80 @@ function findDropdownContainer( itemId ) {
  * @elementor/editor-elements is the reliable v4 primitive (raw
  * $e.run('document/elements/select') is not — see nav.js). Called with a KNOWN
  * id in the same tick it was created/resolved, so it never races a re-find. */
+/* The editing-panel tab buttons (General / Style / Interactions). Reading &
+ * restoring the active one lets us SELECT a container without Elementor's
+ * default "new container opens on Style" behaviour yanking the user off the tab
+ * they were on. */
+const PANEL_TAB_LABELS = [ 'General', 'Content', 'Settings', 'Style', 'Interactions', 'Advanced' ];
+
+function getPanelTabButtons() {
+	return [ ...window.document.querySelectorAll( '#elementor-panel button, #elementor-panel [role="tab"]' ) ]
+		.filter( ( n ) => PANEL_TAB_LABELS.includes( n.textContent.trim() ) && n.getBoundingClientRect().width > 0 );
+}
+
+function isTabActive( btn ) {
+	return btn.getAttribute( 'aria-selected' ) === 'true' ||
+		/Mui-selected|elementor-active|(^|\s)active(\s|$)/.test( btn.className.toString() );
+}
+
+function readActivePanelTab() {
+	const active = getPanelTabButtons().find( isTabActive );
+	return active ? active.textContent.trim() : null;
+}
+
+function restorePanelTab( label ) {
+	if ( ! label ) {
+		return;
+	}
+	const target = getPanelTabButtons().find( ( n ) => n.textContent.trim() === label );
+	if ( target && ! isTabActive( target ) ) {
+		target.click();
+	}
+}
+
+/* Hold the panel on `label` for a short window. Elementor opens a freshly
+ * created/selected container on the Style tab, and that switch lands only after
+ * the new element's panel mounts — LATER than a couple of frames — so a few fixed
+ * timeouts lose the race. This re-asserts the tab every frame until `durationMs`,
+ * clicking only when Elementor actually flipped it away (isTabActive guards), so
+ * it never spams nor fights an already-correct tab. */
+function keepPanelTab( label, durationMs = 900 ) {
+	if ( ! label ) {
+		return;
+	}
+	const start = performance.now();
+	const tick = () => {
+		restorePanelTab( label );
+		if ( performance.now() - start < durationMs ) {
+			window.requestAnimationFrame( tick );
+		}
+	};
+	window.requestAnimationFrame( tick );
+}
+
 function selectDropdownById( dropdownId ) {
-	if ( ! dropdownId || isEditorModalOrPopoverActive() ) {
+	if ( ! dropdownId ) {
 		return;
 	}
-	if ( getSelectedElementId() === dropdownId ) {
-		return;
-	}
-	try {
-		selectElement( dropdownId );
-	} catch ( error ) {
-		/* best effort */
-	}
+	/* Plain SELECT only — NEVER touch the panel tab. Elementor keeps whatever tab
+	 * is active when you select an existing element, so clicking an item just
+	 * selects its dropdown container with no forced navigation to any tab. Retried
+	 * on the next frame because the model can lag a tick after create/normalize —
+	 * the timing gap behind the old "selection worked only sometimes". */
+	const attempt = () => {
+		if ( isEditorModalOrPopoverActive() ) {
+			return;
+		}
+		if ( getSelectedElementId() !== dropdownId ) {
+			try {
+				selectElement( dropdownId );
+			} catch ( error ) {
+				/* best effort */
+			}
+		}
+	};
+	attempt();
+	window.requestAnimationFrame( attempt );
 }
 
 /* Resolve (creating/repairing if needed) the item's dropdown flexbox and select
@@ -801,7 +863,427 @@ export function MobileNavLifecycleControl() {
 	);
 }
 
+/* Ensure an item owns a dropdown flexbox (its submenu container); create it +
+ * flip has_dropdown on if missing. Module-level twin of the closure inside
+ * SubItemsManager so the flat tree can nest an item under any parent. */
+function ensureItemFlexbox( itemId ) {
+	const item = getContainer( itemId );
+	if ( ! item ) {
+		return null;
+	}
+	const existing = normalizeDropdownModel( itemId );
+	if ( existing ) {
+		return existing;
+	}
+	const result = createElements( {
+		title: 'Dropdown',
+		subtitle: 'Dropdown added',
+		elements: [ {
+			container: item,
+			model: {
+				elType: 'e-flexbox',
+				editor_settings: { title: 'Dropdown' },
+				settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+			},
+			options: { at: 0 },
+		} ],
+	} );
+	updateElementSettings( {
+		id: itemId,
+		props: { has_dropdown: prop( 'boolean', true ) },
+	} );
+	const flexId = result?.createdElements?.[ 0 ]?.containerId;
+	return flexId ? getContainer( flexId ) : findFirstChildOfType( getContainer( itemId ), 'e-flexbox' );
+}
+
+/* Walk the whole nav tree into a FLAT, depth-annotated list (WP-menu style):
+ * nav → nav-items (depth 0); each item's dropdown flexbox → nav-items (depth 1);
+ * and so on, unbounded. Each row: { id, depth, title, parentId }. parentId is the
+ * CONTAINER the item currently lives in (nav root or a dropdown flexbox). */
+function useNavTree( navId ) {
+	const cacheRef = React.useRef( { signature: null, value: [] } );
+
+	return useListenTo(
+		[
+			v1ReadyEvent(),
+			commandEndEvent( 'document/elements/create' ),
+			commandEndEvent( 'document/elements/delete' ),
+			commandEndEvent( 'document/elements/update' ),
+			commandEndEvent( 'document/elements/settings' ),
+			commandEndEvent( 'document/elements/set-settings' ),
+			commandEndEvent( 'document/elements/duplicate' ),
+			commandEndEvent( 'document/elements/move' ),
+		],
+		() => {
+			const out = [];
+			const walk = ( containerId, depth ) => {
+				const container = getContainer( containerId );
+				container?.model?.get?.( 'elements' )?.each?.( ( model ) => {
+					if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
+						return;
+					}
+					if ( model.get( 'isLocked' ) === true ) {
+						model.set( 'isLocked', false, { silent: true } );
+					}
+					const id = model.get( 'id' );
+					const itemContainer = getContainer( id );
+					const text = readProp( itemContainer?.settings?.get?.( 'text' ), {} );
+					const editorSettings = model.get( 'editor_settings' ) || {};
+					const title = readProp( text?.content, '' ) || editorSettings.title || 'Menu Item';
+					out.push( { id, depth, title, parentId: containerId } );
+					const flex = findFirstChildOfType( itemContainer, 'e-flexbox' );
+					if ( flex ) {
+						walk( flex.id, depth + 1 );
+					}
+				} );
+			};
+			walk( navId, 0 );
+
+			const signature = out.map( ( r ) => `${ r.id }:${ r.depth }:${ r.title }:${ r.parentId }` ).join( '|' );
+			if ( cacheRef.current.signature === signature ) {
+				return cacheRef.current.value;
+			}
+			cacheRef.current = { signature, value: out };
+			return out;
+		},
+		[ navId ]
+	);
+}
+
 export function NavItemsControl( { label } ) {
+	const { element } = useElement();
+	const navId = element.id;
+
+	const tree = useNavTree( navId );
+	const INDENT = 18;
+
+	const [ expandedId, setExpandedId ] = React.useState( null );
+	const [ dragId, setDragId ]         = React.useState( null );
+	const [ dropIndex, setDropIndex ]   = React.useState( null );
+	const [ dropDepth, setDropDepth ]   = React.useState( 0 );
+
+	React.useEffect( () => {
+		return syncEditorDropdownPreviewAfterRender( navId, expandedId );
+	}, [ navId, expandedId, tree ] );
+
+	/* Contiguous subtree [start, end) of the row at `index` (itself + everything
+	 * deeper that immediately follows). Used to lift a whole branch while dragging
+	 * and to forbid dropping a branch inside itself. */
+	const subtreeRange = ( index ) => {
+		const baseDepth = tree[ index ].depth;
+		let end = index + 1;
+		while ( end < tree.length && tree[ end ].depth > baseDepth ) {
+			end++;
+		}
+		return [ index, end ];
+	};
+
+	const handleAddMain = () => {
+		const nav = getContainer( navId );
+		if ( ! nav ) {
+			return;
+		}
+		const topCount = tree.filter( ( r ) => r.depth === 0 ).length;
+		const result = createElements( {
+			title: 'Menu Item',
+			subtitle: 'Menu item added',
+			elements: [ {
+				container: nav,
+				model: buildNavItemModel( topCount + 1 ),
+				options: { at: topCount },
+			} ],
+		} );
+		const id = result?.createdElements?.[ 0 ]?.containerId;
+		if ( id ) {
+			setExpandedId( id );
+		}
+	};
+
+	const handleAddChild = ( parentRow ) => {
+		const flexbox = ensureItemFlexbox( parentRow.id );
+		if ( ! flexbox ) {
+			return;
+		}
+		const count = flexbox.model?.get?.( 'elements' )?.length ?? 0;
+		const result = createElements( {
+			title: 'Sub Item',
+			subtitle: 'Sub-menu item added',
+			elements: [ {
+				container: flexbox,
+				model: buildSubItemModel( count + 1 ),
+				options: { at: count },
+			} ],
+		} );
+		const id = result?.createdElements?.[ 0 ]?.containerId;
+		if ( id ) {
+			setExpandedId( id );
+		}
+	};
+
+	const handleDuplicate = ( row ) => {
+		duplicateElements( {
+			elementIds: [ row.id ],
+			title: 'Menu Item',
+			subtitle: 'Menu item duplicated',
+		} );
+	};
+
+	const handleRemove = ( row ) => {
+		removeElements( {
+			elementIds: [ row.id ],
+			title: 'Menu Item',
+			subtitle: 'Menu item removed',
+		} );
+		if ( expandedId === row.id ) {
+			setExpandedId( null );
+		}
+	};
+
+	/* Clicking a row = "open this item's dropdown container for editing/styling":
+	 * if the item already has a dropdown, SELECT that placeholder container (only —
+	 * no forced tab). If it has none, just expand the inline settings so the user
+	 * can enable one. Settings for a dropdown item stay reachable via the ✎ icon. */
+	const handleRowActivate = ( row ) => {
+		const flexbox = findFirstChildOfType( getContainer( row.id ), 'e-flexbox' );
+		if ( flexbox?.id ) {
+			markDropdownFlexbox( flexbox );
+			syncEditorNestedPreview( row.id, true );
+			selectDropdownById( flexbox.id );
+			return;
+		}
+		setExpandedId( expandedId === row.id ? null : row.id );
+	};
+
+	/* While dragging over row `overIndex`, decide the insertion index (below the
+	 * hovered row's own subtree) and the target depth from the pointer's X offset
+	 * — the WordPress "drag right to nest" gesture. Depth is clamped to
+	 * [0, depthOfItemAbove + 1]. */
+	const handleDragOver = ( event, overIndex ) => {
+		event.preventDefault();
+		if ( dragId === null ) {
+			return;
+		}
+		const dragIndex = tree.findIndex( ( r ) => r.id === dragId );
+		if ( dragIndex < 0 ) {
+			return;
+		}
+		const [ start, end ] = subtreeRange( dragIndex );
+		// Can't drop onto itself / its own subtree.
+		if ( overIndex >= start && overIndex < end ) {
+			return;
+		}
+
+		// Insert AFTER the hovered row's whole subtree.
+		const [ , overEnd ] = subtreeRange( overIndex );
+		let insertAt = overEnd;
+		// If the hovered row is below the dragged branch, indices shift once the
+		// branch is lifted — normalize to a "visible list" index.
+		if ( insertAt > start ) {
+			insertAt -= ( end - start );
+		}
+
+		// Depth bounds from the item that will sit ABOVE the insertion point
+		// (in the visible list, i.e. excluding the dragged branch).
+		const visible = tree.filter( ( _, i ) => i < start || i >= end );
+		const aboveDepth = insertAt > 0 ? visible[ insertAt - 1 ].depth : 0;
+		const pointerDepth = Math.max(
+			0,
+			Math.round( ( event.clientX - event.currentTarget.getBoundingClientRect().left - 10 ) / INDENT )
+		);
+		const depth = Math.min( pointerDepth, aboveDepth + 1 );
+
+		setDropIndex( insertAt );
+		setDropDepth( depth );
+	};
+
+	const handleDropCommit = () => {
+		const movedId = dragId;
+		const insertAt = dropIndex;
+		const depth = dropDepth;
+		setDragId( null );
+		setDropIndex( null );
+		if ( movedId === null || insertAt === null ) {
+			return;
+		}
+
+		const dragIndex = tree.findIndex( ( r ) => r.id === movedId );
+		if ( dragIndex < 0 ) {
+			return;
+		}
+		const [ start, end ] = subtreeRange( dragIndex );
+		const visible = tree.filter( ( _, i ) => i < start || i >= end );
+
+		// Parent = nearest preceding VISIBLE item whose depth === depth-1.
+		let parentContainer = getContainer( navId );
+		let parentItemId = null;
+		if ( depth > 0 ) {
+			for ( let i = insertAt - 1; i >= 0; i-- ) {
+				if ( visible[ i ].depth === depth - 1 ) {
+					parentItemId = visible[ i ].id;
+					break;
+				}
+			}
+			if ( ! parentItemId ) {
+				return; // no valid parent for this depth
+			}
+			parentContainer = ensureItemFlexbox( parentItemId );
+		}
+		if ( ! parentContainer ) {
+			return;
+		}
+
+		// Position among that parent's direct children, counted in the visible list.
+		let at = 0;
+		for ( let i = 0; i < insertAt; i++ ) {
+			if ( visible[ i ].depth === depth ) {
+				at++;
+			}
+		}
+
+		const movedElement = getContainer( movedId );
+		if ( ! movedElement ) {
+			return;
+		}
+		moveElements( {
+			title: 'Menu Item',
+			subtitle: 'Menu item moved',
+			moves: [ {
+				element: movedElement,
+				targetContainer: parentContainer,
+				options: { at },
+			} ],
+		} );
+	};
+
+	return (
+		<Stack gap={ 1 }>
+			<Stack direction="row" alignItems="center" justifyContent="space-between">
+				<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
+					{ label }
+				</Typography>
+				<Button size="tiny" variant="outlined" onClick={ handleAddMain }>
+					{ '+ Add main item' }
+				</Button>
+			</Stack>
+			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+				{ 'Drag a row up/down to reorder. Drag it to the RIGHT to nest it under the item above (creates a sub-dropdown); drag LEFT to move it out a level — just like the WordPress menu.' }
+			</Typography>
+
+			<Stack
+				gap={ 0.5 }
+				onDragLeave={ () => setDropIndex( null ) }
+			>
+				{ tree.map( ( row, index ) => {
+					const isExpanded  = expandedId === row.id;
+					const isDragging  = dragId === row.id;
+					const showLineAt  = dropIndex === index;
+					return (
+						<Box key={ row.id }>
+							{ /* Drop indicator line — indented to the target depth. */ }
+							{ showLineAt && (
+								<Box sx={ {
+									height: 2,
+									bgcolor: 'primary.main',
+									ml: `${ dropDepth * INDENT }px`,
+									mb: 0.25,
+									borderRadius: 1,
+								} } />
+							) }
+							<Box
+								draggable
+								onDragStart={ () => { setDragId( row.id ); setExpandedId( null ); } }
+								onDragOver={ ( e ) => handleDragOver( e, index ) }
+								onDrop={ handleDropCommit }
+								onDragEnd={ () => { setDragId( null ); setDropIndex( null ); } }
+								sx={ {
+									ml: `${ row.depth * INDENT }px`,
+									border: '1px solid',
+									borderColor: 'divider',
+									borderRadius: 1,
+									overflow: 'hidden',
+									bgcolor: 'background.default',
+									opacity: isDragging ? 0.4 : 1,
+								} }
+							>
+								<Stack
+									direction="row"
+									alignItems="center"
+									gap={ 0.5 }
+									sx={ { px: 1, py: 0.7, userSelect: 'none' } }
+								>
+									<Box component="span" aria-hidden
+										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 14, lineHeight: 1 } }>
+										⠿
+									</Box>
+									<Typography variant="caption"
+										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, minWidth: 38 } }>
+										{ row.depth === 0 ? 'MAIN' : `L${ row.depth }` }
+									</Typography>
+									<Typography
+										variant="body2"
+										onClick={ () => handleRowActivate( row ) }
+										sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400, cursor: 'pointer' } }
+									>
+										{ row.title }
+									</Typography>
+									<Tooltip title="Edit settings">
+										<IconButton size="tiny" aria-label="Edit item settings"
+											onClick={ ( e ) => { e.stopPropagation(); setExpandedId( isExpanded ? null : row.id ); } }>
+											<span style={ { fontSize: 13, lineHeight: 1 } }>✎</span>
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="Add child">
+										<IconButton size="tiny" aria-label="Add child item"
+											onClick={ ( e ) => { e.stopPropagation(); handleAddChild( row ); } }>
+											<span style={ { fontSize: 15, lineHeight: 1 } }>＋</span>
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="Duplicate">
+										<IconButton size="tiny" aria-label="Duplicate menu item"
+											onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
+											<span style={ { fontSize: 13, lineHeight: 1 } }>⧉</span>
+										</IconButton>
+									</Tooltip>
+									{ tree.length > 1 && (
+										<Tooltip title="Remove">
+											<IconButton size="tiny" aria-label="Remove menu item"
+												onClick={ ( e ) => { e.stopPropagation(); handleRemove( row ); } }>
+												<span style={ { fontSize: 14, lineHeight: 1 } }>×</span>
+											</IconButton>
+										</Tooltip>
+									) }
+								</Stack>
+
+								<Collapse in={ isExpanded } unmountOnExit>
+									<Box sx={ { px: 1.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider' } }>
+										<NavItemFields
+											elementId={ row.id }
+											fallbackTitle={ row.title }
+											hideChildManager
+											onDropdownToggle={ () => {} }
+											onTitleChange={ () => {} }
+										/>
+									</Box>
+								</Collapse>
+							</Box>
+
+							{ /* Trailing drop zone (append to end / same level as last). */ }
+							{ index === tree.length - 1 && (
+								<Box
+									onDragOver={ ( e ) => handleDragOver( e, index ) }
+									onDrop={ handleDropCommit }
+									sx={ { height: 10 } }
+								/>
+							) }
+						</Box>
+					);
+				} ) }
+			</Stack>
+		</Stack>
+	);
+}
+
+function NavItemsControlLegacy( { label } ) {
 	const { element } = useElement();
 	const navId = element.id;
 
@@ -1260,7 +1742,7 @@ function SubItemsManager( { itemId } ) {
 	);
 }
 
-function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange } ) {
+function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange, hideChildManager } ) {
 	const data = useListenTo(
 		[
 			v1ReadyEvent(),
@@ -1354,6 +1836,13 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 				return;
 			}
 
+			/* Capture the user's tab BEFORE we create/select anything. Creating the
+			 * dropdown flexbox auto-selects it and Elementor flips a brand-new
+			 * container to the Style tab — only on this ENABLE path do we hold the
+			 * user's tab so the switch doesn't yank them to Style. (The click/select
+			 * path never touches the tab.) */
+			const enablePrevTab = enabled ? readActivePanelTab() : null;
+
 			let dropdownId = null;
 
 			if ( enabled ) {
@@ -1398,6 +1887,20 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 				if ( ! dropdownId ) {
 					dropdownId = getElementId( findDropdownContainer( elementId ) );
 				}
+				/* Reveal the empty, normally-hidden dropdown so the freshly-created
+				 * placeholder is VISIBLE/editable on enable (nav.js selection-sync
+				 * alone does not reveal it the first time). Re-applied across the
+				 * render window since creating the flexbox re-renders the preview. */
+				const revealFlex = getContainer( dropdownId );
+				if ( revealFlex ) {
+					markDropdownFlexbox( revealFlex );
+				}
+				const revealDrop = () => syncEditorNestedPreview( elementId, true );
+				revealDrop();
+				[ 80, 200, 400, 800 ].forEach( ( d ) => window.setTimeout( revealDrop, d ) );
+				/* Hold the user's tab across Elementor's late Style-flip for the new
+				 * container (enable path only). */
+				keepPanelTab( enablePrevTab );
 				/* Select the placeholder synchronously. Reveal then follows for
 				 * free via the editor CSS `.elementor-element-selected` rule and
 				 * nav.js's selection sync — no inline-style reveal timers to race. */
@@ -1412,13 +1915,6 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			id: elementId,
 			props: { [ key ]: prop( 'string', value ) },
 		} );
-	};
-
-	const editDropdownStyle = () => {
-		/* Resolve + select synchronously — the flexbox already exists, so
-		 * findDropdownContainer returns it in the same tick and selectElement
-		 * lands reliably (no fixed-delay re-find that could miss). */
-		selectDropdownContainer( elementId );
 	};
 
 	return (
@@ -1450,11 +1946,8 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			</Stack>
 			{ dropdownEnabled && (
 				<>
-					<Button size="tiny" variant="outlined" onClick={ editDropdownStyle } fullWidth>
-						{ 'Edit dropdown style' }
-					</Button>
 					<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
-						{ 'Selects this item’s dropdown container. Use its Style tab for background, width, padding and layout.' }
+						{ 'Click this item in the list to select its dropdown container — then style it from any tab you like.' }
 					</Typography>
 					<Typography variant="caption">{ 'Trigger' }</Typography>
 					<Select
@@ -1482,9 +1975,11 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 						<MenuItem value="slide-items">{ 'Slide Items' }</MenuItem>
 						<MenuItem value="rotate-items">{ 'Rotate Items' }</MenuItem>
 					</Select>
-					<Box sx={ { pt: 1, mt: 0.5, borderTop: '1px solid', borderColor: 'divider' } }>
-						<SubItemsManager itemId={ elementId } />
-					</Box>
+					{ ! hideChildManager && (
+						<Box sx={ { pt: 1, mt: 0.5, borderTop: '1px solid', borderColor: 'divider' } }>
+							<SubItemsManager itemId={ elementId } />
+						</Box>
+					) }
 				</>
 			) }
 		</Stack>
