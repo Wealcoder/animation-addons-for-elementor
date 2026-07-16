@@ -8,6 +8,7 @@ import FreePro from "@/pages/FreePro";
 import Integrations from "@/pages/Integrations";
 import RequiredFeatures from "@/pages/RequiredFeatures";
 import StaterTemplate from "@/pages/StaterTemplate";
+import Submissions from "@/pages/Submissions";
 import Widgets from "@/pages/Widgets";
 
 export const ShowContent = (item) => {
@@ -40,6 +41,12 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.FirstLayout>
           <Integrations />
+        </MainLayout.FirstLayout>
+      );
+    case "submissions":
+      return (
+        <MainLayout.FirstLayout>
+          <Submissions />
         </MainLayout.FirstLayout>
       );
     case "stater-template":

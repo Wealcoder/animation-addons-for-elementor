@@ -442,7 +442,7 @@ Output goes to `assets/build/`. Each entry produces:
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |
-| A whole `define_base_styles()` silently does nothing | One invalid key/value fails the entire definition. `width`/`height` are `Size_Prop_Type` — a `String_Prop_Type('fit-content')` is invalid. For CSS keywords/functions use the `custom` unit: `Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ])` (transformer emits the `size` verbatim). `auto` → `[ 'size' => 'auto', 'unit' => 'auto' ]`. |
+| A whole `define_base_styles()` silently does nothing | One invalid key/value fails the entire definition. `width`/`height` are `Size_Prop_Type` — a `String_Prop_Type('fit-content')` is invalid. For CSS keywords/functions use the `custom` unit: `Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ])` (transformer emits the `size` verbatim). `auto` → `[ 'size' => 'auto', 'unit' => 'auto' ]`. Another killer: `background` must be `Background_Prop_Type::generate([ 'color' => Color_Prop_Type::generate(…) ])` — a bare `Color_Prop_Type` voids the definition (shipped as a colorless Form submit button). **Full verified key/format tables + shape cookbook: `animation-addons-for-elementor-pro/docs/atomic-v4/atomic-style-schema-reference.md` — check it BEFORE writing any base style.** |
 | Base-style change shows in the editor but the frontend is unstyled / wrong | Atomic base styles are generated per-request, but the frontend renders them from a **cached** state; deleting `wp-content/uploads/elementor/` alone leaves it empty until a rebuild. After editing any `define_base_styles()`, **clear Elementor's cache** (wp-admin → Elementor → Tools → "Clear Files & Data", i.e. `#elementor-clear-cache-button`) then reload the frontend. The editor always renders live from PHP, so an editor-only check hides this. (Seen as a nav that's a perfect 44px circle in the editor but a full-width `position:static` block on the frontend.) |
 | Slider nav arrow one size in editor, another on frontend (and/or a huge ellipse at slidesPerView=1) | The nav badge USED to be icon-driven (`width/height: fit-content`), so it sized to whatever the SVG happened to be — 20px on a fresh drop (the `aae-a-svg` utility) but 65px on an element saved before that class existed → different footprint per element age, and `auto`/content-driven width could stretch into an ellipse in a single full-width slide. Fix: pin the nav to a **fixed** `width/height: 44px` in `class-aae-a-slider-nav-{prev,next}.php` (constant everywhere, can't stretch) and cap the SVG to fit inside via each slider stylesheet — `.aae-a-navigator-{prev,next} .e-svg-base, svg { max-width/height: 24px }` in BOTH `nestedslider.scss` and `loop-grid-slider.scss` (the two sliders load different CSS; the Loop Grid Slider deliberately does not load the Nested Slider's stylesheet, so the rule is duplicated). |
 | Data-attrs not on rendered HTML | `Render::inject_into_html()` not handling the widget type, or `$attrs` empty |
@@ -470,6 +470,576 @@ helpers. Frontend handlers use `elementorFrontend.elementsHandler.addHandler()`
 which we replace with our `KINDS` scan/bind dispatcher.
 
 ---
+
+## AAE Atomic Form Builder (planned — new widget family)
+
+Spec sources, in order of authority (newer/more implementation-specific wins
+on conflict):
+1. `C:\Users\UseR\Documents\atomic-form\AAE_Atomic_Form_Builder_Claude_PRD_SSR_Pack\` —
+   **primary reference.** `AAE_Atomic_Form_Builder_Complete_PRD_for_Claude.md`
+   (product, v2.0) + `AAE_Atomic_Form_Builder_SSR_SRS_for_Claude.md`
+   (technical/SRS, v1.0) — both written specifically for coding agents, dated
+   July 12 2026, and far more concrete (literal REST routes, DB columns,
+   prop names, response-code table) than the doc below.
+2. `C:\Users\UseR\Documents\atomic-form\` root — PRD v1.6 + Test Cases v1.1.
+   Broader product rationale (pain points, accessibility/i18n detail, exact
+   UX copy) not repeated in the SSR pack; still valid where it doesn't
+   conflict with #1.
+
+This section is a working distillation for coding purposes — re-read the
+source docs for anything not captured here or for product (not architecture)
+questions.
+
+This is a **new atomic widget family**, not an animation effect. Do not use
+the [Adding a new effect](#adding-a-new-effect) recipe (Schema/Controls/Render
+layered onto an *existing* widget) — instead follow the **Widgets/** pattern
+used by `Offcanvas`, `NestedSlider`, `FlipBox` (container widget + real child
+element widgets registered independently in `class-atomic.php`'s
+`widgets_registry`, PHP twig render via `Has_Element_Template`, own JS bundle).
+See [File map](#file-map) and `inc/AtomicWidgets/Widgets/` for the shape to
+copy.
+
+### Why not use Elementor's native `e-form` instead
+
+Elementor is actively building its own atomic form (`e-form` container +
+`e-form-input`/`-label`/`-textarea`/`-checkbox`/`-radio-button`/`-select`/
+`-date-picker`/`-time-picker`/`-file-upload`/`-submit-button`, each an
+independently-styleable atomic widget — confirmed live in installed
+Elementor Pro 4.1.2 behind the hidden, active-by-default `e_pro_atomic_form`
+experiment; free core only shows a "Pro feature" paywall placeholder for it).
+Investigated 2026-07-12 — see git history in `elementor-src-repo` under
+`modules/atomic-widgets/elements/atomic-form/` for how actively it's still
+changing (commits within the prior ~30 days touching required-children
+behavior, default children, and the free/Pro boundary itself).
+
+**Decided: build AAE's own form independently, not on top of `e-form`.**
+Reason: the target client will not run Elementor Pro, so they would only
+ever see Pro's paywall placeholder for `e-form` — there is no native form
+for AAE to extend or coexist with on this project. This also isn't a loss
+relative to what Pro's version offers: confirmed by direct code inspection,
+Elementor's native form has no honeypot/CAPTCHA/bot-shield of its own (only
+optional Akismet, itself gated behind a further paid tier + a separate
+plugin dependency), runs all actions synchronously in one request (no async
+queue), has no true save-before-actions guarantee (submission storage is
+just another action in the list, skippable), and has no multi-step or
+conditional-field logic at all — so every differentiator already planned
+below (Bot Shield, async action queue, save-before-actions, schema
+versioning, presets, multi-step, conditional logic) remains genuinely
+additive, not duplicative. If a future project needs the free/Pro-agnostic
+version reconsidered, re-run this investigation rather than trusting this
+note blindly — the native feature is pre-GA and changing fast.
+
+### Packaging decision
+
+The SSR doc's stated *preference* is a separate `aae-form-builder` plugin
+(namespace `AAEFB\`), but it explicitly allows building inside Animation
+Addons with this repo's own conventions instead. **Decided: build inside
+`animation-addons-for-elementor`.** Concretely, that means translating the
+SSR doc's separate-plugin scaffolding onto this repo's real conventions:
+
+| SSR doc says | Use instead, in this repo |
+|---|---|
+| Separate plugin `aae-form-builder` | `animation-addons-for-elementor` (this plugin) |
+| Namespace `AAEFB\` | `WCF_ADDONS\Forms\` (sibling to `WCF_ADDONS\AtomicWidgets\`, `WCF_ADDONS\Atomic\`) |
+| `aae-form-builder.php`, `includes/`, `assets/`, `templates/elementor/elements/` | `inc/AtomicWidgets/Widgets/Form*/` per element (matching `Offcanvas/`, `NestedSlider/`), plus `inc/Forms/` for the non-widget backend (Schema Sync, Submission Core, Queue, Admin) — mirror `inc/Atomic/` vs `inc/AtomicWidgets/` split already used for effects vs. widgets |
+| DB tables `aaefb_forms`, `aaefb_form_schemas`, `aaefb_submissions`, `aaefb_submission_values`, `aaefb_action_jobs`, `aaefb_action_logs` | Same columns, prefixed `aae_` to match this plugin's existing option-name convention (`aae_atomic_widgets`, `aae_atomic_extensions`) → `aae_forms`, `aae_form_schemas`, `aae_submissions`, `aae_submission_values`, `aae_action_jobs`, `aae_action_logs` |
+| REST namespace `aaefb/v1` | `aae/v1` (or whatever namespace the rest of this plugin already registers under — check before Milestone 5 REST work; grep for `register_rest_route` first) |
+| `data-aaefb-ready="true"` ready marker | `data-aae-form-ready="true"`, consistent with this repo's `data-aae-<feature>-<setting>` convention (see [Conventions](#conventions)) |
+
+Everything else below (props, table columns, endpoints, response codes,
+milestones) is otherwise a direct port of the SSR doc's content with names
+adjusted per this table.
+
+### Core product principles (non-negotiable, PRD §5 + v1.4 security addendum)
+
+1. **Security first, then UI/UX polish.** Public submission must be safe by
+   default; the submit pipeline must not depend on Elementor editor classes —
+   it must keep working even if the editor layer breaks.
+2. **Never lose a lead** — default submission mode is Store + Admin Email.
+3. **Save-before-actions, and its inverse, fail-before-save**: a valid
+   submission is saved before any email/webhook/Sheets/notification/redirect
+   action runs; a request blocked by Bot Shield/validation creates **zero**
+   clean submission and **zero** action jobs — it only ever produces a
+   spam/security log entry.
+4. Backend validation always repeats frontend validation before saving —
+   never trust the frontend alone.
+5. Actions must be observable: failures need logs and retry where supported.
+6. Accessibility, i18n/RTL, privacy, and performance are MVP requirements,
+   not later polish.
+7. No raw personal data shared with third parties unless the admin enables
+   the feature and sees a disclosure.
+8. No global frontend bloat — load assets conditionally (reuses
+   [On-demand asset loading](#on-demand-asset-loading)).
+9. Elementor editor previews must not create real submissions unless the
+   admin explicitly uses **Test Submit** / "Test All Actions" mode.
+10. Future integrations plug into adapters, not hardcoded one-off code.
+
+### Element family
+
+- `e-aae-a-form` — container element (`Atomic_Element_Base` + `Has_Element_Template`,
+  `meta('is_container', true)`, like `AAE_A_Btn_Pro`/`Offcanvas`)
+- `e-aae-a-form-field` — child element. Owns its own error-message slot
+  render-side (see "Validation message ownership" below) — never a separate
+  draggable widget.
+- `e-aae-a-form-submit` — child element, normally the last element on the
+  final step. **Locked**: deleting it must be blocked or require a restore
+  warning — a form must never become silently unsubmittable.
+- `e-aae-a-form-step` — **Pro/later** (Multi-Step). Step container holding
+  fields, headings, paragraphs, div blocks, and optional review/summary
+  content. Don't build this until the Multi-Step milestone.
+
+The form is a container with real child elements, visible in the
+Navigator/structure panel — do not build a monolithic repeater-only widget
+(i.e. do not model fields as a repeater control on a single widget the way
+V3/Elementor Pro forms do). Allowed non-field children (heading/paragraph/
+div wrappers) must still be walked in DOM order by the schema builder
+regardless of wrapper nesting. **Nested `e-aae-a-form` inside another
+`e-aae-a-form` must be rejected or warned at save time.**
+
+### Validation message ownership
+
+Field/form/step error and success messages are **built-in slots owned by the
+element itself**, not separate widgets a user can drag away. This is a
+deliberate accessibility guard — the panel/Render layer for
+`e-aae-a-form-field` must always render its own error container
+non-optionally.
+
+### Free vs. Pro split (PRD §24, verbatim boundary)
+
+Follow the split already established by `Btn` (free) / `Btn_Pro` (free
+plugin, `inc/AtomicWidgets/Widgets/BtnPro/class-aae-a-btn-pro.php`, type
+`e-aae-a-btn-pro`) and by the pro plugin's own extension modules
+(`animation-addons-for-elementor-pro/inc/AtomicV4/<Feature>/{Schema,Controls,Renderer,Assets}.php`,
+e.g. `FlexboxChildHover`). Gate with `class_exists` guards, not an inline
+capability flag inside the free widget. Prefer extending the same
+`e-aae-a-form`/`e-aae-a-form-field` family from the pro plugin (matching how
+`FlexboxChildHover` extends `e-flexbox`) over forking a second
+`e-aae-a-form-pro` container.
+
+**Free:** Basic Form widget; Visual Preset Popup; Contact/Newsletter/Lead/
+Support presets; base fields — **Text, Email, Textarea, Phone (basic format
+only), URL, Number, Select, Radio, Checkbox, Acceptance, Hidden, Submit**;
+AJAX/REST submit; Store Submission; Admin Email (To/CC/BCC/Reply-To); Auto
+Reply; basic Submission Dashboard + CSV export; basic Webhook (URL, POST
+JSON, all fields, test button); Honeypot + basic reCAPTCHA option;
+accessibility/i18n/RTL/privacy/performance foundations.
+
+**Pro:** advanced field types — **Date, Time, File Upload, Range, Rating,
+Signature, Repeater, HTML, Password, Calculation, Step, Address, Country**;
+Premium presets; Private Storage + Google Drive/AWS S3 adapters; Google
+Sheets (OAuth); Advanced Webhook (custom headers/auth/mapping/conditions/
+retry, n8n/Zapier/Make presets); Action Logs + Retry Queue UI; **Validation
+Pro** (regex, real phone validation API, country restriction, disposable
+email, domain rules); Telegram/WhatsApp/Slack; **Conditional Display Engine**;
+**Multi-Step Forms**; Calculator/Quote forms; Analytics/Lead Management; AI
+Copilot; HTML Email Template Builder.
+
+Open/unresolved per the spec (flag to product owner, don't guess): whether
+Bot Shield presets are Free or Pro (recommendation only: basic protections
+Free, advanced presets/logs Pro).
+
+### Atomic element requirements (SSR §4 — authoritative prop names)
+
+**`e-aae-a-form`** — `Atomic_Element_Base` + `Has_Element_Template`, HTML tag
+`form`. Props: `form_key` (hidden), `actions_json` (hidden), `behavior`
+(`store_email` | `store` | `email`), `msg_success`, `msg_error`,
+`msg_invalid`, `spam_honeypot`, `spam_min_seconds`, `captcha_provider`,
+`classes`, `attributes`. Allowed children: `e-aae-a-form-field`,
+`e-aae-a-form-submit`, `e-heading`, `e-paragraph`, `e-div-block`. Default
+children on drop: Name field, Email field, Message field, Submit button.
+
+**`e-aae-a-form-field`** — one element class, behavior branches on a
+`field_type` prop (do not make a separate element per field type). Props:
+`field_type`, `field_key`, `label`, `placeholder`, `help`, `required`,
+`width`, `default_value`, `autocomplete`, `inputmode`, `options`, `rows`,
+`min`, `max`, `step`, `consent_text`, `validation_rules` (later). MVP
+`field_type` values: `text`, `email`, `textarea`, `tel`, `url`, `number`,
+`select`, `radio`, `checkbox`, `acceptance`, `hidden`.
+
+**`e-aae-a-form-submit`** — props: `label`, `loading_label`, `success_label`
+(later), `error_label` (later), `icon`, `alignment`. **Locked by default** —
+must not become silently unsubmittable via accidental deletion.
+
+### Editor controls (SSR §5)
+
+- **`aae-form-fields`** control — projects real child field elements into a
+  list; add/reorder/duplicate/delete; edits label/type/key/required/
+  placeholder/width inline; warns on duplicate `field_key`; warns if
+  `field_key` is locked because submissions already reference it.
+- **`aae-form-actions`** control — opens a modal that reads/writes the
+  hidden `actions_json` prop; configures Store/Email/Auto-Reply/Webhook/
+  Sheets(later); validates against an action-registry schema; test
+  email/webhook buttons call admin REST routes (see below).
+- **Preset picker** — reuse the existing
+  [preset picker](#to-add-presets-to-a-native-atomic-widget-e-heading-e-button-)
+  pattern: search/filter, apply subtree, **regenerate `form_key`** on apply,
+  keep current page context.
+
+### Form identity (SSR §6 — simpler than the older PRD's 5-field identity
+table; this is the version to implement)
+
+Every form instance has one **`form_key`** (hidden prop on `e-aae-a-form`,
+not user-facing by default), tied to `post_id` + `element_id`.
+
+- On create: if `form_key` is empty, generate one.
+- On duplicate: regenerate if the key already exists elsewhere.
+- On paste/import: regenerate if a collision is detected.
+- On Elementor document save: **server-side reconciliation** re-verifies
+  uniqueness as a safety net for programmatic imports/edge cases that bypass
+  the editor-bridge regeneration path.
+- Do not let duplicated forms share submissions unless a future explicit
+  "linked/global form" feature supports it.
+
+(The older root-level PRD additionally describes `form_template_id` /
+`form_instance_id` / `runtime_instance_id` as separate concepts — treat that
+as design *rationale*, not the schema to implement; the SSR doc's single
+`form_key` is the authoritative, simpler version actually meant for coding.)
+
+Field-level: changing a `field_key` after submissions exist against it must
+**warn** — it creates a new field identity rather than silently rewriting
+history.
+
+### Schema sync (SSR §7 — exact steps, runs on Elementor document save)
+
+```
+1. Locate e-aae-a-form elements.
+2. Walk the form subtree recursively.
+3. Read form-level props.
+4. Read field child elements.
+5. Read submit element.
+6. Validate actions_json.
+7. Build canonical schema JSON.
+8. Hash schema.
+9. If hash changed, create new schema version.
+10. Mark latest schema active.
+```
+
+Schema JSON fields: form key, form version, fields, actions, messages, spam
+settings, submit settings, `source = "elements"`, `schema_format`. Every
+submission stores its schema version/snapshot so old submissions keep
+rendering correctly after the form is edited (including deleted/renamed
+fields, which retain their historical label/value).
+
+### Database (SSR §8 — table names adjusted per the packaging table above:
+`aaefb_*` → `aae_*`)
+
+**`aae_forms`**: id, form_key, post_id, element_id, status, created_at, updated_at.
+
+**`aae_form_schemas`**: id, form_id, version, schema_hash, schema_json, source, active, created_at.
+
+**`aae_submissions`**: id, form_id, form_key, schema_version, status, source_url, referrer_url, utm_json, ip_hash, user_agent, created_at.
+
+**`aae_submission_values`**: id, submission_id, field_key, field_label, field_type, field_value, created_at.
+
+**`aae_action_jobs`**: id, submission_id, action_type, status, attempts, next_run_at, payload_json, created_at, updated_at.
+
+**`aae_action_logs`**: id, job_id, submission_id, action_type, status, message, request_snapshot, response_snapshot, created_at.
+
+**`aae_attachments`** — later, Pro (file upload).
+
+Dashboard requirements: pagination, search, filter by form/status/date, CSV
+export, bulk delete, single-submission drawer (values, source, metadata,
+action logs), find-by-email for DSAR/support. No unbounded row loads —
+paginate + index, must not timeout or spike memory at scale.
+
+### REST API (SSR §9–10 — namespace adjusted per packaging table:
+`aaefb/v1` → `aae/v1`; confirm no collision with an existing namespace
+before Milestone 5 by grepping for `register_rest_route` in this plugin)
+
+**Public:**
+```
+POST /aae/v1/forms/{form_key}/token   — no-store headers, returns a fresh single-use submit token, itself rate-limited
+POST /aae/v1/forms/{form_key}/submit  — validates token, runs Bot Shield, runs server validation, saves submission, creates action jobs, returns success
+```
+
+**Admin** (cookie auth + nonce + capability checks required):
+```
+GET  /aae/v1/submissions
+GET  /aae/v1/submissions/{id}
+POST /aae/v1/actions/test-email
+POST /aae/v1/actions/test-webhook
+POST /aae/v1/action-jobs/{id}/retry
+GET  /aae/v1/form-health/{form_id}
+```
+
+### Response codes (SSR §10 — the complete, authoritative table; supersedes
+the partial 403/409/429-only list from the older PRD)
+
+| Code | Meaning |
+|---|---|
+| 200 | success |
+| 400 | malformed request |
+| 401 | unauthorized admin request |
+| 403 | invalid token / security failure |
+| 409 | duplicate/replay submission |
+| 422 | validation error |
+| 429 | rate limit |
+| 500 | server error |
+
+Frontend must handle every one of these distinctly.
+
+### Submit runtime requirements (SSR §11)
+
+Initialize forms once (prevent duplicate init with a ready marker —
+`data-aae-form-ready="true"`, see packaging table); must work inside hidden
+containers; fetch a fresh token on interaction or submit; prevent page
+reload; disable submit button while in flight; show loading state; run
+frontend validation; submit to REST; show field + global errors; focus
+first invalid field; **reveal parent accordion/tab/popup** if the invalid
+field is hidden; keep user input after failure; prevent double submit;
+respect `prefers-reduced-motion`.
+
+### Submission architecture — exact 10-step pipeline (PRD §3, v1.4)
+
+```
+1. Render form with form_key, active schema_version, timestamp, one-time submit token.
+2. Visitor submits via REST endpoint ONLY — public admin-ajax is not allowed.
+3. Server verifies token, nonce/session context, form identity, schema version, timestamp.
+4. Bot Shield checks: honeypot, minimum time, rate limit, duplicate submit, optional CAPTCHA/Turnstile.
+5. Server validates all fields against the active schema snapshot.
+6. Security/validation failure → log as spam/security, return a safe generic message, create NO clean submission.
+7. Validation passes → save submission FIRST.
+8. Create async action jobs (email, webhook, Sheets, notification, cloud storage).
+9. Return success to visitor AFTER save, NOT after third-party actions complete.
+10. Queue processes actions; stores action logs/retry status for admin review.
+```
+
+### Bot Shield (PRD §2/§4/§5, v1.4)
+
+| Layer | Purpose | Tier |
+|---|---|---|
+| Submit token | single-use, prevents duplicate/replayed submit | MVP |
+| Nonce / REST permission | verifies request origin + route validity | MVP |
+| Honeypot | silently catches automated fillers | MVP |
+| Minimum submit time | blocks unrealistically fast submits | MVP |
+| Rate limit | by hashed IP + `form_key` | MVP |
+| CAPTCHA/Turnstile escalation | challenges suspicious/high-frequency requests | MVP/Pro |
+| Email/domain/keyword blocklist | blocks low-quality patterns | Pro |
+| Country restriction | allow/block by policy | Pro |
+| Real phone validation adapter | validates phone quality/country match | Pro |
+| Spam reason log | shows admin why blocked, never stored as a clean lead | — |
+
+Admin defaults: Protection Mode = **Recommended**; Honeypot On; Minimum
+Submit Time = **3 seconds**; Rate Limit per Form On; Rate Limit by Hashed IP
+On; Duplicate Submit Token On; CAPTCHA Escalation on when connected (shown
+only on suspicion or High mode); Spam Log On; generic Block Message; Admin
+Alert on Attack Spike = Pro.
+
+**Protection modes:**
+- **Low** — nonce/token, honeypot, basic validation. Small low-risk forms.
+- **Recommended** (default) — + min time, rate limit, spam log, optional
+  CAPTCHA escalation. Default for most contact/lead forms.
+- **High** — + stricter rate limits, CAPTCHA/Turnstile challenge,
+  domain/keyword blocking, country restrictions. High-traffic/lead-gen forms.
+
+Rate limiting is scoped by **`form_key` + hashed visitor signal**, never a
+permanent raw IP, by default. Disabling raw-IP storage must **not** disable
+hashed rate limiting — they're independent switches.
+
+### Duplicate-submit prevention (three overlapping layers)
+
+1. Single-use submit token — reused token → 409-style response + spam/security log.
+2. Frontend button-state guard — submit button disables immediately on
+   click/while sending, before the token round-trip even starts.
+3. **Cache-proofing** — fetch a fresh, `no-store` submit token when the user
+   interacts with/begins the form, specifically to defeat CDN/cache-plugin
+   stale-token 403s (this is the direct fix for the "cache plugins break
+   forms" pain point).
+
+### Async action queue (PRD §12 — exact contract)
+
+States: **Pending, Processing, Success, Failed, Retrying, Cancelled.**
+
+Retry schedule: attempt 1 immediate → attempt 2 after **5 minutes** →
+attempt 3 after **30 minutes** → attempt 4 after **2 hours** → final failure
+marks **Failed** with a manual **Retry** button in admin.
+
+Job record: provider, action type, submission id, payload summary, status,
+attempts, last error, next retry time, created/updated time. Store summaries
+and redacted payloads, not raw PII, where possible. Redirect must not wait
+for queued actions (explicit future carve-out: payment flows requiring
+synchronous confirmation).
+
+**Open/unresolved:** Action Scheduler vs. WP Cron vs. custom queue table vs.
+hybrid — not decided by the spec; flag before building this milestone.
+
+### Actions after submit (PRD §10, tiers)
+
+| Action | Tier | Priority |
+|---|---|---|
+| Store in Database | Free | P0 |
+| Admin Email (To/CC/BCC/Reply-To/subject/message/smart tags) | Free | P0 |
+| Auto Reply | Free | P1 |
+| Redirect | Free | P1 |
+| Basic Webhook | Free | P1 |
+| Advanced Webhook | Pro | P2 |
+| Google Sheets | Pro | P2 |
+| Telegram/WhatsApp/Slack | Pro | P2 |
+| Google Drive/AWS S3 | Pro | P2 |
+
+Auto-reply only fires when a valid email field exists (with a "Include
+submitted copy" option). From-domain mismatch (From email ≠ site domain)
+must trigger a UI deliverability warning + SMTP-setup suggestion. Google
+Sheets requires OAuth + mapping UI + test row + retry on failure;
+expired/revoked OAuth token must fail the job safely, prompt reconnect in
+the dashboard, and leave the submission saved.
+
+**Smart tags (SSR §22 — exact MVP syntax, resolved this time, not left to
+design):**
+```
+{{field.name}}  {{field.email}}  {{field.phone}}  {{field.message}}
+{{site.title}}  {{site.url}}  {{site.admin_email}}
+{{page.title}}  {{page.url}}
+{{submission.id}}  {{submission.date}}  {{submission.time}}
+```
+The parser must sanitize/escape based on output context (HTML email body vs.
+plain text vs. webhook JSON).
+
+**Action registry (SSR §19)** — implement actions behind a common interface,
+not one-off handlers: `id`, `label`, `settings schema`, `validation`,
+`run()` method, `log formatter`, `retry support`. Action types: `store`,
+`admin_email`, `auto_reply`, `webhook`, `google_sheets` (later), `telegram`
+(later), `whatsapp` (later), `redirect`. All actions run through the async
+queue **except** immediate UX actions like `redirect`.
+
+### UX requirements
+
+- AJAX/REST submit, no page reload; loading state on submit.
+- Inline validation: validate on blur, not while typing unless already
+  interacted; validate everything on submit + optional error summary; map
+  backend errors back to field-level; hidden conditional fields don't block
+  submit by default.
+- Focus first invalid field; **reveal parent accordion/tab/popup before
+  focusing a field hidden inside one** ("Reveal-Before-Focus" — a named
+  differentiator, not just a nice-to-have).
+- Never clear user input after a failed submit.
+- Slow-network/offline messaging, exact copy from the spec:
+  - Slow: "Your connection seems slow. Please wait a moment."
+  - Offline: "You appear to be offline. Please reconnect and try again."
+  - Timeout: "We could not submit the form. Your information is still here. Please try again."
+  - Duplicate: "This form was already submitted."
+  - Rate limit: "Too many attempts. Please wait a moment and try again."
+- Retry after a network failure uses a **fresh** submit token.
+- Native autocomplete/inputmode: `name`, `email`, `tel`, `organization`,
+  `street-address`, `address-level1/2`, `postal-code`, `country-name`, `url`
+  where appropriate; mobile keyboard matches field type (email/tel/numeric/
+  url); editor should warn on conflicting field-type/autocomplete pairs.
+- Accessibility (WCAG 2.1 AA-inspired, MVP not later polish): every input
+  has an accessible label; required state announced; errors linked via
+  accessible descriptions; ARIA live/status for success/error messages;
+  full keyboard navigation; focus moves to first invalid field after failed
+  submit; usable inside Elementor popups; presets meet contrast requirements.
+- i18n/RTL: all strings translatable, consistent text domain, RTL-safe
+  layout, WPML/Polylang/TranslatePress compatibility, submissions store
+  locale metadata.
+
+### Motion policy
+
+MVP motion scope only: error reveal, success fade/slide, button spinner,
+conditional field show/hide transition, preset popup open/close. **No GSAP
+dependency for core form submit** — this is repeated emphatically throughout
+the spec and is a hard MVP constraint, distinct from the rest of this plugin
+where GSAP is already used for animation effects. Respect
+`prefers-reduced-motion`; validation clarity must never depend on animation.
+
+### Milestone order (SSR §33 — authoritative; supersedes the older PRD's
+v1.4 sprint reprioritization, which grouped things slightly differently)
+
+Implement and get one milestone reviewed before starting the next; do not
+build the whole feature in one pass.
+
+1. **Atomic skeleton** — register `e-aae-a-form`, `-form-field`,
+   `-form-submit`; add default children (Name/Email/Message/Submit); render
+   basic form; no submit logic yet.
+2. **Fields control** — `aae-form-fields` list control; add/reorder/
+   duplicate/delete; edit field settings.
+3. **Preset popup** — preset registry; popup UI; apply subtree; regenerate
+   `form_key` on apply.
+4. **Identity and schema sync** — generate `form_key`; regenerate on
+   duplicate/paste/import; schema walker; versioning.
+5. **REST submit runtime** — frontend submit intercept; token fetch; REST
+   submit; UI states (loading/success/error/rate-limited/offline).
+6. **Submission DB** — create the six `aae_*` tables; save submission +
+   values.
+7. **Email action** — admin email; auto reply; smart tags; test email.
+8. **Bot Shield** — honeypot; min submit time; token replay prevention;
+   rate limit.
+9. **Dashboard and health check** — submissions UI; single view; Form
+   Health Check.
+10. **Basic webhook and action logs** — webhook action; action jobs; logs.
+
+**Note on ordering vs. the older PRD:** the root-level PRD's v1.4 addendum
+argues for moving Bot Shield earlier (position 2, right after the skeleton)
+because security should precede UI polish. The SSR doc — newer, and written
+explicitly as the implementation milestone list for Claude — puts Bot Shield
+at position 8, after fields/presets/identity/REST/DB/email are already
+built. Follow the **SSR numbering above** since it's the more recent,
+implementation-specific source, but build the REST submit endpoint (M5) and
+the token/nonce/honeypot checks it depends on together — don't ship an
+insecure REST endpoint in M5 and defer all security to M8. At minimum, single-
+use tokens + nonce verification belong in M5; rate-limit/honeypot escalation
+can wait for M8.
+
+**Pro (separate track, after M10, per Free vs. Pro split above):** advanced
+field types, Conditional Display Engine, Multi-Step Forms
+(`e-aae-a-form-step`), Calculator/Quote, abandonment tracking/partial save,
+Analytics, AI Copilot, HTML Email Template Builder, advanced Bot Shield
+(Turnstile/reCAPTCHA v3, disposable-email/keyword/country blocking).
+
+### Hard "do not" rules (SSR §34, consolidated with the PRD's own list)
+
+- Build the full product in one pass.
+- Use public `admin-ajax.php` for submissions.
+- Modify unrelated widgets/modules, or refactor the whole plugin, while
+  building this feature.
+- Depend on Elementor Pro form controls.
+- Load assets globally — load form assets only on pages/previews that
+  actually have an AAE Form (reuses
+  [On-demand asset loading](#on-demand-asset-loading)).
+- Add GSAP to MVP submit.
+- Run external actions (email/webhook/Sheets) synchronously inside the
+  submit request, and never let one of them failing delete or lose an
+  already-saved submission.
+- Make validation messages removable widgets.
+- Store raw IP by default — only with explicit admin opt-in.
+- Hide security failures behind a generic "success" in admin logs — log the
+  real reason for admins even when the visitor sees a safe generic message.
+
+---
+
+## AAE Popup — global popup system (PRO, AtomicV4, shipped 2026-07)
+
+Site-wide popup system for atomic elements, lives in the PRO plugin:
+`animation-addons-for-elementor-pro/inc/AtomicV4/Popup/` +
+`inc/AtomicV4/Support/TriggerMap.php` + `src/modules/atomic-v4/popup{,-editor}.js`
++ `assets/css/atomic-v4-popup.css`. Full design/data contract:
+`animation-addons-for-elementor-pro/docs/atomic-v4/popup-developer.md`.
+
+Key facts (read the doc before touching):
+
+- Popups are **AAE Builder templates** (this plugin's `wcf-addons-template`
+  CPT), template type `aae-popup` ("Popup — Atomic") registered via the
+  existing `wcf_builder_template_types` filter. Distinct from the legacy v3
+  `popup` type — do not merge them.
+- Trigger = "AAE Popup" panel section (`aae_v4_popup_{enabled,action,target}`
+  props) on the canonical atomic types; renders NO custom attrs — configs go
+  into `window.AAE_V4_POPUP` keyed by `data-interaction-id` via `TriggerMap`
+  (atomic widgets are Twig-rendered, custom wrapper attrs are impossible).
+  `TriggerMap` is the shared engine a future Click Reveal reuses.
+- **Atomic CSS for footer-rendered documents does NOT happen by itself**
+  (Elementor Pro's own popup is broken this way — elementor#35397).
+  `Popup/Registry.php` fixes it two ways: Tier 1 re-fires
+  `do_action('elementor/post/render', $popup_id)` during the host post's
+  render pass (mirrors core's Components module; cached via `Cache_Validity`
+  root key `aae-v4-popup-refs`); Tier 2 prints inline CSS at `wp_footer` via
+  the public `Styles_Renderer` for theme-builder/archive contexts. Any new
+  feature that renders an Elementor document outside the main loop needs the
+  same treatment.
+- wp_footer order: popups print at prio 3, trigger maps at prio 5, scripts 20.
+- Verified end-to-end via WP-CLI selftest + Playwright
+  (`E:\Local Testing\verify-popup.mjs`, `probe-widgetscache.mjs`); test
+  content on the dev site: popup template 8244 + page 8245
+  ("AAE Popup Selftest…").
 
 ## Elementor core reference (Atomic v4 architecture)
 
@@ -499,6 +1069,12 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
   no `flex-grow`/`flex-shrink`/`flex-basis` key, only the `flex` shorthand
   (`Flex_Prop_Type`), and `height` must be a `Size_Prop_Type` — one invalid
   key fails the whole definition silently.
+- **Style-key/format quick answer:** the complete verified tables (every
+  valid key, its prop type, every enum value, generate() shapes for
+  Background/Dimensions/Border_Radius/Flex/gap, and the list of keys that
+  DON'T exist) are pre-digested in
+  `animation-addons-for-elementor-pro/docs/atomic-v4/atomic-style-schema-reference.md` —
+  check there before grepping the schema.
 - **Caveat:** the RUNTIME is the installed `elementor/` plugin, which is
   older than this repo. Before using an API found here, confirm it exists
   in the installed version too.
@@ -522,6 +1098,12 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
 ### To turn auto-replay on/off for an effect
 - Set `autoReplaySetting` to the Boolean prop name in `features.js` (e.g.
   `'aae_text_enable_editor'`) to enable, or `null` to disable.
+
+### To build the AAE Form Builder
+See [AAE Atomic Form Builder (planned — new widget family)](#aae-atomic-form-builder-planned--new-widget-family).
+Follow the **Widgets/** container+children pattern, not the effect recipe —
+implement one milestone at a time from the SSR-doc order listed there. Full
+spec: `C:\Users\UseR\Documents\atomic-form\AAE_Atomic_Form_Builder_Claude_PRD_SSR_Pack\`.
 
 ### To add presets to a NATIVE atomic widget (e-heading, e-button, …)
 No code needed — drop JSONs in a folder named after the element type:

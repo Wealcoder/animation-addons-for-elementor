@@ -16,7 +16,8 @@
   ],
   "minimum-stability": "stable",
   "require-dev": {
-   
+    "wp-coding-standards/wpcs": "^3.2",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1"
   },
   "require": {
     "ext-simplexml": "*",

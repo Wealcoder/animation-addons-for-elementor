@@ -305,6 +305,17 @@ final class Atomic
 			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
+			// AAE Form parts — seeded as the form's default children, so they
+			// must always be registered (same reasoning as the Loop pieces).
+			'aae-a-form-label',
+			'aae-a-form-input',
+			'aae-a-form-textarea',
+			'aae-a-form-checkbox',
+			'aae-a-form-radio',
+			'aae-a-form-select',
+			'aae-a-form-submit',
+			'aae-a-form-success-message',
+			'aae-a-form-error-message',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -1438,6 +1449,186 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form' => [
+				'label'        => 'Form',
+				'description'  => 'Atomic-first form: real child fields, locked submit button. Milestone 1 skeleton — no submit logic yet.',
+				'icon'         => 'eicon-form-horizontal',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form',
+					'contact',
+					'lead',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-label' => [
+				'label'        => 'Form Label',
+				'description'  => 'Label widget for AAE Form — linked to an input by ID; drag from the panel to add more fields.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form label',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-input' => [
+				'label'        => 'Form Input',
+				'description'  => 'Input widget for AAE Form — text/email/number/tel/password via a type prop.',
+				'icon'         => 'eicon-form-horizontal',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form input',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-textarea' => [
+				'label'        => 'Form Textarea',
+				'description'  => 'Textarea widget for AAE Form.',
+				'icon'         => 'eicon-textarea',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form textarea',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-checkbox' => [
+				'label'        => 'Form Checkbox',
+				'description'  => 'Checkbox widget for AAE Form — fully styleable, with checked state.',
+				'icon'         => 'eicon-check-circle',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form checkbox',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-radio' => [
+				'label'        => 'Form Radio',
+				'description'  => 'Radio button widget for AAE Form — radios sharing a group name are exclusive.',
+				'icon'         => 'eicon-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form radio',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-select' => [
+				'label'        => 'Form Select',
+				'description'  => 'Select/dropdown widget for AAE Form — options one per line, value|Label.',
+				'icon'         => 'eicon-select',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form select',
+					'dropdown',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-success-message' => [
+				'label'        => 'Form Success Message (Internal)',
+				'description'  => 'Locked status container shown when the form submits successfully.',
+				'icon'         => 'eicon-check',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form success',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-error-message' => [
+				'label'        => 'Form Error Message (Internal)',
+				'description'  => 'Locked status container shown when the form submission fails.',
+				'icon'         => 'eicon-close',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form error',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-submit' => [
+				'label'        => 'Form Submit Button',
+				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
+				'icon'         => 'eicon-button',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form submit',
+					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-nav' => [
 				'label'        => 'Nav',
 				'description'  => 'Atomic navbar with fully styleable items and dropdown support.',
@@ -2390,6 +2581,70 @@ final class Atomic
 			'aae-a-offcanvas-panel' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
 				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form',
+				'file'          => 'Widgets/Form/class-aae-a-form.php',
+				'script_handle' => 'aae-a-form-js',
+				'script_path'   => '/assets/atomic/js/form.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-form-css',
+				'style_path'    => '/assets/atomic/css/form.css',
+			],
+
+			'aae-a-form-label' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Label',
+				'file'       => 'Widgets/Form/class-aae-a-form-label.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-input' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Input',
+				'file'       => 'Widgets/Form/class-aae-a-form-input.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-textarea' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Textarea',
+				'file'       => 'Widgets/Form/class-aae-a-form-textarea.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-checkbox' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Checkbox',
+				'file'       => 'Widgets/Form/class-aae-a-form-checkbox.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-radio' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Radio',
+				'file'       => 'Widgets/Form/class-aae-a-form-radio.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-select' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Select',
+				'file'       => 'Widgets/Form/class-aae-a-form-select.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-success-message' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Success_Message',
+				'file'       => 'Widgets/Form/class-aae-a-form-success-message.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-error-message' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Error_Message',
+				'file'       => 'Widgets/Form/class-aae-a-form-error-message.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-submit' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit',
+				'file'       => 'Widgets/Form/class-aae-a-form-submit.php',
 				'has_script' => false,
 			],
 

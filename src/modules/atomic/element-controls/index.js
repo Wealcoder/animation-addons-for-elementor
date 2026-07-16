@@ -19,6 +19,7 @@ import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
 import { TimelineItemsControl } from './TimelineItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
+import { FormActionsControl } from './FormActionsControl';
 import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
 import { QueryChipsControl } from './QueryChipsControl';
 
@@ -30,6 +31,7 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
+	{ type: 'aae-form-actions', component: FormActionsControl, layout: 'full' },
 	// Prop-bound (unlike the element-controls above): the panel wraps it in a
 	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
 	// reads/writes the String_Array prop.

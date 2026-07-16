@@ -136,10 +136,40 @@
       "Bash(node \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/13d3cab4-c507-4585-9ae0-18a5244bd461/scratchpad/drag-13739.mjs\")",
       "Bash(php -l inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php)",
       "Bash(node \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/13d3cab4-c507-4585-9ae0-18a5244bd461/scratchpad/flex-verify.mjs\")",
-      "Bash(sed -i 's|/Regenerate/i|/Clear Files \\\\& Data/i|' \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/13d3cab4-c507-4585-9ae0-18a5244bd461/scratchpad/flex-verify.mjs\")"
+      "Bash(sed -i 's|/Regenerate/i|/Clear Files \\\\& Data/i|' \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/13d3cab4-c507-4585-9ae0-18a5244bd461/scratchpad/flex-verify.mjs\")",
+      "Bash(php -l \"e:\\\\Local Sites\\\\app\\\\public\\\\wp-content\\\\plugins\\\\animation-addons-for-elementor-pro\\\\inc\\\\AtomicV4\\\\Bootstrap.php\")",
+      "Bash(php -l \"e:\\\\Local Sites\\\\app\\\\public\\\\wp-content\\\\plugins\\\\animation-addons-for-elementor-pro\\\\inc\\\\AtomicV4\\\\Support\\\\TriggerMap.php\")",
+      "Bash(php -l 'e:\\\\Local Sites\\\\app\\\\public\\\\wp-content\\\\plugins\\\\animation-addons-for-elementor-pro\\\\inc\\\\AtomicV4\\\\Popup$f.php')",
+      "Bash(wp --version)",
+      "Bash(wp option *)",
+      "Read(//c/Users/UseR/**)",
+      "Read(//c//**)",
+      "Bash(php -r \"echo PHP_VERSION;\")",
+      "Read(//d/programs/local/resources/extraResources/bin/**)",
+      "Bash(php \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" option get siteurl)",
+      "Bash(php -c \"C:/Users/UseR/AppData/Roaming/Local/run/40CIH9DP0/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" option get siteurl)",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" option get siteurl)",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/check-module.php\")",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/create-selftest.php\")",
+      "Bash(curl -s --max-time 30 \"http://development.local/?page_id=8245\" -o \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/page-output.html\")",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/dump-styles.php\")",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/tier2-test.php\")",
+      "Bash(node verify-popup.mjs)",
+      "Bash(node verify-popup-editor.mjs)",
+      "Bash(node probe-widgetscache.mjs)",
+      "Bash(rm \"E:/Local Testing/verify-popup-editor.mjs\" && echo deleted)",
+      "Bash(npx webpack *)",
+      "Bash(curl -s --max-time 30 http://development.local/?page_id=8245 -o C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/page-output3.html)",
+      "Bash(curl -s --max-time 30 http://development.local/ -o C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/home.html)",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -l inc/AtomicV4/Popup/TemplateType.php)",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -l inc/AtomicV4/Popup/Assets.php)",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"E:/Local Testing/fixtures-popup-add-close.php\")",
+      "Bash(\"C:/Users/UseR/AppData/Roaming/Local/lightning-services/php-8.4.10+0/bin/win64/php.exe\" -c \"C:/Users/UseR/AppData/Roaming/Local/run/gXWQPVn4H/conf/php/php.ini\" \"D:/programs/local/resources/extraResources/bin/wp-cli/wp-cli.phar\" eval-file \"C:/Users/UseR/AppData/Local/Temp/claude/e--Local-Sites-app-public-wp-content-plugins-animation-addons-for-elementor/905209c9-166c-41b6-ad67-0758701be871/scratchpad/make-host-page.php\" 8962)",
+      "Bash(POPUP_ID=8962 PAGE_ID=8963 node verify-popup-settings-modal.mjs)"
     ],
     "additionalDirectories": [
-      "e:\\Local Sites\\app\\public"
+      "e:\\Local Sites\\app\\public",
+      "E:\\Local Testing"
     ]
   }
 }
