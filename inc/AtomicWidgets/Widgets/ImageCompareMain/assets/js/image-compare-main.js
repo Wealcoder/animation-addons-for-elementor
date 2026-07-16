@@ -107,8 +107,8 @@ const initImageCompare = ( container ) => {
 };
 
 register( {
-	elementType: 'e-aae-a-image-compare',
-	id: 'e-aae-a-image-compare-handler',
+	elementType: 'e-aae-a-image-compare-main',
+	id: 'e-aae-a-image-compare-main-handler',
 	callback: ( { element } ) => {
 		element.removeAttribute( 'data-aae-compare-ready' );
 		initImageCompare( element );

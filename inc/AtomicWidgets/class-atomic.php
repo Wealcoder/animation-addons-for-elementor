@@ -1118,8 +1118,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-image-compare' => [
-				'label'        => 'Image Compare',
+			'aae-a-image-compare-main' => [
+				'label'        => 'Image Compare Main',
 				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
 				'icon'         => 'eicon-image-before-after',
 				'is_pro'       => false,
@@ -1133,6 +1133,7 @@ final class Atomic
 					'after',
 					'slider',
 					'atomic',
+					'main',
 				],
 				'category'     => 'general',
 				'order'        => 10,
@@ -2428,11 +2429,11 @@ final class Atomic
 			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
 			'has_script' => false,
 		],
-		'aae-a-image-compare' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
-			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
-			'script_handle' => 'aae-a-image-compare-js',
-			'script_path' => '/assets/atomic/js/image-compare.js',
+		'aae-a-image-compare-main' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompareMain\AAE_A_Image_Compare_Main',
+			'file' => 'Widgets/ImageCompareMain/class-aae-a-image-compare-main.php',
+			'script_handle' => 'aae-a-image-compare-main-js',
+			'script_path' => '/assets/atomic/js/image-compare-main.js',
 			'has_script' => true,
 			// No external CSS: all per-element styles live in the widget's
 			// define_base_styles() (compound selectors) + the inline <style>
