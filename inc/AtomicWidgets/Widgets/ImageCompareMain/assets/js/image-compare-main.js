@@ -20,12 +20,92 @@ const { register } = window.elementorV2?.frontendHandlers || window.elementorFro
  *      axis for the drag-distance check.
  *   4. Stops pointerdown from bubbling so the v4 editor's element-drag
  *      layer doesn't intercept the slider drag inside the editor.
+ *   5. While a drag is in progress, forces pointer-events:none on every
+ *      ANCESTOR container's own `.elementor-element-overlay` (see
+ *      suppressAncestorOverlays below) — required only when this widget
+ *      is nested inside another container (Flexbox/Div-block/etc).
  */
 const CLICK_VS_DRAG_THRESHOLD_PX = 4;
+
+/**
+ * Elementor gives every `.elementor-element-overlay` a global
+ * `z-index: 9998`. Our widget's own root div has no z-index (auto), so when
+ * this widget is nested inside another container, that PARENT container's
+ * own overlay — a sibling of our widget, not a descendant — wins the
+ * stacking comparison outright and sits above our entire widget regardless
+ * of any z-index set *inside* our own widget (thumb/divider/range). When the
+ * v4 editor's "child-selection" layer re-enables that ancestor overlay's
+ * pointer-events (to let hover/select reach nested elements), it becomes the
+ * real hit target for the whole area our widget occupies, and dragging on it
+ * moves the ANCESTOR instead of our slider. Placed directly on the page
+ * root, there's no such sibling overlay in the way, which is why the bug
+ * only reproduces when nested.
+ *
+ * Fighting this with a bigger z-index on our own root would mean out-ranking
+ * 9998 at every possible nesting depth — fragile. Instead, for the duration
+ * of an actual drag gesture, force pointer-events:none on every ancestor's
+ * own overlay div and restore it on pointerup/cancel.
+ */
+const suppressAncestorOverlays = ( container ) => {
+	const restores = [];
+	let node = container.parentElement;
+
+	while ( node ) {
+		const overlay = node.querySelector( ':scope > .elementor-element-overlay' );
+		if ( overlay ) {
+			restores.push( [ overlay, overlay.style.getPropertyValue( 'pointer-events' ), overlay.style.getPropertyPriority( 'pointer-events' ) ] );
+			overlay.style.setProperty( 'pointer-events', 'none', 'important' );
+		}
+		node = node.parentElement;
+	}
+
+	return () => {
+		restores.forEach( ( [ overlay, value, priority ] ) => {
+			if ( value ) {
+				overlay.style.setProperty( 'pointer-events', value, priority );
+			} else {
+				overlay.style.removeProperty( 'pointer-events' );
+			}
+		} );
+	};
+};
+
+/**
+ * The v4 editor marks a container's root element `draggable="true"` (native
+ * HTML5 drag) so the CANVAS can reposition it among its siblings — but only
+ * when that element actually HAS siblings to reorder against. A widget that
+ * is the page's sole/top-level element gets no such siblings, so the editor
+ * never marks it draggable and the invisible range works fine. The same
+ * widget nested inside a Flexbox/Div-block DOES get draggable="true" on its
+ * own root — and since that root is the NEAREST ancestor-or-self match, a
+ * mousedown+drag gesture anywhere inside it (including on our invisible
+ * range, which never declares its own draggable state) is resolved by the
+ * browser as "drag this root", not "drag the range's value" — moving the
+ * whole widget instead of the divider. This is set via direct DOM attribute
+ * mutation by the editor's own render pipeline, so a static `draggable`
+ * attribute in the Twig template gets overwritten right after insertion —
+ * only a MutationObserver forcing it back to "false" survives.
+ *
+ * There is no safe "empty" area on this widget to leave draggable instead:
+ * the invisible range covers its entire body. Losing canvas drag-to-reorder
+ * for this widget is an accepted trade-off — reorder it via the Navigator/
+ * Structure panel instead.
+ */
+const keepContainerNonDraggable = ( container ) => {
+	const enforce = () => {
+		if ( container.getAttribute( 'draggable' ) !== 'false' ) {
+			container.setAttribute( 'draggable', 'false' );
+		}
+	};
+	enforce();
+	new MutationObserver( enforce ).observe( container, { attributes: true, attributeFilter: [ 'draggable' ] } );
+};
 
 const initImageCompare = ( container ) => {
 	if ( container.dataset.aaeCompareReady === '1' ) return;
 	container.dataset.aaeCompareReady = '1';
+
+	keepContainerNonDraggable( container );
 
 	const range = container.querySelector( '[data-aae-compare-range]' );
 
@@ -58,6 +138,7 @@ const initImageCompare = ( container ) => {
 	let pointerStartCoord = null;
 	let pointerStartValue = null;
 	let pointerMoved      = false;
+	let restoreOverlays   = null;
 
 	const getAxisCoord = ( event ) => isVertical() ? event.clientY : event.clientX;
 
@@ -65,6 +146,8 @@ const initImageCompare = ( container ) => {
 		pointerStartCoord = getAxisCoord( event );
 		pointerStartValue = range.value;
 		pointerMoved      = false;
+		restoreOverlays?.();
+		restoreOverlays   = suppressAncestorOverlays( container );
 	} );
 
 	range.addEventListener( 'pointermove', ( event ) => {
@@ -75,6 +158,9 @@ const initImageCompare = ( container ) => {
 	} );
 
 	const pointerEnd = () => {
+		restoreOverlays?.();
+		restoreOverlays = null;
+
 		if ( pointerStartCoord === null ) return;
 
 		const clickMoveDisabled = container.dataset.enableClickMove === 'no';
