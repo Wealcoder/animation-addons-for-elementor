@@ -1,1 +1,106 @@
-.aae-a-toggle-switcher .aae-ts-pane:not(.show){display:none}.aae-a-toggle-switcher .aae-ts-switch.active .aae-ts-knob{transform:translate(20px,-50%)}.aae-a-toggle-switcher .aae-ts-switch.active{background-color:var(--aae-ts-switcher-active-bg,#000);border-color:var(--aae-ts-switcher-active-bg,#000)}.aae-a-toggle-switcher .aae-ts-label-after.active .aae-ts-highlight,.aae-a-toggle-switcher .aae-ts-label-before.active .aae-ts-highlight{opacity:1;transform:translateX(0)}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./inc/AtomicWidgets/Widgets/ToggleSwitcher/assets/scss/toggle-switcher.scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************/
+.aae-a-toggle-switcher {
+  display: flex;
+  flex-direction: column;
+}
+.aae-a-toggle-switcher .slide-toggle-wrapper {
+  --switcher-width: 40px;
+  --switcher-border-width: 2px;
+  --switcher-indicator-width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.aae-a-toggle-switcher .slide-toggle-wrapper input[type=checkbox] {
+  display: none;
+}
+.aae-a-toggle-switcher .slide-toggle-wrapper .before_label,
+.aae-a-toggle-switcher .slide-toggle-wrapper .after_label {
+  cursor: pointer;
+  color: var(--aae-ts-label-color);
+}
+.aae-a-toggle-switcher .toggle-content .aae-a-toggle-pane {
+  display: none;
+}
+.aae-a-toggle-switcher .toggle-content .aae-a-toggle-pane.show {
+  display: block;
+}
+.aae-a-toggle-switcher.style-1 .switcher {
+  display: inline-block;
+  width: var(--switcher-width);
+  height: 20px;
+  background-color: var(--aae-ts-switcher-bg, #999999);
+  border: var(--switcher-border-width) solid var(--aae-ts-switcher-bg, #999999);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+}
+.aae-a-toggle-switcher.style-1 .switcher::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--switcher-indicator-width);
+  height: var(--switcher-indicator-width);
+  background-color: var(--aae-ts-indicator-color, #ffffff);
+  border-radius: 50%;
+  transition: transform 0.3s;
+  transform: translate(0px, -50%);
+}
+.aae-a-toggle-switcher.style-1 input[type=checkbox]:checked + .switcher {
+  background-color: var(--aae-ts-switcher-active-bg, #000);
+  border-color: var(--aae-ts-switcher-active-bg, #000);
+}
+.aae-a-toggle-switcher.style-1 input[type=checkbox]:checked + .switcher::before {
+  transform: translate(calc(var(--switcher-width) - (var(--switcher-indicator-width) + 2 * var(--switcher-border-width))), -50%);
+}
+.aae-a-toggle-switcher.style-2 .switcher {
+  display: none;
+}
+.aae-a-toggle-switcher.style-2 .before_label,
+.aae-a-toggle-switcher.style-2 .after_label {
+  padding: 10px 20px;
+  position: relative;
+  z-index: 2;
+}
+.aae-a-toggle-switcher.style-2 .before_label::after,
+.aae-a-toggle-switcher.style-2 .after_label::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: var(--aae-ts-label-active-bg, #000);
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.3s;
+}
+.aae-a-toggle-switcher.style-2 .before_label.active,
+.aae-a-toggle-switcher.style-2 .after_label.active {
+  color: var(--aae-ts-label-active-color, #fff);
+}
+.aae-a-toggle-switcher.style-2 .before_label.active::after,
+.aae-a-toggle-switcher.style-2 .after_label.active::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+.aae-a-toggle-switcher.style-2 .before_label::after {
+  transform: translateX(100%);
+}
+.aae-a-toggle-switcher.style-2 .after_label::after {
+  transform: translateX(-100%);
+}
+
+/*# sourceMappingURL=toggle-switcher.css.map*/
