@@ -113,11 +113,10 @@ class AAE_A_Flip_Box_Main extends Atomic_Element_Base {
 		return [
 			'base' => Style_Definition::make()
 				->add_variant( Style_Variant::make()->add_props( [
-					'display'          => String_Prop_Type::generate( 'block' ),
-					'width'            => String_Prop_Type::generate( '100%' ),
-					'position'         => String_Prop_Type::generate( 'relative' ),
-					'background-color' => String_Prop_Type::generate( 'transparent' ),
-					'overflow'         => String_Prop_Type::generate( 'hidden' ),
+					'display'  => String_Prop_Type::generate( 'block' ),
+					'width'    => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'position' => String_Prop_Type::generate( 'relative' ),
+					'overflow' => String_Prop_Type::generate( 'hidden' ),
 				] ) ),
 		];
 	}

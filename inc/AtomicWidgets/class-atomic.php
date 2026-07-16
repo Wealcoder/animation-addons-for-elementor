@@ -1660,6 +1660,29 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-flip-box' => [
+				'label'        => 'Flip Box',
+				'description'  => 'An open, unlocked flip card — front and back faces are plain containers you can restyle or fill freely. Pair with the ready-made preset designs for each flip direction.',
+				'icon'         => 'eicon-flip-box',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip',
+					'box',
+					'card',
+					'hover',
+					'atomic',
+					'preset',
+					'template',
+				],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-flip-box-main' => [
 				'label'        => 'Flip Box Main',
 				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
@@ -2676,6 +2699,16 @@ final class Atomic
 			'script_path'   => '/assets/atomic/js/nav.js',
 			'style_handle'  => 'aae-a-nav-css',
 			'style_path'    => '/assets/atomic/css/nav.css',
+		],
+
+		'aae-a-flip-box' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
+			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
+			'script_handle' => 'aae-a-flip-box-js',
+			'script_path'   => '/assets/atomic/js/flip-box.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-flip-box-css',
+			'style_path'    => '/assets/atomic/js/flip-box.css',
 		],
 
 		'aae-a-flip-box-main' => [
