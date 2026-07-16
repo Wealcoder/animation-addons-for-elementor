@@ -1,0 +1,86 @@
+/* aae-btn-gen, aae-btn-gen-content, aae-btn-gen-shape-hr */
+/* =================================== free button =================================== */
+.e-aae-a-btn-base {
+	cursor: pointer;
+}
+.e-aae-a-btn-base:hover .aae-btn-divide-hr {
+	width: 120%;
+}
+.e-aae-a-btn-base:hover .aae-btn-cross-hr {
+	height: 120%;
+}
+.e-aae-a-btn-base:hover .aae-btn-underline-hr {
+	width: 0%;
+	min-width: 0;
+}
+.e-aae-a-btn-base:hover .aae-btn-outlinepill-hr {
+	z-index: 0;
+	top: 4px;
+	width: 50%;
+	transform: translate(-50%, -100%);
+}
+.e-aae-a-btn-base:hover .aae-btn-slidefill-bgfront {
+	z-index: 4;
+	left: -92%;
+}
+/* text flip */
+.aae-btn-txtflip .aae-btn-txtflip-content {
+  transform-style: preserve-3d;
+}
+.aae-btn-txtflip .aae-btn-txtflip-content::before {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  content: attr(data-text);
+  transition: color 0.3s;
+  transform: rotateX(-90deg);
+  transform-origin: 50% 0;
+  text-align: center;
+}
+.aae-btn-txtflip:hover .aae-btn-txtflip-content {
+  transform: rotateX(90deg) translateY(-100%);
+}
+/* border devide */
+.aae-btn-borderdivide .aae-btn-borderdivide-icon-inner svg {
+  transition: all 0.3s;
+}
+.aae-btn-borderdivide .aae-btn-borderdivide-icon-inner svg[data-swap-clone] {
+  position: absolute;
+  inset: 0;
+  transform: translate(-10px, 10px);
+  opacity: 0;
+}
+.aae-btn-borderdivide.e-aae-a-btn-base:hover {
+  color: var(--aae-btn-hover-color, inherit);
+}
+.aae-btn-borderdivide:hover .aae-btn-borderdivide-icon-inner svg[data-swap-clone] {
+  transform: translate(0, 0);
+  opacity: 1;
+}
+.aae-btn-borderdivide:hover .aae-btn-borderdivide-icon-inner svg:not([data-swap-clone]) {
+  transform: translate(10px, -10px);
+  opacity: 0;
+}
+
+// mask button
+@keyframes aae_mask_animation {
+  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+  to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+}
+@keyframes aae_mask_animation_2 {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to   { -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+.aae-btn-mask-effect {
+  box-sizing: border-box;
+  -webkit-mask: url("../images/mask-btn.png");
+  mask: url("../images/mask-btn.png");
+  -webkit-mask-size: 2300% 100%;
+  mask-size: 2300% 100%;
+  animation: aae_mask_animation_2 0.7s steps(22) forwards;
+}
+.aae-btn-mask:hover .aae-btn-mask-effect {
+  animation: aae_mask_animation 0.7s steps(22) forwards;
+}

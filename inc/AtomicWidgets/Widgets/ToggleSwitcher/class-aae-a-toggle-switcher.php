@@ -1,51 +1,26 @@
 <?php
-
 namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
+use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+
+require_once __DIR__ . '/class-aae-a-toggle-pane.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
-	return;
-}
-
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
-use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
-use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-
-require_once __DIR__ . '/class-aae-a-toggle-pane.php';
-
-use WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane;
-
-/**
- * AAE Toggle Switcher — an open dual-panel content toggle: two unlocked
- * before/after labels, an empty switch placeholder, and two unlocked panes
- * to fill freely. Nothing is locked and there is no `ts_style` enum — pick
- * a look (Switch / Label Highlight) and its ready-made knob/highlight
- * pieces by importing one of the ready-made templates, then restyle those
- * pieces from their own Style panel, exactly like the AAE Btn wrapper
- * pattern. Pair with AAE_A_Toggle_Switcher_Main (ToggleSwitcherMain) for the
- * locked, style-enum-driven version.
- */
 class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
-
 	use Has_Element_Template;
-
-	const BASE_STYLE_KEY = 'base';
-
-	public static $widget_description = 'An open dual-panel content toggle you build yourself: two unlocked before/after labels, a switch marker, and two unlocked panes. Pair with the ready-made Switch / Label Highlight templates.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -69,32 +44,71 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'toggle', 'switch', 'tabs', 'atomic', 'switcher', 'open', 'container' ];
+		return [ 'toggle', 'switch', 'tabs', 'atomic', 'switcher' ];
 	}
 
 	protected static function define_props_schema(): array {
 		return [
-			'classes'    => Classes_Prop_Type::make()->default( [] ),
-			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'classes'               => Classes_Prop_Type::make()->default( [] ),
+			'attributes'            => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			'ts_style'              => String_Prop_Type::make()->enum( [ '1', '2' ] )->default( '1' ),
+			'ts_label_before'       => String_Prop_Type::make()->default( 'Monthly' ),
+			'ts_label_after'        => String_Prop_Type::make()->default( 'Yearly' ),
+			'ts_label_color'        => String_Prop_Type::make()->default( '' ),
+			'ts_label_active_color' => String_Prop_Type::make()->default( '' ),
+			'ts_label_active_bg'    => String_Prop_Type::make()->default( '' ),
+			'ts_switcher_bg'        => String_Prop_Type::make()->default( '' ),
+			'ts_switcher_active_bg' => String_Prop_Type::make()->default( '' ),
+			'ts_indicator_color'    => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
-		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
-
 		return [
 			Section::make()
-				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
-				->set_id( 'aae_presets' )
+				->set_id( 'content' )
+				->set_label( __( 'Toggle Switcher', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
-						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'layout' => 'custom' ] ),
+					Select_Control::bind_to( 'ts_style' )
+						->set_label( __( 'Style', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => '1', 'label' => __( 'Style One (Switch)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => '2', 'label' => __( 'Style Two (Label Highlight)', 'animation-addons-for-elementor' ) ],
+						] ),
+
+					Text_Control::bind_to( 'ts_label_before' )
+						->set_label( __( 'Label Before', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_label_after' )
+						->set_label( __( 'Label After', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'ts_colors' )
+				->set_label( __( 'Tab Button Colors', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Text_Control::bind_to( 'ts_label_color' )
+						->set_label( __( 'Label Color', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_label_active_color' )
+						->set_label( __( 'Active Label Color', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_label_active_bg' )
+						->set_label( __( 'Active Label Background', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_switcher_bg' )
+						->set_label( __( 'Switcher Background (Off)', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_switcher_active_bg' )
+						->set_label( __( 'Switcher Background (On)', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'ts_indicator_color' )
+						->set_label( __( 'Switcher Indicator Color', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
 				->set_id( 'settings' )
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [
 					Text_Control::bind_to( '_cssid' )
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
@@ -103,66 +117,22 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 		];
 	}
 
-	/**
-	 * MINIMAL wrapper base styles only (Btn pattern). Header row vs. stacked
-	 * panes comes from flex-wrap here plus AAE_A_Toggle_Pane's own base style
-	 * (flex: 1 0 100%, forcing each pane onto its own row) — no nested
-	 * flexbox wrapper element is needed just to lay out the label/switch row.
-	 */
 	protected function define_base_styles(): array {
 		return [
-			self::BASE_STYLE_KEY => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'display',        String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'flex-direction', String_Prop_Type::generate( 'row' ) )
-						->add_prop( 'flex-wrap',      String_Prop_Type::generate( 'wrap' ) )
-						->add_prop( 'align-items',    String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',            Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
-				),
+			'base' => Style_Definition::make()
+				->add_variant( Style_Variant::make()->add_props( [
+					'display'        => String_Prop_Type::generate( 'flex' ),
+					'flex-direction' => String_Prop_Type::generate( 'column' ),
+					'width'          => String_Prop_Type::generate( '100%' ),
+				] ) ),
 		];
 	}
 
-	/**
-	 * Plain, marker-free starting point — two text labels and an empty
-	 * Div_Block placeholder for the switch, plus two panes. No aae-ts-*
-	 * classes and no knob/highlight children are baked in here: those live
-	 * entirely in the ready-made templates (each one is a self-contained
-	 * element tree, independent of these defaults), matching the Btn
-	 * wrapper's plain, marker-free defaults.
-	 */
 	protected function define_default_children() {
 		return [
-			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Label Before' ] )
-				->settings( [
-					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( 'Monthly' ),
-						'children' => [],
-					] ),
-					'tag' => String_Prop_Type::generate( 'span' ),
-				] )
-				->build(),
-
-			Div_Block::generate()
-				->editor_settings( [ 'title' => 'Switch' ] )
-				->build(),
-
-			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Label After' ] )
-				->settings( [
-					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( 'Yearly' ),
-						'children' => [],
-					] ),
-					'tag' => String_Prop_Type::generate( 'span' ),
-				] )
-				->build(),
-
 			AAE_A_Toggle_Pane::generate()
 				->editor_settings( [ 'title' => 'Pane 1' ] )
 				->build(),
-
 			AAE_A_Toggle_Pane::generate()
 				->editor_settings( [ 'title' => 'Pane 2' ] )
 				->build(),
@@ -170,21 +140,7 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [
-			'e-aae-a-toggle-pane',
-			'widget',
-			'e-heading',
-			'e-paragraph',
-			'e-svg',
-			'e-image',
-			'e-divider',
-			'e-flexbox',
-			'e-div-block',
-		];
-	}
-
-	protected function define_default_html_tag() {
-		return 'div';
+		return [ 'e-aae-a-toggle-pane' ];
 	}
 
 	protected function get_templates(): array {

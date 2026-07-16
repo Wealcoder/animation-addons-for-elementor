@@ -1,0 +1,84 @@
+/* 4  — Ripple (GSAP)
+   No shared CSS needed: the ripple span, arrow line and arrow tip are all
+   real elements with their own Style-panel props authored in the preset
+   JSON (z-temp/button-pro-style-4-ripple-gsap.json). rippleGsapSetup() in
+   global-preset-pro.js toggles their inline styles directly on hover, so
+   users can fully restyle the effect without touching this file. */
+
+/* 5  — Group Swap L */
+.aae-btn-grswapl [data-swap-clone] {
+  transform: scale3d(0.5, 0.5, 1);
+  margin-right: -50px;
+  opacity: 0;
+}
+.aae-btn-grswapl .aae-btn-grswapl-icon:not([data-swap-clone]) {
+  transform: scale3d(1, 1, 1);
+  margin-left: 0;
+  opacity: 1;
+}
+.aae-btn-grswapl:hover [data-swap-clone] {
+  transform: scale3d(1, 1, 1);
+  margin-right: 0;
+  opacity: 1;
+}
+.aae-btn-grswapl:hover .aae-btn-grswapl-icon:not([data-swap-clone]) {
+  transform: scale3d(0.5, 0.5, 1);
+  margin-left: -50px;
+  opacity: 0;
+}
+/* 6  — Group Swap R */
+.aae-btn-grswapr [data-swap-clone] {
+  transform: scale3d(1, 1, 1);
+  margin-right: 0;
+  opacity: 1;
+}
+.aae-btn-grswapr .aae-btn-grswapr-icon:not([data-swap-clone]) {
+  transform: scale3d(0.5, 0.5, 1);
+  margin-left: -50px;
+  opacity: 0;
+}
+.aae-btn-grswapr:hover [data-swap-clone] {
+  transform: scale3d(0.5, 0.5, 1);
+  margin-right: -50px;
+  opacity: 0;
+}
+.aae-btn-grswapr:hover .aae-btn-grswapr-icon:not([data-swap-clone]) {
+  transform: scale3d(1, 1, 1);
+  margin-left: 0;
+  opacity: 1;
+}
+// polygon — shared fill mechanics for Oval (9), Circle (10), Ellipse (11).
+.aae-btn-polygon-effect {
+  pointer-events: none;
+}
+
+.aae-btn-polygon:hover .aae-btn-polygon-effect {
+  width: var(--aae-btn-polygon-fill-size, 400px);
+  height: var(--aae-btn-polygon-fill-size, 400px);
+}
+
+.aae-btn-ellipse:hover .aae-btn-polygon-effect {
+  z-index: 0;
+}
+.aae-btn-polygon .aae-btn-polygon-effect {
+  transition: width 700ms ease, height 700ms ease, left 300ms ease, top 300ms ease;
+}
+
+
+// ripple button
+.aae-btn-ripple .aae-btn-ripple-arrow::after {
+  position: absolute;
+  content: '';
+  top: -5px;
+  right: 30px;
+  border: solid currentcolor;
+  border-width: 0 1px 1px 0;
+  padding: 5px;
+  transform: rotate(-45deg);
+  transition: all 0.3s;
+  opacity: 0;
+}
+.aae-btn-ripple:hover .aae-btn-ripple-arrow::after {
+  right: 0;
+  opacity: 1;
+}

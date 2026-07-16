@@ -17,9 +17,7 @@ import { stringArrayPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
-import { TimelineItemsControl } from './TimelineItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
-import { FormActionsControl } from './FormActionsControl';
 import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
 import { QueryChipsControl } from './QueryChipsControl';
 import { DrawPlayControl } from './DrawPlayControl';
@@ -27,7 +25,6 @@ import { DrawPlayControl } from './DrawPlayControl';
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
-	{ type: 'aae-timeline-items', component: TimelineItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
