@@ -32,7 +32,7 @@ export const imageType = {
 		};
 		img.addEventListener('load', done, { once: true });
 		img.addEventListener('error', () => {
-			done();
+			done(); 
 			img.alt = 'Image failed to load';
 		}, { once: true });
 

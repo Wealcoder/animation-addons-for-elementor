@@ -24,7 +24,7 @@ export function registerType(type) {
 		types.push(type);
 	}
 }
-
+ 
 export function resolveType(slide) {
 	for (let i = types.length - 1; i >= 0; i -= 1) {
 		try {

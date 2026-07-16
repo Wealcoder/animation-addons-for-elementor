@@ -5,7 +5,7 @@ use WCF_ADDONS\Atomic\InteractionsMap;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	exit; 
 }
 
 /**

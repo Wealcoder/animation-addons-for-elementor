@@ -25,7 +25,7 @@ const SHADOWS = {
 	medium: '0 18px 50px rgba(0,0,0,0.4)',
 	strong: '0 24px 80px rgba(0,0,0,0.6)',
 };
-
+ 
 /** Pick a key's value for the active bp, cascading bp → … → desktop. */
 function valueForBp(perBp, bp) {
 	if (!perBp || typeof perBp !== 'object') return undefined;

@@ -23,7 +23,7 @@ export const htmlType = {
 
 	render(slide, stage) {
 		const wrap = document.createElement('div');
-		wrap.className = 'aae-lb-html';
+		wrap.className = 'aae-lb-html'; 
 
 		if (slide.node instanceof Node) {
 			wrap.appendChild(slide.node);

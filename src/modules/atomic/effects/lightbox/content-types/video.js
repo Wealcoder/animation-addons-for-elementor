@@ -33,7 +33,7 @@ function youtubeId(url) {
 function vimeoId(url) {
 	const m = url.match(VIMEO);
 	return m ? m[1] : '';
-}
+} 
 
 export const videoType = {
 	name: 'video',

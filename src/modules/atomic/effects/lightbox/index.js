@@ -13,7 +13,7 @@
  *
  * Config lives in window.AAE_INTERACTIONS_LB[<interactionId>], published by
  * Lightbox_Manager / Render.php.
- */
+ */ 
 
 import './index.css';
 import { openLightbox } from './overlay';

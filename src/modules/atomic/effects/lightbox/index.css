@@ -25,7 +25,7 @@
 	pointer-events: auto;
 	transition: opacity 280ms ease;
 }
-
+ 
 .aae-lb-backdrop {
 	position: absolute;
 	inset: 0;

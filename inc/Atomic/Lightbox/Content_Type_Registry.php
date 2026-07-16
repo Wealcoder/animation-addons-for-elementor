@@ -3,7 +3,7 @@ namespace WCF_ADDONS\Atomic\Lightbox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-}
+} 
 
 /**
  * Normalizes a caller-supplied trigger descriptor into the flat config object

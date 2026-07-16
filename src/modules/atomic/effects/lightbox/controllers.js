@@ -19,12 +19,12 @@ export function attachKeyboard(api) {
 			case 'Home': api.goTo(0); break;
 			case 'End': api.goTo(api.count() - 1); break;
 			default: return;
-		}
+		} 
 		e.preventDefault();
 	};
 	document.addEventListener('keydown', onKey);
 	return () => document.removeEventListener('keydown', onKey);
-}
+} 
 
 /**
  * Walk up from `node` (stopping at `root`) looking for an element that can

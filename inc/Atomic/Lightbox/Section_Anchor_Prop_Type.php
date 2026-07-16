@@ -19,3 +19,4 @@ class Section_Anchor_Prop_Type extends Base_Section_Anchor {
 		return 'aae-section-aae-lightbox-style';
 	}
 }
+ 

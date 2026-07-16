@@ -32,7 +32,7 @@ export function containerFor(node) {
 		el = el.parentElement;
 	}
 	return null;
-}
+} 
 
 /** Is this node inside any lightbox container? (cheap check for delegation.) */
 export function isInContainer(node) {

@@ -4,7 +4,7 @@ namespace WCF_ADDONS\Atomic\Lightbox;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+ 
 /**
  * Auto-attaches the Lightbox to core `e-image` elements.
  *

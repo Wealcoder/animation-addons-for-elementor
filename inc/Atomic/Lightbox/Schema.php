@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
+/** 
  * Global Lightbox schema.
  *
  * Registers the shared `lb_*` props onto the atomic elements that get the

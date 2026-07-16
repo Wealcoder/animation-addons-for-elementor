@@ -23,7 +23,7 @@ function groupOf(trigger) {
  */
 export function collectGroup(trigger, mapName) {
 	const group = groupOf(trigger);
-
+ 
 	let triggers;
 	if (group) {
 		// All triggers resolving to this same group, in DOM order.

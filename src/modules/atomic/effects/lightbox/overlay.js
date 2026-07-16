@@ -18,7 +18,7 @@ import {
 	attachKeyboard, attachWheel, attachTouch, attachHash, attachZoom,
 } from './controllers';
 import { applyStyleVars, clearStyleVars } from './style-vars';
-
+ 
 const ICONS = {
 	close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
 	prev: '<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>',
