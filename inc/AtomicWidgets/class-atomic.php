@@ -665,6 +665,22 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
+			'aae-a-draw-svg' => [
+				'label'        => 'DrawSVG',
+				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
+				'icon'         => 'eicon-animation',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
 				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
@@ -2399,9 +2415,15 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-draw-svg' => [
+				'script_handle' => 'aae-a-draw-svg-js',
+				'script_path' => '/assets/atomic/js/draw-svg.js',
+				'script_deps' => [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ],
+				'has_script' => true,
+			],
+
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
-			// (paging appends slides then re-binds the shared slider runtime).
 			'aae-a-loop-grid-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',

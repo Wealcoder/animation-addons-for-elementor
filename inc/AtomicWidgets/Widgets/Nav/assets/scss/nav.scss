@@ -142,13 +142,77 @@
 	display: none;
 }
 
-/* Core empty Flexboxes default to width:100%, which makes a newly enabled
- * dropdown look like a page-wide section. Keep only the empty authoring state
- * compact; authored width/background takes over as soon as content is added. */
-.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view) {
-	width: 240px !important;
-	min-width: 200px !important;
-	min-height: 120px !important;
+/* ══ Editor authoring (canvas) ══ */
+.elementor-editor-active,
+.elementor-edit-mode {
+	/* Hide the stray empty-view on non-dropdown items. */
+	.aae-a-nav .aae-a-nav-item:not([data-has-dropdown="true"]) > .elementor-empty-view {
+		display: none;
+	}
+
+	/* Empty dropdown stays compact instead of full-width; authored size wins
+	 * as soon as content is added. `:not(.aae-a-nav-item)` is critical: a nav-item
+	 * is ALSO an atomic flexbox container, so without it every empty sub-item row
+	 * matched this rule and ballooned to 120px — a revealed dropdown then rendered
+	 * tall with its sub-items spaced ~120px apart (ugly, unlike the compact
+	 * frontend). Only genuine dropdown containers should get the droppable size. */
+	.aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(.elementor-empty-view):not(:has(> .aae-a-nav-item)) {
+		width: 240px;
+		min-width: 200px;
+		min-height: 120px;
+	}
+	.aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base) .elementor-empty-view {
+		background: transparent !important;
+	}
+
+	/* Keep EVERY nav-item row at its label height in the editor. An atomic nav-item
+	 * with a descendant empty-view — its own empty sub-item rows OR a nested
+	 * sub-dropdown's — otherwise inherits Elementor core's 120px empty-container
+	 * min-height and balloons. For a sub-item that owns a nested dropdown that
+	 * ballooned the row and spread the PARENT dropdown's items apart, breaking its
+	 * layout. The item's dropdown is position:absolute (out of flow), so collapsing
+	 * the row to content height never clips it. (Must include items WITH a dropdown,
+	 * so no :not([data-has-dropdown]) here.) */
+	.aae-a-nav .aae-a-nav-item {
+		width: auto !important;
+		min-width: 0 !important;
+		min-height: 0 !important;
+		min-block-size: 0 !important;
+	}
+
+	/* Elementor core (editor-preview.css) sets
+	 * `.e-atomic-element:has(.elementor-empty-view){min-height:120px}`. A POPULATED
+	 * submenu dropdown still contains an empty-view (each empty sub-item row has
+	 * one), so it inherited that 120px and rendered taller than its content — items
+	 * looked spaced out, unlike the compact frontend. Once the dropdown holds
+	 * sub-items, collapse it back to content height (empty dropdowns, with no
+	 * `> .aae-a-nav-item`, keep the droppable 120px above). */
+	.aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .e-atomic-element):has(> .aae-a-nav-item) {
+		min-height: 0 !important;
+		min-block-size: 0 !important;
+	}
+
+	/* Reveal a dropdown when its item is open / selected / contains the
+	 * selection (any depth). Editor-only + behavioral → !important is safe and
+	 * matches the inline styles nav.js sets. */
+	.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"]:is(.aae-editor-dropdown-open, :is(.elementor-element-selected, .elementor-element-editable), :has(:is(.elementor-element-selected, .elementor-element-editable))) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
+		visibility: visible !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+	}
+
+	/* Nested nav-items are position:static globally (below) so their sub-dropdown
+	 * anchors to the PARENT dropdown for the cascade. But static makes Elementor's
+	 * selection overlay (position:absolute; inset:0) escape to the nearest
+	 * positioned ancestor — the dropdown — so selecting a sub-item drew the
+	 * selection outline around the WHOLE dropdown container instead of the one row.
+	 * In the EDITOR give each nested item its own positioning context so the overlay
+	 * hugs just that row. Frontend keeps static (this is scoped to edit-mode), so
+	 * the runtime cascade anchoring is unaffected; the sub-dropdown still opens to
+	 * the right (verified — only a ~padding-width shift). */
+	.aae-a-nav .aae-a-nav-item .aae-a-nav-item {
+		position: relative !important;
+	}
 }
 
 .elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view {
@@ -162,10 +226,10 @@
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -174,10 +238,10 @@
 /* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
 .elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
