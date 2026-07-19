@@ -265,6 +265,146 @@ function buildSubItemModel( position ) {
 	};
 }
 
+/* A fresh 7-char element id. createElements only auto-assigns an id to the TOP
+ * element of a model — nested `elements` keep whatever id they were given, so a
+ * deep import model MUST carry an explicit id on every node or the nested ones
+ * ship with id:"" → duplicate ids → a cyclic Backbone view lookup that blows
+ * the stack. Prefer Elementor's own generator; fall back to a random id. */
+function genElementId() {
+	try {
+		if ( window.elementorCommon?.helpers?.getUniqueId ) {
+			return window.elementorCommon.helpers.getUniqueId();
+		}
+	} catch ( e ) {}
+	return Math.random().toString( 36 ).slice( 2, 9 ).padEnd( 7, '0' );
+}
+
+/* Build a full nav-item model (with link + nested dropdown) from one imported
+ * WordPress menu node `{ title, url, target, children }`. Recurses so the whole
+ * subtree is created in a SINGLE createElements call — this sidesteps the
+ * "flexbox just created this tick" defer race that iterative building hits
+ * (see handleAddChild). Any node with children becomes a dropdown parent whose
+ * children live in one core Flexbox carrying DROPDOWN_CLASS. Every node gets an
+ * explicit id (see genElementId). */
+function buildImportedItemModel( node ) {
+	const title = node.title || 'Menu Item';
+	const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
+	const settings = {
+		text: prop( 'html-v3', { content: prop( 'string', title ), children: [] } ),
+		has_dropdown: prop( 'boolean', hasChildren ),
+		trigger: prop( 'string', 'click' ),
+		dropdown_animation: prop( 'string', 'gsap' ),
+	};
+	if ( node.url ) {
+		settings.link = prop( 'link', {
+			destination: prop( 'url', node.url ),
+			isTargetBlank: prop( 'boolean', node.target === '_blank' ),
+			tag: prop( 'string', 'a' ),
+		} );
+	}
+	const model = {
+		id: genElementId(),
+		elType: NAV_ITEM_TYPE,
+		editor_settings: { title },
+		settings,
+		elements: [],
+	};
+	if ( hasChildren ) {
+		model.elements = [ {
+			id: genElementId(),
+			elType: 'e-flexbox',
+			editor_settings: { title: 'Dropdown' },
+			settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+			elements: node.children.map( buildImportedItemModel ),
+		} ];
+	}
+	return model;
+}
+
+/* Fetch the site's WordPress menus (with nested item trees) once. Reuses the
+ * editor's existing `AAE_LOOP_GRID` ajax config (url + nonce). Returns
+ * { menus, loading, error }; menus is [] when none/errored. */
+function useWpMenus() {
+	const [ menus, setMenus ] = React.useState( [] );
+	const [ loading, setLoading ] = React.useState( true );
+	const [ error, setError ] = React.useState( null );
+
+	React.useEffect( () => {
+		const cfg = window.AAE_LOOP_GRID || {};
+		if ( ! cfg.ajaxUrl ) {
+			setLoading( false );
+			setError( 'unavailable' );
+			return;
+		}
+		let alive = true;
+		const body = new window.FormData();
+		body.append( 'action', 'aae_get_nav_menus' );
+		body.append( 'nonce', cfg.nonce || '' );
+		window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
+			.then( ( r ) => r.json() )
+			.then( ( json ) => {
+				if ( ! alive ) return;
+				setMenus( Array.isArray( json?.data?.menus ) ? json.data.menus : [] );
+				setLoading( false );
+			} )
+			.catch( () => {
+				if ( ! alive ) return;
+				setError( 'failed' );
+				setLoading( false );
+			} );
+		return () => { alive = false; };
+	}, [] );
+
+	return { menus, loading, error };
+}
+
+/* "Import from WordPress menu" row for the Menu Items panel: a menu picker +
+ * Import button. Collapses to nothing when the site has no menus. */
+function NavMenuImport( { onImport } ) {
+	const { menus, loading } = useWpMenus();
+	const [ selectedId, setSelectedId ] = React.useState( '' );
+
+	React.useEffect( () => {
+		if ( ! selectedId && menus.length ) {
+			setSelectedId( String( menus[ 0 ].id ) );
+		}
+	}, [ menus, selectedId ] );
+
+	if ( loading || ! menus.length ) {
+		return null;
+	}
+
+	const selected = menus.find( ( m ) => String( m.id ) === String( selectedId ) );
+
+	return (
+		<Box sx={ { p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 } }>
+			<Typography variant="caption" sx={ { color: 'text.tertiary', display: 'block', mb: 0.5 } }>
+				{ 'Import from a WordPress menu (Appearance → Menus). Items are appended.' }
+			</Typography>
+			<Stack direction="row" gap={ 0.5 } alignItems="center">
+				<Select
+					size="tiny"
+					value={ selectedId }
+					onChange={ ( e ) => setSelectedId( e.target.value ) }
+					sx={ { flex: 1, minWidth: 0 } }
+				>
+					{ menus.map( ( m ) => (
+						<MenuItem key={ m.id } value={ String( m.id ) }>{ m.name }</MenuItem>
+					) ) }
+				</Select>
+				<Button
+					size="tiny"
+					variant="outlined"
+					disabled={ ! selected?.items?.length }
+					onClick={ () => selected && onImport( selected ) }
+				>
+					{ 'Import' }
+				</Button>
+			</Stack>
+		</Box>
+	);
+}
+
 /* First direct child of `container` whose type matches `type` (as a container). */
 function findFirstChildOfType( container, type ) {
 	const children = container?.model?.get?.( 'elements' );
@@ -1028,6 +1168,26 @@ export function NavItemsControl( { label } ) {
 		}
 	};
 
+	/* Append every top-level item of a WordPress menu (with its full nested
+	 * subtree) after the current items. The whole tree per top item is one
+	 * model, so a single createElements call builds all levels at once. */
+	const handleImportMenu = ( menu ) => {
+		const nav = getContainer( navId );
+		if ( ! nav || ! menu?.items?.length ) {
+			return;
+		}
+		const topCount = tree.filter( ( r ) => r.depth === 0 ).length;
+		createElements( {
+			title: 'Import Menu',
+			subtitle: `Imported "${ menu.name }"`,
+			elements: menu.items.map( ( node, i ) => ( {
+				container: nav,
+				model: buildImportedItemModel( node ),
+				options: { at: topCount + i },
+			} ) ),
+		} );
+	};
+
 	const handleAddChild = ( parentRow ) => {
 		/* Whether the item ALREADY owned a dropdown flexbox before this click. */
 		const hadFlex = !! findFirstChildOfType( getContainer( parentRow.id ), 'e-flexbox' );
@@ -1222,6 +1382,8 @@ export function NavItemsControl( { label } ) {
 			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
 				{ 'Drag a row up/down to reorder. Drag it to the RIGHT to nest it under the item above (creates a sub-dropdown); drag LEFT to move it out a level — just like the WordPress menu.' }
 			</Typography>
+
+			<NavMenuImport onImport={ handleImportMenu } />
 
 			<Stack
 				gap={ 0.5 }
