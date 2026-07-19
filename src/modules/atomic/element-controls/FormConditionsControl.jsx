@@ -28,6 +28,7 @@ import { useElement } from "@elementor/editor-editing-panel";
 import { getContainer } from "@elementor/editor-elements";
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -118,6 +119,26 @@ const readState = (container) => {
   return { action, logic, rules };
 };
 
+/* Branching-paths icon for the row button (native Display Conditions style). */
+const BranchIcon = () => (
+  <svg
+    width={15}
+    height={15}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="6" cy="6" r="2.4" />
+    <circle cx="6" cy="18" r="2.4" />
+    <circle cx="18" cy="12" r="2.4" />
+    <path d="M8.4 6h4.1a3 3 0 0 1 3 3v.6" />
+    <path d="M8.4 18h4.1a3 3 0 0 0 3-3v-.6" />
+  </svg>
+);
+
 const TrashIcon = () => (
   <svg
     width={15}
@@ -184,6 +205,8 @@ export function FormConditionsControl({ label }) {
     $e.run("document/elements/settings", {
       container,
       settings: {
+        // Native-style UX: rules present = feature on; cleared = off.
+        aae_cond_enable: { $$type: "boolean", value: cleanRules.length > 0 },
         aae_cond_action: { $$type: "string", value: action },
         aae_cond_logic: { $$type: "string", value: logic },
         aae_cond_rules: { $$type: "string", value: JSON.stringify(cleanRules) },
@@ -193,11 +216,58 @@ export function FormConditionsControl({ label }) {
     setOpen(false);
   };
 
+  // Active = enabled with at least one saved rule — read at render so the
+  // indicator refreshes when the dialog closes.
+  const currentSettings = getContainer(element.id)?.settings?.toJSON?.() || {};
+  let active = !!unwrap(currentSettings.aae_cond_enable);
+  if (active) {
+    try {
+      const saved = JSON.parse(asString(currentSettings.aae_cond_rules) || "[]");
+      active = Array.isArray(saved) && saved.length > 0;
+    } catch (_e) {
+      active = false;
+    }
+  }
+
   return (
     <Stack gap={1}>
-      <Button variant="outlined" size="small" fullWidth onClick={openDialog}>
-        {label || __("Edit Conditions", TD)}
-      </Button>
+      {/* Native Settings-row look: label left, bordered icon button right
+          (same pattern as Elementor Pro's Display Conditions row). */}
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ minHeight: 32 }}>
+        <Stack direction="row" alignItems="center" gap={0.5}>
+          {/* AAE brand mark — same icon-font glyph the AAE section headers
+              use (see responsive-section/section-branding.js). */}
+          <Box
+            component="i"
+            className="wcf-logo"
+            sx={{ display: "inline-flex", alignItems: "center", fontSize: 14 }}
+          />
+          <Typography variant="caption" sx={{ fontSize: 12, color: "text.primary" }}>
+            {label || __("Conditional Display", TD)}
+          </Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" gap={0.75}>
+          {active && (
+            <Box sx={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: BRAND }} />
+          )}
+          <IconButton
+            size="small"
+            onClick={openDialog}
+            title={__("Show or hide this element based on the visitor's answers", TD)}
+            sx={{
+              width: 28,
+              height: 28,
+              border: 1,
+              borderRadius: 1,
+              borderColor: active ? BRAND : "divider",
+              color: active ? BRAND : "text.secondary",
+              "&:hover": { borderColor: BRAND, color: BRAND },
+            }}
+          >
+            <BranchIcon />
+          </IconButton>
+        </Stack>
+      </Stack>
 
       <Dialog
         open={open}
@@ -351,7 +421,7 @@ export function FormConditionsControl({ label }) {
             </Button>
 
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              {__("Hidden fields never block submit and their values are not sent. The same rules are re-checked on the server.", TD)}
+              {__("Hidden fields never block submit and their values are not sent. The same rules are re-checked on the server. Remove all rules to turn conditions off.", TD)}
             </Typography>
           </Stack>
         </DialogContent>
