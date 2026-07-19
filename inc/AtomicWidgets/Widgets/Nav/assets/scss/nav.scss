@@ -142,7 +142,6 @@
 	display: none;
 }
 
-<<<<<<< HEAD
 /* ══ Editor authoring (canvas) ══ */
 .elementor-editor-active,
 .elementor-edit-mode {
@@ -196,7 +195,7 @@
 	/* Reveal a dropdown when its item is open / selected / contains the
 	 * selection (any depth). Editor-only + behavioral → !important is safe and
 	 * matches the inline styles nav.js sets. */
-	.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"]:is(.aae-editor-dropdown-open, .elementor-element-selected, :has(.elementor-element-selected)) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
+	.aae-a-nav .aae-a-nav-item[data-has-dropdown="true"]:is(.aae-editor-dropdown-open, :is(.elementor-element-selected, .elementor-element-editable), :has(:is(.elementor-element-selected, .elementor-element-editable))) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
 		visibility: visible !important;
 		opacity: 1 !important;
 		pointer-events: auto !important;
@@ -214,15 +213,6 @@
 	.aae-a-nav .aae-a-nav-item .aae-a-nav-item {
 		position: relative !important;
 	}
-=======
-/* Core empty Flexboxes default to width:100%, which makes a newly enabled
- * dropdown look like a page-wide section. Keep only the empty authoring state
- * compact; authored width/background takes over as soon as content is added. */
-.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown:has(.elementor-empty-view) {
-	width: 240px !important;
-	min-width: 200px !important;
-	min-height: 120px !important;
->>>>>>> 6cb782af794c67e4fe63e87a6b3f3e8658123fb6
 }
 
 .elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view {
@@ -236,10 +226,10 @@
 .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
@@ -248,10 +238,10 @@
 /* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
 .elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
 .elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"].elementor-element-selected > .e-con:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-atomic-element:not(.aae-a-nav-item-label),
-.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(.elementor-element-selected) > .e-con:not(.aae-a-nav-item-label) {
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] .aae-a-nav-item[data-has-dropdown="true"]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
 	visibility: visible;
 	opacity: 1;
 	pointer-events: auto;
