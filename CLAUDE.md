@@ -986,6 +986,59 @@ field types, Conditional Display Engine, Multi-Step Forms
 Analytics, AI Copilot, HTML Email Template Builder, advanced Bot Shield
 (Turnstile/reCAPTCHA v3, disposable-email/keyword/country blocking).
 
+### Conditional Display Engine (PRO — shipped 2026-07-19)
+
+Lives in `animation-addons-for-elementor-pro/inc/AtomicV4/FormConditions/`
+(FlexboxChildHover module pattern). Free ships ONLY neutral plumbing:
+
+- **JS hook registry** — free `form.js` exposes `window.AAEFormHooks`
+  (WP-style addAction/addFilter; `aae_form/init` fires per form, late
+  registrations replay). Pro runtime
+  (`src/modules/atomic-v4/form-conditions.js`, handle
+  `aae-pro-form-conditions`, depends on `aae-a-form-js`) binds there.
+  Free validation/collect skip anything under `[data-aae-cond-hidden]`.
+- **PHP filters (free)** — `aae_form/schema_walker/field` (per-field extras),
+  `aae_form/schema_walker/schema` (whole schema + raw tree — used to attach
+  ancestor row conditions to inner fields as `conditions_parents`),
+  `aae_form/validator/skip_field` (skipped = not validated, not stored).
+- **Config delivery** — field/content WIDGETS get `data-aae-cond` spliced
+  into their first tag via `elementor/widget/render_content`;
+  flexbox/div-block CONTAINERS can't (elements, not widgets) so their
+  configs ride `window.AAE_FORM_COND` keyed by `data-id` (collected at
+  `before_render`, printed at `wp_footer` prio 5). Runtime enqueued only
+  when something actually carries conditions.
+- **Rule semantics live in THREE mirrored places** — PHP `Engine.php`,
+  runtime `form-conditions.js`, dialog `FormConditionsControl.jsx`
+  (free editor-bridge, dormant without pro — Integrations-tab pattern;
+  PHP control stub type `aae-form-conditions`). Operators: equals /
+  not_equals / empty / not_empty / contains / greater_than / less_than;
+  logic all/any; action show/hide. Change one → change all three.
+- Editor canvas never hides conditioned elements (styling access); reveal
+  animation class `aae-cond-reveal` lives in free `form.scss` behind
+  `prefers-reduced-motion`.
+
+### Multi-Step Forms — hard requirements noted 2026-07-19 (build on the
+Conditional Display engine + AAEFormHooks; not started)
+
+1. **Next only after the current step validates** — advancing to the next
+   step MUST run that step's field validation first and block on errors
+   (user requirement, non-negotiable).
+2. **A Multi-Step preset must ship with the feature** (user requirement).
+3. Panel copy/UX matters: clear per-control descriptions like the
+   Conditional Display section (user asked for good in-panel guidance).
+
+### Form presets
+
+`inc/AtomicWidgets/Widgets/Form/presets/`: `contact`, `newsletter`,
+`all-fields` (every field type, single column), `all-fields-columns`
+(same fields, paired into two-column `e-flexbox` rows with
+`e-div-block` columns — desktop `width: calc(50% - 8px)` via the
+custom-unit trick, mobile variant `width: 100%`; ids re-keyed
+`aae-cols-*` so both all-fields presets can coexist on a page).
+`all-fields-columns.json` is GENERATED from `all-fields.json` — script:
+scratchpad `make-columns-preset.js` pattern (pairs list + row/column
+wrappers). Regenerate rather than hand-editing both.
+
 ### Hard "do not" rules (SSR §34, consolidated with the PRD's own list)
 
 - Build the full product in one pass.

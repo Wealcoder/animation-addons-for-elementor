@@ -62,7 +62,7 @@ final class Schema_Walker {
 		}
 		unset( $field );
 
-		return [
+		$schema = [
 			'schema_format' => self::SCHEMA_FORMAT,
 			'source'        => 'elements',
 			'form_key'      => (string) Prop::read( $settings, 'form_key', '' ),
@@ -80,6 +80,16 @@ final class Schema_Walker {
 			],
 			'messages'      => $message,
 		];
+
+		/**
+		 * Post-process the whole canonical schema with the raw form subtree
+		 * in hand. The pro Conditional Display engine uses this to attach
+		 * ancestor (row/container) conditions to the fields inside them.
+		 *
+		 * @param array $schema Canonical schema (shape above).
+		 * @param array $form   Raw e-aae-a-form element node.
+		 */
+		return apply_filters( 'aae_form/schema_walker/schema', $schema, $form );
 	}
 
 	/** Stable hash of a canonical schema (key order is construction order). */
