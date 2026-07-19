@@ -1,27 +1,3 @@
-/* AAE Atomic Image Compare (wrapper) — kept as minimal as possible.
-   Everything a preset's own element can carry (position, sizing,
-   object-fit, clip-path, colors, flex layout, the static 50% cross-axis
-   center AND the centering transform of the divider/thumb) is baked
-   directly into each preset's per-element local styles instead — see
-   Widgets/ImageCompare/presets/*.json — same as Btn/SocialShare. Cursor,
-   writing-mode, user-select, and the label-hidden opacity toggle are set
-   once by assets/js/image-compare.js instead (static per-instance values
-   with no schema/preset home, but no dependency on a per-render value
-   either, so JS owns them cleanly).
-
-   What's left here is ONLY what genuinely can't move either way: the live
-   CSS-var-driven slider position (has to reflect each instance's own
-   "Initial Position" setting from first paint — only a server-rendered
-   CSS var guarantees that), the sibling-combinator hover/active effect off
-   the invisible range input, pointer-events (unsupported schema key),
-   vendor pseudo-elements (::-webkit-slider-thumb / ::-moz-range-thumb —
-   no DOM node, can't be styled by a preset OR touched by JS), the
-   invisible range input + its label (raw Twig HTML, not Elementor elements
-   at all), and the `.elementor-element-overlay` pass-through (an
-   editor-injected div, not one of ours). Scoped by the widget's own class
-   (global, not per-instance data-id) since this is a real enqueued
-   stylesheet. */
-
 .aae-a-image-compare > .elementor-element-overlay {
 	position: absolute;
 	inset: 0;
@@ -35,14 +11,9 @@
 .aae-a-image-compare .aae-a-image-compare-caption-before,
 .aae-a-image-compare .aae-a-image-compare-caption-after {
 	pointer-events: none;
-	transition: opacity 0.2s ease;
 }
 
-/* ------ Horizontal direction (default) ------
-   Divider + thumb track the live --aae-image-compare-position custom
-   property on the X axis. `left` isn't a schema key, and the hover/active
-   scale reads a sibling selector off the invisible range input — neither
-   is expressible via a preset's local style. */
+/* ------ Horizontal direction (default) ------ */
 .aae-a-image-compare .aae-a-image-compare-divider {
 	left: var(--aae-image-compare-position, 50%);
 	pointer-events: none !important;
@@ -54,31 +25,6 @@
 	transition: transform 0.3s ease-in-out;
 }
 
-.aae-a-image-compare .aae-a-image-compare__label {
-	font-size: 0;
-	line-height: 0;
-	position: absolute;
-	inset: 0;
-	margin: 0;
-	padding: 0;
-}
-
-.aae-a-image-compare .aae-a-image-compare__range {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	background-color: transparent;
-	border: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	outline: none;
-	z-index: 20;
-	opacity: 0;
-}
 .aae-a-image-compare .aae-a-image-compare__range::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	width: 40px;
@@ -105,12 +51,7 @@
 	transform: translate(-50%, -50%) scale(0.95);
 }
 
-/* ------ Vertical direction override ------
-   Same live custom property now drives the Y axis instead. Everything
-   else (divider/thumb dimensions, transforms, cursor, writing-mode, clip-
-   path axis, caption placement) is already baked into the vertical
-   preset's own local styles or set once by JS — only the dynamic position
-   swap needs to happen here. */
+/* ------ Vertical direction override ------ */
 .aae-a-image-compare[data-direction="vertical"] .aae-a-image-compare-divider {
 	inset-block-start: var(--aae-image-compare-position, 50%);
 }

@@ -56,7 +56,7 @@
                   "max-width": { "$$type": "size", "value": { "unit": "%", "size": 100 } },
                   "height": { "$$type": "size", "value": { "unit": "%", "size": 100 } },
                   "object-fit": { "$$type": "string", "value": "cover" },
-                  "object-position": { "$$type": "string", "value": "0 50%" },
+                  "object-position": { "$$type": "string", "value": "center left" },
                   "margin": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
                   "z-index": { "$$type": "number", "value": 2 },
                   "clip-path": { "$$type": "string", "value": "inset(0 0 calc(100% - var(--aae-image-compare-position, 50%)) 0)" }
@@ -107,7 +107,7 @@
                   "max-width": { "$$type": "size", "value": { "unit": "%", "size": 100 } },
                   "height": { "$$type": "size", "value": { "unit": "auto", "size": "" } },
                   "object-fit": { "$$type": "string", "value": "cover" },
-                  "object-position": { "$$type": "string", "value": "0 50%" },
+                  "object-position": { "$$type": "string", "value": "center left" },
                   "margin": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
                   "z-index": { "$$type": "number", "value": 1 }
                 },
@@ -232,7 +232,7 @@
             "elType": "widget",
             "isInner": false,
             "settings": {
-              "classes": { "$$type": "classes", "value": ["aae-a-svg-30"] },
+              "classes": { "$$type": "classes", "value": ["aae-a-svg-30", "e-icv-ico"] },
               "svg": {
                 "$$type": "svg-src",
                 "value": {
@@ -245,7 +245,24 @@
             "version": "0.0",
             "interactions": [],
             "elements": [],
-            "styles": []
+            "styles": {
+              "e-icv-ico": {
+                "id": "e-icv-ico",
+                "label": "local",
+                "type": "class",
+                "variants": [
+                  {
+                    "meta": { "breakpoint": "desktop", "state": null },
+                    "props": {
+                      "width": { "$$type": "size", "value": { "unit": "px", "size": 30 } },
+                      "height": { "$$type": "size", "value": { "unit": "px", "size": 30 } }
+                    },
+                    "custom_css": null
+                  }
+                ],
+                "custom_css": null
+              }
+            }
           }
         ]
       },
@@ -280,7 +297,25 @@
                   "inset-inline-start": { "$$type": "size", "value": { "unit": "px", "size": 16 } },
                   "z-index": { "$$type": "number", "value": 12 },
                   "margin": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                  "line-height": { "$$type": "size", "value": { "unit": "em", "size": 1 } }
+                  "line-height": { "$$type": "size", "value": { "unit": "em", "size": 1 } },
+                  "transition": {
+                    "$$type": "transition",
+                    "value": [
+                      {
+                        "$$type": "selection-size",
+                        "value": {
+                          "selection": {
+                            "$$type": "key-value",
+                            "value": {
+                              "key": { "$$type": "string", "value": "All properties" },
+                              "value": { "$$type": "string", "value": "all" }
+                            }
+                          },
+                          "size": { "$$type": "size", "value": { "unit": "ms", "size": 200 } }
+                        }
+                      }
+                    ]
+                  }
                 },
                 "custom_css": null
               }
@@ -321,7 +356,25 @@
                   "z-index": { "$$type": "number", "value": 12 },
                   "margin": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
                   "line-height": { "$$type": "size", "value": { "unit": "em", "size": 1 } },
-                  "text-align": { "$$type": "string", "value": "start" }
+                  "text-align": { "$$type": "string", "value": "start" },
+                  "transition": {
+                    "$$type": "transition",
+                    "value": [
+                      {
+                        "$$type": "selection-size",
+                        "value": {
+                          "selection": {
+                            "$$type": "key-value",
+                            "value": {
+                              "key": { "$$type": "string", "value": "All properties" },
+                              "value": { "$$type": "string", "value": "all" }
+                            }
+                          },
+                          "size": { "$$type": "size", "value": { "unit": "ms", "size": 200 } }
+                        }
+                      }
+                    ]
+                  }
                 },
                 "custom_css": null
               }

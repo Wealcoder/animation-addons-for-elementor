@@ -21,24 +21,27 @@
     {{ editor_attributes | default('') | raw }}>
 
     {#
-        No inline <style> here — per-element look (position, sizing,
-        object-fit, clip-path, colors, layout) lives in each preset's own
-        local element styles (Widgets/ImageCompare/presets/*.json), same as
-        Btn/SocialShare. Only the live CSS-var-driven slider position, the
-        sibling-combinator hover effect, and the vendor pseudo-elements —
-        things no preset/schema can express — live in
-        assets/scss/image-compare.scss (enqueued via `aae-a-image-compare-css`).
-        The one inline `style` attribute above is the dynamic per-render
-        seed value for that CSS var, not a style rule.
+        No <style> tag here — only real inline `style=""` attributes are
+        allowed on this template. That only covers the two elements this
+        twig itself renders (label + range input) and only their static,
+        unconditional declarations. Everything else — pseudo-elements
+        (::-webkit-slider-thumb / ::-moz-range-thumb), pseudo-class +
+        sibling-combinator hover/active rules, @media, the live CSS-var
+        driven position, and anything targeting the divider/thumb/captions/
+        overlay (rendered by other widgets or the editor, not by this
+        template) — can't be expressed as an attribute and lives in
+        assets/scss/image-compare.scss instead.
     #}
-
-    <label class="aae-a-image-compare__label" for="aae-image-compare-range-{{ id }}">Move image comparison slider</label>
+    <label class="aae-a-image-compare__label"
+           for="aae-image-compare-range-{{ id }}"
+           style="font-size:0;line-height:0;position:absolute;inset:0;margin:0;padding:0;">Move image comparison slider</label>
     <input type="range"
            min="0"
            max="100"
            value="{{ default_position }}"
            class="aae-a-image-compare__range"
            id="aae-image-compare-range-{{ id }}"
+           style="position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;background-color:transparent;border:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;outline:none;z-index:20;opacity:0;"
            data-aae-compare-range>
 
     {{ children_placeholder | raw }}
