@@ -33,6 +33,38 @@ const isEditMode = () =>
 	!! ( window.elementorFrontend?.isEditMode?.() || window.elementor );
 
 /* ------------------------------------------------------------------ */
+/* Extension hooks (WP-style, browser-side)                            */
+/*                                                                     */
+/* window.AAEFormHooks lets other bundles (the PRO Conditional Display */
+/* engine, future Validation Pro) plug into this runtime without       */
+/* patching it. Late joiners are replayed: adding an 'aae_form/init'   */
+/* action immediately fires it for every already-initialised form, so  */
+/* load order between free and pro bundles never matters.              */
+/* ------------------------------------------------------------------ */
+
+const hooks = ( window.AAEFormHooks = window.AAEFormHooks || {
+	actions: {},
+	filters: {},
+	addAction( name, fn ) {
+		( this.actions[ name ] = this.actions[ name ] || [] ).push( fn );
+		if ( 'aae_form/init' === name ) {
+			document
+				.querySelectorAll( 'form[data-aae-form-ready="true"]' )
+				.forEach( ( form ) => fn( form ) );
+		}
+	},
+	doAction( name, ...args ) {
+		( this.actions[ name ] || [] ).forEach( ( fn ) => fn( ...args ) );
+	},
+	addFilter( name, fn ) {
+		( this.filters[ name ] = this.filters[ name ] || [] ).push( fn );
+	},
+	applyFilters( name, value, ...args ) {
+		return ( this.filters[ name ] || [] ).reduce( ( acc, fn ) => fn( acc, ...args ), value );
+	},
+} );
+
+/* ------------------------------------------------------------------ */
 /* Token                                                               */
 /* ------------------------------------------------------------------ */
 
@@ -185,6 +217,13 @@ const validateFrontend = ( form ) => {
 	const requiredMsg = requiredMessage( form );
 
 	for ( const control of controlsOf( form ) ) {
+		// Conditionally-hidden fields never block submit (spec). The marker is
+		// set by the pro Conditional Display runtime — free only respects it.
+		// The filter lets other engines skip controls by their own criteria.
+		if ( hooks.applyFilters( 'aae_form/validate/skip_control', !! control.closest( '[data-aae-cond-hidden]' ), control, form ) ) {
+			continue;
+		}
+
 		const value = control.value.trim();
 
 		if ( 'radio' === control.type ) {
@@ -280,9 +319,19 @@ const validateFrontend = ( form ) => {
 const collectFields = ( form ) => {
 	const fields = {};
 
+	// FormData can't tell which control a value came from, so resolve the
+	// conditionally-hidden set up front and drop their names entirely.
+	const hiddenNames = new Set();
+	form.querySelectorAll( '[data-aae-cond-hidden] [name], [name][data-aae-cond-hidden]' ).forEach( ( control ) => {
+		hiddenNames.add( control.name );
+	} );
+
 	for ( const [ rawName, value ] of new FormData( form ) ) {
 		if ( value instanceof File ) {
 			continue; // files ride as pre-upload refs, never inline (JSON body).
+		}
+		if ( hooks.applyFilters( 'aae_form/collect/skip_field', hiddenNames.has( rawName ), rawName, form ) ) {
+			continue; // conditionally hidden — its value must not submit.
 		}
 		if ( rawName.endsWith( '[]' ) ) {
 			const name = rawName.slice( 0, -2 );
@@ -645,6 +694,11 @@ const initForm = ( form ) => {
 			inFlight = false;
 		}
 	} );
+
+	// Extension point: the PRO Conditional Display engine (and any future
+	// engine) binds per-form here. Frontend only — the editor early-return
+	// above means canvas forms never fire it. Late registrations replay.
+	hooks.doAction( 'aae_form/init', form );
 };
 
 register( {

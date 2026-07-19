@@ -250,4 +250,17 @@ form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aa
     .aae-form-runtime-message {
         transition: opacity 0.15s ease;
     }
+
+    // Conditional Display (pro): a field/row revealed by a condition fades
+    // in. Hide is instant by design — the class is added on show only.
+    .aae-cond-reveal {
+        animation: aae-cond-reveal 0.18s ease;
+    }
+}
+
+@keyframes aae-cond-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
 }

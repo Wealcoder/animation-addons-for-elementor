@@ -221,8 +221,9 @@ const labelText = (raw) => {
   return asString(value);
 };
 
-/** [{ key, label }] for every field of the form, in DOM order. */
-const collectFieldTags = (formContainer) => {
+/** [{ key, label }] for every field of the form, in DOM order.
+ * Exported: FormConditionsControl reuses it for its field dropdowns. */
+export const collectFieldTags = (formContainer) => {
   const found = [];
   const seen = new Set();
   const labels = {}; // input-id (_cssid) → label text

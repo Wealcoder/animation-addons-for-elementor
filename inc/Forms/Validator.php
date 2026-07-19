@@ -38,6 +38,21 @@ final class Validator {
 
 		foreach ( self::group_fields( $schema['fields'] ?? [] ) as $key => $group ) {
 			$field = $group['field'];
+
+			/**
+			 * Skip a field entirely (no validation, no storage). The pro
+			 * Conditional Display engine hooks this to honor fields the
+			 * visitor never saw — hidden fields must not block submit.
+			 *
+			 * @param bool  $skip   Default false.
+			 * @param array $field  Schema field entry.
+			 * @param array $posted Full posted payload.
+			 * @param array $schema Active schema snapshot.
+			 */
+			if ( apply_filters( 'aae_form/validator/skip_field', false, $field, $posted, $schema ) ) {
+				continue;
+			}
+
 			$value = $posted[ $key ] ?? null;
 
 			switch ( $field['type'] ) {

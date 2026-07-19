@@ -1,18 +1,18 @@
 <?php
 /**
- * AAE Forms — file uploads (local private storage ONLY, no cloud adapters).
+ * AAE Forms â€” file uploads (local private storage ONLY, no cloud adapters).
  *
  * Pre-upload flow:
  *   1. POST /aae/v1/forms/{form_key}/uploads (multipart: file, field_key,
- *      nonce) — validates against the ACTIVE schema's file field rules,
+ *      nonce) â€” validates against the ACTIVE schema's file field rules,
  *      stores the file in a private uploads subfolder, inserts a PENDING
  *      aae_attachments row, returns { id, key } (key = claim secret).
  *   2. The submit payload carries [{ id, key }] as the file field's value;
  *      the Validator verifies every ref (id+key+form_key+pending).
  *   3. After the submission row exists (aae_form/submission_saved), the
- *      refs are CLAIMED: submission_id set, status → attached.
+ *      refs are CLAIMED: submission_id set, status â†’ attached.
  *   4. Un-claimed rows older than PENDING_TTL are deleted (file + row) by
- *      a daily cron — abandoned uploads never pile up.
+ *      a daily cron â€” abandoned uploads never pile up.
  *
  * Storage is wp-content/uploads/aae-forms/{form_key}/ with a deny-all
  * .htaccess + random filenames; downloads go ONLY through the
@@ -46,7 +46,7 @@ final class Uploads {
 	const DEFAULT_ACCEPT  = 'pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip';
 
 	/**
-	 * Never accepted, whatever the field's accept list says — executables,
+	 * Never accepted, whatever the field's accept list says â€” executables,
 	 * server-side scripts and XSS vectors (svg/html).
 	 */
 	const BLOCKED_EXTENSIONS = [
@@ -61,7 +61,7 @@ final class Uploads {
 	public static function init(): void {
 		add_action( 'rest_api_init', [ self::class, 'register_routes' ] );
 
-		// Claim pending uploads once the submission row exists (never before —
+		// Claim pending uploads once the submission row exists (never before â€”
 		// save-before-actions applies to files too).
 		add_action( 'aae_form/submission_saved', [ self::class, 'claim_for_submission' ], 5, 5 );
 
@@ -83,7 +83,7 @@ final class Uploads {
 			]
 		);
 
-		// Admin-only download proxy — the ONLY way a stored file is served.
+		// Admin-only download proxy â€” the ONLY way a stored file is served.
 		register_rest_route(
 			Rest::REST_NAMESPACE,
 			'/attachments/(?P<id>\d+)/download',
@@ -101,7 +101,7 @@ final class Uploads {
 	/* Public upload endpoint                                              */
 	/* ------------------------------------------------------------------ */
 
-	/** POST /forms/{form_key}/uploads — one file per request. */
+	/** POST /forms/{form_key}/uploads â€” one file per request. */
 	public static function handle_upload( WP_REST_Request $request ): WP_REST_Response {
 		$form_key = (string) $request['form_key'];
 
@@ -124,7 +124,7 @@ final class Uploads {
 			return self::error( 429, 'aae_form_rate_limited', __( 'Too many uploads. Please wait a moment and try again.', 'animation-addons-for-elementor' ) );
 		}
 
-		// The target must be a real file field of the ACTIVE schema — its
+		// The target must be a real file field of the ACTIVE schema â€” its
 		// rules (accept/max size), never client-supplied attributes, decide.
 		$field_key = sanitize_text_field( (string) $request->get_param( 'field_key' ) );
 		$field     = self::file_field( $schema, $field_key );
@@ -163,7 +163,7 @@ final class Uploads {
 		}
 
 		// Content sniff: the bytes must match the claimed extension for types
-		// WP knows — a renamed .exe never gets through on extension alone.
+		// WP knows â€” a renamed .exe never gets through on extension alone.
 		$check = wp_check_filetype_and_ext( $file['tmp_name'], $original );
 		if ( empty( $check['ext'] ) || strtolower( (string) $check['ext'] ) !== $ext ) {
 			return self::error( 422, 'aae_form_file_type', __( 'This file type is not allowed.', 'animation-addons-for-elementor' ) );
@@ -210,7 +210,7 @@ final class Uploads {
 		);
 
 		if ( false === $inserted ) {
-			@unlink( $destination ); // phpcs:ignore WordPress.PHP.NoSilencedErrors -- best-effort rollback.
+			wp_delete_file( $destination ); // best-effort rollback.
 
 			return self::error( 500, 'aae_form_storage', __( 'We could not store the file. Please try again.', 'animation-addons-for-elementor' ) );
 		}
@@ -233,7 +233,7 @@ final class Uploads {
 	/* Admin download proxy                                                */
 	/* ------------------------------------------------------------------ */
 
-	/** GET /attachments/{id}/download — streams the file to an admin. */
+	/** GET /attachments/{id}/download â€” streams the file to an admin. */
 	public static function handle_download( WP_REST_Request $request ) {
 		global $wpdb;
 
@@ -252,7 +252,7 @@ final class Uploads {
 			return self::error( 404, 'aae_form_not_found', __( 'File not found.', 'animation-addons-for-elementor' ) );
 		}
 
-		// Stream directly — a JSON response can't carry the bytes.
+		// Stream directly â€” a JSON response can't carry the bytes.
 		nocache_headers();
 		header( 'Content-Type: ' . ( '' !== (string) $row['mime'] ? (string) $row['mime'] : 'application/octet-stream' ) );
 		header( 'Content-Disposition: attachment; filename="' . rawurlencode( (string) $row['original_name'] ) . '"' );
@@ -268,9 +268,9 @@ final class Uploads {
 	/* ------------------------------------------------------------------ */
 
 	/**
-	 * Verify a posted list of upload refs ([{id,key},…]) against pending rows
-	 * of this form. Returns normalized value entries for storage —
-	 * [ [ 'id' => int, 'name' => string, 'size' => int ], … ] — or null when
+	 * Verify a posted list of upload refs ([{id,key},â€¦]) against pending rows
+	 * of this form. Returns normalized value entries for storage â€”
+	 * [ [ 'id' => int, 'name' => string, 'size' => int ], â€¦ ] â€” or null when
 	 * ANY ref is unknown/foreign/spent (the whole field then fails validation).
 	 */
 	public static function verify_refs( array $refs, string $form_key ): ?array {
@@ -313,13 +313,13 @@ final class Uploads {
 
 	/**
 	 * aae_form/submission_saved: attach the submission's verified uploads.
-	 * File-field clean values are arrays of ['id'=>…] entries (see
-	 * Validator) — collect the ids and claim their pending rows.
+	 * File-field clean values are arrays of ['id'=>â€¦] entries (see
+	 * Validator) â€” collect the ids and claim their pending rows.
 	 */
 	public static function claim_for_submission( $submission_id, $form_key, $clean, $schema, $meta ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- hook signature.
 		$submission_id = (int) $submission_id;
 		if ( $submission_id <= 0 || ! is_array( $clean ) ) {
-			return; // behavior 'email' stores nothing — pending rows expire via cron.
+			return; // behavior 'email' stores nothing â€” pending rows expire via cron.
 		}
 
 		$file_keys = [];
@@ -427,7 +427,7 @@ final class Uploads {
 	 * Delete still-pending upload rows + files of a form. Used by the Admin
 	 * Email action after a successful send on a store-less ("Email Only")
 	 * form: the email was the delivery, nothing else can ever reach these
-	 * files (no submission row → no dashboard link), so don't let personal
+	 * files (no submission row â†’ no dashboard link), so don't let personal
 	 * data linger for the 24h TTL.
 	 *
 	 * @param int[] $ids Attachment row ids.
@@ -453,7 +453,7 @@ final class Uploads {
 		foreach ( (array) $rows as $row ) {
 			$path = self::abs_path( (string) $row['stored_path'] );
 			if ( '' !== $path && file_exists( $path ) ) {
-				@unlink( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors -- best-effort sweep.
+				wp_delete_file( $path ); // best-effort sweep.
 			}
 
 			$wpdb->delete( Database::attachments_table(), [ 'id' => (int) $row['id'] ], [ '%d' ] );
@@ -481,7 +481,7 @@ final class Uploads {
 		foreach ( (array) $rows as $row ) {
 			$path = self::abs_path( (string) $row['stored_path'] );
 			if ( '' !== $path && file_exists( $path ) ) {
-				@unlink( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors -- best-effort sweep.
+				wp_delete_file( $path ); // best-effort sweep.
 			}
 
 			$wpdb->delete( Database::attachments_table(), [ 'id' => (int) $row['id'] ], [ '%d' ] );
@@ -547,7 +547,7 @@ final class Uploads {
 		}
 
 		// Deny direct HTTP access (Apache 2.2 + 2.4); nginx users must map
-		// the folder to `deny all` — documented limitation of htaccess-only.
+		// the folder to `deny all` â€” documented limitation of htaccess-only.
 		$htaccess = trailingslashit( $uploads['basedir'] ) . 'aae-forms/.htaccess';
 		if ( ! file_exists( $htaccess ) ) {
 			@file_put_contents( $htaccess, "Require all denied\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n" ); // phpcs:ignore WordPress.PHP.NoSilencedErrors, WordPress.WP.AlternativeFunctions -- one-time hardening file.
