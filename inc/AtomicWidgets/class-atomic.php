@@ -1691,6 +1691,45 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form-rating' => [
+				'label'        => 'Form Rating',
+				'description'  => 'Advanced Field (Pro) — a star-rating field. Progressively enhances a real number input, so submit and validation work exactly like any other number field.',
+				'icon'         => 'eicon-star-o',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form rating',
+					'star',
+					'review',
+					'feedback',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range' => [
+				'label'        => 'Form Range',
+				'description'  => 'Advanced Field (Pro) — a range slider. Style tab → Background Color sets the slider\'s own color.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range',
+					'slider',
+					'range',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-form-submit' => [
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
@@ -2826,6 +2865,18 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_File',
 				'file'       => 'Widgets/Form/class-aae-a-form-file.php',
 				'has_script' => false,
+			],
+
+			'aae-a-form-rating' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Rating',
+				'file'       => 'Widgets/Form/class-aae-a-form-rating.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/rating.js).
+			],
+
+			'aae-a-form-range' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
+				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
 			],
 
 			'aae-a-form-step' => [

@@ -164,6 +164,51 @@ final class Validator {
 					$clean[ $key ] = $value;
 					break;
 
+				case 'range':
+					// A native <input type="range"> always posts a value (its
+					// own min/midpoint by default) — there is no "empty" state
+					// and therefore no required check, same reasoning as Rating's
+					// toggle-off-to-0 being the closest it gets to "unset".
+					$value = sanitize_text_field( self::scalar( $value ) );
+
+					if ( ! is_numeric( $value ) ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$range_error = self::check_range( (float) $value, $field );
+					if ( null !== $range_error ) {
+						$errors[ $key ] = $range_error;
+						break;
+					}
+
+					$clean[ $key ] = $value;
+					break;
+
+				case 'rating':
+					$value = sanitize_text_field( self::scalar( $value ) );
+
+					if ( '' === $value || '0' === $value ) {
+						if ( $field['required'] ) {
+							$errors[ $key ] = self::msg_required( $field );
+						}
+						break;
+					}
+
+					if ( ! is_numeric( $value ) || (float) $value !== (float) (int) $value ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$range_error = self::check_range( (float) $value, $field );
+					if ( null !== $range_error ) {
+						$errors[ $key ] = $range_error;
+						break;
+					}
+
+					$clean[ $key ] = $value;
+					break;
+
 				default: // input family: text / email / number / tel / url / password.
 					$value = sanitize_text_field( self::scalar( $value ) );
 
@@ -213,9 +258,32 @@ final class Validator {
 			case 'tel':
 				// Basic-format-only per spec's Free tier (real validation is a Pro adapter).
 				return preg_match( '/^\+?[0-9\-().\s]{3,30}$/', $value ) ? null : self::msg_or( $field, __( 'Please enter a valid phone number.', 'animation-addons-for-elementor' ) );
+
+			case 'date':
+				// Native <input type="date"> posts ISO 8601 (YYYY-MM-DD) regardless
+				// of the visitor's locale display format.
+				if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) || ! checkdate( (int) substr( $value, 5, 2 ), (int) substr( $value, 8, 2 ), (int) substr( $value, 0, 4 ) ) ) {
+					return self::msg_or( $field, __( 'Please enter a valid date.', 'animation-addons-for-elementor' ) );
+				}
+				return self::check_date_range( $value, $field );
+
+			case 'time':
+				// Native <input type="time"> posts HH:MM (or HH:MM:SS with the
+				// step attribute) in 24-hour form.
+				return preg_match( '/^\d{2}:\d{2}(:\d{2})?$/', $value ) ? null : self::msg_or( $field, __( 'Please enter a valid time.', 'animation-addons-for-elementor' ) );
 		}
 
-		return null;
+		/**
+		 * Extend format checking for a field type this switch doesn't handle
+		 * (e.g. a Pro-added input type). Return a message string to fail
+		 * validation, or null (the default) to pass.
+		 *
+		 * @param string|null $error Default null (passes).
+		 * @param string      $type  The field's `type` value.
+		 * @param string      $value Sanitized posted value.
+		 * @param array       $field Schema field entry.
+		 */
+		return apply_filters( 'aae_form/validator/check_format', null, $type, $value, $field );
 	}
 
 	/**
@@ -234,6 +302,29 @@ final class Validator {
 		if ( '' !== $max && is_numeric( $max ) && $value > (float) $max ) {
 			/* translators: %s: maximum allowed value */
 			return self::msg_or( $field, sprintf( __( 'Please enter a value of at most %s.', 'animation-addons-for-elementor' ), $max ) );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Date min/max from the schema snapshot ("YYYY-MM-DD" strings, same as the
+	 * native <input type="date"> min/max attributes) — compared as timestamps
+	 * so "2026-01-01" < "2026-02-01" regardless of string sort quirks.
+	 */
+	private static function check_date_range( string $value, array $field ): ?string {
+		$min = (string) ( $field['min'] ?? '' );
+		$max = (string) ( $field['max'] ?? '' );
+		$ts  = strtotime( $value );
+
+		if ( '' !== $min && false !== ( $min_ts = strtotime( $min ) ) && $ts < $min_ts ) {
+			/* translators: %s: earliest allowed date */
+			return self::msg_or( $field, sprintf( __( 'Please choose a date on or after %s.', 'animation-addons-for-elementor' ), $min ) );
+		}
+
+		if ( '' !== $max && false !== ( $max_ts = strtotime( $max ) ) && $ts > $max_ts ) {
+			/* translators: %s: latest allowed date */
+			return self::msg_or( $field, sprintf( __( 'Please choose a date on or before %s.', 'animation-addons-for-elementor' ), $max ) );
 		}
 
 		return null;

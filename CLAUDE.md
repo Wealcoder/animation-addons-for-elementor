@@ -625,15 +625,17 @@ Reply; basic Submission Dashboard + CSV export; basic Webhook (URL, POST
 JSON, all fields, test button); Honeypot + basic reCAPTCHA option;
 accessibility/i18n/RTL/privacy/performance foundations.
 
-**Pro:** advanced field types — **Date, Time, File Upload, Range, Rating,
-Signature, Repeater, HTML, Password, Calculation, Step, Address, Country**;
-Premium presets; Private Storage + Google Drive/AWS S3 adapters; Google
-Sheets (OAuth); Advanced Webhook (custom headers/auth/mapping/conditions/
-retry, n8n/Zapier/Make presets); Action Logs + Retry Queue UI; **Validation
-Pro** (regex, real phone validation API, country restriction, disposable
-email, domain rules); Telegram/WhatsApp/Slack; **Conditional Display Engine**;
-**Multi-Step Forms**; Calculator/Quote forms; Analytics/Lead Management; AI
-Copilot; HTML Email Template Builder.
+**Pro:** advanced field types — **Date, Time, Range, Rating** (shipped, see
+[Advanced Field Types — Batch 1](#advanced-field-types--batch-1-datetimerangerating-shipped-2026-07-20)),
+**File Upload (advanced), Signature, Repeater, HTML, Password, Calculation,
+Step, Address, Country** (not yet built); Premium presets; Private Storage +
+Google Drive/AWS S3 adapters; Google Sheets (OAuth); Advanced Webhook
+(custom headers/auth/mapping/conditions/retry, n8n/Zapier/Make presets);
+Action Logs + Retry Queue UI; **Validation Pro** (regex, real phone
+validation API, country restriction, disposable email, domain rules);
+Telegram/WhatsApp/Slack; **Conditional Display Engine**; **Multi-Step
+Forms**; Calculator/Quote forms; Analytics/Lead Management; AI Copilot;
+HTML Email Template Builder.
 
 Open/unresolved per the spec (flag to product owner, don't guess): whether
 Bot Shield presets are Free or Pro (recommendation only: basic protections
@@ -996,6 +998,147 @@ field types, Conditional Display Engine, Multi-Step Forms
 (`e-aae-a-form-step`), Calculator/Quote, abandonment tracking/partial save,
 Analytics, AI Copilot, HTML Email Template Builder, advanced Bot Shield
 (Turnstile/reCAPTCHA v3, disposable-email/keyword/country blocking).
+
+### Advanced Field Types — Batch 1: Date/Time/Range/Rating (shipped 2026-07-20)
+
+First slice of the Pro "advanced field types" list — split into batches by
+risk rather than shipped as one large change (Signature/Repeater/HTML/
+Calculation/Address/Country remain unbuilt). Two different implementation
+shapes, chosen per the same free/Pro registry constraint documented under
+[Multi-Step Forms](#multi-step-forms--shipped-2026-07-19-free-plugin-not-pro-gated-in-code):
+
+- **Date, Time** are new `type` enum values on the EXISTING
+  `AAE_A_Form_Input` widget, added entirely from Pro
+  (`animation-addons-for-elementor-pro/inc/AtomicV4/FormFields/Schema.php`)
+  via a filter hook the free widget already exposed and documented for this
+  exact purpose (`aae_form/input_types` — its own docblock said "Pro adds
+  date/time here" before any Pro code used it). No new widget class, no new
+  props, no JS bundle — one `add_filter` call. Registered in
+  `inc/AtomicV4/Bootstrap.php` alongside the other AtomicV4 modules.
+- **Rating and Range are each a genuinely new element type**
+  (`e-aae-a-form-rating`, `e-aae-a-form-range`), so — same reasoning as
+  `e-aae-a-form-step`/`-next`/`-prev` — both live in the FREE plugin
+  unconditionally, with `is_pro => true` in `class-atomic.php`'s dashboard
+  metadata marking them premium-tier (upsell badge only, not a functional
+  gate; new optional widgets default to inactive until toggled on in the
+  Atomic Widgets dashboard, same as any other non-seeded widget).
+  - **Rating** (`inc/AtomicWidgets/Widgets/Form/class-aae-a-form-rating.php`):
+    the real control is a plain `<input type="number">` (min 0, max = star
+    count, required/error_message all work exactly like any other number
+    field to Validator.php and Schema_Walker), progressively enhanced by
+    `lib/rating.js` (mirrors `lib/multi-select.js`'s pattern) into a
+    clickable star row that mirrors clicks onto the hidden input's value and
+    fires `change` — so the rest of the form runtime never needs
+    special-case Rating logic. Clicking the currently-set star again clears
+    the rating (toggle off). CSS in `form.scss` (`.aae-a-form-rating-*`); no
+    framework, no GSAP.
+  - **Range** (`class-aae-a-form-range.php`) — originally shipped as a
+    THIRD Pro `type` value on the Input widget (like Date/Time), then split
+    into its own widget the same day after the user asked to set the
+    slider's own colour, independently, from the Style panel. Root problem:
+    `accent-color` — the one CSS property that actually recolors a native
+    range's track/thumb consistently across browsers — has **no
+    equivalent key in Elementor's atomic Style-panel schema at all**
+    (confirmed by listing every file in
+    `elementor/modules/atomic-widgets/controls/types/` — there is also no
+    generic "Color" Content-tab control to fall back to; atomic widgets
+    only expose color pickers through `Style_Definition`/`Color_Prop_Type`,
+    i.e. the Style tab). Solution: Range gets its own `background` prop on
+    its own base style (Style tab → Background Color, same mechanism
+    Select's background uses), and `lib/range.js` bridges that to
+    `accent-color` by reading the rendered input's own **computed**
+    `background-color` at init and copying it onto `input.style.accentColor`
+    — a live runtime bridge, not a build-time one (mirrors
+    `lib/multi-select.js`'s `applyStyle()`, which does the identical
+    computed-style-copy trick for the multi-select trigger). Defaults to
+    `#69727D` (the same neutral gray Checkbox's `:checked` state uses), not
+    transparent — transparent would make the accent invisible until a
+    builder explicitly paints a colour, which reads as broken rather than
+    "using the default". Because Range moved to its own widget, Pro's
+    `FormFields` module shrank back down to Date/Time only — `Controls.php`
+    and `Renderer.php` (which existed only to splice a `step` attribute onto
+    the shared Input widget) were deleted entirely; `step` is now a plain
+    prop directly on the Range widget itself, no splicing needed.
+- `Validator.php` gained `date`/`time` format/range checks inside
+  `check_format()` (dispatched by the Input widget's `type` string — works
+  regardless of which plugin registered that type) plus one new filter,
+  `aae_form/validator/check_format`, for any FUTURE type this switch
+  doesn't handle. `rating` and `range` are each their OWN top-level `case`
+  in `Validator::validate()`'s main switch instead (they're separate field
+  TYPES from `Schema_Walker::FIELD_TYPES`, not Input `type` values, so they
+  never reach `check_format()` at all) — `range` reuses the same
+  `check_range()` helper the input family's own min/max check uses, and
+  never fires a required error (a native range always posts a value).
+  `Schema_Walker::FIELD_TYPES` gained `e-aae-a-form-rating` → `rating` and
+  `e-aae-a-form-range` → `range` mappings, each with a matching case in
+  `build_field()` — Rating's carries `max` into the schema as the star-count
+  ceiling, Range's carries `min`/`max` (its `step` is display-only, not a
+  submission-security concern, so it isn't in the schema at all).
+- New preset: `presets/advanced-fields.json` — Date, Time, Range, Rating,
+  Submit, plus the required Field Error / Success / Error message widgets
+  (same "every preset needs these three" pattern as `all-fields.json`).
+  Deliberately a NEW preset rather than a retrofit of `all-fields.json` (
+  which would have required regenerating the derived
+  `all-fields-columns.json` too, per the [Form presets](#form-presets)
+  note that the columns version is script-generated, not hand-edited).
+- **Verified end-to-end** via a WP-CLI fixture (`make-form-advfields-page.php`,
+  mirrors `make-form-allfields-page.php`) + Playwright
+  (`verify-form-advfields.mjs`, `E:\Local Testing\`): all four field types
+  render with correct attributes (native `date`/`time`/`range` inputs, 5
+  painted stars for Rating's default max), required-field errors fire
+  correctly (range never fires one — a native range input always has a
+  value), star clicks mirror to the real input and clear its error, and a
+  full REST submit reaches `form-state-success` — proving the whole
+  pipeline (Schema_Walker → Validator → Rest.php) accepts all four new
+  types.
+- **Gotcha — a WP-CLI fixture builder using `Document::save()` alone left
+  the page rendering as plain `post_content` (wpautop-wrapped `<p>`/`<br>`,
+  no `<form>`/div-block wrappers at all), even though `_elementor_data` and
+  the schema-sync DB row were both correct.** Root cause: a freshly
+  `wp_insert_post()`-created plain `page` has no `_elementor_edit_mode` meta
+  yet, and `Document::save()` doesn't set it — so WordPress never hands the
+  page to Elementor's frontend renderer, no matter how correct the saved
+  element tree is. This affected the EXISTING `make-form-allfields-page.php`
+  fixture too (not something Batch 1 introduced) — it had simply never been
+  re-run since being written, so the bug was latent. Fixed in both scripts
+  by explicitly `update_post_meta( $post_id, '_elementor_edit_mode',
+  'builder' )` BEFORE calling `$document->save()` (mirrors
+  `make-host-page.php`, which writes `_elementor_data` directly and always
+  set this meta itself — the one fixture-builder pattern in this codebase
+  that never hit the bug). Diagnose this class of "children render but the
+  container doesn't, and there's no PHP error anywhere" failure by checking
+  for a literal `<form`/`<div class="e-div-block"` tag in the raw response
+  HTML, not just `data-element_type` attribute counts — Elementor's own
+  `render_content` filter still fires per-widget even when the parent
+  document isn't being rendered as a document at all, which is what made
+  the child widgets appear to "work" while the root silently didn't.
+- Bot Shield's minimum-submit-time default (3s) will reject a same-request
+  fixture test that fills every field and submits in well under a second —
+  this is Bot Shield doing its job, not a bug; any new form-submit
+  Playwright test needs a `waitForTimeout` of at least that long before
+  clicking Submit (see `verify-form-advfields.mjs`).
+- **Bug found + fixed same day (2026-07-20), reported live via screenshot:
+  the Rating field's required-error message rendered INLINE next to the
+  stars (squeezing Submit onto the same line) instead of on its own line
+  below.** Root cause, two independent gaps: (1) `errorAnchor()` in
+  `form.js` didn't know about the Rating wrapper — for every other
+  enhanced-control field (multi-select, checkbox row, radio group) it walks
+  up to the wrapper via `.closest(...)` before inserting the error, but
+  Rating's hidden `<input>` fell through to the default case, so
+  `insertAdjacentElement('afterend', el)` inserted the error INSIDE
+  `.aae-a-form-rating` (next to the visible star row) instead of as a
+  sibling of the wrapper — breaking the `:where(.aae-form-field-error) {
+  flex-basis: 100% }` row-break, since that rule only forces a line break
+  for direct flex children of the `<form>`, not something nested one level
+  deeper. Fixed by adding `control.closest('.aae-a-form-rating')` to the
+  same lookup chain. (2) Separately, `AAE_A_Form_Rating::define_base_styles()`
+  never set `width: 100%` (unlike Input/Select/Textarea, which all do) — so
+  the wrapper shrank to its star row's own width, leaving room for Submit to
+  tuck in beside it even before the error-anchor fix. Both were required;
+  fixing only one still left a layout bug. Verify this class of bug by
+  checking computed `getBoundingClientRect()` Y-positions of the field,
+  its error, and the next control — not just that the error text exists
+  somewhere in the DOM.
 
 ### Conditional Display Engine (PRO — shipped 2026-07-19)
 

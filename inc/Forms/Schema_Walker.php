@@ -38,6 +38,8 @@ final class Schema_Walker {
 		'e-aae-a-form-radio'    => 'radio',
 		'e-aae-a-form-select'   => 'select',
 		'e-aae-a-form-file'     => 'file',
+		'e-aae-a-form-rating'   => 'rating',
+		'e-aae-a-form-range'    => 'range',
 	];
 
 	/** Build the canonical schema array for one form element. */
@@ -208,6 +210,20 @@ final class Schema_Walker {
 				$field['max_size']  = (float) Prop::read( $settings, 'max_size', 0 );
 				$field['multiple']  = (bool) Prop::read( $settings, 'multiple', false );
 				$field['max_files'] = (int) Prop::read( $settings, 'max_files', 0 );
+				break;
+			case 'rating':
+				// Star count — the Validator's range check reuses this as `max`
+				// so a crafted request can never post above the rendered stars.
+				$field['min'] = '0';
+				$field['max'] = (string) Prop::read( $settings, 'max', '5' );
+				break;
+			case 'range':
+				// Min/max the Validator re-checks server-side (never trusted from
+				// client attributes) — same reasoning as the input family's own
+				// min/max above. Step is display-only (native browser stepping),
+				// not a submission-security concern, so it isn't in the schema.
+				$field['min'] = (string) Prop::read( $settings, 'min', '0' );
+				$field['max'] = (string) Prop::read( $settings, 'max', '100' );
 				break;
 		}
 

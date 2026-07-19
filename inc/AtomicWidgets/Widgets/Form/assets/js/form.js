@@ -23,6 +23,8 @@
 import { register } from '@elementor/frontend-handlers';
 import { initMultiSelect, syncMultiSelect } from './lib/multi-select';
 import { initSteps, resyncSteps } from './lib/multi-step';
+import { initRating, syncRating } from './lib/rating';
+import { initRange } from './lib/range';
 
 const SLOW_AFTER_MS = 8000;
 const TIMEOUT_MS = 30000;
@@ -159,12 +161,17 @@ const messageFor = ( control, fallback ) =>
 const errorAnchor = ( control ) =>
 	// The error belongs after the field's whole visual block, never inside
 	// it: a radio group's wrapper (not between its option rows), a checkbox/
-	// radio row (not between box and label), or the multi-select enhancement
+	// radio row (not between box and label), the multi-select enhancement
 	// wrap (the native select is hidden INSIDE .aae-ms — inserting after it
-	// would paint the message above the trigger button).
+	// would paint the message above the trigger button), or the rating
+	// wrapper (the native number input is hidden INSIDE it alongside the
+	// visible star row — inserting after the input alone breaks the error
+	// out of the flex-basis:100% row-break and squeezes it in next to the
+	// stars/Submit instead of onto its own line).
 	control.closest( '.aae-form-radio-group' ) ||
 	control.closest( '.aae-form-checkbox-row' ) ||
 	control.closest( '.aae-ms' ) ||
+	control.closest( '.aae-a-form-rating' ) ||
 	control;
 
 const clearFieldError = ( control ) => {
@@ -595,6 +602,21 @@ const initForm = ( form ) => {
 		initMultiSelect( form );
 	}
 
+	// Star-rating UI over any [data-aae-rating] wrapper (Multi-Step Forms
+	// precedent — Pro-marketed, free-plugin code). Runs in the editor preview
+	// too (pure UI, no submit) and stays inert on forms without one.
+	const hasRating = !! form.querySelector( '[data-aae-rating]' );
+	if ( hasRating ) {
+		initRating( form );
+	}
+
+	// Range colour bridge (Style tab → Background Color → accent-color).
+	// Runs in the editor preview too (pure UI, no submit) and stays inert on
+	// forms without a range field.
+	if ( form.querySelector( '[data-aae-range="true"]' ) ) {
+		initRange( form );
+	}
+
 	// A Reset/Clear button (submit widget with button_type=reset) fires the
 	// form's native `reset` event. The browser clears the real controls, but
 	// our custom bits don't follow — so resync the multi-select UI, drop
@@ -614,6 +636,9 @@ const initForm = ( form ) => {
 		setTimeout( () => {
 			if ( hasMultiSelect ) {
 				syncMultiSelect( form );
+			}
+			if ( hasRating ) {
+				syncRating( form );
 			}
 			clearAllErrors( form );
 			showRuntimeMessage( form, '', 'error' );
@@ -890,6 +915,41 @@ if ( typeof MutationObserver !== 'undefined' ) {
 						if ( form && ! seen.has( form ) ) {
 							seen.add( form );
 							initMultiSelect( form );
+						}
+					} );
+				}
+
+				// Same class of problem as the late multi-select above: a
+				// rating field can also render/get injected after its form
+				// already passed initForm's one-time guard. initRating is
+				// idempotent (data-aae-rating-bound guard).
+				const lateRatings = node.matches?.( '[data-aae-rating]' )
+					? [ node ]
+					: node.querySelectorAll?.( '[data-aae-rating]' );
+				if ( lateRatings && lateRatings.length ) {
+					const seenRatingForms = new Set();
+					lateRatings.forEach( ( wrap ) => {
+						const form = wrap.closest( '.aae-a-form' );
+						if ( form && ! seenRatingForms.has( form ) ) {
+							seenRatingForms.add( form );
+							initRating( form );
+						}
+					} );
+				}
+
+				// Same class of problem: a range field rendering/getting
+				// injected after its form already passed initForm's guard.
+				// initRange is idempotent (a plain computed-style re-copy).
+				const lateRanges = node.matches?.( '[data-aae-range="true"]' )
+					? [ node ]
+					: node.querySelectorAll?.( '[data-aae-range="true"]' );
+				if ( lateRanges && lateRanges.length ) {
+					const seenRangeForms = new Set();
+					lateRanges.forEach( ( input ) => {
+						const form = input.closest( '.aae-a-form' );
+						if ( form && ! seenRangeForms.has( form ) ) {
+							seenRangeForms.add( form );
+							initRange( form );
 						}
 					} );
 				}
