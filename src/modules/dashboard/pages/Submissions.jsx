@@ -1023,6 +1023,25 @@ const IntegrationCard = ({ item, onChanged }) => {
         </p>
       )}
 
+      {item.help && item.help.text && (
+        <p className="mt-3 text-xs text-text-secondary">
+          {item.help.text}
+          {item.help.url && (
+            <>
+              {" "}
+              <a
+                href={item.help.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand underline underline-offset-2 hover:text-brand-secondary"
+              >
+                {__("Open API keys page →", "animation-addons-for-elementor")}
+              </a>
+            </>
+          )}
+        </p>
+      )}
+
       <div className="mt-4">
         {connected && !editing ? (
           <div className="flex items-center gap-2">

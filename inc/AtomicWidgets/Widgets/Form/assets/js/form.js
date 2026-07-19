@@ -512,7 +512,17 @@ const initForm = ( form ) => {
 	// form's native `reset` event. The browser clears the real controls, but
 	// our custom bits don't follow — so resync the multi-select UI, drop
 	// inline errors and any success/error state after the reset applies.
+	//
+	// A successful submit ALSO calls form.reset() (to clear the just-sent
+	// data) and fires this same native event — but there it must NOT wipe
+	// the success state it just set. suppressNextReset lets the submit
+	// handler mark that one reset as "ours" so only a real user click on a
+	// Reset/Clear button clears the form-state classes.
 	form.addEventListener( 'reset', () => {
+		if ( form.dataset.aaeSuppressResetState === 'true' ) {
+			delete form.dataset.aaeSuppressResetState;
+			return;
+		}
 		// Defer: on `reset` the field values haven't been cleared yet.
 		setTimeout( () => {
 			if ( hasMultiSelect ) {
@@ -632,6 +642,7 @@ const initForm = ( form ) => {
 				// for the instant before navigation.
 				setFormState( form, 'success' );
 				showRuntimeMessage( form, '', 'success' );
+				form.dataset.aaeSuppressResetState = 'true';
 				form.reset();
 				if ( data.redirect_url ) {
 					window.location.assign( data.redirect_url );
@@ -664,9 +675,11 @@ const initForm = ( form ) => {
 					break;
 				}
 				case 409:
+					setFormState( form, 'error' );
 					showRuntimeMessage( form, t( 'duplicate', 'This form was already submitted.' ), 'error' );
 					break;
 				case 429:
+					setFormState( form, 'error' );
 					showRuntimeMessage( form, t( 'rateLimit', 'Too many attempts. Please wait a moment and try again.' ), 'error' );
 					break;
 				default:

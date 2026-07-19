@@ -692,6 +692,8 @@ final class Admin_Rest {
 				// Attributes for the editor mapping UI (empty until pro backs
 				// the id — the editor then shows the "requires Pro" state).
 				'attributes' => null !== $provider ? $provider::attributes() : [],
+				// "Where do I get this key?" text + link for the connect card.
+				'help'       => Integrations::help( $id ),
 			];
 		}
 
