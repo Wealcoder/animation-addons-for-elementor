@@ -2416,6 +2416,8 @@ final class Atomic
 			],
 
 			'aae-a-draw-svg' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
+				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
 				'script_handle' => 'aae-a-draw-svg-js',
 				'script_path' => '/assets/atomic/js/draw-svg.js',
 				'script_deps' => [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ],
