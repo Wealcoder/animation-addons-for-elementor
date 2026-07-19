@@ -22,6 +22,7 @@
 
 import { register } from '@elementor/frontend-handlers';
 import { initMultiSelect, syncMultiSelect } from './lib/multi-select';
+import { initSteps, resyncSteps } from './lib/multi-step';
 
 const SLOW_AFTER_MS = 8000;
 const TIMEOUT_MS = 30000;
@@ -79,6 +80,58 @@ const fetchToken = async ( formKey ) => {
 		throw error;
 	}
 	return response.json(); // { token, nonce, expires_in }
+};
+
+/* ------------------------------------------------------------------ */
+/* reCAPTCHA v3                                                        */
+/*                                                                     */
+/* Google's script + grecaptcha.ready()/execute() are loaded ONLY when */
+/* this page actually has a form marked data-aae-form-recaptcha="v3" — */
+/* a page with no such form never fetches Google's script at all,     */
+/* keeping the on-demand-asset principle for the common case.         */
+/* ------------------------------------------------------------------ */
+
+let recaptchaScriptPromise = null;
+
+const loadRecaptchaScript = ( siteKey ) => {
+	if ( recaptchaScriptPromise ) {
+		return recaptchaScriptPromise;
+	}
+	recaptchaScriptPromise = new Promise( ( resolve, reject ) => {
+		if ( window.grecaptcha ) {
+			resolve( window.grecaptcha );
+			return;
+		}
+		const script = document.createElement( 'script' );
+		script.src = `https://www.google.com/recaptcha/api.js?render=${ encodeURIComponent( siteKey ) }`;
+		script.async = true;
+		script.defer = true;
+		script.onload = () => resolve( window.grecaptcha );
+		script.onerror = () => reject( new Error( 'recaptcha-load-failed' ) );
+		document.head.appendChild( script );
+	} );
+	return recaptchaScriptPromise;
+};
+
+/** Resolves to a fresh v3 token, or '' if reCAPTCHA can't run (no site key, script failed, …). */
+const getRecaptchaToken = async ( action ) => {
+	const siteKey = config().recaptchaSiteKey;
+	if ( ! siteKey ) {
+		return '';
+	}
+	try {
+		const grecaptcha = await loadRecaptchaScript( siteKey );
+		return await new Promise( ( resolve ) => {
+			grecaptcha.ready( () => {
+				grecaptcha
+					.execute( siteKey, { action } )
+					.then( resolve )
+					.catch( () => resolve( '' ) );
+			} );
+		} );
+	} catch ( _e ) {
+		return ''; // server-side treats a missing/empty token as a failed check.
+	}
 };
 
 /* ------------------------------------------------------------------ */
@@ -206,17 +259,27 @@ const focusFirstInvalid = ( form ) => {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TEL_RE = /^\+?[0-9\-().\s]{3,30}$/;
 
-const controlsOf = ( form ) =>
-	Array.from( form.elements ).filter(
+/**
+ * Named, enabled, non-button controls under `root` — `root` is normally the
+ * whole `form` (native `form.elements`, includes every control anywhere in
+ * the form regardless of nesting), but Multi-Step's per-step Next button
+ * passes a single step element instead, via `root.querySelectorAll` (no
+ * `.elements` collection on a plain `<div>`) — scoping validation to just
+ * that step's controls without touching the rest of the form.
+ */
+const controlsOf = ( root ) => {
+	const all = root.elements ? Array.from( root.elements ) : Array.from( root.querySelectorAll( 'input, select, textarea' ) );
+	return all.filter(
 		( el ) => el.name && ! el.disabled && ! [ 'submit', 'button', 'reset' ].includes( el.type )
 	);
+};
 
-const validateFrontend = ( form ) => {
+const validateFrontend = ( form, scopeEl ) => {
 	const errors = [];
 	const seenRadioGroups = new Set();
 	const requiredMsg = requiredMessage( form );
 
-	for ( const control of controlsOf( form ) ) {
+	for ( const control of controlsOf( scopeEl || form ) ) {
 		// Conditionally-hidden fields never block submit (spec). The marker is
 		// set by the pro Conditional Display runtime — free only respects it.
 		// The filter lets other engines skip controls by their own criteria.
@@ -494,6 +557,30 @@ const setLoading = ( form, button, loading ) => {
 /* Init                                                                */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Wire Multi-Step navigation onto `form` — shared by initForm's normal pass
+ * and the late-added-steps MutationObserver branch below (applying a preset
+ * or dragging in a 2nd step after the form already initialized creates step
+ * elements initForm never saw). initSteps itself is idempotent and a no-op
+ * under 2 steps, so calling this speculatively is always safe.
+ *
+ * Runs in the editor preview too (validateStep/onBlocked null there) — like
+ * the multi-select UI, a builder needs to see/style every step; only the
+ * Next-button VALIDATION gate is frontend-only.
+ */
+const bindStepsFor = ( form ) => {
+	initSteps(
+		form,
+		isEditMode() ? null : ( stepEl ) => validateFrontend( form, stepEl ),
+		isEditMode()
+			? null
+			: ( stepEl, errors ) => {
+				errors.forEach( ( [ control, message ] ) => showFieldError( form, control, message ) );
+				focusFirstInvalid( form );
+			}
+	);
+};
+
 const initForm = ( form ) => {
 	if ( form.dataset.aaeFormReady === 'true' ) {
 		return;
@@ -533,6 +620,8 @@ const initForm = ( form ) => {
 			form.classList.remove( 'form-state-default', 'form-state-success', 'form-state-error' );
 		}, 0 );
 	} );
+
+	bindStepsFor( form );
 
 	// Previews must never create real submissions (spec principle #9).
 	if ( isEditMode() ) {
@@ -579,6 +668,19 @@ const initForm = ( form ) => {
 	form.addEventListener( 'focusin', prefetch, { once: true } );
 	form.addEventListener( 'pointerdown', prefetch, { once: true } );
 
+	// Same idea for reCAPTCHA: load Google's script on first interaction so
+	// grecaptcha.execute() at submit time doesn't wait on a script fetch.
+	if ( 'v3' === form.dataset.aaeFormRecaptcha ) {
+		const prefetchRecaptcha = () => {
+			const siteKey = config().recaptchaSiteKey;
+			if ( siteKey ) {
+				loadRecaptchaScript( siteKey ).catch( () => {} );
+			}
+		};
+		form.addEventListener( 'focusin', prefetchRecaptcha, { once: true } );
+		form.addEventListener( 'pointerdown', prefetchRecaptcha, { once: true } );
+	}
+
 	form.addEventListener( 'submit', async ( event ) => {
 		event.preventDefault();
 
@@ -615,6 +717,13 @@ const initForm = ( form ) => {
 			// endpoint; the JSON submit then carries only the returned refs.
 			const fileRefs = await uploadPendingFiles( form, formKey, nonce );
 
+			// A fresh v3 token per submit attempt (Google's tokens are
+			// short-lived and single-use in practice) — only fetched for
+			// forms that actually opted into reCAPTCHA.
+			const recaptchaToken = 'v3' === form.dataset.aaeFormRecaptcha
+				? await getRecaptchaToken( 'aae_form_submit' )
+				: '';
+
 			const response = await fetch(
 				`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/submit`,
 				{
@@ -628,6 +737,7 @@ const initForm = ( form ) => {
 						fields: { ...collectFields( form ), ...fileRefs },
 						source_url: window.location.href,
 						referrer_url: document.referrer || '',
+						...( recaptchaToken ? { recaptcha_token: recaptchaToken } : {} ),
 					} ),
 				}
 			);
@@ -783,6 +893,28 @@ if ( typeof MutationObserver !== 'undefined' ) {
 						}
 					} );
 				}
+
+				// Same class of problem, Multi-Step's version: applying the
+				// "Multi-Step Contact/Lead" preset (or dragging in a 2nd
+				// e-aae-a-form-step) creates step elements INSIDE a form
+				// that's already past initForm's one-time guard — so
+				// initSteps() never ran for it. Catch late-added steps here
+				// and bind navigation directly; initSteps is itself
+				// idempotent (aaeStepsBound guard) and requires 2+ steps, so
+				// this is a no-op until the 2nd step actually lands.
+				const lateSteps = node.matches?.( '[data-aae-form-step="true"]' )
+					? [ node ]
+					: node.querySelectorAll?.( '[data-aae-form-step="true"]' );
+				if ( lateSteps && lateSteps.length ) {
+					const seenForms = new Set();
+					lateSteps.forEach( ( stepEl ) => {
+						const form = stepEl.closest( 'form.aae-a-form' );
+						if ( form && ! seenForms.has( form ) ) {
+							seenForms.add( form );
+							bindStepsFor( form );
+						}
+					} );
+				}
 			}
 		}
 	} );
@@ -795,6 +927,38 @@ if ( typeof MutationObserver !== 'undefined' ) {
 	} else {
 		document.addEventListener( 'DOMContentLoaded', start );
 	}
+}
+
+// Editor-only polling fallback for Multi-Step. Two distinct problems, one
+// loop:
+//   1. Elementor's canvas re-render after "Apply Preset" / dragging in a
+//      step doesn't reliably surface as an observable childList mutation on
+//      the new step nodes (confirmed live — the MutationObserver above
+//      fires for the surrounding re-render but never reports a node that
+//      itself matches/contains [data-aae-form-step], likely because the
+//      existing form container node is reused and repainted rather than
+//      replaced) — so an unbound form needs bindStepsFor() to run at all.
+//   2. MORE IMPORTANTLY: even an ALREADY-bound form's step nodes get
+//      silently replaced (fresh Twig render, no aae-form-step-active class)
+//      on ANY settings change to the form or its children — not just
+//      preset apply. Confirmed live: toggling the unrelated "Auto Step
+//      Navigation" switch made the ENTIRE form vanish from canvas, because
+//      every step re-rendered without the active class and nothing
+//      reapplied it. So resyncSteps() must run on EVERY tick for EVERY
+//      multi-step form, bound or not — it's cheap (a few querySelectorAll
+//      + classList.toggle calls) and fully idempotent.
+// Both only run in the editor (isEditMode), never on the real frontend,
+// where forms don't change after load.
+if ( isEditMode() ) {
+	setInterval( () => {
+		document.querySelectorAll( 'form.aae-a-form' ).forEach( ( form ) => {
+			if ( form.dataset.aaeStepsBound !== 'true' ) {
+				bindStepsFor( form );
+			} else {
+				resyncSteps( form );
+			}
+		} );
+	}, 1000 );
 }
 
 // Initial scan — catches forms ALREADY in the DOM when this script loads.

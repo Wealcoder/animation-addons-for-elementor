@@ -11,6 +11,17 @@
     box-sizing: border-box;
 }
 
+// Next/Previous step buttons: text + icon (uploaded SVG or built-in chevron
+// fallback — see aae-a-form-next/prev.html.twig), centered with a small gap.
+// Icon size follows font-size (1em in the twig) so the Style panel's Font
+// Size control resizes it along with the text, no separate icon-size prop.
+.aae-a-form-next,
+.aae-a-form-prev {
+    cursor: pointer;
+    box-sizing: border-box;
+    gap: 8px;
+}
+
 .aae-a-form-checkbox,
 .aae-a-form-radio,
 .aae-a-form-select {
@@ -48,6 +59,98 @@
 form[data-element_type="e-aae-a-form"].form-state-success [data-element_type="e-aae-a-form-success-message"],
 form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aae-a-form-error-message"] {
     display: block;
+}
+
+// Multi-Step Forms: every e-aae-a-form-step is display:none via its own
+// atomic base style (".elementor .e-aae-a-form-step-base", specificity
+// 0,2,0). A plain ".aae-a-form-step.aae-form-step-active" rule TIES that
+// specificity, and the base-styles stylesheet happens to cascade after this
+// one, so the tie silently went to display:none (step content invisible
+// behind a live nav bar — confirmed via computed-style diagnostics: classList
+// had aae-form-step-active, computedDisplay was still "none"). Adding
+// ".elementor" matches the base rule's specificity qualifier so this wins
+// regardless of stylesheet order, without reaching for !important.
+.elementor .aae-a-form-step.aae-form-step-active {
+    display: flex;
+}
+
+// During an animated Next/Previous transition (lib/multi-step.js's
+// animateStepChange — plain CSS transform/opacity transitions, no JS
+// tweening library), the outgoing AND incoming step are briefly both
+// "active" at once so they can cross-fade/slide against each other — as
+// normal flex-wrap siblings that would shove layout around for the
+// transition's duration (the form growing/shrinking mid-animation, content
+// jumping). The runtime adds this class to the FORM only for the
+// transition's duration (removed the instant it completes, alongside the
+// outgoing step losing aae-form-step-active via resyncSteps) — it pins ONLY
+// the OUTGOING step absolutely (via :not — the incoming one stays in normal
+// flow so the form keeps the new step's real height throughout, never
+// collapsing to 0).
+//
+// top/left/width are NOT set here — a fixed `top:0; left:0; width:100%`
+// positions against the form's BORDER box and ignores its padding,
+// misaligning the outgoing step from its (normally-flowed, padding-
+// respecting) sibling — the exact "overlap/conflict on step change" bug
+// reported live on a real multi-step page. animateStepChange() sets those
+// three properties inline instead, from the outgoing step's OWN
+// getBoundingClientRect() captured a moment earlier while still in normal
+// flow — pixel-perfect regardless of the form's padding/border, immune to
+// future Style-panel changes.
+form.aae-a-form.aae-form-step-transitioning {
+    position: relative;
+}
+
+form.aae-form-step-transitioning .aae-a-form-step.aae-form-step-active:not(.aae-form-step-incoming) {
+    position: absolute;
+}
+
+// transition-duration is set inline (per-transition TRANSITION_MS) by
+// animateStepChange(); this just declares WHICH properties animate, scoped
+// to the animation window only (aae-form-step-anim-run — added right before
+// the rAF-deferred style flip, removed on finish) so a step's transform/
+// opacity never transitions outside an explicit Next/Previous action (e.g.
+// resyncSteps' instant reconciliation must stay instant).
+form.aae-form-step-anim-run .aae-a-form-step.aae-form-step-active {
+    transition-property: transform, opacity;
+    transition-timing-function: ease-out;
+    will-change: transform, opacity;
+}
+
+// Step progress indicator the runtime injects into a step that has NO
+// author-placed Next/Previous widget of its own (the "Auto Step
+// Navigation" fallback — see lib/multi-step.js) — kept minimal/neutral so
+// it doesn't fight a builder's own heading/paragraph styling choices.
+.aae-form-step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    color: inherit;
+    opacity: 0.7;
+    width: 100%;
+    margin-top: auto;
+}
+
+// Default children of a fresh e-aae-a-form-step: a Previous + Next widget
+// pair side by side. Builders restyle/move these freely — this only sets
+// the drop-in defaults so a new step doesn't look like two stacked
+// full-width buttons.
+.aae-form-step-nav-row {
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+}
+
+// A hidden Prev/Next widget (first/last step) collapses instead of leaving
+// a gap in the row — `hidden` already does this natively, but Elementor's
+// own atomic base styles set `display` on every element, which would
+// otherwise beat the UA `[hidden]` rule.
+.aae-a-form-next[hidden],
+.aae-a-form-prev[hidden] {
+    display: none !important;
 }
 
 // Bot Shield honeypot (Milestone 8): off-screen, zero-footprint. NOT

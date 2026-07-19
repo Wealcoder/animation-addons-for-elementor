@@ -445,6 +445,7 @@ Output goes to `assets/build/`. Each entry produces:
 | A whole `define_base_styles()` silently does nothing | One invalid key/value fails the entire definition. `width`/`height` are `Size_Prop_Type` — a `String_Prop_Type('fit-content')` is invalid. For CSS keywords/functions use the `custom` unit: `Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ])` (transformer emits the `size` verbatim). `auto` → `[ 'size' => 'auto', 'unit' => 'auto' ]`. Another killer: `background` must be `Background_Prop_Type::generate([ 'color' => Color_Prop_Type::generate(…) ])` — a bare `Color_Prop_Type` voids the definition (shipped as a colorless Form submit button). **Full verified key/format tables + shape cookbook: `animation-addons-for-elementor-pro/docs/atomic-v4/atomic-style-schema-reference.md` — check it BEFORE writing any base style.** |
 | Base-style change shows in the editor but the frontend is unstyled / wrong | Atomic base styles are generated per-request, but the frontend renders them from a **cached** state; deleting `wp-content/uploads/elementor/` alone leaves it empty until a rebuild. After editing any `define_base_styles()`, **clear Elementor's cache** (wp-admin → Elementor → Tools → "Clear Files & Data", i.e. `#elementor-clear-cache-button`) then reload the frontend. The editor always renders live from PHP, so an editor-only check hides this. (Seen as a nav that's a perfect 44px circle in the editor but a full-width `position:static` block on the frontend.) |
 | Slider nav arrow one size in editor, another on frontend (and/or a huge ellipse at slidesPerView=1) | The nav badge USED to be icon-driven (`width/height: fit-content`), so it sized to whatever the SVG happened to be — 20px on a fresh drop (the `aae-a-svg` utility) but 65px on an element saved before that class existed → different footprint per element age, and `auto`/content-driven width could stretch into an ellipse in a single full-width slide. Fix: pin the nav to a **fixed** `width/height: 44px` in `class-aae-a-slider-nav-{prev,next}.php` (constant everywhere, can't stretch) and cap the SVG to fit inside via each slider stylesheet — `.aae-a-navigator-{prev,next} .e-svg-base, svg { max-width/height: 24px }` in BOTH `nestedslider.scss` and `loop-grid-slider.scss` (the two sliders load different CSS; the Loop Grid Slider deliberately does not load the Nested Slider's stylesheet, so the rule is duplicated). |
+| A "reveal" class you toggle at runtime (`aae-form-step-active`, etc.) doesn't override a base style's `display:none`, even though the class IS present in the DOM (`classList` has it, but `getComputedStyle().display` still says `none`) | **CSS specificity tie, not a JS/runtime bug.** Atomic base styles compile as `.elementor .e-<widget>-base { display: none; … }` — specificity (0,2,0). A plain `.your-class.active-class { display: flex }` override is ALSO (0,2,0) — a tie, and the base-styles sheet happens to cascade after your own, so the tie silently goes to `display:none`. Fix: add `.elementor` to your override selector so it matches the base rule's specificity (`.elementor .your-class.active-class { display: flex }`), not `!important`. Diagnose by walking `document.styleSheets` for every rule matching the element and setting `display` (see the `e-aae-a-form-step` Multi-Step Forms fix, 2026-07-19, for the exact Playwright snippet) — don't assume the DOM/model layer is broken just because content "isn't showing"; check computed style + winning rule first. |
 | Data-attrs not on rendered HTML | `Render::inject_into_html()` not handling the widget type, or `$attrs` empty |
 | Animation works in preview but not on frontend | `Render.php` not calling `wp_enqueue_script()` |
 | Animation works on frontend but not in editor preview | `editor-bridge/features.js` missing widget type in `widgetTypes` |
@@ -942,6 +943,16 @@ the spec and is a hard MVP constraint, distinct from the rest of this plugin
 where GSAP is already used for animation effects. Respect
 `prefers-reduced-motion`; validation clarity must never depend on animation.
 
+**Multi-Step Forms' step-change transition (fade/slide/fade-slide, per-step
+selectable) is a pure CSS `transform`/`opacity` transition** — see the
+"Step-change animation" entry under
+[Multi-Step Forms](#multi-step-forms--shipped-2026-07-19-free-plugin-not-pro-gated-in-code)
+above. It briefly used GSAP (2026-07-20, at the user's request) as a
+deliberate scoped exception, then was rebuilt CSS-only the same day (also
+user-requested, after a residual visual issue) — so the "no GSAP" rule now
+holds without exception across the entire Form Builder, including this
+transition.
+
 ### Milestone order (SSR §33 — authoritative; supersedes the older PRD's
 v1.4 sprint reprioritization, which grouped things slightly differently)
 
@@ -1017,15 +1028,270 @@ Lives in `animation-addons-for-elementor-pro/inc/AtomicV4/FormConditions/`
   animation class `aae-cond-reveal` lives in free `form.scss` behind
   `prefers-reduced-motion`.
 
-### Multi-Step Forms — hard requirements noted 2026-07-19 (build on the
-Conditional Display engine + AAEFormHooks; not started)
+### Multi-Step Forms — shipped 2026-07-19 (free plugin, not pro-gated in code)
+
+Hard requirements (all live-verified end-to-end on development.local: applied
+via a real preset, published, driven on the actual frontend — Next blocked
+with 2 field errors on empty required fields, advanced to step 2 once filled,
+Previous appeared):
 
 1. **Next only after the current step validates** — advancing to the next
    step MUST run that step's field validation first and block on errors
-   (user requirement, non-negotiable).
+   (user requirement, non-negotiable). ✅ Confirmed.
 2. **A Multi-Step preset must ship with the feature** (user requirement).
-3. Panel copy/UX matters: clear per-control descriptions like the
-   Conditional Display section (user asked for good in-panel guidance).
+   ✅ Two presets: `multi-step-contact.json` (2 steps) and
+   `multi-step-lead.json` (3 steps) — see below.
+3. Panel copy/UX — the Step widget's Content section labels/describes
+   `step_title` clearly (shown in the step-nav progress indicator, not
+   inside the step itself).
+
+**Architecture decision (verified via Explore agent before building — see
+also `AAE_A_Btn_Pro` precedent, `Widgets/BtnPro/class-aae-a-btn-pro.php`):
+Elementor's atomic widget registry (`inc/AtomicWidgets/class-atomic.php`'s
+`get_available_widgets()`) is 100% free-plugin territory — a Pro plugin
+cannot register a brand-new element TYPE from outside it.** So
+`e-aae-a-form-step` is a normal FREE-plugin element
+(`inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php`, container:
+`Atomic_Element_Base` + `Has_Element_Template`, unrestricted children like
+the parent form) registered in `class-atomic.php` in all three places new
+Form children need: the "always-active internal widgets" list (~line 327,
+alongside the other form parts), the Widgets-dashboard metadata (`is_pro:
+true` — marketing/upsell badge ONLY, exactly like `aae-a-btn-pro`; the code
+itself is NOT license-gated), and the class/file registry (`has_script:
+false` — step-nav JS rides inside the existing `aae-a-form-js` bundle, not
+a separate script).
+
+**Runtime**: `inc/AtomicWidgets/Widgets/Form/assets/js/lib/multi-step.js`
+(new module, mirrors `lib/multi-select.js`'s pattern) — `initSteps(form,
+validateStep, onBlocked)` toggles `aae-form-step-active` on exactly one
+`[data-aae-form-step="true"]` at a time (same class-toggle-reveal trick as
+`form-state-{value}`). Runs in the editor preview too (builders need to
+see/style every step) — only the Next-button VALIDATION gate is
+frontend-only (`validateStep`/`onBlocked` null in `isEditMode()`).
+`form.js` reuses its own private `validateFrontend`/`showFieldError`/
+`focusFirstInvalid` for this (no duplicated validation logic) —
+`controlsOf()` was generalized to accept ANY root element (not just
+`form.elements`) so validation can scope to one step's controls via
+`querySelectorAll`.
+
+**Next/Previous are REAL atomic widgets (added 2026-07-19), not
+runtime-injected DOM buttons** — `e-aae-a-form-next` /
+`e-aae-a-form-prev` (`class-aae-a-form-next.php` / `-prev.php`, leaf
+`Atomic_Widget_Base`, same free-plugin reasoning as the Step element
+above), rendering `<button data-aae-form-step-nav="next"|"prev">`. This
+gives builders full Style-tab control (colors, borders, spacing, hover
+state) — something a JS-injected `<div>` never had. `e-aae-a-form-step`
+seeds a Prev+Next pair (`e-flexbox.aae-form-step-nav-row`) as its
+`define_default_children()`, so a fresh Step drops in ready to navigate;
+builders can delete/move/restyle them freely.
+
+- **Detection, not injection, is the default path.** `multi-step.js`'s
+  `initSteps` scans each step for its OWN `[data-aae-form-step-nav]`
+  widgets (`ownNavButtons()`) and delegates clicks to them via one listener
+  on the `<form>` (event delegation — covers both author-placed widgets
+  present at initial render AND any fallback button appended later).
+  `render()` toggles the `hidden` attribute on whichever Prev/Next widgets
+  exist per step (Prev hidden on step 0, Next hidden on the last step) —
+  `.aae-a-form-next[hidden], .aae-a-form-prev[hidden] { display: none
+  !important }` in `form.scss` is required because the widgets' own atomic
+  base style sets `display: flex`, which otherwise beats the UA `[hidden]`
+  rule (same specificity class of bug as the entry in [Common breakage
+  points](#common-breakage-points) — a `!important` here is the deliberate,
+  narrow exception).
+- **Fallback only when a step has neither widget.** Gated by the
+  **PER-STEP "Auto Step Navigation" switch** (`step_nav_auto` prop on
+  `e-aae-a-form-step` — moved here 2026-07-20 from the Form widget, so a
+  builder doing fully custom navigation on ONE particular step, e.g. a
+  review/confirm step, can turn it off there without affecting the rest of
+  the wizard) — read via `data-aae-form-step-nav-auto` on the step element
+  itself (see `aae-a-form-step.html.twig`). ON (default): a step missing
+  both widgets gets `multi-step.js`'s own injected Prev/Next/`N / M` bar
+  (`buildFallbackNav()`, appended at the end of that step's content, tagged
+  with the same `data-aae-form-step-nav` attrs so the SAME click-delegation
+  path handles it — no separate injected-button code path). OFF: no
+  fallback ever for that step — un-advanceable without its own widget,
+  which is the point.
+
+**GOTCHA #2 — toggling ANY setting on the form (not just the Auto Step
+Navigation switch) made the ENTIRE multi-step form vanish in the editor.**
+Root cause, confirmed via a diagnostic that flipped `step_nav_auto`
+programmatically and inspected the preview iframe DOM: Elementor's editor
+repaints a form's `innerHTML` from scratch on ANY settings change to the
+form or its children (not just "Apply Preset") — the `<form>` node itself
+is reused (so its `data-aae-form-ready`/`data-aae-steps-bound` dataset
+survives), but every STEP node inside gets freshly re-rendered with NO
+`aae-form-step-active` class. The original `initSteps()` closed over the
+OLD step elements and the "already bound" guard (`aaeStepsBound === true`)
+made it skip re-running entirely — so the new step nodes sat there
+permanently `display:none` (their own base style), nothing ever reapplied
+the active class to any of them, and the whole form looked empty. Fix
+(`lib/multi-step.js`, rewritten 2026-07-20): step-navigation state
+(current index) now lives on `form.__aaeStepState`, not a closure over
+stale DOM references, and a new exported `resyncSteps(form)` always
+re-queries fresh step nodes and reapplies active/hidden state — cheap and
+idempotent, so it's safe to call unconditionally. `form.js`'s existing
+editor-only 1-second polling loop (added for the preset-apply gotcha
+below) now calls `resyncSteps()` on EVERY tick for EVERY already-bound
+multi-step form, not just unbound ones — this is what actually heals a
+form after Elementor repaints its steps out from under it. Verified with
+a regression test that flips an intentionally UNRELATED setting
+(`behavior`, not `step_nav_auto`) and confirms the form stays visible —
+proving the fix isn't specific to one switch, it's general re-render
+resilience.
+- **Icon**: `Svg_Src_Prop_Type` + `Svg_Control` (`icon` prop) — empty by
+  default, Twig falls back to a built-in inline chevron (`→` for Next,
+  rendered AFTER the text; `←` for Previous, rendered BEFORE the text).
+  Uploading an SVG via the Icon control replaces the chevron. Same
+  empty-prop-falls-back-to-glyph pattern as
+  `class-aae-a-offcanvas-trigger.php`. Icon sized `1em` in the twig so it
+  scales with the button's own Font Size style, no separate icon-size prop.
+
+**Step-change animation (added 2026-07-20, rebuilt CSS-only later the same
+day)** — plays when Next/Previous change the active step. Originally used
+GSAP as a deliberate, explicit exception to Motion policy's "no GSAP for
+core form submit" rule (at the user's direct request, "gsap use koro"),
+then was **fully removed and rebuilt as a pure CSS transition** (also
+user-requested: "use css animation, remove gsap , it still has issue") —
+there is no GSAP dependency anywhere in the Form Builder now, and Motion
+policy's "no GSAP" rule holds without exception.
+
+- **Per-step selectable**, not a global form setting: `step_transition`
+  prop on `e-aae-a-form-step` (enum `none` / `fade` / `slide` /
+  `fade-slide`, default `fade-slide`) — read via
+  `data-aae-form-step-transition` on the ARRIVING step (see
+  `aae-a-form-step.html.twig`), so a wizard can mix effects per step (e.g.
+  a punchier slide on most steps, `none` on a review step for instant
+  feedback). Direction (`+1` Next / `-1` Prev) is inferred at runtime, not
+  stored — Next always reads as moving forward, Previous as moving back,
+  regardless of which step's transition is playing.
+- **Implementation**: `animateStepChange()` in `lib/multi-step.js` sets the
+  FROM state on the incoming step's inline styles (`transitionDuration`,
+  `opacity`, `transform: translateX(...)`), forces a reflow
+  (`toStep.offsetHeight`), then flips to the TO state one `requestAnimationFrame`
+  later (double-rAF, so the browser commits the FROM state as a real paint
+  before starting the transition — a same-frame write would get coalesced
+  into a single paint and never animate). Completion is detected via a
+  `transitionend` listener scoped to `toStep`'s `transform`/`opacity`
+  properties, with a `setTimeout` safety net (`TRANSITION_MS + 120`) in case
+  `transitionend` never fires (hidden tab, ancestor `display:none` mid-
+  transition, etc.) — the form must never get stuck mid-transition forever.
+  `prefersReducedMotion()` and `step_transition === 'none'` both fall back
+  to an instant class-toggle swap, calling `onDone()` synchronously.
+- **CSS side** (`form.scss`): `transition-property: transform, opacity` is
+  scoped to `form.aae-form-step-anim-run .aae-form-step-active` — a class
+  added by the runtime only for the animation's duration (removed on
+  finish) — specifically so a step's transform/opacity never transitions
+  outside an explicit Next/Previous action. This matters because
+  `resyncSteps()`'s instant reconciliation (editor polling, GOTCHA #2)
+  toggles the SAME `aae-form-step-active` class on unrelated repaints; if
+  the transition-property applied unconditionally, every poll-tick
+  class-toggle would visibly animate too.
+- **Layout containment during the transition**: both the outgoing and
+  incoming step are briefly `aae-form-step-active` at once (so they can
+  cross-fade/slide against each other), which would otherwise fight the
+  form's own `flex-direction: row; flex-wrap: wrap` base style (two
+  flex-item steps visible → layout jump/height jump for the transition's
+  duration). Fixed with a transition-scoped class pair in `form.scss`:
+  `form.aae-form-step-transitioning` (added/removed only for the
+  animation's duration) pins the OUTGOING step `position: absolute`
+  (`:not(.aae-form-step-incoming)` — the incoming one stays in normal
+  flow, so the form keeps the arriving step's real height throughout,
+  never collapsing to 0). Both classes are removed in `finish()` (the
+  `transitionend`/safety-timer completion handler), at which point
+  `resyncSteps()` also runs to reconcile nav-button hidden-state/labels —
+  normal flex flow resumes immediately.
+
+**GOTCHA #3 — the outgoing step visibly overlapped/misaligned with the
+incoming one during the cross-fade (reported live on a real page,
+2026-07-20).** Root cause: the FIRST version of the containment fix above
+set `top: 0; left: 0; width: 100%` in plain CSS on the outgoing step —
+those percentages/offsets resolve against the form's own BORDER box once
+`position: absolute` applies, but the form has `padding: 20px` in its base
+style, so the outgoing step's edges landed 20px further out than its
+sibling (which stays in normal, padding-respecting flex flow). Confirmed
+via Playwright: outgoing step measured `1110px` wide starting at the
+form's left edge while the incoming one was `1070px` inset by 20px — a
+visible edge mismatch during the overlap window, exactly matching the
+"overlap/conflict" report. **Fix**: `animateStepChange()` captures the
+outgoing step's REAL `getBoundingClientRect()` a moment before switching
+it to `position: absolute` (while it's still in normal flow) and sets
+`top`/`left`/`width` inline from that, converted to form-relative
+coordinates — pixel-perfect regardless of the form's padding/border/gap,
+and immune to future Style-panel edits. `form.scss`'s rule now only sets
+`position: absolute` itself, nothing else. Verified with a Playwright
+regression across desktop/tablet/mobile: outgoing/incoming widths match
+to 0.00px at every sampled frame of the transition; the LEFT position
+legitimately drifts during a `slide`/`fade-slide` transition — that's the
+animation's own intended motion (the CSS `translateX` offset), not a bug,
+and settles back to the exact pre-transition position once the transition
+completes (confirmed: `opacity: 1`, `position: relative` — fully reset;
+Chromium reports the resting `transform` as the identity matrix
+`matrix(1, 0, 0, 1, 0, 0)` rather than the literal string `none` on an
+element with a reachable `transition-property: transform` — visually
+identical, not a residual transform).
+
+**GSAP removed entirely (2026-07-20, same day, user-requested: "use css
+animation, remove gsap , it still has issue")** — after the GOTCHA #3 fix
+above, the user asked for GSAP to be dropped in favor of pure CSS despite
+the fix being verified. `getGsap()`/`gsap.timeline()`/`gsap.set()` were all
+deleted from `lib/multi-step.js`; `class-atomic.php`'s `aae-a-form` entry
+no longer declares `'gsap'` in `script_deps`. The rect-capture fix from
+GOTCHA #3 (form-relative `top`/`left`/`width` on the outgoing step) was
+KEPT as-is — it's independent of which animation engine drives the
+transition. Re-verified with the same Playwright regression (desktop/
+tablet/mobile): 0.00px width drift, no horizontal overflow, correct
+final-state reset, and a real mid-flight opacity/transform sample
+confirming the CSS transition actually runs (not an instant swap).
+- `resyncSteps()` (the editor re-render healing path, GOTCHA #2 above)
+  deliberately NEVER animates — it's the instant, idempotent
+  ground-truth reconciliation the polling loop calls every tick, and must
+  stay side-effect-free w.r.t. motion or every poll tick would replay a
+  transition. Only the explicit `goNext()`/`goPrev()` user-action paths
+  call `animateStepChange()`.
+- Both new/changed files: `lib/multi-step.js` (rewritten twice — first to
+  add GSAP, then to remove it in favor of `transitionend` + inline
+  `transform`/`opacity` styles), `class-aae-a-form-step.php`
+  (`step_transition` prop + `Select_Control`), `aae-a-form-step.html.twig`
+  (data attr), `form.scss` (containment rules + the scoped
+  `transition-property` declaration), `class-atomic.php` (no longer
+  declares a `gsap` script dependency for `aae-a-form`).
+- Both preset JSONs (`multi-step-contact.json`, `multi-step-lead.json`)
+  were updated to place explicit `e-aae-a-form-next` / `-prev` widgets in
+  every step (in an `aae-form-step-nav-row` flexbox), demonstrating the
+  real-widget path rather than relying on the fallback.
+
+**GOTCHA #1 — applying a preset to an ALREADY-initialized form never bound
+steps via the MutationObserver.** `initForm`'s one-time `aaeFormReady` guard
+means `bindStepsFor` (the shared helper wiring `initSteps`) never re-runs
+once a form has already initialized — and empirically, Elementor's
+canvas re-render after "Apply Preset" does NOT surface the new step nodes
+as an observable `childList` mutation on `document.body` (confirmed via a
+diagnostic MutationObserver: 87 nodes added during a preset apply, ZERO of
+them contained `[data-aae-form-step]` — the existing form container is
+reused/repainted, not replaced as a discrete addable node). Fixed with an
+**editor-only 1-second polling fallback** (`isEditMode()` gate) that
+re-scans `form.aae-a-form` and calls `bindStepsFor` on any not yet
+`aaeStepsBound` — safe because `initSteps`/`bindStepsFor` are fully
+idempotent and cheap (early-return under 2 steps). The existing
+"late-added `select[multiple]`" MutationObserver branch right above this
+one in `form.js` was NOT changed/removed — it may or may not have the same
+underlying issue, untested; the step-specific late-MutationObserver branch
+is ALSO still present (harmless, just apparently never the one that fires)
+alongside the polling fallback that actually does the job.
+
+**Schema**: `Schema_Walker::collect()` threads a `$current_step` accumulator
+down the recursion (same technique as the pro Conditional Display engine's
+`Engine.php::walk_containers()` ancestor walk) — entering an
+`e-aae-a-form-step` sets `$step_scope` to that element's raw id and appends
+`{key, title}` to a new `$steps` array; every field built while inside that
+scope gets a `'step' => (string) $step` entry. The top-level schema gains a
+`'steps'` key (empty array for ordinary single-page forms — no migration
+needed, no separate is-multi-step flag). Validator/Rest.php were NOT
+changed — final submit still re-validates every field regardless of step
+(existing safety-net behavior), the new `step` field is additive metadata
+only, not yet consumed server-side (no per-step server gate exists — the
+non-negotiable requirement is specifically about the FRONTEND Next-button
+gate, confirmed sufficient by re-reading the requirement wording).
 
 ### Form presets
 

@@ -221,7 +221,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 						// Providers stay listed (schema enum already ships them) but
 						// are honestly labeled until the integration lands (Pro).
 						Select_Control::bind_to( 'captcha_provider' )
-							->set_label( __( 'CAPTCHA Provider', 'animation-addons-for-elementor' ) )
+							->set_label( __( 'CAPTCHA Provider (set up keys in Form Submissions → Integrations)', 'animation-addons-for-elementor' ) )
 							->set_options(
 								[
 									[
@@ -230,7 +230,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 									],
 									[
 										'value' => 'recaptcha_v3',
-										'label' => __( 'reCAPTCHA v3 (coming soon)', 'animation-addons-for-elementor' ),
+										'label' => __( 'reCAPTCHA v3', 'animation-addons-for-elementor' ),
 									],
 									[
 										'value' => 'turnstile',
