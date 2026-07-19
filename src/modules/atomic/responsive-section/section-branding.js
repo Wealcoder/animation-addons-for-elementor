@@ -37,8 +37,6 @@ const AAE_SECTION_LABELS = new Set([
 	'Custom CSS (AAE)',
 	'Wrapper Link',
 	'Nested Slider',
-	'AAE Child Hover',
-	'AAE Popup',
 ]);
 
 let started = false;

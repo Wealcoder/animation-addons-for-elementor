@@ -1,181 +1,118 @@
-/**
- * AAE Offcanvas — frontend runtime (vanilla JS, no GSAP).
- *
- * The panel + overlay are teleported to <body> so `position: fixed` resolves
- * against the viewport (Elementor container transforms would otherwise trap
- * it). The panel's VISUAL look (background, width, padding…) comes from its
- * atomic base style / Style-panel classes, which are global and survive the
- * move — this file only owns BEHAVIOUR + GEOMETRY (fixed placement, the slide
- * transform, visibility, scroll-lock). The one visual value we re-apply inline
- * is the computed background, read BEFORE the move as a guard against the
- * teleport dropping it on some themes (see the skill's teleport pitfall).
- */
+const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 
-import { register } from '@elementor/frontend-handlers';
-
-// Closed-state slide per edge (100% = the element's own size, so we never need
-// to measure it).
-const TRANSFORMS = {
+const POSITION_TRANSFORMS = {
 	left:   'translateX(-100%)',
 	right:  'translateX(100%)',
 	top:    'translateY(-100%)',
 	bottom: 'translateY(100%)',
 };
 
-// Fixed geometry per edge. Left/right leave width/height to the base style
-// (full-height side drawer); top/bottom force a full-width, content-height bar.
-const POS = {
-	left:   { left: '0',  top: '0',    bottom: '0',    right: 'auto' },
-	right:  { right: '0', top: '0',    bottom: '0',    left: 'auto' },
-	top:    { top: '0',   left: '0',   right: '0',     bottom: 'auto', width: '100%', maxWidth: 'none', height: 'auto', maxHeight: '90vh' },
-	bottom: { bottom: '0', left: '0',  right: '0',     top: 'auto',    width: '100%', maxWidth: 'none', height: 'auto', maxHeight: '90vh' },
+const POSITION_STYLES = {
+	left:   { left: '0', top: '0', bottom: '0', right: '' },
+	right:  { right: '0', top: '0', bottom: '0', left: '' },
+	top:    { top: '0', left: '0', right: '0', width: '100%', maxWidth: 'none', height: 'auto', bottom: '', minHeight: '220px', maxHeight: '90vh' },
+	bottom: { bottom: '0', left: '0', right: '0', width: '100%', maxWidth: 'none', height: 'auto', top: 'auto', minHeight: '220px', maxHeight: '90vh' },
 };
 
-const SLIDE = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+const getPanelShellSize = ( panel, position ) => {
+	const computed = window.getComputedStyle( panel );
+	const widthValue = Number.parseFloat( computed.width );
+	const heightValue = Number.parseFloat( computed.height );
+	const width = computed.width && computed.width !== 'auto' && widthValue > 0 ? computed.width : '320px';
+	const maxWidth = computed.maxWidth && computed.maxWidth !== 'none' ? computed.maxWidth : '90vw';
+	const height = computed.height && computed.height !== 'auto' && heightValue > 0 ? computed.height : '100vh';
 
-const initOffcanvas = ( root ) => {
-	if ( root.dataset.aaeOffcanvasInit === 'true' ) {
-		return;
-	}
-	root.dataset.aaeOffcanvasInit = 'true';
-
-	const trigger  = root.querySelector( '.aae-offcanvas-trigger' );
-	const overlay  = root.querySelector( '.aae-offcanvas-overlay' );
-	// Find the panel by class, falling back to its element-type attr — the v4
-	// editor strips custom classes off atomic child elements, but data-attrs stay.
-	const panel    = root.querySelector( '.aae-a-offcanvas-panel' )
-		|| root.querySelector( '[data-element_type="e-aae-a-offcanvas-panel"]' );
-	const closeBtn = panel ? panel.querySelector( '.aae-offcanvas-close' ) : null;
-
-	if ( ! trigger || ! panel ) {
-		return;
+	if ( position === 'top' || position === 'bottom' ) {
+		return {};
 	}
 
-	// EDITOR: never teleport or drive the drawer here. The panel is opened for
-	// editing purely from the "Open Panel (Editor)" switch, which re-renders the
-	// Twig with a baked show-rule — no JS needed. Bail out.
+	return {
+		width,
+		maxWidth,
+		height,
+	};
+};
+
+const initOffcanvas = ( container ) => {
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
 		return;
 	}
 
-	const position        = root.dataset.position || 'left';
-	const closedTransform  = TRANSFORMS[ position ] || TRANSFORMS.left;
-	const posStyles        = POS[ position ] || POS.left;
-	const overlayColor     = root.dataset.overlayColor || 'rgba(0,0,0,0.5)';
-	const closeOnOverlay   = root.dataset.closeOnOverlay !== 'false';
-	const closeOnEsc       = root.dataset.closeOnEsc !== 'false';
+	const trigger  = container.querySelector( '.aae-offcanvas-trigger' );
+	const overlay  = container.querySelector( '.aae-offcanvas-overlay' );
+	const shell    = container.querySelector( '.aae-offcanvas-shell' );
+	const panel    = container.querySelector( '.aae-a-offcanvas-panel' );
+	const closeBtn = panel ? panel.querySelector( '.aae-offcanvas-close' ) : null;
 
-	// Preserve the panel's computed background BEFORE it leaves Elementor's
-	// scoped DOM — teleporting can otherwise drop the Style-tab background.
-	const cs      = window.getComputedStyle( panel );
-	const bgImage = cs.backgroundImage;
-	const bgColor = cs.backgroundColor;
-	const panelBg = ( bgImage && bgImage !== 'none' )
-		? cs.background
-		: ( bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent' )
-			? bgColor
-			: '#ffffff';
+	if ( ! trigger || ! shell || ! panel ) return;
 
-	// Teleport to <body> so fixed positioning uses the viewport.
-	document.body.appendChild( panel );
-	if ( overlay ) {
-		document.body.appendChild( overlay );
-	}
-
-	// Place the panel off-screen. Transition off for the initial placement so it
-	// doesn't animate in from nowhere on load; re-enabled next frame.
-	Object.assign( panel.style, {
-		position:      'fixed',
-		zIndex:        '9999',
-		display:       'flex',
-		flexDirection: 'column',
-		overflowY:     'auto',
-		visibility:    'hidden',
-		pointerEvents: 'none',
-		transition:    'none',
-		background:    panelBg,
-		...posStyles,
-		transform:     closedTransform,
-	} );
-
-	if ( overlay ) {
-		Object.assign( overlay.style, {
-			position:      'fixed',
-			inset:         '0',
-			zIndex:        '9998',
-			background:     overlayColor,
-			opacity:       '0',
-			visibility:    'hidden',
-			pointerEvents: 'none',
-			transition:    'opacity 0.3s ease, visibility 0s 0.3s',
-		} );
-	}
-
-	requestAnimationFrame( () => {
-		panel.style.transition = SLIDE;
-	} );
-
+	const position      = container.dataset.position || 'left';
+	const closedTransform = POSITION_TRANSFORMS[ position ] || 'translateX(-100%)';
+	const posStyles     = POSITION_STYLES[ position ] || POSITION_STYLES.left;
+	const panelSize     = getPanelShellSize( panel, position );
 	let closeTimer;
+
+	// Disable transition during init so the initial off-screen placement is instant (no flash)
+	shell.style.transition = 'none';
+
+	Object.assign( shell.style, panelSize, posStyles );
+	shell.style.transform = closedTransform;
+
+	// Move the pre-rendered shell to <body> so fixed positioning uses the viewport.
+	document.body.appendChild( shell );
+	if ( overlay ) document.body.appendChild( overlay );
+
+	// Re-enable transition on the next frame so open/close animate normally
+	requestAnimationFrame( () => {
+		shell.style.transition = '';
+	} );
 
 	const open = () => {
 		window.clearTimeout( closeTimer );
-		panel.style.visibility    = 'visible';
-		panel.style.pointerEvents = 'auto';
-		panel.style.transform     = 'none';
+		// Show before animating in so the slide is visible
+		shell.style.visibility = 'visible';
+		shell.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+		shell.style.transform = 'none';
+		shell.style.pointerEvents = 'auto';
 		if ( overlay ) {
-			overlay.style.transition    = 'opacity 0.3s ease';
-			overlay.style.visibility    = 'visible';
-			overlay.style.opacity       = '1';
+			overlay.classList.add( 'is-open' );
+			overlay.style.opacity = '1';
+			overlay.style.visibility = 'visible';
+			overlay.style.transition = 'opacity 0.3s ease';
 			overlay.style.pointerEvents = 'auto';
 		}
-		root.classList.add( 'is-open' );
+		container.classList.add( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
-		document.body.style.overflow = 'hidden'; // scroll-lock while open
 	};
 
 	const close = () => {
-		panel.style.transform     = closedTransform;
-		panel.style.pointerEvents = 'none';
+		shell.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+		shell.style.transform = closedTransform;
+		shell.style.pointerEvents = 'none';
 		if ( overlay ) {
-			overlay.style.transition    = 'opacity 0.3s ease, visibility 0s 0.3s';
-			overlay.style.opacity       = '0';
+			overlay.classList.remove( 'is-open' );
+			overlay.style.opacity = '0';
+			overlay.style.visibility = 'hidden';
+			overlay.style.transition = 'opacity 0.3s ease, visibility 0s 0.3s';
 			overlay.style.pointerEvents = 'none';
-			overlay.style.visibility    = 'hidden';
 		}
-		root.classList.remove( 'is-open' );
+		container.classList.remove( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
-		document.body.style.overflow = '';
-		// Hide after the slide-out so it can't catch pointer events off-screen.
 		closeTimer = window.setTimeout( () => {
-			panel.style.visibility = 'hidden';
+			shell.style.visibility = 'hidden';
 		}, 350 );
 	};
 
 	trigger.addEventListener( 'click', open );
-	if ( closeBtn ) {
-		closeBtn.addEventListener( 'click', close );
-	}
-	if ( overlay && closeOnOverlay ) {
-		overlay.addEventListener( 'click', close );
-	}
-	if ( closeOnEsc ) {
-		document.addEventListener( 'keydown', ( ev ) => {
-			if ( ev.key === 'Escape' && root.classList.contains( 'is-open' ) ) {
-				close();
-			}
-		} );
-	}
+	if ( overlay ) overlay.addEventListener( 'click', close );
+	if ( closeBtn ) closeBtn.addEventListener( 'click', close );
+	document.addEventListener( 'keydown', ( ev ) => {
+		if ( ev.key === 'Escape' && shell.style.transform === 'none' ) close();
+	} );
 };
 
 register( {
 	elementType: 'e-aae-a-offcanvas',
 	id: 'aae-a-offcanvas-handler',
-	callback: ( { element } ) => {
-		const root = element.classList.contains( 'aae-a-offcanvas' )
-			? element
-			: element.querySelector( '.aae-a-offcanvas' );
-		if ( root ) {
-			initOffcanvas( root );
-		}
-	},
+	callback: ( { element } ) => initOffcanvas( element ),
 } );

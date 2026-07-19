@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -221,3 +222,6 @@ function playProgressBar(el) {
 /******/ })()
 ;
 //# sourceMappingURL=progressbar.js.map
+=======
+!function(){"use strict";var t=elementorV2.frontendHandlers;const e=2*Math.PI*40;function r(t,e,r){const a=performance.now();!function s(n){const o=Math.min((n-a)/r,1);t.textContent=Math.round(o*e)+"%",o<1&&requestAnimationFrame(s)}(performance.now())}(0,t.register)({elementType:"e-aae-a-progressbar",id:"e-aae-a-progressbar-handler",callback:({element:t})=>{const a=t;if(!a)return;const s=a.dataset.pbType||"line",n=parseFloat(a.dataset.pbPercentage||50)/100,o="true"===a.dataset.pbDisplayPercentage?a.querySelector(".aae-pb-pct"):null,i=parseFloat(a.dataset.pbTrackHeight||8),l=parseFloat(a.dataset.pbStrokeWidth||10);if(a.style.setProperty("--aae-pb-track-height",i+"px"),a.style.setProperty("--aae-pb-stroke-width",String(l)),"dot"===s){const t=a.querySelectorAll(".dot"),e=Math.round(n*t.length);return void t.forEach((t,r)=>{setTimeout(()=>t.classList.toggle("active",r<e),150*r)})}if("circle"===s){const t=a.querySelector(".progressbar-path");if(!t)return;return t.style.transition="none",t.style.strokeDashoffset=e,requestAnimationFrame(()=>{t.style.transition="",requestAnimationFrame(()=>{t.style.strokeDashoffset=e*(1-n)})}),void(o&&r(o,Math.round(100*n),1400))}const c=a.querySelector(".progressbar-fill");c&&(o&&(o.style.position="absolute",o.style.top="0",o.style.left="50%",o.style.transform="translateX(-50%)"),c.style.transition="none",c.style.width="0%",requestAnimationFrame(()=>{c.style.transition="",requestAnimationFrame(()=>{c.style.width=100*n+"%"})}),o&&r(o,Math.round(100*n),1400))}})}();
+>>>>>>> atomic4

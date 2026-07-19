@@ -48,21 +48,6 @@
 		opacity: 0.7;
 	}
 
-	// Contain the nav arrow's SVG to the fixed 44px badge (the nav elements are
-	// reused from the Nested Slider). Mirrors nestedslider.scss — this widget
-	// deliberately does not load that stylesheet, so the rule is duplicated here.
-	// Without it an old-saved 65px SVG (created before the `aae-a-svg` 20px utility
-	// existed) overflows the fixed badge and breaks the circle, making the same
-	// slider look different in the editor vs the frontend.
-	.aae-a-navigator-prev,
-	.aae-a-navigator-next {
-		.e-svg-base,
-		svg {
-			max-width: 24px;
-			max-height: 24px;
-		}
-	}
-
 }
 
 // Pagination edge-state (mirrors the Loop Grid): hide the inert control on the

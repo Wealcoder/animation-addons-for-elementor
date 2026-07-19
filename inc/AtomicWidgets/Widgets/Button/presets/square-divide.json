@@ -10,13 +10,7 @@
 					"id": "psqdv02",
 					"settings": {
 						"classes": { "$$type": "classes", "value": [ "aae-sq-divide-btn" ] },
-						"text": {
-							"$$type": "html-v3",
-							"value": {
-								"content": { "$$type": "string", "value": "Explore Now" },
-								"children": []
-							}
-						}
+						"text":    { "$$type": "string",  "value": "Explore Now" }
 					},
 					"elements": [],
 					"isInner": false,

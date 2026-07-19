@@ -1,40 +1,26 @@
-{#
-  AAE Offcanvas Panel — the sliding drawer surface AND the user drop-zone.
-
-  The panel's look comes entirely from its base style (define_base_styles) so it
-  is Style-panel overridable and survives the runtime teleport to <body> (base
-  styles are global classes). The only inline CSS here is a structural reset for
-  the plain close button — it lives INSIDE the panel, so it travels along when
-  the JS moves the panel out to <body>.
-#}
 {% set classes = ['aae-a-offcanvas-panel', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
-{% set close_icon_url = settings.close_icon.url | default('') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
-    role="dialog"
-    aria-modal="true"
-    aria-label="{{ 'Offcanvas panel' | e('html_attr') }}"
     {% if settings.attributes is defined and settings.attributes is not empty %}
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
 
     <style>
-        :where([data-id="{{ id }}"]) .aae-offcanvas-close {
-            display: inline-flex; align-items: center; justify-content: center;
-            cursor: pointer; background: transparent; border: 0; color: inherit;
-            padding: 0; margin: 0 0 16px auto;
-        }
-        :where([data-id="{{ id }}"]) .aae-offcanvas-close :is(img, svg) {
-            display: block; width: 24px; height: 24px;
+        [data-id="{{ id }}"] .aae-offcanvas-close img,
+        [data-id="{{ id }}"] .aae-offcanvas-close svg {
+            display: block;
+            width: 24px;
+            height: 24px;
         }
     </style>
 
-    <button class="aae-offcanvas-close" type="button" aria-label="{{ 'Close panel' | e('html_attr') }}">
+    {% set close_icon_url = settings.close_icon.url | default('') %}
+    <button class="aae-offcanvas-close" type="button" aria-label="Close panel" style="display: block; cursor: pointer; background: transparent; border: 0; color: inherit; line-height: 1; padding: 0; margin: 0 0 16px auto;">
         {% if close_icon_url is not empty %}
             <img src="{{ close_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
         {% else %}
@@ -42,5 +28,7 @@
         {% endif %}
     </button>
 
-    {{ children_placeholder | raw }}
+    <div class="aae-offcanvas-panel-content e-con">
+        {{ children_placeholder | raw }}
+    </div>
 </div>

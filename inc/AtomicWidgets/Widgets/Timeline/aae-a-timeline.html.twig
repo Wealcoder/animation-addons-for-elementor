@@ -1,10 +1,12 @@
 {% set classes = ['aae-a-timeline', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% set preset = settings.preset | default('editorial-rail') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
+    data-preset="{{ preset | e('html_attr') }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -12,6 +14,273 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
+
+    {#
+        Specificity strategy — every selector lands at exactly (0,1,0):
+
+            • Parent rules: `:where([data-id][data-preset="X"]).aae-a-timeline`
+              → `:where(...)` contributes 0, `.aae-a-timeline` contributes
+              (0,1,0). Total (0,1,0).
+
+            • Descendant rules: `:where([data-id][data-preset="X"]) .child-class`
+              → `:where(...)` contributes 0, the bare `.child-class`
+              outside `:where` contributes (0,1,0). Total (0,1,0).
+
+        Why (0,1,0):
+            • `.e-con` (Elementor container framework) emits its own
+              defaults at (0,1,0). Our Twig <style> lives in <body>,
+              after <head>, so on a (0,1,0) tie we WIN — `.e-con`'s
+              10px default padding etc. is overridden.
+            • Elementor's Style-panel local-style rules emit as
+              `.elementor .e-XXX-abcdef` at (0,2,0). They beat our
+              (0,1,0) on every property. So users can change padding,
+              display, grid columns, gap, max-width — per breakpoint —
+              from the parent's Style panel, and the changes apply.
+
+        Items + markers + date / title / desc all follow the same
+        (0,1,0) rule. Click any child to open its own Style panel and
+        every property overrides cleanly.
+    #}
+    <style>
+        /* Spine — universally hidden, social preset re-shows below */
+        :where([data-id="{{ id }}"]) .aae-a-timeline-spine {
+            display: none;
+        }
+
+        {% if preset == 'editorial-rail' %}
+        /* ═════════════════════════════════════════════════════
+           EDITORIAL RAIL — green vertical spine on each item
+           ═════════════════════════════════════════════════════ */
+        :where([data-id="{{ id }}"]).aae-a-timeline {
+            display: flex;
+            flex-direction: column;
+            max-width: 720px;
+            padding-block: 16px;
+            padding-inline: 0;
+            gap: 0;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
+            padding-inline-start: 32px;
+            padding-block-end: 32px;
+            border-inline-start: 2px solid #bbf7d0;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: -11px;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            background: #16a34a; color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px #f0fdf4;
+            font-size: 10px; font-weight: 800; line-height: 1;
+            z-index: 2;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #15803d; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 20px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        {% endif %}
+
+        {% if preset == 'heritage-split' %}
+        /* ═════════════════════════════════════════════════════
+           HERITAGE SPLIT — warm orange spine
+           ═════════════════════════════════════════════════════ */
+        :where([data-id="{{ id }}"]).aae-a-timeline {
+            display: flex;
+            flex-direction: column;
+            max-width: 720px;
+            padding: 32px 28px;
+            gap: 0;
+            background: linear-gradient(180deg, #fef9f4, #fff5e9);
+            border: 1px solid #f4ae88;
+            border-radius: 14px;
+            box-shadow: 0 18px 50px rgba(120,46,16,.10);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
+            padding-inline-start: 42px;
+            padding-block-end: 32px;
+            border-inline-start: 3px solid #f4ae88;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: -18px;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            background: #c0502a; color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #fef9f4, 0 8px 20px rgba(192,80,42,.30);
+            font-size: 12px; font-weight: 800; line-height: 1;
+            z-index: 2;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #c0502a; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #7c2d12; font-size: 20px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #92400e; font-size: 14px; line-height: 1.6; }
+        {% endif %}
+
+        {% if preset == 'roadmap-track' %}
+        /* ═════════════════════════════════════════════════════
+           ROADMAP TRACK — horizontal 4-col grid
+           ═════════════════════════════════════════════════════ */
+        :where([data-id="{{ id }}"]).aae-a-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1120px;
+            padding: 100px 28px 28px;
+            background-color: #f8fafc;
+            background-image: linear-gradient(to bottom,
+                transparent 0, transparent 81px,
+                #cbd5e1 81px, #cbd5e1 83px,
+                transparent 83px);
+            background-repeat: no-repeat;
+            border-radius: 14px;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
+            padding: 22px;
+            gap: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.05);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date {
+            position: absolute;
+            inset-block-start: -78px;
+            inset-inline-start: 0;
+            color: #0f172a;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            text-transform: none;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: -28px;
+            inset-inline-start: 0;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            background: #fff;
+            color: #64748b;
+            border: 2px solid #94a3b8;
+            border-radius: 50%;
+            font-size: 9px; font-weight: 700; line-height: 1;
+            z-index: 2;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(3) .aae-a-timeline-item-marker {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 5px rgba(37,99,235,.16);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 18px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #64748b; font-size: 14px; line-height: 1.6; }
+        {% endif %}
+
+        {% if preset == 'case-study' %}
+        /* ═════════════════════════════════════════════════════
+           CASE STUDY STEPS — bold navy, square marker
+           ═════════════════════════════════════════════════════ */
+        :where([data-id="{{ id }}"]).aae-a-timeline {
+            display: flex;
+            flex-direction: column;
+            max-width: 720px;
+            gap: 18px;
+            padding-block: 16px;
+            padding-inline: 0;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
+            padding-inline-start: 48px;
+            padding-block-end: 28px;
+            border-inline-start: 4px solid #0f172a;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: -24px;
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            background: #0f172a; color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(15,23,42,.22);
+            font-size: 15px; font-weight: 800;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #fff; background: #0f172a; padding: 6px 12px; border-radius: 999px; align-self: start; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #0f172a; font-size: 22px; font-weight: 700; line-height: 1.2; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #475569; font-size: 14px; line-height: 1.6; }
+        {% endif %}
+
+        {% if preset == 'social' %}
+        /* ═════════════════════════════════════════════════════
+           SOCIAL — purple alternating split with dotted spine
+           ═════════════════════════════════════════════════════ */
+        :where([data-id="{{ id }}"]).aae-a-timeline {
+            display: flex;
+            flex-direction: column;
+            max-width: 720px;
+            padding: 40px 0;
+            gap: 32px;
+            position: relative;
+            margin-inline: auto;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item {
+            width: calc(50% - 24px);
+            padding: 20px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(124,58,237,.10);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(odd)  { align-self: flex-start; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(even) { align-self: flex-end; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(odd) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 24px;
+            inset-inline-end: -24px;
+            inset-inline-start: auto;
+            transform: translateX(50%);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item:nth-child(even) .aae-a-timeline-item-marker {
+            position: absolute;
+            inset-block-start: 24px;
+            inset-inline-start: -24px;
+            inset-inline-end: auto;
+            transform: translateX(-50%);
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-marker {
+            width: 14px; height: 14px;
+            background: #7c3aed;
+            color: transparent;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px #fff, 0 0 0 5px #c4b5fd;
+            font-size: 0;
+            z-index: 2;
+        }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-date  { color: #7c3aed; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-title { color: #18181b; font-size: 17px; font-weight: 700; line-height: 1.3; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-item-desc  { color: #52525b; font-size: 14px; line-height: 1.55; }
+        :where([data-id="{{ id }}"]) .aae-a-timeline-spine {
+            display: block;
+            position: absolute;
+            inset-block-start: 16px;
+            inset-block-end: 16px;
+            inset-inline-start: 50%;
+            inset-inline-end: auto;
+            transform: translateX(-50%);
+            width: 0;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            background: none;
+            border-block-start: 0;
+            border-block-end: 0;
+            border-inline-end: 0;
+            border-inline-start: 2px dotted #c4b5fd;
+            font-size: 0;
+            line-height: 0;
+            z-index: 0;
+        }
+        {% endif %}
+    </style>
 
     {{ children_placeholder | raw }}
 </div>
