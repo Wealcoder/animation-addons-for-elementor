@@ -1,37 +1,84 @@
+import '../scss/image-compare.scss';
+
 const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 
 /**
- * AAE Atomic Image Compare — frontend handler.
+ * AAE Atomic Image Compare (wrapper) — frontend handler.
  *
- * The native <input type="range"> handles drag + touch + keyboard for free
- * in both axes (writing-mode: vertical-lr rotates the control for vertical
- * mode without changing its value semantics — top = min, bottom = max).
- *
- * This handler only:
- *   1. Mirrors the range value into the `--aae-image-compare-position`
- *      CSS variable. Everything visual — divider/thumb position AND the
- *      clip-path direction on the Before image + Before label — reads
- *      that variable through CSS rules scoped by `[data-direction]`, so
- *      this handler never has to know which axis is active.
- *   2. Toggles `data-{before,after}-label-hidden` when the handle reaches
- *      the edges so labels fade out gracefully.
- *   3. Suppresses track-clicks when `data-enable-click-move="no"` (drag
- *      only — clicks revert to the pre-click value), using the right
- *      axis for the drag-distance check.
- *   4. Stops pointerdown from bubbling so the v4 editor's element-drag
- *      layer doesn't intercept the slider drag inside the editor.
+ * Identical behavior to Image Compare Main's handler — see
+ * Widgets/ImageCompareMain/assets/js/image-compare-main.js for the full
+ * rationale comments on the ancestor-overlay suppression and the
+ * non-draggable-root workaround. Kept as a separate bundle (not a shared
+ * import) so this widget's on-demand script stays fully independent of the
+ * Main widget's, matching how Btn/BtnPro each ship their own bundle.
  */
 const CLICK_VS_DRAG_THRESHOLD_PX = 4;
+
+const suppressAncestorOverlays = ( container ) => {
+	const restores = [];
+	let node = container.parentElement;
+
+	while ( node ) {
+		const overlay = node.querySelector( ':scope > .elementor-element-overlay' );
+		if ( overlay ) {
+			restores.push( [ overlay, overlay.style.getPropertyValue( 'pointer-events' ), overlay.style.getPropertyPriority( 'pointer-events' ) ] );
+			overlay.style.setProperty( 'pointer-events', 'none', 'important' );
+		}
+		node = node.parentElement;
+	}
+
+	return () => {
+		restores.forEach( ( [ overlay, value, priority ] ) => {
+			if ( value ) {
+				overlay.style.setProperty( 'pointer-events', value, priority );
+			} else {
+				overlay.style.removeProperty( 'pointer-events' );
+			}
+		} );
+	};
+};
+
+const keepContainerNonDraggable = ( container ) => {
+	const enforce = () => {
+		if ( container.getAttribute( 'draggable' ) !== 'false' ) {
+			container.setAttribute( 'draggable', 'false' );
+		}
+	};
+	enforce();
+	new MutationObserver( enforce ).observe( container, { attributes: true, attributeFilter: [ 'draggable' ] } );
+};
 
 const initImageCompare = ( container ) => {
 	if ( container.dataset.aaeCompareReady === '1' ) return;
 	container.dataset.aaeCompareReady = '1';
+
+	keepContainerNonDraggable( container );
 
 	const range = container.querySelector( '[data-aae-compare-range]' );
 
 	if ( ! range ) return;
 
 	const isVertical = () => container.dataset.direction === 'vertical';
+
+	/**
+	 * Direction is fixed for the element's lifetime — cursor, writing-mode,
+	 * and user-select are static per-instance values with no schema/preset
+	 * home (no Elementor element to attach them to, or unsupported style
+	 * keys), so they're set once here instead of via a `[data-direction]`
+	 * CSS selector. The live drag position stays a CSS custom property
+	 * (see update() below) — unlike these, it has to reflect each
+	 * instance's own "Initial Position" setting from first paint, which
+	 * only a server-rendered CSS var can guarantee.
+	 */
+	const vertical  = isVertical();
+	const thumb     = container.querySelector( '.aae-a-image-compare-thumb' );
+	const beforeLbl = container.querySelector( '.aae-a-image-compare-caption-before' );
+	const afterLbl  = container.querySelector( '.aae-a-image-compare-caption-after' );
+
+	container.style.userSelect = 'none';
+	range.style.cursor = vertical ? 'ns-resize' : 'ew-resize';
+	if ( vertical ) range.style.writingMode = 'vertical-lr';
+	if ( thumb ) thumb.style.cursor = vertical ? 'ns-resize' : 'ew-resize';
 
 	const getDefaultPosition = () => {
 		const fallback = Number( container.dataset.defaultPosition );
@@ -45,19 +92,16 @@ const initImageCompare = ( container ) => {
 		range.value = value;
 		container.style.setProperty( '--aae-image-compare-position', value + '%' );
 
-		container.dataset.beforeLabelHidden = value < 12 ? 'true' : 'false';
-		container.dataset.afterLabelHidden  = value > 88 ? 'true' : 'false';
+		if ( beforeLbl ) beforeLbl.style.opacity = value < 12 ? '0' : '1';
+		if ( afterLbl )  afterLbl.style.opacity  = value > 88 ? '0' : '1';
 	};
 
 	range.addEventListener( 'input', update );
 
-	/* Click-to-move suppression. Native range fires `input` on both drag
-	   AND click — distinguish by tracking pointer movement on the relevant
-	   axis (X for horizontal, Y for vertical) between pointerdown and
-	   pointerup. Movement under the threshold → click → revert. */
 	let pointerStartCoord = null;
 	let pointerStartValue = null;
 	let pointerMoved      = false;
+	let restoreOverlays   = null;
 
 	const getAxisCoord = ( event ) => isVertical() ? event.clientY : event.clientX;
 
@@ -65,6 +109,8 @@ const initImageCompare = ( container ) => {
 		pointerStartCoord = getAxisCoord( event );
 		pointerStartValue = range.value;
 		pointerMoved      = false;
+		restoreOverlays?.();
+		restoreOverlays   = suppressAncestorOverlays( container );
 	} );
 
 	range.addEventListener( 'pointermove', ( event ) => {
@@ -75,6 +121,9 @@ const initImageCompare = ( container ) => {
 	} );
 
 	const pointerEnd = () => {
+		restoreOverlays?.();
+		restoreOverlays = null;
+
 		if ( pointerStartCoord === null ) return;
 
 		const clickMoveDisabled = container.dataset.enableClickMove === 'no';
@@ -91,18 +140,11 @@ const initImageCompare = ( container ) => {
 	range.addEventListener( 'pointerup', pointerEnd );
 	range.addEventListener( 'pointercancel', pointerEnd );
 
-	/* Editor preview: the v4 editor wraps every element with a drag layer
-	   that captures pointerdown to move the widget around the canvas. That
-	   layer eats the range input's drag, so the user ends up moving the
-	   whole widget instead of the slider. Stop pointer events from
-	   bubbling up — the range input still receives them, so drag / touch /
-	   keyboard interaction stays intact. */
 	const swallow = ( event ) => event.stopPropagation();
 	[ 'pointerdown', 'mousedown', 'touchstart', 'dragstart' ].forEach( ( eventName ) => {
 		range.addEventListener( eventName, swallow );
 	} );
 
-	/* Run once on load. */
 	update();
 };
 

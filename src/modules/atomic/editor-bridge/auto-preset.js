@@ -2,19 +2,7 @@
 
 /**
  * Auto-apply a default preset when a widget is freshly dropped.
- *
- * A bare AAE widget (Loop Grid Slider, Progress Bar, Button, Button Pro,
- * Timeline, Toggle Switcher, Social Share, …) drops with its plain
- * define_default_children() output, which looks unstyled. To give a good
- * out-of-the-box result we apply a chosen default preset the first time each
- * one is created — the same transform the "Apply Preset" dropdown runs, so
- * the outcome is identical to picking that preset by hand.
- *
- * We hook Elementor's command bus (`document/elements/create`) rather than a DOM
- * observer: create fires once per drop with the new element in the model, and we
- * can locate the seeded slide item from the V1 container tree. We only act on the
- * user's own drop (not on undo/redo/import re-creates) and only once per element.
- */
+*/
 
 import { track } from './disposables';
 import { applyPresetModel, getPresetsForType } from '../element-controls/preset-apply';

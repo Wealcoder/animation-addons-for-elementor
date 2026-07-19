@@ -28,17 +28,27 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Button\Atomic_Button;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Divider\Atomic_Divider;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
+/**
+ * AAE Image Compare — the "wrapper" counterpart of Image Compare Main,
+ * matching the Btn/SocialShare pattern: same schema/behavior as the Main
+ * widget, but fronted by a "Presets" picker so a ready-made horizontal or
+ * vertical design can be dropped in with one click instead of hand-building
+ * the before/after/divider/handle/label tree from scratch.
+ */
 class AAE_A_Image_Compare extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'A draggable before/after image comparison slider. Before image, after image, divider, handle, and labels are independent atomic children — each styleable from its own Style panel.';
+	public static $widget_description = 'A draggable before/after image comparison slider with ready-made horizontal/vertical presets. Before image, after image, divider, handle, and labels are independent atomic children — each styleable from its own Style panel.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -58,7 +68,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider' ];
+		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider', 'template' ];
 	}
 
 	public function get_icon() {
@@ -76,7 +86,18 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items( [
+					AAE_A_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			Section::make()
 				->set_label( __( 'Image Compare', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
@@ -93,6 +114,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 					Switch_Control::bind_to( 'enable_click_move' )
 						->set_label( __( 'Enable Click to Move', 'animation-addons-for-elementor' ) ),
 				] ),
+
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
@@ -105,28 +127,19 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Per-element base styles, keyed off the child class names. Compound
-	 * selectors (`base .child-class`) emit nested CSS scoped to the widget's
-	 * auto-generated base class, so each rule travels with the element
-	 * definition — no external SCSS/CSS file required.
-	 *
-	 * Properties not in the v4 style schema (pointer-events, user-select,
-	 * grid-area, ::-webkit-* pseudo-elements, sibling combinators like
-	 * `.range:hover ~ .thumb`, and CSS-variable-driven `left`) are silently
-	 * dropped by Render_Props_Resolver, so those rules stay in the inline
-	 * <style> block of the Twig template alongside the markup that needs
-	 * them. Everything that fits the schema lives here.
+	 * Root wrapper only. Unlike Image Compare Main, this wrapper does NOT
+	 * carry per-child compound selectors — before/after image, captions,
+	 * divider, and handle positioning all live as each preset's own local
+	 * element styles instead (see Widgets/ImageCompare/presets/*.json),
+	 * exactly like Btn/SocialShare. Only the CSS-var-driven live position,
+	 * the sibling-combinator hover effect, and the vendor pseudo-elements —
+	 * things the v4 style schema genuinely can't express — live in
+	 * assets/scss/image-compare.scss.
 	 */
 	protected function define_base_styles(): array {
-		$size_100_pct  = Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] );
-		$size_50_pct   = Size_Prop_Type::generate( [ 'size' => 50,  'unit' => '%' ] );
-		$size_0_px     = Size_Prop_Type::generate( [ 'size' => 0,   'unit' => 'px' ] );
-		$size_16_px    = Size_Prop_Type::generate( [ 'size' => 16,  'unit' => 'px' ] );
-		$size_1_em     = Size_Prop_Type::generate( [ 'size' => 1,   'unit' => 'em' ] );
-		$caption_clip  = String_Prop_Type::generate( 'inset(0 calc(100% - var(--aae-image-compare-position, 50%)) 0 0)' );
+		$size_100_pct = Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] );
 
 		return [
-			// Parent container.
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
@@ -137,118 +150,16 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 						->add_prop( 'display',    String_Prop_Type::generate( 'grid' ) )
 						->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'px' ] ) )
 				),
-
-			// AFTER image — natural flow, defines the widget's height.
-			// `height: auto` can't go through Size_Prop_Type (no keyword
-			// support) so it lives in the Twig <style> block instead.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-after' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',        String_Prop_Type::generate( 'relative' ) )
-						->add_prop( 'width',           $size_100_pct )
-						->add_prop( 'max-width',       $size_100_pct )
-						->add_prop( 'display',         String_Prop_Type::generate( 'block' ) )
-						->add_prop( 'object-fit',      String_Prop_Type::generate( 'cover' ) )
-						->add_prop( 'object-position', String_Prop_Type::generate( '0 50%' ) )
-						->add_prop( 'margin',          $size_0_px )
-						->add_prop( 'z-index',         Number_Prop_Type::generate( 1 ) )
-				),
-
-			// BEFORE image — absolutely positioned overlay, clipped by handle %.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-before' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',           String_Prop_Type::generate( 'absolute' ) )
-						->add_prop( 'inset-block-start',  $size_0_px )
-						->add_prop( 'inset-inline-start', $size_0_px )
-						->add_prop( 'width',              $size_100_pct )
-						->add_prop( 'max-width',          $size_100_pct )
-						->add_prop( 'height',             $size_100_pct )
-						->add_prop( 'display',            String_Prop_Type::generate( 'block' ) )
-						->add_prop( 'object-fit',         String_Prop_Type::generate( 'cover' ) )
-						->add_prop( 'object-position',    String_Prop_Type::generate( '0 50%' ) )
-						->add_prop( 'margin',             $size_0_px )
-						->add_prop( 'z-index',            Number_Prop_Type::generate( 2 ) )
-						->add_prop( 'clip-path',          $caption_clip )
-				),
-
-			// BEFORE caption.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-caption-before' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',           String_Prop_Type::generate( 'absolute' ) )
-						->add_prop( 'inset-block-start',  $size_16_px )
-						->add_prop( 'inset-inline-start', $size_16_px )
-						->add_prop( 'z-index',            Number_Prop_Type::generate( 12 ) )
-						->add_prop( 'margin',             $size_0_px )
-						->add_prop( 'line-height',        $size_1_em )
-						->add_prop( 'clip-path',          $caption_clip )
-				),
-
-			// AFTER caption.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-caption-after' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
-						->add_prop( 'inset-block-start', $size_16_px )
-						->add_prop( 'inset-inline-end',  $size_16_px )
-						->add_prop( 'z-index',           Number_Prop_Type::generate( 12 ) )
-						->add_prop( 'margin',            $size_0_px )
-						->add_prop( 'line-height',       $size_1_em )
-						->add_prop( 'text-align',        String_Prop_Type::generate( 'end' ) )
-				),
-
-			// Slider line (Atomic_Divider). `left: var(...)` lives in the
-			// Twig <style> because Size_Prop_Type can't carry a CSS variable.
-			// Default geometry: 2px wide × full height (horizontal slider).
-			// Twig flips this to full width × 2px tall when direction is
-			// vertical via `[data-direction="vertical"]`.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-divider' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
-						->add_prop( 'inset-block-start', $size_0_px )
-						->add_prop( 'width',             Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ) )
-						->add_prop( 'height',            $size_100_pct )
-						->add_prop( 'margin',            $size_0_px )
-						->add_prop( 'z-index',           Number_Prop_Type::generate( 10 ) )
-				),
-
-			// Slider thumb (Atomic_Button). The `left: var(...)` and
-			// `transform: translate(-50%, -50%)` live in the Twig <style>
-			// (CSS-var value + sibling combinator hover effects).
-			// z-index needs to clear the editor element-overlay (30) and
-			// the invisible range input (20), so the thumb is visible by
-			// default without users hand-bumping it from the Style panel.
-			self::BASE_STYLE_KEY . ' .aae-a-image-compare-thumb' => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'position',          String_Prop_Type::generate( 'absolute' ) )
-						->add_prop( 'inset-block-start', $size_50_pct )
-						->add_prop( 'margin',            $size_0_px )
-						->add_prop( 'z-index',           Number_Prop_Type::generate( 999 ) )
-				),
 		];
 	}
 
 	/**
-	 * Default child structure, ordered to match the v1 spec:
-	 *   1. Before Image  (Atomic_Image — clipped overlay)
-	 *   2. After Image   (Atomic_Image — natural-flow baseline)
-	 *   3. Divider       (Atomic_Divider — slider line)
-	 *   4. Handle        (Atomic_Button — draggable thumb)
-	 *   5. Before Label  (Atomic_Paragraph — optional caption)
-	 *   6. After Label   (Atomic_Paragraph — optional caption)
-	 *
-	 * Each child is a core atomic element so the user can edit text /
-	 * media and style appearance through the element's own Style panel.
-	 * Image, label text, and label visibility are managed per-child — no
-	 * widget-level duplicates.
+	 * Same default composition as Image Compare Main — presets replace this
+	 * whole tree via the picker, but a fresh drop of the plain element still
+	 * has to work sensibly before any preset is applied.
 	 */
 	protected function define_default_children() {
 		return [
-			// 1. Before Image — absolutely positioned overlay, clipped by the
-			//    handle position. Atomic_Image supplies its own placeholder.
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'Before Image' ] )
 				->settings( [
@@ -256,7 +167,6 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			// 2. After Image — natural flow, defines the widget's height.
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'After Image' ] )
 				->settings( [
@@ -264,8 +174,6 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			// 3. Divider — vertical line that tracks the handle position.
-			//    User styles colour / width / opacity via Style panel.
 			Atomic_Divider::generate()
 				->editor_settings( [ 'title' => 'Divider' ] )
 				->settings( [
@@ -273,22 +181,25 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			// 4. Handle — the draggable thumb at the divider's midpoint.
-			//    User styles background, border, padding, typography, arrow
-			//    colour (= button text colour) via Style panel.
-			Atomic_Button::generate()
+			Div_Block::generate()
 				->editor_settings( [ 'title' => 'Handle' ] )
 				->settings( [
 					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-thumb' ] ),
-					'text'    => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '‹ ›' ),
-						'children' => [],
-					] ),
+				] )
+				->children( [
+					Atomic_Svg::generate()
+						->editor_settings( [ 'title' => 'Handle Icon' ] )
+						->settings( [
+							'classes' => Classes_Prop_Type::generate( [ 'aae-a-svg-30' ] ),
+							'svg'     => Svg_Src_Prop_Type::generate( [
+								'id'  => null,
+								'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/icon/handle.svg' ),
+							] ),
+						] )
+						->build(),
 				] )
 				->build(),
 
-			// 5. Before Label — optional caption on the clipped (before) side.
-			//    Hide by deleting the child or styling `display: none`.
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Before Label' ] )
 				->settings( [
@@ -301,7 +212,6 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			// 6. After Label — optional caption on the after side.
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'After Label' ] )
 				->settings( [
@@ -317,7 +227,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider' ];
+		return [ 'widget', 'e-image', 'e-paragraph', 'e-button', 'e-divider', 'e-div-block', 'e-svg' ];
 	}
 
 	protected function define_default_html_tag() {
@@ -332,5 +242,9 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 
 	public function get_script_depends(): array {
 		return [ 'aae-a-image-compare-js' ];
+	}
+
+	public function get_style_depends(): array {
+		return [ 'aae-a-image-compare-css' ];
 	}
 }

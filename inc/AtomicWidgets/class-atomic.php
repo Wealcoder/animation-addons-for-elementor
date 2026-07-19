@@ -1118,6 +1118,29 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-image-compare' => [
+				'label'        => 'Image Compare',
+				'description'  => 'A draggable before/after image comparison slider — no manual setup needed, apply the ready-made Horizontal/Vertical presets and swap in your own images.',
+				'icon'         => 'eicon-image-before-after',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'image',
+					'compare',
+					'before',
+					'after',
+					'slider',
+					'atomic',
+					'template',
+				],
+				'category'     => 'general',
+				'order'        => 9,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-image-compare-main' => [
 				'label'        => 'Image Compare Main',
 				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
@@ -2451,6 +2474,15 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main_Item',
 			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
 			'has_script' => false,
+		],
+		'aae-a-image-compare' => [
+			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
+			'script_handle' => 'aae-a-image-compare-js',
+			'script_path' => '/assets/atomic/js/image-compare.js',
+			'has_script' => true,
+			'style_handle' => 'aae-a-image-compare-css',
+			'style_path' => '/assets/atomic/js/image-compare.css',
 		],
 		'aae-a-image-compare-main' => [
 			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompareMain\AAE_A_Image_Compare_Main',
