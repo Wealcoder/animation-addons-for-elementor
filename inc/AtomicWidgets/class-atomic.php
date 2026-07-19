@@ -3274,7 +3274,7 @@ final class Atomic
 	 */
 	public function enqueue_atomic_editor_scripts(): void
 	{
-		$this->guard_elementor_core_atomic_types();
+		// $this->guard_elementor_core_atomic_types();
 
 		$suffix = $this->is_dev_environment() ? '' : '.min';
 		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
