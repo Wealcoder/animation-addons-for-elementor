@@ -175,7 +175,16 @@ final class Schema_Walker {
 				break;
 		}
 
-		return $field;
+		/**
+		 * Extend a schema field entry with extension-owned data. The pro
+		 * Conditional Display engine appends its `conditions` config here so
+		 * the Validator can re-evaluate visibility server-side.
+		 *
+		 * @param array $field    Canonical field entry (built above).
+		 * @param mixed $settings Raw element settings.
+		 * @param array $element  Raw element node.
+		 */
+		return apply_filters( 'aae_form/schema_walker/field', $field, $settings, $element );
 	}
 
 	/**

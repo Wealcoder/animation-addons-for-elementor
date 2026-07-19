@@ -47,6 +47,10 @@ use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
 use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // The Loop Grid parent pulls in the query engine + the loop children it seeds.
 require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-grid.php';
 require_once __DIR__ . '/class-aae-a-loop-slide-track.php';
