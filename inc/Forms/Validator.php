@@ -95,6 +95,42 @@ final class Validator {
 					$clean[ $key ] = $multiple ? array_values( $values ) : $values[0];
 					break;
 
+				case 'file':
+					// Value is a list of pre-upload refs [{id,key},…] — the
+					// files themselves were already validated and stored by
+					// the uploads endpoint; here we verify the refs belong to
+					// THIS form and are still unclaimed, then normalize to
+					// [{id,name,size},…] for storage. Claiming happens after
+					// the submission row exists (Uploads::claim_for_submission).
+					$refs = self::file_refs( $value );
+
+					if ( empty( $refs ) ) {
+						if ( $field['required'] ) {
+							$errors[ $key ] = self::msg_required( $field );
+						}
+						break;
+					}
+
+					$max_files = ! empty( $field['multiple'] ) ? max( 1, (int) ( $field['max_files'] ?? 0 ) ) : 1;
+					if ( 0 === (int) ( $field['max_files'] ?? 0 ) && ! empty( $field['multiple'] ) ) {
+						$max_files = 10; // sane ceiling when the field sets none.
+					}
+
+					if ( count( $refs ) > $max_files ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$verified = Uploads::verify_refs( $refs, (string) ( $schema['form_key'] ?? '' ) );
+
+					if ( null === $verified ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$clean[ $key ] = $verified;
+					break;
+
 				case 'textarea':
 					$value = sanitize_textarea_field( self::scalar( $value ) );
 
@@ -145,21 +181,44 @@ final class Validator {
 	}
 
 	/** Per-type format checks; null means the value passes. */
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field validation_rules (Validation Pro).
 	private static function check_format( string $type, string $value, array $field ): ?string {
 		switch ( $type ) {
 			case 'email':
-				return is_email( $value ) ? null : __( 'Please enter a valid email address.', 'animation-addons-for-elementor' );
+				return is_email( $value ) ? null : self::msg_or( $field, __( 'Please enter a valid email address.', 'animation-addons-for-elementor' ) );
 
 			case 'url':
-				return false !== filter_var( $value, FILTER_VALIDATE_URL ) ? null : __( 'Please enter a valid URL.', 'animation-addons-for-elementor' );
+				return false !== filter_var( $value, FILTER_VALIDATE_URL ) ? null : self::msg_or( $field, __( 'Please enter a valid URL.', 'animation-addons-for-elementor' ) );
 
 			case 'number':
-				return is_numeric( $value ) ? null : __( 'Please enter a number.', 'animation-addons-for-elementor' );
+				if ( ! is_numeric( $value ) ) {
+					return self::msg_or( $field, __( 'Please enter a number.', 'animation-addons-for-elementor' ) );
+				}
+				return self::check_range( (float) $value, $field );
 
 			case 'tel':
 				// Basic-format-only per spec's Free tier (real validation is a Pro adapter).
-				return preg_match( '/^\+?[0-9\-().\s]{3,30}$/', $value ) ? null : __( 'Please enter a valid phone number.', 'animation-addons-for-elementor' );
+				return preg_match( '/^\+?[0-9\-().\s]{3,30}$/', $value ) ? null : self::msg_or( $field, __( 'Please enter a valid phone number.', 'animation-addons-for-elementor' ) );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Number min/max from the schema snapshot — repeats the frontend's range
+	 * check so a crafted request can't store an out-of-range value.
+	 */
+	private static function check_range( float $value, array $field ): ?string {
+		$min = $field['min'] ?? '';
+		$max = $field['max'] ?? '';
+
+		if ( '' !== $min && is_numeric( $min ) && $value < (float) $min ) {
+			/* translators: %s: minimum allowed value */
+			return self::msg_or( $field, sprintf( __( 'Please enter a value of at least %s.', 'animation-addons-for-elementor' ), $min ) );
+		}
+
+		if ( '' !== $max && is_numeric( $max ) && $value > (float) $max ) {
+			/* translators: %s: maximum allowed value */
+			return self::msg_or( $field, sprintf( __( 'Please enter a value of at most %s.', 'animation-addons-for-elementor' ), $max ) );
 		}
 
 		return null;
@@ -215,6 +274,22 @@ final class Validator {
 		return $allowed;
 	}
 
+	/** Normalize a posted file-field value to [ ['id'=>int,'key'=>string], … ]. */
+	private static function file_refs( $value ): array {
+		$refs = [];
+
+		foreach ( is_array( $value ) ? $value : [] as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['id'], $entry['key'] ) ) {
+				$refs[] = [
+					'id'  => (int) $entry['id'],
+					'key' => is_string( $entry['key'] ) ? $entry['key'] : '',
+				];
+			}
+		}
+
+		return $refs;
+	}
+
 	private static function scalar( $value ): string {
 		if ( is_array( $value ) ) {
 			$value = reset( $value );
@@ -223,13 +298,20 @@ final class Validator {
 		return is_scalar( $value ) ? (string) $value : '';
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field custom messages (Validation Pro).
-	private static function msg_required( array $field ): string {
-		return __( 'This field is required.', 'animation-addons-for-elementor' );
+	/** The field's authored error message, or the given fallback — mirrors
+	 * the frontend's messageFor(): one custom message covers every failure
+	 * kind for that field. */
+	private static function msg_or( array $field, string $fallback ): string {
+		$custom = trim( (string) ( $field['error_message'] ?? '' ) );
+
+		return '' !== $custom ? $custom : $fallback;
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field custom messages (Validation Pro).
+	private static function msg_required( array $field ): string {
+		return self::msg_or( $field, __( 'This field is required.', 'animation-addons-for-elementor' ) );
+	}
+
 	private static function msg_invalid( array $field ): string {
-		return __( 'Please enter a valid value.', 'animation-addons-for-elementor' );
+		return self::msg_or( $field, __( 'Please enter a valid value.', 'animation-addons-for-elementor' ) );
 	}
 }

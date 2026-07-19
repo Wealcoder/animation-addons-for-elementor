@@ -160,6 +160,13 @@ const LoadingRows = ({ cols }) => (
 /* Submissions tab                                                     */
 /* ------------------------------------------------------------------ */
 
+/** "1.2 MB" style size for file-field download links. */
+const formatBytes = (bytes) => {
+  if (!bytes || bytes < 1024) return `${bytes || 0} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
 /** yyyy-mm-dd for "today minus N days" in the browser's local time. */
 const daysAgo = (n) => {
   const d = new Date();
@@ -527,7 +534,22 @@ const DetailSheet = ({ id, onClose }) => {
                 <div key={value.key} className="grid grid-cols-3 gap-2 border-b pb-2">
                   <span className="font-medium text-muted-foreground">{value.label}</span>
                   <span className="col-span-2 whitespace-pre-wrap break-words">
-                    {value.value || "—"}
+                    {value.files?.length ? (
+                      <span className="flex flex-col gap-1">
+                        {value.files.map((file) => (
+                          <a
+                            key={file.id}
+                            href={file.url}
+                            className="text-brand underline underline-offset-2 break-all"
+                          >
+                            {file.name}
+                            {file.size ? ` (${formatBytes(file.size)})` : ""}
+                          </a>
+                        ))}
+                      </span>
+                    ) : (
+                      value.value || "—"
+                    )}
                   </span>
                 </div>
               ))}

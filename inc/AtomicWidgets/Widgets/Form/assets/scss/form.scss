@@ -17,6 +17,29 @@
     cursor: pointer;
 }
 
+// Placeholder colour can't go through base styles (atomic has no
+// pseudo-element support): inherit each control's own Text Color (Style
+// panel) at reduced opacity, so changing Text Color moves the placeholder
+// too. Prefixed selectors stay in separate rules — one unknown pseudo in a
+// selector list would drop the whole rule.
+.aae-a-form-input::placeholder,
+.aae-a-form-textarea::placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
+.aae-a-form-input::-webkit-input-placeholder,
+.aae-a-form-textarea::-webkit-input-placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
+.aae-a-form-input::-moz-placeholder,
+.aae-a-form-textarea::-moz-placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
 // Status-message reveal (native e-form pattern): the message containers are
 // display:none via their base style; the form's form-state-{value} class —
 // set by the States toggle now, by the submit runtime in Milestone 5 —
@@ -44,8 +67,11 @@ form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aa
 // ---------------------------------------------------------------------
 
 // Inline field error, injected after the invalid control (or after the
-// checkbox row). aria-describedby links it to the field.
-.aae-form-field-error {
+// checkbox row / radio group / multi-select wrap). aria-describedby links it
+// to the field. :where() keeps every default at ZERO specificity so the
+// Field Error widget's mirrored style classes (base + panel styling) always
+// win regardless of stylesheet order.
+:where(.aae-form-field-error) {
     flex-basis: 100%;
     width: 100%;
     margin-top: -6px; // pull toward its field across the form's gap.
@@ -54,8 +80,12 @@ form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aa
     color: #870000;
 }
 
+// Invalid-control border. The runtime sets --aae-form-invalid-color on the
+// form from the Field Error element (its Border → Color if set, else its
+// text colour) — so styling the error message styles the border too.
+// !important stays: it must beat the control's own base/focus border-color.
 .aae-a-form .aae-form-invalid {
-    border-color: #870000 !important;
+    border-color: var(--aae-form-invalid-color, #870000) !important;
 }
 
 // Network/state copy (slow / offline / timeout / duplicate / rate-limit).
@@ -81,6 +111,138 @@ form[data-element_type="e-aae-a-form"].form-state-error [data-element_type="e-aa
 .aae-a-form-submit[aria-busy="true"] {
     opacity: 0.7;
     cursor: progress;
+}
+
+// ---------------------------------------------------------------------------
+// Checkbox multi-select (lib/multi-select.js enhances a native
+// select[multiple]). The real <select> stays for submit but is hidden; the
+// trigger button + panel below carry the UI. Kept visually close to the
+// native select so the element's Style-panel border/colour still reads
+// through where practical.
+// ---------------------------------------------------------------------------
+.aae-ms {
+    position: relative;
+    width: 100%;
+}
+
+// Hidden but still submittable + focusable (not display:none).
+.aae-ms-native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+// Scoped under .aae-ms and reset hard — themes/Elementor style bare
+// <button> (the trigger) with their primary colour otherwise (that's the
+// stray pink). These win on specificity + explicit values.
+.aae-ms .aae-ms-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: 10px;
+    font: inherit;
+    line-height: normal;
+    text-align: left;
+    text-transform: none;
+    letter-spacing: normal;
+    // Inherit the element's Style-panel Text Color + Background Color (the
+    // wrap copies them from the native <select> — see multi-select.js), so
+    // styling the Select in the panel tints the trigger too. Fallbacks keep
+    // it readable when unset.
+    color: inherit;
+    background: var(--aae-ms-bg, #fff);
+    background-image: none;
+    border: 1px solid #d6d5d5;
+    border-radius: 3px;
+    box-shadow: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    appearance: none;
+
+    &:hover,
+    &:focus,
+    &:active {
+        color: inherit;
+        background: var(--aae-ms-bg, #fff);
+        box-shadow: none;
+        outline: none;
+    }
+
+    &::after {
+        content: "";
+        width: 0;
+        height: 0;
+        margin-left: 8px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid currentColor;
+        opacity: 0.55;
+        flex-shrink: 0;
+    }
+}
+
+.aae-ms.aae-ms-open .aae-ms-trigger {
+    border-color: #706f6f;
+}
+
+.aae-ms-panel {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+    color: inherit;
+    background: var(--aae-ms-bg, #fff);
+    border: 1px solid #d6d5d5;
+    border-radius: 3px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.aae-ms.aae-ms-open .aae-ms-panel {
+    display: block;
+}
+
+// Clean text row — NO checkbox. Colour/background inherit so the element's
+// Style-panel Text Color tints the options and a Background Color fills the
+// row. A selected row shows a trailing check + a subtle tint.
+.aae-ms-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    &.aae-ms-selected {
+        background: rgba(0, 0, 0, 0.08);
+        font-weight: 600;
+
+        &::after {
+            content: "\2713"; // ✓
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+    }
 }
 
 @media (prefers-reduced-motion: no-preference) {

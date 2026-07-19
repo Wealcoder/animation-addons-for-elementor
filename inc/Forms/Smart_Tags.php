@@ -124,7 +124,24 @@ final class Smart_Tags {
 
 	private static function field_value( $value ): string {
 		if ( is_array( $value ) ) {
-			return implode( ', ', array_map( 'strval', $value ) );
+			$parts = [];
+
+			foreach ( $value as $item ) {
+				// File-field entries are [ 'id' => …, 'name' => …, 'size' => … ].
+				if ( is_array( $item ) ) {
+					$name = (string) ( $item['name'] ?? '' );
+					if ( '' === $name ) {
+						continue;
+					}
+					$size    = (int) ( $item['size'] ?? 0 );
+					$parts[] = $size > 0 ? $name . ' (' . size_format( $size ) . ')' : $name;
+					continue;
+				}
+
+				$parts[] = (string) $item;
+			}
+
+			return implode( ', ', $parts );
 		}
 
 		return (string) $value;

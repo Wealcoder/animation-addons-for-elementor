@@ -68,7 +68,7 @@ const BRAND_GRADIENT = "linear-gradient(135deg, #FFA184 0%, #F2754F 100%)";
 const BRAND_TINT = "rgba(246, 80, 44, 0.12)";
 
 const DEFAULT_CONFIG = {
-  admin_email: { enabled: true, to: "", cc: "", bcc: "", reply_to: "", subject: "", body: "" },
+  admin_email: { enabled: true, to: "", cc: "", bcc: "", reply_to: "", subject: "", body: "", attach_files: true },
   auto_reply: { enabled: false, subject: "", body: "", include_copy: false },
   webhook: { enabled: false, url: "" },
   redirect: { enabled: false, url: "" },
@@ -502,6 +502,33 @@ const TagField = ({ label, value, onChange, placeholder, multiline, fieldTags })
 export function FormActionsControl({ label }) {
   const { element } = useElement();
   const [open, setOpen] = useState(false);
+  // Drag offset of the dialog paper — kept in a ref (not state) so moving
+  // the dialog never re-renders the form inside it.
+  const dragPos = React.useRef({ x: 0, y: 0 });
+
+  /** Drag the dialog by its title bar. */
+  const startDrag = (event) => {
+    if (event.target.closest("button, input, textarea, a")) {
+      return;
+    }
+    const paper = event.currentTarget.closest(".MuiDialog-paper");
+    if (!paper) {
+      return;
+    }
+    event.preventDefault(); // no text selection while dragging
+    const startX = event.clientX - dragPos.current.x;
+    const startY = event.clientY - dragPos.current.y;
+    const onMove = (e) => {
+      dragPos.current = { x: e.clientX - startX, y: e.clientY - startY };
+      paper.style.transform = `translate(${dragPos.current.x}px, ${dragPos.current.y}px)`;
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [fieldTags, setFieldTags] = useState([]);
   const [notice, setNotice] = useState(null); // { severity, text }
@@ -554,6 +581,7 @@ export function FormActionsControl({ label }) {
   };
 
   const openDialog = () => {
+    dragPos.current = { x: 0, y: 0 }; // fresh paper each open — start undragged
     const container = getContainer(element.id);
     setConfig(readConfig(container));
     setFieldTags(collectFieldTags(container));
@@ -652,14 +680,17 @@ export function FormActionsControl({ label }) {
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        maxWidth="xs"
+        maxWidth="sm"
         fullWidth
         // Anchor next to the editing panel (left) instead of centering —
         // keeps the canvas visible while configuring actions.
         sx={{ "& .MuiDialog-container": { justifyContent: "flex-start" } }}
         PaperProps={{ sx: { ml: "310px", maxHeight: "calc(100% - 48px)" } }}
       >
-        <DialogTitle sx={{ pb: 1.5 }}>
+        <DialogTitle
+          onPointerDown={startDrag}
+          sx={{ pb: 1.5, cursor: "move", userSelect: "none", touchAction: "none" }}
+        >
           <Stack direction="row" alignItems="center" gap={1.5}>
             <Stack
               alignItems="center"
@@ -799,6 +830,16 @@ export function FormActionsControl({ label }) {
                 fieldTags={fieldTags}
                 onChange={(v) => patch("admin_email", "body", v)}
               />
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="caption">
+                  {__("Attach uploaded files (up to 20 MB total)", TD)}
+                </Typography>
+                <Switch
+                  size="small"
+                  checked={config.admin_email.attach_files !== false}
+                  onChange={(e) => patch("admin_email", "attach_files", e.target.checked)}
+                />
+              </Stack>
               <Button size="small" variant="text" disabled={busy === "email"} onClick={testEmail}>
                 {busy === "email" ? __("Sending…", TD) : __("Send Test Email", TD)}
               </Button>

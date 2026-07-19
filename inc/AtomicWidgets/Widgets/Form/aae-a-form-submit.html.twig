@@ -7,9 +7,10 @@
 {% set classes = ['aae-a-form-submit', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set allowed_tags = '<b><strong><sup><sub><s><em><i><u><del><span><br>' %}
 
+{% set btn_type = settings.button_type | default('submit') %}
 <button
     class="{{ classes }} {{ editor_classes | default('') }}"
-    type="submit"
+    type="{{ btn_type == 'reset' ? 'reset' : 'submit' }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"

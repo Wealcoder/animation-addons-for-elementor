@@ -18,6 +18,7 @@
     {% if settings.value is defined and settings.value is not empty %}value="{{ settings.value | e('html_attr') }}"{% endif %}
     {% if settings.required %}required aria-required="true"{% endif %}
     {% if settings.checked %}checked{% endif %}
+    {% if settings.error_message is defined and settings.error_message is not empty %}data-aae-error-message="{{ settings.error_message | e('html_attr') }}"{% endif %}
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}
 />

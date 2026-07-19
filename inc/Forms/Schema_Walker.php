@@ -37,6 +37,7 @@ final class Schema_Walker {
 		'e-aae-a-form-checkbox' => 'checkbox',
 		'e-aae-a-form-radio'    => 'radio',
 		'e-aae-a-form-select'   => 'select',
+		'e-aae-a-form-file'     => 'file',
 	];
 
 	/** Build the canonical schema array for one form element. */
@@ -142,12 +143,19 @@ final class Schema_Walker {
 			'css_id'     => $css_id,
 			'label'      => '',
 			'required'   => (bool) Prop::read( $settings, 'required', false ),
+			// Per-field custom error message — the server echoes it on a 422
+			// so backend errors read the same as the frontend's.
+			'error_message' => (string) Prop::read( $settings, 'error_message', '' ),
 		];
 
 		switch ( $field_type ) {
 			case 'input':
 			case 'textarea':
 				$field['placeholder'] = (string) Prop::read( $settings, 'placeholder', '' );
+				// Range rules for number inputs — enforced server-side by the
+				// Validator, never trusted from client attributes.
+				$field['min'] = (string) Prop::read( $settings, 'min', '' );
+				$field['max'] = (string) Prop::read( $settings, 'max', '' );
 				break;
 			case 'checkbox':
 			case 'radio':
@@ -156,6 +164,14 @@ final class Schema_Walker {
 			case 'select':
 				$field['options']  = (string) Prop::read( $settings, 'options', '' );
 				$field['multiple'] = (bool) Prop::read( $settings, 'multiple', false );
+				break;
+			case 'file':
+				// Upload rules the server enforces (accept/max_size come from
+				// the SCHEMA at upload time, never from client attributes).
+				$field['accept']    = (string) Prop::read( $settings, 'accept', '' );
+				$field['max_size']  = (float) Prop::read( $settings, 'max_size', 0 );
+				$field['multiple']  = (bool) Prop::read( $settings, 'multiple', false );
+				$field['max_files'] = (int) Prop::read( $settings, 'max_files', 0 );
 				break;
 		}
 
