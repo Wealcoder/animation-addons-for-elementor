@@ -59,10 +59,10 @@ const AUTO_PRESETS = {
   // These widgets carry no marker class on their default children, so
   // "still default" is decided structurally instead — the exact multiset of
   // child types define_default_children() seeds. See matchesDefaultShape().
-  'e-aae-a-btn': {
-    presetId: 'button-free-default-divide-div',
-    isDefault: (container) => matchesDefaultShape(container, ['e-paragraph', 'e-svg']),
-  },
+  // 'e-aae-a-btn': {
+  //   presetId: 'button-free-default-divide-div',
+  //   isDefault: (container) => matchesDefaultShape(container, ['e-paragraph', 'e-svg']),
+  // },
   'e-aae-a-timeline': {
     presetId: 'timeline-social',
     isDefault: (container) => matchesDefaultShape(container, Array(4).fill('e-aae-a-timeline-item')),
