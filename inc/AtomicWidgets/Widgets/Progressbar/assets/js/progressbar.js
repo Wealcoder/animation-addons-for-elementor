@@ -1,8 +1,8 @@
 import { register } from '@elementor/frontend-handlers';
 import '../scss/progressbar.scss';
 
-const DURATION           = 1400;
-const CIRCLE_RADIUS      = 40;
+const DURATION             = 1400;
+const CIRCLE_RADIUS        = 40;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS; // ≈ 251.327
 
 /**
@@ -18,6 +18,71 @@ function animateCounter( el, to, duration ) {
 	} )( performance.now() );
 }
 
+function easeInOutQuad( t ) {
+	return t < 0.5 ? 2 * t * t : 1 - Math.pow( -2 * t + 2, 2 ) / 2;
+}
+
+function animateWidth( el, toPercent, duration ) {
+	el.style.transition = 'none';
+	el.style.width       = '0%';
+	const startTime = performance.now();
+	( function tick( now ) {
+		const progress = Math.min( ( now - startTime ) / duration, 1 );
+		el.style.width = ( easeInOutQuad( progress ) * toPercent ) + '%';
+		if ( progress < 1 ) requestAnimationFrame( tick );
+	} )( performance.now() );
+}
+
+/** Run the actual reveal — called once the progress bar scrolls into view. */
+function playProgressBar( el ) {
+	const pct     = parseFloat( el.dataset.pbPercentage || 50 ) / 100;
+	const showPct = el.dataset.pbDisplayPercentage === 'true';
+	const pctEl   = showPct ? el.querySelector( '.aae-pb-pct' ) : null;
+
+	// ── Circle ───────────────────────────────────────────────────────────
+	const path = el.querySelector( '.aae-progressbar-path' );
+	if ( path ) {
+		path.style.transition       = 'none';
+		path.style.strokeDasharray  = String( CIRCLE_CIRCUMFERENCE );
+		path.style.strokeDashoffset = String( CIRCLE_CIRCUMFERENCE );
+		requestAnimationFrame( () => {
+			path.style.transition = '';
+			requestAnimationFrame( () => {
+				path.style.strokeDashoffset = String( CIRCLE_CIRCUMFERENCE * ( 1 - pct ) );
+			} );
+		} );
+
+		if ( pctEl ) animateCounter( pctEl, Math.round( pct * 100 ), DURATION );
+		return;
+	}
+
+	// ── Dot ──────────────────────────────────────────────────────────────
+	const dots = el.querySelectorAll( '.aae-progressbar-dot' );
+	if ( dots.length ) {
+		const active = Math.round( pct * dots.length );
+		dots.forEach( ( dot, i ) => {
+			setTimeout( () => {
+				if ( i < active ) {
+					dot.style.backgroundColor = getComputedStyle( dot ).borderColor;
+					dot.style.opacity = '1';
+				} else {
+					dot.style.backgroundColor = '';
+					dot.style.opacity = '';
+				}
+			}, i * 150 );
+		} );
+		return;
+	}
+
+	// ── Line ─────────────────────────────────────────────────────────────
+	const fill = el.querySelector( '.aae-progressbar-fill' );
+	if ( ! fill ) return;
+
+	animateWidth( fill, pct * 100, DURATION );
+
+	if ( pctEl ) animateCounter( pctEl, Math.round( pct * 100 ), DURATION );
+}
+
 register( {
 	elementType: 'e-aae-a-progressbar',
 	id:          'e-aae-a-progressbar-handler',
@@ -25,70 +90,26 @@ register( {
 		const el = element;
 		if ( ! el ) return;
 
-		const type        = el.dataset.pbType    || 'line';
-		const pct         = parseFloat( el.dataset.pbPercentage || 50 ) / 100;
-		const showPct     = el.dataset.pbDisplayPercentage === 'true';
-		const pctEl       = showPct ? el.querySelector( '.aae-pb-pct' ) : null;
-		const trackHeight = parseFloat( el.dataset.pbTrackHeight || 8 );
-		const strokeWidth = parseFloat( el.dataset.pbStrokeWidth || 10 );
-
-		// Apply configurable values as CSS custom properties.
-		el.style.setProperty( '--aae-pb-track-height', trackHeight + 'px' );
-		el.style.setProperty( '--aae-pb-stroke-width', String( strokeWidth ) );
-
-		// ── Dot ──────────────────────────────────────────────────────────────
-		if ( type === 'dot' ) {
-			const dots   = el.querySelectorAll( '.dot' );
-			const active = Math.round( pct * dots.length );
-			dots.forEach( ( dot, i ) => {
-				setTimeout( () => dot.classList.toggle( 'active', i < active ), i * 150 );
-			} );
+		// Fire the reveal once the bar actually enters the viewport — by
+		// scrolling down to it, or because it's already in view on a fresh
+		// page load/refresh (IntersectionObserver reports that immediately
+		// on observe(), so both cases are covered by the same code path).
+		if ( typeof IntersectionObserver === 'undefined' ) {
+			playProgressBar( el );
 			return;
 		}
 
-		// ── Circle ───────────────────────────────────────────────────────────
-		if ( type === 'circle' ) {
-			const path = el.querySelector( '.progressbar-path' );
-			if ( ! path ) return;
+		const observer = new IntersectionObserver( ( entries, obs ) => {
+			for ( const entry of entries ) {
+				if ( entry.isIntersecting ) {
+					playProgressBar( el );
+					obs.disconnect();
+				}
+			}
+		}, { threshold: 0.3 } );
 
-			// Reset for clean editor re-runs, then animate.
-			path.style.transition      = 'none';
-			path.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE;
-			requestAnimationFrame( () => {
-				path.style.transition      = '';
-				requestAnimationFrame( () => {
-					path.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE * ( 1 - pct );
-				} );
-			} );
+		observer.observe( el );
 
-			if ( pctEl ) animateCounter( pctEl, Math.round( pct * 100 ), DURATION );
-			return;
-		}
-
-		// ── Line ─────────────────────────────────────────────────────────────
-		const fill = el.querySelector( '.progressbar-fill' );
-		if ( ! fill ) return;
-
-		// Elementor's frontend CSS shrinks the span to its natural content width, so
-		// width:100% computes to the span's own text width rather than the container.
-		// translateX(-50%) centres without depending on any percentage-based width.
-		if ( pctEl ) {
-			pctEl.style.position  = 'absolute';
-			pctEl.style.top       = '0';
-			pctEl.style.left      = '50%';
-			pctEl.style.transform = 'translateX(-50%)';
-		}
-
-		// Reset for clean editor re-runs, then animate.
-		fill.style.transition = 'none';
-		fill.style.width      = '0%';
-		requestAnimationFrame( () => {
-			fill.style.transition = '';
-			requestAnimationFrame( () => {
-				fill.style.width = ( pct * 100 ) + '%';
-			} );
-		} );
-
-		if ( pctEl ) animateCounter( pctEl, Math.round( pct * 100 ), DURATION );
+		return () => observer.disconnect();
 	},
 } );

@@ -15,6 +15,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
 require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
@@ -132,8 +134,26 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Bare-drop structural CSS moved out of the external nav.scss into the
+	 * element's own base style (atomic optimization: each element ships the CSS
+	 * it needs). `position: relative` gives the menu a positioning context;
+	 * `overflow: visible` lets future dropdowns escape. Emitted WITHOUT
+	 * `!important` (base styles never do) so the user's Style tab always wins —
+	 * safe here because nothing else sets position/overflow on this element.
+	 * The bare 'base' key also feeds the Twig root its scope class.
+	 * NOTE: `min-height: unset` stays in nav.scss — `unset` is not expressible
+	 * as an atomic Size prop.
+	 */
 	protected function define_base_styles(): array {
-		return [];
+		return [
+			'base' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
+						->add_prop( 'overflow', String_Prop_Type::generate( 'visible' ) )
+				),
+		];
 	}
 
 	protected function define_default_children() {

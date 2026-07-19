@@ -298,7 +298,7 @@ const initAccordion = (container) => {
     installDelegatedToggle(container.ownerDocument);
     distributeAll(container);
     applyDefaultState(container);
-    observeContainer(container);
+    serveContainer(container);
 };
 
 register({

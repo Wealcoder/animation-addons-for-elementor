@@ -18,7 +18,41 @@ import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
-import lightboxStyleSection from './extensions/lightbox-style/config';
+
+/* ---------------------------------------------------------------------------
+ * Editor-only crash guard for Elementor v4's colour-picker (MUI Popover).
+ *
+ * Opening the Style-tab colour picker and interacting with it can throw
+ * `NotFoundError: Failed to execute 'removeChild' … not a child` from deep
+ * inside react-dom's commit phase (the popover is a React portal; React tries
+ * to remove a portal node the DOM no longer parents). A console diagnostic
+ * confirmed the crash stack is 100% react-dom with NO AAE frame and NO AAE
+ * document command running while the popover is open — i.e. it originates in
+ * Elementor/MUI core, not this plugin. Until core fixes it, make removeChild /
+ * insertBefore no-op instead of throwing when the node isn't actually parented
+ * by the target. This is the well-known React #11538 guard; it loads only in
+ * the editor (this bundle is editor-only) and never ships to the frontend.
+ * ------------------------------------------------------------------------- */
+( function guardReactPortalDomOps() {
+	if ( typeof Node !== 'function' || ! Node.prototype || Node.prototype.__aaeDomGuard ) {
+		return;
+	}
+	Node.prototype.__aaeDomGuard = true;
+
+	/* ONLY removeChild is guarded. A no-op removeChild is safe: it fires only
+	 * when the node is already not parented by the target (the exact crash
+	 * case), so the intended removal is effectively already done. We do NOT
+	 * guard insertBefore — a no-op insert would DROP a node React needs, which
+	 * broke selection/style rendering. The reported crash was removeChild. */
+	const originalRemoveChild = Node.prototype.removeChild;
+	Node.prototype.removeChild = function ( child ) {
+		if ( child && child.parentNode !== this ) {
+			return child;
+		}
+		return originalRemoveChild.apply( this, arguments );
+	};
+} )();
+
 /* =====================================================================
  * Responsive sections (one section per AAE extension)
  *
@@ -51,7 +85,6 @@ registerResponsiveSection( tilt );
 registerResponsiveSection( scrollTo );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
-registerResponsiveSection( lightboxStyleSection );
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the
@@ -86,14 +119,18 @@ import { getPreviewWindow } from './editor-bridge/helpers';
 import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './editor-bridge/settings-bridge';
 import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
-
-let bootstrapped = false;
+import { startAutoPreset } from './editor-bridge/auto-preset';
+import { startFormGuards } from './editor-bridge/form-guards';
 
 function bootstrap() {
-	if (bootstrapped) {
-		bootstrapped = false;
-	}
-	bootstrapped = true;
+	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
+	// responsive-mode changes, etc. Each bootstrap installs observers + heartbeats
+	// + teardown callbacks; running it again without tearing down the previous run
+	// left MULTIPLE live instances, and a stale instance's teardown/prune (bound to
+	// the OLD preview window) would remove the current run's toggle button ~200ms
+	// after it was injected → the button BLINKED. So dispose the previous run
+	// first, giving us exactly one clean set of instances per preview load.
+	disposeAll();
 
 	// Selecting a slide (Structure panel, canvas, anywhere) drives the preview
 	// slider to it — same as clicking its row in the panel's "Slides" list.
@@ -102,6 +139,14 @@ function bootstrap() {
 	// Loop Grid Slider has no query in the editor (one authored slide), so
 	// duplicate that slide client-side for a realistic multi-up / effect preview.
 	startSliderEditorPreview();
+
+	// Apply a default preset the first time certain widgets (Loop Grid Slider) are
+	// dropped, so they land styled instead of as a bare Post Image + Title card.
+	startAutoPreset();
+
+	// Save-time warnings: form without a Submit button / nested forms
+	// (spec hard rules — warn, never block the save).
+	startFormGuards();
 }
 
 if (window.elementor && window.elementor.on) {

@@ -1224,10 +1224,82 @@ class WPML_Manager
 			 */
 			'wcf--floating-elements' => [],
 
-			/**
-			 * Loop Grid Widget (no fields)
-			 */
 			'aae--loop-grid' => [],
+
+			/**
+			 * Advanced Pricing Table Widget
+			 */
+			'wcf--a-pricing-table' => [
+				'conditions' => [ 'widgetType' => 'wcf--a-pricing-table' ],
+				'fields'     => [
+
+					/* Header */
+					[
+						'field'       => 'title',
+						'type'        => esc_html__( 'Advanced Pricing Table: Title', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+					[
+						'field'       => 'sub_title',
+						'type'        => esc_html__( 'Advanced Pricing Table: Sub Title', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					[
+						'field'       => 'currency_symbol_custom',
+						'type'        => esc_html__( 'Advanced Pricing Table: Currency Symbol', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					[
+						'field'       => 'price',
+						'type'        => esc_html__( 'Advanced Pricing Table: Price', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					[
+						'field'       => 'original_price',
+						'type'        => esc_html__( 'Advanced Pricing Table: Original Price', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					[
+						'field'       => 'period',
+						'type'        => esc_html__( 'Advanced Pricing Table: Period', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+					
+					/* Features */
+					[
+						'field'       => 'feature_title',
+						'type'        => esc_html__( 'Advanced Pricing Table: Features Title', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					// Button Text
+					[
+						'field'       => 'btn_text',
+						'type'        => esc_html__( 'Advanced Pricing Table: Button Text', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+
+					// Button Link
+					[
+						'field'       => 'btn_link',
+						'type'        => esc_html__( 'Advanced Pricing Table: Button Link', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINK',
+					],
+
+					/* Ribbon */
+					[
+						'field'       => 'ribbon_title',
+						'type'        => esc_html__( 'Advanced Pricing Table: Ribbon Title', 'animation-addons-for-elementor' ),
+						'editor_type' => 'LINE',
+					],
+				],
+				
+				'integration-class' => [ 'WCF_ADDONS\INC\WPML\WIDGET\Pricing_Table',]
+			],
 		];
 
 		/**

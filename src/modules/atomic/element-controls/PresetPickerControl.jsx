@@ -10,166 +10,29 @@
  * This is an ACTION control, not a prop-bound control: it carries no stored
  * value. It lists the bundled presets for the selected element's type and, on
  * choosing one, REPLACES the selected element in place with the preset's design
- * (settings + styles + children). Presets are authored as Elementor exports;
- * a preset whose root is a flex/container is UNWRAPPED — its children are placed
- * at the selected element's position, the wrapper dropped.
+ * (settings + styles + children). A special "Reset to Default" entry rebuilds the
+ * element with its plain default children instead of a preset.
+ *
+ * The heavy lifting (sanitize / unwrap / regenerate style ids / type-rewrite /
+ * replace-in-place) lives in ./preset-apply.js so the editor's auto-preset module
+ * can reuse the exact same transform.
  *
  * Presets are provided by PHP as window.AAE_WIDGET_PRESETS, keyed by element
- * type (e.g. 'e-aae-a-advanced-heading'). See class-atomic.php::get_widget_presets().
- *
- * Uses the proper @elementor/editor-elements helpers (createElements /
- * removeElements / getContainer) rather than raw $e.run, matching SlidesControl.
+ * type. See class-atomic.php::get_widget_presets().
  */
 
 import * as React from "react";
-import {
-  createElements,
-  getContainer,
-  removeElements,
-  selectElement,
-} from "@elementor/editor-elements";
 import { useElement } from "@elementor/editor-editing-panel";
 import { Stack, Typography, MenuItem, Select } from "@elementor/ui";
 
-// Container element types whose wrapper is unwrapped on apply.
-const CONTAINER_TYPES = ["e-flexbox", "e-div-block", "e-grid", "container"];
+import {
+  getPresetsForType,
+  applyPresetModel,
+} from "./preset-apply";
+import { DEFAULT_CHILD_MODELS, applyResetToDefault } from "./preset-defaults";
 
-function getPresetsForType(type) {
-  const all = window.AAE_WIDGET_PRESETS;
-  if (!all || typeof all !== "object") {
-    return [];
-  }
-  const list = all[type];
-  return Array.isArray(list) ? list : [];
-}
-
-function isContainerModel(model) {
-  const type = model.widgetType || model.elType;
-  return CONTAINER_TYPES.indexOf(type) !== -1;
-}
-
-/**
- * Sanitize a preset model so it passes Elementor's save-time style validation.
- *
- * Elementor's Image_Src prop enforces an XOR rule: an image source may carry an
- * attachment `id` OR a `url`, but NOT both. Native exports routinely include
- * both (id + cached url), which renders fine in the editor but is REJECTED on
- * publish with "...background: invalid_value". We walk the whole model and, for
- * every image-src that has both, drop the `url` (the attachment id is the source
- * of truth; WP regenerates the url from it).
- *
- * Generic deep walk so it covers image-src anywhere — background overlays,
- * settings, nested children, any depth.
- */
-function sanitizeImageSrc(node) {
-  if (Array.isArray(node)) {
-    node.forEach(sanitizeImageSrc);
-    return;
-  }
-  if (!node || typeof node !== "object") {
-    return;
-  }
-
-  if (node.$$type === "image-src" && node.value && typeof node.value === "object") {
-    const src = node.value;
-    const hasId = src.id && src.id.value !== undefined && src.id.value !== null && src.id.value !== "";
-    const hasUrl =
-      src.url &&
-      (typeof src.url.value === "string"
-        ? src.url.value !== ""
-        : src.url.value !== undefined && src.url.value !== null);
-    // XOR: keep id, drop url when both are present.
-    if (hasId && hasUrl) {
-      delete src.url;
-    }
-  }
-
-  Object.keys(node).forEach((key) => {
-    const child = node[key];
-    if (child && typeof child === "object") {
-      sanitizeImageSrc(child);
-    }
-  });
-}
-
-/**
- * Generate a fresh, collision-resistant local style id.
- * Mirrors Elementor's getRandomStyleId shape: e-<rand>-<rand>.
- */
-function randomStyleId() {
-  const rand = () => Math.random().toString(36).slice(2, 9);
-  return `e-${rand()}-${rand()}`;
-}
-
-/**
- * Recursively regenerate every element's LOCAL style ids in a preset model and
- * rewrite the matching `classes` references, so applying the same styled preset
- * to multiple widgets never shares (collides on) style-id classes.
- *
- * Elementor only auto-regenerates style ids on paste/import/duplicate hooks —
- * not on `create` — so we do it here before createElements(). Mirrors
- * modules/atomic-widgets/.../regenerate-local-style-ids.js.
- */
-function regenerateModelStyleIds(model) {
-  if (!model || typeof model !== "object") {
-    return model;
-  }
-
-  const styles = model.styles;
-  if (styles && typeof styles === "object" && !Array.isArray(styles)) {
-    const changed = {};
-    const newStyles = {};
-
-    Object.keys(styles).forEach((oldId) => {
-      const newId = randomStyleId();
-      changed[oldId] = newId;
-      newStyles[newId] = { ...styles[oldId], id: newId };
-    });
-
-    model.styles = newStyles;
-
-    // Rewrite settings.classes that referenced the old ids.
-    const classesProp = model.settings && model.settings.classes;
-    if (
-      classesProp &&
-      classesProp.$$type === "classes" &&
-      Array.isArray(classesProp.value)
-    ) {
-      classesProp.value = classesProp.value.map((cls) => changed[cls] || cls);
-    }
-  }
-
-  if (Array.isArray(model.elements)) {
-    model.elements.forEach(regenerateModelStyleIds);
-  }
-
-  return model;
-}
-
-/**
- * Resolve the selected element's parent container + its index within it, using
- * the V1 container model (not the DOM), matching how SlidesControl works.
- */
-function getParentAndIndex(elementId) {
-  const container = getContainer(elementId);
-  const parent = container?.parent || null;
-  if (!parent) {
-    return { parent: null, index: 0 };
-  }
-
-  let index = 0;
-  const children = parent.model?.get?.("elements");
-  if (children?.each) {
-    let i = 0;
-    children.each((child) => {
-      if (child.get("id") === elementId) {
-        index = i;
-      }
-      i += 1;
-    });
-  }
-  return { parent, index };
-}
+// The sentinel value for the "Reset to Default" menu entry (not a preset id).
+const RESET_VALUE = "__aae_reset_default__";
 
 export function PresetPickerControl({ label }) {
   const { element } = useElement();
@@ -177,83 +40,24 @@ export function PresetPickerControl({ label }) {
   const type = element.type || element.model?.get?.("elType");
 
   const presets = getPresetsForType(type);
+  const canReset = !!DEFAULT_CHILD_MODELS[type];
 
-  const applyPreset = (preset) => {
-    if (!preset?.model) {
+  const onPick = (value) => {
+    if (value === RESET_VALUE) {
+      applyResetToDefault(elementId, type);
       return;
     }
-
-    const { parent, index } = getParentAndIndex(elementId);
-    if (!parent) {
-      return;
-    }
-
-    // Unwrap: a flex/container preset applies its children; otherwise itself.
-    const root = JSON.parse(JSON.stringify(preset.model));
-    const models = isContainerModel(root)
-      ? Array.isArray(root.elements)
-        ? root.elements
-        : []
-      : [root];
-
-    if (!models.length) {
-      return;
-    }
-
-    // Regenerate local style ids so applying the same styled preset multiple
-    // times never shares (collides on) style-id classes. `create` does NOT
-    // auto-regenerate style ids (only paste/import/duplicate hooks do), so we
-    // do it explicitly here. Element ids are intentionally NOT pre-assigned:
-    // Elementor's create command ignores any model.id and mints its own, so we
-    // capture the real ids from the command result instead (see below).
-    const elementsToCreate = models.map((child, i) => {
-      const model = JSON.parse(JSON.stringify(child));
-      delete model.id;
-      regenerateModelStyleIds(model);
-      sanitizeImageSrc(model);
-      return {
-        container: parent,
-        model,
-        options: { at: index + i, clone: true },
-      };
-    });
-
-    // createElements() executes immediately and returns { createdElements: [...] },
-    // each entry carrying the REAL containerId Elementor assigned. We need the
-    // first one so we can re-select it after removing the original — otherwise
-    // the panel goes blank (nothing selected) once the original is gone.
-    const result = createElements({
-      title: "Preset",
-      subtitle: `Applied "${preset.name}"`,
-      elements: elementsToCreate,
-    });
-
-    const firstNewId =
-      result &&
-      Array.isArray(result.createdElements) &&
-      result.createdElements[0]
-        ? result.createdElements[0].containerId
-        : null;
-
-    // Replace in place: remove the original after the preset children are added.
-    removeElements({
-      elementIds: [elementId],
-      title: "Preset",
-      subtitle: "Replaced element",
-    });
-
-    // Re-select the first newly created element so the editing panel stays on a
-    // valid target instead of going blank after the original is removed.
-    if (firstNewId) {
-      try {
-        selectElement(firstNewId);
-      } catch (_) {
-        /* selection is best-effort; ignore if the container isn't ready */
-      }
+    const preset = presets.find((p) => p.id === value);
+    if (preset?.model) {
+      applyPresetModel(preset.model, elementId, type, {
+        title: "Preset",
+        subtitle: `Applied "${preset.name}"`,
+      });
     }
   };
 
-  if (!presets.length) {
+  // Nothing to offer at all — no presets AND no reset target.
+  if (!presets.length && !canReset) {
     return null;
   }
 
@@ -269,16 +73,14 @@ export function PresetPickerControl({ label }) {
         size="tiny"
         displayEmpty
         value=""
-        onChange={(e) => {
-          const preset = presets.find((p) => p.id === e.target.value);
-          if (preset) {
-            applyPreset(preset);
-          }
-        }}
+        onChange={(e) => onPick(e.target.value)}
       >
         <MenuItem value="" disabled>
           {"Apply a preset…"}
         </MenuItem>
+        {canReset && (
+          <MenuItem value={RESET_VALUE}>{"Reset to Default (clear styles)"}</MenuItem>
+        )}
         {presets.map((p) => (
           <MenuItem key={p.id} value={p.id}>
             {p.name}
