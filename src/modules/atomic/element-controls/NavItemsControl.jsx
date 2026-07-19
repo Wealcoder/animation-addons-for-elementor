@@ -51,6 +51,18 @@ const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
 
+/* Compact action-icon button for the menu-item rows. The default IconButton
+ * padding makes four icons + the level badge overflow to a second line once
+ * the Elementor panel narrows to ~300px; a fixed 20px box with minimal padding
+ * keeps every row on a single line. */
+const NAV_ROW_ICON_SX = {
+	flexShrink: 0,
+	p: '2px',
+	width: 20,
+	height: 20,
+	minWidth: 20,
+};
+
 const prop = ( type, value ) => ( { $$type: type, value } );
 
 function readProp( value, fallback = '' ) {
@@ -970,7 +982,9 @@ export function NavItemsControl( { label } ) {
 	const navId = element.id;
 
 	const tree = useNavTree( navId );
-	const INDENT = 18;
+	/* Tight indent so deeply-nested rows still fit the ~300px panel without the
+	 * title wrapping or the action icons overflowing to a second line. */
+	const INDENT = 12;
 
 	const [ expandedId, setExpandedId ] = React.useState( null );
 	const [ dragId, setDragId ]         = React.useState( null );
@@ -1248,47 +1262,53 @@ export function NavItemsControl( { label } ) {
 								<Stack
 									direction="row"
 									alignItems="center"
-									gap={ 0.5 }
-									sx={ { px: 1, py: 0.7, userSelect: 'none' } }
+									gap={ 0.25 }
+									sx={ { px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
 								>
 									<Box component="span" aria-hidden
-										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 14, lineHeight: 1 } }>
+										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
 										⠿
 									</Box>
 									<Typography variant="caption"
-										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, minWidth: 38 } }>
-										{ row.depth === 0 ? 'MAIN' : `L${ row.depth }` }
+										title={ row.depth === 0 ? 'Main item' : `Level ${ row.depth }` }
+										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, fontSize: 10, minWidth: 14, flexShrink: 0, textAlign: 'center' } }>
+										{ row.depth === 0 ? 'M' : `L${ row.depth }` }
 									</Typography>
 									<Typography
 										variant="body2"
+										noWrap
 										onClick={ () => handleRowActivate( row ) }
-										sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400, cursor: 'pointer' } }
+										sx={ { flex: 1, minWidth: 0, fontSize: 12, fontWeight: isExpanded ? 600 : 400, cursor: 'pointer' } }
 									>
 										{ row.title }
 									</Typography>
 									<Tooltip title="Edit settings">
 										<IconButton size="tiny" aria-label="Edit item settings"
+											sx={ NAV_ROW_ICON_SX }
 											onClick={ ( e ) => { e.stopPropagation(); setExpandedId( isExpanded ? null : row.id ); } }>
-											<span style={ { fontSize: 13, lineHeight: 1 } }>✎</span>
+											<span style={ { fontSize: 11, lineHeight: 1 } }>✎</span>
 										</IconButton>
 									</Tooltip>
 									<Tooltip title="Add child">
 										<IconButton size="tiny" aria-label="Add child item"
+											sx={ NAV_ROW_ICON_SX }
 											onClick={ ( e ) => { e.stopPropagation(); handleAddChild( row ); } }>
-											<span style={ { fontSize: 15, lineHeight: 1 } }>＋</span>
+											<span style={ { fontSize: 13, lineHeight: 1 } }>＋</span>
 										</IconButton>
 									</Tooltip>
 									<Tooltip title="Duplicate">
 										<IconButton size="tiny" aria-label="Duplicate menu item"
+											sx={ NAV_ROW_ICON_SX }
 											onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
-											<span style={ { fontSize: 13, lineHeight: 1 } }>⧉</span>
+											<span style={ { fontSize: 11, lineHeight: 1 } }>⧉</span>
 										</IconButton>
 									</Tooltip>
 									{ tree.length > 1 && (
 										<Tooltip title="Remove">
 											<IconButton size="tiny" aria-label="Remove menu item"
+												sx={ NAV_ROW_ICON_SX }
 												onClick={ ( e ) => { e.stopPropagation(); handleRemove( row ); } }>
-												<span style={ { fontSize: 14, lineHeight: 1 } }>×</span>
+												<span style={ { fontSize: 12, lineHeight: 1 } }>×</span>
 											</IconButton>
 										</Tooltip>
 									) }
