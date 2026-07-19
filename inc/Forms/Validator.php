@@ -95,6 +95,42 @@ final class Validator {
 					$clean[ $key ] = $multiple ? array_values( $values ) : $values[0];
 					break;
 
+				case 'file':
+					// Value is a list of pre-upload refs [{id,key},…] — the
+					// files themselves were already validated and stored by
+					// the uploads endpoint; here we verify the refs belong to
+					// THIS form and are still unclaimed, then normalize to
+					// [{id,name,size},…] for storage. Claiming happens after
+					// the submission row exists (Uploads::claim_for_submission).
+					$refs = self::file_refs( $value );
+
+					if ( empty( $refs ) ) {
+						if ( $field['required'] ) {
+							$errors[ $key ] = self::msg_required( $field );
+						}
+						break;
+					}
+
+					$max_files = ! empty( $field['multiple'] ) ? max( 1, (int) ( $field['max_files'] ?? 0 ) ) : 1;
+					if ( 0 === (int) ( $field['max_files'] ?? 0 ) && ! empty( $field['multiple'] ) ) {
+						$max_files = 10; // sane ceiling when the field sets none.
+					}
+
+					if ( count( $refs ) > $max_files ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$verified = Uploads::verify_refs( $refs, (string) ( $schema['form_key'] ?? '' ) );
+
+					if ( null === $verified ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$clean[ $key ] = $verified;
+					break;
+
 				case 'textarea':
 					$value = sanitize_textarea_field( self::scalar( $value ) );
 
@@ -213,6 +249,22 @@ final class Validator {
 		}
 
 		return $allowed;
+	}
+
+	/** Normalize a posted file-field value to [ ['id'=>int,'key'=>string], … ]. */
+	private static function file_refs( $value ): array {
+		$refs = [];
+
+		foreach ( is_array( $value ) ? $value : [] as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['id'], $entry['key'] ) ) {
+				$refs[] = [
+					'id'  => (int) $entry['id'],
+					'key' => is_string( $entry['key'] ) ? $entry['key'] : '',
+				];
+			}
+		}
+
+		return $refs;
 	}
 
 	private static function scalar( $value ): string {

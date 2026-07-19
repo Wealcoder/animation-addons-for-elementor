@@ -16,6 +16,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
@@ -25,15 +26,6 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-/**
- * AAE Timeline — Item (open template wrapper).
- *
- * Minimal counterpart of TimelineMain_Item: same structural base styles
- * (position/flex/gap), but no preset-driven appearance of its own. Visual
- * skin comes entirely from the ready-made JSON templates in
- * z_temp/templates/Timeline — each one sets its own local per-element
- * styles on the marker/date/title/desc children directly.
- */
 class AAE_A_Timeline_Item extends Atomic_Element_Base {
 
 	use Has_Element_Template;
@@ -125,6 +117,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
+			// 2. Date — small uppercase label above the title.
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Date' ] )
@@ -137,7 +130,6 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-
 			Atomic_Heading::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Title' ] )
@@ -151,6 +143,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
+			// 4. Description — body copy paragraph.
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Description' ] )

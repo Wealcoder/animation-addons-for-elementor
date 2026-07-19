@@ -298,7 +298,7 @@ final class Admin_Rest {
 			foreach ( $value_rows as $value ) {
 				$sid = (int) $value->submission_id;
 				if ( count( $previews[ $sid ] ?? [] ) < 2 ) {
-					$previews[ $sid ][] = (string) $value->field_value;
+					$previews[ $sid ][] = self::preview_value( (string) $value->field_value );
 				}
 			}
 		}
@@ -387,12 +387,22 @@ final class Admin_Rest {
 					'ip_hash'        => (string) $submission->ip_hash,
 				],
 				'values'     => array_map(
-					static fn( $v ) => [
-						'key'   => (string) $v->field_key,
-						'label' => '' !== (string) $v->field_label ? (string) $v->field_label : (string) $v->field_key,
-						'type'  => (string) $v->field_type,
-						'value' => (string) $v->field_value,
-					],
+					static function ( $v ) {
+						$entry = [
+							'key'   => (string) $v->field_key,
+							'label' => '' !== (string) $v->field_label ? (string) $v->field_label : (string) $v->field_key,
+							'type'  => (string) $v->field_type,
+							'value' => (string) $v->field_value,
+						];
+
+						// File fields store [{id,name,size},…] — resolve each to
+						// a download link through the auth proxy.
+						if ( 'file' === (string) $v->field_type ) {
+							$entry['files'] = self::file_links( (string) $v->field_value );
+						}
+
+						return $entry;
+					},
 					(array) $values
 				),
 				'logs'       => array_map(
@@ -407,6 +417,42 @@ final class Admin_Rest {
 			],
 			200
 		);
+	}
+
+	/**
+	 * File-field value JSON ([{id,name,size},…]) → download links for the
+	 * dashboard. The download proxy is a REST route (cookie auth), so a plain
+	 * <a href> must carry the wp_rest nonce as the _wpnonce query arg.
+	 *
+	 * @return array<int, array{id:int,name:string,size:int,url:string}>
+	 */
+	private static function file_links( string $value ): array {
+		$entries = json_decode( $value, true );
+		if ( ! is_array( $entries ) ) {
+			return [];
+		}
+
+		$links = [];
+		foreach ( $entries as $entry ) {
+			if ( ! is_array( $entry ) || empty( $entry['id'] ) ) {
+				continue;
+			}
+
+			$id = (int) $entry['id'];
+
+			$links[] = [
+				'id'   => $id,
+				'name' => (string) ( $entry['name'] ?? ( 'file-' . $id ) ),
+				'size' => (int) ( $entry['size'] ?? 0 ),
+				'url'  => add_query_arg(
+					'_wpnonce',
+					wp_create_nonce( 'wp_rest' ),
+					rest_url( Rest::REST_NAMESPACE . '/attachments/' . $id . '/download' )
+				),
+			];
+		}
+
+		return $links;
 	}
 
 	public static function delete_submissions( WP_REST_Request $request ): WP_REST_Response {

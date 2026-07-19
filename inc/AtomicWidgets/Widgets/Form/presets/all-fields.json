@@ -153,6 +153,34 @@
                     "text": {
                         "$$type": "html-v3",
                         "value": {
+                            "content": { "$$type": "string", "value": "Attachment (optional)" },
+                            "children": []
+                        }
+                    },
+                    "input-id": { "$$type": "string", "value": "aae-all-attachment" }
+                },
+                "elements": [],
+                "editor_settings": { "title": "Label — Attachment" }
+            },
+            {
+                "elType": "widget",
+                "widgetType": "e-aae-a-form-file",
+                "settings": {
+                    "accept": { "$$type": "string", "value": "pdf,jpg,jpeg,png" },
+                    "max_size": { "$$type": "string", "value": "10" },
+                    "error_message": { "$$type": "string", "value": "Please attach a PDF or image under 10 MB." },
+                    "_cssid": { "$$type": "string", "value": "aae-all-attachment" }
+                },
+                "elements": [],
+                "editor_settings": { "title": "File — Attachment" }
+            },
+            {
+                "elType": "widget",
+                "widgetType": "e-aae-a-form-label",
+                "settings": {
+                    "text": {
+                        "$$type": "html-v3",
+                        "value": {
                             "content": { "$$type": "string", "value": "Topic" },
                             "children": []
                         }

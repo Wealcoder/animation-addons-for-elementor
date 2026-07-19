@@ -41,11 +41,6 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 		return [
 			\Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg::generate()
 				->settings( [
-					// aae-a-svg (StyleManager utility) sets a sane 20px default so the
-					// arrow isn't the core Atomic_Svg 65px default inside the nav badge.
-					// It's a plain utility class, so the user's own Size (SVG Style tab)
-					// still overrides it — icon-size changes now take effect.
-					'classes' => \Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type::generate( [ 'aae-a-svg' ] ),
 					'svg' => \Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type::generate( [
 						'id' => null,
 						'url' => \Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/NestedSlider/assets/icon/next.svg' ),
@@ -106,25 +101,8 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 			'inset-block-start' => Size_Prop_Type::generate([ 'size' => 50, 'unit' => '%' ]),
 			'inset-inline-end' => Size_Prop_Type::generate([ 'size' => 20, 'unit' => 'px' ]),
 			'z-index' => Number_Prop_Type::generate( 10 ),
-			// FIXED round badge — NOT icon-driven. The nav's SVG child renders at
-			// different sizes depending on the element's age: a fresh drop carries the
-			// `aae-a-svg` utility (20px) while an element saved before that class existed
-			// falls back to the core Atomic_Svg 65px default. A `fit-content` button
-			// therefore came out 40px on fresh drops but ~80px on old-saved ones, so the
-			// same slider looked one size in the editor and another on the frontend (the
-			// reported editor↔frontend mismatch). Pinning width/height to a constant 44px
-			// makes the badge identical everywhere regardless of the icon size; the SVG
-			// is contained to fit inside via each slider stylesheet's `.aae-a-navigator-*
-			// svg { max-width/height }` rule. A fixed width also can't stretch into an
-			// ellipse when the slider is a single 100%-wide slide (the older spv=1 bug).
-			'width' => Size_Prop_Type::generate([ 'size' => 44, 'unit' => 'px' ]),
-			'height' => Size_Prop_Type::generate([ 'size' => 44, 'unit' => 'px' ]),
-			'padding' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
-				'block-start' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
-				'block-end' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
-				'inline-start' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
-				'inline-end' => Size_Prop_Type::generate([ 'size' => 8, 'unit' => 'px' ]),
-			]),
+			'width' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
+			'height' => Size_Prop_Type::generate([ 'size' => 40, 'unit' => 'px' ]),
 			'background' => Background_Prop_Type::generate([
 				'color' => Color_Prop_Type::generate( '#ffffff' )
 			]),

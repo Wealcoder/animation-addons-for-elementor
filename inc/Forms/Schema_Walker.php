@@ -37,6 +37,7 @@ final class Schema_Walker {
 		'e-aae-a-form-checkbox' => 'checkbox',
 		'e-aae-a-form-radio'    => 'radio',
 		'e-aae-a-form-select'   => 'select',
+		'e-aae-a-form-file'     => 'file',
 	];
 
 	/** Build the canonical schema array for one form element. */
@@ -156,6 +157,14 @@ final class Schema_Walker {
 			case 'select':
 				$field['options']  = (string) Prop::read( $settings, 'options', '' );
 				$field['multiple'] = (bool) Prop::read( $settings, 'multiple', false );
+				break;
+			case 'file':
+				// Upload rules the server enforces (accept/max_size come from
+				// the SCHEMA at upload time, never from client attributes).
+				$field['accept']    = (string) Prop::read( $settings, 'accept', '' );
+				$field['max_size']  = (float) Prop::read( $settings, 'max_size', 0 );
+				$field['multiple']  = (bool) Prop::read( $settings, 'multiple', false );
+				$field['max_files'] = (int) Prop::read( $settings, 'max_files', 0 );
 				break;
 		}
 

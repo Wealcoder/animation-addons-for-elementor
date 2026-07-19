@@ -208,6 +208,39 @@ const validateFrontend = ( form ) => {
 			continue;
 		}
 
+		if ( 'file' === control.type ) {
+			// Size/type/count rules from the widget's own settings (the server
+			// re-validates all of it from the schema at upload time).
+			const files = Array.from( control.files || [] );
+
+			if ( ! files.length ) {
+				if ( control.required ) {
+					errors.push( [ control, messageFor( control, requiredMsg ) ] );
+				}
+				continue;
+			}
+
+			const maxFiles = control.multiple ? parseInt( control.dataset.aaeMaxFiles, 10 ) || 10 : 1;
+			const maxMb = parseFloat( control.dataset.aaeMaxSize ) || 10;
+			const accept = ( control.dataset.aaeAccept || '' )
+				.toLowerCase()
+				.split( ',' )
+				.map( ( s ) => s.trim() )
+				.filter( Boolean );
+
+			if ( files.length > maxFiles ) {
+				errors.push( [ control, messageFor( control, t( 'tooManyFiles', `Please choose at most ${ maxFiles } file(s).` ) ) ] );
+			} else if ( files.some( ( file ) => file.size > maxMb * 1024 * 1024 ) ) {
+				errors.push( [ control, messageFor( control, t( 'fileTooLarge', `File is too large. Maximum size is ${ maxMb } MB.` ) ) ] );
+			} else if (
+				accept.length &&
+				files.some( ( file ) => ! accept.includes( ( file.name.split( '.' ).pop() || '' ).toLowerCase() ) )
+			) {
+				errors.push( [ control, messageFor( control, t( 'fileType', 'This file type is not allowed.' ) ) ] );
+			}
+			continue;
+		}
+
 		if ( control.required && '' === value ) {
 			errors.push( [ control, messageFor( control, requiredMsg ) ] );
 			continue;
@@ -248,6 +281,9 @@ const collectFields = ( form ) => {
 	const fields = {};
 
 	for ( const [ rawName, value ] of new FormData( form ) ) {
+		if ( value instanceof File ) {
+			continue; // files ride as pre-upload refs, never inline (JSON body).
+		}
 		if ( rawName.endsWith( '[]' ) ) {
 			const name = rawName.slice( 0, -2 );
 			( fields[ name ] = fields[ name ] || [] ).push( value );
@@ -257,6 +293,50 @@ const collectFields = ( form ) => {
 	}
 
 	return fields;
+};
+
+/**
+ * Pre-upload every chosen file to the uploads endpoint (one request per
+ * file), returning { fieldKey: [ { id, key }, … ] } to merge into the submit
+ * payload. Throws a tagged error ({ uploadControl, uploadMessage }) so the
+ * submit handler can paint the failure on the right field.
+ */
+const uploadPendingFiles = async ( form, formKey, nonce ) => {
+	const refs = {};
+
+	for ( const input of form.querySelectorAll( 'input[type="file"]' ) ) {
+		const files = Array.from( input.files || [] );
+		if ( ! files.length || ! input.name ) {
+			continue;
+		}
+
+		const fieldKey = input.name.replace( /\[\]$/, '' );
+		refs[ fieldKey ] = [];
+
+		for ( const file of files ) {
+			const body = new FormData();
+			body.append( 'file', file );
+			body.append( 'field_key', fieldKey );
+			body.append( 'nonce', nonce );
+
+			const response = await fetch(
+				`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/uploads`,
+				{ method: 'POST', cache: 'no-store', body }
+			);
+			const data = await response.json().catch( () => ( {} ) );
+
+			if ( ! response.ok ) {
+				const error = new Error( 'upload_failed' );
+				error.uploadControl = input;
+				error.uploadMessage = data.message || '';
+				throw error;
+			}
+
+			refs[ fieldKey ].push( { id: data.id, key: data.key } );
+		}
+	}
+
+	return refs;
 };
 
 /* ------------------------------------------------------------------ */
@@ -416,6 +496,10 @@ const initForm = ( form ) => {
 		try {
 			const { token, nonce } = await ensureAuth();
 
+			// Files first: each rides its own multipart request to the uploads
+			// endpoint; the JSON submit then carries only the returned refs.
+			const fileRefs = await uploadPendingFiles( form, formKey, nonce );
+
 			const response = await fetch(
 				`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/submit`,
 				{
@@ -426,7 +510,7 @@ const initForm = ( form ) => {
 					body: JSON.stringify( {
 						token,
 						nonce,
-						fields: collectFields( form ),
+						fields: { ...collectFields( form ), ...fileRefs },
 						source_url: window.location.href,
 						referrer_url: document.referrer || '',
 					} ),
@@ -487,7 +571,12 @@ const initForm = ( form ) => {
 			}
 		} catch ( error ) {
 			auth = null;
-			if ( false === navigator.onLine ) {
+			if ( error && error.uploadControl ) {
+				// A pre-upload was rejected (type/size/rate limit) — paint it
+				// on the field; the visitor's other input is untouched.
+				showFieldError( form, error.uploadControl, error.uploadMessage || t( 'uploadFailed', 'We could not upload your file. Please try again.' ) );
+				focusFirstInvalid( form );
+			} else if ( false === navigator.onLine ) {
 				showRuntimeMessage( form, t( 'offline', 'You appear to be offline. Please reconnect and try again.' ), 'error' );
 			} else {
 				// Abort/timeout/network — input is untouched, retry gets a fresh token.
