@@ -10,8 +10,11 @@
    not bound the browser's "list-item scope", so a nested <li> would auto-close
    its ancestor <li> and the parser would rip the nested tree apart. Using
    <div> throughout (nav + items) keeps deep nesting intact. #}
+{# WAI-ARIA menu pattern: this wrapper is presentational (role="none", like an
+   <li role="none">); the focusable label below is the real role="menuitem".
+   nav.js wires the keyboard/aria-expanded state onto that label. #}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
-    role="menuitem"
+    role="none"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
@@ -28,11 +31,11 @@
     {{ editor_attributes | default('') | raw }}>
 
     {% if has_link %}
-        <{{ settings.link.tag | default('a') | e('html_tag') }} class="aae-a-nav-item-label" {{ m.render_link_attributes(settings.link) }}>
+        <{{ settings.link.tag | default('a') | e('html_tag') }} class="aae-a-nav-item-label" role="menuitem" {{ m.render_link_attributes(settings.link) }}>
             {{ settings.text | striptags('<b><strong><sup><sub><s><em><u><span><br>') | raw }}
         </{{ settings.link.tag | default('a') | e('html_tag') }}>
     {% else %}
-        <span class="aae-a-nav-item-label">
+        <span class="aae-a-nav-item-label" role="menuitem">
             {{ settings.text | striptags('<b><strong><sup><sub><s><em><u><span><br>') | raw }}
         </span>
     {% endif %}

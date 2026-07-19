@@ -2132,6 +2132,11 @@ final class Atomic
 		// controls (posts by title/ID, taxonomy terms by name).
 		add_action('wp_ajax_aae_loop_query_options', [$this, 'ajax_loop_query_options']);
 
+		// AAE Nav: list WordPress menus + their nested item trees so the Nav
+		// panel's "Import from WordPress menu" control can rebuild them as
+		// atomic nav-items. Reuses the `aae_loop_grid` editor nonce.
+		add_action('wp_ajax_aae_get_nav_menus', [$this, 'ajax_get_nav_menus']);
+
 		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
 		// document before resolving tags, so a Featured Image / Post Title tag
 		// inside a loop item resolves against the PAGE (usually no thumbnail →
@@ -3711,6 +3716,68 @@ final class Atomic
 		];
 
 		wp_send_json_success(wp_nav_menu($args));
+	}
+
+	/**
+	 * AJAX handler — return every registered WordPress menu together with its
+	 * items pre-assembled into a nested tree. The AAE Nav panel's import control
+	 * consumes this to build atomic nav-items (with dropdowns) that mirror the
+	 * WP menu hierarchy. Reuses the `aae_loop_grid` editor nonce.
+	 */
+	public function ajax_get_nav_menus(): void
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$menus = wp_get_nav_menus();
+		$out   = [];
+
+		if (! is_wp_error($menus)) {
+			foreach ($menus as $menu) {
+				$items = wp_get_nav_menu_items($menu->term_id);
+				$out[] = [
+					'id'    => (int) $menu->term_id,
+					'name'  => $menu->name,
+					'items' => $this->build_nav_menu_tree(is_array($items) ? $items : []),
+				];
+			}
+		}
+
+		wp_send_json_success(['menus' => $out]);
+	}
+
+	/**
+	 * Turn WordPress's flat, menu_order-sorted item list into a nested tree
+	 * keyed by parent. Each node exposes only what the editor needs to build a
+	 * nav-item: label, url, target, and its children.
+	 *
+	 * @param array $items Output of wp_get_nav_menu_items().
+	 * @return array Nested nodes: [ [ 'title', 'url', 'target', 'children' ], ... ].
+	 */
+	private function build_nav_menu_tree(array $items): array
+	{
+		$by_parent = [];
+		foreach ($items as $item) {
+			$by_parent[(int) $item->menu_item_parent][] = $item;
+		}
+
+		$build = function ($parent_id) use (&$build, $by_parent) {
+			$nodes = [];
+			foreach ($by_parent[$parent_id] ?? [] as $item) {
+				$nodes[] = [
+					'title'    => wp_strip_all_tags($item->title),
+					'url'      => esc_url_raw($item->url),
+					'target'   => ('_blank' === $item->target) ? '_blank' : '',
+					'children' => $build((int) $item->ID),
+				];
+			}
+			return $nodes;
+		};
+
+		return $build(0);
 	}
 
 	/**

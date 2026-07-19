@@ -312,6 +312,7 @@ function openItem( item ) {
 		resetCssAnim( sub, anim );
 		item.classList.add( 'is-open' );
 	}
+	navLabel( item )?.setAttribute( 'aria-expanded', 'true' );
 }
 
 function closeItem( item ) {
@@ -323,6 +324,7 @@ function closeItem( item ) {
 			g().set( descendantSub, { clearProps: 'all' } );
 		}
 		descendant.classList.remove( 'is-open' );
+		navLabel( descendant )?.setAttribute( 'aria-expanded', 'false' );
 	} );
 	const sub  = getSub( item );
 	const anim = getAnim( item );
@@ -332,6 +334,7 @@ function closeItem( item ) {
 	} else {
 		item.classList.remove( 'is-open' );
 	}
+	navLabel( item )?.setAttribute( 'aria-expanded', 'false' );
 }
 
 function sanitizeEditorClone( clone ) {
@@ -614,6 +617,189 @@ window.addEventListener( 'load', ensureEditorMobilePreviews );
  * evaluation and `load`. Node identity checks make healthy scans a no-op. */
 window.setInterval( ensureEditorMobilePreviews, 500 );
 
+/* Normalize a URL for current-page comparison: resolve to absolute, drop the
+ * hash, and strip a trailing slash from the path so `/about` and `/about/`
+ * match. Returns null for unparseable/anchor-only hrefs. */
+function normalizeNavUrl( href ) {
+	if ( ! href || href === '#' || href.charAt( 0 ) === '#' ) return null;
+	try {
+		const url = new URL( href, window.location.origin );
+		if ( url.origin !== window.location.origin ) return null;
+		const path = url.pathname.replace( /\/+$/, '' ) || '/';
+		return path + url.search;
+	} catch ( error ) {
+		return null;
+	}
+}
+
+/* DESIGN-LESS current-page highlight. Runs on the FRONTEND only (the nav lives
+ * in a cached header/theme-builder template shared across pages, so this must
+ * be computed per page in the browser, not baked into the server render). Adds
+ * structural hooks the user styles themselves via the Style tab:
+ *   .aae-a-nav-item-active   — the item whose link is the current page
+ *   .aae-a-nav-item-ancestor — every dropdown parent on the active item's trail
+ *   aria-current="page"      — on the matching <a> (accessibility)
+ * No visual styling is injected. */
+function markActiveNavItems( nav ) {
+	const current = normalizeNavUrl( window.location.href );
+	if ( ! current ) return;
+	nav.querySelectorAll( 'a.aae-a-nav-item-label[href]' ).forEach( anchor => {
+		if ( normalizeNavUrl( anchor.href ) !== current ) return;
+		const item = anchor.closest( '.aae-a-nav-item' );
+		if ( ! item ) return;
+		item.classList.add( 'aae-a-nav-item-active' );
+		anchor.setAttribute( 'aria-current', 'page' );
+		let ancestor = item.parentElement?.closest( '.aae-a-nav-item' );
+		while ( ancestor ) {
+			ancestor.classList.add( 'aae-a-nav-item-ancestor' );
+			ancestor = ancestor.parentElement?.closest( '.aae-a-nav-item' );
+		}
+	} );
+}
+
+/* ---- Desktop keyboard + ARIA menubar model ---------------------------------
+ * Everything below runs on the FRONTEND desktop path only (never mobile — the
+ * drawer has its own focus-trap/keyboard handling). It layers a standard WAI-
+ * ARIA menubar interaction onto the existing click/hover dropdowns without
+ * touching their visual behaviour. */
+
+/* The item's own label element (the focusable <a>/<span>), not a descendant's. */
+function navLabel( item ) {
+	return item?.querySelector( ':scope > .aae-a-nav-item-label' ) || null;
+}
+
+/* Direct child nav-items of a container (the nav root or a dropdown flexbox). */
+function childNavItems( container ) {
+	return container ? [ ...container.querySelectorAll( ':scope > .aae-a-nav-item' ) ] : [];
+}
+
+/* The nav-items that live inside this item's dropdown panel. */
+function subNavItems( item ) {
+	return childNavItems( getSub( item ) );
+}
+
+function parentNavItem( item ) {
+	return item?.parentElement?.closest( '.aae-a-nav-item' ) || null;
+}
+
+function hasNavDropdown( item ) {
+	return item?.dataset.hasDropdown === 'true';
+}
+
+function initDesktopKeyboardNav( nav, sig ) {
+	nav.setAttribute( 'aria-orientation', 'horizontal' );
+
+	/* One-time ARIA + roving-tabindex setup for every item. */
+	nav.querySelectorAll( '.aae-a-nav-item' ).forEach( item => {
+		const label = navLabel( item );
+		if ( ! label ) return;
+		label.setAttribute( 'tabindex', '-1' );
+		if ( hasNavDropdown( item ) ) {
+			label.setAttribute( 'aria-haspopup', 'true' );
+			label.setAttribute( 'aria-expanded', 'false' );
+			const sub = getSub( item );
+			if ( sub ) {
+				if ( ! sub.id ) {
+					sub.id = `aae-nav-sub-${ nav.getAttribute( 'data-id' ) || '' }-${ item.dataset.id || '' }`;
+				}
+				sub.setAttribute( 'role', 'menu' );
+				label.setAttribute( 'aria-controls', sub.id );
+			}
+		}
+	} );
+	/* Roving tabindex: exactly one label is Tab-reachable; arrows move within. */
+	navLabel( childNavItems( nav )[ 0 ] )?.setAttribute( 'tabindex', '0' );
+
+	const setRoving = ( item ) => {
+		nav.querySelectorAll( '.aae-a-nav-item-label[tabindex="0"]' )
+			.forEach( l => l.setAttribute( 'tabindex', '-1' ) );
+		navLabel( item )?.setAttribute( 'tabindex', '0' );
+	};
+	const focusItem = ( item ) => {
+		if ( ! item ) return;
+		setRoving( item );
+		navLabel( item )?.focus();
+	};
+	const openAndEnter = ( item, toLast = false ) => {
+		if ( ! hasNavDropdown( item ) ) return false;
+		openItem( item );
+		const kids = subNavItems( item );
+		focusItem( toLast ? kids[ kids.length - 1 ] : kids[ 0 ] );
+		return true;
+	};
+	const closeToParent = ( item ) => {
+		const parent = parentNavItem( item );
+		if ( parent ) {
+			closeItem( parent );
+			focusItem( parent );
+		}
+	};
+	const closeAllOpen = () => {
+		childNavItems( nav ).forEach( item => {
+			if ( item.classList.contains( 'is-open' ) ) closeItem( item );
+		} );
+	};
+
+	nav.addEventListener( 'keydown', ( e ) => {
+		const label = e.target.closest( '.aae-a-nav-item-label' );
+		if ( ! label || ! nav.contains( label ) ) return;
+		const item = label.closest( '.aae-a-nav-item' );
+		if ( ! item ) return;
+		const parent = parentNavItem( item );
+		const isTop = ! parent;
+		const container = isTop ? nav : getSub( parent );
+		const siblings = childNavItems( container );
+		const idx = siblings.indexOf( item );
+		const step = ( delta ) =>
+			focusItem( siblings[ ( idx + delta + siblings.length ) % siblings.length ] );
+
+		switch ( e.key ) {
+			case 'ArrowRight':
+				if ( isTop ) { step( 1 ); e.preventDefault(); }
+				else if ( hasNavDropdown( item ) ) { openAndEnter( item ); e.preventDefault(); }
+				break;
+			case 'ArrowLeft':
+				if ( isTop ) { step( -1 ); e.preventDefault(); }
+				else { closeToParent( item ); e.preventDefault(); }
+				break;
+			case 'ArrowDown':
+				if ( isTop ) { openAndEnter( item ); e.preventDefault(); }
+				else { step( 1 ); e.preventDefault(); }
+				break;
+			case 'ArrowUp':
+				if ( isTop ) { openAndEnter( item, true ); e.preventDefault(); }
+				else { step( -1 ); e.preventDefault(); }
+				break;
+			case 'Home':
+				focusItem( siblings[ 0 ] ); e.preventDefault();
+				break;
+			case 'End':
+				focusItem( siblings[ siblings.length - 1 ] ); e.preventDefault();
+				break;
+			case 'Enter':
+			case ' ':
+				if ( hasNavDropdown( item ) ) {
+					if ( item.classList.contains( 'is-open' ) ) closeItem( item );
+					else openAndEnter( item );
+					e.preventDefault();
+				}
+				/* A leaf <a> is left alone so Enter follows the link natively. */
+				break;
+			case 'Escape':
+				if ( ! isTop ) { closeToParent( item ); e.preventDefault(); }
+				else if ( item.classList.contains( 'is-open' ) ) { closeItem( item ); e.preventDefault(); }
+				break;
+			default:
+				break;
+		}
+	}, { signal: sig } );
+
+	/* Leaving the nav entirely (Tab out, click away) collapses open dropdowns. */
+	nav.addEventListener( 'focusout', ( e ) => {
+		if ( ! nav.contains( e.relatedTarget ) ) closeAllOpen();
+	}, { signal: sig } );
+}
+
 register( {
 	elementType: 'e-aae-a-nav',
 	id: 'aae-a-nav-handler',
@@ -641,6 +827,8 @@ register( {
 
 		if ( nav.dataset.navInit === 'true' ) return;
 		nav.dataset.navInit = 'true';
+
+		markActiveNavItems( nav );
 
 		/* Abort stale document listeners from a previous render of this nav */
 		navControllers.get( navId )?.abort();
@@ -695,6 +883,8 @@ register( {
 		document.addEventListener( 'click', ( e ) => {
 			if ( ! nav.contains( e.target ) ) closeAllClickItems();
 		}, { signal: sig } );
+
+		initDesktopKeyboardNav( nav, sig );
 	},
 } );
 
