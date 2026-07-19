@@ -18,6 +18,7 @@ import {
   Plug,
   RefreshCw,
   RotateCw,
+  ShieldCheck,
   Trash2,
   X,
 } from "lucide-react";
@@ -182,12 +183,14 @@ const DATE_PRESETS = [
   { key: "custom", label: __("Custom range…", "animation-addons-for-elementor"), from: null, to: null },
 ];
 
-const EMPTY_FILTERS = { form_key: "", from: "", to: "", s: "" };
+const EMPTY_FILTERS = { form_key: "", from: "", to: "", s: "", field_key: "", field_value: "" };
 
 const SubmissionsTab = ({ presetFormKey }) => {
   const [filters, setFilters] = useState({ ...EMPTY_FILTERS, form_key: presetFormKey || "" });
   const [datePreset, setDatePreset] = useState("all");
   const [search, setSearch] = useState(""); // debounced into filters.s
+  const [fieldValueInput, setFieldValueInput] = useState(""); // debounced into filters.field_value
+  const [fields, setFields] = useState([]); // this form's field keys/labels, for the Field dropdown
   const [page, setPage] = useState(1);
   const [data, setData] = useState({ rows: [], total: 0, forms: [] });
   const [loading, setLoading] = useState(true);
@@ -208,6 +211,28 @@ const SubmissionsTab = ({ presetFormKey }) => {
     }, 400);
     return () => clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      setFilters((current) =>
+        current.field_value === fieldValueInput ? current : { ...current, field_value: fieldValueInput }
+      );
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [fieldValueInput]);
+
+  // The Field dropdown only makes sense scoped to ONE form — its options
+  // come from that form's own submitted field keys, not a global list.
+  useEffect(() => {
+    if (!filters.form_key) {
+      setFields([]);
+      return;
+    }
+    api(`form-fields?form_key=${encodeURIComponent(filters.form_key)}`)
+      .then((data) => setFields(data.fields || []))
+      .catch(() => setFields([]));
+  }, [filters.form_key]);
 
   // "View" jump from the Form Health tab.
   useEffect(() => {
@@ -238,8 +263,16 @@ const SubmissionsTab = ({ presetFormKey }) => {
   const clearFilters = () => {
     setDatePreset("all");
     setSearch("");
+    setFieldValueInput("");
     setPage(1);
     setFilters(EMPTY_FILTERS);
+  };
+
+  /** Changing the form invalidates the field filter — a field key from a
+   * DIFFERENT form's schema has no meaning here. */
+  const changeForm = (form_key) => {
+    setFieldValueInput("");
+    patchFilters({ form_key, field_key: "", field_value: "" });
   };
 
   const applyDatePreset = (key) => {
@@ -286,9 +319,7 @@ const SubmissionsTab = ({ presetFormKey }) => {
       <div className="flex flex-wrap items-center gap-2">
         <Select
           value={filters.form_key || "all"}
-          onValueChange={(value) =>
-            patchFilters({ form_key: value === "all" ? "" : value })
-          }
+          onValueChange={(value) => changeForm(value === "all" ? "" : value)}
         >
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder={__("All forms", "animation-addons-for-elementor")} />
@@ -307,6 +338,48 @@ const SubmissionsTab = ({ presetFormKey }) => {
             ))}
           </SelectContent>
         </Select>
+
+        {/* Field-wise filter — scoped to the selected form, so it's only
+            offered once a specific form (not "All forms") is chosen. */}
+        {filters.form_key && fields.length > 0 && (
+          <>
+            <Select
+              value={filters.field_key || "any"}
+              onValueChange={(value) => {
+                setFieldValueInput("");
+                patchFilters({ field_key: value === "any" ? "" : value, field_value: "" });
+              }}
+            >
+              <SelectTrigger className="w-[170px]">
+                <SelectValue placeholder={__("Any field", "animation-addons-for-elementor")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">
+                  {__("Any field", "animation-addons-for-elementor")}
+                </SelectItem>
+                {fields.map((field) => (
+                  <SelectItem key={field.key} value={field.key}>
+                    {field.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {filters.field_key && (
+              <Input
+                type="search"
+                className="w-[170px]"
+                placeholder={sprintf(
+                  /* translators: %s: field label, e.g. "Experience" */
+                  __("%s value…", "animation-addons-for-elementor"),
+                  fields.find((f) => f.key === filters.field_key)?.label || filters.field_key
+                )}
+                value={fieldValueInput}
+                onChange={(e) => setFieldValueInput(e.target.value)}
+              />
+            )}
+          </>
+        )}
 
         <Select value={datePreset} onValueChange={applyDatePreset}>
           <SelectTrigger className="w-[150px]">
@@ -1099,14 +1172,191 @@ const IntegrationCard = ({ item, onChanged }) => {
   );
 };
 
+/**
+ * reCAPTCHA v3 connect card — one global site-key/secret-key pair, same
+ * free-shell/pro-capability split as email-marketing providers, but a
+ * distinct shape (two keys, not one) so it isn't forced into IntegrationCard.
+ * Enabling it per form happens in the widget's own Bot Shield panel
+ * (captcha_provider), not here — this card only manages the shared keys.
+ */
+const RecaptchaCard = ({ item, onChanged }) => {
+  const [siteKey, setSiteKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(!item.connected);
+
+  const connected = item.connected;
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const result = await api("recaptcha/keys", {
+        method: "POST",
+        body: JSON.stringify({ site_key: siteKey.trim(), secret_key: secretKey.trim() }),
+      });
+      toast.success(result.message);
+      setSiteKey("");
+      setSecretKey("");
+      setEditing(false);
+      onChanged();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const disconnect = async () => {
+    setSaving(true);
+    try {
+      const result = await api("recaptcha/keys", {
+        method: "POST",
+        body: JSON.stringify({ site_key: "", secret_key: "" }),
+      });
+      toast.success(result.message);
+      onChanged();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border bg-background p-5 transition-shadow hover:shadow-widget-card">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFA184] to-[#F2754F] text-white shadow-[0_2px_8px_rgba(246,80,44,0.35)]">
+            <ShieldCheck className="h-5 w-5" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold">
+                {__("reCAPTCHA v3", "animation-addons-for-elementor")}
+              </h3>
+              {!item.pro && (
+                <span className="inline-flex items-center rounded-full bg-[linear-gradient(180deg,#FFA184_0%,#F2754F_100%)] px-2 py-0.5 text-[11px] font-semibold text-white">
+                  {__("PRO", "animation-addons-for-elementor")}
+                </span>
+              )}
+            </div>
+            <p className="mt-0.5 text-sm text-text-secondary">
+              {connected ? (
+                <span className="inline-flex items-center gap-1 text-emerald-600">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  {item.pro
+                    ? __("Connected", "animation-addons-for-elementor")
+                    : __("Keys saved — verify with Pro", "animation-addons-for-elementor")}
+                </span>
+              ) : (
+                __("Not connected", "animation-addons-for-elementor")
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {!item.pro && (
+        <p className="mt-3 rounded-lg bg-background-secondary px-3 py-2 text-xs text-text-secondary">
+          {__(
+            "Add the Pro add-on to verify submissions against Google's score.",
+            "animation-addons-for-elementor"
+          )}
+        </p>
+      )}
+
+      {item.help?.text && (
+        <p className="mt-3 text-xs text-text-secondary">
+          {item.help.text}
+          {item.help.url && (
+            <>
+              {" "}
+              <a
+                href={item.help.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand underline underline-offset-2 hover:text-brand-secondary"
+              >
+                {__("Create a reCAPTCHA site →", "animation-addons-for-elementor")}
+              </a>
+            </>
+          )}
+        </p>
+      )}
+
+      <div className="mt-4 space-y-2">
+        {connected && !editing ? (
+          <div className="flex items-center gap-2">
+            <code className="flex-1 rounded-lg border bg-background-secondary px-3 py-2 text-sm tracking-wide text-text-secondary">
+              {item.site_key}
+            </code>
+            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+              {__("Change", "animation-addons-for-elementor")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={saving}
+              className="text-red-600 hover:border-red-300 hover:text-red-700"
+              onClick={disconnect}
+            >
+              {__("Disconnect", "animation-addons-for-elementor")}
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Input
+              type="text"
+              autoComplete="off"
+              placeholder={__("Site key", "animation-addons-for-elementor")}
+              value={siteKey}
+              onChange={(e) => setSiteKey(e.target.value)}
+            />
+            <div className="flex items-center gap-2">
+              <Input
+                type="password"
+                autoComplete="off"
+                placeholder={__("Secret key", "animation-addons-for-elementor")}
+                value={secretKey}
+                onChange={(e) => setSecretKey(e.target.value)}
+                className="flex-1"
+              />
+              <Button
+                size="sm"
+                disabled={saving || !siteKey.trim() || !secretKey.trim()}
+                className="bg-brand text-white hover:bg-brand-secondary"
+                onClick={save}
+              >
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  __("Connect", "animation-addons-for-elementor")
+                )}
+              </Button>
+              {connected && (
+                <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+                  {__("Cancel", "animation-addons-for-elementor")}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const IntegrationsTab = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recaptcha, setRecaptcha] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
-    api("integrations")
-      .then((data) => setItems(data.integrations || []))
+    Promise.all([
+      api("integrations").then((data) => setItems(data.integrations || [])),
+      api("recaptcha").then((data) => setRecaptcha(data)),
+    ])
       .catch((error) => toast.error(error.message))
       .finally(() => setLoading(false));
   }, []);
@@ -1133,6 +1383,7 @@ const IntegrationsTab = () => {
           {items.map((item) => (
             <IntegrationCard key={item.id} item={item} onChanged={load} />
           ))}
+          {recaptcha && <RecaptchaCard item={recaptcha} onChanged={load} />}
         </div>
       )}
     </div>

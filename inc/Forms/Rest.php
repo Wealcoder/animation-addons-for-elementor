@@ -284,6 +284,28 @@ final class Rest {
 			);
 		}
 
+		// reCAPTCHA v3: only enforced when the form opts in. A missing/failed
+		// verifier is a real block (not a silent pass) — a form that asked
+		// for reCAPTCHA must not quietly skip the check just because pro is
+		// absent or Google's call errored; that would defeat the setting.
+		$captcha_provider = (string) ( $schema['settings']['captcha_provider'] ?? 'none' );
+		if ( 'recaptcha_v3' === $captcha_provider ) {
+			$captcha_token = isset( $params['recaptcha_token'] ) && is_string( $params['recaptcha_token'] )
+				? $params['recaptcha_token']
+				: '';
+
+			// Google's siteverify `remoteip` param is optional — omitted here
+			// rather than threading a raw IP through just for this call,
+			// consistent with the plugin's no-raw-IP-by-default stance.
+			$check = Captcha::verify( $captcha_token, '' );
+
+			if ( ! $check['ok'] || $check['score'] < Captcha::threshold() ) {
+				Spam_Log::record( $form_key, ! $check['available'] ? 'captcha_unavailable' : 'captcha_failed' );
+
+				return self::error( 403, 'aae_form_security', self::generic_block_message() );
+			}
+		}
+
 		// --- Step 5: validate against the active schema snapshot. -----------
 		$result = Validator::validate( $schema, $params['fields'] );
 

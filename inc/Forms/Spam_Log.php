@@ -30,7 +30,8 @@ final class Spam_Log {
 	/**
 	 * @param string $form_key Target form.
 	 * @param string $reason   Machine reason: honeypot | rate_limited |
-	 *                         token_invalid | token_replay | too_fast | bad_nonce.
+	 *                         token_invalid | token_replay | too_fast | bad_nonce |
+	 *                         captcha_failed | captcha_unavailable.
 	 * @param array  $extra    Additional snapshot keys (source_url, …).
 	 */
 	public static function record( string $form_key, string $reason, array $extra = [] ): void {

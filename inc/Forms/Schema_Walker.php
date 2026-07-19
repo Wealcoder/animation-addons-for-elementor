@@ -51,8 +51,9 @@ final class Schema_Walker {
 			'success' => '',
 			'error'   => '',
 		];
+		$steps   = []; // ordered list of { key, title } — empty = single-page form.
 
-		self::collect( $form['elements'] ?? [], $fields, $submit, $labels, $message );
+		self::collect( $form['elements'] ?? [], $fields, $submit, $labels, $message, $steps, null );
 
 		// Attach resolved label text to each field by its _cssid.
 		foreach ( $fields as &$field ) {
@@ -79,6 +80,12 @@ final class Schema_Walker {
 				'loading_label' => '',
 			],
 			'messages'      => $message,
+			// Present only when the form actually has e-aae-a-form-step
+			// children — a plain single-page form's schema has NO 'steps'
+			// key at all, so existing single-page forms need no migration
+			// and the frontend/validator can treat "no steps" as the
+			// single-page case without a separate flag.
+			'steps'         => $steps,
 		];
 
 		/**
@@ -97,8 +104,16 @@ final class Schema_Walker {
 		return md5( wp_json_encode( $schema ) );
 	}
 
-	/** Depth-first, DOM-order walk. Skips nested e-aae-a-form subtrees. */
-	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message ): void {
+	/**
+	 * Depth-first, DOM-order walk. Skips nested e-aae-a-form subtrees.
+	 *
+	 * @param string|null $current_step The step's element_id while descending
+	 *   inside an e-aae-a-form-step subtree, else null (single-page form, or
+	 *   between/outside steps — e.g. a Submit button placed after all steps).
+	 *   Threaded down exactly like the pro Conditional Display engine threads
+	 *   an ancestor accumulator in its own walk (Engine.php's walk_containers).
+	 */
+	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message, array &$steps, ?string $current_step ): void {
 		foreach ( $elements as $element ) {
 			if ( ! is_array( $element ) ) {
 				continue;
@@ -112,10 +127,17 @@ final class Schema_Walker {
 				continue;
 			}
 
-			$settings = $element['settings'] ?? [];
+			$settings   = $element['settings'] ?? [];
+			$step_scope = $current_step;
 
-			if ( isset( self::FIELD_TYPES[ $type ] ) ) {
-				$fields[] = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings );
+			if ( 'e-aae-a-form-step' === $type ) {
+				$step_scope = (string) ( $element['id'] ?? '' );
+				$steps[]    = [
+					'key'   => $step_scope,
+					'title' => (string) Prop::read( $settings, 'step_title', '' ),
+				];
+			} elseif ( isset( self::FIELD_TYPES[ $type ] ) ) {
+				$fields[] = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings, $current_step );
 			} elseif ( 'e-aae-a-form-label' === $type ) {
 				$for = (string) Prop::read( $settings, 'input-id', '' );
 				if ( '' !== $for && ! isset( $labels[ $for ] ) ) {
@@ -134,12 +156,12 @@ final class Schema_Walker {
 
 			if ( ! empty( $element['elements'] ) && is_array( $element['elements'] )
 				&& ! in_array( $type, [ 'e-aae-a-form-success-message', 'e-aae-a-form-error-message' ], true ) ) {
-				self::collect( $element['elements'], $fields, $submit, $labels, $message );
+				self::collect( $element['elements'], $fields, $submit, $labels, $message, $steps, $step_scope );
 			}
 		}
 	}
 
-	private static function build_field( string $field_type, array $element, $settings ): array {
+	private static function build_field( string $field_type, array $element, $settings, ?string $step = null ): array {
 		$element_id = (string) ( $element['id'] ?? '' );
 		$css_id     = (string) Prop::read( $settings, '_cssid', '' );
 		$name       = (string) Prop::read( $settings, 'name', '' );
@@ -156,6 +178,10 @@ final class Schema_Walker {
 			// Per-field custom error message — the server echoes it on a 422
 			// so backend errors read the same as the frontend's.
 			'error_message' => (string) Prop::read( $settings, 'error_message', '' ),
+			// Which e-aae-a-form-step this field lives in (that step's raw
+			// element id), or '' for a single-page form / a field placed
+			// outside any step. The Validator uses this for per-step gating.
+			'step'          => (string) $step,
 		];
 
 		switch ( $field_type ) {

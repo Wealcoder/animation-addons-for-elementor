@@ -150,6 +150,17 @@ final class Admin_Rest {
 			]
 		);
 
+		// Distinct field keys/labels for ONE form — feeds the Submissions
+		// filter bar's "Field" dropdown once a form is selected.
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/form-fields',
+			$admin + [
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ self::class, 'form_fields' ],
+			]
+		);
+
 		register_rest_route(
 			Rest::REST_NAMESPACE,
 			'/admin/spam-log',
@@ -216,6 +227,27 @@ final class Admin_Rest {
 				'callback' => [ self::class, 'integration_lists' ],
 			]
 		);
+
+		// reCAPTCHA v3 — same free-shell/pro-capability split: free stores
+		// the site-key/secret-key pair and reports connection state; the
+		// real Google siteverify call lives in pro (Captcha::verify()).
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/recaptcha',
+			$admin + [
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ self::class, 'get_recaptcha' ],
+			]
+		);
+
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/recaptcha/keys',
+			$admin + [
+				'methods'  => WP_REST_Server::CREATABLE,
+				'callback' => [ self::class, 'save_recaptcha_keys' ],
+			]
+		);
 	}
 
 	// ------------------------------------------------------------------
@@ -225,11 +257,16 @@ final class Admin_Rest {
 	/** Sanitized list filters from the request. */
 	private static function read_filters( WP_REST_Request $request ): array {
 		return [
-			'form_key' => sanitize_text_field( (string) $request->get_param( 'form_key' ) ),
-			'status'   => sanitize_text_field( (string) $request->get_param( 'status' ) ),
-			'from'     => sanitize_text_field( (string) $request->get_param( 'from' ) ),
-			'to'       => sanitize_text_field( (string) $request->get_param( 'to' ) ),
-			's'        => sanitize_text_field( (string) $request->get_param( 's' ) ),
+			'form_key'    => sanitize_text_field( (string) $request->get_param( 'form_key' ) ),
+			'status'      => sanitize_text_field( (string) $request->get_param( 'status' ) ),
+			'from'        => sanitize_text_field( (string) $request->get_param( 'from' ) ),
+			'to'          => sanitize_text_field( (string) $request->get_param( 'to' ) ),
+			's'           => sanitize_text_field( (string) $request->get_param( 's' ) ),
+			// Field-wise filter: ONE field key (e.g. "experience") + the value
+			// to match within it — distinct from `s`, which searches every
+			// field's value across the whole submission with no key filter.
+			'field_key'   => sanitize_text_field( (string) $request->get_param( 'field_key' ) ),
+			'field_value' => sanitize_text_field( (string) $request->get_param( 'field_value' ) ),
 		];
 	}
 
@@ -262,6 +299,19 @@ final class Admin_Rest {
 			// Find-by-value — incl. find-by-email for DSAR/support requests.
 			$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_value LIKE %s )";
 			$args[]  = '%' . $wpdb->esc_like( $filters['s'] ) . '%';
+		}
+		if ( '' !== $filters['field_key'] ) {
+			// Field-wise filter: match ONE field's value, not every field's
+			// (unlike `s` above). An empty field_value with a field_key set
+			// still narrows to submissions that HAVE that field at all.
+			if ( '' !== $filters['field_value'] ) {
+				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s AND field_value LIKE %s )";
+				$args[]  = $filters['field_key'];
+				$args[]  = '%' . $wpdb->esc_like( $filters['field_value'] ) . '%';
+			} else {
+				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s )";
+				$args[]  = $filters['field_key'];
+			}
 		}
 
 		$where_sql = implode( ' AND ', $where );
@@ -357,6 +407,50 @@ final class Admin_Rest {
 			},
 			(array) $rows
 		);
+	}
+
+	/**
+	 * Distinct field keys (+ their most recent label) submitted for ONE
+	 * form — feeds the Submissions filter bar's "Field" dropdown. Reads the
+	 * MAX(id)-per-key row so a renamed field (label changed after some
+	 * submissions) shows its current label, not a stale one.
+	 *
+	 * @return array<int,array{key:string,label:string}>
+	 */
+	public static function form_fields( WP_REST_Request $request ): WP_REST_Response {
+		global $wpdb;
+
+		$form_key = sanitize_text_field( (string) $request->get_param( 'form_key' ) );
+		if ( '' === $form_key ) {
+			return new WP_REST_Response( [ 'fields' => [] ], 200 );
+		}
+
+		$values      = Database::submission_values_table();
+		$submissions = Database::submissions_table();
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT v.field_key, v.field_label FROM ' . $values . ' v'
+				. ' INNER JOIN ' . $submissions . ' s ON s.id = v.submission_id'
+				. ' INNER JOIN ( SELECT field_key, MAX(id) AS max_id FROM ' . $values
+				. ' WHERE submission_id IN ( SELECT id FROM ' . $submissions . ' WHERE form_key = %s )'
+				. ' GROUP BY field_key ) latest ON latest.max_id = v.id'
+				. ' WHERE s.form_key = %s'
+				. ' ORDER BY v.field_key',
+				$form_key,
+				$form_key
+			)
+		);
+
+		$fields = array_map(
+			static fn( $row ) => [
+				'key'   => (string) $row->field_key,
+				'label' => '' !== (string) $row->field_label ? (string) $row->field_label : (string) $row->field_key,
+			],
+			(array) $rows
+		);
+
+		return new WP_REST_Response( [ 'fields' => $fields ], 200 );
 	}
 
 	public static function get_submission( WP_REST_Request $request ): WP_REST_Response {
@@ -797,6 +891,58 @@ final class Admin_Rest {
 				'message' => (string) ( $result['message'] ?? '' ),
 			],
 			empty( $result['ok'] ) ? 502 : 200
+		);
+	}
+
+	// ------------------------------------------------------------------
+	// reCAPTCHA v3
+	// ------------------------------------------------------------------
+
+	/**
+	 * Current reCAPTCHA connection state for the dashboard connect card.
+	 * `pro` mirrors the Integrations pattern: true only when a real
+	 * verifier is registered (Captcha::verify() reports `available`).
+	 */
+	public static function get_recaptcha(): WP_REST_Response {
+		$has_verifier = is_callable( apply_filters( 'aae_form/recaptcha_verifier', null ) );
+
+		return new WP_REST_Response(
+			[
+				'pro'         => $has_verifier,
+				'connected'   => Captcha::has_keys(),
+				'site_key'    => Captcha::site_key(),
+				'secret_mask' => Captcha::mask_secret(),
+				'help'        => [
+					'text' => __( 'Create a reCAPTCHA v3 site in the Google admin console, then paste both keys here.', 'animation-addons-for-elementor' ),
+					'url'  => 'https://www.google.com/recaptcha/admin/create',
+				],
+			],
+			200
+		);
+	}
+
+	/**
+	 * Save (or clear) the site-key/secret-key pair. Free stores keys
+	 * unverified (no network call available); pro's verifier is only
+	 * exercised at actual submit time, not here — Google's siteverify API
+	 * has no "check this secret is valid" call without a real token.
+	 */
+	public static function save_recaptcha_keys( WP_REST_Request $request ): WP_REST_Response {
+		$site_key   = trim( (string) $request->get_param( 'site_key' ) );
+		$secret_key = trim( (string) $request->get_param( 'secret_key' ) );
+
+		Captcha::set_keys( $site_key, $secret_key );
+
+		return new WP_REST_Response(
+			[
+				'connected'   => Captcha::has_keys(),
+				'site_key'    => Captcha::site_key(),
+				'secret_mask' => Captcha::mask_secret(),
+				'message'     => Captcha::has_keys()
+					? __( 'Saved.', 'animation-addons-for-elementor' )
+					: __( 'Cleared.', 'animation-addons-for-elementor' ),
+			],
+			200
 		);
 	}
 
