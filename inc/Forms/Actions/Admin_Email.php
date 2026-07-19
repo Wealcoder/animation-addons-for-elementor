@@ -85,6 +85,14 @@ class Admin_Email extends Action_Base {
 
 		$sent = wp_mail( $to, $subject, $body, $headers, $attachments );
 
+		// Store-less ("Email Only") forms: the email WAS the delivery — once
+		// it's out, nothing can ever reach these files again (no submission
+		// row → no dashboard link), so purge instead of letting personal
+		// data sit out the 24h TTL. Failed sends keep the files for retries.
+		if ( $sent && (int) ( $context['submission_id'] ?? 0 ) <= 0 ) {
+			Uploads::purge_pending( self::file_ids( $context ), (string) ( $context['form_key'] ?? '' ) );
+		}
+
 		return [
 			'success'  => (bool) $sent,
 			'message'  => $sent
@@ -107,18 +115,7 @@ class Admin_Email extends Action_Base {
 	 * @return array<string,string>
 	 */
 	private static function file_attachments( array $context ): array {
-		$ids = [];
-
-		foreach ( (array) ( $context['types'] ?? [] ) as $key => $type ) {
-			if ( 'file' !== $type ) {
-				continue;
-			}
-			foreach ( (array) ( $context['fields'][ $key ] ?? [] ) as $ref ) {
-				if ( is_array( $ref ) && ! empty( $ref['id'] ) ) {
-					$ids[] = (int) $ref['id'];
-				}
-			}
-		}
+		$ids = self::file_ids( $context );
 
 		if ( empty( $ids ) ) {
 			return [];
@@ -143,6 +140,24 @@ class Admin_Email extends Action_Base {
 		}
 
 		return $out;
+	}
+
+	/** Attachment row ids referenced by every file field of the submission. */
+	private static function file_ids( array $context ): array {
+		$ids = [];
+
+		foreach ( (array) ( $context['types'] ?? [] ) as $key => $type ) {
+			if ( 'file' !== $type ) {
+				continue;
+			}
+			foreach ( (array) ( $context['fields'][ $key ] ?? [] ) as $ref ) {
+				if ( is_array( $ref ) && ! empty( $ref['id'] ) ) {
+					$ids[] = (int) $ref['id'];
+				}
+			}
+		}
+
+		return $ids;
 	}
 
 	/** Value of the first email-type field in the submission, or ''. */
