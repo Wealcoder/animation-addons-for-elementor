@@ -360,11 +360,66 @@ const runtimeMessageEl = ( form ) => {
 	return el;
 };
 
+/** The authored (styleable) status container for a tone, if the form has one. */
+const messageContainer = ( form, tone ) =>
+	form.querySelector(
+		'success' === tone
+			? '[data-element_type="e-aae-a-form-success-message"]'
+			: '[data-element_type="e-aae-a-form-error-message"]'
+	);
+
+/**
+ * Route a runtime message (duplicate / rate-limit / offline / timeout /
+ * server error) into the editor-authored status container, so the user's
+ * panel styling applies to every message the form can show. The paragraph's
+ * authored text is saved and restored when the message clears. Forms built
+ * before the containers existed fall back to the injected div. 'info' hints
+ * (slow connection) stay in the div — transient progress, not a form state.
+ */
 const showRuntimeMessage = ( form, message, tone ) => {
-	const el = runtimeMessageEl( form );
-	el.textContent = message;
-	el.dataset.tone = tone || 'error';
-	el.hidden = ! message;
+	if ( 'info' === tone && message ) {
+		const el = runtimeMessageEl( form );
+		el.textContent = message;
+		el.dataset.tone = 'info';
+		el.hidden = false;
+		return;
+	}
+
+	const container = messageContainer( form, tone );
+
+	if ( ! container ) {
+		const el = runtimeMessageEl( form );
+		el.textContent = message;
+		el.dataset.tone = tone || 'error';
+		el.hidden = ! message;
+		return;
+	}
+
+	// Routed to the authored container — silence the fallback div (it may
+	// still hold a stale 'slow connection' hint from this same request).
+	const legacy = form.querySelector( '.aae-form-runtime-message' );
+	if ( legacy ) {
+		legacy.hidden = true;
+	}
+
+	const paragraph = container.querySelector( 'p' ) || container;
+
+	if ( message ) {
+		if ( undefined === container.dataset.aaeAuthoredText ) {
+			container.dataset.aaeAuthoredText = paragraph.textContent;
+		}
+		paragraph.textContent = message;
+		container.setAttribute( 'role', 'status' );
+		container.setAttribute( 'aria-live', 'polite' );
+		container.style.display = 'block'; // inline beats the display:none base style
+		container.scrollIntoView( { block: 'nearest', behavior: 'auto' } );
+	} else {
+		if ( undefined !== container.dataset.aaeAuthoredText ) {
+			paragraph.textContent = container.dataset.aaeAuthoredText;
+			delete container.dataset.aaeAuthoredText;
+		}
+		container.style.display = ''; // back to CSS control (form-state reveal)
+	}
 };
 
 const setLoading = ( form, button, loading ) => {
@@ -415,6 +470,7 @@ const initForm = ( form ) => {
 				syncMultiSelect( form );
 			}
 			clearAllErrors( form );
+			showRuntimeMessage( form, '', 'error' );
 			form.classList.remove( 'form-state-default', 'form-state-success', 'form-state-error' );
 		}, 0 );
 	} );

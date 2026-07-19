@@ -420,6 +420,32 @@ final class Admin_Rest {
 	}
 
 	/**
+	 * List-preview form of a stored value: file-field JSON ([{id,name},…])
+	 * reads as the file names, everything else passes through as-is.
+	 */
+	private static function preview_value( string $value ): string {
+		if ( '' === $value || '[' !== $value[0] ) {
+			return $value;
+		}
+
+		$decoded = json_decode( $value, true );
+		if ( ! is_array( $decoded ) ) {
+			return $value;
+		}
+
+		$names = [];
+		foreach ( $decoded as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['name'] ) ) {
+				$names[] = (string) $entry['name'];
+			} elseif ( is_scalar( $entry ) ) {
+				$names[] = (string) $entry; // multi-select JSON arrays too.
+			}
+		}
+
+		return $names ? implode( ', ', $names ) : $value;
+	}
+
+	/**
 	 * File-field value JSON ([{id,name,size},…]) → download links for the
 	 * dashboard. The download proxy is a REST route (cookie auth), so a plain
 	 * <a href> must carry the wp_rest nonce as the _wpnonce query arg.

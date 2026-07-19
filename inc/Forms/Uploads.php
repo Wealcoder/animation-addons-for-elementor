@@ -354,6 +354,75 @@ final class Uploads {
 		);
 	}
 
+	/**
+	 * Absolute paths for a submission's uploads, keyed by a unique original
+	 * filename (wp_mail since 6.2 uses string keys as attachment names).
+	 * Used by the Admin Email action to attach submitted files.
+	 *
+	 * With a submission id, only that submission's attached rows match; the
+	 * form_key fallback covers behavior "email" forms, whose verified uploads
+	 * are never claimed (no submission row) and stay pending until the cron.
+	 *
+	 * @param int[]  $ids           Attachment row ids (from the clean value).
+	 * @param int    $submission_id 0 for store-less (email-only) forms.
+	 * @param string $form_key      Required when $submission_id is 0.
+	 * @return array<string,string> [ filename => absolute path ]
+	 */
+	public static function attachment_paths( array $ids, int $submission_id, string $form_key = '' ): array {
+		global $wpdb;
+
+		$ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
+		if ( empty( $ids ) ) {
+			return [];
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		if ( $submission_id > 0 ) {
+			$sql  = 'SELECT original_name, stored_path FROM ' . Database::attachments_table() . " WHERE submission_id = %d AND status = 'attached' AND id IN ({$placeholders})";
+			$args = array_merge( [ $submission_id ], $ids );
+		} elseif ( '' !== $form_key ) {
+			$sql  = 'SELECT original_name, stored_path FROM ' . Database::attachments_table() . " WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})";
+			$args = array_merge( [ $form_key ], $ids );
+		} else {
+			return [];
+		}
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( $sql, $args ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from our helper, placeholders generated to count.
+			ARRAY_A
+		);
+
+		$out = [];
+
+		foreach ( (array) $rows as $row ) {
+			$path = self::abs_path( (string) $row['stored_path'] );
+			if ( '' === $path || ! file_exists( $path ) ) {
+				continue;
+			}
+
+			$name = sanitize_file_name( (string) $row['original_name'] );
+			if ( '' === $name ) {
+				$name = basename( $path );
+			}
+
+			// De-dupe filenames so two "cv.pdf" uploads don't collide as keys.
+			$candidate = $name;
+			$suffix    = 2;
+			while ( isset( $out[ $candidate ] ) ) {
+				$dot       = strrpos( $name, '.' );
+				$candidate = false === $dot
+					? $name . '-' . $suffix
+					: substr( $name, 0, $dot ) . '-' . $suffix . substr( $name, $dot );
+				$suffix++;
+			}
+
+			$out[ $candidate ] = $path;
+		}
+
+		return $out;
+	}
+
 	/* ------------------------------------------------------------------ */
 	/* Cleanup                                                             */
 	/* ------------------------------------------------------------------ */

@@ -181,21 +181,44 @@ final class Validator {
 	}
 
 	/** Per-type format checks; null means the value passes. */
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field validation_rules (Validation Pro).
 	private static function check_format( string $type, string $value, array $field ): ?string {
 		switch ( $type ) {
 			case 'email':
-				return is_email( $value ) ? null : __( 'Please enter a valid email address.', 'animation-addons-for-elementor' );
+				return is_email( $value ) ? null : self::msg_or( $field, __( 'Please enter a valid email address.', 'animation-addons-for-elementor' ) );
 
 			case 'url':
-				return false !== filter_var( $value, FILTER_VALIDATE_URL ) ? null : __( 'Please enter a valid URL.', 'animation-addons-for-elementor' );
+				return false !== filter_var( $value, FILTER_VALIDATE_URL ) ? null : self::msg_or( $field, __( 'Please enter a valid URL.', 'animation-addons-for-elementor' ) );
 
 			case 'number':
-				return is_numeric( $value ) ? null : __( 'Please enter a number.', 'animation-addons-for-elementor' );
+				if ( ! is_numeric( $value ) ) {
+					return self::msg_or( $field, __( 'Please enter a number.', 'animation-addons-for-elementor' ) );
+				}
+				return self::check_range( (float) $value, $field );
 
 			case 'tel':
 				// Basic-format-only per spec's Free tier (real validation is a Pro adapter).
-				return preg_match( '/^\+?[0-9\-().\s]{3,30}$/', $value ) ? null : __( 'Please enter a valid phone number.', 'animation-addons-for-elementor' );
+				return preg_match( '/^\+?[0-9\-().\s]{3,30}$/', $value ) ? null : self::msg_or( $field, __( 'Please enter a valid phone number.', 'animation-addons-for-elementor' ) );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Number min/max from the schema snapshot — repeats the frontend's range
+	 * check so a crafted request can't store an out-of-range value.
+	 */
+	private static function check_range( float $value, array $field ): ?string {
+		$min = $field['min'] ?? '';
+		$max = $field['max'] ?? '';
+
+		if ( '' !== $min && is_numeric( $min ) && $value < (float) $min ) {
+			/* translators: %s: minimum allowed value */
+			return self::msg_or( $field, sprintf( __( 'Please enter a value of at least %s.', 'animation-addons-for-elementor' ), $min ) );
+		}
+
+		if ( '' !== $max && is_numeric( $max ) && $value > (float) $max ) {
+			/* translators: %s: maximum allowed value */
+			return self::msg_or( $field, sprintf( __( 'Please enter a value of at most %s.', 'animation-addons-for-elementor' ), $max ) );
 		}
 
 		return null;
@@ -275,13 +298,20 @@ final class Validator {
 		return is_scalar( $value ) ? (string) $value : '';
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field custom messages (Validation Pro).
-	private static function msg_required( array $field ): string {
-		return __( 'This field is required.', 'animation-addons-for-elementor' );
+	/** The field's authored error message, or the given fallback — mirrors
+	 * the frontend's messageFor(): one custom message covers every failure
+	 * kind for that field. */
+	private static function msg_or( array $field, string $fallback ): string {
+		$custom = trim( (string) ( $field['error_message'] ?? '' ) );
+
+		return '' !== $custom ? $custom : $fallback;
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- $field is reserved for per-field custom messages (Validation Pro).
+	private static function msg_required( array $field ): string {
+		return self::msg_or( $field, __( 'This field is required.', 'animation-addons-for-elementor' ) );
+	}
+
 	private static function msg_invalid( array $field ): string {
-		return __( 'Please enter a valid value.', 'animation-addons-for-elementor' );
+		return self::msg_or( $field, __( 'Please enter a valid value.', 'animation-addons-for-elementor' ) );
 	}
 }

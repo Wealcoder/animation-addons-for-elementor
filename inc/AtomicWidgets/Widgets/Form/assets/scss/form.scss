@@ -17,6 +17,29 @@
     cursor: pointer;
 }
 
+// Placeholder colour can't go through base styles (atomic has no
+// pseudo-element support): inherit each control's own Text Color (Style
+// panel) at reduced opacity, so changing Text Color moves the placeholder
+// too. Prefixed selectors stay in separate rules — one unknown pseudo in a
+// selector list would drop the whole rule.
+.aae-a-form-input::placeholder,
+.aae-a-form-textarea::placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
+.aae-a-form-input::-webkit-input-placeholder,
+.aae-a-form-textarea::-webkit-input-placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
+.aae-a-form-input::-moz-placeholder,
+.aae-a-form-textarea::-moz-placeholder {
+    color: inherit;
+    opacity: 0.6;
+}
+
 // Status-message reveal (native e-form pattern): the message containers are
 // display:none via their base style; the form's form-state-{value} class —
 // set by the States toggle now, by the submit runtime in Milestone 5 —

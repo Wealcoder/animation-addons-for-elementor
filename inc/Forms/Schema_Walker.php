@@ -143,12 +143,19 @@ final class Schema_Walker {
 			'css_id'     => $css_id,
 			'label'      => '',
 			'required'   => (bool) Prop::read( $settings, 'required', false ),
+			// Per-field custom error message — the server echoes it on a 422
+			// so backend errors read the same as the frontend's.
+			'error_message' => (string) Prop::read( $settings, 'error_message', '' ),
 		];
 
 		switch ( $field_type ) {
 			case 'input':
 			case 'textarea':
 				$field['placeholder'] = (string) Prop::read( $settings, 'placeholder', '' );
+				// Range rules for number inputs — enforced server-side by the
+				// Validator, never trusted from client attributes.
+				$field['min'] = (string) Prop::read( $settings, 'min', '' );
+				$field['max'] = (string) Prop::read( $settings, 'max', '' );
 				break;
 			case 'checkbox':
 			case 'radio':

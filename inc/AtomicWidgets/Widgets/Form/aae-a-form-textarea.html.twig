@@ -5,13 +5,8 @@
 {% set classes = ['aae-a-form-textarea', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
 
-{# Placeholder colour inherits the textarea's Text Color (Style panel) at
-   reduced opacity — see aae-a-form-input.html.twig. #}
-<style>
-    [data-id="{{ id }}"]::placeholder { color: inherit; opacity: 0.6; }
-    [data-id="{{ id }}"]::-webkit-input-placeholder { color: inherit; opacity: 0.6; }
-    [data-id="{{ id }}"]::-moz-placeholder { color: inherit; opacity: 0.6; }
-</style>
+{# Placeholder colour: class-scoped rules in form.scss — see
+   aae-a-form-input.html.twig. #}
 <textarea
     class="{{ classes }} {{ editor_classes | default('') }}"
     name="{{ input_name | e('html_attr') }}"

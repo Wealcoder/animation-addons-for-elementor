@@ -6,15 +6,9 @@
 {% set classes = ['aae-a-form-input', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
 
-{# Placeholder colour can't go through base styles (atomic has no pseudo-element
-   support), so scope it to this input's data-id and inherit the input's own
-   Text Color (Style panel → Color) at reduced opacity — change Text Color and
-   the placeholder follows. Renders on editor + frontend. #}
-<style>
-    [data-id="{{ id }}"]::placeholder { color: inherit; opacity: 0.6; }
-    [data-id="{{ id }}"]::-webkit-input-placeholder { color: inherit; opacity: 0.6; }
-    [data-id="{{ id }}"]::-moz-placeholder { color: inherit; opacity: 0.6; }
-</style>
+{# Placeholder colour: class-scoped rules in form.scss (inherit Text Color at
+   reduced opacity) — was a per-instance <style> here, which printed one tag
+   per field on the page. #}
 <input
     class="{{ classes }} {{ editor_classes | default('') }}"
     type="{{ settings.type | default('text') }}"
