@@ -55,6 +55,19 @@ const AUTO_PRESETS = {
     presetId: 'timeline-social',
     isDefault: (container) => matchesDefaultShape(container, Array(4).fill('e-aae-a-timeline-item')),
   },
+  'e-aae-a-image-compare': {
+    presetId: 'image-compare-horizontal',
+    // The preset itself seeds the exact same 6 widget types as
+    // define_default_children() (image/image/divider/div-block/paragraph/
+    // paragraph), so a shape-only check can't tell "untouched default" from
+    // "just got the preset applied" — it would reapply forever. Check the
+    // `aae-ic-default` marker class instead (same technique as the
+    // e-aae-a-progressbar rule above), which only the genuine defaults carry.
+    isDefault: (container) => {
+      const kids = container.children || [];
+      return kids.length > 0 && kids.every((kid) => getClassesList(kid).includes('aae-ic-default'));
+    },
+  },
   'e-aae-a-toggle-switcher': {
     presetId: 'toggle-switcher-style-switch',
     isDefault: (container) =>

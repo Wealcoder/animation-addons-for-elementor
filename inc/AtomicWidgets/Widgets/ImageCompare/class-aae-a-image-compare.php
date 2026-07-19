@@ -33,6 +33,8 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -139,6 +141,8 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$size_100_pct = Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] );
 
+		$zero_px = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
+
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
@@ -148,6 +152,16 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 						->add_prop( 'width',      $size_100_pct )
 						->add_prop( 'max-width',  $size_100_pct )
 						->add_prop( 'display',    String_Prop_Type::generate( 'grid' ) )
+						// The active Kit's default container padding (`.e-con`,
+						// commonly 10px a side) otherwise leaks onto this widget's
+						// root. That only shrinks the in-flow After image's
+						// content box (605px of a 625px box, verified live) —
+						// the absolutely positioned Before/divider/thumb/captions
+						// use `inset:0`, whose containing block is the PADDING
+						// box, so they ignore it and span the full 625px. Same
+						// mismatch in both directions; explicit padding:0 makes
+						// every child agree on the same box.
+						->add_prop( 'padding',    $zero_px )
 						->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'px' ] ) )
 				),
 		];
@@ -157,34 +171,57 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	 * Same default composition as Image Compare Main — presets replace this
 	 * whole tree via the picker, but a fresh drop of the plain element still
 	 * has to work sensibly before any preset is applied.
+	 *
+	 * Every child also carries the `aae-ic-default` marker class. The preset
+	 * JSONs seed the exact same 6 widget types (image/image/divider/div-block/
+	 * paragraph/paragraph), so the editor's auto-preset watcher (see
+	 * src/modules/atomic/editor-bridge/auto-preset.js) can't tell "untouched
+	 * default" from "just got the preset applied" by shape alone — it needs
+	 * this marker (same technique as AAE_A_Progressbar's `aae-pb-default`).
+	 * Without it the watcher re-applies the preset to its own output forever,
+	 * since the newly-created element gets a new id and is never in `handled`.
 	 */
 	protected function define_default_children() {
 		return [
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'Before Image' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-before' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-before', 'aae-ic-default' ] ),
+					'image'   => Image_Prop_Type::generate( [
+						'src'  => Image_Src_Prop_Type::generate( [
+							'id'  => null,
+							'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/before.jpg' ),
+						] ),
+						'size' => String_Prop_Type::generate( 'large' ),
+					] ),
 				] )
 				->build(),
 
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'After Image' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-after' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-after', 'aae-ic-default' ] ),
+					'image'   => Image_Prop_Type::generate( [
+						'src'  => Image_Src_Prop_Type::generate( [
+							'id'  => null,
+							'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/after.jpg' ),
+						] ),
+						'size' => String_Prop_Type::generate( 'large' ),
+					] ),
 				] )
 				->build(),
 
 			Atomic_Divider::generate()
 				->editor_settings( [ 'title' => 'Divider' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-divider' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-divider', 'aae-ic-default' ] ),
 				] )
 				->build(),
 
 			Div_Block::generate()
 				->editor_settings( [ 'title' => 'Handle' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-thumb' ] ),
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-image-compare-thumb', 'aae-ic-default' ] ),
 				] )
 				->children( [
 					Atomic_Svg::generate()
@@ -203,7 +240,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Before Label' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-before' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-before', 'aae-ic-default' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'Before' ),
 						'children' => [],
@@ -215,7 +252,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'After Label' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-after' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-image-compare-caption-after', 'aae-ic-default' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'After' ),
 						'children' => [],
