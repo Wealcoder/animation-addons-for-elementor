@@ -831,14 +831,35 @@ const ISSUE_LABELS = {
 
 const HealthTab = ({ onViewSubmissions }) => {
   const [forms, setForms] = useState(null);
+  const [server, setServer] = useState(null);
 
   useEffect(() => {
     api("health")
-      .then((data) => setForms(data.forms))
+      .then((data) => {
+        setForms(data.forms);
+        setServer(data.server || null);
+      })
       .catch((error) => toast.error(error.message));
   }, []);
 
   return (
+    <>
+    {server?.uploads_protection === "nginx_config_needed" && (
+      <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
+        <p className="font-medium">
+          {__("Nginx detected — protect the uploads folder", "animation-addons-for-elementor")}
+        </p>
+        <p className="mt-1">
+          {__(
+            "Form file uploads live under wp-content/uploads/aae-forms/. The bundled .htaccess blocks direct downloads on Apache, but nginx ignores .htaccess — add this to your server config (then reload nginx):",
+            "animation-addons-for-elementor"
+          )}
+        </p>
+        <pre className="mt-2 overflow-x-auto rounded bg-amber-100 p-2 text-xs dark:bg-amber-900">
+          {server.nginx_snippet}
+        </pre>
+      </div>
+    )}
     <Table>
       <TableHeader>
         <TableRow>
@@ -921,6 +942,7 @@ const HealthTab = ({ onViewSubmissions }) => {
           ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 

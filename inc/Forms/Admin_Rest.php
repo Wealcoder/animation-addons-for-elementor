@@ -639,7 +639,33 @@ final class Admin_Rest {
 			];
 		}
 
-		return new WP_REST_Response( [ 'forms' => $out ], 200 );
+		return new WP_REST_Response(
+			[
+				'forms'  => $out,
+				'server' => self::server_health(),
+			],
+			200
+		);
+	}
+
+	/**
+	 * Server-level checks the dashboard surfaces above the per-form table.
+	 * The uploads dir ships a deny-all .htaccess, which nginx ignores — on
+	 * nginx the admin must add a location block, so say so with the snippet.
+	 */
+	private static function server_health(): array {
+		$software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) : '';
+		$is_nginx = false !== strpos( $software, 'nginx' );
+
+		$uploads = wp_upload_dir();
+		$dir     = trailingslashit( (string) $uploads['basedir'] ) . 'aae-forms';
+
+		return [
+			'software'           => $software,
+			'uploads_protection' => $is_nginx ? 'nginx_config_needed' : 'htaccess',
+			'has_uploads'        => is_dir( $dir ),
+			'nginx_snippet'      => 'location ^~ /wp-content/uploads/aae-forms/ { deny all; }',
+		];
 	}
 
 	// ------------------------------------------------------------------
@@ -829,7 +855,9 @@ final class Admin_Rest {
 		foreach ( $rows as $row ) {
 			$line = [ $row->id, $row->form_key, $row->created_at, $row->status, $row->source_url ];
 			foreach ( array_keys( $columns ) as $key ) {
-				$line[] = $values_by_submission[ (int) $row->id ][ $key ] ?? '';
+				// Same humanizing as the list preview: file-field JSON → file
+				// names, multi-select JSON → joined values, plain text as-is.
+				$line[] = self::preview_value( (string) ( $values_by_submission[ (int) $row->id ][ $key ] ?? '' ) );
 			}
 			fputcsv( $out, $line, ',', '"', '\\' );
 		}

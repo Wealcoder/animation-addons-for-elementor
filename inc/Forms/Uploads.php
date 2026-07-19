@@ -423,6 +423,43 @@ final class Uploads {
 		return $out;
 	}
 
+	/**
+	 * Delete still-pending upload rows + files of a form. Used by the Admin
+	 * Email action after a successful send on a store-less ("Email Only")
+	 * form: the email was the delivery, nothing else can ever reach these
+	 * files (no submission row → no dashboard link), so don't let personal
+	 * data linger for the 24h TTL.
+	 *
+	 * @param int[] $ids Attachment row ids.
+	 */
+	public static function purge_pending( array $ids, string $form_key ): void {
+		global $wpdb;
+
+		$ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
+		if ( empty( $ids ) || '' === $form_key ) {
+			return;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, stored_path FROM ' . Database::attachments_table() . " WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from our helper, placeholders generated to count.
+				array_merge( [ $form_key ], $ids )
+			),
+			ARRAY_A
+		);
+
+		foreach ( (array) $rows as $row ) {
+			$path = self::abs_path( (string) $row['stored_path'] );
+			if ( '' !== $path && file_exists( $path ) ) {
+				@unlink( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors -- best-effort sweep.
+			}
+
+			$wpdb->delete( Database::attachments_table(), [ 'id' => (int) $row['id'] ], [ '%d' ] );
+		}
+	}
+
 	/* ------------------------------------------------------------------ */
 	/* Cleanup                                                             */
 	/* ------------------------------------------------------------------ */
