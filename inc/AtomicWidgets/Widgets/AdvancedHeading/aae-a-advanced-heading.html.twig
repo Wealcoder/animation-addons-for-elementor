@@ -1,30 +1,27 @@
-{% set allowed_tags = ['h1','h2','h3','h4','h5','h6','div'] %}
+{#
+  AAE Advanced Heading — renders the raw-HTML `content` inside the chosen tag.
+
+  `content` is already sanitised on save by AAE_Html_Rich_Prop_Type (wp_kses
+  with a class-preserving whitelist), so it is printed with `| raw` and WITHOUT
+  `striptags` — that is what lets a highlight <span class="…"> survive to the
+  frontend. The plugin adds no styling of its own; style your classes yourself.
+#}
+{% set allowed_tags = ['h1','h2','h3','h4','h5','h6','div','p','span'] %}
 {% set tag = settings.ah_tag | default('h2') %}
 {% if tag not in allowed_tags %}{% set tag = 'h2' %}{% endif %}
 
-{% set style = settings.ah_style | default('gradient') %}
-{% set align = settings.ah_align | default('left') %}
-
 {% set classes = [
-        'e-con',
-        'e-atomic-element',
-        base_styles.base,
         'aae-a-advanced-heading',
-        'aae-ah-style-' ~ style,
-        'aae-ah-align-' ~ align
-    ] | merge(settings.classes | default([])) | join(' ') %}
+        'e-atomic-element'
+    ] | merge(settings.classes | default([])) | join(' ') | trim %}
 
-<{{ tag | e('html_tag') }} class="{{ classes }} {{ editor_classes | default('') }}"
+<{{ tag | e('html_tag') }}
+    class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
-    data-interaction-id="{{ interaction_id | default('') }}"
-    {% if settings._cssid is defined and settings._cssid is not empty %}
-        id="{{ settings._cssid | e('html_attr') }}"
-    {% endif %}
-    {% if settings.attributes is defined and settings.attributes is not empty %}
-        {{ settings.attributes | raw }}
-    {% endif %}
-    {{ editor_attributes | default('') | raw }}>
-    {{ children_placeholder | raw }}
-</{{ tag | e('html_tag') }}>
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+>{{ settings.content | default('') | raw }}</{{ tag | e('html_tag') }}>

@@ -1,4 +1,19 @@
 <?php
+/**
+ * AAE Advanced Heading — atomic leaf widget.
+ *
+ * A heading whose text is a single raw-HTML field. Unlike Elementor's stock
+ * heading (which strips `class` from inline tags), this widget keeps inline
+ * markup WITH your own classes — so you can wrap any word in
+ * `<span class="…">`, `<mark>`, `<b>` etc. and style / highlight it yourself.
+ *
+ * Design-less by intent: the plugin ships NO CSS. You add classes in the
+ * content and style them via the Elementor Style panel or your own CSS.
+ * (See AAE_Html_Rich_Prop_Type for why a custom prop type is needed to let
+ * the classes survive save + render.)
+ *
+ * @package AnimationAddonsForElementor
+ */
 
 namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
 
@@ -6,44 +21,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
+if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base' ) ) {
 	return;
 }
 
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+require_once __DIR__ . '/class-aae-html-rich-prop-type.php';
+
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Textarea_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
-use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
-use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Advanced_Heading extends Atomic_Element_Base {
+class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 
-	use Has_Element_Template;
+	use Has_Template;
 
-	const BASE_STYLE_KEY = 'base';
-
-	/** Class added to a child to mark it as a highlight part. */
-	const HIGHLIGHT_CLASS = 'aae-ah-highlight';
-
-	public static $widget_description = 'Advanced heading with editable text and highlight parts. Highlight treatment: gradient, bracket, divider+dot, or animated underline.';
-
-	public function __construct( $data = [], $args = null ) {
-		parent::__construct( $data, $args );
-		$this->meta( 'is_container', true );
-	}
-
-	public static function get_type() {
-		return 'e-aae-a-advanced-heading';
-	}
+	public static $widget_description = 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.';
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-advanced-heading';
@@ -54,7 +53,7 @@ class AAE_A_Advanced_Heading extends Atomic_Element_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'atomic', 'heading', 'title', 'highlight', 'gradient', 'advanced' ];
+		return [ 'atomic', 'heading', 'title', 'highlight', 'html', 'span', 'advanced' ];
 	}
 
 	public function get_icon() {
@@ -67,29 +66,18 @@ class AAE_A_Advanced_Heading extends Atomic_Element_Base {
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// HTML tag for the heading wrapper.
-			'ah_tag'   => String_Prop_Type::make()->default( 'h2' ),
+			'ah_tag'  => String_Prop_Type::make()->default( 'h2' ),
 
-			// Highlight treatment applied to .aae-ah-highlight children.
-			'ah_style' => String_Prop_Type::make()->default( 'gradient' ),
-
-			// Alignment of the heading line.
-			'ah_align' => String_Prop_Type::make()->default( 'left' ),
+			// Raw inline HTML. Sanitised by AAE_Html_Rich_Prop_Type so classes
+			// on inline tags survive; rendered with `| raw` (no striptags).
+			'content' => AAE_Html_Rich_Prop_Type::make()->default(
+				'Build your <span class="highlight">Innovate</span> Our Core Solution'
+			),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
-		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
-
 		return [
-			Section::make()
-				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
-				->set_id( 'aae_presets' )
-				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
-						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'layout' => 'custom' ] ),
-				] ),
-
 			Section::make()
 				->set_label( __( 'Heading', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
@@ -104,23 +92,13 @@ class AAE_A_Advanced_Heading extends Atomic_Element_Base {
 							[ 'value' => 'h5', 'label' => 'H5' ],
 							[ 'value' => 'h6', 'label' => 'H6' ],
 							[ 'value' => 'div', 'label' => __( 'div', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'p', 'label' => __( 'p', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'span', 'label' => __( 'span', 'animation-addons-for-elementor' ) ],
 						] ),
 
-					// NOTE: 'ah_style' (Highlight Style) is intentionally NOT exposed
-					// as a panel control. The prop still exists in the schema and
-					// drives the .aae-ah-style-<value> class in the Twig template,
-					// but the value is meant to be baked into presets by the plugin
-					// author (set it in the exported preset JSON), not changed by
-					// end users. To temporarily re-expose it for authoring, restore
-					// a Select_Control::bind_to( 'ah_style' ) here.
-
-					Select_Control::bind_to( 'ah_align' )
-						->set_label( __( 'Alignment', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'left',   'label' => __( 'Left',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'center', 'label' => __( 'Center', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'right',  'label' => __( 'Right',  'animation-addons-for-elementor' ) ],
-						] ),
+					Textarea_Control::bind_to( 'content' )
+						->set_label( __( 'Content (HTML allowed)', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'Build your <span class="highlight">word</span> here' ),
 				] ),
 
 			Section::make()
@@ -134,70 +112,13 @@ class AAE_A_Advanced_Heading extends Atomic_Element_Base {
 		];
 	}
 
-	protected function define_base_styles(): array {
-		return [
-			self::BASE_STYLE_KEY => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'display',     String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'flex-wrap',   String_Prop_Type::generate( 'wrap' ) )
-						->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',         Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ) )
-						->add_prop( 'font-size',   String_Prop_Type::generate( '40px' ) )
-						->add_prop( 'font-weight', String_Prop_Type::generate( '700' ) )
-						->add_prop( 'line-height', String_Prop_Type::generate( '1.2' ) )
-				),
-		];
-	}
-
-	protected function define_default_children() {
-		return [
-			$this->make_part( 'Build your', false, 'Text' ),
-			$this->make_part( 'Innovate', true, 'Highlight' ),
-			$this->make_part( 'Our Core Solution', false, 'Text' ),
-		];
-	}
-
-	/**
-	 * Build a single editable text part as an atomic Paragraph <span>.
-	 *
-	 * @param string $text        Initial text content.
-	 * @param bool   $is_highlight Whether this part gets the highlight class.
-	 * @param string $title       Editor navigator title.
-	 */
-	private function make_part( string $text, bool $is_highlight, string $title ) {
-		$classes = $is_highlight ? [ self::HIGHLIGHT_CLASS ] : [ 'aae-ah-text' ];
-
-		return Atomic_Paragraph::generate()
-			->editor_settings( [ 'title' => $title ] )
-			->settings( [
-				'classes'   => Classes_Prop_Type::generate( $classes ),
-				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( $text ),
-					'children' => [],
-				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
-			] )
-			->build();
-	}
-
-	// No allowed-child-types whitelist: a non-empty list makes the editor's
-	// drag-drop gate (getChildType) STRICT — only listed types can be dropped,
-	// which silently blocked AAE atomic widgets like e-aae-a-counter. Returning
-	// the base default ([] = allow all, like flexbox/div-block) lets any native
-	// or AAE atomic widget be added inside the heading — including future ones.
-
-	protected function define_default_html_tag() {
-		return 'h2';
-	}
+	// No define_base_styles() override → inherits the empty default: the plugin
+	// ships ZERO CSS for this widget. Style everything via the panel / your own
+	// classes.
 
 	protected function get_templates(): array {
 		return [
 			'elementor/elements/aae-a-advanced-heading' => __DIR__ . '/aae-a-advanced-heading.html.twig',
 		];
-	}
-
-	public function get_style_depends(): array {
-		return [ 'aae-a-advanced-heading-css' ];
 	}
 }

@@ -811,7 +811,7 @@ final class Atomic
 
 			'aae-a-advanced-heading' => [
 				'label'        => 'Advanced Heading',
-				'description'  => 'Heading with editable text and highlight parts: gradient, bracket, divider+dot, or animated underline.',
+				'description'  => 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.',
 				'icon'         => 'eicon-t-letter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -821,7 +821,8 @@ final class Atomic
 					'heading',
 					'title',
 					'highlight',
-					'gradient',
+					'html',
+					'span',
 					'atomic',
 				],
 				'category'     => 'general',
@@ -2704,11 +2705,10 @@ final class Atomic
 			],
 
 			'aae-a-advanced-heading' => [
-				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
-				'file'         => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
-				'has_script'   => false,
-				'style_handle' => 'aae-a-advanced-heading-css',
-				'style_path'   => '/assets/atomic/css/advanced-heading.css',
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
+				'file'       => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
+				'has_script' => false,
+				// Design-less: this widget ships no CSS. Style your own classes.
 			],
 
 			'aae-a-progressbar' => [
