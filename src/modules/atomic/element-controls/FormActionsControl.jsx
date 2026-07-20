@@ -142,7 +142,6 @@ const readConfig = (container) => {
     auto_reply: { ...DEFAULT_CONFIG.auto_reply },
     webhook: { ...DEFAULT_CONFIG.webhook },
     redirect: { ...DEFAULT_CONFIG.redirect },
-    brevo: { ...DEFAULT_CONFIG.brevo, mapping: {} },
   };
 
   try {
@@ -316,11 +315,14 @@ const RedirectIcon = () => (
   </svg>
 );
 
-const BrevoIcon = () => (
+/* Neutral plug/integration icon — the section covers whichever provider is
+   selected in the Service dropdown below, so it must not imply one brand. */
+const PlugIcon = () => (
   <svg {...iconProps}>
-    <path d="M12 2a3 3 0 0 0-3 3v2H7a2 2 0 0 0-2 2v2a5 5 0 0 0 5 5h.5" />
-    <path d="M9 7h6a4 4 0 0 1 4 4 5 5 0 0 1-5 5h-1a4 4 0 0 0-4 4" />
-    <circle cx="12" cy="11" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M9 2v4" />
+    <path d="M15 2v4" />
+    <path d="M6 8h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8Z" />
+    <path d="M12 17v5" />
   </svg>
 );
 
@@ -545,17 +547,47 @@ export function FormActionsControl({ label }) {
   const [intLoading, setIntLoading] = useState(false);
   const [listsLoading, setListsLoading] = useState(false);
 
-  const loadIntegrations = async () => {
+  // `configForDefault` is the JUST-READ config from openDialog(), passed in
+  // directly rather than read off React state — `setConfig` inside the same
+  // synchronous openDialog() call hasn't committed yet, so closing over the
+  // `config` state here would still see the PREVIOUS dialog's (or the
+  // default, all-disabled) config and default the picker to the wrong
+  // provider, e.g. falling back to Brevo when the form actually has
+  // Mailchimp enabled.
+  const loadIntegrations = async (configForDefault) => {
     setIntLoading(true);
     try {
       const data = await getAdminData("integrations");
       const all = data.integrations || [];
       setIntegrations(all);
-      // Default the picker to the first provider that is already enabled in
-      // this form's config, else the first connected one, else the first.
-      const enabled = all.find((i) => config[i.id]?.enabled);
+      // Default the picker to the enabled provider that's actually
+      // connected, else any enabled one, else the first connected one, else
+      // the first in the catalog. Preferring "enabled AND connected" over
+      // plain catalog order matters when more than one block is enabled
+      // (stale data, see the self-heal below) — an enabled-but-disconnected
+      // provider is the leftover, not the one the user actually wants.
+      const enabledOnes = all.filter((i) => configForDefault[i.id]?.enabled);
+      const enabledConnected = enabledOnes.find((i) => i.pro && i.connected);
       const connected = all.find((i) => i.pro && i.connected);
-      setProvider((enabled || connected || all[0] || {}).id || "");
+      const chosen = enabledConnected || enabledOnes[0] || connected || all[0] || {};
+      setProvider(chosen.id || "");
+
+      // Self-heal data saved before providers were made mutually exclusive:
+      // more than one provider block can end up enabled=true (e.g. switching
+      // the Service dropdown across two edit sessions never turned the
+      // previous one off). Clear every OTHER enabled block down to just the
+      // chosen one so a stale provider doesn't keep creating jobs silently.
+      if (enabledOnes.length > 1) {
+        setConfig((current) => {
+          const next = { ...current };
+          enabledOnes.forEach((item) => {
+            if (item.id !== chosen.id && next[item.id]?.enabled) {
+              next[item.id] = { ...next[item.id], enabled: false };
+            }
+          });
+          return next;
+        });
+      }
     } catch (_e) {
       setIntegrations([]);
       setProvider("");
@@ -584,14 +616,15 @@ export function FormActionsControl({ label }) {
   const openDialog = () => {
     dragPos.current = { x: 0, y: 0 }; // fresh paper each open — start undragged
     const container = getContainer(element.id);
-    setConfig(readConfig(container));
+    const freshConfig = readConfig(container);
+    setConfig(freshConfig);
     setFieldTags(collectFieldTags(container));
     setNotice(null);
     setTab("admin_email");
     setIntegrations([]);
     setProvider("");
     setLists([]);
-    loadIntegrations();
+    loadIntegrations(freshConfig);
     setOpen(true);
   };
 
@@ -610,12 +643,59 @@ export function FormActionsControl({ label }) {
   // The per-provider config block, created lazily so any provider works.
   const providerCfg = config[provider] || { enabled: false, list_id: "", mapping: {} };
 
-  /** Patch a key on the selected provider's config block. */
+  /**
+   * Only ONE email-marketing provider can be active per form (one Service
+   * dropdown, one enable switch) — but each provider's config lives in its
+   * own actions_json block, so switching the dropdown alone never touched
+   * the PREVIOUSLY selected provider's `enabled` flag. That let a form end
+   * up with e.g. both brevo.enabled=true and mailchimp.enabled=true after
+   * switching providers across two edit sessions, silently creating a job
+   * for a provider the user thought they'd moved away from (and picking the
+   * wrong one back up as the "default enabled" provider on next open, since
+   * that picks the first enabled hit in catalog order). Enforce mutual
+   * exclusivity here: turning a provider on turns every other registered
+   * provider off in the same update.
+   */
   const patchProvider = (key, value) =>
-    setConfig((current) => ({
-      ...current,
-      [provider]: { ...(current[provider] || { enabled: false, list_id: "", mapping: {} }), [key]: value },
-    }));
+    setConfig((current) => {
+      const next = {
+        ...current,
+        [provider]: { ...(current[provider] || { enabled: false, list_id: "", mapping: {} }), [key]: value },
+      };
+      if ("enabled" === key && value) {
+        integrations.forEach((item) => {
+          if (item.id !== provider && next[item.id]?.enabled) {
+            next[item.id] = { ...next[item.id], enabled: false };
+          }
+        });
+      }
+      return next;
+    });
+
+  /**
+   * Switch which provider the Integrations tab is editing. If another
+   * provider is currently the enabled one, move `enabled` over to the newly
+   * picked provider too — so the dropdown always reflects "the" active
+   * provider instead of leaving a stale enabled flag behind on the one the
+   * user just switched away from.
+   */
+  const switchProvider = (nextProviderId) => {
+    setConfig((current) => {
+      const wasEnabled = integrations.some((item) => item.id !== nextProviderId && current[item.id]?.enabled);
+      if (!wasEnabled) {
+        return current;
+      }
+      const next = { ...current };
+      integrations.forEach((item) => {
+        if (item.id !== nextProviderId && next[item.id]?.enabled) {
+          next[item.id] = { ...next[item.id], enabled: false };
+        }
+      });
+      next[nextProviderId] = { ...(next[nextProviderId] || { list_id: "", mapping: {} }), enabled: true };
+      return next;
+    });
+    setProvider(nextProviderId);
+  };
 
   /** Set one provider attribute → form-field mapping (or clear it). */
   const patchProviderMap = (attr, fieldKey) =>
@@ -890,8 +970,8 @@ export function FormActionsControl({ label }) {
             {/* ---------------- Integrations (email marketing) ---------- */}
             {tab === "integrations" && (
             <SectionCard
-              icon={<BrevoIcon />}
-              title={providerInfo ? providerInfo.label : __("Email Marketing", TD)}
+              icon={<PlugIcon />}
+              title={__("Integration Enable", TD)}
               hint={__("Add each submitter as a contact in your list", TD)}
               enabled={!!providerCfg.enabled}
               onToggle={(v) => patchProvider("enabled", v)}
@@ -903,7 +983,7 @@ export function FormActionsControl({ label }) {
                   labelId="aae-int-provider"
                   label={__("Service", TD)}
                   value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
+                  onChange={(e) => switchProvider(e.target.value)}
                 >
                   {integrations.map((item) => (
                     <MenuItem key={item.id} value={item.id}>

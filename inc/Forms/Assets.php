@@ -89,8 +89,14 @@ final class Assets {
 			self::SCRIPT_HANDLE,
 			'AAEFormConfig',
 			[
-				'restUrl' => esc_url_raw( rest_url( Rest::REST_NAMESPACE . '/' ) ),
-				'i18n'    => [
+				'restUrl'          => esc_url_raw( rest_url( Rest::REST_NAMESPACE . '/' ) ),
+				// Public site key only — never the secret key. The runtime
+				// loads Google's script and calls grecaptcha.execute() itself,
+				// only for forms actually marked captcha_provider=recaptcha_v3
+				// (data-aae-form-recaptcha on the <form>), so a page with no
+				// such form never touches Google's script at all.
+				'recaptchaSiteKey' => Captcha::site_key(),
+				'i18n'             => [
 					// Network/state copy — exact wording from the spec's UX table.
 					'slow'          => __( 'Your connection seems slow. Please wait a moment.', 'animation-addons-for-elementor' ),
 					'offline'       => __( 'You appear to be offline. Please reconnect and try again.', 'animation-addons-for-elementor' ),

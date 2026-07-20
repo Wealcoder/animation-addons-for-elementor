@@ -322,6 +322,11 @@ final class Atomic
 			// one must never hit ElementTypeNotFound.
 			'aae-a-form-field-error',
 			'aae-a-form-file',
+			// Multi-Step preset drops these as default children too — same
+			// always-on reasoning.
+			'aae-a-form-step',
+			'aae-a-form-next',
+			'aae-a-form-prev',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -1686,6 +1691,45 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form-rating' => [
+				'label'        => 'Form Rating',
+				'description'  => 'Advanced Field (Pro) — a star-rating field. Progressively enhances a real number input, so submit and validation work exactly like any other number field.',
+				'icon'         => 'eicon-star-o',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form rating',
+					'star',
+					'review',
+					'feedback',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range' => [
+				'label'        => 'Form Range',
+				'description'  => 'Advanced Field (Pro) — a range slider. Style tab → Background Color sets the slider\'s own color.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range',
+					'slider',
+					'range',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-form-submit' => [
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
@@ -1697,6 +1741,67 @@ final class Atomic
 				'keywords'     => [
 					'form submit',
 					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-step' => [
+				'label'        => 'Form Step',
+				'description'  => 'Multi-Step Forms (Pro) — one page of a multi-step form. Add 2+ inside a form to turn it into a wizard with Next/Previous navigation and per-step validation.',
+				'icon'         => 'eicon-single-page',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form step',
+					'multi-step',
+					'wizard',
+					'page',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-next' => [
+				'label'        => 'Next Step Button',
+				'description'  => 'Multi-Step Forms (Pro) — advances a multi-step form to the next step. Validates the current step first.',
+				'icon'         => 'eicon-arrow-right',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form next',
+					'multi-step',
+					'wizard',
+					'button',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-prev' => [
+				'label'        => 'Previous Step Button',
+				'description'  => 'Multi-Step Forms (Pro) — steps a multi-step form back one step. Never validated.',
+				'icon'         => 'eicon-arrow-left',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form previous',
+					'form back',
+					'multi-step',
+					'wizard',
+					'button',
 				],
 				'category'     => 'general',
 				'order'        => 19,
@@ -2688,6 +2793,9 @@ final class Atomic
 				'file'          => 'Widgets/Form/class-aae-a-form.php',
 				'script_handle' => 'aae-a-form-js',
 				'script_path'   => '/assets/atomic/js/form.js',
+				// Multi-Step step-transition animations (lib/multi-step.js)
+				// are plain CSS transform/opacity transitions — no JS
+				// tweening library dependency needed.
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-form-css',
 				'style_path'    => '/assets/atomic/css/form.css',
@@ -2757,6 +2865,36 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_File',
 				'file'       => 'Widgets/Form/class-aae-a-form-file.php',
 				'has_script' => false,
+			],
+
+			'aae-a-form-rating' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Rating',
+				'file'       => 'Widgets/Form/class-aae-a-form-rating.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/rating.js).
+			],
+
+			'aae-a-form-range' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
+				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
+			],
+
+			'aae-a-form-step' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Step',
+				'file'       => 'Widgets/Form/class-aae-a-form-step.php',
+				'has_script' => false, // step-nav logic ships inside aae-a-form-js itself.
+			],
+
+			'aae-a-form-next' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Next',
+				'file'       => 'Widgets/Form/class-aae-a-form-next.php',
+				'has_script' => false, // click handler ships inside aae-a-form-js itself.
+			],
+
+			'aae-a-form-prev' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Prev',
+				'file'       => 'Widgets/Form/class-aae-a-form-prev.php',
+				'has_script' => false, // click handler ships inside aae-a-form-js itself.
 			],
 
 			'aae-a-nav' => [

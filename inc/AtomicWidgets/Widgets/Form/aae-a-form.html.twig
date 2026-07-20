@@ -19,6 +19,7 @@
     data-interaction-id="{{ interaction_id | default(id) }}"
     data-aae-form-ready="false"
     data-aae-form-behavior="{{ settings.behavior | default('store_email') }}"
+    {% if settings.captcha_provider is defined and settings.captcha_provider == 'recaptcha_v3' %}data-aae-form-recaptcha="v3"{% endif %}
     {% if settings.form_key is defined and settings.form_key is not empty %}data-aae-form-key="{{ settings.form_key | e('html_attr') }}"{% endif %}
     novalidate
     {% if settings._cssid is defined and settings._cssid is not empty %}
