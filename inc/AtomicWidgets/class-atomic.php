@@ -232,7 +232,7 @@ final class Atomic
 	{
 		if (is_null($this->active_widgets)) {
 			$saved = $this->get_saved_options();
-			$this->active_widgets = ! empty($saved) ? array_keys($saved) : [];
+			$this->active_widgets = ! empty($saved) ? array_keys(array_filter($saved)) : [];
 		}
 
 		return $this->active_widgets;
@@ -334,7 +334,15 @@ final class Atomic
 
 		$saved = $this->get_saved_options();
 
-		return isset($saved[$slug]);
+		// `isset()` alone can't tell "user explicitly turned this off"
+		// (stored as `false`) apart from "never decided" (key absent) —
+		// both used to be treated as "off" here, which was fine for THIS
+		// check, but made maybe_seed_widgets_defaults() unable to make the
+		// same distinction and re-enable widgets the user had turned off.
+		// `!empty()` keeps this check's own behavior identical (false or
+		// missing both read as inactive) while ajax_save_settings() now
+		// writes real `false` values so that distinction is preserved.
+		return ! empty($saved[$slug]);
 	}
 
 	/* =====================================================================
@@ -407,7 +415,7 @@ final class Atomic
 
 		foreach ($this->widgets_registry as $slug => $def) {
 			$widgets[$slug] = array_merge($def, [
-				'is_active' => isset($saved[$slug]),
+				'is_active' => ! empty($saved[$slug]),
 			]);
 		}
 
@@ -1311,7 +1319,7 @@ final class Atomic
 			],
 
 			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar Template',
+				'label'        => 'Progress Bar',
 				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
@@ -1826,7 +1834,7 @@ final class Atomic
 			],
 
 			'aae-a-btn' => [
-				'label'        => 'ButtonTemplate',
+				'label'        => 'Button',
 				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => false,
@@ -1847,7 +1855,7 @@ final class Atomic
 			],
 
 			'aae-a-btn-pro' => [
-				'label'        => 'ButtonTemplate Pro',
+				'label'        => 'Button Pro',
 				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => true,
@@ -3609,14 +3617,23 @@ final class Atomic
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
-		// Build a clean associative array: slug => true for enabled.
-		$clean = [];
+		// Merge explicit true/false decisions into the existing saved state
+		// (rather than only ever recording "on" and omitting "off"). Storing
+		// real `false` values — instead of just leaving the key absent — is
+		// what lets maybe_seed_widgets_defaults() tell "never decided yet"
+		// apart from "user turned this off"; omitting `false` made the two
+		// indistinguishable, so any `default => true` widget got silently
+		// re-enabled by that re-seed pass the moment it was disabled here.
+		$clean = $this->get_saved_options();
+
 		foreach ($settings as $slug => $state) {
 			$slug = sanitize_key($slug);
 
-			if (isset($this->widgets_registry[$slug]) && ! empty($state)) {
-				$clean[$slug] = true;
+			if (! isset($this->widgets_registry[$slug])) {
+				continue;
 			}
+
+			$clean[$slug] = ! empty($state);
 		}
 
 		$updated = update_option(self::OPTION_NAME, $clean);
@@ -3626,7 +3643,7 @@ final class Atomic
 
 		wp_send_json([
 			'status' => $updated,
-			'total'  => count($clean),
+			'total'  => count(array_filter($clean)),
 		]);
 	}
 
