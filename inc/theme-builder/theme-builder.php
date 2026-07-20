@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Modules\Library\Documents\Library_Document;
 use Elementor\Plugin as ElementorPlugin;
@@ -72,10 +74,10 @@ class WCF_Theme_Builder
 		add_filter('template_include', array($this, 'template_loader'), 30);
 
 		// Archive Page
-		add_action('wcf_archive_builder_content', array($this, 'archive_page_builder_content'));
+		add_action('animation_addons_archive_builder_content', array($this, 'archive_page_builder_content'));
 
 		// single
-		add_action('wcf_single_builder_content', array($this, 'single_post_builder_content'));
+		add_action('animation_addons_single_builder_content', array($this, 'single_post_builder_content'));
 
 		// Body classes
 		add_filter('body_class', array($this, 'body_classes'));
@@ -83,8 +85,8 @@ class WCF_Theme_Builder
 		// header footer
 		add_action('get_header', array($this, 'override_header'));
 		add_action('get_footer', array($this, 'override_footer'));
-		add_action('wcf_header_builder_content', array($this, 'header_builder_content'));
-		add_action('wcf_footer_builder_content', array($this, 'footer_builder_content'));
+		add_action('animation_addons_header_builder_content', array($this, 'header_builder_content'));
+		add_action('animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
 	}
 
 	/**
@@ -237,7 +239,8 @@ class WCF_Theme_Builder
 			return $template;
 		}
 
-		if (isset($_REQUEST['aaeid']) && ! isset($_REQUEST['preview_id'])) {
+		// Read-only request check for template routing; no nonce applies.
+		if (isset($_REQUEST['aaeid']) && ! isset($_REQUEST['preview_id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return $template;
 		}
 
@@ -287,10 +290,12 @@ class WCF_Theme_Builder
 			
 		if ($template_ID) {
 			if($tmpType == 'header'){
-				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true ); 
 				$offsetY = get_post_meta( $template_ID, 'aae_header_smoother_offsety', true );
 				$offsetY = preg_replace( '/[^0-9.\-]/', '', $offsetY );
 				if($offsetY && is_numeric($offsetY)){
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 					$GLOBALS['aae_header_smoother_offsetY'] = $offsetY;
 				}
 				
@@ -354,7 +359,8 @@ class WCF_Theme_Builder
 			'posts_per_page' => -1,
 			'order'          => 'ASC',
 			'orderby'        => 'date',
-			'meta_query'     => array(
+			// Templates are selected by their _type marker meta; meta lookup is required here.
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'   => self::CPT_META . '_type',
 					'value' => $tmpType,
@@ -625,7 +631,8 @@ class WCF_Theme_Builder
 			'posts_per_page' => -1,
 			'order'          => 'ASC',
 			'orderby'        => 'date',
-			'meta_query'     => array_merge(array('relation' => 'AND'), $meta_query),
+			// Templates are filtered by their _type marker meta; meta lookup is required here.
+			'meta_query'     => array_merge(array('relation' => 'AND'), $meta_query), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		);
 
 		$query              = new \WP_Query($query_args);
@@ -852,7 +859,8 @@ class WCF_Theme_Builder
 					$output .= do_shortcode(render_block($block));
 				}
 			} else {
-				$content = apply_filters('the_content', $content);
+				// 'the_content' is a WordPress core filter, not a plugin-defined hook.
+				$content = apply_filters('the_content', $content); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$content = str_replace(']]>', ']]&gt;', $content);
 
 				return $content;
@@ -893,9 +901,10 @@ class WCF_Theme_Builder
 	{
 		$active_class = 'nav-tab-active';
 		$current_type = '';
-		if (isset($_GET['template_type'])) {
+		// Read-only admin list-table tab filter; no nonce applies.
+		if (isset($_GET['template_type'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$active_class = '';
-			$current_type = sanitize_key($_GET['template_type']);
+			$current_type = sanitize_key(wp_unslash($_GET['template_type'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 ?>
 		<div id="wcf-template-tabs-wrapper" class="nav-tab-wrapper">
@@ -935,11 +944,14 @@ class WCF_Theme_Builder
 			return;
 		}
 
-		if (isset($_GET['template_type']) && $_GET['template_type'] != '' && $_GET['template_type'] != 'all') {
-			$type = isset($_GET['template_type']) ? sanitize_key($_GET['template_type']) : '';
+		// Read-only admin list-table query filter; no nonce applies.
+		$template_type = isset($_GET['template_type']) ? sanitize_key(wp_unslash($_GET['template_type'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ('' !== $template_type && 'all' !== $template_type) {
+			$type = $template_type;
 
-			$query->query_vars['meta_key']     = self::CPT_META . '_type';
-			$query->query_vars['meta_value']   = $type;
+			// Filtering the admin list table by template type marker meta; meta lookup is required here.
+			$query->query_vars['meta_key']     = self::CPT_META . '_type'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			$query->query_vars['meta_value']   = $type; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			$query->query_vars['meta_compare'] = '=';
 		}
 	}
@@ -1022,7 +1034,7 @@ class WCF_Theme_Builder
 				'optionkey' => 'singlepage',
 			),
 		);
-
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_builder_template_types', $template_type);
 	}
 
@@ -1101,6 +1113,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_hf_list', $selection_options);
 	}
 
@@ -1168,6 +1181,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		return apply_filters('wcf_display_archive_list', $selection_options);
 	}
 
@@ -1213,6 +1227,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_archive_list', $selection_options);
 	}
 
@@ -1245,6 +1260,7 @@ class WCF_Theme_Builder
 		 *
 		 * @since 1.0.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_display_taxonomy_list', $selection_options);
 	}
 
@@ -1325,7 +1341,8 @@ class WCF_Theme_Builder
 	 */
 	public function print_popup()
 	{
-		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
+		// Read-only admin screen check; no nonce applies.
+		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 	<script type="text/template" id="tmpl-wcf-addons-ctppopup">
 		<div class="wcf-addons-template-edit-popup-area">
@@ -1951,11 +1968,12 @@ class WCF_Theme_Builder
 	public function enqueue_scripts($hook)
 	{
 
-		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
+		// Read-only admin screen check; no nonce applies.
+		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			// CSS
-			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css');
-			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css');
+			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css', array(), WCF_ADDONS_VERSION);
+			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css', array(), WCF_ADDONS_VERSION);
 
 			// JS
 			wp_enqueue_script('select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array('jquery'), WCF_ADDONS_VERSION, true);

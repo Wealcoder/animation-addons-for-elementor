@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -187,7 +189,7 @@ class Posts extends Widget_Base {
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'         => 'thumbnail_size',
-				'exclude'      => [ 'custom' ],
+				'exclude'      => [ 'custom' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default'      => 'medium',
 				'prefix_class' => 'elementor-portfolio--thumbnail-size-',
 			]
@@ -596,7 +598,7 @@ class Posts extends Widget_Base {
 			[
 				'name'      => 'content_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .content',
 				'separator' => 'before',
 			]
@@ -628,7 +630,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'content_bg_even',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post:nth-child(even) .content',
 				'label'    => ''
 			]
@@ -1412,7 +1414,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'read_more_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link',
 			]
 		);
@@ -1444,7 +1446,7 @@ class Posts extends Widget_Base {
 			[
 				'name'     => 'read_more_hover_background',
 				'types'    => [ 'classic', 'gradient' ],
-				'exclude'  => [ 'image' ],
+				'exclude'  => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .link:hover',
 			]
 		);
@@ -1727,7 +1729,7 @@ class Posts extends Widget_Base {
 			[
 				'name'      => 'read_more_hover_link_background',
 				'types'     => [ 'classic', 'gradient' ],
-				'exclude'   => [ 'image' ],
+				'exclude'   => [ 'image' ],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .wcf-post:hover .link',
 				'condition' => [
 					'show_read_more' => 'yes',
@@ -2531,7 +2533,7 @@ class Posts extends Widget_Base {
 			// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 			if ( empty( $post->post_excerpt ) ) {
 				$max_length = (int) $this->get_settings( 'excerpt_length' );
-				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() );
+				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$excerpt    = $this->trim_words( $excerpt, $max_length );
 				echo wp_kses_post( $excerpt );
 			} else {

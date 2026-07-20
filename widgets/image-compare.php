@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -354,7 +356,7 @@ class Image_Compare extends Widget_Base
 			Group_Control_Box_Shadow::get_type(),
 			[
 				'name'     => 'image_box_shadow',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'box_shadow_position',
 				],
 				'selector' => '{{WRAPPER}} .wcf--image-compare',
@@ -398,7 +400,7 @@ class Image_Compare extends Widget_Base
 			[
 				'name' => 'circle_bg',
 				'types' => ['classic', 'gradient'],
-				'exclude' => ['image'],
+				'exclude' => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf--image-compare-handle:after',
 			]
 		);

@@ -143,3 +143,69 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
         reject(e);
     }
 }));
+
+const gulpZip = require('gulp-zip').default;
+const path = require('path');
+// Plugin info
+const pluginSlug = 'animation-addons-for-elementor'; // 🔁 change this
+const distPath = 'dist';
+
+/**
+ * Create plugin ZIP
+ */
+gulp.task('zip', () => {
+    return gulp.src([
+        '**/*',
+
+        // unnecessary files
+        '!node_modules/**',
+        '!public/**',
+        '!src/**',
+        '!dist/**',
+        '!assets/src/**',
+
+        '!**/*.map',
+
+        // Exclude non-minified JS files from assets/js/widgets (only keep .min.js)
+        '!assets/js/widgets/*.js',
+        'assets/js/widgets/*.min.js',
+
+        '!.git/**',
+        '!.github/**',
+        '!.vscode/**',
+        '!.eslintignore',
+        '!.eslintrc',
+        '!.eslintrc.cjs',
+        '!.gitignore',
+        '!.phpcs.xml.dist',
+        '!components.cptBuilder.json',
+        '!components.dashboard.json',
+        '!components.pageImport.json',
+        '!gulpfile.js',
+        '!jsconfig.json',
+        '!package-lock.json',
+        '!package.json',
+        '!phpstan.neon',
+        '!postcss.config.js',
+        '!package.json',
+        '!swap-config.js',
+        '!tailwind.cptBuilder.config.js',
+        '!tailwind.dashboard.config.js',
+        '!tailwind.pageImport.config.js',
+        '!webpack.config.js',
+        '!README.md',
+        '!.env',
+        '!**/.DS_Store'
+    ], {
+        base: '..',       // 👈 keeps main plugin folder
+        allowEmpty: true
+    })
+        .pipe(gulpZip('animation-addons-for-elementor.zip'))
+        .pipe(gulp.dest(distPath));
+});
+
+
+gulp.task('release', gulp.series(
+    'build',
+    'zip'
+));

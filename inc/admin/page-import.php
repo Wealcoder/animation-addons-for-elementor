@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 /**
  * Plugin Name: AAE Admin Buttons
@@ -32,17 +34,26 @@ final class AAE_Admin_Page_Importer
     {
         global $wpdb;
 
-        $count = $wpdb->get_var("
-            SELECT COUNT(*) FROM $wpdb->posts 
-            WHERE post_type = 'page' 
-            AND post_status = 'publish' 
-            AND ID IN (
-                SELECT post_id FROM $wpdb->postmeta 
-                WHERE meta_key = 'aae_imported' AND meta_value = '1'
-            )
-        ");
+        // Cache the imported-page count; this renders on every admin pages-list load.
+        $count = wp_cache_get('aae_imported_page_count', 'aae_page_import');
+        if (false === $count) {
+            // Fixed aggregate query with no user input; $wpdb is required for the COUNT.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $count = $wpdb->get_var("
+                SELECT COUNT(*) FROM $wpdb->posts
+                WHERE post_type = 'page'
+                AND post_status = 'publish'
+                AND ID IN (
+                    SELECT post_id FROM $wpdb->postmeta
+                    WHERE meta_key = 'aae_imported' AND meta_value = '1'
+                )
+            ");
+            wp_cache_set('aae_imported_page_count', $count, 'aae_page_import', MINUTE_IN_SECONDS);
+        }
 
-        $class = (isset($_GET['aae-latest-import']) && $_GET['aae-latest-import'] == 'import') ? 'current' : '';
+        // Read-only list-table view filter from a navigation link; no nonce required.
+        $current_view = isset($_GET['aae-latest-import']) ? sanitize_key(wp_unslash($_GET['aae-latest-import'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $class        = ('import' === $current_view) ? 'current' : '';
         $url   = add_query_arg('aae-latest-import', 'import', admin_url('edit.php?post_type=page'));
         $views['latest-import'] = "<a href='$url' class='$class' style='color: #fc6848; font-weight: 500' >AAE Imported <span class='count'>($count)</span></a>";
         return $views;
@@ -52,7 +63,9 @@ final class AAE_Admin_Page_Importer
         global $pagenow;
 
         if (is_admin() && $pagenow == 'edit.php' && $query->get('post_type') == 'page') {
-            if (isset($_GET['aae-latest-import']) && $_GET['aae-latest-import'] == 'import') {
+            // Read-only list-table view filter from a navigation link; no nonce required.
+            $current_view = isset($_GET['aae-latest-import']) ? sanitize_key(wp_unslash($_GET['aae-latest-import'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if ('import' === $current_view) {
                 $query->set('meta_key', 'aae_imported');
                 $query->set('meta_value', '1');
             }
@@ -195,7 +208,7 @@ final class AAE_Admin_Page_Importer
                 'nonce'        => wp_create_nonce('wcf_admin_nonce'),
 
                 'addons_config' => apply_filters(
-                    'wcf_addons_dashboard_config',
+                    'wcf_addons_dashboard_config',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                     $config
                 ),
 

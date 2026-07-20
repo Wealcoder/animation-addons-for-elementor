@@ -1,19 +1,23 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 /**
  * Admin views: Add/Edit Code Snippet
  *
  * @since 2.3.10
  * @package WCF_ADDONS\CodeSnippet
+ * 
  */
+ 
 
 use WCF_ADDONS\CodeSnippet\Helpers;
 use WCF_ADDONS\WCF_Theme_Builder;
 
 defined( 'ABSPATH' ) || exit;
 
-$locations = WCF_Theme_Builder::get_hf_location_selections();
+$locations = WCF_Theme_Builder::get_hf_location_selections();  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 
 if ( 'php' === $snippet_details['code_type'] ) {
+	 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 	$locations['basic']['value'] = array_merge(
 		$locations['basic']['value'],
 		array(

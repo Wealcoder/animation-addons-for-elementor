@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Base;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 use XMLReader;
@@ -90,8 +92,8 @@ class AAEImporter extends WXRImporter {
 				// Register the taxonomy to ensure it works in imports
 				register_taxonomy(
 					$data['taxonomy'],
-					apply_filters( 'woocommerce_taxonomy_objects_' . $data['taxonomy'], array( 'product' ) ),
-					apply_filters( 'woocommerce_taxonomy_args_' . $data['taxonomy'], array(
+					apply_filters( 'woocommerce_taxonomy_objects_' . $data['taxonomy'], array( 'product' ) ),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+					apply_filters( 'woocommerce_taxonomy_args_' . $data['taxonomy'], array(  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						'hierarchical' => true,
 						'show_ui'      => false,
 						'query_var'    => true,

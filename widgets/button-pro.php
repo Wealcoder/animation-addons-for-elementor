@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -266,7 +268,7 @@ class Button_Pro extends Widget_Base
 			[
 				'name'      => 'btn_bg',
 				'types'     => ['classic', 'gradient'],
-				'exclude'   => ['image'],
+				'exclude'   => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .aae--btn-pro, {{WRAPPER}} .g-btn-text, {{WRAPPER}} .g-btn-icon',
 				'condition' => ['btn_style!' => '7'],
 			]
@@ -277,7 +279,7 @@ class Button_Pro extends Widget_Base
 			[
 				'name'      => 'btn_bg_2',
 				'types'     => ['classic', 'gradient'],
-				'exclude'   => ['image'],
+				'exclude'   => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector'  => '{{WRAPPER}} .aae--btn-pro::after',
 				'condition' => ['btn_style' => ['7', '8']],
 			]
@@ -497,7 +499,7 @@ class Button_Pro extends Widget_Base
 			[
 				'name'     => 'btn_h_bg',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .aae--btn-pro:hover, {{WRAPPER}} .aae-btn-pro-group:hover span, {{WRAPPER}} .style-4 .aae--btn-pro span',
 			]
 		);

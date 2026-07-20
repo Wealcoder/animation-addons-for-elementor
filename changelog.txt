@@ -1,6 +1,22 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.7.0 – 7th July 2026
+
+    - Fixed: Variability issue fixed.
+    - Improved: Removed unused code.
+
+= 🌀 Animation Addons for Elementor v2.6.9 – 2nd July 2026
+
+    - Fixed: Security Fixed at whole plugin.
+    - Improved: Performance Improved at whole plugin.
+
+
+= 🌀 Animation Addons for Elementor v2.6.8 – 16th June 2026
+
+    - Fixed: Image Gallery lightbox issue — it is now working perfectly.
+    - Improved: Reduced plugin size for better performance and faster loading.  
+
 = 🌀 Animation Addons for Elementor v2.6.7 – 2nd June 2026
 
     - Improved: Text Domain Mismatch at Image Accordion, Advanced Pricing Table and Weather widgets.

@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -224,7 +226,7 @@ class Banner_Posts extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			array(
 				'name'      => 'thumbnail_size',
-				'exclude'   => array('custom'),
+				'exclude'   => array('custom'),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default'   => 'medium',
 				'condition' => array(
 					'show_thumb' => 'yes',
@@ -937,7 +939,7 @@ class Banner_Posts extends Widget_Base
 			array(
 				'name'     => 'read_more_background',
 				'types'    => array('classic', 'gradient'),
-				'exclude'  => array('image'),
+				'exclude'  => array('image'),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link',
 			)
 		);
@@ -967,7 +969,7 @@ class Banner_Posts extends Widget_Base
 			array(
 				'name'     => 'read_more_hover_background',
 				'types'    => array('classic', 'gradient'),
-				'exclude'  => array('image'),
+				'exclude'  => array('image'),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link:hover',
 			)
 		);

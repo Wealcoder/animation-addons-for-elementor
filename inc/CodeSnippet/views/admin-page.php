@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 /**
  * View: Admin Page
  *
@@ -10,10 +11,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$current_tab  = filter_input( INPUT_GET, 'tab' );
-$current_page = filter_input( INPUT_GET, 'page' );
-$tabs         = isset( $tabs ) ? $tabs : array();
-$tabs         = apply_filters( 'wcf_code_snippet_' . $page_hook . '_tabs', $tabs );
+$current_tab  = filter_input( INPUT_GET, 'tab' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+$current_page = filter_input( INPUT_GET, 'page' );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+$tabs         = isset( $tabs ) ? $tabs : array(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+$tabs         = apply_filters( 'wcf_code_snippet_' . $page_hook . '_tabs', $tabs );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 $current_tab  = ! empty( $current_tab ) && array_key_exists( $current_tab, $tabs ) ? $current_tab : key( $tabs );
 ?>
 	<div class="" id="wcptm-top-bar">
@@ -30,7 +31,7 @@ $current_tab  = ! empty( $current_tab ) && array_key_exists( $current_tab, $tabs
 					printf(
 						'<a href="%s" class="nav-tab %s">%s</a>',
 						esc_url( admin_url( 'admin.php?page=' . $current_page . '&tab=' . $name ) ),
-						esc_attr( $current_tab === $name ? 'nav-tab-active' : '' ),
+						esc_attr( $current_tab === $name ? 'nav-tab-active' : '' ),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 						esc_html( $label )
 					);
 				}
@@ -44,7 +45,7 @@ $current_tab  = ! empty( $current_tab ) && array_key_exists( $current_tab, $tabs
 				 *
 				 * @since 2.3.10
 				 */
-				do_action( 'wcf_code_snippet_' . $page_hook . '_nav_items', $current_tab, $tabs );
+				do_action( 'wcf_code_snippet_' . $page_hook . '_nav_items', $current_tab, $tabs );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 				?>
 			</nav>
 		<?php endif; ?>
@@ -58,7 +59,7 @@ $current_tab  = ! empty( $current_tab ) && array_key_exists( $current_tab, $tabs
 			 *
 			 * @since 2.3.10
 			 */
-			do_action( "wcf_code_snippet_{$page_hook}_{$current_tab}_content", $current_tab );
+			do_action( "wcf_code_snippet_{$page_hook}_{$current_tab}_content", $current_tab );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 		}
 
 		/**
@@ -68,7 +69,7 @@ $current_tab  = ! empty( $current_tab ) && array_key_exists( $current_tab, $tabs
 		 *
 		 * @since 2.3.10
 		 */
-		do_action( "wcf_code_snippet_{$page_hook}_content", $current_tab );
+		do_action( "wcf_code_snippet_{$page_hook}_content", $current_tab );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 		?>
 	</div>
 <?php

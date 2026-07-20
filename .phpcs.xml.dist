@@ -8,6 +8,7 @@
 <exclude-pattern>/node_modules/</exclude-pattern>
 <exclude-pattern>/src/</exclude-pattern>
 <exclude-pattern>/build/</exclude-pattern>
+<exclude-pattern>/dist/</exclude-pattern><!-- Packaged build output (git-ignored); scan source, not the built copy. -->
 <exclude-pattern>/packages/</exclude-pattern>
 <exclude-pattern>/includes/AsyncProcess/</exclude-pattern>
 
@@ -44,8 +45,21 @@
 <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 	<properties>
 		<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
-		<property name="prefixes" type="array" value="wcf_addons,WCF_ADDONS"/>
+		<!-- The plugin ships under several established prefixes (matched as "starts with"):
+		     WCF_ADDONS namespaces/constants, and wcf_/wcf_addons/wcfaddon/aae function & hook names.
+		     Renaming these public names would break backward compatibility, so the accepted
+		     prefix list is broadened to recognize them. -->
+		<property name="prefixes" type="array" value="wcf,wcf_addons,WCF_ADDONS,wcfaddon,aae"/>
 	</properties>
+</rule>
+
+<!-- Template/view files are included within a render scope; their top-level variables
+     ($message, $current_tab, $commenter, etc.) are view-locals, not true plugin globals.
+     PHPCS cannot distinguish included-file scope, so the global-variable prefix check is
+     not meaningful there. -->
+<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound">
+	<exclude-pattern>*/templates/*</exclude-pattern>
+	<exclude-pattern>*/views/*</exclude-pattern>
 </rule>
 <rule ref="WordPress.WP.I18n">
 	<properties>

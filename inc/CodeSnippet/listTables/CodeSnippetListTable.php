@@ -1,6 +1,10 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\CodeSnippet\listTables;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WCF_ADDONS\CodeSnippet\CodeSnippet;
 use WCF_ADDONS\CodeSnippet\Helpers;
@@ -69,7 +73,8 @@ class CodeSnippetListTable extends AbstractListTable {
 
 		// Add meta_key for custom field sorting.
 		if ( in_array( $order_by, array( 'code_type', 'load_location', 'priority', 'snippet_status' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
-			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			// Custom-field sort for the snippets list table; meta-based ordering is required here.
+			$args['meta_key'] = $this->get_meta_key_for_orderby( $order_by ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			if ( 'priority' === $order_by ) {
 				$args['orderby'] = 'meta_value_num';
 			} else {
@@ -488,7 +493,7 @@ class CodeSnippetListTable extends AbstractListTable {
 				break;
 
 			default:
-				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item );
+				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 		}
 
 		return $value;

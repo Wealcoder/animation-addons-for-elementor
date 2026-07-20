@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Typography;
 use Elementor\Repeater;
@@ -277,7 +279,7 @@ class Animated_Heading extends Widget_Base {
 			array(
 				'name'     => 'heading_typo',
 				'selector' => '{{WRAPPER}} .animated--heading',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'text_decoration',
 				],
 			)

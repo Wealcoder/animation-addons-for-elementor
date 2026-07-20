@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Modules\ElementManager\Options;
 use Elementor\Plugin;
@@ -424,7 +426,7 @@ class WCF_Admin_Init
 			'isSettingsPage' => true,
 			'nonce'          => wp_create_nonce('wcf_admin_nonce'),
 
-			'addons_config'  => apply_filters('wcf_addons_dashboard_config', $config),
+			'addons_config'  => apply_filters('wcf_addons_dashboard_config', $config),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			'adminURL'       => admin_url(),
 			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),

@@ -1,6 +1,8 @@
 <?php
-
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Base;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WCF_ADDONS\Admin\WCF_Plugin_Installer;
 use WP_Error;
@@ -130,7 +132,7 @@ class AAEAddon_Importer {
 			    // Include the necessary plugin.php file
 				$progress                   = '20';	
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-				do_action('aaeaddon/starter-template/import/before/wp_options');	
+				do_action('aaeaddon/starter-template/import/before/wp_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				if(is_array($user_plugins) && $user_plugins){
 					if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){	
 							if ( current_user_can( 'install_plugins' ) ) {				
@@ -214,7 +216,7 @@ class AAEAddon_Importer {
 					}
 				}
 				$this->update_blog_and_homepage_options($template_data);	
-				do_action('aaeaddon/starter-template/import/step/metasettings');				
+				do_action('aaeaddon/starter-template/import/step/metasettings'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
@@ -229,7 +231,7 @@ class AAEAddon_Importer {
 				$import_type = isset($_POST['import_type']) ? sanitize_text_field(wp_unslash($_POST['import_type'])) : 'full-demo'; // Remove slashes if added by WP
 				
 				if( $import_type !='page' ){
-					do_action('aaeaddon/starter-template/import/step/wp_options');	
+					do_action('aaeaddon/starter-template/import/step/wp_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				}	
 								
 				update_option('aaeaddon_template_import_state', $msg);			
@@ -309,26 +311,28 @@ class AAEAddon_Importer {
 				if ( isset( $xml->option ) ) {
 					foreach ( $xml->option as $opt ) {
 						$option_name     = sanitize_text_field( (string) $opt->name );
-						$serialized_data = sanitize_text_field( (string) $opt->value );					
-						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+						$serialized_data = sanitize_text_field( (string) $opt->value );
+						// One-time import write to the options table; object caching does not apply.
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 						$wpdb->update(
 							$wpdb->options,
 							array( 'option_value' => $serialized_data ),
 							array( 'option_name'  => $option_name )
 						);
-						do_action('aae/addons/options/import',$option_name, $serialized_data);
+						do_action('aae/addons/options/import',$option_name, $serialized_data); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook using slash-namespaced form; kept for backward compatibility.
 					}
 				} else {
 					$option_name     = sanitize_text_field( (string) $xml->name );
 					$serialized_data = sanitize_text_field( (string) $xml->value );
-	
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+
+					// One-time import write to the options table; object caching does not apply.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 					$wpdb->update(
 						$wpdb->options,
 						array( 'option_value' => $serialized_data ),
 						array( 'option_name'  => $option_name )
 					);
-					do_action('aae/addons/options/import',$option_name, $serialized_data);
+					do_action('aae/addons/options/import',$option_name, $serialized_data); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook using slash-namespaced form; kept for backward compatibility.
 				}
 			}
 		}
@@ -373,7 +377,7 @@ class AAEAddon_Importer {
 		];	
 	    
 		// Fetch the remote file with POST request
-		$response = wp_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args));
+		$response = wp_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args)); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 		
 		if (is_wp_error($response)) {
 			update_option('aaeaddon_template_import_state', esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));

@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Utils;
@@ -257,9 +259,10 @@ class Search_Query extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$from_date  = sanitize_text_field( isset( $_GET['from_date'] ) ? wp_unslash( $_GET['from_date'] ) : '');
-		$to_date    = sanitize_text_field( isset( $_GET['to_date'] ) ? wp_unslash($_GET['to_date']) : '' );
-		$categories = isset( $_GET['category'] ) && is_array( $_GET['category'] ) ?  array_map( 'sanitize_text_field', wp_unslash( $_GET['category'] ) ) : [];
+		// Read-only public search query parameters; no nonce applies to a GET search form.
+		$from_date  = sanitize_text_field( isset( $_GET['from_date'] ) ? wp_unslash( $_GET['from_date'] ) : ''); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$to_date    = sanitize_text_field( isset( $_GET['to_date'] ) ? wp_unslash($_GET['to_date']) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$categories = isset( $_GET['category'] ) && is_array( $_GET['category'] ) ?  array_map( 'sanitize_text_field', wp_unslash( $_GET['category'] ) ) : []; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$cat_filter = [];
 
 		foreach ( $categories as $cat_id ) {
@@ -285,7 +288,8 @@ class Search_Query extends Widget_Base {
 			$cat_list = '<div class="post-filter-result cat"> Category: ' . $cat_list . '</div>';
 		}
 
-		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() || ( isset( $_GET['preview_id'] ) && isset( $_GET['preview_nonce'] ) ) ) {
+		// Read-only presence check for Elementor preview query vars; no values are read, so no nonce applies.
+		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() || ( isset( $_GET['preview_id'] ) && isset( $_GET['preview_nonce'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$search_found_title = $settings['search_text'] . '<span> Hello World </span>';
 		} else {
 			$search_found_title = $settings['search_text'] . '<span>' . get_search_query() . '</span>';

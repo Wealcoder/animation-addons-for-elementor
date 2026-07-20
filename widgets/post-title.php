@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Plugin;
@@ -531,7 +533,7 @@ class Post_Title extends Widget_Base {
 				'name'      => 'ellipsis_typography',
 				'label'     => esc_html__( 'Ellipsis Typography', 'animation-addons-for-elementor' ),
 				'selector'  => '{{WRAPPER}} .wcf--title .wcf-ellipsis:not(i):not(svg)',
-				'exclude'   => array( 'font_size', 'line_height' ),
+				'exclude'   => array( 'font_size', 'line_height' ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'condition' => array(
 					'enable_trim'   => 'yes',
 					'ellipsis_type' => 'text',

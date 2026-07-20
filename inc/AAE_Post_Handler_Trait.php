@@ -1,5 +1,7 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;
@@ -48,7 +50,7 @@ trait AAE_Post_Handler_Trait {
 					$title                  = $this->trim_words( get_the_title(), $max_length );
 					$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-					echo $this->wcf_wrap_first_n_words( $title, $highlight_title_length ); // Wrap first 2 words
+					echo wp_kses_post( $this->wcf_wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
 
 				} else {
 					the_title();
@@ -71,7 +73,8 @@ trait AAE_Post_Handler_Trait {
 			// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 			if ( empty( $post->post_excerpt ) ) {
 				$max_length = (int) $this->get_settings( 'excerpt_length' );
-				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() );
+				// 'the_excerpt' is a WordPress core filter, not a plugin-defined hook.
+				$excerpt    = apply_filters( 'the_excerpt', get_the_excerpt() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$excerpt    = $this->trim_words( $excerpt, $max_length );
 				echo wp_kses_post( $excerpt );
 			} else {
@@ -97,7 +100,7 @@ trait AAE_Post_Handler_Trait {
 		);
 
 		?>
-		<div class="thumb <?php echo 'wcf--format-' . get_post_format(); ?>">
+		<div class="thumb <?php echo esc_attr( 'wcf--format-' . get_post_format() ); ?>">
 			<a href="<?php echo esc_url( get_the_permalink() ); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
 			</a>
@@ -446,7 +449,7 @@ trait AAE_Post_Handler_Trait {
 						$date = get_the_date();
 						/** This filter is documented in wp-includes/general-template.php */
 						// PHPCS - The date is safe.
-						echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						?>
 					</span>
 				</div>
@@ -462,7 +465,7 @@ trait AAE_Post_Handler_Trait {
 				$date = get_the_date();
 				/** This filter is documented in wp-includes/general-template.php */
 				// PHPCS - The date is safe.
-				echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				?>
 			</span>
 		<?php
@@ -531,7 +534,8 @@ trait AAE_Post_Handler_Trait {
 			array(
 				'post_type'   => 'aaeaddon_post_rating',
 				'post_status' => 'publish',
-				'meta_query'  => array(
+				// Ratings are stored as separate posts keyed by post_id meta; lookup by meta is required here.
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
 						'key'   => 'post_id',
 						'value' => $post_id,
@@ -544,7 +548,7 @@ trait AAE_Post_Handler_Trait {
 		?>
 			<span class="post-review">
 				<?php $this->render_meta_icon( $meta ); ?>
-				<?php echo $total_ratings; ?>
+				<?php echo esc_html( $total_ratings ); ?>
 				<?php echo esc_html__( 'reviews', 'animation-addons-for-elementor' ); ?>
 			</span>
 		<?php
@@ -681,7 +685,7 @@ trait AAE_Post_Handler_Trait {
 			?>
 				<nav class="wcf-post-pagination"
 					aria-label="<?php esc_attr_e( 'Pagination', 'animation-addons-for-elementor' ); ?>">
-				<?php echo implode( PHP_EOL, $links ); ?>
+				<?php echo wp_kses_post( implode( PHP_EOL, $links ) ); ?>
 				</nav>
 			<?php
 			return;
