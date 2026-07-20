@@ -1,0 +1,10 @@
+{% import 'elementor/macros' as m %}
+{# Editor (client-side) preview of the AAE Post Content widget. The FRONTEND is
+   rendered server-side by the PHP render() override, which runs the full builder
+   -content pipeline. Here we simply output the pre-rendered `post_content`
+   (computed in get_atomic_settings()) inside the widget's root element so the
+   canvas mirrors the published output and inherits the Style-tab styling. #}
+{% set classes = settings.classes | merge([ base_styles.base ]) | join(' ') %}
+<div class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
+    {{ settings.post_content | default('') | raw }}
+</div>
