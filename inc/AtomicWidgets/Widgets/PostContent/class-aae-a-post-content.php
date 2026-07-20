@@ -101,19 +101,10 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 			return '';
 		}
 
-		// Editor with no real content: preview the shared sample post so the
-		// canvas reads like a real single-post layout.
-		$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
-		if ( $sample ) {
-			$content = trim( (string) apply_filters( 'the_content', $sample->post_content ) );
-			if ( '' !== $content ) {
-				return $content;
-			}
-		}
-
-		// Nothing at all to show — render an unmistakable placeholder so the user
-		// knows the widget is here and what it will output on the frontend.
-		return $this->get_editor_placeholder();
+		// Editor with no real content: preview the shared sample post, or the
+		// labeled placeholder when none is available — same source as the baked
+		// schema default, so the on-drop preview and the refreshed render match.
+		return self::build_editor_preview_default();
 	}
 
 	/**
@@ -122,7 +113,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	 *
 	 * @return string
 	 */
-	private function get_editor_placeholder(): string {
+	private static function get_editor_placeholder(): string {
 		$title = esc_html__( 'AAE Post Content', 'animation-addons-for-elementor' );
 		$desc  = esc_html__( 'The current post\'s content will be displayed here on the frontend.', 'animation-addons-for-elementor' );
 
@@ -138,12 +129,45 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	}
 
 	protected static function define_props_schema(): array {
+		// Bake an editor preview into the prop DEFAULT so freshly-dropped widgets
+		// render content immediately. The editor renders the widget client-side
+		// from the twig using the schema defaults baked into the config — at that
+		// moment get_atomic_settings() (which recomputes post_content on the
+		// server) has not run for the new element, so without a non-empty default
+		// the canvas would be blank on drop. get_atomic_settings() still refreshes
+		// this value on every server render for accuracy.
+		$preview = '';
+		if ( class_exists( '\Elementor\Plugin' ) && Plugin::$instance->editor->is_edit_mode() ) {
+			$preview = self::build_editor_preview_default();
+		}
+
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			// Populated at render time from the post; never edited directly.
-			'post_content' => String_Prop_Type::make()->default( '' )->meta( Overridable_Prop_Type::ignore() ),
+			'post_content' => String_Prop_Type::make()->default( $preview )->meta( Overridable_Prop_Type::ignore() ),
 		];
+	}
+
+	/**
+	 * Editor-only default content for a freshly-dropped widget: the shared sample
+	 * post's content, or the labeled placeholder when none is available. Static so
+	 * it can seed the prop default in define_props_schema().
+	 *
+	 * @return string
+	 */
+	private static function build_editor_preview_default(): string {
+		if ( class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
+			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			if ( $sample ) {
+				$content = trim( (string) apply_filters( 'the_content', $sample->post_content ) );
+				if ( '' !== $content ) {
+					return $content;
+				}
+			}
+		}
+
+		return self::get_editor_placeholder();
 	}
 
 	protected function define_atomic_controls(): array {
