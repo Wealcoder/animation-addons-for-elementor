@@ -1005,6 +1005,29 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-toc' => [
+				'label'        => 'Table of Content',
+				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
+				'icon'         => 'eicon-table-of-contents',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toc',
+					'table',
+					'content',
+					'contents',
+					'anchor',
+					'heading',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 7,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-accordion-item' => [
 				'label'        => 'Accordion Item',
 				'description'  => 'Internal child container for Accordion.',
@@ -2572,6 +2595,22 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-accordion-css',
 				'style_path' => '/assets/atomic/css/accordion.css',
+			],
+
+			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
+			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
+			// present, and degrades gracefully to native smooth scroll without
+			// them — so, like Counter, it declares NO gsap script_deps (those
+			// handles live in the Pro plugin; a missing registered dep would
+			// silently prevent this free widget's script from enqueuing).
+			'aae-a-toc' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
+				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
+				'script_handle' => 'aae-a-toc-js',
+				'script_path' => '/assets/atomic/js/table-of-contents.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-toc-css',
+				'style_path' => '/assets/atomic/css/table-of-contents.css',
 			],
 
 			'aae-a-accordion-item' => [
