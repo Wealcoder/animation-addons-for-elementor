@@ -12,6 +12,52 @@
 	overflow: visible !important;
 }
 
+/* Make the label (which may be an <a>) pick up the colour / text-decoration the
+ * user sets on the nav-item in the Style tab. A bare <a> forces the browser/
+ * theme link colour, so font-size worked (it inherits) but colour did not.
+ * This is structural only — no opinionated colour is imposed, it just lets the
+ * user's own styling cascade to the text. Select the item (or a sub-item) →
+ * Style → Text Color. */
+.aae-a-nav .aae-a-nav-item-label {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+/* Dropdown indicator icon (injected by nav.js into has-dropdown items' labels).
+ * Structural only — inherits the label's colour via currentColor and rotates
+ * when the dropdown opens. Override size/colour/rotation via this class in the
+ * Style tab (or custom CSS). pointer-events:none so a click falls through to
+ * the label/item and toggles the dropdown. */
+.aae-a-nav .aae-a-nav-dropdown-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 0.7em;
+	block-size: 0.7em;
+	margin-inline-start: 6px;
+	pointer-events: none;
+	transition: transform 0.2s ease;
+}
+
+.aae-a-nav .aae-a-nav-dropdown-icon svg {
+	inline-size: 100%;
+	block-size: 100%;
+	fill: currentColor;
+}
+
+.aae-a-nav .aae-a-nav-item.is-open > .aae-a-nav-item-label .aae-a-nav-dropdown-icon,
+.aae-a-nav .aae-a-nav-item.aae-editor-dropdown-open > .aae-a-nav-item-label .aae-a-nav-dropdown-icon {
+	transform: rotate(180deg);
+}
+
+/* In the mobile drawer the submenu-toggle arrow (its own "Dropdown Icon" from
+ * the Mobile Menu section) is the interactive drill trigger — so hide the
+ * desktop indicator there to avoid showing two icons. Covers the live drawer
+ * (`.aae-nav-mobile-mounted`) and the editor's mobile preview clone. */
+.aae-nav-mobile-mounted .aae-a-nav-dropdown-icon {
+	display: none;
+}
+
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-atomic-element:not(.aae-a-nav-item-label),
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .e-con:not(.aae-a-nav-item-label),
 .aae-a-nav .aae-a-nav-item[data-has-dropdown="true"] > .aae-a-nav-dropdown {

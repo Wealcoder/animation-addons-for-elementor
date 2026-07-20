@@ -96,6 +96,35 @@ function openEditorDropdownChain( item ) {
 	}
 }
 
+/* Reverse of openEditorDropdownChain for ONE item: drop the open marker and the
+ * inline reveal so the dropdown falls back to its CSS-hidden state. */
+function closeEditorDropdownItem( item ) {
+	item.classList.remove( 'aae-editor-dropdown-open' );
+	const sub = getSub( item );
+	if ( sub ) {
+		sub.style.visibility = '';
+		sub.style.opacity = '';
+		sub.style.pointerEvents = '';
+	}
+}
+
+/* Is a panel popover/modal (colour picker, link box, etc.) open? nav.js runs in
+ * the PREVIEW iframe but these live in the parent panel document, so we check
+ * there. Mirrors isEditorModalOrPopoverActive() in NavItemsControl.jsx — the
+ * editor-control side already refuses to mutate while one is open; sync() below
+ * needs the same restraint so a live style re-render can't collapse the very
+ * dropdown the user is styling. */
+function isEditorPopoverActive() {
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		return !! editorWindow.document.querySelector(
+			'.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]'
+		);
+	} catch ( error ) {
+		return false;
+	}
+}
+
 function selectEditorElementById( id ) {
 	if ( ! id ) return;
 	try {
@@ -121,19 +150,77 @@ function initEditorDropdownUX( nav ) {
 	editorNavControllers.set( navId, ctrl );
 	const sig = ctrl.signal;
 
+	let observer = null;
+	/* data-id of the dropdown-owning item whose chain is currently revealed. Kept
+	 * so we can RE-ASSERT it while a panel popover is open (see below), because a
+	 * live style change re-renders the item and strips the selection marker the
+	 * CSS reveal keys on. */
+	let lastOpenOwnerId = null;
+	const observe = () => observer?.observe( nav, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: [ 'class', 'data-has-dropdown' ],
+	} );
 	const sync = () => {
+		/* We mutate classes/inline-styles below, which the observer also watches —
+		 * disconnect while we reconcile so our own writes don't retrigger sync in
+		 * an endless loop (collapse-all + reopen always produces mutations). */
+		observer?.disconnect();
+
 		normalizeRenderedDropdowns( nav );
+
+		/* A panel popover/modal (colour picker, etc.) is open → the user is styling
+		 * the currently-revealed dropdown item. Applying a style live re-renders
+		 * that item in the preview and fires this observer; running the collapse
+		 * pass here would hide the very dropdown being styled, and the atomic
+		 * re-render momentarily drops `.elementor-element-editable` (the marker the
+		 * CSS reveal keys on), so we couldn't reopen it either — it would stick
+		 * closed until the user re-selects. Instead, DON'T collapse: just re-assert
+		 * the last open chain (re-adds the open class + inline reveal the re-render
+		 * wiped) and leave every other dropdown as-is. */
+		if ( isEditorPopoverActive() ) {
+			if ( lastOpenOwnerId ) {
+				const owner = nav.querySelector(
+					`.aae-a-nav-item[data-has-dropdown="true"][data-id="${ lastOpenOwnerId }"]`
+				);
+				if ( owner ) openEditorDropdownChain( owner );
+			}
+			injectDropdownIcons( nav );
+			observe();
+			return;
+		}
+
+		/* Collapse EVERY dropdown first; only the selected element's chain is
+		 * reopened below. This is what auto-closes other dropdowns when you select
+		 * a different item / click elsewhere on the canvas. */
 		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
 			const sub = getSub( item );
 			if ( sub ) {
 				sub.classList.add( 'aae-a-nav-dropdown' );
 				sub.setAttribute( 'data-aae-dropdown-for', item.getAttribute( 'data-id' ) || '' );
 			}
-			if ( item.classList.contains( 'elementor-element-selected' ) ||
-				item.querySelector( '.elementor-element-selected' ) ) {
-				openEditorDropdownChain( item );
-			}
+			closeEditorDropdownItem( item );
 		} );
+
+		/* Reveal only the chain that contains the currently-selected element.
+		 * `.elementor-element-editable` is the v4 selection marker; `owner` is that
+		 * element's nearest dropdown-owning nav-item (itself if it has a dropdown),
+		 * and openEditorDropdownChain walks up so all ancestors open too. When
+		 * nothing in the nav is selected, every dropdown stays closed. */
+		const selected = nav.querySelector( '.elementor-element-editable, .elementor-element-selected' );
+		const owner = selected?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( owner ) {
+			openEditorDropdownChain( owner );
+			lastOpenOwnerId = owner.getAttribute( 'data-id' );
+		} else {
+			lastOpenOwnerId = null;
+		}
+
+		/* Re-inline the dropdown icon after atomic re-renders wipe it. */
+		injectDropdownIcons( nav );
+
+		observe();
 	};
 
 	let raf = null;
@@ -150,17 +237,26 @@ function initEditorDropdownUX( nav ) {
 		if ( ! dropdown || ! nav.contains( dropdown ) ) return;
 		const owner = dropdown.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( owner ) openEditorDropdownChain( owner );
-		selectEditorElementById( dropdown.getAttribute( 'data-id' ) );
+		selectEditorElementById( ( e.target.closest( '.aae-a-nav-item' ) && dropdown.contains( e.target.closest( '.aae-a-nav-item' ) ) ? e.target.closest( '.aae-a-nav-item' ) : dropdown ).getAttribute( 'data-id' ) );
 	}, { capture: true, signal: sig } );
 
 	nav.addEventListener( 'click', e => {
 		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( ! item || ! nav.contains( item ) ) return;
 		openEditorDropdownChain( item );
+		/* Reveal is selection-driven now (sync keeps only the selected chain open),
+		 * so a top-level label click must also SELECT its item — otherwise sync
+		 * collapses the dropdown it just opened. Clicks INSIDE an open dropdown are
+		 * already selected by the pointerdown handler (specific sub-item), so skip
+		 * those to avoid overriding that finer selection. */
+		if ( ! e.target.closest( '.aae-a-nav-dropdown' ) ) {
+			selectEditorElementById( item.getAttribute( 'data-id' ) );
+		}
 	}, { capture: true, signal: sig } );
 
-	const observer = new MutationObserver( schedule );
-	observer.observe( nav, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'data-has-dropdown' ] } );
+	observer = new MutationObserver( schedule );
+	/* Initial observe happens at the end of the first sync() below; sync also
+	 * re-observes after each reconcile (it disconnects while mutating). */
 	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
 	sync();
 }
@@ -657,6 +753,51 @@ function markActiveNavItems( nav ) {
 	} );
 }
 
+/* Dropdown indicator icon: fetched once per URL, inlined (not <img>) so CSS can
+ * recolour it via `fill: currentColor`. */
+const dropdownIconCache = new Map();
+function fetchDropdownIconSvg( url ) {
+	if ( dropdownIconCache.has( url ) ) {
+		return dropdownIconCache.get( url );
+	}
+	const promise = window.fetch( url )
+		.then( ( r ) => ( r.ok ? r.text() : '' ) )
+		.then( ( text ) => ( /<svg[\s>]/i.test( text ) ? text : '' ) )
+		.catch( () => '' );
+	dropdownIconCache.set( url, promise );
+	return promise;
+}
+
+/* Inline the nav's chosen dropdown icon next to the label of every item that has
+ * a dropdown. Idempotent (skips items that already carry the icon), so it is
+ * safe to call on init AND after each editor re-render. Design-less: it only
+ * injects structure — size/colour/rotation are styled via CSS / the Style tab. */
+function injectDropdownIcons( nav ) {
+	if ( nav.dataset.showDropdownIcon === 'false' ) {
+		return;
+	}
+	const url = nav.dataset.dropdownIcon;
+	if ( ! url ) {
+		return;
+	}
+	fetchDropdownIconSvg( url ).then( ( svg ) => {
+		if ( ! svg ) {
+			return;
+		}
+		nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( ( item ) => {
+			const label = item.querySelector( ':scope > .aae-a-nav-item-label' );
+			if ( ! label || label.querySelector( ':scope > .aae-a-nav-dropdown-icon' ) ) {
+				return;
+			}
+			const span = document.createElement( 'span' );
+			span.className = 'aae-a-nav-dropdown-icon';
+			span.setAttribute( 'aria-hidden', 'true' );
+			span.innerHTML = svg;
+			label.appendChild( span );
+		} );
+	} );
+}
+
 /* ---- Desktop keyboard + ARIA menubar model ---------------------------------
  * Everything below runs on the FRONTEND desktop path only (never mobile — the
  * drawer has its own focus-trap/keyboard handling). It layers a standard WAI-
@@ -821,6 +962,7 @@ register( {
 		if ( isEditor() ) {
 			normalizeRenderedDropdowns( nav );
 			initEditorDropdownUX( nav );
+			injectDropdownIcons( nav );
 			return;
 		}
 		normalizeRenderedDropdowns( nav );
@@ -829,6 +971,7 @@ register( {
 		nav.dataset.navInit = 'true';
 
 		markActiveNavItems( nav );
+		injectDropdownIcons( nav );
 
 		/* Abort stale document listeners from a previous render of this nav */
 		navControllers.get( navId )?.abort();

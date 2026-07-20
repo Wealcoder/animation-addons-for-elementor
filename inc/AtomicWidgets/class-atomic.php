@@ -3768,6 +3768,7 @@ final class Atomic
 			$nodes = [];
 			foreach ($by_parent[$parent_id] ?? [] as $item) {
 				$nodes[] = [
+					'id'       => (int) $item->ID,
 					'title'    => wp_strip_all_tags($item->title),
 					'url'      => esc_url_raw($item->url),
 					'target'   => ('_blank' === $item->target) ? '_blank' : '',

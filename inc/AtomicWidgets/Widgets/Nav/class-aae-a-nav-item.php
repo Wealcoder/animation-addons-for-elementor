@@ -66,6 +66,11 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 			'has_dropdown'       => Boolean_Prop_Type::make()->default( false ),
 			'trigger'            => String_Prop_Type::make()->default( 'click' ),
 			'dropdown_animation' => String_Prop_Type::make()->default( 'gsap' ),
+			/* Set only on items created by "Import from WordPress menu". Stores the
+			 * source WP menu-item ID so a later "Update from WordPress" can match,
+			 * update, add and remove items by identity without disturbing the
+			 * user's styling. Empty for hand-added items (never touched by sync). */
+			'wp_id'              => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
