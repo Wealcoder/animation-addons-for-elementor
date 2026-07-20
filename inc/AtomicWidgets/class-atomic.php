@@ -489,6 +489,26 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-content' => [
+				'label'        => 'Post Content',
+				'description'  => 'Dynamically displays the current post content natively in Elementor V4.',
+				'icon'         => 'eicon-post-content',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'content',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-post-image' => [
 				'label'        => 'Post Image',
 				'description'  => 'Dynamically displays the current post featured image natively in Elementor V4.',
@@ -2409,6 +2429,12 @@ final class Atomic
 				'has_script' => false,
 				'style_handle' => 'aae-a-post-title-css',
 				'style_path' => '/assets/atomic/css/post-title.css',
+			],
+
+			'aae-a-post-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content',
+				'file' => 'Widgets/PostContent/class-aae-a-post-content.php',
+				'has_script' => false,
 			],
 
 			'aae-a-post-image' => [
