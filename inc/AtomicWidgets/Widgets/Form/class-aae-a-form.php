@@ -137,6 +137,17 @@ class AAE_A_Form extends Atomic_Element_Base {
 				->default( 'default' )
 				->meta( 'generates_class', 'form-state-{value}' ),
 
+			// Seconds after a successful submit before the form returns to its
+			// resting state (success message cleared, multi-step back to the
+			// first step). 0 keeps the success state until reload.
+			'success_reset_delay' => Number_Prop_Type::make()->default( 5 ),
+
+			// Hide the fields after a successful submit so only the success
+			// message remains. Independent of the reset delay above: hiding is
+			// about what the visitor SEES, resetting is about the form's state.
+			'success_hide_form'   => Boolean_Prop_Type::make()->default( false ),
+			'success_hide_delay'  => Number_Prop_Type::make()->default( 0 ),
+
 			'spam_honeypot'    => Boolean_Prop_Type::make()->default( true ),
 			'spam_min_seconds' => Number_Prop_Type::make()->default( 3 ),
 
@@ -192,6 +203,23 @@ class AAE_A_Form extends Atomic_Element_Base {
 								],
 							]
 						),
+						Number_Control::bind_to( 'success_reset_delay' )
+							->set_label( __( 'Reset After Success (seconds)', 'animation-addons-for-elementor' ) )
+							->set_min( 0 )
+							->set_description(
+								__( 'After a successful submit, clear the message and reset the form — a multi-step form returns to its first step. Set 0 to keep the success message until the page reloads.', 'animation-addons-for-elementor' )
+							),
+						Switch_Control::bind_to( 'success_hide_form' )
+							->set_label( __( 'Hide Form After Success', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Hide the fields after a successful submit so only the success message stays on screen.', 'animation-addons-for-elementor' )
+							),
+						Number_Control::bind_to( 'success_hide_delay' )
+							->set_label( __( 'Hide After (seconds)', 'animation-addons-for-elementor' ) )
+							->set_min( 0 )
+							->set_description(
+								__( 'How long the fields stay visible before hiding. 0 hides them immediately. If “Reset After Success” is also set, use a shorter time here — the reset brings the form back.', 'animation-addons-for-elementor' )
+							),
 					]
 				),
 
@@ -232,10 +260,10 @@ class AAE_A_Form extends Atomic_Element_Base {
 										'value' => 'recaptcha_v3',
 										'label' => __( 'reCAPTCHA v3', 'animation-addons-for-elementor' ),
 									],
-									[
-										'value' => 'turnstile',
-										'label' => __( 'Turnstile (coming soon)', 'animation-addons-for-elementor' ),
-									],
+									// `turnstile` stays in the PROP ENUM (schema) so any
+									// form already saved with it keeps validating — it is
+									// only dropped from the picker until the integration
+									// actually lands.
 								]
 							),
 					]

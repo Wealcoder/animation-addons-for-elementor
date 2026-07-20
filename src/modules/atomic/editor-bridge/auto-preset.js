@@ -16,7 +16,7 @@
  */
 
 import { track } from './disposables';
-import { applyPresetModel, getPresetsForType } from '../element-controls/preset-apply';
+import { applyPresetModel, ensurePresetsLoaded, getCachedPresetsForType } from '../element-controls/preset-apply';
 
 // Which freshly-dropped widget gets which default preset (by preset id — the
 // sanitized json basename) AND which slider settings to seed so the preset lands
@@ -152,6 +152,14 @@ function maybeAutoApply() {
       return;
     }
 
+    // Presets are now fetched on demand (remote + local merged server-side —
+    // see preset-apply.js's ensurePresetsLoaded) rather than read from an
+    // eager global. Kick the fetch off immediately, in parallel with the
+    // slide-item poll below, so it's very likely already resolved by the
+    // time the slide item appears; getCachedPresetsForType() is a plain
+    // synchronous read once ensurePresetsLoaded's promise settles.
+    const presetsReady = ensurePresetsLoaded(rule.slideItemType);
+
     // The default children (track → slide item → post image/title) are seeded
     // asynchronously after create. Poll briefly for the slide item, then apply.
     let attempts = 0;
@@ -176,23 +184,34 @@ function maybeAutoApply() {
         return;
       }
 
-      const presets = getPresetsForType(rule.slideItemType);
-      const preset = presets.find((p) => p.id === rule.presetId) || presets[0];
-      if (!preset || !preset.model) {
-        return;
-      }
+      // Wait for the preset fetch (almost always already settled by now —
+      // it started before the poll loop) before deciding whether to apply.
+      presetsReady.then(() => {
+        // Re-check: the slide item may have been styled (or the container
+        // removed) during the wait for a slow fetch.
+        if (handled.has(container.id) || !hasOnlyDefaultChildren(slideItem)) {
+          return;
+        }
 
-      handled.add(container.id);
+        const presets = getCachedPresetsForType(rule.slideItemType);
+        const preset = presets.find((p) => p.id === rule.presetId) || presets[0];
+        if (!preset || !preset.model) {
+          return;
+        }
 
-      // Seed slider settings (correct aae-rj shape) BEFORE the preset apply below
-      // (which re-selects a new element). Best-effort — never blocks the preset.
-      if (rule.settings) {
-        applySliderSettings(container, rule.settings);
-      }
+        handled.add(container.id);
 
-      applyPresetModel(preset.model, slideItem.id, rule.slideItemType, {
-        title: 'Default preset',
-        subtitle: `Applied "${preset.name}"`,
+        // Seed slider settings (correct aae-rj shape) BEFORE the preset apply
+        // below (which re-selects a new element). Best-effort — never blocks
+        // the preset.
+        if (rule.settings) {
+          applySliderSettings(container, rule.settings);
+        }
+
+        applyPresetModel(preset.model, slideItem.id, rule.slideItemType, {
+          title: 'Default preset',
+          subtitle: `Applied "${preset.name}"`,
+        });
       });
     };
     tryApply();

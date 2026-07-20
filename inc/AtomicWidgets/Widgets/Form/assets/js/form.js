@@ -25,6 +25,8 @@ import { initMultiSelect, syncMultiSelect } from './lib/multi-select';
 import { initSteps, resyncSteps } from './lib/multi-step';
 import { initRating, syncRating } from './lib/rating';
 import { initRange } from './lib/range';
+import { initPassword, resetPassword } from './lib/password';
+import { initCalculations, syncCalculations } from './lib/calculation';
 
 const SLOW_AFTER_MS = 8000;
 const TIMEOUT_MS = 30000;
@@ -172,6 +174,10 @@ const errorAnchor = ( control ) =>
 	control.closest( '.aae-form-checkbox-row' ) ||
 	control.closest( '.aae-ms' ) ||
 	control.closest( '.aae-a-form-rating' ) ||
+	// Password: the input lives inside the styled wrapper alongside the
+	// reveal button — anchoring to the input alone would paint the error
+	// INSIDE the field box (same class of bug as Rating's, 2026-07-20).
+	control.closest( '.aae-a-form-password' ) ||
 	control;
 
 const clearFieldError = ( control ) => {
@@ -281,6 +287,89 @@ const controlsOf = ( root ) => {
 	);
 };
 
+// After a successful submit, return the form to its resting state so the
+// next entry starts fresh: success message cleared, field errors gone, and
+// a multi-step form back on its FIRST step. The delay rides the form's
+// "Reset After Success (seconds)" setting (data-aae-form-reset-delay);
+// 0 disables — the success state then stays until the page reloads.
+const scheduleSuccessReset = ( form ) => {
+	const raw = parseFloat( form.dataset.aaeFormResetDelay );
+	const seconds = Number.isFinite( raw ) ? raw : 5;
+	if ( seconds <= 0 ) {
+		return;
+	}
+
+	clearTimeout( form.__aaeSuccessResetTimer );
+	form.__aaeSuccessResetTimer = setTimeout( () => {
+		setFormState( form, 'default' );
+		showRuntimeMessage( form, '', 'error' );
+		clearAllErrors( form );
+		// The reset brings the form back, so undo any success-hide with it —
+		// otherwise a form with both settings would reset into an empty box.
+		showFormBody( form );
+
+		const state = form.__aaeStepState;
+		if ( state ) {
+			state.current = 0;
+			resyncSteps( form );
+		}
+	}, seconds * 1000 );
+};
+
+/* ------------------------------------------------------------------ */
+/* Hide-after-success                                                  */
+/*                                                                     */
+/* "Only the success message stays on screen." Hiding the <form> itself */
+/* would take the message with it (the message widgets are its         */
+/* children), so instead every DIRECT child EXCEPT the status-message   */
+/* containers gets the marker class — the message keeps its authored    */
+/* styling and position, the fields vanish.                            */
+/* ------------------------------------------------------------------ */
+
+const HIDDEN_CLASS = 'aae-form-body-hidden';
+
+const MESSAGE_TYPES = [
+	'e-aae-a-form-success-message',
+	'e-aae-a-form-error-message',
+];
+
+// NOTE: the attribute is `data-element_type` with an UNDERSCORE, so it is
+// NOT reachable via `dataset.elementType` (that maps to data-element-type).
+// getAttribute is the only correct read here.
+const isMessageContainer = ( el ) =>
+	MESSAGE_TYPES.includes( el.getAttribute?.( 'data-element_type' ) ) ||
+	MESSAGE_TYPES.some( ( type ) => el.querySelector?.( `[data-element_type="${ type }"]` ) );
+
+const hideFormBody = ( form ) => {
+	Array.from( form.children ).forEach( ( child ) => {
+		if ( ! isMessageContainer( child ) ) {
+			child.classList.add( HIDDEN_CLASS );
+		}
+	} );
+};
+
+const showFormBody = ( form ) => {
+	form
+		.querySelectorAll( `.${ HIDDEN_CLASS }` )
+		.forEach( ( el ) => el.classList.remove( HIDDEN_CLASS ) );
+};
+
+const scheduleSuccessHide = ( form ) => {
+	if ( 'true' !== form.dataset.aaeFormHideOnSuccess ) {
+		return;
+	}
+
+	const raw = parseFloat( form.dataset.aaeFormHideDelay );
+	const seconds = Number.isFinite( raw ) && raw > 0 ? raw : 0;
+
+	clearTimeout( form.__aaeSuccessHideTimer );
+	if ( seconds <= 0 ) {
+		hideFormBody( form );
+		return;
+	}
+	form.__aaeSuccessHideTimer = setTimeout( () => hideFormBody( form ), seconds * 1000 );
+};
+
 const validateFrontend = ( form, scopeEl ) => {
 	const errors = [];
 	const seenRadioGroups = new Set();
@@ -359,6 +448,36 @@ const validateFrontend = ( form, scopeEl ) => {
 			continue;
 		}
 
+		// Password: min length + confirm-match. Read from the control's own
+		// data-attrs so the rules travel with the widget; the server re-checks
+		// both from the schema snapshot (never trust the frontend alone).
+		// `control.type` is unreliable here — the reveal toggle flips it to
+		// 'text' — so key off the wrapper class instead.
+		if ( control.closest( '.aae-a-form-password' ) ) {
+			const min = parseInt( control.dataset.aaePasswordMin, 10 );
+			if ( min > 0 && value.length < min ) {
+				errors.push( [
+					control,
+					messageFor( control, t( 'passwordTooShort', `Please use at least ${ min } characters.` ) ),
+				] );
+				continue;
+			}
+
+			const matchId = control.dataset.aaePasswordMatch;
+			if ( matchId ) {
+				const other = form.querySelector( `#${ CSS.escape( matchId ) }` );
+				if ( other && other.value !== control.value ) {
+					errors.push( [
+						control,
+						control.dataset.aaePasswordMismatchMessage ||
+							t( 'passwordMismatch', 'Passwords do not match.' ),
+					] );
+					continue;
+				}
+			}
+			continue;
+		}
+
 		if ( 'email' === control.type && ! EMAIL_RE.test( value ) ) {
 			errors.push( [ control, messageFor( control, t( 'invalidEmail', 'Please enter a valid email address.' ) ) ] );
 		} else if ( 'url' === control.type && ! /^https?:\/\/\S+\.\S+/.test( value ) ) {
@@ -376,6 +495,17 @@ const validateFrontend = ( form, scopeEl ) => {
 			}
 		} else if ( 'tel' === control.type && ! TEL_RE.test( value ) ) {
 			errors.push( [ control, messageFor( control, t( 'invalidTel', 'Please enter a valid phone number.' ) ) ] );
+		}
+
+		// Extension point mirroring the server's 'aae_form/validator/value_error'
+		// filter: extra per-value checks (pro Validation's regex rules) run only
+		// when every built-in check above passed. Return a message to fail.
+		const builtinFailed = errors.length && errors[ errors.length - 1 ][ 0 ] === control;
+		if ( ! builtinFailed ) {
+			const extra = hooks.applyFilters( 'aae_form/validate/value_error', '', control, value, form );
+			if ( extra && 'string' === typeof extra ) {
+				errors.push( [ control, extra ] );
+			}
 		}
 	}
 
@@ -617,6 +747,22 @@ const initForm = ( form ) => {
 		initRange( form );
 	}
 
+	// Password reveal (eye) toggle. Editor preview too (pure UI, no submit);
+	// inert on forms without a password field.
+	const hasPassword = !! form.querySelector( '.aae-a-form-password' );
+	if ( hasPassword ) {
+		initPassword( form );
+	}
+
+	// Live totals for [data-aae-calc] fields. Editor preview too (builders
+	// need to see their formula working while styling) and inert on forms
+	// without one. The server recomputes every total on submit, so this is
+	// display/UX only — never the source of truth.
+	const hasCalculation = !! form.querySelector( '[data-aae-calc]' );
+	if ( hasCalculation ) {
+		initCalculations( form );
+	}
+
 	// A Reset/Clear button (submit widget with button_type=reset) fires the
 	// form's native `reset` event. The browser clears the real controls, but
 	// our custom bits don't follow — so resync the multi-select UI, drop
@@ -640,9 +786,23 @@ const initForm = ( form ) => {
 			if ( hasRating ) {
 				syncRating( form );
 			}
+			if ( hasPassword ) {
+				// Never leave a revealed password on screen after a reset —
+				// including the reset that follows a successful submit.
+				resetPassword( form );
+			}
+			if ( hasCalculation ) {
+				// Totals must fall back to their placeholder once the fields
+				// they read from are cleared.
+				syncCalculations( form );
+			}
 			clearAllErrors( form );
 			showRuntimeMessage( form, '', 'error' );
 			form.classList.remove( 'form-state-default', 'form-state-success', 'form-state-error' );
+			// A real Reset/Clear click must restore a success-hidden form, and
+			// cancel a pending hide so it can't fire onto the fresh form.
+			clearTimeout( form.__aaeSuccessHideTimer );
+			showFormBody( form );
 		}, 0 );
 	} );
 
@@ -690,8 +850,13 @@ const initForm = ( form ) => {
 	// there, and its issue timestamp makes the server's minimum-submit-time
 	// check measure real filling time.
 	const prefetch = () => ensureAuth().catch( () => {} );
-	form.addEventListener( 'focusin', prefetch, { once: true } );
-	form.addEventListener( 'pointerdown', prefetch, { once: true } );
+	const armPrefetch = () => {
+		// Same function reference — re-adding while still armed is a no-op,
+		// re-adding after the once-listener fired arms it again.
+		form.addEventListener( 'focusin', prefetch, { once: true } );
+		form.addEventListener( 'pointerdown', prefetch, { once: true } );
+	};
+	armPrefetch();
 
 	// Same idea for reCAPTCHA: load Google's script on first interaction so
 	// grecaptcha.execute() at submit time doesn't wait on a script fetch.
@@ -779,12 +944,20 @@ const initForm = ( form ) => {
 				showRuntimeMessage( form, '', 'success' );
 				form.dataset.aaeSuppressResetState = 'true';
 				form.reset();
+				// The suppressed reset skips the handler above, so re-lock any
+				// revealed password here — a sent form must never leave one
+				// readable on screen.
+				if ( hasPassword ) {
+					resetPassword( form );
+				}
 				if ( data.redirect_url ) {
 					window.location.assign( data.redirect_url );
 					return;
 				}
 				form.querySelector( '[data-element_type="e-aae-a-form-success-message"]' )
 					?.scrollIntoView( { block: 'nearest', behavior: 'auto' } );
+				scheduleSuccessHide( form );
+				scheduleSuccessReset( form );
 				return;
 			}
 
@@ -822,8 +995,18 @@ const initForm = ( form ) => {
 					setFormState( form, 'error' );
 					showRuntimeMessage( form, data.message || t( 'genericError', 'We could not submit the form. Please try again.' ), 'error' );
 			}
+
+			// Fetch the NEXT attempt's token immediately: the server's
+			// minimum-submit-time check measures from token issue (Rest.php),
+			// so the retry token must age while the visitor fixes their input.
+			// Waiting for a new interaction doesn't work here — the 422 path
+			// auto-focuses the invalid field, so a re-armed focusin listener
+			// never fires and the token would be fetched at click time (age
+			// ~0s → an honest retry gets blocked as too_fast).
+			prefetch();
 		} catch ( error ) {
 			auth = null;
+			prefetch(); // same reasoning as the non-ok branch above.
 			if ( error && error.uploadControl ) {
 				// A pre-upload was rejected (type/size/rate limit) — paint it
 				// on the field; the visitor's other input is untouched.
@@ -840,6 +1023,13 @@ const initForm = ( form ) => {
 			clearTimeout( timeoutTimer );
 			setLoading( form, button, false );
 			inFlight = false;
+			// The token is spent (or was never granted) either way — re-arm the
+			// interaction prefetch so the NEXT attempt's fresh token is issued
+			// when the visitor resumes editing, not at click time. A click-time
+			// token is younger than the server's minimum-submit-time check
+			// (measured from token issue, Rest.php) and would 403 an honest
+			// retry after a 422/409/500 — or a second fill after success-reset.
+			armPrefetch();
 		}
 	} );
 

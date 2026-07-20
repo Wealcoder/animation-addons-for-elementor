@@ -19,6 +19,9 @@
     data-interaction-id="{{ interaction_id | default(id) }}"
     data-aae-form-ready="false"
     data-aae-form-behavior="{{ settings.behavior | default('store_email') }}"
+    data-aae-form-reset-delay="{{ settings.success_reset_delay | default(5) }}"
+    {% if settings.success_hide_form %}data-aae-form-hide-on-success="true"{% endif %}
+    data-aae-form-hide-delay="{{ settings.success_hide_delay | default(0) }}"
     {% if settings.captcha_provider is defined and settings.captcha_provider == 'recaptcha_v3' %}data-aae-form-recaptcha="v3"{% endif %}
     {% if settings.form_key is defined and settings.form_key is not empty %}data-aae-form-key="{{ settings.form_key | e('html_attr') }}"{% endif %}
     novalidate

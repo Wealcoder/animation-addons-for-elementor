@@ -1730,6 +1730,68 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form-password' => [
+				'label'        => 'Form Password',
+				'description'  => 'Advanced Field (Pro) — a masked password field with an optional reveal button, minimum length and confirm-match. Never stored, emailed or sent to webhooks in readable form.',
+				'icon'         => 'eicon-lock-user',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form password',
+					'password',
+					'secret',
+					'confirm',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-calculation' => [
+				'label'        => 'Form Calculation',
+				'description'  => 'Advanced Field (Pro) — a read-only total computed from other fields by a formula, e.g. {quantity} * {price}. The server recomputes it on submit, so the stored value can never be tampered with.',
+				'icon'         => 'eicon-number-field',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form calculation',
+					'calculator',
+					'total',
+					'price',
+					'quote',
+					'sum',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-country' => [
+				'label'        => 'Form Country',
+				'description'  => 'Advanced Field (Pro) — a country dropdown with the full ISO country list built in. Prune or reorder the list to pin priority countries; values submit as ISO codes.',
+				'icon'         => 'eicon-globe',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form country',
+					'country',
+					'dropdown',
+					'nationality',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-form-submit' => [
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
@@ -2879,6 +2941,24 @@ final class Atomic
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
 			],
 
+			'aae-a-form-country' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Country',
+				'file'       => 'Widgets/Form/class-aae-a-form-country.php',
+				'has_script' => false, // native single <select>; no JS needed.
+			],
+
+			'aae-a-form-calculation' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Calculation',
+				'file'       => 'Widgets/Form/class-aae-a-form-calculation.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/calculation.js).
+			],
+
+			'aae-a-form-password' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Password',
+				'file'       => 'Widgets/Form/class-aae-a-form-password.php',
+				'has_script' => false, // reveal toggle ships inside aae-a-form-js (lib/password.js).
+			],
+
 			'aae-a-form-step' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Step',
 				'file'       => 'Widgets/Form/class-aae-a-form-step.php',
@@ -3749,6 +3829,30 @@ final class Atomic
 		return $server_ip === '127.0.0.1';
 	}
 
+	/**
+	 * Public accessor for is_dev_environment() — used by the remote preset
+	 * system (Atomic\Presets\Cache) to decide whether to bypass its cache
+	 * and always fetch fresh from the remote server.
+	 *
+	 * @return bool
+	 */
+	public function is_dev_environment_public(): bool
+	{
+		return $this->is_dev_environment();
+	}
+
+	/**
+	 * Public accessor for get_available_widgets() — used by
+	 * Atomic\Presets\Local_Fallback to walk each widget's presets/ folder
+	 * without duplicating this plugin's widget registry.
+	 *
+	 * @return array
+	 */
+	public function get_available_widgets_public(): array
+	{
+		return $this->get_available_widgets();
+	}
+
 	/* =====================================================================
 	 *  Dashboard integration
 	 * =================================================================== */
@@ -4090,13 +4194,13 @@ final class Atomic
 			true
 		);
 
-		// Expose bundled widget presets to the editor bridge so its panel UI
-		// (Apply Preset dropdown) can list and apply them. Keyed by widget type.
-		wp_localize_script(
-			'aae-atomic-editor',
-			'AAE_WIDGET_PRESETS',
-			$this->get_widget_presets()
-		);
+		// NOTE: AAE_PRESET_CONFIG is NOT localized here. PresetPickerControl.jsx
+		// (which reads window.AAE_PRESET_CONFIG) ships inside the
+		// 'aae-atomic-common-editor-bridge' bundle (built from
+		// src/modules/atomic/editor-bridge.js), NOT this 'aae-atomic-editor'
+		// handle (built from inc/AtomicWidgets/assets/js/atomic-editor.js —
+		// a small, unrelated outer-frame bridge). See Atomic\Assets::
+		// enqueue_editor_bridge() for the correct wp_localize_script() call.
 
 		// Loop Grid: ajax config for the editor "full grid live" preview module.
 		wp_localize_script(
@@ -4166,202 +4270,6 @@ JS,
 		);
 	}
 
-	/**
-	 * Scan every widget's presets/ folder and return the parsed JSON presets,
-	 * grouped by the widget type they belong to, so the editor can list the
-	 * presets relevant to the selected element.
-	 *
-	 * Two file formats are accepted:
-	 *   - Elementor native export: { content:[ <model> ], title, type, ... }
-	 *     (the user exports a flex container holding the design)
-	 *   - Plugin format:           { name, model:{...} }
-	 *
-	 * The exposed model is the root export element (e.g. an e-flexbox wrapper).
-	 * The editor unwraps a container wrapper on apply and places its children
-	 * at the selected element's position. The preset is keyed by the primary
-	 * atomic widget found inside (e.g. e-aae-a-advanced-heading) so it shows
-	 * when that widget is selected — not when a bare flexbox is selected.
-	 *
-	 * @return array<string, array<int, array>> elementType => preset[]
-	 */
-	private function get_widget_presets(): array
-	{
-		$presets = [];
-		$scanned_dirs = [];
-
-		foreach ($this->get_available_widgets() as $widget_data) {
-			if (empty($widget_data['file'])) {
-				continue;
-			}
-
-			$widget_dir = wp_normalize_path(dirname(WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $widget_data['file']));
-			$preset_dir = $widget_dir . '/presets';
-
-			if (! is_dir($preset_dir)) {
-				continue;
-			}
-
-			// Many widgets share one folder (e.g. all LoopGrid parts live in
-			// Widgets/LoopGrid), so the same presets/ dir would be globbed once
-			// per sibling widget and every preset would appear N times. Scan each
-			// dir only once.
-			if (isset($scanned_dirs[$preset_dir])) {
-				continue;
-			}
-			$scanned_dirs[$preset_dir] = true;
-
-			foreach (glob($preset_dir . '/*.json') as $file) {
-				$preset = $this->parse_preset_file($file);
-				if (! $preset) {
-					continue;
-				}
-
-				// Key by the primary atomic widget inside the model (so a
-				// flex-wrapped heading preset shows when a heading is selected),
-				// falling back to the model's own type.
-				$type = $this->detect_primary_widget_type($preset['model']);
-				if ('' === $type) {
-					continue;
-				}
-
-				$presets[$type][] = $preset;
-			}
-		}
-
-		// Native atomic widgets (e-heading, e-button, …) have no widget dir of
-		// ours to host a presets/ folder, and detect_primary_widget_type() only
-		// recognises e-aae-a-* widgets. So their presets live in one shared root,
-		// one sub-folder per element type — the FOLDER NAME is the key:
-		//   inc/AtomicWidgets/Presets/e-heading/*.json  =>  presets['e-heading']
-		// The matching panel section is injected by Atomic\Presets\Controls,
-		// which checks the same folders (keep the path in sync with it).
-		$native_root = wp_normalize_path(WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets');
-		if (is_dir($native_root)) {
-			foreach (glob($native_root . '/*', GLOB_ONLYDIR) as $type_dir) {
-				$type = basename($type_dir);
-
-				foreach (glob($type_dir . '/*.json') as $file) {
-					$preset = $this->parse_preset_file($file);
-					if ($preset) {
-						$presets[$type][] = $preset;
-					}
-				}
-			}
-		}
-
-		return $presets;
-	}
-
-	/**
-	 * Parse one preset .json file into [ id, name, model ], accepting both the
-	 * Elementor native export format ({ content:[<model>], title }) and the
-	 * plugin format ({ name, model }). Returns null when unreadable/invalid.
-	 *
-	 * @param string $file Absolute path to the .json file.
-	 * @return array{id:string,name:string,model:array}|null
-	 */
-	private function parse_preset_file(string $file): ?array
-	{
-		$raw = file_get_contents($file);
-		if (false === $raw) {
-			return null;
-		}
-
-		// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
-		// instead of a baked-in domain (so the JSON works on any install
-		// after this plugin is distributed) — resolve it here the same
-		// way live widget code resolves its own asset URLs via
-		// WCF_ADDONS_URL (see e.g. AAE_A_Social_Share_Item::get_vendor_svg_url()).
-		if (defined('WCF_ADDONS_URL')) {
-			$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
-		}
-
-		$data = json_decode($raw, true);
-		if (! is_array($data)) {
-			return null;
-		}
-
-		// Resolve the root model + name from either supported format.
-		$model = null;
-		$name  = basename($file, '.json');
-
-		if (! empty($data['model']) && is_array($data['model'])) {
-			// Plugin format.
-			$model = $data['model'];
-			if (isset($data['name'])) {
-				$name = (string) $data['name'];
-			}
-		} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
-			// Elementor native export: content[] holds top-level elements;
-			// the first is the wrapper we treat as the preset model.
-			$model = $data['content'][0];
-			if (! empty($data['title'])) {
-				$name = (string) $data['title'];
-			}
-		}
-
-		if (! $model) {
-			return null;
-		}
-
-		return [
-			'id'    => sanitize_key(basename($file, '.json')),
-			'name'  => $name,
-			'model' => $model,
-		];
-	}
-
-	/**
-	 * Find the most relevant widget type a preset targets. If the root is a
-	 * layout container, descend to the first AAE atomic widget inside; else use
-	 * the root's own type. Returns the type string Elementor reports for the
-	 * element (elType for atomic elements, widgetType for classic widgets).
-	 *
-	 * @param array $model Element model.
-	 * @return string
-	 */
-	private function detect_primary_widget_type(array $model): string
-	{
-		$container_types = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
-
-		$root_type = $model['elType'] ?? '';
-		if ('widget' === $root_type && ! empty($model['widgetType'])) {
-			$root_type = $model['widgetType'];
-		}
-
-		// If the root isn't a container, it's the target itself.
-		if (! in_array($root_type, $container_types, true)) {
-			return $root_type;
-		}
-
-		// Descend breadth-first to the first AAE atomic widget.
-		$queue = $model['elements'] ?? [];
-
-		while (! empty($queue)) {
-			$node = array_shift($queue);
-			if (! is_array($node)) {
-				continue;
-			}
-
-			$type = $node['elType'] ?? '';
-			if ('widget' === $type && ! empty($node['widgetType'])) {
-				$type = $node['widgetType'];
-			}
-
-			if (is_string($type) && 0 === strpos($type, 'e-aae-a-')) {
-				return $type;
-			}
-
-			if (! empty($node['elements']) && is_array($node['elements'])) {
-				foreach ($node['elements'] as $child) {
-					$queue[] = $child;
-				}
-			}
-		}
-
-		// No AAE widget inside — fall back to the container type itself.
-		return $root_type;
-	}
 }
 
 // Initialize.

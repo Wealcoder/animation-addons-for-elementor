@@ -91,6 +91,87 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 		return (array) apply_filters( 'aae_form/input_types', $options );
 	}
 
+	/**
+	 * Curated autocomplete tokens (spec: native autofill where appropriate —
+	 * name/email/tel/organization/address family/postal-code/url). '' means
+	 * "browser default" (no attribute rendered). Used for BOTH the prop enum
+	 * and the Select control's options.
+	 *
+	 * @return array<int,array{value:string,label:string}>
+	 */
+	public static function autocomplete_options(): array {
+		return [
+			[
+				'value' => '',
+				'label' => __( 'Browser default', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'name',
+				'label' => __( 'Full name', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'given-name',
+				'label' => __( 'First name', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'family-name',
+				'label' => __( 'Last name', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'email',
+				'label' => __( 'Email', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'username',
+				'label' => __( 'Username', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'tel',
+				'label' => __( 'Phone', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'url',
+				'label' => __( 'Website URL', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'organization',
+				'label' => __( 'Company / Organization', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'street-address',
+				'label' => __( 'Street address', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'address-line1',
+				'label' => __( 'Address line 1', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'address-line2',
+				'label' => __( 'Address line 2', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'address-level2',
+				'label' => __( 'City', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'address-level1',
+				'label' => __( 'State / Province', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'postal-code',
+				'label' => __( 'Postal code', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'country-name',
+				'label' => __( 'Country name', 'animation-addons-for-elementor' ),
+			],
+			[
+				'value' => 'off',
+				'label' => __( 'Off (no autofill)', 'animation-addons-for-elementor' ),
+			],
+		];
+	}
+
 	/** Just the value slugs, for the prop enum. */
 	private static function type_values(): array {
 		return array_values(
@@ -132,6 +213,13 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 			'required'    => Boolean_Prop_Type::make()->default( false ),
 			'readonly'    => Boolean_Prop_Type::make()->default( false ),
 
+			// Browser autofill hint (autocomplete attribute). '' = browser
+			// default, no attribute rendered. Display-only — deliberately NOT
+			// in the schema snapshot (same reasoning as Range's step).
+			'autocomplete' => String_Prop_Type::make()
+				->enum( array_column( self::autocomplete_options(), 'value' ) )
+				->default( '' ),
+
 			// Validation rules (user-supplied): accepted value range for number
 			// fields, rendered as native min/max attributes. Kept as strings so
 			// empty = no rule.
@@ -156,6 +244,12 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 						Select_Control::bind_to( 'type' )
 						->set_label( __( 'Type', 'animation-addons-for-elementor' ) )
 						->set_options( self::type_options() ),
+						Select_Control::bind_to( 'autocomplete' )
+							->set_label( __( 'Autofill', 'animation-addons-for-elementor' ) )
+							->set_options( self::autocomplete_options() )
+							->set_description(
+								__( 'What the browser should suggest for this field (autocomplete). Match it to the field’s meaning — e.g. Street address, City, Postal code.', 'animation-addons-for-elementor' )
+							),
 						Switch_Control::bind_to( 'required' )
 							->set_label( __( 'Required', 'animation-addons-for-elementor' ) ),
 						Switch_Control::bind_to( 'readonly' )

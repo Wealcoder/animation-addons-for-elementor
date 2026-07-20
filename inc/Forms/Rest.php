@@ -325,6 +325,33 @@ final class Rest {
 			'ip_hash'        => Token::visitor_hash(),
 		];
 
+		/**
+		 * The ONE seam that sees a submission's raw values — including any
+		 * password — before redaction. It exists for actions that genuinely
+		 * cannot work with a masked value (the pro Create User action needs
+		 * the real password to call wp_insert_user()).
+		 *
+		 * Runs SYNCHRONOUSLY inside the submit request, deliberately: the raw
+		 * value must never be written to the async job queue, which persists
+		 * its payload. Anything hooking here must consume the value and keep
+		 * nothing — no logging, no storage, no third-party call carrying it.
+		 *
+		 * Fires before storage, so a listener failing must not lose the lead:
+		 * handlers are expected to swallow their own errors.
+		 *
+		 * @param array $clean  Validated values, still raw.
+		 * @param array $schema Active schema snapshot.
+		 * @param array $meta   form_key / schema_version / source_url / … .
+		 */
+		do_action( 'aae_form/submission_raw', $result['clean'], $schema, $meta );
+
+		// Passwords never travel past validation in readable form: replace
+		// every password value with its mask / one-way hash BEFORE anything
+		// downstream can see it — the observability hook, storage, the action
+		// queue (admin email, auto-reply, webhook) and the CSV export all read
+		// from here, so there is no path that leaks one.
+		$result['clean'] = Validator::redact_passwords( $result['clean'], $schema );
+
 		// Observability seam — fires whether or not storage is enabled.
 		do_action( 'aae_form/submission_validated', $form_key, $result['clean'], $schema, $meta );
 
