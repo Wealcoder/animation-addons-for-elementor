@@ -8,6 +8,12 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
+    {# Desktop dropdown-indicator icon: nav.js fetches this SVG and inlines it
+       next to each has-dropdown item's label (see injectDropdownIcons). #}
+    data-show-dropdown-icon="{{ settings.show_dropdown_icon is defined and not settings.show_dropdown_icon ? 'false' : 'true' }}"
+    {% if settings.dropdown_icon is defined and settings.dropdown_icon.url is defined and settings.dropdown_icon.url is not empty %}
+        data-dropdown-icon="{{ settings.dropdown_icon.url | e('html_attr') }}"
+    {% endif %}
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}

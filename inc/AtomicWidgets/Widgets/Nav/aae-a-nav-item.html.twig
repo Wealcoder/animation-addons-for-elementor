@@ -3,7 +3,11 @@
 {% set has_dropdown = settings.has_dropdown ? 'true' : 'false' %}
 {% set trigger = settings.trigger | default('click') %}
 {% set dropdown_anim = settings.dropdown_animation | default('gsap') %}
-{% set has_link = settings.link is defined and settings.link.href is defined and settings.link.href is not empty %}
+{# A bare "#" href is not a real destination (typical WP placeholder for a
+   dropdown parent). Rendering <a href="#"> makes Elementor's editor anchor
+   handler run querySelector('#') → SyntaxError on click, so treat it as no link
+   and render a <span> instead. #}
+{% set has_link = settings.link is defined and settings.link.href is defined and settings.link.href is not empty and settings.link.href != '#' %}
 
 {# Rendered as <div>, NOT <li>: a nav-item can be nested inside another
    nav-item's dropdown flexbox (a <div>) for multi-level menus. A <div> does

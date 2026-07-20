@@ -63,6 +63,31 @@ const NAV_ROW_ICON_SX = {
 	minWidth: 20,
 };
 
+/* Hover-revealed quick-action cluster (Edit / Add child / Duplicate / Remove).
+ * Positioned absolutely over the right edge of the row so the title always gets
+ * the FULL row width — the icons no longer permanently eat ~80px, which is what
+ * crowded rows at the ~300px panel width. It fades in on row hover / keyboard
+ * focus-within (see the parent row's sx), and is force-shown while the row is
+ * expanded (below). A short left-side gradient keeps the icons legible over a
+ * long, truncated title. pointer-events is off while hidden so the invisible
+ * cluster never swallows clicks meant for the title underneath. */
+const NAV_ROW_ACTIONS_SX = {
+	position: 'absolute',
+	top: 0,
+	right: 0,
+	bottom: 0,
+	display: 'flex',
+	alignItems: 'center',
+	gap: 0.25,
+	pl: 2.5,
+	pr: 0.5,
+	opacity: 0,
+	pointerEvents: 'none',
+	transition: 'opacity 120ms ease',
+	background: ( theme ) =>
+		`linear-gradient(to right, transparent 0, ${ theme.palette.background.default } 20px)`,
+};
+
 const prop = ( type, value ) => ( { $$type: type, value } );
 
 function readProp( value, fallback = '' ) {
@@ -294,8 +319,11 @@ function buildImportedItemModel( node ) {
 		has_dropdown: prop( 'boolean', hasChildren ),
 		trigger: prop( 'string', 'click' ),
 		dropdown_animation: prop( 'string', 'gsap' ),
+		wp_id: prop( 'string', node.id != null ? String( node.id ) : '' ),
 	};
-	if ( node.url ) {
+	/* Skip a bare "#" placeholder URL — a real <a href="#"> crashes Elementor's
+	 * editor anchor handler (querySelector('#')). Such items become plain labels. */
+	if ( node.url && node.url !== '#' ) {
 		settings.link = prop( 'link', {
 			destination: prop( 'url', node.url ),
 			isTargetBlank: prop( 'boolean', node.target === '_blank' ),
@@ -319,6 +347,107 @@ function buildImportedItemModel( node ) {
 		} ];
 	}
 	return model;
+}
+
+/* The link prop for an imported node (or null when the node has no real url —
+ * a bare "#" placeholder is treated as no link; see buildImportedItemModel). */
+function importedLinkProp( node ) {
+	if ( ! node.url || node.url === '#' ) {
+		return null;
+	}
+	return prop( 'link', {
+		destination: prop( 'url', node.url ),
+		isTargetBlank: prop( 'boolean', node.target === '_blank' ),
+		tag: prop( 'string', 'a' ),
+	} );
+}
+
+/* Direct child nav-items of a container (nav root or dropdown flexbox). */
+function directNavItems( container ) {
+	const out = [];
+	container?.model?.get?.( 'elements' )?.each?.( ( model ) => {
+		if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) === NAV_ITEM_TYPE ) {
+			const child = getContainer( model.get( 'id' ) );
+			if ( child ) {
+				out.push( child );
+			}
+		}
+	} );
+	return out;
+}
+
+/* Smart, non-destructive "Update from WordPress" for one level of the tree.
+ *
+ * Matches existing imported nav-items to WP nodes by the stored `wp_id`, then:
+ *   - updates the label/link of matched items (WP is the source of truth),
+ *   - recurses into their (styled, preserved) dropdown flexbox,
+ *   - adds items new in WP,
+ *   - removes items whose wp_id vanished from WP.
+ * Hand-added items (no wp_id) are never touched. Everything works by ID with a
+ * fresh getContainer at each step, because every create/update re-renders and
+ * detaches prior container instances. `containerId` is the nav root or a
+ * dropdown flexbox. */
+function syncMenuLevel( containerId, wpNodes ) {
+	const container = getContainer( containerId );
+	if ( ! container ) {
+		return;
+	}
+	const wpIds = new Set( wpNodes.map( ( n ) => String( n.id ) ) );
+	const existing = directNavItems( container );
+	const byWpId = new Map();
+	existing.forEach( ( item ) => {
+		const wid = readProp( item.settings?.get?.( 'wp_id' ), '' );
+		if ( wid ) {
+			byWpId.set( String( wid ), item.id );
+		}
+	} );
+
+	/* Remove imported items deleted from WP (leave hand-added ones alone). */
+	const toRemove = existing
+		.filter( ( item ) => {
+			const wid = readProp( item.settings?.get?.( 'wp_id' ), '' );
+			return wid && ! wpIds.has( String( wid ) );
+		} )
+		.map( ( item ) => item.id );
+	if ( toRemove.length ) {
+		removeElements( { elementIds: toRemove, title: 'Update Menu', subtitle: 'Removed items no longer in WordPress' } );
+	}
+
+	wpNodes.forEach( ( node ) => {
+		const matchId = byWpId.get( String( node.id ) );
+		const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
+
+		if ( matchId ) {
+			const props = {
+				text: prop( 'html-v3', { content: prop( 'string', node.title || 'Menu Item' ), children: [] } ),
+				has_dropdown: prop( 'boolean', hasChildren ),
+			};
+			const link = importedLinkProp( node );
+			if ( link ) {
+				props.link = link;
+			}
+			updateElementSettings( { id: matchId, props } );
+
+			if ( hasChildren ) {
+				let flex = findFirstChildOfType( getContainer( matchId ), 'e-flexbox' );
+				if ( ! flex ) {
+					flex = ensureItemFlexbox( matchId );
+				}
+				if ( flex ) {
+					syncMenuLevel( getElementId( flex ), node.children );
+				}
+			}
+		} else {
+			const fresh = getContainer( containerId );
+			if ( fresh ) {
+				createElements( {
+					title: 'Update Menu',
+					subtitle: 'Added item from WordPress',
+					elements: [ { container: fresh, model: buildImportedItemModel( node ), options: {} } ],
+				} );
+			}
+		}
+	} );
 }
 
 /* Fetch the site's WordPress menus (with nested item trees) once. Reuses the
@@ -359,27 +488,39 @@ function useWpMenus() {
 }
 
 /* "Import from WordPress menu" row for the Menu Items panel: a menu picker +
- * Import button. Collapses to nothing when the site has no menus. */
-function NavMenuImport( { onImport } ) {
+ * action button. When the picked menu is the one already imported into this nav
+ * (`linkedMenuId`), the button becomes "Update from WordPress" and runs the
+ * non-destructive smart sync; otherwise it imports (appends). Collapses to
+ * nothing when the site has no menus. */
+function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 	const { menus, loading } = useWpMenus();
 	const [ selectedId, setSelectedId ] = React.useState( '' );
 
+	/* Default the picker to the already-linked menu (so "Update" shows first),
+	 * else the first menu. */
 	React.useEffect( () => {
-		if ( ! selectedId && menus.length ) {
-			setSelectedId( String( menus[ 0 ].id ) );
+		if ( selectedId || ! menus.length ) {
+			return;
 		}
-	}, [ menus, selectedId ] );
+		const preferred = linkedMenuId && menus.some( ( m ) => String( m.id ) === String( linkedMenuId ) )
+			? String( linkedMenuId )
+			: String( menus[ 0 ].id );
+		setSelectedId( preferred );
+	}, [ menus, selectedId, linkedMenuId ] );
 
 	if ( loading || ! menus.length ) {
 		return null;
 	}
 
 	const selected = menus.find( ( m ) => String( m.id ) === String( selectedId ) );
+	const isLinked = linkedMenuId && String( selectedId ) === String( linkedMenuId );
 
 	return (
 		<Box sx={ { p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 } }>
 			<Typography variant="caption" sx={ { color: 'text.tertiary', display: 'block', mb: 0.5 } }>
-				{ 'Import from a WordPress menu (Appearance → Menus). Items are appended.' }
+				{ isLinked
+					? 'Re-sync from WordPress: adds new items, removes deleted ones, refreshes labels/links — your styling stays.'
+					: 'Import from a WordPress menu (Appearance → Menus). Items are appended.' }
 			</Typography>
 			<Stack direction="row" gap={ 0.5 } alignItems="center">
 				<Select
@@ -394,11 +535,11 @@ function NavMenuImport( { onImport } ) {
 				</Select>
 				<Button
 					size="tiny"
-					variant="outlined"
+					variant={ isLinked ? 'contained' : 'outlined' }
 					disabled={ ! selected?.items?.length }
-					onClick={ () => selected && onImport( selected ) }
+					onClick={ () => selected && ( isLinked ? onUpdate( selected ) : onImport( selected ) ) }
 				>
-					{ 'Import' }
+					{ isLinked ? 'Update' : 'Import' }
 				</Button>
 			</Stack>
 		</Box>
@@ -1083,9 +1224,14 @@ function useNavTree( navId ) {
 		],
 		() => {
 			const out = [];
-			const walk = ( containerId, depth ) => {
-				const container = getContainer( containerId );
-				container?.model?.get?.( 'elements' )?.each?.( ( model ) => {
+			/* Descend via the Backbone MODEL tree, not getContainer(). A freshly
+			 * created deep item (e.g. from "Update from WordPress") is present in
+			 * the model immediately but its container/view may not be registered
+			 * for a tick — keying the walk on containers made those nested levels
+			 * vanish from this panel until a reload, even though the canvas showed
+			 * them. The model is always complete, so the whole tree renders now. */
+			const walk = ( containerId, containerModel, depth ) => {
+				containerModel?.get?.( 'elements' )?.each?.( ( model ) => {
 					if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
 						return;
 					}
@@ -1098,13 +1244,19 @@ function useNavTree( navId ) {
 					const editorSettings = model.get( 'editor_settings' ) || {};
 					const title = readProp( text?.content, '' ) || editorSettings.title || 'Menu Item';
 					out.push( { id, depth, title, parentId: containerId } );
-					const flex = findFirstChildOfType( itemContainer, 'e-flexbox' );
-					if ( flex ) {
-						walk( flex.id, depth + 1 );
+					/* The dropdown flexbox lives directly under the item's model. */
+					let flexModel = null;
+					model.get( 'elements' )?.each?.( ( childModel ) => {
+						if ( ! flexModel && ( childModel.get( 'widgetType' ) || childModel.get( 'elType' ) ) === 'e-flexbox' ) {
+							flexModel = childModel;
+						}
+					} );
+					if ( flexModel ) {
+						walk( flexModel.get( 'id' ), flexModel, depth + 1 );
 					}
 				} );
 			};
-			walk( navId, 0 );
+			walk( navId, getContainer( navId )?.model, 0 );
 
 			const signature = out.map( ( r ) => `${ r.id }:${ r.depth }:${ r.title }:${ r.parentId }` ).join( '|' );
 			if ( cacheRef.current.signature === signature ) {
@@ -1127,9 +1279,39 @@ export function NavItemsControl( { label } ) {
 	const INDENT = 12;
 
 	const [ expandedId, setExpandedId ] = React.useState( null );
+	/* Accordion: the depth-0 (main) item whose subtree is currently unfolded in
+	 * the panel. Only ONE main branch is open at a time — clicking another main
+	 * collapses the previous one — so the list stays short instead of showing
+	 * every level of every menu at once. null = all branches collapsed. */
+	const [ openMainId, setOpenMainId ]  = React.useState( null );
 	const [ dragId, setDragId ]         = React.useState( null );
 	const [ dropIndex, setDropIndex ]   = React.useState( null );
 	const [ dropDepth, setDropDepth ]   = React.useState( 0 );
+
+	/* Per-row: the depth-0 item that heads its branch (its `mainId`) and whether
+	 * it has children. The flat tree is pre-order, so the heading main is simply
+	 * the most recent depth-0 row, and a row has children iff the next row is
+	 * deeper. Drives both the accordion visibility filter and the chevron. */
+	const rowsMeta = React.useMemo( () => {
+		let currentMain = null;
+		return tree.map( ( r, i ) => {
+			if ( r.depth === 0 ) {
+				currentMain = r.id;
+			}
+			return {
+				mainId: r.depth === 0 ? r.id : currentMain,
+				hasChildren: i + 1 < tree.length && tree[ i + 1 ].depth > r.depth,
+			};
+		} );
+	}, [ tree ] );
+
+	/* If the open branch's main item disappears (deleted / menu re-synced),
+	 * collapse so we never point at a stale id. */
+	React.useEffect( () => {
+		if ( openMainId && ! tree.some( ( r ) => r.depth === 0 && r.id === openMainId ) ) {
+			setOpenMainId( null );
+		}
+	}, [ tree, openMainId ] );
 
 	React.useEffect( () => {
 		return syncEditorDropdownPreviewAfterRender( navId, expandedId );
@@ -1165,11 +1347,13 @@ export function NavItemsControl( { label } ) {
 		const id = result?.createdElements?.[ 0 ]?.containerId;
 		if ( id ) {
 			setExpandedId( id );
+			setOpenMainId( id );
 		}
 	};
 
 	/* Append every top-level item of a WordPress menu (with its full nested
-	 * subtree) after the current items. The whole tree per top item is one
+	 * subtree) after the current items, then bind the nav to that menu so the
+	 * button offers "Update" next time. The whole tree per top item is one
 	 * model, so a single createElements call builds all levels at once. */
 	const handleImportMenu = ( menu ) => {
 		const nav = getContainer( navId );
@@ -1186,9 +1370,26 @@ export function NavItemsControl( { label } ) {
 				options: { at: topCount + i },
 			} ) ),
 		} );
+		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
+	};
+
+	/* Non-destructive re-sync of an already-imported menu (see syncMenuLevel):
+	 * add/remove/refresh imported items by wp_id, keep styling and hand-added
+	 * items. Runs top-down from the nav root. */
+	const handleUpdateMenu = ( menu ) => {
+		if ( ! getContainer( navId ) || ! menu?.items ) {
+			return;
+		}
+		syncMenuLevel( navId, menu.items );
+		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
 	};
 
 	const handleAddChild = ( parentRow ) => {
+		/* Keep the parent's branch unfolded so the new child is actually visible in
+		 * the accordion (a fresh child under a collapsed branch would otherwise be
+		 * added out of sight). */
+		const parentIndex = tree.findIndex( ( r ) => r.id === parentRow.id );
+		setOpenMainId( rowsMeta[ parentIndex ]?.mainId ?? parentRow.id );
 		/* Whether the item ALREADY owned a dropdown flexbox before this click. */
 		const hadFlex = !! findFirstChildOfType( getContainer( parentRow.id ), 'e-flexbox' );
 		const flexbox = ensureItemFlexbox( parentRow.id );
@@ -1251,21 +1452,32 @@ export function NavItemsControl( { label } ) {
 		}
 	};
 
+	/* Unfold (or collapse) a main branch in the panel accordion. Clicking a main
+	 * item with a submenu chain opens that chain and closes whatever else was open;
+	 * clicking the same open main again collapses it. Clicking a child keeps its
+	 * own branch open. Split out from handleRowActivate so the chevron can drive it
+	 * without also toggling the inline settings. */
+	const openBranchFor = ( row, index ) => {
+		const mainId = rowsMeta[ index ]?.mainId ?? row.id;
+		setOpenMainId( ( prev ) => ( row.depth === 0 && prev === row.id ) ? null : mainId );
+	};
+
 	/* Clicking a row = "open this item's dropdown container for editing/styling":
 	 * if the item already has a dropdown, SELECT that placeholder container (only —
 	 * no forced tab). If it has none, just expand the inline settings so the user
 	 * can enable one. Settings for a dropdown item stay reachable via the ✎ icon. */
-	const handleRowActivate = ( row ) => {
-		/* Clicking a row ONLY toggles expandedId. That both shows the row's inline
-		 * settings AND — via the reveal effect keyed on expandedId — reveals its
-		 * dropdown container on the canvas (the effect is chain-aware, so a dropdown
-		 * item reveals its own container and a sub-item reveals its parent's).
+	const handleRowActivate = ( row, index ) => {
+		/* Toggle the row's inline settings + (via the reveal effect keyed on
+		 * expandedId) its dropdown container on the canvas — chain-aware, so a
+		 * dropdown item reveals its own container and a sub-item reveals its
+		 * parent's. We deliberately do NOT select the dropdown container here;
+		 * selecting swaps the panel over to it (reads as a forced navigation away
+		 * from the Menu Items list). The user only wants the container to APPEAR.
 		 *
-		 * We deliberately do NOT select the dropdown container here. Selecting swaps
-		 * the editing panel over to that container — which reads as a forced tab
-		 * change / navigation away from the Menu Items list. The user only wants the
-		 * container to APPEAR; they can click it on the canvas to style it. */
+		 * Also drive the panel accordion: a main click unfolds its submenu chain
+		 * (and collapses other mains); a child click keeps its branch open. */
 		setExpandedId( expandedId === row.id ? null : row.id );
+		openBranchFor( row, index );
 	};
 
 	/* While dragging over row `overIndex`, decide the insertion index (below the
@@ -1380,19 +1592,32 @@ export function NavItemsControl( { label } ) {
 				</Button>
 			</Stack>
 			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
-				{ 'Drag a row up/down to reorder. Drag it to the RIGHT to nest it under the item above (creates a sub-dropdown); drag LEFT to move it out a level — just like the WordPress menu.' }
+				{ 'Click a main item (▶) to unfold its submenu; opening another folds the previous one. Drag a row up/down to reorder, RIGHT to nest it under the item above, LEFT to move it out a level — just like the WordPress menu.' }
 			</Typography>
 
-			<NavMenuImport onImport={ handleImportMenu } />
+			<NavMenuImport
+				linkedMenuId={ readProp( getContainer( navId )?.settings?.get?.( 'imported_menu_id' ), '' ) }
+				onImport={ handleImportMenu }
+				onUpdate={ handleUpdateMenu }
+			/>
 
 			<Stack
 				gap={ 0.5 }
 				onDragLeave={ () => setDropIndex( null ) }
 			>
 				{ tree.map( ( row, index ) => {
+					const meta        = rowsMeta[ index ] || {};
+					/* Accordion filter: main items always show; a deeper row shows only
+					 * while its main branch is the open one. Return null (not skip) so
+					 * `index` stays aligned with `tree` for the drag handlers. */
+					const isVisible   = row.depth === 0 || meta.mainId === openMainId;
+					if ( ! isVisible ) {
+						return null;
+					}
 					const isExpanded  = expandedId === row.id;
 					const isDragging  = dragId === row.id;
 					const showLineAt  = dropIndex === index;
+					const isBranchOpen = row.depth === 0 && openMainId === row.id;
 					return (
 						<Box key={ row.id }>
 							{ /* Drop indicator line — indented to the target depth. */ }
@@ -1419,18 +1644,43 @@ export function NavItemsControl( { label } ) {
 									overflow: 'hidden',
 									bgcolor: 'background.default',
 									opacity: isDragging ? 0.4 : 1,
+									/* Reveal the quick-action cluster on hover or when a
+									 * keyboard user focuses one of its buttons. */
+									'&:hover .aae-nav-row-actions, &:focus-within .aae-nav-row-actions': {
+										opacity: 1,
+										pointerEvents: 'auto',
+									},
 								} }
 							>
 								<Stack
 									direction="row"
 									alignItems="center"
 									gap={ 0.25 }
-									sx={ { px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
+									sx={ { position: 'relative', px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
 								>
 									<Box component="span" aria-hidden
 										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
 										⠿
 									</Box>
+									{ /* Disclosure chevron for a main item that owns a submenu
+									     chain — click to unfold/collapse its branch in the panel
+									     without opening the inline settings. A childless main gets
+									     a blank spacer so every main row's title lines up. */ }
+									{ row.depth === 0 && meta.hasChildren ? (
+										<Box component="span" role="button" aria-label={ isBranchOpen ? 'Collapse submenu' : 'Expand submenu' }
+											aria-expanded={ isBranchOpen }
+											onClick={ ( e ) => { e.stopPropagation(); openBranchFor( row, index ); } }
+											sx={ {
+												flexShrink: 0, width: 14, textAlign: 'center', cursor: 'pointer',
+												color: 'text.secondary', fontSize: 9, lineHeight: 1,
+												transform: isBranchOpen ? 'rotate(90deg)' : 'none',
+												transition: 'transform 120ms ease',
+											} }>
+											▶
+										</Box>
+									) : row.depth === 0 ? (
+										<Box component="span" aria-hidden sx={ { flexShrink: 0, width: 14 } } />
+									) : null }
 									<Typography variant="caption"
 										title={ row.depth === 0 ? 'Main item' : `Level ${ row.depth }` }
 										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, fontSize: 10, minWidth: 14, flexShrink: 0, textAlign: 'center' } }>
@@ -1439,41 +1689,51 @@ export function NavItemsControl( { label } ) {
 									<Typography
 										variant="body2"
 										noWrap
-										onClick={ () => handleRowActivate( row ) }
+										onClick={ () => handleRowActivate( row, index ) }
 										sx={ { flex: 1, minWidth: 0, fontSize: 12, fontWeight: isExpanded ? 600 : 400, cursor: 'pointer' } }
 									>
 										{ row.title }
 									</Typography>
-									<Tooltip title="Edit settings">
-										<IconButton size="tiny" aria-label="Edit item settings"
-											sx={ NAV_ROW_ICON_SX }
-											onClick={ ( e ) => { e.stopPropagation(); setExpandedId( isExpanded ? null : row.id ); } }>
-											<span style={ { fontSize: 11, lineHeight: 1 } }>✎</span>
-										</IconButton>
-									</Tooltip>
-									<Tooltip title="Add child">
-										<IconButton size="tiny" aria-label="Add child item"
-											sx={ NAV_ROW_ICON_SX }
-											onClick={ ( e ) => { e.stopPropagation(); handleAddChild( row ); } }>
-											<span style={ { fontSize: 13, lineHeight: 1 } }>＋</span>
-										</IconButton>
-									</Tooltip>
-									<Tooltip title="Duplicate">
-										<IconButton size="tiny" aria-label="Duplicate menu item"
-											sx={ NAV_ROW_ICON_SX }
-											onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
-											<span style={ { fontSize: 11, lineHeight: 1 } }>⧉</span>
-										</IconButton>
-									</Tooltip>
-									{ tree.length > 1 && (
-										<Tooltip title="Remove">
-											<IconButton size="tiny" aria-label="Remove menu item"
+									{ /* Quick actions — hidden until the row is hovered/focused,
+									     and kept visible while the row is expanded so the ✎ that
+									     opened it doesn't vanish under the pointer. */ }
+									<Box
+										className="aae-nav-row-actions"
+										sx={ isExpanded
+											? { ...NAV_ROW_ACTIONS_SX, opacity: 1, pointerEvents: 'auto' }
+											: NAV_ROW_ACTIONS_SX }
+									>
+										<Tooltip title="Edit settings">
+											<IconButton size="tiny" aria-label="Edit item settings"
 												sx={ NAV_ROW_ICON_SX }
-												onClick={ ( e ) => { e.stopPropagation(); handleRemove( row ); } }>
-												<span style={ { fontSize: 12, lineHeight: 1 } }>×</span>
+												onClick={ ( e ) => { e.stopPropagation(); setExpandedId( isExpanded ? null : row.id ); } }>
+												<span style={ { fontSize: 11, lineHeight: 1 } }>✎</span>
 											</IconButton>
 										</Tooltip>
-									) }
+										<Tooltip title="Add child">
+											<IconButton size="tiny" aria-label="Add child item"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); handleAddChild( row ); } }>
+												<span style={ { fontSize: 13, lineHeight: 1 } }>＋</span>
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Duplicate">
+											<IconButton size="tiny" aria-label="Duplicate menu item"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
+												<span style={ { fontSize: 11, lineHeight: 1 } }>⧉</span>
+											</IconButton>
+										</Tooltip>
+										{ tree.length > 1 && (
+											<Tooltip title="Remove">
+												<IconButton size="tiny" aria-label="Remove menu item"
+													sx={ NAV_ROW_ICON_SX }
+													onClick={ ( e ) => { e.stopPropagation(); handleRemove( row ); } }>
+													<span style={ { fontSize: 12, lineHeight: 1 } }>×</span>
+												</IconButton>
+											</Tooltip>
+										) }
+									</Box>
 								</Stack>
 
 								<Collapse in={ isExpanded } unmountOnExit>

@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 require_once __DIR__ . '/class-aae-a-toggle-pane.php';
+require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -65,6 +66,17 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 
 	protected function define_atomic_controls(): array {
 		return [
+			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items(
+					[
+						AAE_A_Preset_Picker_Control::make()
+							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+							->set_meta( [ 'layout' => 'custom' ] ),
+					]
+				),
+
 			Section::make()
 				->set_id( 'content' )
 				->set_label( __( 'Toggle Switcher', 'animation-addons-for-elementor' ) )

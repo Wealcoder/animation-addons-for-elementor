@@ -489,6 +489,26 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-content' => [
+				'label'        => 'Post Content',
+				'description'  => 'Dynamically displays the current post content natively in Elementor V4.',
+				'icon'         => 'eicon-post-content',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'content',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-post-image' => [
 				'label'        => 'Post Image',
 				'description'  => 'Dynamically displays the current post featured image natively in Elementor V4.',
@@ -811,7 +831,7 @@ final class Atomic
 
 			'aae-a-advanced-heading' => [
 				'label'        => 'Advanced Heading',
-				'description'  => 'Heading with editable text and highlight parts: gradient, bracket, divider+dot, or animated underline.',
+				'description'  => 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.',
 				'icon'         => 'eicon-t-letter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -821,7 +841,8 @@ final class Atomic
 					'heading',
 					'title',
 					'highlight',
-					'gradient',
+					'html',
+					'span',
 					'atomic',
 				],
 				'category'     => 'general',
@@ -1001,6 +1022,29 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 6,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toc' => [
+				'label'        => 'Table of Content',
+				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
+				'icon'         => 'eicon-table-of-contents',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toc',
+					'table',
+					'content',
+					'contents',
+					'anchor',
+					'heading',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2450,6 +2494,12 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/post-title.css',
 			],
 
+			'aae-a-post-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content',
+				'file' => 'Widgets/PostContent/class-aae-a-post-content.php',
+				'has_script' => false,
+			],
+
 			'aae-a-post-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
@@ -2636,6 +2686,22 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/accordion.css',
 			],
 
+			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
+			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
+			// present, and degrades gracefully to native smooth scroll without
+			// them — so, like Counter, it declares NO gsap script_deps (those
+			// handles live in the Pro plugin; a missing registered dep would
+			// silently prevent this free widget's script from enqueuing).
+			'aae-a-toc' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
+				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
+				'script_handle' => 'aae-a-toc-js',
+				'script_path' => '/assets/atomic/js/table-of-contents.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-toc-css',
+				'style_path' => '/assets/atomic/css/table-of-contents.css',
+			],
+
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
@@ -2766,11 +2832,10 @@ final class Atomic
 			],
 
 			'aae-a-advanced-heading' => [
-				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
-				'file'         => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
-				'has_script'   => false,
-				'style_handle' => 'aae-a-advanced-heading-css',
-				'style_path'   => '/assets/atomic/css/advanced-heading.css',
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
+				'file'       => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
+				'has_script' => false,
+				// Design-less: this widget ships no CSS. Style your own classes.
 			],
 
 			'aae-a-progressbar' => [
@@ -4010,6 +4075,7 @@ final class Atomic
 			$nodes = [];
 			foreach ($by_parent[$parent_id] ?? [] as $item) {
 				$nodes[] = [
+					'id'       => (int) $item->ID,
 					'title'    => wp_strip_all_tags($item->title),
 					'url'      => esc_url_raw($item->url),
 					'target'   => ('_blank' === $item->target) ? '_blank' : '',

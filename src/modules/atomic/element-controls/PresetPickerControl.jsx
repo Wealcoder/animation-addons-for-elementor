@@ -36,6 +36,7 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -341,7 +342,11 @@ export function PresetPickerControl({ label }) {
               }}
             >
               {(() => {
-                const total = presets ? presets.length : 0;
+                if (presets === null) {
+                  return "Loading designs…";
+                }
+
+                const total = presets.length;
                 const designWord = total === 1 ? "design" : "designs";
                 return proCount > 0
                   ? `${total} ${designWord} — ${proCount} premium`
@@ -381,14 +386,27 @@ export function PresetPickerControl({ label }) {
           sx={{ bgcolor: "background.default", py: 2.5, px: { xs: 1.5, sm: 3 } }}
         >
           {presets === null ? (
-            <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-              {[0, 1, 2, 3].map((i) => (
-                <Grid item xs={6} sm={4} md={3} key={i}>
-                  <Skeleton variant="rounded" height={100} />
-                  <Skeleton variant="text" width="70%" />
-                </Grid>
-              ))}
-            </Grid>
+            <>
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={1}
+                sx={{ mb: 2, color: "text.secondary" }}
+              >
+                <CircularProgress size={14} thickness={5} sx={{ color: BRAND }} />
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                  {"Fetching presets…"}
+                </Typography>
+              </Stack>
+              <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                {[0, 1, 2, 3].map((i) => (
+                  <Grid item xs={6} sm={4} md={3} key={i}>
+                    <Skeleton variant="rounded" height={100} />
+                    <Skeleton variant="text" width="70%" />
+                  </Grid>
+                ))}
+              </Grid>
+            </>
           ) : (
             grouped.map(({ category, items }) => (
               <Box key={category || "__uncategorized"} sx={{ mb: 3 }}>

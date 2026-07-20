@@ -20,15 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Remote_Client {
 
-	// TEMPORARY: points at the local dev copy of the server plugin
-	// (themecrowdy.local) because the real production site
-	// (themecrowdy.com) does not have aae-preset-server deployed yet —
-	// confirmed 2026-07-20 via a live curl (rest_no_route/404). Swap this
-	// back to https://themecrowdy.com/wp-json/aae-preset-server/v1 once the
-	// server plugin is actually deployed to production, or this plugin will
-	// never see remote presets on any real customer site (themecrowdy.local
-	// is only reachable from this dev machine).
-	const BASE_URL = 'http://themecrowdy.local/wp-json/aae-preset-server/v1';
+	const BASE_URL = 'https://crowdytheme.com/assets/wp-json/aae-preset-server/v1';
 
 	const TIMEOUT = 8;
 
