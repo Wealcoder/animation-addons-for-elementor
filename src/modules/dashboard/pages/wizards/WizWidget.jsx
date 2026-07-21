@@ -3,11 +3,14 @@ import WidgetTopBg from "../../../../../public/images/wizard/widget-top-bg.png";
 import { useSkip } from "@/hooks/app.hooks";
 import { useEffect } from "react";
 
-// Brevo (Sendinblue) Contacts API configuration.
-const BREVO_API_ENDPOINT = "https://api.brevo.com/v3/contacts";
-const BREVO_API_KEY =
-  "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";
-const BREVO_LIST_ID = 16;
+// Lead-capture relay endpoint. The plugin sends only lead data here; the
+// relay server holds the private Brevo API key and forwards the contact to
+// Brevo, so the key is never exposed in this bundle.
+//
+// Local testing (Animation Addons Lead Relay plugin on this site):
+const LEADS_API_ENDPOINT = "http://animation.test/wp-json/leads/v1/subscribe";
+// Production (swap to this once the relay is live on your domain):
+// const LEADS_API_ENDPOINT = "https://api.animationaddons.com/v1/leads";
 
 /**
  * Derive a display name from the local part of an email address.
@@ -21,67 +24,51 @@ function extractNameFromEmail(email) {
 }
 
 /**
- * Build the Brevo contact payload from the current WordPress user.
+ * Build the lead payload from the current WordPress user.
  *
- * Field mapping (matches the previous FluentCRM data set):
- *   email     -> email
- *   firstName -> attributes.FIRSTNAME
- *   lastName  -> attributes.LASTNAME
- *   company   -> attributes.COMPANY
- *   phone     -> attributes.SMS  (Brevo's default phone attribute)
- * Any extra fields can be added under `attributes` as needed.
- *
- * @param {number} listId - Brevo list ID the contact is subscribed to.
+ * We send neutral lead fields; the relay API maps them onto Brevo
+ * attributes (FIRSTNAME/LASTNAME/COMPANY/SMS) and the target list ID,
+ * so no Brevo-specific config or credentials live in the plugin.
  */
-function buildBrevoContact(listId) {
+function buildLeadPayload() {
   const user = WCF_ADDONS_ADMIN?.user ?? {};
   const firstName =
     user.f_name && user.f_name !== ""
       ? user.f_name
       : extractNameFromEmail(user.email);
 
-  // Only include attributes that actually have a value so we don't
-  // overwrite existing Brevo fields with empty strings on update.
-  const attributes = {};
-  if (firstName) attributes.FIRSTNAME = firstName;
-  if (user.l_name) attributes.LASTNAME = user.l_name;
-  if (user.company) attributes.COMPANY = user.company;
-  if (user.phone) attributes.SMS = user.phone;
+  // Only include fields that actually have a value.
+  const lead = { email: user.email };
+  if (firstName) lead.firstName = firstName;
+  if (user.l_name) lead.lastName = user.l_name;
+  if (user.company) lead.company = user.company;
+  if (user.phone) lead.phone = user.phone;
 
-  const contact = {
-    email: user.email,
-    attributes,
-    // `updateEnabled` upserts the contact instead of erroring when it exists.
-    updateEnabled: true,
-  };
+  // Lightweight source metadata to help attribute the lead server-side.
+  lead.source = "animation-addon";
+  lead.site = WCF_ADDONS_ADMIN?.home_url || WCF_ADDONS_ADMIN?.adminURL || "";
 
-  // Only attach `listIds` when a valid list ID is configured.
-  if (listId) {
-    contact.listIds = [listId];
-  }
-
-  return contact;
+  return lead;
 }
 
 /**
- * Send a contact to Brevo using the static API key and list ID.
+ * Send the lead to our relay API, which subscribes it to Brevo.
  */
-async function subscribeToBrevo() {
-  const response = await fetch(BREVO_API_ENDPOINT, {
+async function subscribeLead() {
+  const response = await fetch(LEADS_API_ENDPOINT, {
     method: "POST",
     headers: {
-      "api-key": BREVO_API_KEY,
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(buildBrevoContact(BREVO_LIST_ID)),
+    body: JSON.stringify(buildLeadPayload()),
   });
 
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status}`);
   }
 
-  // Brevo returns 201 with a body on create and 204 (no body) on update.
+  // Tolerate empty (204) responses from the relay API.
   if (response.status !== 204) {
     await response.json();
   }
@@ -90,11 +77,11 @@ async function subscribeToBrevo() {
 const WizWidget = () => {
   const { isSkipTerms } = useSkip();
 
-  // Subscribe the current user to Brevo once, mirroring the previous
+  // Subscribe the current user once, mirroring the previous
   // "run once per browser" behavior via the same localStorage flag.
   async function addSubscriber() {
     try {
-      await subscribeToBrevo();
+      await subscribeLead();
     } catch (error) {
       // Swallow errors: subscription is best-effort and must not block
       // the wizard. We still set the flag so we don't retry on reload.
