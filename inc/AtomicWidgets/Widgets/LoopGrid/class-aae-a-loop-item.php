@@ -126,6 +126,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                         ->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
                         ->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
                         ->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
+                        ->add_prop( 'padding', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
                 )
         ];
     }
