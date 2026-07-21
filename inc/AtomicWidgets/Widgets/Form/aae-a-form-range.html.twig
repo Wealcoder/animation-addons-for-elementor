@@ -1,0 +1,29 @@
+{#
+  AAE Form Range — renders a single <input type="range">. Its colour comes
+  from Style tab → Background Color (see class-aae-a-form-range.php); the
+  runtime (lib/range.js) copies that computed background-color onto the
+  input's own accent-color, the property that actually recolors a native
+  range's track/thumb.
+  name falls back to _cssid, then element id, same as the text-family Input.
+#}
+{% set classes = ['aae-a-form-range', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
+
+<input
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    type="range"
+    name="{{ input_name | e('html_attr') }}"
+    min="{{ settings.min is defined and settings.min is not empty ? settings.min : '0' }}"
+    max="{{ settings.max is defined and settings.max is not empty ? settings.max : '100' }}"
+    step="{{ settings.step is defined and settings.step is not empty ? settings.step : '1' }}"
+    data-aae-range="true"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.required %}required aria-required="true"{% endif %}
+    {% if settings.error_message is defined and settings.error_message is not empty %}data-aae-error-message="{{ settings.error_message | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+/>

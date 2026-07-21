@@ -51,6 +51,43 @@ const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
 
+/* Compact action-icon button for the menu-item rows. The default IconButton
+ * padding makes four icons + the level badge overflow to a second line once
+ * the Elementor panel narrows to ~300px; a fixed 20px box with minimal padding
+ * keeps every row on a single line. */
+const NAV_ROW_ICON_SX = {
+	flexShrink: 0,
+	p: '2px',
+	width: 20,
+	height: 20,
+	minWidth: 20,
+};
+
+/* Hover-revealed quick-action cluster (Edit / Add child / Duplicate / Remove).
+ * Positioned absolutely over the right edge of the row so the title always gets
+ * the FULL row width — the icons no longer permanently eat ~80px, which is what
+ * crowded rows at the ~300px panel width. It fades in on row hover / keyboard
+ * focus-within (see the parent row's sx), and is force-shown while the row is
+ * expanded (below). A short left-side gradient keeps the icons legible over a
+ * long, truncated title. pointer-events is off while hidden so the invisible
+ * cluster never swallows clicks meant for the title underneath. */
+const NAV_ROW_ACTIONS_SX = {
+	position: 'absolute',
+	top: 0,
+	right: 0,
+	bottom: 0,
+	display: 'flex',
+	alignItems: 'center',
+	gap: 0.25,
+	pl: 2.5,
+	pr: 0.5,
+	opacity: 0,
+	pointerEvents: 'none',
+	transition: 'opacity 120ms ease',
+	background: ( theme ) =>
+		`linear-gradient(to right, transparent 0, ${ theme.palette.background.default } 20px)`,
+};
+
 const prop = ( type, value ) => ( { $$type: type, value } );
 
 function readProp( value, fallback = '' ) {
@@ -132,17 +169,32 @@ function syncEditorDropdownPreview( navId, itemId ) {
 		}
 	};
 
-	nav.querySelectorAll( ':scope > .aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
-		if ( item.getAttribute( 'data-id' ) !== itemId ) {
+	/* Build the chain to keep open: the item itself PLUS every ancestor nav-item up
+	 * to the nav. Revealing the chain means a nested sub-item also reveals the parent
+	 * dropdown that contains it — so adding/opening a sub-item shows the dropdown
+	 * under its main item on the canvas. (The old `:scope >` version only matched
+	 * top-level items, so a nested itemId revealed nothing and closed its parent.) */
+	const openChain = new Set();
+	if ( itemId ) {
+		let el = nav.querySelector( `.aae-a-nav-item[data-id="${ itemId }"]` );
+		while ( el && nav.contains( el ) ) {
+			const id = el.getAttribute( 'data-id' );
+			if ( id ) {
+				openChain.add( id );
+			}
+			el = el.parentElement?.closest( '.aae-a-nav-item' );
+		}
+	}
+
+	/* Close every currently-open dropdown that isn't part of the active chain. */
+	nav.querySelectorAll( '.aae-a-nav-item.aae-editor-dropdown-open' ).forEach( item => {
+		if ( ! openChain.has( item.getAttribute( 'data-id' ) ) ) {
 			revealDropdown( item, false );
 		}
 	} );
-	if ( itemId ) {
-		revealDropdown(
-			nav.querySelector( `:scope > .aae-a-nav-item[data-id="${ itemId }"]` ),
-			true
-		);
-	}
+	/* Open the whole chain (parent dropdowns first is not required — each is
+	 * revealed independently by class + inline styles). */
+	openChain.forEach( id => revealDropdown( nav.querySelector( `.aae-a-nav-item[data-id="${ id }"]` ), true ) );
 }
 
 function syncEditorNestedPreview( itemId, open ) {
@@ -238,6 +290,262 @@ function buildSubItemModel( position ) {
 	};
 }
 
+/* A fresh 7-char element id. createElements only auto-assigns an id to the TOP
+ * element of a model — nested `elements` keep whatever id they were given, so a
+ * deep import model MUST carry an explicit id on every node or the nested ones
+ * ship with id:"" → duplicate ids → a cyclic Backbone view lookup that blows
+ * the stack. Prefer Elementor's own generator; fall back to a random id. */
+function genElementId() {
+	try {
+		if ( window.elementorCommon?.helpers?.getUniqueId ) {
+			return window.elementorCommon.helpers.getUniqueId();
+		}
+	} catch ( e ) {}
+	return Math.random().toString( 36 ).slice( 2, 9 ).padEnd( 7, '0' );
+}
+
+/* Build a full nav-item model (with link + nested dropdown) from one imported
+ * WordPress menu node `{ title, url, target, children }`. Recurses so the whole
+ * subtree is created in a SINGLE createElements call — this sidesteps the
+ * "flexbox just created this tick" defer race that iterative building hits
+ * (see handleAddChild). Any node with children becomes a dropdown parent whose
+ * children live in one core Flexbox carrying DROPDOWN_CLASS. Every node gets an
+ * explicit id (see genElementId). */
+function buildImportedItemModel( node ) {
+	const title = node.title || 'Menu Item';
+	const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
+	const settings = {
+		text: prop( 'html-v3', { content: prop( 'string', title ), children: [] } ),
+		has_dropdown: prop( 'boolean', hasChildren ),
+		trigger: prop( 'string', 'click' ),
+		dropdown_animation: prop( 'string', 'gsap' ),
+		wp_id: prop( 'string', node.id != null ? String( node.id ) : '' ),
+	};
+	/* Skip a bare "#" placeholder URL — a real <a href="#"> crashes Elementor's
+	 * editor anchor handler (querySelector('#')). Such items become plain labels. */
+	if ( node.url && node.url !== '#' ) {
+		settings.link = prop( 'link', {
+			destination: prop( 'url', node.url ),
+			isTargetBlank: prop( 'boolean', node.target === '_blank' ),
+			tag: prop( 'string', 'a' ),
+		} );
+	}
+	const model = {
+		id: genElementId(),
+		elType: NAV_ITEM_TYPE,
+		editor_settings: { title },
+		settings,
+		elements: [],
+	};
+	if ( hasChildren ) {
+		model.elements = [ {
+			id: genElementId(),
+			elType: 'e-flexbox',
+			editor_settings: { title: 'Dropdown' },
+			settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+			elements: node.children.map( buildImportedItemModel ),
+		} ];
+	}
+	return model;
+}
+
+/* The link prop for an imported node (or null when the node has no real url —
+ * a bare "#" placeholder is treated as no link; see buildImportedItemModel). */
+function importedLinkProp( node ) {
+	if ( ! node.url || node.url === '#' ) {
+		return null;
+	}
+	return prop( 'link', {
+		destination: prop( 'url', node.url ),
+		isTargetBlank: prop( 'boolean', node.target === '_blank' ),
+		tag: prop( 'string', 'a' ),
+	} );
+}
+
+/* Direct child nav-items of a container (nav root or dropdown flexbox). */
+function directNavItems( container ) {
+	const out = [];
+	container?.model?.get?.( 'elements' )?.each?.( ( model ) => {
+		if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) === NAV_ITEM_TYPE ) {
+			const child = getContainer( model.get( 'id' ) );
+			if ( child ) {
+				out.push( child );
+			}
+		}
+	} );
+	return out;
+}
+
+/* Smart, non-destructive "Update from WordPress" for one level of the tree.
+ *
+ * Matches existing imported nav-items to WP nodes by the stored `wp_id`, then:
+ *   - updates the label/link of matched items (WP is the source of truth),
+ *   - recurses into their (styled, preserved) dropdown flexbox,
+ *   - adds items new in WP,
+ *   - removes items whose wp_id vanished from WP.
+ * Hand-added items (no wp_id) are never touched. Everything works by ID with a
+ * fresh getContainer at each step, because every create/update re-renders and
+ * detaches prior container instances. `containerId` is the nav root or a
+ * dropdown flexbox. */
+function syncMenuLevel( containerId, wpNodes ) {
+	const container = getContainer( containerId );
+	if ( ! container ) {
+		return;
+	}
+	const wpIds = new Set( wpNodes.map( ( n ) => String( n.id ) ) );
+	const existing = directNavItems( container );
+	const byWpId = new Map();
+	existing.forEach( ( item ) => {
+		const wid = readProp( item.settings?.get?.( 'wp_id' ), '' );
+		if ( wid ) {
+			byWpId.set( String( wid ), item.id );
+		}
+	} );
+
+	/* Remove imported items deleted from WP (leave hand-added ones alone). */
+	const toRemove = existing
+		.filter( ( item ) => {
+			const wid = readProp( item.settings?.get?.( 'wp_id' ), '' );
+			return wid && ! wpIds.has( String( wid ) );
+		} )
+		.map( ( item ) => item.id );
+	if ( toRemove.length ) {
+		removeElements( { elementIds: toRemove, title: 'Update Menu', subtitle: 'Removed items no longer in WordPress' } );
+	}
+
+	wpNodes.forEach( ( node ) => {
+		const matchId = byWpId.get( String( node.id ) );
+		const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
+
+		if ( matchId ) {
+			const props = {
+				text: prop( 'html-v3', { content: prop( 'string', node.title || 'Menu Item' ), children: [] } ),
+				has_dropdown: prop( 'boolean', hasChildren ),
+			};
+			const link = importedLinkProp( node );
+			if ( link ) {
+				props.link = link;
+			}
+			updateElementSettings( { id: matchId, props } );
+
+			if ( hasChildren ) {
+				let flex = findFirstChildOfType( getContainer( matchId ), 'e-flexbox' );
+				if ( ! flex ) {
+					flex = ensureItemFlexbox( matchId );
+				}
+				if ( flex ) {
+					syncMenuLevel( getElementId( flex ), node.children );
+				}
+			}
+		} else {
+			const fresh = getContainer( containerId );
+			if ( fresh ) {
+				createElements( {
+					title: 'Update Menu',
+					subtitle: 'Added item from WordPress',
+					elements: [ { container: fresh, model: buildImportedItemModel( node ), options: {} } ],
+				} );
+			}
+		}
+	} );
+}
+
+/* Fetch the site's WordPress menus (with nested item trees) once. Reuses the
+ * editor's existing `AAE_LOOP_GRID` ajax config (url + nonce). Returns
+ * { menus, loading, error }; menus is [] when none/errored. */
+function useWpMenus() {
+	const [ menus, setMenus ] = React.useState( [] );
+	const [ loading, setLoading ] = React.useState( true );
+	const [ error, setError ] = React.useState( null );
+
+	React.useEffect( () => {
+		const cfg = window.AAE_LOOP_GRID || {};
+		if ( ! cfg.ajaxUrl ) {
+			setLoading( false );
+			setError( 'unavailable' );
+			return;
+		}
+		let alive = true;
+		const body = new window.FormData();
+		body.append( 'action', 'aae_get_nav_menus' );
+		body.append( 'nonce', cfg.nonce || '' );
+		window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
+			.then( ( r ) => r.json() )
+			.then( ( json ) => {
+				if ( ! alive ) return;
+				setMenus( Array.isArray( json?.data?.menus ) ? json.data.menus : [] );
+				setLoading( false );
+			} )
+			.catch( () => {
+				if ( ! alive ) return;
+				setError( 'failed' );
+				setLoading( false );
+			} );
+		return () => { alive = false; };
+	}, [] );
+
+	return { menus, loading, error };
+}
+
+/* "Import from WordPress menu" row for the Menu Items panel: a menu picker +
+ * action button. When the picked menu is the one already imported into this nav
+ * (`linkedMenuId`), the button becomes "Update from WordPress" and runs the
+ * non-destructive smart sync; otherwise it imports (appends). Collapses to
+ * nothing when the site has no menus. */
+function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
+	const { menus, loading } = useWpMenus();
+	const [ selectedId, setSelectedId ] = React.useState( '' );
+
+	/* Default the picker to the already-linked menu (so "Update" shows first),
+	 * else the first menu. */
+	React.useEffect( () => {
+		if ( selectedId || ! menus.length ) {
+			return;
+		}
+		const preferred = linkedMenuId && menus.some( ( m ) => String( m.id ) === String( linkedMenuId ) )
+			? String( linkedMenuId )
+			: String( menus[ 0 ].id );
+		setSelectedId( preferred );
+	}, [ menus, selectedId, linkedMenuId ] );
+
+	if ( loading || ! menus.length ) {
+		return null;
+	}
+
+	const selected = menus.find( ( m ) => String( m.id ) === String( selectedId ) );
+	const isLinked = linkedMenuId && String( selectedId ) === String( linkedMenuId );
+
+	return (
+		<Box sx={ { p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 } }>
+			<Typography variant="caption" sx={ { color: 'text.tertiary', display: 'block', mb: 0.5 } }>
+				{ isLinked
+					? 'Re-sync from WordPress: adds new items, removes deleted ones, refreshes labels/links — your styling stays.'
+					: 'Import from a WordPress menu (Appearance → Menus). Items are appended.' }
+			</Typography>
+			<Stack direction="row" gap={ 0.5 } alignItems="center">
+				<Select
+					size="tiny"
+					value={ selectedId }
+					onChange={ ( e ) => setSelectedId( e.target.value ) }
+					sx={ { flex: 1, minWidth: 0 } }
+				>
+					{ menus.map( ( m ) => (
+						<MenuItem key={ m.id } value={ String( m.id ) }>{ m.name }</MenuItem>
+					) ) }
+				</Select>
+				<Button
+					size="tiny"
+					variant={ isLinked ? 'contained' : 'outlined' }
+					disabled={ ! selected?.items?.length }
+					onClick={ () => selected && ( isLinked ? onUpdate( selected ) : onImport( selected ) ) }
+				>
+					{ isLinked ? 'Update' : 'Import' }
+				</Button>
+			</Stack>
+		</Box>
+	);
+}
+
 /* First direct child of `container` whose type matches `type` (as a container). */
 function findFirstChildOfType( container, type ) {
 	const children = container?.model?.get?.( 'elements' );
@@ -280,18 +588,80 @@ function findDropdownContainer( itemId ) {
  * @elementor/editor-elements is the reliable v4 primitive (raw
  * $e.run('document/elements/select') is not — see nav.js). Called with a KNOWN
  * id in the same tick it was created/resolved, so it never races a re-find. */
+/* The editing-panel tab buttons (General / Style / Interactions). Reading &
+ * restoring the active one lets us SELECT a container without Elementor's
+ * default "new container opens on Style" behaviour yanking the user off the tab
+ * they were on. */
+const PANEL_TAB_LABELS = [ 'General', 'Content', 'Settings', 'Style', 'Interactions', 'Advanced' ];
+
+function getPanelTabButtons() {
+	return [ ...window.document.querySelectorAll( '#elementor-panel button, #elementor-panel [role="tab"]' ) ]
+		.filter( ( n ) => PANEL_TAB_LABELS.includes( n.textContent.trim() ) && n.getBoundingClientRect().width > 0 );
+}
+
+function isTabActive( btn ) {
+	return btn.getAttribute( 'aria-selected' ) === 'true' ||
+		/Mui-selected|elementor-active|(^|\s)active(\s|$)/.test( btn.className.toString() );
+}
+
+function readActivePanelTab() {
+	const active = getPanelTabButtons().find( isTabActive );
+	return active ? active.textContent.trim() : null;
+}
+
+function restorePanelTab( label ) {
+	if ( ! label ) {
+		return;
+	}
+	const target = getPanelTabButtons().find( ( n ) => n.textContent.trim() === label );
+	if ( target && ! isTabActive( target ) ) {
+		target.click();
+	}
+}
+
+/* Hold the panel on `label` for a short window. Elementor opens a freshly
+ * created/selected container on the Style tab, and that switch lands only after
+ * the new element's panel mounts — LATER than a couple of frames — so a few fixed
+ * timeouts lose the race. This re-asserts the tab every frame until `durationMs`,
+ * clicking only when Elementor actually flipped it away (isTabActive guards), so
+ * it never spams nor fights an already-correct tab. */
+function keepPanelTab( label, durationMs = 900 ) {
+	if ( ! label ) {
+		return;
+	}
+	const start = performance.now();
+	const tick = () => {
+		restorePanelTab( label );
+		if ( performance.now() - start < durationMs ) {
+			window.requestAnimationFrame( tick );
+		}
+	};
+	window.requestAnimationFrame( tick );
+}
+
 function selectDropdownById( dropdownId ) {
-	if ( ! dropdownId || isEditorModalOrPopoverActive() ) {
+	if ( ! dropdownId ) {
 		return;
 	}
-	if ( getSelectedElementId() === dropdownId ) {
-		return;
-	}
-	try {
-		selectElement( dropdownId );
-	} catch ( error ) {
-		/* best effort */
-	}
+	/* Plain SELECT only — NEVER touch the panel tab. Elementor keeps whatever tab
+	 * is active when you select an existing element, so clicking an item just
+	 * selects its dropdown container with no forced navigation to any tab. Retried
+	 * on the next frame because the model can lag a tick after create/normalize —
+	 * the timing gap behind the old "selection worked only sometimes". */
+	const attempt = () => {
+		if ( isEditorModalOrPopoverActive() ) {
+			return;
+		}
+		if ( getSelectedElementId() !== dropdownId ) {
+			try {
+				selectElement( dropdownId );
+			} catch ( error ) {
+				/* best effort */
+			}
+		}
+	};
+	attempt();
+	window.requestAnimationFrame( attempt );
 }
 
 /* Resolve (creating/repairing if needed) the item's dropdown flexbox and select
@@ -801,7 +1171,601 @@ export function MobileNavLifecycleControl() {
 	);
 }
 
+/* Ensure an item owns a dropdown flexbox (its submenu container); create it +
+ * flip has_dropdown on if missing. Module-level twin of the closure inside
+ * SubItemsManager so the flat tree can nest an item under any parent. */
+function ensureItemFlexbox( itemId ) {
+	const item = getContainer( itemId );
+	if ( ! item ) {
+		return null;
+	}
+	const existing = normalizeDropdownModel( itemId );
+	if ( existing ) {
+		return existing;
+	}
+	const result = createElements( {
+		title: 'Dropdown',
+		subtitle: 'Dropdown added',
+		elements: [ {
+			container: item,
+			model: {
+				elType: 'e-flexbox',
+				editor_settings: { title: 'Dropdown' },
+				settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+			},
+			options: { at: 0 },
+		} ],
+	} );
+	updateElementSettings( {
+		id: itemId,
+		props: { has_dropdown: prop( 'boolean', true ) },
+	} );
+	const flexId = result?.createdElements?.[ 0 ]?.containerId;
+	return flexId ? getContainer( flexId ) : findFirstChildOfType( getContainer( itemId ), 'e-flexbox' );
+}
+
+/* Walk the whole nav tree into a FLAT, depth-annotated list (WP-menu style):
+ * nav → nav-items (depth 0); each item's dropdown flexbox → nav-items (depth 1);
+ * and so on, unbounded. Each row: { id, depth, title, parentId }. parentId is the
+ * CONTAINER the item currently lives in (nav root or a dropdown flexbox). */
+function useNavTree( navId ) {
+	const cacheRef = React.useRef( { signature: null, value: [] } );
+
+	return useListenTo(
+		[
+			v1ReadyEvent(),
+			commandEndEvent( 'document/elements/create' ),
+			commandEndEvent( 'document/elements/delete' ),
+			commandEndEvent( 'document/elements/update' ),
+			commandEndEvent( 'document/elements/settings' ),
+			commandEndEvent( 'document/elements/set-settings' ),
+			commandEndEvent( 'document/elements/duplicate' ),
+			commandEndEvent( 'document/elements/move' ),
+		],
+		() => {
+			const out = [];
+			/* Descend via the Backbone MODEL tree, not getContainer(). A freshly
+			 * created deep item (e.g. from "Update from WordPress") is present in
+			 * the model immediately but its container/view may not be registered
+			 * for a tick — keying the walk on containers made those nested levels
+			 * vanish from this panel until a reload, even though the canvas showed
+			 * them. The model is always complete, so the whole tree renders now. */
+			const walk = ( containerId, containerModel, depth ) => {
+				containerModel?.get?.( 'elements' )?.each?.( ( model ) => {
+					if ( ( model.get( 'widgetType' ) || model.get( 'elType' ) ) !== NAV_ITEM_TYPE ) {
+						return;
+					}
+					if ( model.get( 'isLocked' ) === true ) {
+						model.set( 'isLocked', false, { silent: true } );
+					}
+					const id = model.get( 'id' );
+					const itemContainer = getContainer( id );
+					const text = readProp( itemContainer?.settings?.get?.( 'text' ), {} );
+					const editorSettings = model.get( 'editor_settings' ) || {};
+					const title = readProp( text?.content, '' ) || editorSettings.title || 'Menu Item';
+					out.push( { id, depth, title, parentId: containerId } );
+					/* The dropdown flexbox lives directly under the item's model. */
+					let flexModel = null;
+					model.get( 'elements' )?.each?.( ( childModel ) => {
+						if ( ! flexModel && ( childModel.get( 'widgetType' ) || childModel.get( 'elType' ) ) === 'e-flexbox' ) {
+							flexModel = childModel;
+						}
+					} );
+					if ( flexModel ) {
+						walk( flexModel.get( 'id' ), flexModel, depth + 1 );
+					}
+				} );
+			};
+			walk( navId, getContainer( navId )?.model, 0 );
+
+			const signature = out.map( ( r ) => `${ r.id }:${ r.depth }:${ r.title }:${ r.parentId }` ).join( '|' );
+			if ( cacheRef.current.signature === signature ) {
+				return cacheRef.current.value;
+			}
+			cacheRef.current = { signature, value: out };
+			return out;
+		},
+		[ navId ]
+	);
+}
+
 export function NavItemsControl( { label } ) {
+	const { element } = useElement();
+	const navId = element.id;
+
+	const tree = useNavTree( navId );
+	/* Tight indent so deeply-nested rows still fit the ~300px panel without the
+	 * title wrapping or the action icons overflowing to a second line. */
+	const INDENT = 12;
+
+	const [ expandedId, setExpandedId ] = React.useState( null );
+	/* Accordion: the depth-0 (main) item whose subtree is currently unfolded in
+	 * the panel. Only ONE main branch is open at a time — clicking another main
+	 * collapses the previous one — so the list stays short instead of showing
+	 * every level of every menu at once. null = all branches collapsed. */
+	const [ openMainId, setOpenMainId ]  = React.useState( null );
+	const [ dragId, setDragId ]         = React.useState( null );
+	const [ dropIndex, setDropIndex ]   = React.useState( null );
+	const [ dropDepth, setDropDepth ]   = React.useState( 0 );
+
+	/* Per-row: the depth-0 item that heads its branch (its `mainId`) and whether
+	 * it has children. The flat tree is pre-order, so the heading main is simply
+	 * the most recent depth-0 row, and a row has children iff the next row is
+	 * deeper. Drives both the accordion visibility filter and the chevron. */
+	const rowsMeta = React.useMemo( () => {
+		let currentMain = null;
+		return tree.map( ( r, i ) => {
+			if ( r.depth === 0 ) {
+				currentMain = r.id;
+			}
+			return {
+				mainId: r.depth === 0 ? r.id : currentMain,
+				hasChildren: i + 1 < tree.length && tree[ i + 1 ].depth > r.depth,
+			};
+		} );
+	}, [ tree ] );
+
+	/* If the open branch's main item disappears (deleted / menu re-synced),
+	 * collapse so we never point at a stale id. */
+	React.useEffect( () => {
+		if ( openMainId && ! tree.some( ( r ) => r.depth === 0 && r.id === openMainId ) ) {
+			setOpenMainId( null );
+		}
+	}, [ tree, openMainId ] );
+
+	React.useEffect( () => {
+		return syncEditorDropdownPreviewAfterRender( navId, expandedId );
+	}, [ navId, expandedId, tree ] );
+
+	/* Contiguous subtree [start, end) of the row at `index` (itself + everything
+	 * deeper that immediately follows). Used to lift a whole branch while dragging
+	 * and to forbid dropping a branch inside itself. */
+	const subtreeRange = ( index ) => {
+		const baseDepth = tree[ index ].depth;
+		let end = index + 1;
+		while ( end < tree.length && tree[ end ].depth > baseDepth ) {
+			end++;
+		}
+		return [ index, end ];
+	};
+
+	const handleAddMain = () => {
+		const nav = getContainer( navId );
+		if ( ! nav ) {
+			return;
+		}
+		const topCount = tree.filter( ( r ) => r.depth === 0 ).length;
+		const result = createElements( {
+			title: 'Menu Item',
+			subtitle: 'Menu item added',
+			elements: [ {
+				container: nav,
+				model: buildNavItemModel( topCount + 1 ),
+				options: { at: topCount },
+			} ],
+		} );
+		const id = result?.createdElements?.[ 0 ]?.containerId;
+		if ( id ) {
+			setExpandedId( id );
+			setOpenMainId( id );
+		}
+	};
+
+	/* Append every top-level item of a WordPress menu (with its full nested
+	 * subtree) after the current items, then bind the nav to that menu so the
+	 * button offers "Update" next time. The whole tree per top item is one
+	 * model, so a single createElements call builds all levels at once. */
+	const handleImportMenu = ( menu ) => {
+		const nav = getContainer( navId );
+		if ( ! nav || ! menu?.items?.length ) {
+			return;
+		}
+		const topCount = tree.filter( ( r ) => r.depth === 0 ).length;
+		createElements( {
+			title: 'Import Menu',
+			subtitle: `Imported "${ menu.name }"`,
+			elements: menu.items.map( ( node, i ) => ( {
+				container: nav,
+				model: buildImportedItemModel( node ),
+				options: { at: topCount + i },
+			} ) ),
+		} );
+		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
+	};
+
+	/* Non-destructive re-sync of an already-imported menu (see syncMenuLevel):
+	 * add/remove/refresh imported items by wp_id, keep styling and hand-added
+	 * items. Runs top-down from the nav root. */
+	const handleUpdateMenu = ( menu ) => {
+		if ( ! getContainer( navId ) || ! menu?.items ) {
+			return;
+		}
+		syncMenuLevel( navId, menu.items );
+		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
+	};
+
+	const handleAddChild = ( parentRow ) => {
+		/* Keep the parent's branch unfolded so the new child is actually visible in
+		 * the accordion (a fresh child under a collapsed branch would otherwise be
+		 * added out of sight). */
+		const parentIndex = tree.findIndex( ( r ) => r.id === parentRow.id );
+		setOpenMainId( rowsMeta[ parentIndex ]?.mainId ?? parentRow.id );
+		/* Whether the item ALREADY owned a dropdown flexbox before this click. */
+		const hadFlex = !! findFirstChildOfType( getContainer( parentRow.id ), 'e-flexbox' );
+		const flexbox = ensureItemFlexbox( parentRow.id );
+		if ( ! flexbox ) {
+			return;
+		}
+		const flexId = getElementId( flexbox );
+
+		const addSub = () => {
+			/* Re-fetch: ensureItemFlexbox flips has_dropdown, which re-renders the
+			 * item subtree and detaches the original flexbox container instance. */
+			const fresh = getContainer( flexId );
+			if ( ! fresh ) {
+				return;
+			}
+			const count = fresh.model?.get?.( 'elements' )?.length ?? 0;
+			const result = createElements( {
+				title: 'Sub Item',
+				subtitle: 'Sub-menu item added',
+				elements: [ {
+					container: fresh,
+					model: buildSubItemModel( count + 1 ),
+					options: { at: count },
+				} ],
+			} );
+			const id = result?.createdElements?.[ 0 ]?.containerId;
+			if ( id ) {
+				setExpandedId( id );
+			}
+		};
+
+		if ( hadFlex ) {
+			addSub();
+		} else {
+			/* The dropdown flexbox was just created THIS tick, so its Navigator
+			 * (Structure panel) node isn't registered yet — a child added now gets
+			 * dropped from the Navigator (the first sub-item went missing while the
+			 * model/canvas/frontend were correct). Defer to the next frame so the
+			 * Navigator has attached the new flexbox before we nest into it. */
+			window.requestAnimationFrame( () => window.requestAnimationFrame( addSub ) );
+		}
+	};
+
+	const handleDuplicate = ( row ) => {
+		duplicateElements( {
+			elementIds: [ row.id ],
+			title: 'Menu Item',
+			subtitle: 'Menu item duplicated',
+		} );
+	};
+
+	const handleRemove = ( row ) => {
+		removeElements( {
+			elementIds: [ row.id ],
+			title: 'Menu Item',
+			subtitle: 'Menu item removed',
+		} );
+		if ( expandedId === row.id ) {
+			setExpandedId( null );
+		}
+	};
+
+	/* Unfold (or collapse) a main branch in the panel accordion. Clicking a main
+	 * item with a submenu chain opens that chain and closes whatever else was open;
+	 * clicking the same open main again collapses it. Clicking a child keeps its
+	 * own branch open. Split out from handleRowActivate so the chevron can drive it
+	 * without also toggling the inline settings. */
+	const openBranchFor = ( row, index ) => {
+		const mainId = rowsMeta[ index ]?.mainId ?? row.id;
+		setOpenMainId( ( prev ) => ( row.depth === 0 && prev === row.id ) ? null : mainId );
+	};
+
+	/* Clicking a row = "open this item's dropdown container for editing/styling":
+	 * if the item already has a dropdown, SELECT that placeholder container (only —
+	 * no forced tab). If it has none, just expand the inline settings so the user
+	 * can enable one. Settings for a dropdown item stay reachable via the ✎ icon. */
+	const handleRowActivate = ( row, index ) => {
+		/* Toggle the row's inline settings + (via the reveal effect keyed on
+		 * expandedId) its dropdown container on the canvas — chain-aware, so a
+		 * dropdown item reveals its own container and a sub-item reveals its
+		 * parent's. We deliberately do NOT select the dropdown container here;
+		 * selecting swaps the panel over to it (reads as a forced navigation away
+		 * from the Menu Items list). The user only wants the container to APPEAR.
+		 *
+		 * Also drive the panel accordion: a main click unfolds its submenu chain
+		 * (and collapses other mains); a child click keeps its branch open. */
+		setExpandedId( expandedId === row.id ? null : row.id );
+		openBranchFor( row, index );
+	};
+
+	/* While dragging over row `overIndex`, decide the insertion index (below the
+	 * hovered row's own subtree) and the target depth from the pointer's X offset
+	 * — the WordPress "drag right to nest" gesture. Depth is clamped to
+	 * [0, depthOfItemAbove + 1]. */
+	const handleDragOver = ( event, overIndex ) => {
+		event.preventDefault();
+		if ( dragId === null ) {
+			return;
+		}
+		const dragIndex = tree.findIndex( ( r ) => r.id === dragId );
+		if ( dragIndex < 0 ) {
+			return;
+		}
+		const [ start, end ] = subtreeRange( dragIndex );
+		// Can't drop onto itself / its own subtree.
+		if ( overIndex >= start && overIndex < end ) {
+			return;
+		}
+
+		// Insert AFTER the hovered row's whole subtree.
+		const [ , overEnd ] = subtreeRange( overIndex );
+		let insertAt = overEnd;
+		// If the hovered row is below the dragged branch, indices shift once the
+		// branch is lifted — normalize to a "visible list" index.
+		if ( insertAt > start ) {
+			insertAt -= ( end - start );
+		}
+
+		// Depth bounds from the item that will sit ABOVE the insertion point
+		// (in the visible list, i.e. excluding the dragged branch).
+		const visible = tree.filter( ( _, i ) => i < start || i >= end );
+		const aboveDepth = insertAt > 0 ? visible[ insertAt - 1 ].depth : 0;
+		const pointerDepth = Math.max(
+			0,
+			Math.round( ( event.clientX - event.currentTarget.getBoundingClientRect().left - 10 ) / INDENT )
+		);
+		const depth = Math.min( pointerDepth, aboveDepth + 1 );
+
+		setDropIndex( insertAt );
+		setDropDepth( depth );
+	};
+
+	const handleDropCommit = () => {
+		const movedId = dragId;
+		const insertAt = dropIndex;
+		const depth = dropDepth;
+		setDragId( null );
+		setDropIndex( null );
+		if ( movedId === null || insertAt === null ) {
+			return;
+		}
+
+		const dragIndex = tree.findIndex( ( r ) => r.id === movedId );
+		if ( dragIndex < 0 ) {
+			return;
+		}
+		const [ start, end ] = subtreeRange( dragIndex );
+		const visible = tree.filter( ( _, i ) => i < start || i >= end );
+
+		// Parent = nearest preceding VISIBLE item whose depth === depth-1.
+		let parentContainer = getContainer( navId );
+		let parentItemId = null;
+		if ( depth > 0 ) {
+			for ( let i = insertAt - 1; i >= 0; i-- ) {
+				if ( visible[ i ].depth === depth - 1 ) {
+					parentItemId = visible[ i ].id;
+					break;
+				}
+			}
+			if ( ! parentItemId ) {
+				return; // no valid parent for this depth
+			}
+			parentContainer = ensureItemFlexbox( parentItemId );
+		}
+		if ( ! parentContainer ) {
+			return;
+		}
+
+		// Position among that parent's direct children, counted in the visible list.
+		let at = 0;
+		for ( let i = 0; i < insertAt; i++ ) {
+			if ( visible[ i ].depth === depth ) {
+				at++;
+			}
+		}
+
+		const movedElement = getContainer( movedId );
+		if ( ! movedElement ) {
+			return;
+		}
+		moveElements( {
+			title: 'Menu Item',
+			subtitle: 'Menu item moved',
+			moves: [ {
+				element: movedElement,
+				targetContainer: parentContainer,
+				options: { at },
+			} ],
+		} );
+	};
+
+	return (
+		<Stack gap={ 1 }>
+			<Stack direction="row" alignItems="center" justifyContent="space-between">
+				<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
+					{ label }
+				</Typography>
+				<Button size="tiny" variant="outlined" onClick={ handleAddMain }>
+					{ '+ Add main item' }
+				</Button>
+			</Stack>
+			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+				{ 'Click a main item (▶) to unfold its submenu; opening another folds the previous one. Drag a row up/down to reorder, RIGHT to nest it under the item above, LEFT to move it out a level — just like the WordPress menu.' }
+			</Typography>
+
+			<NavMenuImport
+				linkedMenuId={ readProp( getContainer( navId )?.settings?.get?.( 'imported_menu_id' ), '' ) }
+				onImport={ handleImportMenu }
+				onUpdate={ handleUpdateMenu }
+			/>
+
+			<Stack
+				gap={ 0.5 }
+				onDragLeave={ () => setDropIndex( null ) }
+			>
+				{ tree.map( ( row, index ) => {
+					const meta        = rowsMeta[ index ] || {};
+					/* Accordion filter: main items always show; a deeper row shows only
+					 * while its main branch is the open one. Return null (not skip) so
+					 * `index` stays aligned with `tree` for the drag handlers. */
+					const isVisible   = row.depth === 0 || meta.mainId === openMainId;
+					if ( ! isVisible ) {
+						return null;
+					}
+					const isExpanded  = expandedId === row.id;
+					const isDragging  = dragId === row.id;
+					const showLineAt  = dropIndex === index;
+					const isBranchOpen = row.depth === 0 && openMainId === row.id;
+					return (
+						<Box key={ row.id }>
+							{ /* Drop indicator line — indented to the target depth. */ }
+							{ showLineAt && (
+								<Box sx={ {
+									height: 2,
+									bgcolor: 'primary.main',
+									ml: `${ dropDepth * INDENT }px`,
+									mb: 0.25,
+									borderRadius: 1,
+								} } />
+							) }
+							<Box
+								draggable
+								onDragStart={ () => { setDragId( row.id ); setExpandedId( null ); } }
+								onDragOver={ ( e ) => handleDragOver( e, index ) }
+								onDrop={ handleDropCommit }
+								onDragEnd={ () => { setDragId( null ); setDropIndex( null ); } }
+								sx={ {
+									ml: `${ row.depth * INDENT }px`,
+									border: '1px solid',
+									borderColor: 'divider',
+									borderRadius: 1,
+									overflow: 'hidden',
+									bgcolor: 'background.default',
+									opacity: isDragging ? 0.4 : 1,
+									/* Reveal the quick-action cluster on hover or when a
+									 * keyboard user focuses one of its buttons. */
+									'&:hover .aae-nav-row-actions, &:focus-within .aae-nav-row-actions': {
+										opacity: 1,
+										pointerEvents: 'auto',
+									},
+								} }
+							>
+								<Stack
+									direction="row"
+									alignItems="center"
+									gap={ 0.25 }
+									sx={ { position: 'relative', px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
+								>
+									<Box component="span" aria-hidden
+										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
+										⠿
+									</Box>
+									{ /* Disclosure chevron for a main item that owns a submenu
+									     chain — click to unfold/collapse its branch in the panel
+									     without opening the inline settings. A childless main gets
+									     a blank spacer so every main row's title lines up. */ }
+									{ row.depth === 0 && meta.hasChildren ? (
+										<Box component="span" role="button" aria-label={ isBranchOpen ? 'Collapse submenu' : 'Expand submenu' }
+											aria-expanded={ isBranchOpen }
+											onClick={ ( e ) => { e.stopPropagation(); openBranchFor( row, index ); } }
+											sx={ {
+												flexShrink: 0, width: 14, textAlign: 'center', cursor: 'pointer',
+												color: 'text.secondary', fontSize: 9, lineHeight: 1,
+												transform: isBranchOpen ? 'rotate(90deg)' : 'none',
+												transition: 'transform 120ms ease',
+											} }>
+											▶
+										</Box>
+									) : row.depth === 0 ? (
+										<Box component="span" aria-hidden sx={ { flexShrink: 0, width: 14 } } />
+									) : null }
+									<Typography variant="caption"
+										title={ row.depth === 0 ? 'Main item' : `Level ${ row.depth }` }
+										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, fontSize: 10, minWidth: 14, flexShrink: 0, textAlign: 'center' } }>
+										{ row.depth === 0 ? 'M' : `L${ row.depth }` }
+									</Typography>
+									<Typography
+										variant="body2"
+										noWrap
+										onClick={ () => handleRowActivate( row, index ) }
+										sx={ { flex: 1, minWidth: 0, fontSize: 12, fontWeight: isExpanded ? 600 : 400, cursor: 'pointer' } }
+									>
+										{ row.title }
+									</Typography>
+									{ /* Quick actions — hidden until the row is hovered/focused,
+									     and kept visible while the row is expanded so the ✎ that
+									     opened it doesn't vanish under the pointer. */ }
+									<Box
+										className="aae-nav-row-actions"
+										sx={ isExpanded
+											? { ...NAV_ROW_ACTIONS_SX, opacity: 1, pointerEvents: 'auto' }
+											: NAV_ROW_ACTIONS_SX }
+									>
+										<Tooltip title="Edit settings">
+											<IconButton size="tiny" aria-label="Edit item settings"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); setExpandedId( isExpanded ? null : row.id ); } }>
+												<span style={ { fontSize: 11, lineHeight: 1 } }>✎</span>
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Add child">
+											<IconButton size="tiny" aria-label="Add child item"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); handleAddChild( row ); } }>
+												<span style={ { fontSize: 13, lineHeight: 1 } }>＋</span>
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Duplicate">
+											<IconButton size="tiny" aria-label="Duplicate menu item"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
+												<span style={ { fontSize: 11, lineHeight: 1 } }>⧉</span>
+											</IconButton>
+										</Tooltip>
+										{ tree.length > 1 && (
+											<Tooltip title="Remove">
+												<IconButton size="tiny" aria-label="Remove menu item"
+													sx={ NAV_ROW_ICON_SX }
+													onClick={ ( e ) => { e.stopPropagation(); handleRemove( row ); } }>
+													<span style={ { fontSize: 12, lineHeight: 1 } }>×</span>
+												</IconButton>
+											</Tooltip>
+										) }
+									</Box>
+								</Stack>
+
+								<Collapse in={ isExpanded } unmountOnExit>
+									<Box sx={ { px: 1.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider' } }>
+										<NavItemFields
+											elementId={ row.id }
+											fallbackTitle={ row.title }
+											hideChildManager
+											onDropdownToggle={ () => {} }
+											onTitleChange={ () => {} }
+										/>
+									</Box>
+								</Collapse>
+							</Box>
+
+							{ /* Trailing drop zone (append to end / same level as last). */ }
+							{ index === tree.length - 1 && (
+								<Box
+									onDragOver={ ( e ) => handleDragOver( e, index ) }
+									onDrop={ handleDropCommit }
+									sx={ { height: 10 } }
+								/>
+							) }
+						</Box>
+					);
+				} ) }
+			</Stack>
+		</Stack>
+	);
+}
+
+function NavItemsControlLegacy( { label } ) {
 	const { element } = useElement();
 	const navId = element.id;
 
@@ -1260,7 +2224,7 @@ function SubItemsManager( { itemId } ) {
 	);
 }
 
-function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange } ) {
+function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange, hideChildManager } ) {
 	const data = useListenTo(
 		[
 			v1ReadyEvent(),
@@ -1354,6 +2318,13 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 				return;
 			}
 
+			/* Capture the user's tab BEFORE we create/select anything. Creating the
+			 * dropdown flexbox auto-selects it and Elementor flips a brand-new
+			 * container to the Style tab — only on this ENABLE path do we hold the
+			 * user's tab so the switch doesn't yank them to Style. (The click/select
+			 * path never touches the tab.) */
+			const enablePrevTab = enabled ? readActivePanelTab() : null;
+
 			let dropdownId = null;
 
 			if ( enabled ) {
@@ -1398,6 +2369,20 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 				if ( ! dropdownId ) {
 					dropdownId = getElementId( findDropdownContainer( elementId ) );
 				}
+				/* Reveal the empty, normally-hidden dropdown so the freshly-created
+				 * placeholder is VISIBLE/editable on enable (nav.js selection-sync
+				 * alone does not reveal it the first time). Re-applied across the
+				 * render window since creating the flexbox re-renders the preview. */
+				const revealFlex = getContainer( dropdownId );
+				if ( revealFlex ) {
+					markDropdownFlexbox( revealFlex );
+				}
+				const revealDrop = () => syncEditorNestedPreview( elementId, true );
+				revealDrop();
+				[ 80, 200, 400, 800 ].forEach( ( d ) => window.setTimeout( revealDrop, d ) );
+				/* Hold the user's tab across Elementor's late Style-flip for the new
+				 * container (enable path only). */
+				keepPanelTab( enablePrevTab );
 				/* Select the placeholder synchronously. Reveal then follows for
 				 * free via the editor CSS `.elementor-element-selected` rule and
 				 * nav.js's selection sync — no inline-style reveal timers to race. */
@@ -1412,13 +2397,6 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			id: elementId,
 			props: { [ key ]: prop( 'string', value ) },
 		} );
-	};
-
-	const editDropdownStyle = () => {
-		/* Resolve + select synchronously — the flexbox already exists, so
-		 * findDropdownContainer returns it in the same tick and selectElement
-		 * lands reliably (no fixed-delay re-find that could miss). */
-		selectDropdownContainer( elementId );
 	};
 
 	return (
@@ -1450,11 +2428,8 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			</Stack>
 			{ dropdownEnabled && (
 				<>
-					<Button size="tiny" variant="outlined" onClick={ editDropdownStyle } fullWidth>
-						{ 'Edit dropdown style' }
-					</Button>
 					<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
-						{ 'Selects this item’s dropdown container. Use its Style tab for background, width, padding and layout.' }
+						{ 'Click this item in the list to select its dropdown container — then style it from any tab you like.' }
 					</Typography>
 					<Typography variant="caption">{ 'Trigger' }</Typography>
 					<Select
@@ -1482,9 +2457,11 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 						<MenuItem value="slide-items">{ 'Slide Items' }</MenuItem>
 						<MenuItem value="rotate-items">{ 'Rotate Items' }</MenuItem>
 					</Select>
-					<Box sx={ { pt: 1, mt: 0.5, borderTop: '1px solid', borderColor: 'divider' } }>
-						<SubItemsManager itemId={ elementId } />
-					</Box>
+					{ ! hideChildManager && (
+						<Box sx={ { pt: 1, mt: 0.5, borderTop: '1px solid', borderColor: 'divider' } }>
+							<SubItemsManager itemId={ elementId } />
+						</Box>
+					) }
 				</>
 			) }
 		</Stack>

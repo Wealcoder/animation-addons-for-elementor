@@ -31,6 +31,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Inline_Editing_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
@@ -86,6 +87,10 @@ class AAE_A_Form_Submit extends Atomic_Widget_Base {
 				]
 			),
 
+			// submit = sends the form; reset = clears every field (native
+			// <button type="reset">, plus the runtime resyncs custom UI).
+			'button_type'   => String_Prop_Type::make()->enum( [ 'submit', 'reset' ] )->default( 'submit' ),
+
 			// Stored now, used by the Milestone-5 submit runtime (button text
 			// swap while the request is in flight).
 			'loading_label' => String_Prop_Type::make()->default( __( 'Sending...', 'animation-addons-for-elementor' ) ),
@@ -100,6 +105,20 @@ class AAE_A_Form_Submit extends Atomic_Widget_Base {
 					[
 						Inline_Editing_Control::bind_to( 'text' )
 							->set_label( __( 'Button text', 'animation-addons-for-elementor' ) ),
+						Select_Control::bind_to( 'button_type' )
+							->set_label( __( 'Button type', 'animation-addons-for-elementor' ) )
+							->set_options(
+								[
+									[
+										'value' => 'submit',
+										'label' => __( 'Submit', 'animation-addons-for-elementor' ),
+									],
+									[
+										'value' => 'reset',
+										'label' => __( 'Reset / Clear', 'animation-addons-for-elementor' ),
+									],
+								]
+							),
 						Text_Control::bind_to( 'loading_label' )
 							->set_label( __( 'Loading text', 'animation-addons-for-elementor' ) ),
 					]

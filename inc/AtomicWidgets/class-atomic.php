@@ -273,6 +273,8 @@ final class Atomic
 			'aae-a-flip-box-main-face',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
+			'aae-a-offcanvas-trigger',
+			'aae-a-offcanvas-close',
 			'aae-a-timeline-item',
 			'aae-a-timeline-main-item',
 			'aae-a-social-share-main-item',
@@ -316,6 +318,15 @@ final class Atomic
 			'aae-a-form-submit',
 			'aae-a-form-success-message',
 			'aae-a-form-error-message',
+			// Style source for injected validation errors — forms saved with
+			// one must never hit ElementTypeNotFound.
+			'aae-a-form-field-error',
+			'aae-a-form-file',
+			// Multi-Step preset drops these as default children too — same
+			// always-on reasoning.
+			'aae-a-form-step',
+			'aae-a-form-next',
+			'aae-a-form-prev',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -469,6 +480,26 @@ final class Atomic
 					'post',
 					'title',
 					'heading',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-content' => [
+				'label'        => 'Post Content',
+				'description'  => 'Dynamically displays the current post content natively in Elementor V4.',
+				'icon'         => 'eicon-post-content',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'content',
 					'atomic',
 					'dynamic',
 				],
@@ -659,6 +690,22 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
+			'aae-a-draw-svg' => [
+				'label'        => 'DrawSVG',
+				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
+				'icon'         => 'eicon-animation',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
 				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
@@ -784,7 +831,7 @@ final class Atomic
 
 			'aae-a-advanced-heading' => [
 				'label'        => 'Advanced Heading',
-				'description'  => 'Heading with editable text and highlight parts: gradient, bracket, divider+dot, or animated underline.',
+				'description'  => 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.',
 				'icon'         => 'eicon-t-letter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -794,7 +841,8 @@ final class Atomic
 					'heading',
 					'title',
 					'highlight',
-					'gradient',
+					'html',
+					'span',
 					'atomic',
 				],
 				'category'     => 'general',
@@ -974,6 +1022,29 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 6,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toc' => [
+				'label'        => 'Table of Content',
+				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
+				'icon'         => 'eicon-table-of-contents',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'toc',
+					'table',
+					'content',
+					'contents',
+					'anchor',
+					'heading',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1473,6 +1544,21 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-offcanvas-trigger' => [
+				'label'           => 'Offcanvas Trigger',
+				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
+				'icon'            => 'eicon-menu-bar',
+				'keywords'        => [ 'offcanvas', 'trigger', 'icon' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-offcanvas-close' => [
+				'label'           => 'Offcanvas Close',
+				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
+				'icon'            => 'eicon-close',
+				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
+				'hide_from_panel' => true,
+			],
+
 			'aae-a-form' => [
 				'label'        => 'Form',
 				'description'  => 'Atomic-first form: real child fields, locked submit button. Milestone 1 skeleton — no submit logic yet.',
@@ -1635,6 +1721,145 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-form-file' => [
+				'label'        => 'Form File Upload',
+				'description'  => 'File upload field for AAE Form — files land in private local storage, validated server-side (type, size), downloadable only by admins.',
+				'icon'         => 'eicon-upload',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form file',
+					'upload',
+					'attachment',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-field-error' => [
+				'label'        => 'Form Field Error',
+				'description'  => 'Style source for inline validation messages — its look and text are copied onto every "This field is required." error the form shows. Deleting it never removes validation; errors just fall back to the default look.',
+				'icon'         => 'eicon-warning',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form error',
+					'validation',
+					'required',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-rating' => [
+				'label'        => 'Form Rating',
+				'description'  => 'Advanced Field (Pro) — a star-rating field. Progressively enhances a real number input, so submit and validation work exactly like any other number field.',
+				'icon'         => 'eicon-star-o',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form rating',
+					'star',
+					'review',
+					'feedback',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range' => [
+				'label'        => 'Form Range',
+				'description'  => 'Advanced Field (Pro) — a range slider. Style tab → Background Color sets the slider\'s own color.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range',
+					'slider',
+					'range',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-password' => [
+				'label'        => 'Form Password',
+				'description'  => 'Advanced Field (Pro) — a masked password field with an optional reveal button, minimum length and confirm-match. Never stored, emailed or sent to webhooks in readable form.',
+				'icon'         => 'eicon-lock-user',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form password',
+					'password',
+					'secret',
+					'confirm',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-calculation' => [
+				'label'        => 'Form Calculation',
+				'description'  => 'Advanced Field (Pro) — a read-only total computed from other fields by a formula, e.g. {quantity} * {price}. The server recomputes it on submit, so the stored value can never be tampered with.',
+				'icon'         => 'eicon-number-field',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form calculation',
+					'calculator',
+					'total',
+					'price',
+					'quote',
+					'sum',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-country' => [
+				'label'        => 'Form Country',
+				'description'  => 'Advanced Field (Pro) — a country dropdown with the full ISO country list built in. Prune or reorder the list to pin priority countries; values submit as ISO codes.',
+				'icon'         => 'eicon-globe',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form country',
+					'country',
+					'dropdown',
+					'nationality',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-form-submit' => [
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
@@ -1646,6 +1871,67 @@ final class Atomic
 				'keywords'     => [
 					'form submit',
 					'internal',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-step' => [
+				'label'        => 'Form Step',
+				'description'  => 'Multi-Step Forms (Pro) — one page of a multi-step form. Add 2+ inside a form to turn it into a wizard with Next/Previous navigation and per-step validation.',
+				'icon'         => 'eicon-single-page',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form step',
+					'multi-step',
+					'wizard',
+					'page',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-next' => [
+				'label'        => 'Next Step Button',
+				'description'  => 'Multi-Step Forms (Pro) — advances a multi-step form to the next step. Validates the current step first.',
+				'icon'         => 'eicon-arrow-right',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form next',
+					'multi-step',
+					'wizard',
+					'button',
+				],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-prev' => [
+				'label'        => 'Previous Step Button',
+				'description'  => 'Multi-Step Forms (Pro) — steps a multi-step form back one step. Never validated.',
+				'icon'         => 'eicon-arrow-left',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form previous',
+					'form back',
+					'multi-step',
+					'wizard',
+					'button',
 				],
 				'category'     => 'general',
 				'order'        => 19,
@@ -2104,6 +2390,11 @@ final class Atomic
 		// controls (posts by title/ID, taxonomy terms by name).
 		add_action('wp_ajax_aae_loop_query_options', [$this, 'ajax_loop_query_options']);
 
+		// AAE Nav: list WordPress menus + their nested item trees so the Nav
+		// panel's "Import from WordPress menu" control can rebuild them as
+		// atomic nav-items. Reuses the `aae_loop_grid` editor nonce.
+		add_action('wp_ajax_aae_get_nav_menus', [$this, 'ajax_get_nav_menus']);
+
 		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
 		// document before resolving tags, so a Featured Image / Post Title tag
 		// inside a loop item resolves against the PAGE (usually no thumbnail →
@@ -2250,6 +2541,12 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/post-title.css',
 			],
 
+			'aae-a-post-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content',
+				'file' => 'Widgets/PostContent/class-aae-a-post-content.php',
+				'has_script' => false,
+			],
+
 			'aae-a-post-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
@@ -2387,9 +2684,17 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-draw-svg' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
+				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
+				'script_handle' => 'aae-a-draw-svg-js',
+				'script_path' => '/assets/atomic/js/draw-svg.js',
+				'script_deps' => [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ],
+				'has_script' => true,
+			],
+
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
-			// (paging appends slides then re-binds the shared slider runtime).
 			'aae-a-loop-grid-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',
@@ -2428,6 +2733,22 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/accordion.css',
 			],
 
+			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
+			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
+			// present, and degrades gracefully to native smooth scroll without
+			// them — so, like Counter, it declares NO gsap script_deps (those
+			// handles live in the Pro plugin; a missing registered dep would
+			// silently prevent this free widget's script from enqueuing).
+			'aae-a-toc' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
+				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
+				'script_handle' => 'aae-a-toc-js',
+				'script_path' => '/assets/atomic/js/table-of-contents.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-toc-css',
+				'style_path' => '/assets/atomic/css/table-of-contents.css',
+			],
+
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
@@ -2461,6 +2782,18 @@ final class Atomic
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-main' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main',
+			'file'          => 'Widgets/SocialShareMain/class-aae-a-social-share-main.php',
+			'script_handle' => 'aae-a-social-share-main-js',
+			'script_path'   => '/assets/atomic/js/social-share-main.js',
+			'has_script'    => true,
+		],
+		'aae-a-social-share-main-item' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main_Item',
+			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
 			'has_script' => false,
 		],
 		'aae-a-image-compare' => [
@@ -2535,11 +2868,10 @@ final class Atomic
 			],
 
 			'aae-a-advanced-heading' => [
-				'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
-				'file'         => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
-				'has_script'   => false,
-				'style_handle' => 'aae-a-advanced-heading-css',
-				'style_path'   => '/assets/atomic/css/advanced-heading.css',
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
+				'file'       => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
+				'has_script' => false,
+				// Design-less: this widget ships no CSS. Style your own classes.
 			],
 
 			'aae-a-progressbar' => [
@@ -2550,6 +2882,16 @@ final class Atomic
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
 				'style_path'    => '/assets/atomic/js/progressbar.css',
+			],
+
+			'aae-a-progressbar-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
+				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
+				'script_handle' => 'aae-a-progressbar-main-js',
+				'script_path'   => '/assets/atomic/js/progressbar-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-progressbar-main-css',
+				'style_path'    => '/assets/atomic/js/progressbar-main.css',
 			],
 
 			'aae-a-toggle-switcher' => [
@@ -2568,6 +2910,22 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-toggle-switcher-main' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
+				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
+				'script_handle' => 'aae-a-toggle-switcher-main-js',
+				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
+				'has_script'    => true,
+				'style_handle'  => 'aae-a-toggle-switcher-main-css',
+				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
+			],
+
+			'aae-a-toggle-pane-main' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
+				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
+				'has_script' => false,
+			],
+
 			'aae-a-offcanvas' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
 				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
@@ -2582,11 +2940,25 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-offcanvas-trigger' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-trigger.php',
+				'has_script' => false,
+			],
+			'aae-a-offcanvas-close' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
+				'has_script' => false,
+			],
+
 			'aae-a-form' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form',
 				'file'          => 'Widgets/Form/class-aae-a-form.php',
 				'script_handle' => 'aae-a-form-js',
 				'script_path'   => '/assets/atomic/js/form.js',
+				// Multi-Step step-transition animations (lib/multi-step.js)
+				// are plain CSS transform/opacity transitions — no JS
+				// tweening library dependency needed.
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-form-css',
 				'style_path'    => '/assets/atomic/css/form.css',
@@ -2644,6 +3016,66 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit',
 				'file'       => 'Widgets/Form/class-aae-a-form-submit.php',
 				'has_script' => false,
+			],
+
+			'aae-a-form-field-error' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Field_Error',
+				'file'       => 'Widgets/Form/class-aae-a-form-field-error.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-file' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_File',
+				'file'       => 'Widgets/Form/class-aae-a-form-file.php',
+				'has_script' => false,
+			],
+
+			'aae-a-form-rating' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Rating',
+				'file'       => 'Widgets/Form/class-aae-a-form-rating.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/rating.js).
+			],
+
+			'aae-a-form-range' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
+				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
+			],
+
+			'aae-a-form-country' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Country',
+				'file'       => 'Widgets/Form/class-aae-a-form-country.php',
+				'has_script' => false, // native single <select>; no JS needed.
+			],
+
+			'aae-a-form-calculation' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Calculation',
+				'file'       => 'Widgets/Form/class-aae-a-form-calculation.php',
+				'has_script' => false, // ships inside aae-a-form-js itself (lib/calculation.js).
+			],
+
+			'aae-a-form-password' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Password',
+				'file'       => 'Widgets/Form/class-aae-a-form-password.php',
+				'has_script' => false, // reveal toggle ships inside aae-a-form-js (lib/password.js).
+			],
+
+			'aae-a-form-step' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Step',
+				'file'       => 'Widgets/Form/class-aae-a-form-step.php',
+				'has_script' => false, // step-nav logic ships inside aae-a-form-js itself.
+			],
+
+			'aae-a-form-next' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Next',
+				'file'       => 'Widgets/Form/class-aae-a-form-next.php',
+				'has_script' => false, // click handler ships inside aae-a-form-js itself.
+			],
+
+			'aae-a-form-prev' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Prev',
+				'file'       => 'Widgets/Form/class-aae-a-form-prev.php',
+				'has_script' => false, // click handler ships inside aae-a-form-js itself.
 			],
 
 			'aae-a-nav' => [
@@ -3497,6 +3929,30 @@ final class Atomic
 		return $server_ip === '127.0.0.1';
 	}
 
+	/**
+	 * Public accessor for is_dev_environment() — used by the remote preset
+	 * system (Atomic\Presets\Cache) to decide whether to bypass its cache
+	 * and always fetch fresh from the remote server.
+	 *
+	 * @return bool
+	 */
+	public function is_dev_environment_public(): bool
+	{
+		return $this->is_dev_environment();
+	}
+
+	/**
+	 * Public accessor for get_available_widgets() — used by
+	 * Atomic\Presets\Local_Fallback to walk each widget's presets/ folder
+	 * without duplicating this plugin's widget registry.
+	 *
+	 * @return array
+	 */
+	public function get_available_widgets_public(): array
+	{
+		return $this->get_available_widgets();
+	}
+
 	/* =====================================================================
 	 *  Dashboard integration
 	 * =================================================================== */
@@ -3602,6 +4058,69 @@ final class Atomic
 		];
 
 		wp_send_json_success(wp_nav_menu($args));
+	}
+
+	/**
+	 * AJAX handler — return every registered WordPress menu together with its
+	 * items pre-assembled into a nested tree. The AAE Nav panel's import control
+	 * consumes this to build atomic nav-items (with dropdowns) that mirror the
+	 * WP menu hierarchy. Reuses the `aae_loop_grid` editor nonce.
+	 */
+	public function ajax_get_nav_menus(): void
+	{
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$menus = wp_get_nav_menus();
+		$out   = [];
+
+		if (! is_wp_error($menus)) {
+			foreach ($menus as $menu) {
+				$items = wp_get_nav_menu_items($menu->term_id);
+				$out[] = [
+					'id'    => (int) $menu->term_id,
+					'name'  => $menu->name,
+					'items' => $this->build_nav_menu_tree(is_array($items) ? $items : []),
+				];
+			}
+		}
+
+		wp_send_json_success(['menus' => $out]);
+	}
+
+	/**
+	 * Turn WordPress's flat, menu_order-sorted item list into a nested tree
+	 * keyed by parent. Each node exposes only what the editor needs to build a
+	 * nav-item: label, url, target, and its children.
+	 *
+	 * @param array $items Output of wp_get_nav_menu_items().
+	 * @return array Nested nodes: [ [ 'title', 'url', 'target', 'children' ], ... ].
+	 */
+	private function build_nav_menu_tree(array $items): array
+	{
+		$by_parent = [];
+		foreach ($items as $item) {
+			$by_parent[(int) $item->menu_item_parent][] = $item;
+		}
+
+		$build = function ($parent_id) use (&$build, $by_parent) {
+			$nodes = [];
+			foreach ($by_parent[$parent_id] ?? [] as $item) {
+				$nodes[] = [
+					'id'       => (int) $item->ID,
+					'title'    => wp_strip_all_tags($item->title),
+					'url'      => esc_url_raw($item->url),
+					'target'   => ('_blank' === $item->target) ? '_blank' : '',
+					'children' => $build((int) $item->ID),
+				];
+			}
+			return $nodes;
+		};
+
+		return $build(0);
 	}
 
 	/**
@@ -3746,8 +4265,7 @@ final class Atomic
 	 */
 	public function enqueue_atomic_editor_scripts(): void
 	{
-		// it break design in editor so i commented it
-		//$this->guard_elementor_core_atomic_types();
+		// $this->guard_elementor_core_atomic_types();
 
 		$suffix = $this->is_dev_environment() ? '' : '.min';
 		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
@@ -3777,13 +4295,13 @@ final class Atomic
 			true
 		);
 
-		// Expose bundled widget presets to the editor bridge so its panel UI
-		// (Apply Preset dropdown) can list and apply them. Keyed by widget type.
-		wp_localize_script(
-			'aae-atomic-editor',
-			'AAE_WIDGET_PRESETS',
-			$this->get_widget_presets()
-		);
+		// NOTE: AAE_PRESET_CONFIG is NOT localized here. PresetPickerControl.jsx
+		// (which reads window.AAE_PRESET_CONFIG) ships inside the
+		// 'aae-atomic-common-editor-bridge' bundle (built from
+		// src/modules/atomic/editor-bridge.js), NOT this 'aae-atomic-editor'
+		// handle (built from inc/AtomicWidgets/assets/js/atomic-editor.js —
+		// a small, unrelated outer-frame bridge). See Atomic\Assets::
+		// enqueue_editor_bridge() for the correct wp_localize_script() call.
 
 		// Loop Grid: ajax config for the editor "full grid live" preview module.
 		wp_localize_script(
@@ -3853,202 +4371,6 @@ JS,
 		);
 	}
 
-	/**
-	 * Scan every widget's presets/ folder and return the parsed JSON presets,
-	 * grouped by the widget type they belong to, so the editor can list the
-	 * presets relevant to the selected element.
-	 *
-	 * Two file formats are accepted:
-	 *   - Elementor native export: { content:[ <model> ], title, type, ... }
-	 *     (the user exports a flex container holding the design)
-	 *   - Plugin format:           { name, model:{...} }
-	 *
-	 * The exposed model is the root export element (e.g. an e-flexbox wrapper).
-	 * The editor unwraps a container wrapper on apply and places its children
-	 * at the selected element's position. The preset is keyed by the primary
-	 * atomic widget found inside (e.g. e-aae-a-advanced-heading) so it shows
-	 * when that widget is selected — not when a bare flexbox is selected.
-	 *
-	 * @return array<string, array<int, array>> elementType => preset[]
-	 */
-	private function get_widget_presets(): array
-	{
-		$presets = [];
-		$scanned_dirs = [];
-
-		foreach ($this->get_available_widgets() as $widget_data) {
-			if (empty($widget_data['file'])) {
-				continue;
-			}
-
-			$widget_dir = wp_normalize_path(dirname(WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $widget_data['file']));
-			$preset_dir = $widget_dir . '/presets';
-
-			if (! is_dir($preset_dir)) {
-				continue;
-			}
-
-			// Many widgets share one folder (e.g. all LoopGrid parts live in
-			// Widgets/LoopGrid), so the same presets/ dir would be globbed once
-			// per sibling widget and every preset would appear N times. Scan each
-			// dir only once.
-			if (isset($scanned_dirs[$preset_dir])) {
-				continue;
-			}
-			$scanned_dirs[$preset_dir] = true;
-
-			foreach (glob($preset_dir . '/*.json') as $file) {
-				$preset = $this->parse_preset_file($file);
-				if (! $preset) {
-					continue;
-				}
-
-				// Key by the primary atomic widget inside the model (so a
-				// flex-wrapped heading preset shows when a heading is selected),
-				// falling back to the model's own type.
-				$type = $this->detect_primary_widget_type($preset['model']);
-				if ('' === $type) {
-					continue;
-				}
-
-				$presets[$type][] = $preset;
-			}
-		}
-
-		// Native atomic widgets (e-heading, e-button, …) have no widget dir of
-		// ours to host a presets/ folder, and detect_primary_widget_type() only
-		// recognises e-aae-a-* widgets. So their presets live in one shared root,
-		// one sub-folder per element type — the FOLDER NAME is the key:
-		//   inc/AtomicWidgets/Presets/e-heading/*.json  =>  presets['e-heading']
-		// The matching panel section is injected by Atomic\Presets\Controls,
-		// which checks the same folders (keep the path in sync with it).
-		$native_root = wp_normalize_path(WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets');
-		if (is_dir($native_root)) {
-			foreach (glob($native_root . '/*', GLOB_ONLYDIR) as $type_dir) {
-				$type = basename($type_dir);
-
-				foreach (glob($type_dir . '/*.json') as $file) {
-					$preset = $this->parse_preset_file($file);
-					if ($preset) {
-						$presets[$type][] = $preset;
-					}
-				}
-			}
-		}
-
-		return $presets;
-	}
-
-	/**
-	 * Parse one preset .json file into [ id, name, model ], accepting both the
-	 * Elementor native export format ({ content:[<model>], title }) and the
-	 * plugin format ({ name, model }). Returns null when unreadable/invalid.
-	 *
-	 * @param string $file Absolute path to the .json file.
-	 * @return array{id:string,name:string,model:array}|null
-	 */
-	private function parse_preset_file(string $file): ?array
-	{
-		$raw = file_get_contents($file);
-		if (false === $raw) {
-			return null;
-		}
-
-		// Presets ship with a portable `{{AAE_ASSET_URL}}` placeholder
-		// instead of a baked-in domain (so the JSON works on any install
-		// after this plugin is distributed) — resolve it here the same
-		// way live widget code resolves its own asset URLs via
-		// WCF_ADDONS_URL (see e.g. AAE_A_Social_Share_Item::get_vendor_svg_url()).
-		if (defined('WCF_ADDONS_URL')) {
-			$raw = str_replace('{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw);
-		}
-
-		$data = json_decode($raw, true);
-		if (! is_array($data)) {
-			return null;
-		}
-
-		// Resolve the root model + name from either supported format.
-		$model = null;
-		$name  = basename($file, '.json');
-
-		if (! empty($data['model']) && is_array($data['model'])) {
-			// Plugin format.
-			$model = $data['model'];
-			if (isset($data['name'])) {
-				$name = (string) $data['name'];
-			}
-		} elseif (! empty($data['content'][0]) && is_array($data['content'][0])) {
-			// Elementor native export: content[] holds top-level elements;
-			// the first is the wrapper we treat as the preset model.
-			$model = $data['content'][0];
-			if (! empty($data['title'])) {
-				$name = (string) $data['title'];
-			}
-		}
-
-		if (! $model) {
-			return null;
-		}
-
-		return [
-			'id'    => sanitize_key(basename($file, '.json')),
-			'name'  => $name,
-			'model' => $model,
-		];
-	}
-
-	/**
-	 * Find the most relevant widget type a preset targets. If the root is a
-	 * layout container, descend to the first AAE atomic widget inside; else use
-	 * the root's own type. Returns the type string Elementor reports for the
-	 * element (elType for atomic elements, widgetType for classic widgets).
-	 *
-	 * @param array $model Element model.
-	 * @return string
-	 */
-	private function detect_primary_widget_type(array $model): string
-	{
-		$container_types = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
-
-		$root_type = $model['elType'] ?? '';
-		if ('widget' === $root_type && ! empty($model['widgetType'])) {
-			$root_type = $model['widgetType'];
-		}
-
-		// If the root isn't a container, it's the target itself.
-		if (! in_array($root_type, $container_types, true)) {
-			return $root_type;
-		}
-
-		// Descend breadth-first to the first AAE atomic widget.
-		$queue = $model['elements'] ?? [];
-
-		while (! empty($queue)) {
-			$node = array_shift($queue);
-			if (! is_array($node)) {
-				continue;
-			}
-
-			$type = $node['elType'] ?? '';
-			if ('widget' === $type && ! empty($node['widgetType'])) {
-				$type = $node['widgetType'];
-			}
-
-			if (is_string($type) && 0 === strpos($type, 'e-aae-a-')) {
-				return $type;
-			}
-
-			if (! empty($node['elements']) && is_array($node['elements'])) {
-				foreach ($node['elements'] as $child) {
-					$queue[] = $child;
-				}
-			}
-		}
-
-		// No AAE widget inside — fall back to the container type itself.
-		return $root_type;
-	}
 }
 
 // Initialize.

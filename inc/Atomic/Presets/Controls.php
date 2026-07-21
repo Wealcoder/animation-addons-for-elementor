@@ -13,16 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the section can't be placed in define_atomic_controls() the way AAE widgets
  * do it (see AdvancedHeading).
  *
- * A native widget gets the section only when presets are actually bundled for
- * it: one folder per element type under inc/AtomicWidgets/Presets/, the FOLDER
- * NAME being the element type key. Drop e.g.
- * inc/AtomicWidgets/Presets/e-heading/my-design.json and the section appears
- * on every selected e-heading — no code change needed.
- *
- * The preset JSONs are scanned and localised by
- * class-atomic.php::get_widget_presets(); the shared React control
- * (element-controls/PresetPickerControl.jsx) lists them for the selected
- * element's type and applies on pick.
+ * The section is injected unconditionally for every non-AAE element type —
+ * presets can now come from the remote preset server (see Atomic\Presets\Rest
+ * + Cache + Remote_Client) as well as bundled local JSON, so a static
+ * per-request local-folder glob can no longer decide whether a type "has"
+ * presets. The shared React control (element-controls/PresetPickerControl.jsx)
+ * fetches per-type on demand from this plugin's own REST proxy and renders
+ * nothing when the resolved (remote + local merged) list is empty.
  *
  * AAE's own widgets (e-aae-a-*) are skipped here — they place the section
  * themselves in define_atomic_controls().
@@ -30,14 +27,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Controls {
 
 	const TD = 'animation-addons-for-elementor';
-
-	/**
-	 * Element types that have at least one bundled preset, as
-	 * [ type => true ]. Populated on first use — one directory scan per request.
-	 *
-	 * @var array<string, true>|null
-	 */
-	private static $types_with_presets = null;
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
@@ -59,11 +48,11 @@ final class Controls {
 			return $controls;
 		}
 
-		if ( ! $this->has_presets( $type ) ) {
-			return $controls;
-		}
-
-		// Presets first — the section reads as a starting point, per convention.
+		// The section is now always injected (no local-only glob gate): the
+		// React control fetches per-type from the remote-preset proxy route
+		// on demand and renders nothing when the resolved list is empty, so
+		// a type with remote-only presets (no local .json bundled at all)
+		// still gets its "Presets" section instead of silently having none.
 		array_unshift( $controls, $this->build_presets_section() );
 
 		return $controls;
@@ -78,25 +67,5 @@ final class Controls {
 					->set_label( __( 'Apply Preset', self::TD ) )
 					->set_meta( [ 'layout' => 'custom' ] ),
 			] );
-	}
-
-	/**
-	 * Whether any preset JSON is bundled for the given element type. Checks the
-	 * same folders class-atomic.php::get_widget_presets() scans
-	 * (inc/AtomicWidgets/Presets/<type>/*.json) — keep the path in sync.
-	 */
-	private function has_presets( string $type ): bool {
-		if ( null === self::$types_with_presets ) {
-			self::$types_with_presets = [];
-
-			$root = wp_normalize_path( WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets' );
-			if ( is_dir( $root ) ) {
-				foreach ( glob( $root . '/*/*.json' ) as $file ) {
-					self::$types_with_presets[ basename( dirname( $file ) ) ] = true;
-				}
-			}
-		}
-
-		return isset( self::$types_with_presets[ $type ] );
 	}
 }

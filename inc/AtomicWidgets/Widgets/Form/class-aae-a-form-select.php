@@ -68,11 +68,19 @@ class AAE_A_Form_Select extends Atomic_Widget_Base {
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
-			'name'       => String_Prop_Type::make()->default( '' ),
-			// One option per line, "value|Label"; label falls back to value.
-			'options'    => String_Prop_Type::make()->default( "option-1|Option 1\noption-2|Option 2\noption-3|Option 3" ),
-			'required'   => Boolean_Prop_Type::make()->default( false ),
-			'multiple'   => Boolean_Prop_Type::make()->default( false ),
+			'name'        => String_Prop_Type::make()->default( '' ),
+			// One option per line, "value|Label|selected"; label falls back to
+			// value, the optional 3rd part "selected" pre-selects that option.
+			// The default set includes one |selected line as a live example.
+			'options'     => String_Prop_Type::make()->default( "option-1|Option 1|selected\noption-2|Option 2\noption-3|Option 3" ),
+			// Trigger/empty-state text for the multi-select UI (and the empty
+			// first option of a single select). Empty keeps the default.
+			'placeholder' => String_Prop_Type::make()->default( '' ),
+			'required'    => Boolean_Prop_Type::make()->default( false ),
+			'multiple'    => Boolean_Prop_Type::make()->default( false ),
+
+			// Per-field validation message — overrides the form-wide default.
+			'error_message' => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -86,11 +94,26 @@ class AAE_A_Form_Select extends Atomic_Widget_Base {
 							->set_label( __( 'Name', 'animation-addons-for-elementor' ) ),
 						Textarea_Control::bind_to( 'options' )
 							->set_label( __( 'Options', 'animation-addons-for-elementor' ) )
-							->set_placeholder( "value|Label\nvalue-2|Label 2" ),
+							->set_placeholder( "value|Label|selected\nvalue-2|Label 2" )
+							->set_description(
+								__( 'One option per line as value|Label. Label is optional (falls back to value). Add |selected at the end to pre-select it — e.g. yes|Yes|selected. In a multi-select you can pre-select more than one.', 'animation-addons-for-elementor' )
+							),
+						Text_Control::bind_to( 'placeholder' )
+							->set_label( __( 'Placeholder', 'animation-addons-for-elementor' ) )
+							->set_placeholder( __( 'Select…', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Empty-state text shown before anything is chosen. Leave blank to use “Select…”.', 'animation-addons-for-elementor' )
+							),
 						Switch_Control::bind_to( 'required' )
 							->set_label( __( 'Required', 'animation-addons-for-elementor' ) ),
 						Switch_Control::bind_to( 'multiple' )
 							->set_label( __( 'Multiple', 'animation-addons-for-elementor' ) ),
+						Text_Control::bind_to( 'error_message' )
+							->set_label( __( 'Error message', 'animation-addons-for-elementor' ) )
+							->set_placeholder( __( 'This field is required.', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Shown when this field fails validation. Leave blank to use the form-wide message.', 'animation-addons-for-elementor' )
+							),
 					]
 				),
 

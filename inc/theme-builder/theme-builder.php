@@ -85,6 +85,42 @@ class WCF_Theme_Builder
 		add_action('get_footer', array($this, 'override_footer'));
 		add_action('wcf_header_builder_content', array($this, 'header_builder_content'));
 		add_action('wcf_footer_builder_content', array($this, 'footer_builder_content'));
+
+		// Atomic (v4) styles: prio 5 — before Elementor's Frontend::enqueue_styles()
+		// (prio 10) fires `after_enqueue_post_styles`, the one-shot pass where
+		// Atomic_Styles_Manager renders CSS for the post IDs collected so far.
+		add_action('wp_enqueue_scripts', array($this, 'announce_template_atomic_styles'), 5);
+	}
+
+	/**
+	 * Announce active builder templates to Elementor's atomic styles pipeline.
+	 *
+	 * Templates render in the body (get_header/get_footer or template files),
+	 * after the head-time pass that generates atomic (v4) CSS. Core only fires
+	 * `elementor/post/render` for the main singular post, so without this the
+	 * templates' atomic local styles, global classes and fonts are never
+	 * enqueued — v3 styles survive only because get_builder_content_for_display
+	 * inlines Post_CSS, which atomic styles don't use.
+	 */
+	public function announce_template_atomic_styles()
+	{
+		if (! class_exists('\Elementor\Plugin')) {
+			return;
+		}
+
+		foreach (array('header', 'footer', 'archive', 'single') as $type) {
+			$template_id = $this->get_template_id($type);
+
+			if (! $template_id) {
+				continue;
+			}
+
+			$document = ElementorPlugin::instance()->documents->get($template_id);
+
+			if ($document && $document->is_built_with_elementor()) {
+				do_action('elementor/post/render', (string) $template_id);
+			}
+		}
 	}
 
 	/**

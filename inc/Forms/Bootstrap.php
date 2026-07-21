@@ -41,6 +41,10 @@ final class Bootstrap {
 		add_action( 'rest_api_init', [ Rest::class, 'register_routes' ] );
 		Assets::init();
 
+		// File uploads — local private storage, pre-upload endpoint, claim on
+		// submission_saved, daily orphan sweep, admin download proxy.
+		Uploads::init();
+
 		// Milestone 7 — after-submit actions: enqueue jobs on submission_saved,
 		// run attempt 1 on shutdown, retries via WP-Cron.
 		Dispatcher::init();

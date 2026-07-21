@@ -4,6 +4,7 @@ import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { registerResponsiveSection } from './responsive-section';
 import { registerAaeElementControls } from './element-controls';
+import { startCardBranding } from './widget-panel/card-branding';
 import regularAnimationSection from './extensions/regular-animation/config';
 import textAnimationSection from './extensions/text-animation/config';
 import parallaxSection from './extensions/parallax/config';
@@ -70,6 +71,10 @@ import nestedSliderSection from './extensions/nested-slider/config';
  * supplies a Section_Anchor_Prop_Type subclass and a single anchor
  * Text_Control inside its Section::make().
  * =================================================================== */
+
+// Widget-picker card branding — runs unconditionally, independent of any
+// one extension's section registration. See widget-panel/card-branding.js.
+startCardBranding();
 
 registerResponsiveSection( regularAnimationSection );
 registerResponsiveSection( textAnimationSection );

@@ -87,6 +87,37 @@ final class Integrations {
 		return array_map( 'strval', (array) $catalog );
 	}
 
+	/**
+	 * "Where do I get this key?" text + link for the dashboard connect card.
+	 * Falls back to a known-provider hint when pro isn't installed yet (so
+	 * the upsell card still tells the admin where the key lives), and to a
+	 * generic message for anything outside that list.
+	 *
+	 * @return array{text:string,url:string}
+	 */
+	public static function help( string $provider_id ): array {
+		$provider = self::get( $provider_id );
+		if ( null !== $provider ) {
+			return $provider::help();
+		}
+
+		$known = [
+			'brevo'     => [
+				'text' => __( 'In Brevo, go to SMTP & API → API Keys and create (or copy) a key. Use the API key, not the SMTP key/password.', 'animation-addons-for-elementor' ),
+				'url'  => 'https://app.brevo.com/settings/keys/api',
+			],
+			'mailchimp' => [
+				'text' => __( 'In Mailchimp, go to Account → Extras → API keys and create (or copy) a key. Paste it exactly as shown, including the -usXX suffix at the end.', 'animation-addons-for-elementor' ),
+				'url'  => 'https://admin.mailchimp.com/account/api/',
+			],
+		];
+
+		return $known[ $provider_id ] ?? [
+			'text' => __( 'Find this service\'s API key in its account/developer settings.', 'animation-addons-for-elementor' ),
+			'url'  => '',
+		];
+	}
+
 	// ------------------------------------------------------------------
 	// Global key store
 	// ------------------------------------------------------------------

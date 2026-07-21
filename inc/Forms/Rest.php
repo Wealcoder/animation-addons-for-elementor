@@ -284,6 +284,28 @@ final class Rest {
 			);
 		}
 
+		// reCAPTCHA v3: only enforced when the form opts in. A missing/failed
+		// verifier is a real block (not a silent pass) — a form that asked
+		// for reCAPTCHA must not quietly skip the check just because pro is
+		// absent or Google's call errored; that would defeat the setting.
+		$captcha_provider = (string) ( $schema['settings']['captcha_provider'] ?? 'none' );
+		if ( 'recaptcha_v3' === $captcha_provider ) {
+			$captcha_token = isset( $params['recaptcha_token'] ) && is_string( $params['recaptcha_token'] )
+				? $params['recaptcha_token']
+				: '';
+
+			// Google's siteverify `remoteip` param is optional — omitted here
+			// rather than threading a raw IP through just for this call,
+			// consistent with the plugin's no-raw-IP-by-default stance.
+			$check = Captcha::verify( $captcha_token, '' );
+
+			if ( ! $check['ok'] || $check['score'] < Captcha::threshold() ) {
+				Spam_Log::record( $form_key, ! $check['available'] ? 'captcha_unavailable' : 'captcha_failed' );
+
+				return self::error( 403, 'aae_form_security', self::generic_block_message() );
+			}
+		}
+
 		// --- Step 5: validate against the active schema snapshot. -----------
 		$result = Validator::validate( $schema, $params['fields'] );
 
@@ -302,6 +324,33 @@ final class Rest {
 			'user_agent'     => isset( $_SERVER['HTTP_USER_AGENT'] ) ? substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ), 0, 255 ) : '',
 			'ip_hash'        => Token::visitor_hash(),
 		];
+
+		/**
+		 * The ONE seam that sees a submission's raw values — including any
+		 * password — before redaction. It exists for actions that genuinely
+		 * cannot work with a masked value (the pro Create User action needs
+		 * the real password to call wp_insert_user()).
+		 *
+		 * Runs SYNCHRONOUSLY inside the submit request, deliberately: the raw
+		 * value must never be written to the async job queue, which persists
+		 * its payload. Anything hooking here must consume the value and keep
+		 * nothing — no logging, no storage, no third-party call carrying it.
+		 *
+		 * Fires before storage, so a listener failing must not lose the lead:
+		 * handlers are expected to swallow their own errors.
+		 *
+		 * @param array $clean  Validated values, still raw.
+		 * @param array $schema Active schema snapshot.
+		 * @param array $meta   form_key / schema_version / source_url / … .
+		 */
+		do_action( 'aae_form/submission_raw', $result['clean'], $schema, $meta );
+
+		// Passwords never travel past validation in readable form: replace
+		// every password value with its mask / one-way hash BEFORE anything
+		// downstream can see it — the observability hook, storage, the action
+		// queue (admin email, auto-reply, webhook) and the CSV export all read
+		// from here, so there is no path that leaks one.
+		$result['clean'] = Validator::redact_passwords( $result['clean'], $schema );
 
 		// Observability seam — fires whether or not storage is enabled.
 		do_action( 'aae_form/submission_validated', $form_key, $result['clean'], $schema, $meta );

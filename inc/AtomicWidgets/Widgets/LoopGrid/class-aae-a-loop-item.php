@@ -74,24 +74,24 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     protected function define_atomic_controls(): array {
-        // Reuse the shared preset-picker element control (same one the Advanced
-        // Heading uses). Presets keyed to `e-aae-a-loop-item` (see
-        // Widgets/LoopGrid/presets/) show here and replace the selected item on
-        // pick.
-        require_once __DIR__ . '/../AdvancedHeading/class-aae-a-preset-picker-control.php';
+        // Preset-picker element control. Presets keyed to `e-aae-a-loop-item`
+        // (see Widgets/LoopGrid/presets/) show here and replace the selected
+        // item on pick. Each widget carries its own copy of this stub class.
+        require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
 
         return [
             Section::make()
                 ->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
                 ->set_id( 'aae_presets' )
                 ->set_items( [
-                    \WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Preset_Picker_Control::make()
+                    AAE_A_Preset_Picker_Control::make()
                         ->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
                         ->set_meta( [ 'layout' => 'custom' ] ),
                 ] ),
 
             Section::make()
-                ->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+                ->set_id( 'settings' )
+                ->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
                 ->set_items( [
                     Link_Control::bind_to( 'link' )
                         ->set_label( __( 'Wrapper Link', 'animation-addons-for-elementor' ) )

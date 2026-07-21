@@ -60,6 +60,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			/* Set when the menu was populated via "Import from WordPress menu".
+			 * Binds this nav to that WP menu so the panel offers "Update from
+			 * WordPress" (id-based smart sync) instead of a duplicate import. */
+			'imported_menu_id' => String_Prop_Type::make()->default( '' ),
+			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
+			 * label of every item that has a dropdown (see injectDropdownIcons). */
+			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
+			'dropdown_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_enabled' => Boolean_Prop_Type::make()->default( false ),
 			'mobile_breakpoint' => String_Prop_Type::make()->default( '767' ),
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
@@ -114,6 +123,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 					AAE_A_Mobile_Nav_Lifecycle_Control::make()
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+			Section::make()
+				->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) )
+				->set_id( 'dropdown_icon_section' )
+				->set_items( [
+					Switch_Control::bind_to( 'show_dropdown_icon' )
+						->set_label( __( 'Show Icon on Dropdown Items', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'dropdown_icon' )
+						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
 				] ),
 			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )

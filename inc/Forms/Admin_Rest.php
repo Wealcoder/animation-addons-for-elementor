@@ -150,6 +150,17 @@ final class Admin_Rest {
 			]
 		);
 
+		// Distinct field keys/labels for ONE form — feeds the Submissions
+		// filter bar's "Field" dropdown once a form is selected.
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/form-fields',
+			$admin + [
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ self::class, 'form_fields' ],
+			]
+		);
+
 		register_rest_route(
 			Rest::REST_NAMESPACE,
 			'/admin/spam-log',
@@ -216,6 +227,27 @@ final class Admin_Rest {
 				'callback' => [ self::class, 'integration_lists' ],
 			]
 		);
+
+		// reCAPTCHA v3 — same free-shell/pro-capability split: free stores
+		// the site-key/secret-key pair and reports connection state; the
+		// real Google siteverify call lives in pro (Captcha::verify()).
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/recaptcha',
+			$admin + [
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => [ self::class, 'get_recaptcha' ],
+			]
+		);
+
+		register_rest_route(
+			Rest::REST_NAMESPACE,
+			'/admin/recaptcha/keys',
+			$admin + [
+				'methods'  => WP_REST_Server::CREATABLE,
+				'callback' => [ self::class, 'save_recaptcha_keys' ],
+			]
+		);
 	}
 
 	// ------------------------------------------------------------------
@@ -225,11 +257,16 @@ final class Admin_Rest {
 	/** Sanitized list filters from the request. */
 	private static function read_filters( WP_REST_Request $request ): array {
 		return [
-			'form_key' => sanitize_text_field( (string) $request->get_param( 'form_key' ) ),
-			'status'   => sanitize_text_field( (string) $request->get_param( 'status' ) ),
-			'from'     => sanitize_text_field( (string) $request->get_param( 'from' ) ),
-			'to'       => sanitize_text_field( (string) $request->get_param( 'to' ) ),
-			's'        => sanitize_text_field( (string) $request->get_param( 's' ) ),
+			'form_key'    => sanitize_text_field( (string) $request->get_param( 'form_key' ) ),
+			'status'      => sanitize_text_field( (string) $request->get_param( 'status' ) ),
+			'from'        => sanitize_text_field( (string) $request->get_param( 'from' ) ),
+			'to'          => sanitize_text_field( (string) $request->get_param( 'to' ) ),
+			's'           => sanitize_text_field( (string) $request->get_param( 's' ) ),
+			// Field-wise filter: ONE field key (e.g. "experience") + the value
+			// to match within it — distinct from `s`, which searches every
+			// field's value across the whole submission with no key filter.
+			'field_key'   => sanitize_text_field( (string) $request->get_param( 'field_key' ) ),
+			'field_value' => sanitize_text_field( (string) $request->get_param( 'field_value' ) ),
 		];
 	}
 
@@ -262,6 +299,19 @@ final class Admin_Rest {
 			// Find-by-value — incl. find-by-email for DSAR/support requests.
 			$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_value LIKE %s )";
 			$args[]  = '%' . $wpdb->esc_like( $filters['s'] ) . '%';
+		}
+		if ( '' !== $filters['field_key'] ) {
+			// Field-wise filter: match ONE field's value, not every field's
+			// (unlike `s` above). An empty field_value with a field_key set
+			// still narrows to submissions that HAVE that field at all.
+			if ( '' !== $filters['field_value'] ) {
+				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s AND field_value LIKE %s )";
+				$args[]  = $filters['field_key'];
+				$args[]  = '%' . $wpdb->esc_like( $filters['field_value'] ) . '%';
+			} else {
+				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s )";
+				$args[]  = $filters['field_key'];
+			}
 		}
 
 		$where_sql = implode( ' AND ', $where );
@@ -298,7 +348,7 @@ final class Admin_Rest {
 			foreach ( $value_rows as $value ) {
 				$sid = (int) $value->submission_id;
 				if ( count( $previews[ $sid ] ?? [] ) < 2 ) {
-					$previews[ $sid ][] = (string) $value->field_value;
+					$previews[ $sid ][] = self::preview_value( (string) $value->field_value );
 				}
 			}
 		}
@@ -359,6 +409,50 @@ final class Admin_Rest {
 		);
 	}
 
+	/**
+	 * Distinct field keys (+ their most recent label) submitted for ONE
+	 * form — feeds the Submissions filter bar's "Field" dropdown. Reads the
+	 * MAX(id)-per-key row so a renamed field (label changed after some
+	 * submissions) shows its current label, not a stale one.
+	 *
+	 * @return array<int,array{key:string,label:string}>
+	 */
+	public static function form_fields( WP_REST_Request $request ): WP_REST_Response {
+		global $wpdb;
+
+		$form_key = sanitize_text_field( (string) $request->get_param( 'form_key' ) );
+		if ( '' === $form_key ) {
+			return new WP_REST_Response( [ 'fields' => [] ], 200 );
+		}
+
+		$values      = Database::submission_values_table();
+		$submissions = Database::submissions_table();
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT v.field_key, v.field_label FROM ' . $values . ' v'
+				. ' INNER JOIN ' . $submissions . ' s ON s.id = v.submission_id'
+				. ' INNER JOIN ( SELECT field_key, MAX(id) AS max_id FROM ' . $values
+				. ' WHERE submission_id IN ( SELECT id FROM ' . $submissions . ' WHERE form_key = %s )'
+				. ' GROUP BY field_key ) latest ON latest.max_id = v.id'
+				. ' WHERE s.form_key = %s'
+				. ' ORDER BY v.field_key',
+				$form_key,
+				$form_key
+			)
+		);
+
+		$fields = array_map(
+			static fn( $row ) => [
+				'key'   => (string) $row->field_key,
+				'label' => '' !== (string) $row->field_label ? (string) $row->field_label : (string) $row->field_key,
+			],
+			(array) $rows
+		);
+
+		return new WP_REST_Response( [ 'fields' => $fields ], 200 );
+	}
+
 	public static function get_submission( WP_REST_Request $request ): WP_REST_Response {
 		global $wpdb;
 		$id = (int) $request['id'];
@@ -387,12 +481,22 @@ final class Admin_Rest {
 					'ip_hash'        => (string) $submission->ip_hash,
 				],
 				'values'     => array_map(
-					static fn( $v ) => [
-						'key'   => (string) $v->field_key,
-						'label' => '' !== (string) $v->field_label ? (string) $v->field_label : (string) $v->field_key,
-						'type'  => (string) $v->field_type,
-						'value' => (string) $v->field_value,
-					],
+					static function ( $v ) {
+						$entry = [
+							'key'   => (string) $v->field_key,
+							'label' => '' !== (string) $v->field_label ? (string) $v->field_label : (string) $v->field_key,
+							'type'  => (string) $v->field_type,
+							'value' => (string) $v->field_value,
+						];
+
+						// File fields store [{id,name,size},…] — resolve each to
+						// a download link through the auth proxy.
+						if ( 'file' === (string) $v->field_type ) {
+							$entry['files'] = self::file_links( (string) $v->field_value );
+						}
+
+						return $entry;
+					},
 					(array) $values
 				),
 				'logs'       => array_map(
@@ -407,6 +511,68 @@ final class Admin_Rest {
 			],
 			200
 		);
+	}
+
+	/**
+	 * List-preview form of a stored value: file-field JSON ([{id,name},…])
+	 * reads as the file names, everything else passes through as-is.
+	 */
+	private static function preview_value( string $value ): string {
+		if ( '' === $value || '[' !== $value[0] ) {
+			return $value;
+		}
+
+		$decoded = json_decode( $value, true );
+		if ( ! is_array( $decoded ) ) {
+			return $value;
+		}
+
+		$names = [];
+		foreach ( $decoded as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['name'] ) ) {
+				$names[] = (string) $entry['name'];
+			} elseif ( is_scalar( $entry ) ) {
+				$names[] = (string) $entry; // multi-select JSON arrays too.
+			}
+		}
+
+		return $names ? implode( ', ', $names ) : $value;
+	}
+
+	/**
+	 * File-field value JSON ([{id,name,size},…]) → download links for the
+	 * dashboard. The download proxy is a REST route (cookie auth), so a plain
+	 * <a href> must carry the wp_rest nonce as the _wpnonce query arg.
+	 *
+	 * @return array<int, array{id:int,name:string,size:int,url:string}>
+	 */
+	private static function file_links( string $value ): array {
+		$entries = json_decode( $value, true );
+		if ( ! is_array( $entries ) ) {
+			return [];
+		}
+
+		$links = [];
+		foreach ( $entries as $entry ) {
+			if ( ! is_array( $entry ) || empty( $entry['id'] ) ) {
+				continue;
+			}
+
+			$id = (int) $entry['id'];
+
+			$links[] = [
+				'id'   => $id,
+				'name' => (string) ( $entry['name'] ?? ( 'file-' . $id ) ),
+				'size' => (int) ( $entry['size'] ?? 0 ),
+				'url'  => add_query_arg(
+					'_wpnonce',
+					wp_create_nonce( 'wp_rest' ),
+					rest_url( Rest::REST_NAMESPACE . '/attachments/' . $id . '/download' )
+				),
+			];
+		}
+
+		return $links;
 	}
 
 	public static function delete_submissions( WP_REST_Request $request ): WP_REST_Response {
@@ -567,7 +733,33 @@ final class Admin_Rest {
 			];
 		}
 
-		return new WP_REST_Response( [ 'forms' => $out ], 200 );
+		return new WP_REST_Response(
+			[
+				'forms'  => $out,
+				'server' => self::server_health(),
+			],
+			200
+		);
+	}
+
+	/**
+	 * Server-level checks the dashboard surfaces above the per-form table.
+	 * The uploads dir ships a deny-all .htaccess, which nginx ignores — on
+	 * nginx the admin must add a location block, so say so with the snippet.
+	 */
+	private static function server_health(): array {
+		$software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) : '';
+		$is_nginx = false !== strpos( $software, 'nginx' );
+
+		$uploads = wp_upload_dir();
+		$dir     = trailingslashit( (string) $uploads['basedir'] ) . 'aae-forms';
+
+		return [
+			'software'           => $software,
+			'uploads_protection' => $is_nginx ? 'nginx_config_needed' : 'htaccess',
+			'has_uploads'        => is_dir( $dir ),
+			'nginx_snippet'      => 'location ^~ /wp-content/uploads/aae-forms/ { deny all; }',
+		];
 	}
 
 	// ------------------------------------------------------------------
@@ -594,6 +786,8 @@ final class Admin_Rest {
 				// Attributes for the editor mapping UI (empty until pro backs
 				// the id — the editor then shows the "requires Pro" state).
 				'attributes' => null !== $provider ? $provider::attributes() : [],
+				// "Where do I get this key?" text + link for the connect card.
+				'help'       => Integrations::help( $id ),
 			];
 		}
 
@@ -701,6 +895,58 @@ final class Admin_Rest {
 	}
 
 	// ------------------------------------------------------------------
+	// reCAPTCHA v3
+	// ------------------------------------------------------------------
+
+	/**
+	 * Current reCAPTCHA connection state for the dashboard connect card.
+	 * `pro` mirrors the Integrations pattern: true only when a real
+	 * verifier is registered (Captcha::verify() reports `available`).
+	 */
+	public static function get_recaptcha(): WP_REST_Response {
+		$has_verifier = is_callable( apply_filters( 'aae_form/recaptcha_verifier', null ) );
+
+		return new WP_REST_Response(
+			[
+				'pro'         => $has_verifier,
+				'connected'   => Captcha::has_keys(),
+				'site_key'    => Captcha::site_key(),
+				'secret_mask' => Captcha::mask_secret(),
+				'help'        => [
+					'text' => __( 'Create a reCAPTCHA v3 site in the Google admin console, then paste both keys here.', 'animation-addons-for-elementor' ),
+					'url'  => 'https://www.google.com/recaptcha/admin/create',
+				],
+			],
+			200
+		);
+	}
+
+	/**
+	 * Save (or clear) the site-key/secret-key pair. Free stores keys
+	 * unverified (no network call available); pro's verifier is only
+	 * exercised at actual submit time, not here — Google's siteverify API
+	 * has no "check this secret is valid" call without a real token.
+	 */
+	public static function save_recaptcha_keys( WP_REST_Request $request ): WP_REST_Response {
+		$site_key   = trim( (string) $request->get_param( 'site_key' ) );
+		$secret_key = trim( (string) $request->get_param( 'secret_key' ) );
+
+		Captcha::set_keys( $site_key, $secret_key );
+
+		return new WP_REST_Response(
+			[
+				'connected'   => Captcha::has_keys(),
+				'site_key'    => Captcha::site_key(),
+				'secret_mask' => Captcha::mask_secret(),
+				'message'     => Captcha::has_keys()
+					? __( 'Saved.', 'animation-addons-for-elementor' )
+					: __( 'Cleared.', 'animation-addons-for-elementor' ),
+			],
+			200
+		);
+	}
+
+	// ------------------------------------------------------------------
 	// CSV export (admin-post download)
 	// ------------------------------------------------------------------
 
@@ -757,7 +1003,9 @@ final class Admin_Rest {
 		foreach ( $rows as $row ) {
 			$line = [ $row->id, $row->form_key, $row->created_at, $row->status, $row->source_url ];
 			foreach ( array_keys( $columns ) as $key ) {
-				$line[] = $values_by_submission[ (int) $row->id ][ $key ] ?? '';
+				// Same humanizing as the list preview: file-field JSON → file
+				// names, multi-select JSON → joined values, plain text as-is.
+				$line[] = self::preview_value( (string) ( $values_by_submission[ (int) $row->id ][ $key ] ?? '' ) );
 			}
 			fputcsv( $out, $line, ',', '"', '\\' );
 		}
