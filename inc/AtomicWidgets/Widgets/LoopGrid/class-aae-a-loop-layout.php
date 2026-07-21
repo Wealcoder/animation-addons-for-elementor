@@ -21,6 +21,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -80,6 +81,8 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 					Style_Variant::make()
 						->add_prop( 'display', String_Prop_Type::generate( 'grid' ) )
 						->add_prop( 'grid-template-columns', String_Prop_Type::generate( 'repeat(3, 1fr)' ) )
+						->add_prop( 'gap', Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
+						 ->add_prop( 'padding', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 				),
 		];
 	}
