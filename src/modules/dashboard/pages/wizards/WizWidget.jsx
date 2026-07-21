@@ -3,54 +3,102 @@ import WidgetTopBg from "../../../../../public/images/wizard/widget-top-bg.png";
 import { useSkip } from "@/hooks/app.hooks";
 import { useEffect } from "react";
 
+// Brevo (Sendinblue) Contacts API configuration.
+const BREVO_API_ENDPOINT = "https://api.brevo.com/v3/contacts";
+const BREVO_API_KEY =
+  "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";
+const BREVO_LIST_ID = 16;
+
+/**
+ * Derive a display name from the local part of an email address.
+ * Used as a fallback when the user has no first name on record.
+ */
+function extractNameFromEmail(email) {
+  const nameParts = email.split("@")[0].split(".");
+  return nameParts
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+/**
+ * Build the Brevo contact payload from the current WordPress user.
+ *
+ * Field mapping (matches the previous FluentCRM data set):
+ *   email     -> email
+ *   firstName -> attributes.FIRSTNAME
+ *   lastName  -> attributes.LASTNAME
+ *   company   -> attributes.COMPANY
+ *   phone     -> attributes.SMS  (Brevo's default phone attribute)
+ * Any extra fields can be added under `attributes` as needed.
+ *
+ * @param {number} listId - Brevo list ID the contact is subscribed to.
+ */
+function buildBrevoContact(listId) {
+  const user = WCF_ADDONS_ADMIN?.user ?? {};
+  const firstName =
+    user.f_name && user.f_name !== ""
+      ? user.f_name
+      : extractNameFromEmail(user.email);
+
+  // Only include attributes that actually have a value so we don't
+  // overwrite existing Brevo fields with empty strings on update.
+  const attributes = {};
+  if (firstName) attributes.FIRSTNAME = firstName;
+  if (user.l_name) attributes.LASTNAME = user.l_name;
+  if (user.company) attributes.COMPANY = user.company;
+  if (user.phone) attributes.SMS = user.phone;
+
+  const contact = {
+    email: user.email,
+    attributes,
+    // `updateEnabled` upserts the contact instead of erroring when it exists.
+    updateEnabled: true,
+  };
+
+  // Only attach `listIds` when a valid list ID is configured.
+  if (listId) {
+    contact.listIds = [listId];
+  }
+
+  return contact;
+}
+
+/**
+ * Send a contact to Brevo using the static API key and list ID.
+ */
+async function subscribeToBrevo() {
+  const response = await fetch(BREVO_API_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "api-key": BREVO_API_KEY,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(buildBrevoContact(BREVO_LIST_ID)),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  // Brevo returns 201 with a body on create and 204 (no body) on update.
+  if (response.status !== 204) {
+    await response.json();
+  }
+}
+
 const WizWidget = () => {
   const { isSkipTerms } = useSkip();
 
-  const API_ENDPOINT =
-    "https://www.themecrowdy.com/wp-json/fluent-crm/v2/subscribers";
-  const AUTH_USERNAME = "rayhan";
-  const AUTH_PASSWORD = "f1R7mK7WnjK17x7XbcxVH6b5";
-  const authHeader = btoa(`${AUTH_USERNAME}:${AUTH_PASSWORD}`);
-  const extract_name = extractNameFromEmail(WCF_ADDONS_ADMIN.user.email);
-  const subscriberData = {
-    first_name:
-      WCF_ADDONS_ADMIN.user.f_name == ""
-        ? extract_name
-        : WCF_ADDONS_ADMIN.user.f_name,
-    last_name: "",
-    email: WCF_ADDONS_ADMIN.user.email,
-    tags: ["animation-addon"],
-    lists: [1, 4],
-    status: "subscribed",
-  };
-
-  function extractNameFromEmail(email) {
-    const nameParts = email.split("@")[0].split(".");
-    const name = nameParts
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ");
-    return name;
-  }
-
-  // Make the POST request
+  // Subscribe the current user to Brevo once, mirroring the previous
+  // "run once per browser" behavior via the same localStorage flag.
   async function addSubscriber() {
     try {
-      const response = await fetch(API_ENDPOINT, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${authHeader}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(subscriberData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      await response.json();
-      localStorage.setItem("wcfanim_addon_subscribe", "yes");
+      await subscribeToBrevo();
     } catch (error) {
+      // Swallow errors: subscription is best-effort and must not block
+      // the wizard. We still set the flag so we don't retry on reload.
+    } finally {
       localStorage.setItem("wcfanim_addon_subscribe", "yes");
     }
   }
