@@ -60,7 +60,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 	public function get_icon()
 	{
-		return 'wcf-icon-Button';
+		return 'eicon-button';
 	}
 
 	public function get_keywords()
