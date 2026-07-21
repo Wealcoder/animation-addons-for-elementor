@@ -1056,7 +1056,7 @@ const IntegrationCard = ({ item, onChanged }) => {
   };
 
   return (
-    <div className="rounded-xl border bg-background p-5 transition-shadow hover:shadow-widget-card">
+    <div className="min-w-0 rounded-xl border bg-background p-5 transition-shadow hover:shadow-widget-card">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFA184] to-[#F2754F] text-white shadow-[0_2px_8px_rgba(246,80,44,0.35)]">
@@ -1117,18 +1117,21 @@ const IntegrationCard = ({ item, onChanged }) => {
 
       <div className="mt-4">
         {connected && !editing ? (
-          <div className="flex items-center gap-2">
-            <code className="flex-1 rounded-lg border bg-background-secondary px-3 py-2 text-sm tracking-wide text-text-secondary">
+          <div className="flex flex-wrap items-center gap-2">
+            <code
+              className="min-w-0 flex-1 truncate rounded-lg border bg-background-secondary px-3 py-2 text-sm tracking-wide text-text-secondary"
+              title={item.key_mask}
+            >
               {item.key_mask}
             </code>
-            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+            <Button variant="outline" size="sm" className="shrink-0" onClick={() => setEditing(true)}>
               {__("Change", "animation-addons-for-elementor")}
             </Button>
             <Button
               variant="outline"
               size="sm"
               disabled={saving}
-              className="text-red-600 hover:border-red-300 hover:text-red-700"
+              className="shrink-0 text-red-600 hover:border-red-300 hover:text-red-700"
               onClick={() => save("")}
             >
               {__("Disconnect", "animation-addons-for-elementor")}
@@ -1146,7 +1149,7 @@ const IntegrationCard = ({ item, onChanged }) => {
               )}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="flex-1"
+              className="min-w-0 flex-1"
             />
             <Button
               size="sm"
@@ -1223,7 +1226,7 @@ const RecaptchaCard = ({ item, onChanged }) => {
   };
 
   return (
-    <div className="rounded-xl border bg-background p-5 transition-shadow hover:shadow-widget-card">
+    <div className="min-w-0 rounded-xl border bg-background p-5 transition-shadow hover:shadow-widget-card">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFA184] to-[#F2754F] text-white shadow-[0_2px_8px_rgba(246,80,44,0.35)]">
@@ -1286,18 +1289,21 @@ const RecaptchaCard = ({ item, onChanged }) => {
 
       <div className="mt-4 space-y-2">
         {connected && !editing ? (
-          <div className="flex items-center gap-2">
-            <code className="flex-1 rounded-lg border bg-background-secondary px-3 py-2 text-sm tracking-wide text-text-secondary">
+          <div className="flex flex-wrap items-center gap-2">
+            <code
+              className="min-w-0 flex-1 truncate rounded-lg border bg-background-secondary px-3 py-2 text-sm tracking-wide text-text-secondary"
+              title={item.site_key}
+            >
               {item.site_key}
             </code>
-            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+            <Button variant="outline" size="sm" className="shrink-0" onClick={() => setEditing(true)}>
               {__("Change", "animation-addons-for-elementor")}
             </Button>
             <Button
               variant="outline"
               size="sm"
               disabled={saving}
-              className="text-red-600 hover:border-red-300 hover:text-red-700"
+              className="shrink-0 text-red-600 hover:border-red-300 hover:text-red-700"
               onClick={disconnect}
             >
               {__("Disconnect", "animation-addons-for-elementor")}
@@ -1319,7 +1325,7 @@ const RecaptchaCard = ({ item, onChanged }) => {
                 placeholder={__("Secret key", "animation-addons-for-elementor")}
                 value={secretKey}
                 onChange={(e) => setSecretKey(e.target.value)}
-                className="flex-1"
+                className="min-w-0 flex-1"
               />
               <Button
                 size="sm"
@@ -1438,7 +1444,10 @@ const Submissions = () => {
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-6">
-        <TabsList>
+        {/* Scrolls within itself on narrow screens — 5 tabs are wider than a
+            phone, and letting them overflow shoves the whole dashboard
+            sideways inside the page's overflow-x-hidden container. */}
+        <TabsList className="max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="submissions" className={tabClass}>
             {__("Submissions", "animation-addons-for-elementor")}
           </TabsTrigger>

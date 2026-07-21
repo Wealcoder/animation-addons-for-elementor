@@ -303,6 +303,23 @@ final class Assets
 				'is_pro' => defined( 'WCF_ADDONS_PRO_FILE' ),
 			]
 		);
+
+		// Remote preset system config — read by PresetPickerControl.jsx /
+		// preset-apply.js's ensurePresetsLoaded(), both of which ship inside
+		// THIS bundle (src/modules/atomic/editor-bridge.js). Must be
+		// localized onto this handle, not 'aae-atomic-editor' (a separate,
+		// unrelated small bundle — see class-atomic.php's
+		// enqueue_atomic_editor_scripts()).
+		wp_localize_script(
+			self::HANDLE . '-editor-bridge',
+			'AAE_PRESET_CONFIG',
+			[
+				'restUrl'          => esc_url_raw( rest_url( 'aae/v1/presets' ) ),
+				'nonce'            => wp_create_nonce( 'wp_rest' ),
+				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
+				'placeholderThumb' => WCF_ADDONS_URL . 'assets/images/preset-placeholder.png',
+			]
+		);
 	}
 
 	private function load_asset(string $entry, array $manual_deps = []): array

@@ -87,6 +87,7 @@ final class Validator {
 					$clean[ $key ] = $value;
 					break;
 
+				case 'country': // identical mechanics to a single select: required + options whitelist.
 				case 'select':
 					$allowed  = self::parse_options( (string) ( $field['options'] ?? '' ) );
 					$multiple = ! empty( $field['multiple'] );
@@ -161,6 +162,12 @@ final class Validator {
 						break;
 					}
 
+					$extra_error = self::extra_value_error( $value, $field, $posted, $schema );
+					if ( null !== $extra_error ) {
+						$errors[ $key ] = $extra_error;
+						break;
+					}
+
 					$clean[ $key ] = $value;
 					break;
 
@@ -180,6 +187,54 @@ final class Validator {
 					if ( null !== $range_error ) {
 						$errors[ $key ] = $range_error;
 						break;
+					}
+
+					$clean[ $key ] = $value;
+					break;
+
+				case 'password':
+					// NOT sanitize_text_field: that strips characters that are
+					// perfectly legal (and desirable) in a password. The value
+					// is never rendered as HTML — it is either discarded or
+					// one-way hashed by Rest.php before storage — so it only
+					// needs to be a string, not display-safe.
+					$value = is_scalar( $value ) ? (string) $value : '';
+
+					if ( '' === $value ) {
+						if ( $field['required'] ) {
+							$errors[ $key ] = self::msg_required( $field );
+						}
+						break;
+					}
+
+					if ( mb_strlen( $value ) > self::MAX_SINGLE_LINE ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					$min_length = (int) ( $field['min_length'] ?? 0 );
+					if ( $min_length > 0 && mb_strlen( $value ) < $min_length ) {
+						$errors[ $key ] = self::msg_invalid( $field );
+						break;
+					}
+
+					// Confirm-match: this field must equal the field whose
+					// _cssid it names. Re-checked here because the frontend
+					// check alone is never trusted.
+					$match_field = (string) ( $field['match_field'] ?? '' );
+					if ( '' !== $match_field ) {
+						$other_key = self::key_for_css_id( $match_field, $schema );
+						$other_val = null !== $other_key && isset( $posted[ $other_key ] ) && is_scalar( $posted[ $other_key ] )
+							? (string) $posted[ $other_key ]
+							: '';
+
+						if ( ! hash_equals( $other_val, $value ) ) {
+							$mismatch = (string) ( $field['mismatch_message'] ?? '' );
+							$errors[ $key ] = '' !== $mismatch
+								? $mismatch
+								: __( 'Passwords do not match.', 'animation-addons-for-elementor' );
+							break;
+						}
 					}
 
 					$clean[ $key ] = $value;
@@ -209,6 +264,34 @@ final class Validator {
 					$clean[ $key ] = $value;
 					break;
 
+				case 'calculation':
+					// The posted value is DISCARDED — this field's value is
+					// derived, so the server recomputes it from the other
+					// posted values using the formula in the schema snapshot.
+					// A visitor editing the hidden input in DevTools therefore
+					// changes nothing about what gets stored or emailed.
+					//
+					// Deliberately never an error: an uncomputable formula
+					// (empty inputs, division by zero, a typo the builder left
+					// behind) stores nothing rather than blocking a submission
+					// the visitor cannot fix.
+					$computed = Formula::evaluate( (string) ( $field['formula'] ?? '' ), $posted );
+
+					if ( null !== $computed ) {
+						$formatted     = Formula::format( $computed, (int) ( $field['decimals'] ?? 2 ) );
+						$clean[ $key ] = $formatted;
+
+						// Feed the result back into the working payload so a
+						// LATER calculation can reference this one
+						// ({subtotal} → {rush_surcharge} → {project_total}).
+						// Fields are grouped in document order, so a formula
+						// may only read calculations declared above it — the
+						// same order the frontend resolves them in, and the
+						// reason a circular reference is impossible.
+						$posted[ $key ] = $formatted;
+					}
+					break;
+
 				default: // input family: text / email / number / tel / url / password.
 					$value = sanitize_text_field( self::scalar( $value ) );
 
@@ -230,6 +313,12 @@ final class Validator {
 						break;
 					}
 
+					$extra_error = self::extra_value_error( $value, $field, $posted, $schema );
+					if ( null !== $extra_error ) {
+						$errors[ $key ] = $extra_error;
+						break;
+					}
+
 					$clean[ $key ] = $value;
 			}
 		}
@@ -238,6 +327,30 @@ final class Validator {
 			'clean'  => $clean,
 			'errors' => $errors,
 		];
+	}
+
+	/**
+	 * Extension point for value checks BEYOND the built-in ones — runs for
+	 * text-like fields (input family + textarea) only after every built-in
+	 * check passed. Mirrors the frontend's 'aae_form/validate/value_error'
+	 * JS filter: backend validation must repeat whatever an extension
+	 * enforces client-side (the pro Validation module's regex rules hook
+	 * here).
+	 */
+	private static function extra_value_error( string $value, array $field, array $posted, array $schema ): ?string {
+		/**
+		 * Fail a value that passed the built-in checks. Return a message
+		 * string to reject it, or null (the default) to accept.
+		 *
+		 * @param string|null $error  Default null (passes).
+		 * @param string      $value  Sanitized posted value.
+		 * @param array       $field  Schema field entry.
+		 * @param array       $posted Full posted payload.
+		 * @param array       $schema Active schema snapshot.
+		 */
+		$error = apply_filters( 'aae_form/validator/value_error', null, $value, $field, $posted, $schema );
+
+		return is_string( $error ) && '' !== $error ? $error : null;
 	}
 
 	/** Per-type format checks; null means the value passes. */
@@ -363,6 +476,58 @@ final class Validator {
 		}
 
 		return $groups;
+	}
+
+	/**
+	 * Resolve a field's posted KEY from its _cssid — the password widget's
+	 * "Must match field ID" names the partner by CSS id, but the payload is
+	 * keyed by the field key (name → _cssid → element id).
+	 */
+	private static function key_for_css_id( string $css_id, array $schema ): ?string {
+		foreach ( (array) ( $schema['fields'] ?? [] ) as $field ) {
+			if ( is_array( $field ) && $css_id === (string) ( $field['css_id'] ?? '' ) ) {
+				return (string) ( $field['key'] ?? '' );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Replace every password value with what may actually be persisted /
+	 * handed to actions, per that field's `store_mode`:
+	 *
+	 *   never (default) — a fixed mask; the real value never leaves this
+	 *                     request.
+	 *   hash            — a one-way wp_hash_password() digest.
+	 *
+	 * Called by Rest.php on the Validator's `clean` output BEFORE storage,
+	 * the submission_validated/submission_saved hooks and the action queue,
+	 * so no downstream consumer (DB, admin email, webhook, CSV export) can
+	 * ever see a readable password — there is deliberately no opt-out.
+	 *
+	 * @param array $clean  Validator 'clean' output.
+	 * @param array $schema Active schema snapshot.
+	 *
+	 * @return array `clean` with password values redacted.
+	 */
+	public static function redact_passwords( array $clean, array $schema ): array {
+		foreach ( (array) ( $schema['fields'] ?? [] ) as $field ) {
+			if ( ! is_array( $field ) || 'password' !== ( $field['type'] ?? '' ) ) {
+				continue;
+			}
+
+			$key = (string) ( $field['key'] ?? '' );
+			if ( '' === $key || ! isset( $clean[ $key ] ) ) {
+				continue;
+			}
+
+			$clean[ $key ] = 'hash' === ( $field['store_mode'] ?? 'never' )
+				? wp_hash_password( (string) $clean[ $key ] )
+				: '********';
+		}
+
+		return $clean;
 	}
 
 	/** Mirror of the select twig's options parsing: "value|Label" per line. */

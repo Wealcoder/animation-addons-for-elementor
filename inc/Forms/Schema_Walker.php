@@ -40,6 +40,9 @@ final class Schema_Walker {
 		'e-aae-a-form-file'     => 'file',
 		'e-aae-a-form-rating'   => 'rating',
 		'e-aae-a-form-range'    => 'range',
+		'e-aae-a-form-country'  => 'country',
+		'e-aae-a-form-password' => 'password',
+		'e-aae-a-form-calculation' => 'calculation',
 	];
 
 	/** Build the canonical schema array for one form element. */
@@ -224,6 +227,32 @@ final class Schema_Walker {
 				// not a submission-security concern, so it isn't in the schema.
 				$field['min'] = (string) Prop::read( $settings, 'min', '0' );
 				$field['max'] = (string) Prop::read( $settings, 'max', '100' );
+				break;
+			case 'password':
+				// Rules the Validator re-checks server-side (never trusted
+				// from client attributes), plus the storage policy that
+				// decides what — if anything — is persisted. `store_mode` has
+				// no 'plain' value by design: a password field's value is
+				// never stored or sent readable.
+				$field['min_length'] = (string) Prop::read( $settings, 'min_length', '' );
+				$field['match_field'] = (string) Prop::read( $settings, 'match_field', '' );
+				$field['store_mode'] = 'hash' === Prop::read( $settings, 'store_mode', 'never' ) ? 'hash' : 'never';
+				$field['mismatch_message'] = (string) Prop::read( $settings, 'mismatch_message', '' );
+				break;
+			case 'country':
+				// Same whitelist mechanics as select. The fallback mirrors the
+				// widget's own `options` default (the built-in ISO list) so an
+				// untouched field still snapshots the full server-side whitelist
+				// instead of an empty one.
+				$field['options'] = (string) Prop::read( $settings, 'options', Countries::options_string() );
+				break;
+			case 'calculation':
+				// The formula is the ONLY thing that decides this field's value:
+				// the Validator recomputes it from the other posted values and
+				// ignores whatever the browser sent, so editing the hidden input
+				// in DevTools can't change what gets stored.
+				$field['formula']  = (string) Prop::read( $settings, 'formula', '' );
+				$field['decimals'] = (int) Prop::read( $settings, 'decimals', 2 );
 				break;
 		}
 

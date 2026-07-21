@@ -126,6 +126,12 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\StyleManager\Preset_Styles() )->register();
 
 		( new Assets() )->register();
+
+		// Remote preset system — "Presets" panel section for native atomic
+		// widgets, and the same-origin proxy route the editor's JS fetches
+		// (merges remote + local presets; see Atomic\Presets\Cache).
+		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
+		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
 	}
 
 	public static function target_element_types(): array {
