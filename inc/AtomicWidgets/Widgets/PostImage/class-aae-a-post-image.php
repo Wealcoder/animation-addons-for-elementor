@@ -128,6 +128,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
+				->set_id( 'settings' )
 				->set_label( __( 'Image Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [
 					Select_Control::bind_to( 'object_fit' )
