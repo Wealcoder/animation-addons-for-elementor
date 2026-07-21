@@ -66,7 +66,7 @@ class AAE_A_Post_Card extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'widget', 'e-image', 'e-heading', 'e-paragraph', 'e-svg' ];
+		return [ 'widget', 'e-image', 'e-heading', 'e-paragraph', 'e-svg', 'e-aae-a-btn' ];
 	}
 
 	protected function define_default_children(): array {
