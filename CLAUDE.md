@@ -1953,8 +1953,10 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
 ```
 
 - **What it is:** `github.com/elementor/elementor`, branch `main` — the
-  development version (e.g. 4.3.0 while the installed runtime plugin
-  `elementor/` is 4.1.4). `git log` / `git pull` it to track upcoming
+  development version, generally ahead of the installed runtime plugin
+  `elementor/` (installed is 4.2.0 as of 2026-07-21 — this is when `e-grid`
+  shipped in core and became live, see [Adding a new effect](#adding-a-new-effect)'s
+  `e-grid` mentions). `git log` / `git pull` it to track upcoming
   architecture. This is the source of truth for **Atomic v4** APIs.
 - **Where to look:**
   - PHP atomic core: `modules/atomic-widgets/` — prop types
