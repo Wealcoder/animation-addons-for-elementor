@@ -106,9 +106,11 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     /**
-     * Default card sizing: each Loop Item is a flex child of the Loop Layout
-     * (display:flex + wrap), sized `flex: 1 1 32%` -> a 3-column "grid" built
-     * with flexbox. Editable from the Style panel.
+     * Default card sizing: each Loop Item is now a CSS-grid child of the Loop
+     * Layout (display:grid; grid-template-columns), so column sizing is owned
+     * by the parent's grid-template-columns rather than a per-item flex-basis.
+     * Still a flex column internally so the card's own content (image/title/
+     * etc.) stacks top-to-bottom.
      *
      * IMPORTANT: the atomic style schema has NO `flex-grow` / `flex-shrink` /
      * `flex-basis` keys — only the `flex` shorthand (Flex_Prop_Type, see
@@ -124,11 +126,6 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                         ->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
                         ->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
                         ->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
-                        ->add_prop( 'flex', Flex_Prop_Type::generate( [
-                            'flexGrow'   => Number_Prop_Type::generate( 1 ),
-                            'flexShrink' => Number_Prop_Type::generate( 1 ),
-                            'flexBasis'  => Size_Prop_Type::generate( [ 'size' => 32, 'unit' => '%' ] ),
-                        ] ) )
                 )
         ];
     }
