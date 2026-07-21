@@ -90,7 +90,8 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                 ] ),
 
             Section::make()
-                ->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+                ->set_id( 'settings' )
+                ->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
                 ->set_items( [
                     Link_Control::bind_to( 'link' )
                         ->set_label( __( 'Wrapper Link', 'animation-addons-for-elementor' ) )
