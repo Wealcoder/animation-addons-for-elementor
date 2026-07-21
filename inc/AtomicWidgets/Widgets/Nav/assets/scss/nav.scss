@@ -238,6 +238,21 @@
 		min-block-size: 0 !important;
 	}
 
+	/* Same core rule, but bubbling UP: when the Nav is dropped INTO another atomic
+	 * container (e.g. a Flexbox), that WRAPPER matches
+	 * `.e-atomic-element:has(.elementor-empty-view){min-height:120px}` too —
+	 * because the Nav's descendant nav-items each carry an editor empty-view and
+	 * `:has()` reaches any depth, so the phantom 120px bubbles up to every ancestor
+	 * of the Nav and balloons the wrapper on the canvas. The rules above only fix
+	 * the Nav's INSIDES (they're scoped under `.aae-a-nav`); this cancels it on any
+	 * atomic container that CONTAINS a Nav. No `!important`, so a min-height the
+	 * user deliberately sets on the wrapper (equal/higher specificity) still wins —
+	 * this only out-specifies core's (0,2,0) phantom rule. */
+	.e-atomic-element:has(.aae-a-nav) {
+		min-height: 0;
+		min-block-size: 0;
+	}
+
 	/* Reveal a dropdown when its item is open / selected / contains the
 	 * selection (any depth). Editor-only + behavioral → !important is safe and
 	 * matches the inline styles nav.js sets. */
