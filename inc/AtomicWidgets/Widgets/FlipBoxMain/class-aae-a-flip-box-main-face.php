@@ -85,7 +85,7 @@ class AAE_A_Flip_Box_Main_Face extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading', 'e-image', 'e-button', 'e-aae-a-button' ];
+		return [ 'widget', 'e-svg', 'e-paragraph', 'e-heading', 'e-image', 'e-button' ];
 	}
 
 	public static function build_default_children( string $title = 'Title', string $content = 'Add your content here.' ): array {

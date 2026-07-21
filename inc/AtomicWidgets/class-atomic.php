@@ -2463,18 +2463,6 @@ final class Atomic
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
 			'has_script' => false,
 		],
-		'aae-a-social-share-main' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main',
-			'file'          => 'Widgets/SocialShareMain/class-aae-a-social-share-main.php',
-			'script_handle' => 'aae-a-social-share-main-js',
-			'script_path'   => '/assets/atomic/js/social-share-main.js',
-			'has_script'    => true,
-		],
-		'aae-a-social-share-main-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main_Item',
-			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
-			'has_script' => false,
-		],
 		'aae-a-image-compare' => [
 			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
 			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
@@ -2483,16 +2471,6 @@ final class Atomic
 			'has_script' => true,
 			'style_handle' => 'aae-a-image-compare-css',
 			'style_path' => '/assets/atomic/js/image-compare.css',
-		],
-		'aae-a-image-compare-main' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompareMain\AAE_A_Image_Compare_Main',
-			'file' => 'Widgets/ImageCompareMain/class-aae-a-image-compare-main.php',
-			'script_handle' => 'aae-a-image-compare-main-js',
-			'script_path' => '/assets/atomic/js/image-compare-main.js',
-			'has_script' => true,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + the inline <style>
-			// block of the Twig template. No `style_handle`/`style_path`.
 		],
 		'aae-a-countdown' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
@@ -2535,16 +2513,6 @@ final class Atomic
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
-			'aae-a-button' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
-				'file'          => 'Widgets/Button/class-aae-a-button.php',
-				'script_handle' => 'aae-a-button-js',
-				'script_path'   => '/assets/atomic/js/button.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-button-css',
-				'style_path'    => '/assets/atomic/js/button.css',
-			],
-
 			'aae-a-btn' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
 				'file'          => 'Widgets/Btn/class-aae-a-btn.php',
@@ -2584,16 +2552,6 @@ final class Atomic
 				'style_path'    => '/assets/atomic/js/progressbar.css',
 			],
 
-			'aae-a-progressbar-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
-				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
-				'script_handle' => 'aae-a-progressbar-main-js',
-				'script_path'   => '/assets/atomic/js/progressbar-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-progressbar-main-css',
-				'style_path'    => '/assets/atomic/js/progressbar-main.css',
-			],
-
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -2607,22 +2565,6 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
-				'has_script' => false,
-			],
-
-			'aae-a-toggle-switcher-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
-				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
-				'script_handle' => 'aae-a-toggle-switcher-main-js',
-				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-toggle-switcher-main-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
-			],
-
-			'aae-a-toggle-pane-main' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
-				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
@@ -2781,17 +2723,6 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
 			'has_script' => false,
-		],
-
-		'aae-a-button-pro'  => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ButtonPro\AAE_A_Button_Pro',
-			'file'          => 'Widgets/ButtonPro/class-aae-a-button-pro.php',
-			'script_handle' => 'aae-a-button-pro-js',
-			'script_path'   => '/assets/atomic/js/button-pro.js',
-			'script_deps'   => [ 'gsap' ],
-			'has_script'    => true,
-			'style_handle'  => 'aae-a-button-pro-css',
-			'style_path'    => '/assets/atomic/js/button-pro.css',
 		],
 
 		// Add new atomic widgets below...
