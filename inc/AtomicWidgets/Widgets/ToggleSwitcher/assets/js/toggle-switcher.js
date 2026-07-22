@@ -90,7 +90,40 @@ initAllSwitchers();
 // and can also replace a widget's markup on selection/setting changes,
 // wiping the pane's inline display override. Disconnect while mutating so
 // this observer doesn't react to its own changes.
+//
+// Last-resort safety net: initAllSwitchers() is meant to be idempotent (a
+// no-op once every switcher's state matches), so this should settle almost
+// immediately. But if the DOM never settles — e.g. something else keeps
+// mutating document.body in response to our own writes — this fires in a
+// tight synchronous loop and hangs the tab. This exact failure already hit
+// the Btn and Btn Pro bundles (see their REINIT_BURST_LIMIT comments); cap
+// how many times we're willing to re-run inside a short burst and fall back
+// to a slow interval instead of spinning forever.
+const REINIT_BURST_LIMIT = 30;
+const REINIT_BURST_WINDOW_MS = 1000;
+let reinitBurstCount = 0;
+let reinitBurstStart = 0;
+
 const tsObserver = new MutationObserver(() => {
+  const now = Date.now();
+  if (now - reinitBurstStart > REINIT_BURST_WINDOW_MS) {
+    reinitBurstStart = now;
+    reinitBurstCount = 0;
+  }
+  reinitBurstCount += 1;
+
+  if (reinitBurstCount > REINIT_BURST_LIMIT) {
+    tsObserver.disconnect();
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[AAE Toggle Switcher] DOM re-init loop exceeded ' + REINIT_BURST_LIMIT +
+      ' runs/second — disabling the live observer to avoid hanging the tab. ' +
+      'Falling back to a periodic rescan every 2s.'
+    );
+    setInterval(initAllSwitchers, 2000);
+    return;
+  }
+
   tsObserver.disconnect();
   initAllSwitchers();
   tsObserver.observe(document.body, { childList: true, subtree: true });
