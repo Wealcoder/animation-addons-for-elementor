@@ -1,6 +1,8 @@
 {% set position = settings.position | default('left') %}
-{% set editor_open = (settings.editor_open is defined and settings.editor_open == true) ? 'is-open' : '' %}
-{% set classes = ['aae-a-offcanvas', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'position-' ~ position, editor_open] | merge(settings.classes | default([])) | join(' ') | trim %}
+{# The "Preview Open (Editor)" reveal is applied by offcanvas.js (editor
+   reconciler), NOT here: the atomic Switch commits without re-rendering this
+   Twig, so a {% if editor_open %} reveal would go stale on every live toggle. #}
+{% set classes = ['aae-a-offcanvas', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'position-' ~ position] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -39,17 +41,6 @@
         [data-id="{{ id }}"] .aae-offcanvas-shell {
             transform: translateX(-100%);
         }
-        {% if editor_open %}
-        [data-id="{{ id }}"] .aae-offcanvas-shell {
-            visibility: visible;
-            pointer-events: auto;
-            display: flex;
-            position: relative;
-            transform: none;
-            width: 100%;
-            margin-top: 16px;
-        }
-        {% endif %}
     </style>
 
     {% set trigger_icon_url = settings.trigger_icon.url | default('') %}
