@@ -52,6 +52,11 @@ final class Atomic
 	 *   'default'     => bool     Default enabled state (on fresh install),
 	 *   'keywords'    => string[] Search keywords,
 	 *   'category'    => string   Widget group for dashboard display,
+	 *   'is_internal' => bool     Optional. True hides this entry from the
+	 *                             dashboard widget list entirely — for
+	 *                             sub-elements of a composite widget (e.g. a
+	 *                             Flip Box's Front/Back/Title/Text) that
+	 *                             should never be individually toggled.
 	 * ]
 	 *
 	 * @var array
@@ -274,7 +279,10 @@ final class Atomic
 			'aae-a-toggle-pane-title',
 			'aae-a-toggle-pane-desc',
 			'aae-a-video-mask-btn',
-			'aae-a-flip-box-main-face',
+			'aae-a-flip-box-front',
+			'aae-a-flip-box-back',
+			'aae-a-flip-box-title',
+			'aae-a-flip-box-text',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-offcanvas-trigger',
@@ -427,6 +435,13 @@ final class Atomic
 		$widgets = [];
 
 		foreach ($this->widgets_registry as $slug => $def) {
+			// Sub-elements of a composite widget (e.g. Flip Box's own
+			// Front/Back/Title/Text) are never individually toggleable —
+			// keep them out of the dashboard list entirely.
+			if (! empty($def['is_internal'])) {
+				continue;
+			}
+
 			$widgets[$slug] = array_merge($def, [
 				'is_active' => isset($saved[$slug]),
 			]);
@@ -2124,42 +2139,66 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-flip-box-main' => [
-				'label'        => 'Flip Box Main',
-				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
-				'icon'         => 'eicon-flip-box',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'flip',
-					'box',
-					'card',
-					'hover',
-					'atomic',
-					'animation',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-flip-box-main-face' => [
-				'label'        => 'Flip Box Main Face (Internal)',
-				'description'  => 'Internal front/back face container for Flip Box Main.',
+			'aae-a-flip-box-front' => [
+				'label'        => 'Flip Box Front (Internal)',
+				'description'  => 'Internal front face container for the AAE Flip Box.',
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
-				'keywords'     => [
-					'flip face',
-					'internal',
-				],
+				'keywords'     => [ 'flip face', 'internal' ],
 				'category'     => 'general',
-				'order'        => 16,
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-back' => [
+				'label'        => 'Flip Box Back (Internal)',
+				'description'  => 'Internal back face container for the AAE Flip Box.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip face', 'internal' ],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-title' => [
+				'label'        => 'Flip Box Title (Internal)',
+				'description'  => 'Internal face title used by the AAE Flip Box front/back faces.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip title', 'internal' ],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-text' => [
+				'label'        => 'Flip Box Text (Internal)',
+				'description'  => 'Internal face body copy used by the AAE Flip Box front/back faces.',
+				'icon'         => 'eicon-paragraph',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip text', 'internal' ],
+				'category'     => 'general',
+				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -3291,19 +3330,27 @@ final class Atomic
 			'style_path'    => '/assets/atomic/js/flip-box.css',
 		],
 
-		'aae-a-flip-box-main' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main',
-			'file'          => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main.php',
-			'script_handle' => 'aae-a-flip-box-main-js',
-			'script_path'   => '/assets/atomic/js/flip-box-main.js',
-			'has_script'    => true,
-			'style_handle'  => 'aae-a-flip-box-main-css',
-			'style_path'    => '/assets/atomic/js/flip-box-main.css',
+		'aae-a-flip-box-front' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Front',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php',
+			'has_script' => false,
 		],
 
-		'aae-a-flip-box-main-face' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main_Face',
-			'file'       => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main-face.php',
+		'aae-a-flip-box-back' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Back',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php',
+			'has_script' => false,
+		],
+
+		'aae-a-flip-box-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Title',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php',
+			'has_script' => false,
+		],
+
+		'aae-a-flip-box-text' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Text',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-text.php',
 			'has_script' => false,
 		],
 
