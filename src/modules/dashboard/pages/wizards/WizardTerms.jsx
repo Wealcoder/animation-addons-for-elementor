@@ -15,7 +15,7 @@ import { useState } from "react";
 // Brevo, so the key is never exposed in this bundle.
 //
 // Local testing (Animation Addons Lead Relay plugin on this site):
-const LEADS_API_ENDPOINT = "http://animation.test/wp-json/leads/v1/subscribe";
+const LEADS_API_ENDPOINT = "https://bricksfly.com/wp-json/leads/v1/subscribe";
 // Production (swap to this once the relay is live on your domain):
 // const LEADS_API_ENDPOINT = "https://api.animationaddons.com/v1/leads";
 
