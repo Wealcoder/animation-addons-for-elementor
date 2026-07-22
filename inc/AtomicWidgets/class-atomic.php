@@ -276,7 +276,6 @@ final class Atomic
 			'aae-a-offcanvas-trigger',
 			'aae-a-offcanvas-close',
 			'aae-a-timeline-item',
-			'aae-a-timeline-main-item',
 			'aae-a-social-share-main-item',
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
@@ -1313,49 +1312,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 14,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-timeline-main' => [
-				'label'        => 'Timeline Main',
-				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
-				'icon'         => 'eicon-time-line',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'history',
-					'roadmap',
-					'atomic',
-					'composite',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-timeline-main-item' => [
-				'label'        => 'Timeline Main — Item',
-				'description'  => 'Internal event-row sub-element used by Timeline Main (marker + date + title + description).',
-				'icon'         => 'eicon-bullet-list',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'item',
-					'event',
-					'atomic',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 16,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2829,20 +2785,6 @@ final class Atomic
 		'aae-a-timeline-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
-			'has_script' => false,
-		],
-		'aae-a-timeline-main' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main',
-			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main.php',
-			'has_script' => false,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + a tiny inline
-			// <style> in the item Twig for the spine shorthand + the
-			// marker's negative-inset positioning. No `style_handle`.
-		],
-		'aae-a-timeline-main-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main_Item',
-			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main-item.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
