@@ -69,7 +69,6 @@ const WizardTerms = () => {
 
     if (isChecking && !hasSubscribed && localStorage.getItem("wcfanim_addon_subscribe") !== "yes") {
       const payload = buildLeadPayload();
-      console.log("📦 Lead payload:", payload);
 
       try {
         const response = await fetch(LEADS_API_ENDPOINT, {
