@@ -85,6 +85,34 @@ document.addEventListener(
 // Run once for whatever is already in the DOM…
 initAllSwitchers();
 
+// True if this mutation batch actually added a switcher node, OR added
+// content inside an already-existing switcher (Elementor frequently mounts
+// the .aae-a-toggle-switcher wrapper first and renders its .aae-ts-pane
+// content in as a later, separate mutation — that content isn't itself a
+// switcher and doesn't contain one, so it only shows up via `closest`).
+// Elementor's editor canvas mutates the DOM constantly for reasons that have
+// nothing to do with this widget (typing, hovering, selecting other
+// elements) — without this check, every single one of those unrelated
+// mutations still pays for a full document.body disconnect + querySelectorAll
+// + reconnect cycle, which adds up fast with several such observers on one
+// page (and gets much worse with DevTools open, which adds real overhead per
+// DOM mutation).
+function touchesToggleSwitcher(mutations) {
+  for (const m of mutations) {
+    for (const node of m.addedNodes) {
+      if (node.nodeType !== 1) continue;
+      if (
+        node.matches?.('.aae-a-toggle-switcher') ||
+        node.querySelector?.('.aae-a-toggle-switcher') ||
+        node.closest?.('.aae-a-toggle-switcher')
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // …and again whenever the DOM changes. Elementor's editor preview mounts
 // atomic widgets asynchronously (they may not exist yet on first run above),
 // and can also replace a widget's markup on selection/setting changes,
@@ -104,7 +132,9 @@ const REINIT_BURST_WINDOW_MS = 1000;
 let reinitBurstCount = 0;
 let reinitBurstStart = 0;
 
-const tsObserver = new MutationObserver(() => {
+const tsObserver = new MutationObserver((mutations) => {
+  if (!touchesToggleSwitcher(mutations)) return;
+
   const now = Date.now();
   if (now - reinitBurstStart > REINIT_BURST_WINDOW_MS) {
     reinitBurstStart = now;
