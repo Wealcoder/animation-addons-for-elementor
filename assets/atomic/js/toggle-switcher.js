@@ -92,8 +92,18 @@ function applyTsState(wrapper, checked) {
   });
   const before = wrapper.querySelector('.aae-ts-label-before');
   const after = wrapper.querySelector('.aae-ts-label-after');
+  // `active` drives legacy Switch/Label-Highlight preset CSS; `e--selected`
+  // is Elementor's own class-based Style-panel state (Style_States::SELECTED)
+  // — the default Tab widget's "active tab" look (accent color + underline)
+  // is a real Style-panel state keyed off this class, not raw CSS. Both are
+  // toggled together so either mechanism works no matter which preset (or
+  // the plain default) supplied the tabs.
   before?.classList.toggle('active', !checked);
+  before?.classList.toggle('e--selected', !checked);
+  before?.setAttribute('aria-selected', String(!checked));
   after?.classList.toggle('active', checked);
+  after?.classList.toggle('e--selected', checked);
+  after?.setAttribute('aria-selected', String(checked));
   wrapper.querySelectorAll('.aae-ts-switch').forEach(el => el.classList.toggle('active', checked));
 }
 function syncInitialState(wrapper) {

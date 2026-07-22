@@ -18,21 +18,27 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+
+require_once __DIR__ . '/Parts/class-aae-a-timeline-number.php';
+require_once __DIR__ . '/Parts/class-aae-a-timeline-year.php';
+require_once __DIR__ . '/Parts/class-aae-a-timeline-title.php';
+require_once __DIR__ . '/Parts/class-aae-a-timeline-desc.php';
 
 /**
  * AAE Timeline — Item (open template wrapper).
  *
- * Minimal counterpart of TimelineMain_Item: same structural base styles
- * (position/flex/gap), but no preset-driven appearance of its own. Visual
- * skin comes entirely from the ready-made JSON templates in
- * z_temp/templates/Timeline — each one sets its own local per-element
- * styles on the marker/date/title/desc children directly.
+ * Structural base styles only (position/flex/gap + spacing between items).
+ * The marker/year/title/desc children are each a dedicated small widget type
+ * (AAE_A_Timeline_Number/_Year/_Title/_Desc) carrying its own fixed
+ * typography via its own define_base_styles() — see
+ * class-aae-a-timeline-number.php for why plain e-paragraph/e-heading reuse
+ * can't express that (base styles are owned by the widget TYPE, not a
+ * per-instance override).
  */
 class AAE_A_Timeline_Item extends Atomic_Element_Base {
 
@@ -101,6 +107,12 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 						->add_prop( 'display',        String_Prop_Type::generate( 'flex' ) )
 						->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
 						->add_prop( 'gap',            Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ) )
+						->add_prop( 'margin', Dimensions_Prop_Type::generate( [
+							'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+							'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+							'block-end'    => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
+							'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+						] ) )
 				),
 		];
 	}
@@ -112,38 +124,38 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 		string $desc = 'Describe what happened during this milestone.'
 	): array {
 		return [
-			Atomic_Paragraph::generate()
+			AAE_A_Timeline_Number::generate()
 				->is_locked( true )
-				->editor_settings( [ 'title' => 'Marker' ] )
+				->editor_settings( [ 'title' => 'Number' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-marker' ] ),
-					'paragraph' => Html_V3_Prop_Type::generate( [
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-marker' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $number ),
 						'children' => [],
 					] ),
-					'tag'       => String_Prop_Type::generate( 'span' ),
+					'tag'     => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
 
-			Atomic_Paragraph::generate()
+			AAE_A_Timeline_Year::generate()
 				->is_locked( true )
-				->editor_settings( [ 'title' => 'Date' ] )
+				->editor_settings( [ 'title' => 'Year' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-date' ] ),
-					'paragraph' => Html_V3_Prop_Type::generate( [
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-date' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $date ),
 						'children' => [],
 					] ),
-					'tag'       => String_Prop_Type::generate( 'span' ),
+					'tag'     => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
 
-			Atomic_Heading::generate()
+			AAE_A_Timeline_Title::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
 					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-title' ] ),
-					'title'   => Html_V3_Prop_Type::generate( [
+					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $title ),
 						'children' => [],
 					] ),
@@ -151,16 +163,16 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			Atomic_Paragraph::generate()
+			AAE_A_Timeline_Desc::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Description' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-desc' ] ),
-					'paragraph' => Html_V3_Prop_Type::generate( [
+					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-desc' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $desc ),
 						'children' => [],
 					] ),
-					'tag'       => String_Prop_Type::generate( 'p' ),
+					'tag'     => String_Prop_Type::generate( 'p' ),
 				] )
 				->build(),
 		];
