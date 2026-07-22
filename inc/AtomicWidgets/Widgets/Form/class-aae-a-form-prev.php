@@ -61,6 +61,22 @@ class AAE_A_Form_Prev extends Atomic_Widget_Base {
 		return [ 'atomic', 'form', 'step', 'multi-step', 'previous', 'back', 'button' ];
 	}
 
+	/**
+	 * Seeded automatically as a Step's default child — not a general-purpose
+	 * widget to drag from the panel. AAE_A_Form_Prev extends Atomic_Widget_Base
+	 * (→ classic Widget_Base), NOT Atomic_Element_Base — the hook is the
+	 * classic show_in_panel()/hide_on_search() pair (Widget_Base::
+	 * get_initial_config()), not Atomic_Element_Base's should_show_in_panel().
+	 * See class-aae-a-form-next.php for the confirmed-live diagnosis.
+	 */
+	public function show_in_panel() {
+		return false;
+	}
+
+	public function hide_on_search() {
+		return true;
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

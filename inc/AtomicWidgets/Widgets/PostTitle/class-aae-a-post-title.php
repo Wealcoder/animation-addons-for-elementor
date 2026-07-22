@@ -94,6 +94,7 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 	{
 		return [
 			Section::make()
+				->set_id('settings')
 				->set_label(__('Title Settings', 'animation-addons-for-elementor'))
 				->set_items([
 					Select_Control::bind_to('tag')

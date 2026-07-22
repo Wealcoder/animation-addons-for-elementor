@@ -1,5 +1,14 @@
 <?php
+
 namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
+	return;
+}
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -9,15 +18,27 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Flex_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
+/**
+ * AAE Toggle Pane — an open, unlocked content pane meant to live inside
+ * AAE_A_Toggle_Switcher. Shown/hidden by toggle-switcher.js purely via the
+ * .aae-ts-pane marker class baked into its own template (position in the
+ * DOM decides before/after pane, same as ToggleSwitcherMain's pane pair) —
+ * no locked props, restyle from this pane's own Style panel exactly like
+ * the AAE Btn wrapper pattern.
+ */
 class AAE_A_Toggle_Pane extends Atomic_Element_Base {
+
 	use Has_Element_Template;
+
+	const BASE_STYLE_KEY = 'base';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -61,6 +82,25 @@ class AAE_A_Toggle_Pane extends Atomic_Element_Base {
 				->set_id( 'settings' )
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_items( [] ),
+		];
+	}
+
+	/**
+	 * Forces each pane onto its own 100%-width row inside the switcher's
+	 * flex-wrap layout — a plain layout rule, not JS-state-dependent, so it
+	 * belongs here as a native base style rather than in toggle-switcher.scss.
+	 */
+	protected function define_base_styles(): array {
+		return [
+			self::BASE_STYLE_KEY => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'flex', Flex_Prop_Type::generate( [
+							'flexGrow'   => Number_Prop_Type::generate( 1 ),
+							'flexShrink' => Number_Prop_Type::generate( 0 ),
+							'flexBasis'  => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+						] ) )
+				),
 		];
 	}
 

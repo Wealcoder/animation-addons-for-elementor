@@ -1,0 +1,27 @@
+{% set flip_type      = settings.flip_type | default('animate-left') %}
+{% set flip_3d        = settings.flip_3d ? 'flip-box--3d' : '' %}
+{% set height         = settings.flip_height | default(300) %}
+{% set show_back_face = settings.show_back_face is defined ? settings.show_back_face : true %}
+
+{% set classes_arr = ['aae-a-flip-box-main', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'flip-box-' ~ flip_type] %}
+{% if flip_3d %}{% set classes_arr = classes_arr | merge([flip_3d]) %}{% endif %}
+{% if not show_back_face %}{% set classes_arr = classes_arr | merge(['flip-box--back-hidden']) %}{% endif %}
+{% set classes = classes_arr | merge(settings.classes | default([])) | join(' ') %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+     data-id="{{ id }}"
+     data-element_type="{{ type }}"
+     data-e-type="{{ type }}"
+     data-interaction-id="{{ interaction_id | default('') }}"
+     style="--aae-flip-height: {{ height }}px;"
+     {% if settings._cssid is defined and settings._cssid is not empty %}
+         id="{{ settings._cssid | e('html_attr') }}"
+     {% endif %}
+     {% if settings.attributes is defined and settings.attributes is not empty %}
+         {{ settings.attributes | raw }}
+     {% endif %}
+     {{ editor_attributes | default('') | raw }}>
+    <div class="flip-box-inner">
+        {{ children_placeholder | raw }}
+    </div>
+</div>

@@ -128,7 +128,7 @@ class AAE_A_Slider extends Atomic_Element_Base {
 	protected function define_default_children() {
 		// Start with 5 empty slides; the user fills each one.
 		$slides = [];
-		for ( $i = 1; $i <= 5; $i++ ) {
+		for ( $i = 1; $i <= 1; $i++ ) {
 			$slides[] = AAE_A_Slide::generate()
 				->editor_settings( [ 'title' => 'Slide ' . $i ] )
 				->build();

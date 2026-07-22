@@ -95,3 +95,100 @@
 	padding: 6px;
 	min-height: 20px;
 }
+
+/* Cold-load skeleton placeholder.
+ *
+ * The Loop Layout renders its per-post loop items as the preview iframe boots,
+ * which on a cold editor open can take a few seconds — during which the canvas
+ * shows an empty layout and reads as "content missing". Show an animated
+ * skeleton grid while the layout (data-element_type="e-aae-a-loop-layout",
+ * which confusingly carries the `aae-a-loop-grid` CSS class) has no
+ * `.aae-a-loop-item` yet; the `:has()`
+ * check makes it vanish automatically the moment the first item is injected — no
+ * JS, no teardown. Editor-only (gated on `.elementor-editor-active`) and this
+ * file never ships to the frontend, so a published page is unaffected. */
+.elementor-editor-active [data-element_type="e-aae-a-loop-layout"]:not(:has(.aae-a-loop-item)) {
+	position: relative;
+	min-height: 320px;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		border-radius: 12px;
+		/* three shimmering card columns */
+		background-image:
+			linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%);
+		background-repeat: no-repeat;
+		background-size: 32% 100%, 32% 100%, 32% 100%;
+		background-position: 0 0, 34% 0, 68% 0;
+		animation: aae-loop-skeleton 1.3s ease-in-out infinite;
+		pointer-events: none;
+	}
+
+	&::after {
+		content: "Loading items…";
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 2;
+		font-size: 13px;
+		font-weight: 500;
+		color: rgba(0, 0, 0, 0.45);
+		pointer-events: none;
+	}
+}
+
+/* Clone-refetch ghost cells.
+ *
+ * The cold-load skeleton above dies the moment the FIRST authored item mounts,
+ * but the clone cards only arrive after the `aae_loop_post_data` AJAX
+ * round-trip — and on a genuine QUERY change (source / filters / order) the
+ * preview module strips the old clones before awaiting the fresh fetch. During
+ * that window the grid collapses to a single card, which is indistinguishable
+ * from a broken grid. loop-grid.js (atomic-editor) sets `aae-loop-fetching` on
+ * the grid container for exactly that window; while it's set, render two inert
+ * shimmer cells so the first row reads as "loading" instead of "missing".
+ *
+ * The cells are flex items (the grid is flexbox, cards are `flex: 1 1 32%`), so
+ * they inherit the row gap and stretch to the authored card's height for free.
+ * `order: 1` keeps them AFTER the authored card (pseudo-elements otherwise sort
+ * ::before first). No conflict with the cold-load skeleton's pseudo-elements:
+ * that one requires `:not(:has(.aae-a-loop-item))` and this state only exists
+ * once an item is present — mutually exclusive. Editor-only, never shipped. */
+.elementor-editor-active .aae-loop-fetching {
+	&::before,
+	&::after {
+		content: "";
+		order: 1;
+		flex: 1 1 32%;
+		min-height: 120px;
+		border-radius: 12px;
+		background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%);
+		background-size: 400% 100%;
+		animation: aae-loop-ghost 1.3s ease-in-out infinite;
+		pointer-events: none;
+	}
+}
+
+@keyframes aae-loop-skeleton {
+	0% {
+		background-position: -20% 0, 14% 0, 48% 0;
+	}
+	100% {
+		background-position: 48% 0, 82% 0, 120% 0;
+	}
+}
+
+@keyframes aae-loop-ghost {
+	0% {
+		background-position: 100% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}

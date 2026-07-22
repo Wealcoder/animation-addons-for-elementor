@@ -117,14 +117,22 @@ export function isContainerModel(model) {
 }
 
 /**
+ * Prop types sharing Elementor's image-source XOR shape: an attachment `id`
+ * OR a `url`, but NOT both. `svg-src` (the `e-svg` widget's `svg` prop) is
+ * structurally identical to `image-src` and enforces the same rule.
+ */
+const IMAGE_SRC_TYPES = ['image-src', 'svg-src'];
+
+/**
  * Sanitize a preset model so it passes Elementor's save-time style validation.
  *
- * Elementor's Image_Src prop enforces an XOR rule: an image source may carry an
- * attachment `id` OR a `url`, but NOT both. Native exports routinely include
- * both (id + cached url), which renders fine in the editor but is REJECTED on
- * publish with "...background: invalid_value". We walk the whole model and, for
- * every image-src that has both, drop the `url` (the attachment id is the source
- * of truth; WP regenerates the url from it).
+ * Elementor's Image_Src prop (and svg-src, same shape) enforces an XOR rule:
+ * an image source may carry an attachment `id` OR a `url`, but NOT both.
+ * Native exports routinely include both (id + cached url), which renders fine
+ * in the editor but is REJECTED on publish with "...background: invalid_value"
+ * (or "svg: invalid_value" for e-svg). We walk the whole model and, for every
+ * image-src/svg-src that has both, drop the `url` (the attachment id is the
+ * source of truth; WP regenerates the url from it).
  */
 export function sanitizeImageSrc(node) {
   if (Array.isArray(node)) {
@@ -135,7 +143,7 @@ export function sanitizeImageSrc(node) {
     return;
   }
 
-  if (node.$$type === 'image-src' && node.value && typeof node.value === 'object') {
+  if (IMAGE_SRC_TYPES.indexOf(node.$$type) !== -1 && node.value && typeof node.value === 'object') {
     const src = node.value;
     const hasId = src.id && src.id.value !== undefined && src.id.value !== null && src.id.value !== '';
     const hasUrl =

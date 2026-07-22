@@ -270,7 +270,7 @@ final class Atomic
 			'aae-a-toggle-pane',
 			'aae-a-toggle-pane-main',
 			'aae-a-video-mask-btn',
-			'aae-a-flip-box-face',
+			'aae-a-flip-box-main-face',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-offcanvas-trigger',
@@ -1212,6 +1212,29 @@ final class Atomic
 
 			'aae-a-image-compare' => [
 				'label'        => 'Image Compare',
+				'description'  => 'A draggable before/after image comparison slider — no manual setup needed, apply the ready-made Horizontal/Vertical presets and swap in your own images.',
+				'icon'         => 'eicon-image-before-after',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'image',
+					'compare',
+					'before',
+					'after',
+					'slider',
+					'atomic',
+					'template',
+				],
+				'category'     => 'general',
+				'order'        => 9,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-image-compare-main' => [
+				'label'        => 'Image Compare Main',
 				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
 				'icon'         => 'eicon-image-before-after',
 				'is_pro'       => false,
@@ -1225,6 +1248,7 @@ final class Atomic
 					'after',
 					'slider',
 					'atomic',
+					'main',
 				],
 				'category'     => 'general',
 				'order'        => 10,
@@ -1968,6 +1992,29 @@ final class Atomic
 
 			'aae-a-flip-box' => [
 				'label'        => 'Flip Box',
+				'description'  => 'An open, unlocked flip card — front and back faces are plain containers you can restyle or fill freely. Pair with the ready-made preset designs for each flip direction.',
+				'icon'         => 'eicon-flip-box',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'flip',
+					'box',
+					'card',
+					'hover',
+					'atomic',
+					'preset',
+					'template',
+				],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-main' => [
+				'label'        => 'Flip Box Main',
 				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
 				'icon'         => 'eicon-flip-box',
 				'is_pro'       => false,
@@ -1988,9 +2035,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-flip-box-face' => [
-				'label'        => 'Flip Box Face (Internal)',
-				'description'  => 'Internal front/back face container for Flip Box.',
+			'aae-a-flip-box-main-face' => [
+				'label'        => 'Flip Box Main Face (Internal)',
+				'description'  => 'Internal front/back face container for Flip Box Main.',
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -2782,9 +2829,8 @@ final class Atomic
 			'script_handle' => 'aae-a-image-compare-js',
 			'script_path' => '/assets/atomic/js/image-compare.js',
 			'has_script' => true,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + the inline <style>
-			// block of the Twig template. No `style_handle`/`style_path`.
+			'style_handle' => 'aae-a-image-compare-css',
+			'style_path' => '/assets/atomic/js/image-compare.css',
 		],
 		'aae-a-countdown' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
@@ -2827,16 +2873,6 @@ final class Atomic
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
-			'aae-a-button' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Button\AAE_A_Button',
-				'file'          => 'Widgets/Button/class-aae-a-button.php',
-				'script_handle' => 'aae-a-button-js',
-				'script_path'   => '/assets/atomic/js/button.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-button-css',
-				'style_path'    => '/assets/atomic/js/button.css',
-			],
-
 			'aae-a-btn' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
 				'file'          => 'Widgets/Btn/class-aae-a-btn.php',
@@ -3108,9 +3144,19 @@ final class Atomic
 			'style_path'    => '/assets/atomic/js/flip-box.css',
 		],
 
-		'aae-a-flip-box-face' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Face',
-			'file'       => 'Widgets/FlipBox/class-aae-a-flip-box-face.php',
+		'aae-a-flip-box-main' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main',
+			'file'          => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main.php',
+			'script_handle' => 'aae-a-flip-box-main-js',
+			'script_path'   => '/assets/atomic/js/flip-box-main.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-flip-box-main-css',
+			'style_path'    => '/assets/atomic/js/flip-box-main.css',
+		],
+
+		'aae-a-flip-box-main-face' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main_Face',
+			'file'       => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main-face.php',
 			'has_script' => false,
 		],
 
@@ -3136,17 +3182,6 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
 			'has_script' => false,
-		],
-
-		'aae-a-button-pro'  => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ButtonPro\AAE_A_Button_Pro',
-			'file'          => 'Widgets/ButtonPro/class-aae-a-button-pro.php',
-			'script_handle' => 'aae-a-button-pro-js',
-			'script_path'   => '/assets/atomic/js/button-pro.js',
-			'script_deps'   => [ 'gsap' ],
-			'has_script'    => true,
-			'style_handle'  => 'aae-a-button-pro-css',
-			'style_path'    => '/assets/atomic/js/button-pro.css',
 		],
 
 		// Add new atomic widgets below...

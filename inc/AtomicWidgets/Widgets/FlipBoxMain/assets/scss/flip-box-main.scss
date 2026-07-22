@@ -1,0 +1,168 @@
+.aae-a-flip-box-main {
+	display: block !important;
+	height: var( --aae-flip-height, 300px );
+
+	> .flip-box-inner {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.aae-a-flip-box-main-face {
+		position: absolute !important;
+		inset: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+
+		// Prevent the face's own back from bleeding through.
+		// !important is required because Elementor's .e-con class
+		// sets backface-visibility: visible on container elements.
+		-webkit-backface-visibility: hidden !important;
+		backface-visibility: hidden !important;
+
+		// Override Elementor .e-con defaults.
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: center !important;
+		align-items: center !important;
+
+	}
+
+	.flip-box-back {
+		z-index: 2;
+	}
+
+	.flip-box-face-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		padding: 20px;
+		width: 100%;
+	}
+
+	// 3D depth — push inner content slightly toward the viewer.
+	&.flip-box--3d {
+		.aae-a-flip-box-main-face {
+			-webkit-transform-style: preserve-3d;
+			transform-style: preserve-3d;
+		}
+		.flip-box-face-inner {
+			transform: translateZ( 60px ) scale( 0.94 );
+		}
+	}
+
+	// ─── Flip animations ─────────────────────────────────────────────────
+	// Each face transforms with an inline perspective() so we never rely
+	// on a parent's transform-style: preserve-3d.
+
+	&.flip-box-animate-left {
+		.flip-box-front {
+			transform: perspective( 1000px ) rotateY( 0deg );
+		}
+		.flip-box-back {
+			transform: perspective( 1000px ) rotateY( -180deg );
+		}
+		&:hover .flip-box-front {
+			transform: perspective( 1000px ) rotateY( 180deg );
+		}
+		&:hover .flip-box-back {
+			transform: perspective( 1000px ) rotateY( 0deg );
+		}
+	}
+
+	&.flip-box-animate-right {
+		.flip-box-front {
+			transform: perspective( 1000px ) rotateY( 0deg );
+		}
+		.flip-box-back {
+			transform: perspective( 1000px ) rotateY( 180deg );
+		}
+		&:hover .flip-box-front {
+			transform: perspective( 1000px ) rotateY( -180deg );
+		}
+		&:hover .flip-box-back {
+			transform: perspective( 1000px ) rotateY( 0deg );
+		}
+	}
+
+	&.flip-box-animate-up {
+		.flip-box-front {
+			transform: perspective( 1000px ) rotateX( 0deg );
+		}
+		.flip-box-back {
+			transform: perspective( 1000px ) rotateX( 180deg );
+		}
+		&:hover .flip-box-front {
+			transform: perspective( 1000px ) rotateX( -180deg );
+		}
+		&:hover .flip-box-back {
+			transform: perspective( 1000px ) rotateX( 0deg );
+		}
+	}
+
+	&.flip-box-animate-down {
+		.flip-box-front {
+			transform: perspective( 1000px ) rotateX( 0deg );
+		}
+		.flip-box-back {
+			transform: perspective( 1000px ) rotateX( -180deg );
+		}
+		&:hover .flip-box-front {
+			transform: perspective( 1000px ) rotateX( 180deg );
+		}
+		&:hover .flip-box-back {
+			transform: perspective( 1000px ) rotateX( 0deg );
+		}
+	}
+
+	&.flip-box-animate-zoom-in {
+		.flip-box-back {
+			opacity: 0;
+			transform: scale( 0.75 );
+			transition: opacity 0.5s, transform 0.5s;
+		}
+		&:hover .flip-box-back {
+			opacity: 1;
+			transform: scale( 1 );
+		}
+	}
+
+	&.flip-box-animate-zoom-out {
+		.flip-box-front {
+			z-index: 3;
+			transition: opacity 0.5s, transform 0.5s, visibility 0.5s;
+		}
+		&:hover .flip-box-front {
+			opacity: 0;
+			visibility: hidden;
+			transform: scale( 0.75 );
+		}
+	}
+
+	&.flip-box-animate-fade-in {
+		.flip-box-back {
+			opacity: 0;
+			transition: opacity 0.5s;
+		}
+		&:hover .flip-box-back {
+			opacity: 1;
+		}
+	}
+
+	// ─── Back face hidden (show_back_face = false) ────────────────────────
+	// Back face child is hidden. The hover flip still plays on the front
+	// face, revealing the physical reverse of the front card.
+	&.flip-box--back-hidden {
+		.flip-box-back {
+			display: none !important;
+		}
+
+		// Allow the front face's reverse side to be seen when it rotates
+		// past 90°. Without this override the face would vanish at 90°.
+		.aae-a-flip-box-main-face.flip-box-front {
+			-webkit-backface-visibility: visible !important;
+			backface-visibility: visible !important;
+		}
+	}
+}

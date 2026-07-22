@@ -9,6 +9,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -113,8 +115,29 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Bare-drop structural CSS moved out of the external nav.scss into this
+	 * element's own base style. `position: relative` is the anchor its dropdown
+	 * (position:absolute) attaches to; `overflow: visible` lets the dropdown
+	 * escape. No `!important` (base styles never emit it) — the user's Style tab
+	 * wins. Dropped from the old external rule: `list-style: none` (item is a
+	 * flexbox, no bullets — and `list-style` isn't in the atomic style schema)
+	 * and `width: auto` (already the flex-item default).
+	 * Kept in nav.scss (base styles can't express these): `flex: 0 0 auto` — the
+	 * Flex_Prop_Type's nested value shape is finicky (the flex transformer reads
+	 * raw grow/shrink/basis, not wrapped sub-props), so it's left as external CSS
+	 * rather than risk a mis-generated prop; and `cursor: pointer`, which is
+	 * attribute-conditional (`[data-has-dropdown]`).
+	 */
 	protected function define_base_styles(): array {
-		return [];
+		return [
+			'base' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
+						->add_prop( 'overflow', String_Prop_Type::generate( 'visible' ) )
+				),
+		];
 	}
 
 	protected function define_default_children() {
