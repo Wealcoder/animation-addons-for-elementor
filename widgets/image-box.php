@@ -997,7 +997,7 @@ class Image_Box extends Widget_Base {
 					<?php endif; ?>
 
 					<?php if ( ! empty( $settings['description'] ) ) : ?>
-						<div class="description"><?php echo esc_html( $settings['description'] ); ?></div>
+						<div class="description"><?php $this->print_unescaped_setting( 'description' ); ?></div>
 					<?php endif; ?>
 
 					<?php
