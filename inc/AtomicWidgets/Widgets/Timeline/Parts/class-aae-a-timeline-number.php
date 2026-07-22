@@ -55,7 +55,7 @@ class AAE_A_Timeline_Number extends Atomic_Widget_Base {
 		return 'eicon-number-field';
 	}
 
-	public function should_show_in_panel() {
+	public function show_in_panel() {
 		// Internal sub-element — never draggable from the widget panel.
 		return false;
 	}

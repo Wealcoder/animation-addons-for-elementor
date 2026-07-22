@@ -53,7 +53,7 @@ class AAE_A_Flip_Box_Text extends Atomic_Widget_Base {
 		return 'eicon-paragraph';
 	}
 
-	public function should_show_in_panel() {
+	public function show_in_panel() {
 		// Internal sub-element — never draggable from the widget panel.
 		return false;
 	}

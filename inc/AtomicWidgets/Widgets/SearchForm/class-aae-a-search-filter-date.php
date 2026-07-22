@@ -52,10 +52,6 @@ class AAE_A_Search_Filter_Date extends Atomic_Widget_Base {
 		return false;
 	}
 
-	public function should_show_in_panel() {
-		return false;
-	}
-
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

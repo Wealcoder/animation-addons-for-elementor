@@ -54,7 +54,7 @@ class AAE_A_Timeline_Title extends Atomic_Widget_Base {
 		return 'eicon-t-letter-bold';
 	}
 
-	public function should_show_in_panel() {
+	public function show_in_panel() {
 		// Internal sub-element — never draggable from the widget panel.
 		return false;
 	}
