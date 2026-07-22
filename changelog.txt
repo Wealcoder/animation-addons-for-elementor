@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v2.7.1 – 21th July 2026 
+
+  - **Fixed:** Wordpress Security Fixation.
+
 = 🌀 Animation Addons for Elementor v2.7.0 – 7th July 2026
 
     - Fixed: Variability issue fixed.
