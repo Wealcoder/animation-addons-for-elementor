@@ -237,7 +237,7 @@ final class Atomic
 	{
 		if (is_null($this->active_widgets)) {
 			$saved = $this->get_saved_options();
-			$this->active_widgets = ! empty($saved) ? array_keys(array_filter($saved)) : [];
+			$this->active_widgets = ! empty($saved) ? array_keys($saved) : [];
 		}
 
 		return $this->active_widgets;
@@ -363,15 +363,7 @@ final class Atomic
 
 		$saved = $this->get_saved_options();
 
-		// `isset()` alone can't tell "user explicitly turned this off"
-		// (stored as `false`) apart from "never decided" (key absent) —
-		// both used to be treated as "off" here, which was fine for THIS
-		// check, but made maybe_seed_widgets_defaults() unable to make the
-		// same distinction and re-enable widgets the user had turned off.
-		// `!empty()` keeps this check's own behavior identical (false or
-		// missing both read as inactive) while ajax_save_settings() now
-		// writes real `false` values so that distinction is preserved.
-		return ! empty($saved[$slug]);
+		return isset($saved[$slug]);
 	}
 
 	/* =====================================================================
@@ -451,7 +443,7 @@ final class Atomic
 			}
 
 			$widgets[$slug] = array_merge($def, [
-				'is_active' => ! empty($saved[$slug]),
+				'is_active' => isset($saved[$slug]),
 			]);
 		}
 
@@ -973,92 +965,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-atomic-button' => [
-				'label'        => 'Button',
-				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button',
-					'cta',
-					'call to action',
-					'atomic button',
-					'click',
-				],
-				'category'     => 'general',
-				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-image-box' => [
-				'label'        => 'Image Box',
-				'description'  => 'An atomic image box widget combining image, heading, and description with animation support.',
-				'icon'         => 'wcf-icon-Image-Box',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'image box',
-					'image card',
-					'photo box',
-					'atomic image box',
-					'media box',
-				],
-				'category'     => 'general',
-				'order'        => 2,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-nav-menu' => [
-				'label'        => 'Nav Menu (Mobile Support)',
-				'description'  => 'Atomic navigation menu with full responsive mobile hamburger/off-canvas support.',
-				'icon'         => 'wcf-icon-One-Page-Nav',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'nav menu',
-					'navigation',
-					'mobile menu',
-					'hamburger menu',
-					'responsive nav',
-					'atomic nav',
-				],
-				'category'     => 'header-footer',
-				'order'        => 4,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Atomic off-canvas panel for slide-in menus, sidebars, and overlay content areas.',
-				'icon'         => 'wcf-icon-Floating-Elements',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas',
-					'off-canvas',
-					'sidebar',
-					'slide panel',
-					'drawer',
-					'mobile panel',
-				],
-				'category'     => 'general',
-				'order'        => 5,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-accordion' => [
 				'label'        => 'Accordion',
 				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
@@ -1330,6 +1236,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — PARENT widget. This is the only Timeline entry
+			// exposed in the dashboard widget list / editor panel.
 			'aae-a-timeline' => [
 				'label'        => 'Timeline',
 				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
@@ -1351,6 +1259,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — HELPER widgets below. `is_internal => true` hides
+			// each of these from the dashboard widget list; they are never
+			// individually toggled, only used internally by Timeline above.
 			'aae-a-timeline-item' => [
 				'label'        => 'Timeline — Item',
 				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
@@ -1358,6 +1269,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'timeline',
@@ -1378,6 +1290,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'number', 'atomic' ],
 				'category'     => 'general',
@@ -1393,6 +1306,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'year', 'date', 'atomic' ],
 				'category'     => 'general',
@@ -1408,6 +1322,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'title', 'heading', 'atomic' ],
 				'category'     => 'general',
@@ -1423,6 +1338,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
 				'category'     => 'general',
@@ -1452,6 +1368,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — PARENT widget #1. The only entry of
+			// this sub-group exposed in the dashboard widget list.
 			'aae-a-progressbar' => [
 				'label'        => 'Progress Bar',
 				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
@@ -1474,6 +1392,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — HELPER widgets below. `is_internal
+			// => true` hides these from the dashboard widget list; they are
+			// only used internally by "Progress Bar Template" above.
 			'aae-a-progressbar-track' => [
 				'label'        => 'Progress Bar — Track',
 				'description'  => 'Internal track sub-element used by the Progress Bar Template.',
@@ -1481,6 +1402,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'track', 'atomic' ],
 				'category'     => 'general',
@@ -1496,6 +1418,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'fill', 'atomic' ],
 				'category'     => 'general',
@@ -1511,6 +1434,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'label', 'atomic' ],
 				'category'     => 'general',
@@ -1519,6 +1443,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
+			// variant powered by ProgressBar.js; it has no helper widgets of
+			// its own). Exposed in the dashboard widget list.
 			'aae-a-progressbar-main' => [
 				'label'        => 'Progress Bar Main',
 				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
@@ -1541,6 +1468,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — PARENT widget #1. The only entry of this
+			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
 				'label'        => 'Toggle Switcher',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1562,6 +1491,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — HELPER widgets below. `is_internal =>
+			// true` hides these from the dashboard widget list; they are
+			// only used internally by "Toggle Switcher" above.
 			'aae-a-toggle-pane' => [
 				'label'        => 'Toggle Pane (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher.',
@@ -1569,6 +1501,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
@@ -1587,6 +1520,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tabs', 'atomic' ],
 				'category'     => 'general',
@@ -1602,6 +1536,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tab', 'atomic' ],
 				'category'     => 'general',
@@ -1617,6 +1552,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'title', 'atomic' ],
 				'category'     => 'general',
@@ -1632,6 +1568,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'description', 'atomic' ],
 				'category'     => 'general',
@@ -1640,6 +1577,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — PARENT widget #2 (a second,
+			// standalone variant of Toggle Switcher, own JS/CSS bundle).
+			// Exposed in the dashboard widget list.
 			'aae-a-toggle-switcher-main' => [
 				'label'        => 'Toggle Switcher Main',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1662,6 +1602,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
+			// true` hides it from the dashboard widget list; only used
+			// internally by "Toggle Switcher Main" above.
 			'aae-a-toggle-pane-main' => [
 				'label'        => 'Toggle Pane Main (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher Main.',
@@ -1669,6 +1612,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
@@ -4252,23 +4196,14 @@ final class Atomic
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
-		// Merge explicit true/false decisions into the existing saved state
-		// (rather than only ever recording "on" and omitting "off"). Storing
-		// real `false` values — instead of just leaving the key absent — is
-		// what lets maybe_seed_widgets_defaults() tell "never decided yet"
-		// apart from "user turned this off"; omitting `false` made the two
-		// indistinguishable, so any `default => true` widget got silently
-		// re-enabled by that re-seed pass the moment it was disabled here.
-		$clean = $this->get_saved_options();
-
+		// Build a clean associative array: slug => true for enabled.
+		$clean = [];
 		foreach ($settings as $slug => $state) {
 			$slug = sanitize_key($slug);
 
-			if (! isset($this->widgets_registry[$slug])) {
-				continue;
+			if (isset($this->widgets_registry[$slug]) && ! empty($state)) {
+				$clean[$slug] = true;
 			}
-
-			$clean[$slug] = ! empty($state);
 		}
 
 		$updated = update_option(self::OPTION_NAME, $clean);
@@ -4278,7 +4213,7 @@ final class Atomic
 
 		wp_send_json([
 			'status' => $updated,
-			'total'  => count(array_filter($clean)),
+			'total'  => count($clean),
 		]);
 	}
 
@@ -4467,43 +4402,32 @@ final class Atomic
 
 	/**
 	 * On first activation (option does not exist), seed with defaults.
+	 *
+	 * Only runs the seed on a true first install. Deliberately does NOT
+	 * merge in defaults for widgets missing from an already-existing saved
+	 * option — that used to also cover "newly added in a plugin update",
+	 * but couldn't tell that case apart from "user explicitly disabled it",
+	 * so every request silently re-enabled anything the user had turned
+	 * off. Matches maybe_seed_extension_defaults() below and V3's widget
+	 * save (inc/admin/dashboard.php), neither of which re-seeds an existing
+	 * install either.
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		$saved = get_option(self::OPTION_NAME);
-
-		// First install: option doesn't exist yet, seed all defaults.
-		if (false === $saved) {
-			$defaults = [];
-
-			foreach ($this->widgets_registry as $slug => $def) {
-				if (! empty($def['default'])) {
-					$defaults[$slug] = true;
-				}
-			}
-
-			add_option(self::OPTION_NAME, $defaults, '', false);
+		// Only act on true first install — option doesn't exist yet.
+		if (false !== get_option(self::OPTION_NAME)) {
 			return;
 		}
 
-		// Existing install: merge in any newly-added default widgets
-		// that aren't yet in the saved option. This allows new widgets
-		// (added in a plugin update) to auto-activate by default.
-		if (! is_array($saved)) {
-			$saved = [];
-		}
+		$defaults = [];
 
-		$changed = false;
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default']) && ! isset($saved[$slug])) {
-				$saved[$slug] = true;
-				$changed = true;
+			if (! empty($def['default'])) {
+				$defaults[$slug] = true;
 			}
 		}
 
-		if ($changed) {
-			update_option(self::OPTION_NAME, $saved, false);
-		}
+		add_option(self::OPTION_NAME, $defaults, '', false);
 	}
 
 	/**

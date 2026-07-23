@@ -266,6 +266,7 @@ final class WCF_ADDONS_Plugin {
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
 		require_once 'class-plugin.php';
+		require_once 'inc/AtomicWidgets/class-atomic.php';
 
 		//wcf plugin loaded
 		// Established public hook name; renaming would break backward compatibility.
