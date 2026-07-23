@@ -25,6 +25,14 @@ export const useExtensions = () => {
   return { allExtensions, setAllExtensions };
 };
 
+export const useAtomicExtensions = () => {
+  const {
+    mainState: { allAtomicExtensions },
+    setAllAtomicExtensions,
+  } = useContext(AppContext);
+  return { allAtomicExtensions, setAllAtomicExtensions };
+};
+
 export const useActiveItem = () => {
   const {
     updateActiveWidget,
@@ -33,6 +41,9 @@ export const useActiveItem = () => {
     updateActiveAtomicWidget,
     updateActiveAtomicGroupWidget,
     updateActiveAtomicFullWidget,
+    updateActiveAtomicExtension,
+    updateActiveAtomicGroupExtension,
+    updateActiveAtomicFullExtension,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,
@@ -47,6 +58,9 @@ export const useActiveItem = () => {
     updateActiveAtomicWidget,
     updateActiveAtomicGroupWidget,
     updateActiveAtomicFullWidget,
+    updateActiveAtomicExtension,
+    updateActiveAtomicGroupExtension,
+    updateActiveAtomicFullExtension,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,

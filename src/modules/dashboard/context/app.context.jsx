@@ -23,6 +23,12 @@ import {
   activeAtomicWidgetFn,
   groupAtomicWidgetsByCategory,
 } from "@/lib/atomicWidgetService";
+import {
+  activeAtomicFullExtensionFn,
+  activeAtomicGroupExtensionFn,
+  activeAtomicExtensionFn,
+  groupAtomicExtensionsByCategory,
+} from "@/lib/atomicExtensionService";
 import { createContext, useCallback, useReducer } from "react";
 
 // Guarantees `.elements` is always an object, even when a category (e.g.
@@ -42,6 +48,9 @@ const initialState = {
   allExtensions: normalizeElements(
     WCF_ADDONS_ADMIN?.addons_config?.extensions
   ),
+  allAtomicExtensions: groupAtomicExtensionsByCategory(
+    WCF_ADDONS_ADMIN?.addons_config?.atomic_extensions
+  ),
   allLibrary: normalizeElements(
     WCF_ADDONS_ADMIN?.addons_config?.integrations?.library
   ),
@@ -60,6 +69,8 @@ const reducer = (state, action) => {
       return { ...state, allAtomicWidgets: action.value };
     case "setAllExtensions":
       return { ...state, allExtensions: action.value };
+    case "setAllAtomicExtensions":
+      return { ...state, allAtomicExtensions: action.value };
     case "setActivated":
       return { ...state, activated: action.value };
     case "setLibrary":
@@ -98,6 +109,13 @@ const useMainContext = (state) => {
   const setAllExtensions = useCallback((data) => {
     dispatch({
       type: "setAllExtensions",
+      value: data,
+    });
+  }, []);
+
+  const setAllAtomicExtensions = useCallback((data) => {
+    dispatch({
+      type: "setAllAtomicExtensions",
       value: data,
     });
   }, []);
@@ -212,6 +230,35 @@ const useMainContext = (state) => {
     [mainState.allAtomicWidgets]
   );
 
+  const updateActiveAtomicExtension = useCallback(
+    (data) => {
+      activeAtomicExtensionFn(mainState.allAtomicExtensions, data, dispatch);
+    },
+    [mainState.allAtomicExtensions]
+  );
+
+  const updateActiveAtomicGroupExtension = useCallback(
+    (data) => {
+      activeAtomicGroupExtensionFn(
+        mainState.allAtomicExtensions,
+        data,
+        dispatch
+      );
+    },
+    [mainState.allAtomicExtensions]
+  );
+
+  const updateActiveAtomicFullExtension = useCallback(
+    (data) => {
+      activeAtomicFullExtensionFn(
+        mainState.allAtomicExtensions,
+        data,
+        dispatch
+      );
+    },
+    [mainState.allAtomicExtensions]
+  );
+
   const updateActiveGeneralExtension = useCallback(
     (data) => {
       generalExtensionFn(mainState.allExtensions, data, dispatch);
@@ -304,6 +351,7 @@ const useMainContext = (state) => {
     setAllWidgets,
     setAllAtomicWidgets,
     setAllExtensions,
+    setAllAtomicExtensions,
     setActivated,
     setNotice,
     setTabKey,
@@ -315,6 +363,9 @@ const useMainContext = (state) => {
     updateActiveAtomicWidget,
     updateActiveAtomicGroupWidget,
     updateActiveAtomicFullWidget,
+    updateActiveAtomicExtension,
+    updateActiveAtomicGroupExtension,
+    updateActiveAtomicFullExtension,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,
