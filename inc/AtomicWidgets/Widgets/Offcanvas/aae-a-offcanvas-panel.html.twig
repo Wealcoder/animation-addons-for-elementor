@@ -3,12 +3,12 @@
 
   The panel's look comes entirely from its base style (define_base_styles) so it
   is Style-panel overridable and survives the runtime teleport to <body> (base
-  styles are global classes). The only inline CSS here is a structural reset for
-  the plain close button — it lives INSIDE the panel, so it travels along when
-  the JS moves the panel out to <body>.
+  styles are global classes). The close button is a real, separately-styleable
+  child element (AAE_A_Offcanvas_Close) seeded via define_default_children — it
+  renders inside children_placeholder along with the user's content, so nothing
+  close-related is hardcoded here any more.
 #}
 {% set classes = ['aae-a-offcanvas-panel', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
-{% set close_icon_url = settings.close_icon.url | default('') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -22,25 +22,6 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-
-    <style>
-        :where([data-id="{{ id }}"]) .aae-offcanvas-close {
-            display: inline-flex; align-items: center; justify-content: center;
-            cursor: pointer; background: transparent; border: 0; color: inherit;
-            padding: 0; margin: 0 0 16px auto;
-        }
-        :where([data-id="{{ id }}"]) .aae-offcanvas-close :is(img, svg) {
-            display: block; width: 24px; height: 24px;
-        }
-    </style>
-
-    <button class="aae-offcanvas-close" type="button" aria-label="{{ 'Close panel' | e('html_attr') }}">
-        {% if close_icon_url is not empty %}
-            <img src="{{ close_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
-        {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        {% endif %}
-    </button>
 
     {{ children_placeholder | raw }}
 </div>

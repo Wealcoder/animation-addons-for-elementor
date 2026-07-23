@@ -119,7 +119,13 @@ const initOffcanvas = ( root ) => {
 	// editor strips custom classes off atomic child elements, but data-attrs stay.
 	const panel    = root.querySelector( '.aae-a-offcanvas-panel' )
 		|| root.querySelector( '[data-element_type="e-aae-a-offcanvas-panel"]' );
-	const closeBtn = panel ? panel.querySelector( '.aae-offcanvas-close' ) : null;
+	// The close button is a real atomic child element (AAE_A_Offcanvas_Close)
+	// seeded inside the panel. Match its hook class, falling back to its
+	// element-type attr for robustness.
+	let closeBtn = panel
+		? ( panel.querySelector( '.aae-offcanvas-close' )
+			|| panel.querySelector( '[data-e-type="e-aae-a-offcanvas-close"]' ) )
+		: null;
 
 	if ( ! trigger || ! panel ) {
 		return;
@@ -130,6 +136,24 @@ const initOffcanvas = ( root ) => {
 	// Twig with a baked show-rule — no JS needed. Bail out.
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
 		return;
+	}
+
+	// Migration safety-net: offcanvas instances saved BEFORE the close became a
+	// real child element have no close button (the old plain-markup close was
+	// removed from the panel Twig). Inject a minimal functional one so the drawer
+	// is never trapped. New offcanvases ship the styleable close element instead.
+	if ( panel && ! closeBtn ) {
+		closeBtn = document.createElement( 'button' );
+		closeBtn.type = 'button';
+		closeBtn.className = 'aae-offcanvas-close';
+		closeBtn.setAttribute( 'aria-label', 'Close panel' );
+		Object.assign( closeBtn.style, {
+			alignSelf: 'flex-end', background: 'transparent', border: '0',
+			cursor: 'pointer', color: 'inherit', padding: '0', lineHeight: '0',
+			marginBottom: '16px',
+		} );
+		closeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+		panel.insertBefore( closeBtn, panel.firstChild );
 	}
 
 	const position        = root.dataset.position || 'left';

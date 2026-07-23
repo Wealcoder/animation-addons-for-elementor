@@ -16,11 +16,8 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
@@ -29,6 +26,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+
+require_once __DIR__ . '/class-aae-a-offcanvas-close.php';
 
 class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 
@@ -67,19 +66,26 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'close_icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Offcanvas/assets/icons/close.svg' ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
+		// No content controls — the panel is a pure drop-zone. The close button
+		// is now a real, separately-styleable child element (AAE_A_Offcanvas_Close),
+		// not a Close Icon setting here.
+		return [];
+	}
+
+	/**
+	 * Seed a real, selectable close button as the panel's first child so the
+	 * drawer is closable out of the box. It's NOT locked — builders can move,
+	 * restyle, or delete it freely (Esc + overlay-click still close the drawer).
+	 */
+	protected function define_default_children(): array {
 		return [
-			Section::make()
-				->set_id( 'panel' )
-				->set_label( __( 'Panel', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Svg_Control::bind_to( 'close_icon' )
-						->set_label( __( 'Close Icon', 'animation-addons-for-elementor' ) ),
-				] ),
+			AAE_A_Offcanvas_Close::generate()
+				->editor_settings( [ 'title' => __( 'Close', 'animation-addons-for-elementor' ) ] )
+				->build(),
 		];
 	}
 
