@@ -167,15 +167,105 @@ const initOffcanvas = ( root ) => {
 	}
 };
 
+/* ── Editor preview reveal ──────────────────────────────────────────────
+ * The "Preview Open (Editor)" switch (editor_open prop) shows/hides the panel
+ * live on the canvas so builders can fill/style it. Two hard facts drive this:
+ *
+ *   1. An atomic Switch commits through an internal set-settings transaction
+ *      that updates the model WITHOUT re-rendering the Twig — so a
+ *      `{% if editor_open %}` reveal goes stale on every live toggle (works
+ *      only after a reload). We therefore reconcile from JS: poll the live
+ *      `editor_open` setting off the editor model on an interval (the atomic
+ *      Switch has no reliable commandEnd, same as Nav's mobile reconciler).
+ *
+ *   2. In edit-mode Elementor mounts the panel CHILD element as a DIRECT child
+ *      of the offcanvas root, NOT inside the Twig `.aae-offcanvas-shell` (whose
+ *      children_placeholder renders empty in the editor). So the toggle must
+ *      show/hide the real `.aae-a-offcanvas-panel` element — hiding the empty
+ *      shell (the old approach) left the editable panel visible regardless.
+ *
+ * When hidden we also flatten the root's min-height: the panel's
+ * `.elementor-empty-view` still matches `:has()` while display:none, so the
+ * core `min-height:120px` bubble would otherwise keep a phantom box under the
+ * hamburger. */
+const editorReconcilers = new Map();
+
+const readEditorOpen = ( id ) => {
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		const container = editorWindow.elementor?.getContainer?.( id );
+		let value;
+		if ( container?.settings?.get ) {
+			value = container.settings.get( 'editor_open' );
+		}
+		if ( value === undefined && container?.model?.get ) {
+			const settings = container.model.get( 'settings' );
+			value = settings?.get ? settings.get( 'editor_open' ) : settings?.editor_open;
+		}
+		// Atomic booleans may arrive raw or wrapped as { $$type, value }.
+		return ( value && typeof value === 'object' ) ? !! value.value : !! value;
+	} catch ( error ) {
+		return false;
+	}
+};
+
+const initOffcanvasEditor = ( container ) => {
+	const id = container.getAttribute( 'data-id' );
+	if ( ! id ) return;
+
+	// Idempotent: re-queries the panel every tick so a late-mounted / re-rendered
+	// panel still gets the current open state, and only writes when it changes.
+	const apply = ( open ) => {
+		container.classList.toggle( 'is-open', open );
+
+		const panel = container.querySelector( '.aae-a-offcanvas-panel' );
+		if ( panel ) {
+			const isHidden = 'none' === panel.style.display;
+			if ( open && isHidden ) {
+				panel.style.removeProperty( 'display' );
+			} else if ( ! open && ! isHidden ) {
+				panel.style.setProperty( 'display', 'none', 'important' );
+			}
+		}
+
+		// Cancel the empty-view 120px bubble while the panel is hidden.
+		const wantFlat = ! open;
+		const isFlat = '0px' === container.style.minHeight;
+		if ( wantFlat && ! isFlat ) {
+			container.style.setProperty( 'min-height', '0', 'important' );
+			container.style.setProperty( 'min-block-size', '0', 'important' );
+		} else if ( ! wantFlat && isFlat ) {
+			container.style.removeProperty( 'min-height' );
+			container.style.removeProperty( 'min-block-size' );
+		}
+	};
+
+	const reconcile = () => {
+		// Element gone (deleted / re-rendered into a new node) → stop this timer.
+		if ( ! document.body.contains( container ) ) {
+			window.clearInterval( editorReconcilers.get( id ) );
+			editorReconcilers.delete( id );
+			return;
+		}
+		apply( readEditorOpen( id ) );
+	};
+
+	// A re-render can call this again for the same id — replace the old timer.
+	if ( editorReconcilers.has( id ) ) {
+		window.clearInterval( editorReconcilers.get( id ) );
+	}
+	reconcile();
+	editorReconcilers.set( id, window.setInterval( reconcile, 250 ) );
+};
+
 register( {
 	elementType: 'e-aae-a-offcanvas',
 	id: 'aae-a-offcanvas-handler',
 	callback: ( { element } ) => {
-		const root = element.classList.contains( 'aae-a-offcanvas' )
-			? element
-			: element.querySelector( '.aae-a-offcanvas' );
-		if ( root ) {
-			initOffcanvas( root );
+		if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
+			initOffcanvasEditor( element );
+		} else {
+			initOffcanvas( element );
 		}
 	},
 } );

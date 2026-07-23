@@ -309,7 +309,8 @@ function genElementId() {
  * subtree is created in a SINGLE createElements call — this sidesteps the
  * "flexbox just created this tick" defer race that iterative building hits
  * (see handleAddChild). Any node with children becomes a dropdown parent whose
- * children live in one core Flexbox carrying DROPDOWN_CLASS. Every node gets an
+ * children live in one core Flexbox (identified by TYPE, not a hook class —
+ * nav.js adds the `.aae-a-nav-dropdown` DOM hook at runtime). Every node gets an
  * explicit id (see genElementId). */
 function buildImportedItemModel( node ) {
 	const title = node.title || 'Menu Item';
@@ -342,7 +343,7 @@ function buildImportedItemModel( node ) {
 			id: genElementId(),
 			elType: 'e-flexbox',
 			editor_settings: { title: 'Dropdown' },
-			settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+			settings: {},
 			elements: node.children.map( buildImportedItemModel ),
 		} ];
 	}
@@ -680,21 +681,15 @@ function selectDropdownContainer( itemId ) {
 	selectDropdownById( dropdownId );
 }
 
-function markDropdownFlexbox( flexbox ) {
-	if ( ! flexbox || hasElementClass( flexbox, DROPDOWN_CLASS ) ) {
-		return;
-	}
-	const classes = normalizeClassesValue( flexbox.settings?.get?.( 'classes' ) );
-	updateElementSettings( {
-		id: flexbox.id,
-		props: {
-			classes: prop( 'classes', [
-				...classes,
-				DROPDOWN_CLASS,
-			] ),
-		},
-	} );
-}
+/* The dropdown flexbox is identified STRUCTURALLY — by element TYPE
+ * (findFirstChildOfType 'e-flexbox') in the panel, and by the core
+ * `.e-flexbox-base`/`.e-con` classes in nav.js's getSub + the CSS — and nav.js
+ * re-adds the `.aae-a-nav-dropdown` DOM hook at runtime. So we deliberately do
+ * NOT write that hook into the element's `classes` prop: putting a plain hook
+ * string there is not a registered Style-panel class, so Elementor flagged
+ * every dropdown with "Some classes are missing / A class was removed from your
+ * site". Kept as a no-op (callers unchanged) — do not re-add the model write. */
+function markDropdownFlexbox() {}
 
 /* Repair old structures where widgets/nav-items were inserted directly below
  * the item. A nav-item must own exactly one dropdown flexbox; everything else
@@ -722,7 +717,7 @@ function normalizeDropdownModel( itemId ) {
 				model: {
 					elType: 'e-flexbox',
 					editor_settings: { title: 'Dropdown' },
-					settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+					settings: {},
 				},
 				options: { at: 0 },
 			} ],
@@ -1191,7 +1186,7 @@ function ensureItemFlexbox( itemId ) {
 			model: {
 				elType: 'e-flexbox',
 				editor_settings: { title: 'Dropdown' },
-				settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+				settings: {},
 			},
 			options: { at: 0 },
 		} ],
@@ -2108,7 +2103,7 @@ function SubItemsManager( { itemId } ) {
 				model: {
 					elType: 'e-flexbox',
 					editor_settings: { title: 'Dropdown' },
-					settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+					settings: {},
 				},
 				options: { at: 0 },
 			} ],
@@ -2349,7 +2344,7 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 							model: {
 								elType: 'e-flexbox',
 								editor_settings: { title: 'Dropdown' },
-								settings: { classes: prop( 'classes', [ DROPDOWN_CLASS ] ) },
+								settings: {},
 							},
 							options: { at: 0 },
 						} ],

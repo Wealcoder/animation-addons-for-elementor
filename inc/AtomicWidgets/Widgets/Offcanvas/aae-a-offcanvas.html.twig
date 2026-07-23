@@ -12,12 +12,9 @@
   Everything else (panel look, drawer geometry) lives in base styles / the JS.
 #}
 {% set position = settings.position | default('left') %}
-{% set overlay = settings.overlay | default('dark') %}
-{% set overlay_color = overlay == 'darker' ? 'rgba(0,0,0,0.75)' : (overlay == 'none' ? 'transparent' : 'rgba(0,0,0,0.5)') %}
-{% set close_on_overlay = (settings.close_on_overlay is not defined or settings.close_on_overlay) ? 'true' : 'false' %}
-{% set close_on_esc = (settings.close_on_esc is not defined or settings.close_on_esc) ? 'true' : 'false' %}
-{% set editor_open = (settings.editor_open is defined and settings.editor_open) ? 'true' : 'false' %}
-{% set trigger_icon_url = settings.trigger_icon.url | default('') %}
+{# The "Preview Open (Editor)" reveal is applied by offcanvas.js (editor
+   reconciler), NOT here: the atomic Switch commits without re-rendering this
+   Twig, so a {% if editor_open %} reveal would go stale on every live toggle. #}
 {% set classes = ['aae-a-offcanvas', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'position-' ~ position] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
@@ -55,30 +52,9 @@
         :where([data-id="{{ id }}"]) .aae-offcanvas-trigger :is(img, svg) {
             display: block; width: 24px; height: 24px;
         }
-
-        /* 2. Flash-guard — panel/overlay ALWAYS hidden by this rule (frontend
-              needs it every load; the editor uses it as the closed state).
-              Targeted by `data-element_type` (NOT class): the v4 editor strips
-              custom classes off atomic children, but data-attrs survive.
-              `!important` beats the panel's base `display:flex` (equal specificity,
-              would win on order). Frontend: once the JS teleports the panel to
-              <body> this selector stops matching and the JS inline styles win. */
-        [data-id="{{ id }}"] [data-element_type="e-aae-a-offcanvas-panel"],
-        [data-id="{{ id }}"] .aae-offcanvas-overlay { display: none !important; }
-
-        {% if editor_open == 'true' %}
-        /* 3. Editor OPEN — emitted ONLY when the "Open Panel (Editor)" switch is
-              on (PHP decides, so it's deterministic; no runtime attr matching).
-              Editor-scoped prefix means it can never affect the frontend even if
-              the switch is left on. Higher specificity + `!important` overrides
-              rule 2 and the base width, so the panel fills a comfortable editing
-              area in-flow. */
-        body.elementor-editor-active [data-id="{{ id }}"] [data-element_type="e-aae-a-offcanvas-panel"] {
-            display: flex !important; position: static !important; transform: none !important;
-            visibility: visible !important; max-width: none !important;
-            height: auto !important; min-height: 160px; margin-top: 12px;
+        [data-id="{{ id }}"] .aae-offcanvas-shell {
+            transform: translateX(-100%);
         }
-        {% endif %}
     </style>
 
     <button class="aae-offcanvas-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="{{ 'Open panel' | e('html_attr') }}">

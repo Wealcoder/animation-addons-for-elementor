@@ -514,6 +514,27 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-search-query' => [
+				'label'        => 'Search Query',
+				'description'  => 'Displays the current search-results heading (query + active date/category filters).',
+				'icon'         => 'eicon-search',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'search',
+					'query',
+					'results',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-post-content' => [
 				'label'        => 'Post Content',
 				'description'  => 'Dynamically displays the current post content natively in Elementor V4.',
@@ -2710,6 +2731,12 @@ final class Atomic
 				'has_script' => false,
 				'style_handle' => 'aae-a-post-title-css',
 				'style_path' => '/assets/atomic/css/post-title.css',
+			],
+
+			'aae-a-search-query' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchQuery\AAE_A_Search_Query',
+				'file' => 'Widgets/SearchQuery/class-aae-a-search-query.php',
+				'has_script' => false,
 			],
 
 			'aae-a-post-content' => [
