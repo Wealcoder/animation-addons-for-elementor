@@ -63,6 +63,7 @@ const animFrom = ( name, position ) => {
 	const signOut = ( position === 'left' || position === 'top' ) ? -1 : 1; // toward its own edge
 	switch ( name ) {
 		case 'none':
+		case 'circle': // shape reveal — handled via clip-path, not a transform tween
 			return null;
 		case 'fade':
 			return { opacity: 0 };
@@ -84,6 +85,19 @@ const animFrom = ( name, position ) => {
 			return { [ axis ]: signOut * 100 + '%' };
 	}
 };
+
+// ── "Circle Reveal" shape animation ──────────────────────────────────────
+// A circle grows from the drawer's corner (clip-path 0% -> 150%). A 150% radius
+// fully covers the panel rectangle, so the whole bg appears GRADUALLY with no
+// snap. Reliable everywhere (clip-path circle interpolates cleanly) unlike the
+// earlier mask-cloud. Reverses to 0% on close. Stays within the drawer's box.
+const CIRCLE_ORIGIN = { left: '0% 0%', right: '100% 0%', top: '50% 0%', bottom: '50% 100%' };
+
+// clip-path circle of `pct` radius centred at `origin`.
+const circleClip = ( pct, origin ) => `circle(${ pct } at ${ origin })`;
+
+// Drop the clip once fully open so the resting panel is never clipped.
+const clearClip = ( panel ) => { panel.style.clipPath = ''; panel.style.webkitClipPath = ''; };
 
 /**
  * Shared teleport host: one bare `.elementor` wrapper appended to <body>.
@@ -247,7 +261,21 @@ const initOffcanvas = ( root ) => {
 		document.body.style.overflow = 'hidden'; // scroll-lock while open
 
 		const from = animFrom( enterAnim, position );
-		if ( hasGsap && from && ! reduce() ) {
+		if ( hasGsap && enterAnim === 'circle' && ! reduce() ) {
+			// Shape reveal: grow a clip-path circle from the corner (0% → 150%, full).
+			panel.style.transform = 'none';
+			const o = CIRCLE_ORIGIN[ position ] || CIRCLE_ORIGIN.left;
+			panel.__aaeTween = gsap().fromTo( panel,
+				{ clipPath: circleClip( '0%', o ), webkitClipPath: circleClip( '0%', o ) },
+				{
+					clipPath:       circleClip( '150%', o ),
+					webkitClipPath: circleClip( '150%', o ),
+					duration,
+					ease,
+					onComplete: () => { panel.__aaeTween = null; clearClip( panel ); },
+				}
+			);
+		} else if ( hasGsap && from && ! reduce() ) {
 			// Enter tween: from the preset's closed vars → the resting state.
 			panel.__aaeTween = gsap().fromTo( panel, from, {
 				...REST,
@@ -281,7 +309,20 @@ const initOffcanvas = ( root ) => {
 		const exitName = exitAnim === 'reverse' ? enterAnim : exitAnim;
 		const to       = animFrom( exitName, position );
 
-		if ( hasGsap && to && ! reduce() ) {
+		if ( hasGsap && exitName === 'circle' && ! reduce() ) {
+			// Shape reveal out: shrink the clip-path circle back to the corner.
+			const o = CIRCLE_ORIGIN[ position ] || CIRCLE_ORIGIN.left;
+			panel.__aaeTween = gsap().fromTo( panel,
+				{ clipPath: circleClip( '150%', o ), webkitClipPath: circleClip( '150%', o ) },
+				{
+					clipPath:       circleClip( '0%', o ),
+					webkitClipPath: circleClip( '0%', o ),
+					duration,
+					ease,
+					onComplete: () => { panel.__aaeTween = null; clearClip( panel ); finishClose(); },
+				}
+			);
+		} else if ( hasGsap && to && ! reduce() ) {
 			panel.__aaeTween = gsap().to( panel, {
 				...to,
 				duration,
@@ -337,6 +378,11 @@ const initOffcanvas = ( root ) => {
  * hamburger. */
 const editorReconcilers = new Map();
 
+const hyphenate = ( s ) => s.replace( /[A-Z]/g, ( m ) => '-' + m.toLowerCase() );
+
+// Inline props the editor reveal sets on the panel — cleared when it re-hides.
+const EDITOR_PANEL_RESET = [ 'position', 'z-index', 'top', 'left', 'right', 'bottom', 'width', 'max-width', 'height', 'max-height', 'visibility' ];
+
 const readEditorOpen = ( id ) => {
 	try {
 		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
@@ -367,23 +413,35 @@ const initOffcanvasEditor = ( container ) => {
 
 		const panel = container.querySelector( '.aae-a-offcanvas-panel' );
 		if ( panel ) {
-			const isHidden = 'none' === panel.style.display;
-			if ( open && isHidden ) {
+			const isFloating = 'fixed' === panel.style.position;
+			if ( open && ! isFloating ) {
+				// Reveal as a FIXED drawer at its edge (out of flow) instead of an
+				// in-flow block — an in-flow 300–800px×100vh panel overflows the tiny
+				// offcanvas and overlaps the sibling columns / pushes the layout.
+				// Floating it keeps the canvas layout intact and mirrors the frontend.
+				const position = container.getAttribute( 'data-position' ) || 'left';
+				const pos = POS[ position ] || POS.left;
 				panel.style.removeProperty( 'display' );
-			} else if ( ! open && ! isHidden ) {
+				panel.style.setProperty( 'position', 'fixed', 'important' );
+				panel.style.setProperty( 'z-index', '9999', 'important' );
+				panel.style.setProperty( 'visibility', 'visible', 'important' );
+				panel.style.setProperty( 'transform', 'none', 'important' );
+				Object.entries( pos ).forEach( ( [ k, v ] ) =>
+					panel.style.setProperty( hyphenate( k ), v, 'important' )
+				);
+			} else if ( ! open && ( isFloating || 'none' !== panel.style.display ) ) {
+				EDITOR_PANEL_RESET.forEach( ( p ) => panel.style.removeProperty( p ) );
+				panel.style.removeProperty( 'transform' );
 				panel.style.setProperty( 'display', 'none', 'important' );
 			}
 		}
 
-		// Cancel the empty-view 120px bubble while the panel is hidden.
-		const wantFlat = ! open;
-		const isFlat = '0px' === container.style.minHeight;
-		if ( wantFlat && ! isFlat ) {
+		// The panel is never in-flow in the editor now (hidden, or a fixed overlay),
+		// so keep the root flat — its `.elementor-empty-view` still matches the core
+		// `:has(){min-height:120px}` and would otherwise leave a phantom box.
+		if ( '0px' !== container.style.minHeight ) {
 			container.style.setProperty( 'min-height', '0', 'important' );
 			container.style.setProperty( 'min-block-size', '0', 'important' );
-		} else if ( ! wantFlat && isFlat ) {
-			container.style.removeProperty( 'min-height' );
-			container.style.removeProperty( 'min-block-size' );
 		}
 	};
 
