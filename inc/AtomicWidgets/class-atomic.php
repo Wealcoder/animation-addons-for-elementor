@@ -1322,6 +1322,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — PARENT widget. This is the only Timeline entry
+			// exposed in the dashboard widget list / editor panel.
 			'aae-a-timeline' => [
 				'label'        => 'Timeline',
 				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
@@ -1343,6 +1345,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — HELPER widgets below. `is_internal => true` hides
+			// each of these from the dashboard widget list; they are never
+			// individually toggled, only used internally by Timeline above.
 			'aae-a-timeline-item' => [
 				'label'        => 'Timeline — Item',
 				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
@@ -1350,6 +1355,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'timeline',
@@ -1370,6 +1376,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'number', 'atomic' ],
 				'category'     => 'general',
@@ -1385,6 +1392,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'year', 'date', 'atomic' ],
 				'category'     => 'general',
@@ -1400,6 +1408,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'title', 'heading', 'atomic' ],
 				'category'     => 'general',
@@ -1415,6 +1424,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
 				'category'     => 'general',
@@ -1444,6 +1454,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — PARENT widget #1. The only entry of
+			// this sub-group exposed in the dashboard widget list.
 			'aae-a-progressbar' => [
 				'label'        => 'Progress Bar Template',
 				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
@@ -1466,6 +1478,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — HELPER widgets below. `is_internal
+			// => true` hides these from the dashboard widget list; they are
+			// only used internally by "Progress Bar Template" above.
 			'aae-a-progressbar-track' => [
 				'label'        => 'Progress Bar — Track',
 				'description'  => 'Internal track sub-element used by the Progress Bar Template.',
@@ -1473,6 +1488,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'track', 'atomic' ],
 				'category'     => 'general',
@@ -1488,6 +1504,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'fill', 'atomic' ],
 				'category'     => 'general',
@@ -1503,6 +1520,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'label', 'atomic' ],
 				'category'     => 'general',
@@ -1511,6 +1529,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
+			// variant powered by ProgressBar.js; it has no helper widgets of
+			// its own). Exposed in the dashboard widget list.
 			'aae-a-progressbar-main' => [
 				'label'        => 'Progress Bar Main',
 				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
@@ -1533,6 +1554,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — PARENT widget #1. The only entry of this
+			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
 				'label'        => 'Toggle Switcher',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1554,6 +1577,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — HELPER widgets below. `is_internal =>
+			// true` hides these from the dashboard widget list; they are
+			// only used internally by "Toggle Switcher" above.
 			'aae-a-toggle-pane' => [
 				'label'        => 'Toggle Pane (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher.',
@@ -1561,6 +1587,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
@@ -1579,6 +1606,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tabs', 'atomic' ],
 				'category'     => 'general',
@@ -1594,6 +1622,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tab', 'atomic' ],
 				'category'     => 'general',
@@ -1609,6 +1638,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'title', 'atomic' ],
 				'category'     => 'general',
@@ -1624,6 +1654,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'description', 'atomic' ],
 				'category'     => 'general',
@@ -1632,6 +1663,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — PARENT widget #2 (a second,
+			// standalone variant of Toggle Switcher, own JS/CSS bundle).
+			// Exposed in the dashboard widget list.
 			'aae-a-toggle-switcher-main' => [
 				'label'        => 'Toggle Switcher Main',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1654,6 +1688,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
+			// true` hides it from the dashboard widget list; only used
+			// internally by "Toggle Switcher Main" above.
 			'aae-a-toggle-pane-main' => [
 				'label'        => 'Toggle Pane Main (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher Main.',
@@ -1661,6 +1698,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
