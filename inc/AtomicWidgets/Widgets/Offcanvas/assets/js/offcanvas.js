@@ -1,14 +1,18 @@
 /**
- * AAE Offcanvas — frontend runtime (vanilla JS, no GSAP).
+ * AAE Offcanvas — frontend runtime.
  *
- * The panel + overlay are teleported to <body> so `position: fixed` resolves
- * against the viewport (Elementor container transforms would otherwise trap
- * it). The panel's VISUAL look (background, width, padding…) comes from its
- * atomic base style / Style-panel classes, which are global and survive the
- * move — this file only owns BEHAVIOUR + GEOMETRY (fixed placement, the slide
- * transform, visibility, scroll-lock). The one visual value we re-apply inline
- * is the computed background, read BEFORE the move as a guard against the
- * teleport dropping it on some themes (see the skill's teleport pitfall).
+ * Open/close play selectable enter/exit animations via GSAP (`window.gsap`,
+ * supplied by the Pro plugin); with GSAP absent every path degrades to the CSS
+ * slide, so the widget still works on free installs.
+ *
+ * The panel + overlay are teleported into a transform-free `.elementor` host on
+ * <body> (see getPortal) so `position: fixed` resolves against the viewport
+ * (ancestor container transforms would otherwise trap it) WITHOUT leaving the
+ * `.elementor` scope — every atomic style rule is `.elementor .e-xxx`, so a
+ * teleport straight onto <body> silently strips the panel's width/padding/
+ * background/base styles. This file owns only BEHAVIOUR + GEOMETRY (fixed
+ * placement, the slide transform, visibility, scroll-lock); all VISUALS stay
+ * with the panel's own scoped atomic styles.
  */
 
 import { register } from '@elementor/frontend-handlers';
@@ -32,6 +36,76 @@ const POS = {
 };
 
 const SLIDE = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+
+// ── Animation (GSAP-driven, self-contained) ──────────────────────────────
+// GSAP is supplied by the Pro plugin as `window.gsap`. When it is absent (free
+// installs) every path degrades to the CSS slide above — never a hard failure.
+const gsap   = () => window.gsap;
+const reduce = () => !! ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
+
+// Panel setting easing enum → GSAP ease string (two carry parameters).
+const EASES = {
+	'power2.out':  'power2.out',
+	'power3.out':  'power3.out',
+	'back.out':    'back.out(1.7)',
+	'elastic.out': 'elastic.out(1, 0.5)',
+	'expo.out':    'expo.out',
+	none:          'none',
+};
+
+// The resting (fully-open) state every enter tween lands on.
+const REST = { opacity: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotationY: 0, filter: 'blur(0px)' };
+
+// Self-contained drawer presets → the GSAP "from"/closed vars for a given
+// animation name + drawer edge. `null` means no motion (instant).
+const animFrom = ( name, position ) => {
+	const axis    = ( position === 'top' || position === 'bottom' ) ? 'y' : 'x';
+	const signOut = ( position === 'left' || position === 'top' ) ? -1 : 1; // toward its own edge
+	switch ( name ) {
+		case 'none':
+			return null;
+		case 'fade':
+			return { opacity: 0 };
+		case 'fade-slide':
+			return { opacity: 0, [ axis ]: signOut * 40 };
+		case 'zoom':
+			return { opacity: 0, scale: 0.92 };
+		case 'flip':
+			return {
+				opacity: 0,
+				transformPerspective: 1000,
+				transformOrigin: { left: 'left center', right: 'right center', top: 'center top', bottom: 'center bottom' }[ position ] || 'left center',
+				...( axis === 'x' ? { rotationY: signOut * -90 } : { rotationX: signOut * 90 } ),
+			};
+		case 'blur':
+			return { opacity: 0, filter: 'blur(16px)' };
+		case 'slide':
+		default:
+			return { [ axis ]: signOut * 100 + '%' };
+	}
+};
+
+/**
+ * Shared teleport host: one bare `.elementor` wrapper appended to <body>.
+ *
+ * The panel must escape its ancestor container transforms (an `e-con` with a
+ * transform traps `position:fixed`), which is why we move it out of the widget.
+ * But moving it straight onto <body> drops ALL its styling: every atomic rule
+ * is scoped `.elementor .e-xxx`, so outside the page's `.elementor` wrapper the
+ * panel loses its width/padding/background/base styles (looked full-width and
+ * unstyled on the frontend while fine in the editor, where we never teleport).
+ * Parking it under a transform-free `.elementor` host fixes both at once:
+ * viewport-relative fixed positioning AND intact scoped styles.
+ */
+const getPortal = () => {
+	let portal = document.querySelector( 'body > .aae-offcanvas-portal' );
+	if ( ! portal ) {
+		portal = document.createElement( 'div' );
+		portal.className = 'elementor aae-offcanvas-portal';
+		document.body.appendChild( portal );
+	}
+	return portal;
+};
 
 const initOffcanvas = ( root ) => {
 	if ( root.dataset.aaeOffcanvasInit === 'true' ) {
@@ -65,25 +139,24 @@ const initOffcanvas = ( root ) => {
 	const closeOnOverlay   = root.dataset.closeOnOverlay !== 'false';
 	const closeOnEsc       = root.dataset.closeOnEsc !== 'false';
 
-	// Preserve the panel's computed background BEFORE it leaves Elementor's
-	// scoped DOM — teleporting can otherwise drop the Style-tab background.
-	const cs      = window.getComputedStyle( panel );
-	const bgImage = cs.backgroundImage;
-	const bgColor = cs.backgroundColor;
-	const panelBg = ( bgImage && bgImage !== 'none' )
-		? cs.background
-		: ( bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent' )
-			? bgColor
-			: '#ffffff';
-
-	// Teleport to <body> so fixed positioning uses the viewport.
-	document.body.appendChild( panel );
+	// Teleport into a transform-free `.elementor` host so fixed positioning uses
+	// the viewport WHILE the panel keeps its `.elementor`-scoped atomic styles
+	// (width/padding/background/base). See getPortal() for the why.
+	const portal = getPortal();
+	portal.appendChild( panel );
 	if ( overlay ) {
-		document.body.appendChild( overlay );
+		portal.appendChild( overlay );
 	}
 
-	// Place the panel off-screen. Transition off for the initial placement so it
-	// doesn't animate in from nowhere on load; re-enabled next frame.
+	// Animation config (from the panel settings, via data-attrs on the root).
+	const hasGsap  = !! gsap();
+	const enterAnim = root.dataset.enterAnim || 'slide';
+	const exitAnim  = root.dataset.exitAnim  || 'reverse';
+	const duration  = ( parseInt( root.dataset.animDuration, 10 ) || 400 ) / 1000;
+	const ease      = EASES[ root.dataset.ease ] || 'power2.out';
+
+	// Base fixed geometry — always applied, independent of the animation engine.
+	// transition:none so a GSAP tween never fights a CSS transition.
 	Object.assign( panel.style, {
 		position:      'fixed',
 		zIndex:        '9999',
@@ -93,10 +166,14 @@ const initOffcanvas = ( root ) => {
 		visibility:    'hidden',
 		pointerEvents: 'none',
 		transition:    'none',
-		background:    panelBg,
 		...posStyles,
-		transform:     closedTransform,
 	} );
+
+	// No GSAP → rest the panel off-screen and (re-)enable the CSS slide next frame.
+	if ( ! hasGsap ) {
+		panel.style.transform = closedTransform;
+		requestAnimationFrame( () => { panel.style.transition = SLIDE; } );
+	}
 
 	if ( overlay ) {
 		Object.assign( overlay.style, {
@@ -111,44 +188,90 @@ const initOffcanvas = ( root ) => {
 		} );
 	}
 
-	requestAnimationFrame( () => {
-		panel.style.transition = SLIDE;
-	} );
-
 	let closeTimer;
+
+	const killTween = () => {
+		if ( panel.__aaeTween ) {
+			panel.__aaeTween.kill();
+			panel.__aaeTween = null;
+		}
+	};
+
+	const showOverlay = () => {
+		if ( ! overlay ) return;
+		overlay.style.transition    = 'opacity 0.3s ease';
+		overlay.style.visibility    = 'visible';
+		overlay.style.opacity       = '1';
+		overlay.style.pointerEvents = 'auto';
+	};
+	const hideOverlay = () => {
+		if ( ! overlay ) return;
+		overlay.style.transition    = 'opacity 0.3s ease, visibility 0s 0.3s';
+		overlay.style.opacity       = '0';
+		overlay.style.pointerEvents = 'none';
+		overlay.style.visibility    = 'hidden';
+	};
 
 	const open = () => {
 		window.clearTimeout( closeTimer );
+		killTween();
 		panel.style.visibility    = 'visible';
 		panel.style.pointerEvents = 'auto';
-		panel.style.transform     = 'none';
-		if ( overlay ) {
-			overlay.style.transition    = 'opacity 0.3s ease';
-			overlay.style.visibility    = 'visible';
-			overlay.style.opacity       = '1';
-			overlay.style.pointerEvents = 'auto';
-		}
+		showOverlay();
 		root.classList.add( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
 		document.body.style.overflow = 'hidden'; // scroll-lock while open
+
+		const from = animFrom( enterAnim, position );
+		if ( hasGsap && from && ! reduce() ) {
+			// Enter tween: from the preset's closed vars → the resting state.
+			panel.__aaeTween = gsap().fromTo( panel, from, {
+				...REST,
+				duration,
+				ease,
+				clearProps:  'transform',
+				onComplete:  () => { panel.__aaeTween = null; },
+			} );
+		} else {
+			// No-GSAP CSS slide (transform:none triggers SLIDE), or instant when
+			// GSAP is present but the animation is "none"/reduced-motion.
+			panel.style.transform = 'none';
+			panel.style.opacity   = '1';
+			panel.style.filter    = 'none';
+		}
+	};
+
+	const finishClose = () => {
+		panel.style.visibility = 'hidden';
 	};
 
 	const close = () => {
-		panel.style.transform     = closedTransform;
-		panel.style.pointerEvents = 'none';
-		if ( overlay ) {
-			overlay.style.transition    = 'opacity 0.3s ease, visibility 0s 0.3s';
-			overlay.style.opacity       = '0';
-			overlay.style.pointerEvents = 'none';
-			overlay.style.visibility    = 'hidden';
-		}
+		killTween();
+		hideOverlay();
 		root.classList.remove( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
 		document.body.style.overflow = '';
-		// Hide after the slide-out so it can't catch pointer events off-screen.
-		closeTimer = window.setTimeout( () => {
-			panel.style.visibility = 'hidden';
-		}, 350 );
+		panel.style.pointerEvents = 'none';
+
+		// `reverse` (default) exits with the enter animation's own closed vars.
+		const exitName = exitAnim === 'reverse' ? enterAnim : exitAnim;
+		const to       = animFrom( exitName, position );
+
+		if ( hasGsap && to && ! reduce() ) {
+			panel.__aaeTween = gsap().to( panel, {
+				...to,
+				duration,
+				ease,
+				onComplete: () => { panel.__aaeTween = null; finishClose(); },
+			} );
+		} else if ( ! hasGsap ) {
+			// CSS slide-out, then hide after it so it can't catch off-screen clicks.
+			panel.style.transform = closedTransform;
+			closeTimer = window.setTimeout( finishClose, 350 );
+		} else {
+			// GSAP present but exit is "none"/reduced-motion → instant hide.
+			finishClose();
+		}
 	};
 
 	trigger.addEventListener( 'click', open );

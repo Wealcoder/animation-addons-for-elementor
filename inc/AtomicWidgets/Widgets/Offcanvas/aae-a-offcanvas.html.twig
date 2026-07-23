@@ -26,6 +26,10 @@
     data-overlay-color="{{ overlay_color | e('html_attr') }}"
     data-close-on-overlay="{{ close_on_overlay }}"
     data-close-on-esc="{{ close_on_esc }}"
+    data-enter-anim="{{ settings.open_animation | default('slide') }}"
+    data-exit-anim="{{ settings.close_animation | default('reverse') }}"
+    data-anim-duration="{{ settings.anim_duration | default(400) }}"
+    data-ease="{{ settings.anim_easing | default('power2.out') }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -51,9 +55,6 @@
         }
         :where([data-id="{{ id }}"]) .aae-offcanvas-trigger :is(img, svg) {
             display: block; width: 24px; height: 24px;
-        }
-        [data-id="{{ id }}"] .aae-offcanvas-shell {
-            transform: translateX(-100%);
         }
     </style>
 

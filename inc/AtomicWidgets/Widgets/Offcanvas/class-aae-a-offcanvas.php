@@ -42,6 +42,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -49,6 +50,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -112,6 +114,14 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 			'close_on_overlay' => Boolean_Prop_Type::make()->default( true ),
 			'close_on_esc'     => Boolean_Prop_Type::make()->default( true ),
 
+			// Open (enter) + close (exit) motion. Self-contained drawer presets
+			// applied by offcanvas.js via GSAP (falls back to a CSS slide when
+			// GSAP isn't present). `reverse` plays the open animation backwards.
+			'open_animation'   => String_Prop_Type::make()->enum( [ 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'none' ] )->default( 'slide' ),
+			'close_animation'  => String_Prop_Type::make()->enum( [ 'reverse', 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'none' ] )->default( 'reverse' ),
+			'anim_duration'    => Number_Prop_Type::make()->default( 400 ),
+			'anim_easing'      => String_Prop_Type::make()->enum( [ 'power2.out', 'power3.out', 'back.out', 'elastic.out', 'expo.out', 'none' ] )->default( 'power2.out' ),
+
 			// Editor-only: reveal the panel in-flow so its content is editable.
 			// Canvas clicks on the trigger are unreliable (Elementor's selection
 			// overlay swallows them), so this switch is the dependable way to open
@@ -157,6 +167,47 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 						->set_label( __( 'Close on Overlay Click', 'animation-addons-for-elementor' ) ),
 					Switch_Control::bind_to( 'close_on_esc' )
 						->set_label( __( 'Close on Esc Key', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'animation' )
+				->set_label( __( 'Animation', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Select_Control::bind_to( 'open_animation' )
+						->set_label( __( 'Open Animation', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'slide',      'label' => __( 'Slide',        'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',       'label' => __( 'Fade',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade-slide', 'label' => __( 'Fade + Slide', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'zoom',       'label' => __( 'Zoom',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flip',       'label' => __( 'Flip',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'blur',       'label' => __( 'Blur',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'none',       'label' => __( 'None',         'animation-addons-for-elementor' ) ],
+						] ),
+					Select_Control::bind_to( 'close_animation' )
+						->set_label( __( 'Close Animation', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'reverse',    'label' => __( 'Same as Open (reverse)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide',      'label' => __( 'Slide',        'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',       'label' => __( 'Fade',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade-slide', 'label' => __( 'Fade + Slide', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'zoom',       'label' => __( 'Zoom',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flip',       'label' => __( 'Flip',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'blur',       'label' => __( 'Blur',         'animation-addons-for-elementor' ) ],
+							[ 'value' => 'none',       'label' => __( 'None',         'animation-addons-for-elementor' ) ],
+						] ),
+					Number_Control::bind_to( 'anim_duration' )
+						->set_label( __( 'Duration (ms)', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'anim_easing' )
+						->set_label( __( 'Easing', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'power2.out',  'label' => __( 'Smooth',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'power3.out',  'label' => __( 'Strong',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'back.out',    'label' => __( 'Back',    'animation-addons-for-elementor' ) ],
+							[ 'value' => 'elastic.out', 'label' => __( 'Elastic', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'expo.out',    'label' => __( 'Expo',    'animation-addons-for-elementor' ) ],
+							[ 'value' => 'none',        'label' => __( 'Linear',  'animation-addons-for-elementor' ) ],
+						] ),
 				] ),
 
 			Section::make()
