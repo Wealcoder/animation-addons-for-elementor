@@ -34,11 +34,10 @@ const AAE_SECTION_LABELS = new Set([
 	'ScrollTo',
 	'Sticky/Pin Element',
 	'Horizontal Scroll',
-	'Custom CSS (AAE)',
+	'Custom CSS',
 	'Wrapper Link',
 	'Nested Slider',
-	'AAE Child Hover',
-	'AAE Popup',
+	'Popup',
 ]);
 
 let started = false;

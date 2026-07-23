@@ -60,7 +60,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	public function get_icon()
 	{
-		return 'wcf-icon-Button';
+		return 'eicon-button';
 	}
 
 	public function get_keywords()
@@ -74,7 +74,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 			'classes'    => Classes_Prop_Type::make()->default([]),
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 
-			'btn_url'      => String_Prop_Type::make()->default('#'),
+			'btn_url'      => String_Prop_Type::make()->default(''),
 			'btn_target'   => String_Prop_Type::make()->default('_self'),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default(false),
 		];
@@ -151,7 +151,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 				]),
 			]),
 
-			'display'         => String_Prop_Type::generate('flex'),
+			'display'         => String_Prop_Type::generate('inline-flex'),
 			'flex-direction'  => String_Prop_Type::generate('row'),
 			'gap'             => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
 			'align-items'     => String_Prop_Type::generate('center'),

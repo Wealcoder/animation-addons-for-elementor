@@ -1,0 +1,43 @@
+{% set classes = ['aae-a-site-logo', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+
+{% if settings.sl_link_target == '_blank' %}
+    {% set rel_attr = 'noopener' ~ (settings.sl_link_nofollow ? ' nofollow' : '') %}
+{% elseif settings.sl_link_nofollow %}
+    {% set rel_attr = 'nofollow' %}
+{% else %}
+    {% set rel_attr = '' %}
+{% endif %}
+
+{% set has_href = settings.sl_resolved_href is defined and settings.sl_resolved_href is not empty %}
+
+<a class="{{ classes }} {{ editor_classes | default('') }}"
+   {% if has_href %}href="{{ settings.sl_resolved_href | e('html_attr') }}"{% endif %}
+   {% if not has_href %}role="presentation"{% endif %}
+   {% if settings.sl_link_target == '_blank' %}target="_blank"{% endif %}
+   {% if rel_attr is not empty %}rel="{{ rel_attr }}"{% endif %}
+   aria-label="{{ settings.sl_site_logo_alt | default('Site Logo') | e }}"
+   data-id="{{ id }}"
+   data-element_type="{{ type }}"
+   data-e-type="{{ type }}"
+   data-interaction-id="{{ interaction_id | default('') }}"
+   {% if settings._cssid is defined and settings._cssid is not empty %}
+       id="{{ settings._cssid | e('html_attr') }}"
+   {% endif %}
+   {% if settings.attributes is defined and settings.attributes is not empty %}
+       {{ settings.attributes | raw }}
+   {% endif %}
+   {{ editor_attributes | default('') | raw }}>
+
+    {% if settings.sl_logo_to == 'custom' %}
+        {# Custom mode: render the native e-image child — user controls the image via its own panel. #}
+        {{ children_placeholder | raw }}
+    {% else %}
+        {# Site Logo mode: always render the current WordPress custom logo, resolved fresh on every request. #}
+        {% if settings.sl_site_logo_url is defined and settings.sl_site_logo_url is not empty %}
+            <img class="aae-site-logo-img"
+                 src="{{ settings.sl_site_logo_url | e('html_attr') }}"
+                 alt="{{ settings.sl_site_logo_alt | default('') | e }}" />
+        {% endif %}
+    {% endif %}
+
+</a>

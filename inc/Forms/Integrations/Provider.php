@@ -44,6 +44,16 @@ interface Provider {
 	public static function attributes(): array;
 
 	/**
+	 * Where/how the admin finds this provider's API key — shown on the
+	 * dashboard Integrations connect card so "paste your API key" isn't a
+	 * dead end. Static so it renders even before pro validates anything.
+	 *
+	 * @return array{text:string,url:string} `url` may be '' if there's
+	 *   nothing sensible to link (text alone still renders).
+	 */
+	public static function help(): array;
+
+	/**
 	 * Validate an API key against the provider (a real network call).
 	 *
 	 * @return array{ok:bool, message:string, account?:string} ok=true means

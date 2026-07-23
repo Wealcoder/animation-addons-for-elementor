@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Database {
 
-	const DB_VERSION = '2';
+	const DB_VERSION = '3';
 	const OPTION_KEY = 'aae_forms_db_version';
 
 	public static function forms_table(): string {
@@ -54,6 +54,11 @@ final class Database {
 	public static function action_logs_table(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'aae_action_logs';
+	}
+
+	public static function attachments_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'aae_attachments';
 	}
 
 	/** Create/upgrade tables when DB_VERSION moves. Hooked on init. */
@@ -177,6 +182,31 @@ final class Database {
 		) {$charset_collate};"
 		);
 
+		// --- File uploads (pre-upload + claim): local private storage only. --
+
+		$attachments = self::attachments_table();
+
+		dbDelta(
+			"CREATE TABLE {$attachments} (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			form_key VARCHAR(64) NOT NULL,
+			submission_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			field_key VARCHAR(191) NOT NULL DEFAULT '',
+			upload_key CHAR(40) NOT NULL DEFAULT '',
+			original_name VARCHAR(255) NOT NULL DEFAULT '',
+			stored_path VARCHAR(255) NOT NULL DEFAULT '',
+			mime VARCHAR(100) NOT NULL DEFAULT '',
+			size_bytes BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			status VARCHAR(20) NOT NULL DEFAULT 'pending',
+			ip_hash CHAR(32) NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL,
+			PRIMARY KEY  (id),
+			KEY form_key (form_key),
+			KEY submission_id (submission_id),
+			KEY status_created (status, created_at)
+		) {$charset_collate};"
+		);
+
 		update_option( self::OPTION_KEY, self::DB_VERSION );
 	}
 
@@ -196,6 +226,7 @@ final class Database {
 		// in the minimal uninstall context.
 		wp_clear_scheduled_hook( 'aae_form/process_queue' );
 		wp_clear_scheduled_hook( 'aae_form/process_queue_sweep' );
+		wp_clear_scheduled_hook( 'aae_form/cleanup_uploads' );
 
 		if ( get_option( 'aae_forms_delete_data_on_uninstall' ) ) {
 			global $wpdb;
@@ -205,6 +236,7 @@ final class Database {
 				self::submission_values_table(),
 				self::action_logs_table(),
 				self::action_jobs_table(),
+				self::attachments_table(),
 				self::submissions_table(),
 				self::schemas_table(),
 				self::forms_table(),

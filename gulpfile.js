@@ -77,19 +77,13 @@ gulp.task('minify:css', function () {
         .pipe(gulp.dest('assets/css'));
 });
 
-gulp.task('compile:atomic-js', () => {
-    return gulp.src([
-        'inc/AtomicWidgets/Widgets/**/*.js',
-        '!inc/AtomicWidgets/Widgets/**/*.min.js',
-    ])
-        .pipe(mode.development(sourcemaps.init({largeFile: true})))
-        .pipe(eslint())
-        .pipe(mode.development(eslint.format()))
-        .pipe(mode.development(prettify({"indent_with_tabs": true,})))
-        .pipe(rename({dirname: ''})) // Flatten directory structure
-        .pipe(mode.development(sourcemaps.write('/.')))
-        .pipe(gulp.dest('assets/atomic/js'));
-});
+// NOTE: atomic widget JS is built by WEBPACK (`npm run build` / `npm run start`),
+// which bundles inc/AtomicWidgets/Widgets/*/assets/js/*.js into assets/atomic/js/
+// and resolves the `@elementor/frontend-handlers` imports via externals.
+// Never raw-copy those sources into assets/atomic/js — unbundled files throw
+// "Cannot use import statement outside a module" / "Identifier 'register' has
+// already been declared" on the frontend. (The old `compile:atomic-js` task did
+// exactly that and was removed 2026-07-20.)
 
 gulp.task('minify:atomic-js', () => {
     return gulp.src([

@@ -3,16 +3,4 @@
         stroke: currentColor;
         transition: stroke-dashoffset 1.4s ease-in-out;
     }
-    .aae-progressbar-fill.aae-pb-default {
-        height: 100%;
-        background: currentColor;
-        border-radius: inherit;
-    }
- .aae-progressbar-fill.aae-pb-default {
-        height: 100%;
-        width: 0%;
-        background: currentColor;
-        border-radius: inherit;
-        transition: width 1.4s ease-in-out;
-    }
 }

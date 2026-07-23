@@ -74,24 +74,24 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     protected function define_atomic_controls(): array {
-        // Reuse the shared preset-picker element control (same one the Advanced
-        // Heading uses). Presets keyed to `e-aae-a-loop-item` (see
-        // Widgets/LoopGrid/presets/) show here and replace the selected item on
-        // pick.
-        require_once __DIR__ . '/../AdvancedHeading/class-aae-a-preset-picker-control.php';
+        // Preset-picker element control. Presets keyed to `e-aae-a-loop-item`
+        // (see Widgets/LoopGrid/presets/) show here and replace the selected
+        // item on pick. Each widget carries its own copy of this stub class.
+        require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
 
         return [
             Section::make()
                 ->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
                 ->set_id( 'aae_presets' )
                 ->set_items( [
-                    \WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Preset_Picker_Control::make()
+                    AAE_A_Preset_Picker_Control::make()
                         ->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
                         ->set_meta( [ 'layout' => 'custom' ] ),
                 ] ),
 
             Section::make()
-                ->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+                ->set_id( 'settings' )
+                ->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
                 ->set_items( [
                     Link_Control::bind_to( 'link' )
                         ->set_label( __( 'Wrapper Link', 'animation-addons-for-elementor' ) )
@@ -106,9 +106,11 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
     }
 
     /**
-     * Default card sizing: each Loop Item is a flex child of the Loop Layout
-     * (display:flex + wrap), sized `flex: 1 1 32%` -> a 3-column "grid" built
-     * with flexbox. Editable from the Style panel.
+     * Default card sizing: each Loop Item is now a CSS-grid child of the Loop
+     * Layout (display:grid; grid-template-columns), so column sizing is owned
+     * by the parent's grid-template-columns rather than a per-item flex-basis.
+     * Still a flex column internally so the card's own content (image/title/
+     * etc.) stacks top-to-bottom.
      *
      * IMPORTANT: the atomic style schema has NO `flex-grow` / `flex-shrink` /
      * `flex-basis` keys — only the `flex` shorthand (Flex_Prop_Type, see
@@ -124,11 +126,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                         ->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
                         ->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
                         ->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
-                        ->add_prop( 'flex', Flex_Prop_Type::generate( [
-                            'flexGrow'   => Number_Prop_Type::generate( 1 ),
-                            'flexShrink' => Number_Prop_Type::generate( 1 ),
-                            'flexBasis'  => Size_Prop_Type::generate( [ 'size' => 32, 'unit' => '%' ] ),
-                        ] ) )
+                        ->add_prop( 'padding', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
                 )
         ];
     }

@@ -41,6 +41,10 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Date_Range_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once __DIR__ . '/class-aae-query-chips-control.php';
 require_once __DIR__ . '/class-aae-a-loop-layout.php';
 require_once __DIR__ . '/class-aae-a-loop-item.php';

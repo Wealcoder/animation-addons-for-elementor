@@ -210,6 +210,27 @@ final class Assets
 				true
 			);
 		}
+		// DrawSVG + MotionPath: needed by the DrawSVG atomic widget. Pro only
+		// registers these when its GSAP-library dashboard toggle is on, so
+		// register them here too (no-op if already registered).
+		if (! wp_script_is('DrawSVGPlugin', 'registered')) {
+			wp_register_script(
+				'DrawSVGPlugin',
+				WCF_ADDONS_PRO_URL . 'assets/lib/DrawSVGPlugin.min.js',
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
+		if (! wp_script_is('MotionPathPlugin', 'registered')) {
+			wp_register_script(
+				'MotionPathPlugin',
+				WCF_ADDONS_PRO_URL . 'assets/lib/MotionPathPlugin.min.js',
+				['gsap'],
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				true
+			);
+		}
 	}
 
 	/**
@@ -257,6 +278,23 @@ final class Assets
 			'aaeAtomicBridge',
 			[
 				'is_pro' => defined( 'WCF_ADDONS_PRO_FILE' ),
+			]
+		);
+
+		// Remote preset system config — read by PresetPickerControl.jsx /
+		// preset-apply.js's ensurePresetsLoaded(), both of which ship inside
+		// THIS bundle (src/modules/atomic/editor-bridge.js). Must be
+		// localized onto this handle, not 'aae-atomic-editor' (a separate,
+		// unrelated small bundle — see class-atomic.php's
+		// enqueue_atomic_editor_scripts()).
+		wp_localize_script(
+			self::HANDLE . '-editor-bridge',
+			'AAE_PRESET_CONFIG',
+			[
+				'restUrl'          => esc_url_raw( rest_url( 'aae/v1/presets' ) ),
+				'nonce'            => wp_create_nonce( 'wp_rest' ),
+				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
+				'placeholderThumb' => WCF_ADDONS_URL . 'assets/images/preset-placeholder.png',
 			]
 		);
 	}

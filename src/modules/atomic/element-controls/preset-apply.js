@@ -35,15 +35,80 @@ export const PRESET_TYPE_ALIASES = {
   'e-aae-a-loop-slide-item': 'e-aae-a-loop-item',
 };
 
-/** Presets bundled for a given element type, honouring the alias table. */
-export function getPresetsForType(type) {
-  const all = window.AAE_WIDGET_PRESETS;
-  if (!all || typeof all !== 'object') {
-    return [];
-  }
-  const key = all[type] ? type : PRESET_TYPE_ALIASES[type] || type;
-  const list = all[key];
+// Per-type in-memory cache, populated by ensurePresetsLoaded(). Both
+// PresetPickerControl (on mount) and auto-preset.js (on drop) read through
+// this same cache so a type fetched once this session is available to both
+// call sites without duplicate network requests.
+const _fetchedPresetsByType = {};
+const _pendingFetchesByType = {};
+
+/**
+ * Synchronous read of whatever presets have already been fetched THIS
+ * session for a type (honouring the alias table). Returns [] for a type
+ * that hasn't been fetched yet — callers that can tolerate an empty result
+ * on a cold type (e.g. auto-preset's drag-drop default, which awaits
+ * ensurePresetsLoaded() first) can use this directly; UI code that must
+ * show a real list should await ensurePresetsLoaded() instead.
+ */
+export function getCachedPresetsForType(type) {
+  const key = _fetchedPresetsByType[type] ? type : PRESET_TYPE_ALIASES[type] || type;
+  const list = _fetchedPresetsByType[key];
   return Array.isArray(list) ? list : [];
+}
+
+/**
+ * Fetches (and caches) presets for one element type from this plugin's own
+ * REST proxy (aae/v1/presets — see inc/Atomic/Presets/Rest.php), which
+ * merges remote (themecrowdy.com) + local bundled presets server-side.
+ * Resolves to [] on any network/parse failure — never rejects, so callers
+ * never need a .catch().
+ *
+ * Safe to call repeatedly for the same type: a fetch already in flight is
+ * shared (not duplicated), and a type already resolved this session is
+ * served straight from the in-memory cache.
+ */
+export function ensurePresetsLoaded(type) {
+  const key = _fetchedPresetsByType[type] !== undefined ? type : PRESET_TYPE_ALIASES[type] || type;
+
+  if (_fetchedPresetsByType[key] !== undefined) {
+    return Promise.resolve(_fetchedPresetsByType[key]);
+  }
+
+  if (_pendingFetchesByType[key]) {
+    return _pendingFetchesByType[key];
+  }
+
+  const config = window.AAE_PRESET_CONFIG;
+  if (!config || !config.restUrl) {
+    _fetchedPresetsByType[key] = [];
+    return Promise.resolve([]);
+  }
+
+  // config.restUrl is rest_url('aae/v1/presets') — on a PLAIN-permalink
+  // install that's already a query string itself, e.g.
+  // "https://site.test/?rest_route=/aae/v1/presets" (no pretty rewrite
+  // rules), so naively appending "?element_type=…" produces a malformed
+  // double-query URL WordPress can't parse (rest_route ends up containing
+  // the element_type param as part of its own value, always 404ing).
+  // Appending with "&" when restUrl already has a "?" — matching how PHP's
+  // add_query_arg() handles the same ambiguity — is correct in both cases.
+  const separator = config.restUrl.indexOf('?') === -1 ? '?' : '&';
+  const url = `${config.restUrl}${separator}element_type=${encodeURIComponent(key)}`;
+
+  const promise = fetch(url, {
+    headers: config.nonce ? { 'X-WP-Nonce': config.nonce } : undefined,
+  })
+    .then((res) => (res.ok ? res.json() : { presets: [] }))
+    .then((data) => (Array.isArray(data?.presets) ? data.presets : []))
+    .catch(() => [])
+    .then((presets) => {
+      _fetchedPresetsByType[key] = presets;
+      delete _pendingFetchesByType[key];
+      return presets;
+    });
+
+  _pendingFetchesByType[key] = promise;
+  return promise;
 }
 
 export function isContainerModel(model) {
@@ -52,14 +117,22 @@ export function isContainerModel(model) {
 }
 
 /**
+ * Prop types sharing Elementor's image-source XOR shape: an attachment `id`
+ * OR a `url`, but NOT both. `svg-src` (the `e-svg` widget's `svg` prop) is
+ * structurally identical to `image-src` and enforces the same rule.
+ */
+const IMAGE_SRC_TYPES = ['image-src', 'svg-src'];
+
+/**
  * Sanitize a preset model so it passes Elementor's save-time style validation.
  *
- * Elementor's Image_Src prop enforces an XOR rule: an image source may carry an
- * attachment `id` OR a `url`, but NOT both. Native exports routinely include
- * both (id + cached url), which renders fine in the editor but is REJECTED on
- * publish with "...background: invalid_value". We walk the whole model and, for
- * every image-src that has both, drop the `url` (the attachment id is the source
- * of truth; WP regenerates the url from it).
+ * Elementor's Image_Src prop (and svg-src, same shape) enforces an XOR rule:
+ * an image source may carry an attachment `id` OR a `url`, but NOT both.
+ * Native exports routinely include both (id + cached url), which renders fine
+ * in the editor but is REJECTED on publish with "...background: invalid_value"
+ * (or "svg: invalid_value" for e-svg). We walk the whole model and, for every
+ * image-src/svg-src that has both, drop the `url` (the attachment id is the
+ * source of truth; WP regenerates the url from it).
  */
 export function sanitizeImageSrc(node) {
   if (Array.isArray(node)) {
@@ -70,7 +143,7 @@ export function sanitizeImageSrc(node) {
     return;
   }
 
-  if (node.$$type === 'image-src' && node.value && typeof node.value === 'object') {
+  if (IMAGE_SRC_TYPES.indexOf(node.$$type) !== -1 && node.value && typeof node.value === 'object') {
     const src = node.value;
     const hasId = src.id && src.id.value !== undefined && src.id.value !== null && src.id.value !== '';
     const hasUrl =

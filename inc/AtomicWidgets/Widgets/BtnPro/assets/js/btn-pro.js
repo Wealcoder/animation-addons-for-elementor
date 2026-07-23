@@ -65,30 +65,45 @@ function rippleGsapSetup(container) {
   container.addEventListener('mouseleave', onLeave);
 }
 
+// Keeps a single cloned "swap" icon in sync with the live icon WITHOUT
+// touching the DOM when nothing actually changed.
+//
+// Elementor's editor preview can wipe our injected clone on unrelated
+// settings/selection changes (see the observer comment below) — but naively
+// remove+recreating it on every single re-run, regardless of whether it's
+// already correct, fights that re-render in a tight mutate -> observe ->
+// mutate loop with no yielding, which can pin a CPU core and hang the tab
+// (this is what happened applying the group-swap presets: preset apply
+// mounts many elements in rapid succession, and each mutation re-triggered
+// an unconditional remove+insert here). Only touch the DOM when the clone
+// is actually missing or stale.
+function syncSwapClone(container, icon) {
+  const existing = container.querySelector(':scope > [data-swap-clone]');
+
+  const candidate = icon.cloneNode(true);
+  candidate.setAttribute('data-swap-clone', 'true');
+  candidate.removeAttribute('data-interaction-id');
+
+  if (existing && existing.isEqualNode(candidate)) {
+    return; // already in sync — no DOM mutation, no observer retrigger
+  }
+
+  if (existing) existing.remove();
+  container.prepend(candidate);
+}
+
 // 5  — Group Swap L
 function groupSwapLeftSetup(container) {
-  container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
-
   const icon = container.querySelector('.aae-btn-grswapl-icon');
   if (!icon) return;
-
-  const clone = icon.cloneNode(true);
-  clone.setAttribute('data-swap-clone', 'true');
-  clone.removeAttribute('data-interaction-id');
-  container.prepend(clone);
+  syncSwapClone(container, icon);
 }
 
 // 6  — Group Swap R
 function groupSwapRightSetup(container) {
-  container.querySelectorAll('[data-swap-clone]').forEach(el => el.remove());
-
   const icon = container.querySelector('.aae-btn-grswapr-icon');
   if (!icon) return;
-
-  const clone = icon.cloneNode(true);
-  clone.setAttribute('data-swap-clone', 'true');
-  clone.removeAttribute('data-interaction-id');
-  container.prepend(clone);
+  syncSwapClone(container, icon);
 }
 
 // 9/10/11 — Oval / Circle / Ellipse share one "polygon" container class and
@@ -168,11 +183,77 @@ function initProButtonEffects() {
 // Run once for whatever is already in the DOM…
 initProButtonEffects();
 
+// Relevant classes only — matches initProButtonEffects()'s own selectors.
+const PRO_BUTTON_SELECTOR = '.aae-btn-ripple, .aae-btn-grswapl, .aae-btn-grswapr, .aae-btn-polygon';
+
+// True if this mutation batch actually added a node we care about, OR added
+// content inside an already-existing button (Elementor frequently mounts a
+// button's wrapper first and renders its inner content — ripple/polygon
+// effect element, swap icon — in as a later, separate mutation; that content
+// isn't itself a match and doesn't contain one, so it only shows up via
+// `closest`). Elementor's editor canvas mutates the DOM constantly for
+// reasons that have nothing to do with these buttons (typing, hovering,
+// selecting other elements) — without this check, every single one of those
+// unrelated mutations would still pay for a full document.body disconnect +
+// querySelectorAll + reconnect cycle, which adds up fast with several such
+// observers on one page (and gets much worse with DevTools open, which adds
+// real overhead per DOM mutation).
+function touchesProButton(mutations) {
+  for (const m of mutations) {
+    for (const node of m.addedNodes) {
+      if (node.nodeType !== 1) continue;
+      if (
+        node.matches?.(PRO_BUTTON_SELECTOR) ||
+        node.querySelector?.(PRO_BUTTON_SELECTOR) ||
+        node.closest?.(PRO_BUTTON_SELECTOR)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // …and again whenever the DOM changes. Elementor's editor preview mounts atomic
 // widgets asynchronously (they may not exist yet on first run above), and can also
 // replace a widget's markup on selection/setting changes, wiping our injected clone.
 // Disconnect while we mutate so this observer doesn't react to its own changes.
-const proButtonObserver = new MutationObserver(() => {
+//
+// Last-resort safety net: every setup function above is meant to be
+// idempotent (no-op when nothing changed), so this should settle almost
+// immediately. But if a future change reintroduces an unconditional DOM
+// mutation, the DOM never settles and this fires in a tight synchronous
+// loop — hanging the tab. Cap how many times we're willing to re-run inside
+// a short burst; if it's exceeded, stop the live observer and fall back to
+// a slow interval so the effects still (eventually) apply without pinning
+// a CPU core.
+const REINIT_BURST_LIMIT = 30;
+const REINIT_BURST_WINDOW_MS = 1000;
+let reinitBurstCount = 0;
+let reinitBurstStart = 0;
+
+const proButtonObserver = new MutationObserver((mutations) => {
+  if (!touchesProButton(mutations)) return;
+
+  const now = Date.now();
+  if (now - reinitBurstStart > REINIT_BURST_WINDOW_MS) {
+    reinitBurstStart = now;
+    reinitBurstCount = 0;
+  }
+  reinitBurstCount += 1;
+
+  if (reinitBurstCount > REINIT_BURST_LIMIT) {
+    proButtonObserver.disconnect();
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[AAE Btn Pro] DOM re-init loop exceeded ' + REINIT_BURST_LIMIT +
+      ' runs/second — disabling the live observer to avoid hanging the tab. ' +
+      'Falling back to a periodic rescan every 2s.'
+    );
+    setInterval(initProButtonEffects, 2000);
+    return;
+  }
+
   proButtonObserver.disconnect();
   initProButtonEffects();
   proButtonObserver.observe(document.body, { childList: true, subtree: true });

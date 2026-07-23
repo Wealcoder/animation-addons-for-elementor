@@ -69,6 +69,10 @@ class AAE_A_Form_Radio extends Atomic_Widget_Base {
 			'value'      => String_Prop_Type::make()->default( '' ),
 			'required'   => Boolean_Prop_Type::make()->default( false ),
 			'checked'    => Boolean_Prop_Type::make()->default( false ),
+
+			// Per-field validation message — any radio in the group may carry
+			// it; the first non-empty one wins for the whole group.
+			'error_message' => String_Prop_Type::make()->default( '' ),
 		];
 	}
 
@@ -80,14 +84,26 @@ class AAE_A_Form_Radio extends Atomic_Widget_Base {
 					[
 						Text_Control::bind_to( 'name' )
 							->set_label( __( 'Group name', 'animation-addons-for-elementor' ) )
-							->set_placeholder( __( 'Enter radio group name', 'animation-addons-for-elementor' ) ),
+							->set_placeholder( __( 'Enter radio group name', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Give every radio in the SAME group the SAME group name — that is what makes only one selectable at a time. Different groups need different names.', 'animation-addons-for-elementor' )
+							),
 						Text_Control::bind_to( 'value' )
 							->set_label( __( 'Choice value', 'animation-addons-for-elementor' ) )
-							->set_placeholder( __( 'Enter choice value', 'animation-addons-for-elementor' ) ),
+							->set_placeholder( __( 'Enter choice value', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'The value submitted when this radio is chosen — make it unique within the group (e.g. yes / no / maybe).', 'animation-addons-for-elementor' )
+							),
 						Switch_Control::bind_to( 'required' )
 							->set_label( __( 'Required', 'animation-addons-for-elementor' ) ),
 						Switch_Control::bind_to( 'checked' )
 							->set_label( __( 'Checked', 'animation-addons-for-elementor' ) ),
+						Text_Control::bind_to( 'error_message' )
+							->set_label( __( 'Error message', 'animation-addons-for-elementor' ) )
+							->set_placeholder( __( 'This field is required.', 'animation-addons-for-elementor' ) )
+							->set_description(
+								__( 'Shown when the group is required but nothing is chosen — set it on any one radio of the group. Leave blank to use the form-wide message.', 'animation-addons-for-elementor' )
+							),
 					]
 				),
 

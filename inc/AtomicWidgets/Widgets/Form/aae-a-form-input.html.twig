@@ -6,6 +6,9 @@
 {% set classes = ['aae-a-form-input', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
 
+{# Placeholder colour: class-scoped rules in form.scss (inherit Text Color at
+   reduced opacity) — was a per-instance <style> here, which printed one tag
+   per field on the page. #}
 <input
     class="{{ classes }} {{ editor_classes | default('') }}"
     type="{{ settings.type | default('text') }}"
@@ -16,8 +19,12 @@
     data-interaction-id="{{ interaction_id | default(id) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
     {% if settings.placeholder is defined and settings.placeholder is not empty %}placeholder="{{ settings.placeholder | e('html_attr') }}"{% endif %}
+    {% if settings.autocomplete is defined and settings.autocomplete is not empty %}autocomplete="{{ settings.autocomplete | e('html_attr') }}"{% endif %}
     {% if settings.required %}required aria-required="true"{% endif %}
     {% if settings.readonly %}readonly{% endif %}
+    {% if settings.min is defined and settings.min is not empty %}min="{{ settings.min | e('html_attr') }}"{% endif %}
+    {% if settings.max is defined and settings.max is not empty %}max="{{ settings.max | e('html_attr') }}"{% endif %}
+    {% if settings.error_message is defined and settings.error_message is not empty %}data-aae-error-message="{{ settings.error_message | e('html_attr') }}"{% endif %}
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}
 />

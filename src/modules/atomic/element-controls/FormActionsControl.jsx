@@ -68,10 +68,14 @@ const BRAND_GRADIENT = "linear-gradient(135deg, #FFA184 0%, #F2754F 100%)";
 const BRAND_TINT = "rgba(246, 80, 44, 0.12)";
 
 const DEFAULT_CONFIG = {
-  admin_email: { enabled: true, to: "", cc: "", bcc: "", reply_to: "", subject: "", body: "" },
+  admin_email: { enabled: true, to: "", cc: "", bcc: "", reply_to: "", subject: "", body: "", attach_files: true },
   auto_reply: { enabled: false, subject: "", body: "", include_copy: false },
   webhook: { enabled: false, url: "" },
   redirect: { enabled: false, url: "" },
+  // Create User (Pro): the pro FormUser module reads this block. Role is
+  // re-checked against an allow-list server-side — an edited actions_json
+  // can never mint a privileged account.
+  create_user: { enabled: false, role: "subscriber", notify: true },
   // Email-marketing provider blocks (brevo, mailchimp, …) are NOT hardcoded
   // here — readConfig() pulls whatever provider blocks the stored
   // actions_json has, and the editor lists providers + their attributes from
@@ -142,7 +146,7 @@ const readConfig = (container) => {
     auto_reply: { ...DEFAULT_CONFIG.auto_reply },
     webhook: { ...DEFAULT_CONFIG.webhook },
     redirect: { ...DEFAULT_CONFIG.redirect },
-    brevo: { ...DEFAULT_CONFIG.brevo, mapping: {} },
+    create_user: { ...DEFAULT_CONFIG.create_user },
   };
 
   try {
@@ -188,8 +192,44 @@ const FIELD_WIDGET_PREFIX = {
   "e-aae-a-form-input": "",
   "e-aae-a-form-textarea": "",
   "e-aae-a-form-select": "",
+  "e-aae-a-form-country": "",
+  "e-aae-a-form-password": "",
+  "e-aae-a-form-rating": "",
+  "e-aae-a-form-range": "",
+  "e-aae-a-form-file": "",
   "e-aae-a-form-checkbox": "checkbox_",
   "e-aae-a-form-radio": "radio_",
+};
+
+/* Field-key aliases the pro Create User action accepts, mirrored from
+   FormUser/Fields.php::ALIASES — keep the two in sync. */
+const USER_FIELD_ALIASES = {
+  username: ["user_name", "username", "user_login", "login", "aae_user"],
+  email: ["email", "user_email", "email_address", "mail"],
+  first_name: ["first_name", "fname", "f_name", "firstname", "given_name"],
+  last_name: ["last_name", "lname", "l_name", "lastname", "surname", "family_name"],
+  full_name: ["name", "full_name", "fullname", "your_name"],
+};
+
+const normalizeKey = (key) => String(key || "").toLowerCase().replace(/[\s\-_]+/g, "");
+
+/** Which field key (if any) this form has for `aliases`.
+ * Mirrors FormUser/Fields.php::match — exact normalised match first, then a
+ * suffix match so prefixed keys (`aae-signup-email`) still resolve. */
+const matchedAlias = (fieldKeys, aliases) => {
+  const normalized = fieldKeys.map((key) => ({ key, norm: normalizeKey(key) }));
+
+  for (const alias of aliases) {
+    const norm = normalizeKey(alias);
+    const exact = normalized.find((f) => f.norm === norm);
+    if (exact) return exact.key;
+  }
+  for (const alias of aliases) {
+    const norm = normalizeKey(alias);
+    const suffix = normalized.find((f) => f.norm.length > norm.length && f.norm.endsWith(norm));
+    if (suffix) return suffix.key;
+  }
+  return "";
 };
 
 const typeOfContainer = (container) => {
@@ -221,8 +261,9 @@ const labelText = (raw) => {
   return asString(value);
 };
 
-/** [{ key, label }] for every field of the form, in DOM order. */
-const collectFieldTags = (formContainer) => {
+/** [{ key, label }] for every field of the form, in DOM order.
+ * Exported: FormConditionsControl reuses it for its field dropdowns. */
+export const collectFieldTags = (formContainer) => {
   const found = [];
   const seen = new Set();
   const labels = {}; // input-id (_cssid) → label text
@@ -250,7 +291,7 @@ const collectFieldTags = (formContainer) => {
         const key = name || FIELD_WIDGET_PREFIX[type] + (cssId || fallbackId);
         if (key && !seen.has(key)) {
           seen.add(key);
-          found.push({ key, cssId });
+          found.push({ key, cssId, type });
         }
       }
 
@@ -259,9 +300,12 @@ const collectFieldTags = (formContainer) => {
   };
 
   walk(formContainer);
-  return found.map(({ key, cssId }) => ({
+  return found.map(({ key, cssId, type }) => ({
     key: asString(key),
     label: asString((cssId && labels[cssId]) || ""),
+    // Widget type — the Create User tab needs it to spot a password field
+    // (which is identified by TYPE, never by a guessable key).
+    type: asString(type),
   }));
 };
 
@@ -307,6 +351,13 @@ const LinkIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg {...iconProps}>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 const RedirectIcon = () => (
   <svg {...iconProps}>
     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -315,11 +366,14 @@ const RedirectIcon = () => (
   </svg>
 );
 
-const BrevoIcon = () => (
+/* Neutral plug/integration icon — the section covers whichever provider is
+   selected in the Service dropdown below, so it must not imply one brand. */
+const PlugIcon = () => (
   <svg {...iconProps}>
-    <path d="M12 2a3 3 0 0 0-3 3v2H7a2 2 0 0 0-2 2v2a5 5 0 0 0 5 5h.5" />
-    <path d="M9 7h6a4 4 0 0 1 4 4 5 5 0 0 1-5 5h-1a4 4 0 0 0-4 4" />
-    <circle cx="12" cy="11" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M9 2v4" />
+    <path d="M15 2v4" />
+    <path d="M6 8h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8Z" />
+    <path d="M12 17v5" />
   </svg>
 );
 
@@ -502,6 +556,33 @@ const TagField = ({ label, value, onChange, placeholder, multiline, fieldTags })
 export function FormActionsControl({ label }) {
   const { element } = useElement();
   const [open, setOpen] = useState(false);
+  // Drag offset of the dialog paper — kept in a ref (not state) so moving
+  // the dialog never re-renders the form inside it.
+  const dragPos = React.useRef({ x: 0, y: 0 });
+
+  /** Drag the dialog by its title bar. */
+  const startDrag = (event) => {
+    if (event.target.closest("button, input, textarea, a")) {
+      return;
+    }
+    const paper = event.currentTarget.closest(".MuiDialog-paper");
+    if (!paper) {
+      return;
+    }
+    event.preventDefault(); // no text selection while dragging
+    const startX = event.clientX - dragPos.current.x;
+    const startY = event.clientY - dragPos.current.y;
+    const onMove = (e) => {
+      dragPos.current = { x: e.clientX - startX, y: e.clientY - startY };
+      paper.style.transform = `translate(${dragPos.current.x}px, ${dragPos.current.y}px)`;
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [fieldTags, setFieldTags] = useState([]);
   const [notice, setNotice] = useState(null); // { severity, text }
@@ -517,17 +598,47 @@ export function FormActionsControl({ label }) {
   const [intLoading, setIntLoading] = useState(false);
   const [listsLoading, setListsLoading] = useState(false);
 
-  const loadIntegrations = async () => {
+  // `configForDefault` is the JUST-READ config from openDialog(), passed in
+  // directly rather than read off React state — `setConfig` inside the same
+  // synchronous openDialog() call hasn't committed yet, so closing over the
+  // `config` state here would still see the PREVIOUS dialog's (or the
+  // default, all-disabled) config and default the picker to the wrong
+  // provider, e.g. falling back to Brevo when the form actually has
+  // Mailchimp enabled.
+  const loadIntegrations = async (configForDefault) => {
     setIntLoading(true);
     try {
       const data = await getAdminData("integrations");
       const all = data.integrations || [];
       setIntegrations(all);
-      // Default the picker to the first provider that is already enabled in
-      // this form's config, else the first connected one, else the first.
-      const enabled = all.find((i) => config[i.id]?.enabled);
+      // Default the picker to the enabled provider that's actually
+      // connected, else any enabled one, else the first connected one, else
+      // the first in the catalog. Preferring "enabled AND connected" over
+      // plain catalog order matters when more than one block is enabled
+      // (stale data, see the self-heal below) — an enabled-but-disconnected
+      // provider is the leftover, not the one the user actually wants.
+      const enabledOnes = all.filter((i) => configForDefault[i.id]?.enabled);
+      const enabledConnected = enabledOnes.find((i) => i.pro && i.connected);
       const connected = all.find((i) => i.pro && i.connected);
-      setProvider((enabled || connected || all[0] || {}).id || "");
+      const chosen = enabledConnected || enabledOnes[0] || connected || all[0] || {};
+      setProvider(chosen.id || "");
+
+      // Self-heal data saved before providers were made mutually exclusive:
+      // more than one provider block can end up enabled=true (e.g. switching
+      // the Service dropdown across two edit sessions never turned the
+      // previous one off). Clear every OTHER enabled block down to just the
+      // chosen one so a stale provider doesn't keep creating jobs silently.
+      if (enabledOnes.length > 1) {
+        setConfig((current) => {
+          const next = { ...current };
+          enabledOnes.forEach((item) => {
+            if (item.id !== chosen.id && next[item.id]?.enabled) {
+              next[item.id] = { ...next[item.id], enabled: false };
+            }
+          });
+          return next;
+        });
+      }
     } catch (_e) {
       setIntegrations([]);
       setProvider("");
@@ -554,15 +665,17 @@ export function FormActionsControl({ label }) {
   };
 
   const openDialog = () => {
+    dragPos.current = { x: 0, y: 0 }; // fresh paper each open — start undragged
     const container = getContainer(element.id);
-    setConfig(readConfig(container));
+    const freshConfig = readConfig(container);
+    setConfig(freshConfig);
     setFieldTags(collectFieldTags(container));
     setNotice(null);
     setTab("admin_email");
     setIntegrations([]);
     setProvider("");
     setLists([]);
-    loadIntegrations();
+    loadIntegrations(freshConfig);
     setOpen(true);
   };
 
@@ -581,12 +694,59 @@ export function FormActionsControl({ label }) {
   // The per-provider config block, created lazily so any provider works.
   const providerCfg = config[provider] || { enabled: false, list_id: "", mapping: {} };
 
-  /** Patch a key on the selected provider's config block. */
+  /**
+   * Only ONE email-marketing provider can be active per form (one Service
+   * dropdown, one enable switch) — but each provider's config lives in its
+   * own actions_json block, so switching the dropdown alone never touched
+   * the PREVIOUSLY selected provider's `enabled` flag. That let a form end
+   * up with e.g. both brevo.enabled=true and mailchimp.enabled=true after
+   * switching providers across two edit sessions, silently creating a job
+   * for a provider the user thought they'd moved away from (and picking the
+   * wrong one back up as the "default enabled" provider on next open, since
+   * that picks the first enabled hit in catalog order). Enforce mutual
+   * exclusivity here: turning a provider on turns every other registered
+   * provider off in the same update.
+   */
   const patchProvider = (key, value) =>
-    setConfig((current) => ({
-      ...current,
-      [provider]: { ...(current[provider] || { enabled: false, list_id: "", mapping: {} }), [key]: value },
-    }));
+    setConfig((current) => {
+      const next = {
+        ...current,
+        [provider]: { ...(current[provider] || { enabled: false, list_id: "", mapping: {} }), [key]: value },
+      };
+      if ("enabled" === key && value) {
+        integrations.forEach((item) => {
+          if (item.id !== provider && next[item.id]?.enabled) {
+            next[item.id] = { ...next[item.id], enabled: false };
+          }
+        });
+      }
+      return next;
+    });
+
+  /**
+   * Switch which provider the Integrations tab is editing. If another
+   * provider is currently the enabled one, move `enabled` over to the newly
+   * picked provider too — so the dropdown always reflects "the" active
+   * provider instead of leaving a stale enabled flag behind on the one the
+   * user just switched away from.
+   */
+  const switchProvider = (nextProviderId) => {
+    setConfig((current) => {
+      const wasEnabled = integrations.some((item) => item.id !== nextProviderId && current[item.id]?.enabled);
+      if (!wasEnabled) {
+        return current;
+      }
+      const next = { ...current };
+      integrations.forEach((item) => {
+        if (item.id !== nextProviderId && next[item.id]?.enabled) {
+          next[item.id] = { ...next[item.id], enabled: false };
+        }
+      });
+      next[nextProviderId] = { ...(next[nextProviderId] || { list_id: "", mapping: {} }), enabled: true };
+      return next;
+    });
+    setProvider(nextProviderId);
+  };
 
   /** Set one provider attribute → form-field mapping (or clear it). */
   const patchProviderMap = (attr, fieldKey) =>
@@ -645,21 +805,57 @@ export function FormActionsControl({ label }) {
 
   return (
     <Stack gap={1}>
-      <Button variant="outlined" size="small" fullWidth onClick={openDialog}>
+      <Button
+        variant="outlined"
+        size="small"
+        fullWidth
+        onClick={openDialog}
+        // AAE brand mark before the text — same glyph the AAE section headers
+        // and the Conditional Display row use (section-branding.js).
+        startIcon={
+          <Box
+            component="i"
+            className="wcf-logo"
+            sx={{ display: "inline-flex", alignItems: "center", fontSize: 14 }}
+          />
+        }
+        sx={{ justifyContent: "center", gap: 0.5 }}
+      >
         {label || __("Manage Actions", TD)}
+        <Box
+          component="span"
+          sx={{
+            ml: 0.75,
+            px: 0.6,
+            py: "1px",
+            fontSize: 9,
+            fontWeight: 700,
+            lineHeight: 1.6,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: "#fff",
+            borderRadius: 0.5,
+            background: BRAND_GRADIENT,
+          }}
+        >
+          {__("Pro", TD)}
+        </Box>
       </Button>
 
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        maxWidth="xs"
+        maxWidth="sm"
         fullWidth
         // Anchor next to the editing panel (left) instead of centering —
         // keeps the canvas visible while configuring actions.
         sx={{ "& .MuiDialog-container": { justifyContent: "flex-start" } }}
         PaperProps={{ sx: { ml: "310px", maxHeight: "calc(100% - 48px)" } }}
       >
-        <DialogTitle sx={{ pb: 1.5 }}>
+        <DialogTitle
+          onPointerDown={startDrag}
+          sx={{ pb: 1.5, cursor: "move", userSelect: "none", touchAction: "none" }}
+        >
           <Stack direction="row" alignItems="center" gap={1.5}>
             <Stack
               alignItems="center"
@@ -713,6 +909,7 @@ export function FormActionsControl({ label }) {
             { key: "integrations", label: __("Integrations", TD) },
             { key: "webhook", label: __("Webhook", TD) },
             { key: "redirect", label: __("Redirect", TD) },
+            { key: "create_user", label: __("Create User", TD) },
           ].map(({ key, label: tabLabel }) => {
             // The "integrations" tab has no config block of its own — its dot
             // lights when ANY email-marketing provider block is enabled.
@@ -799,6 +996,16 @@ export function FormActionsControl({ label }) {
                 fieldTags={fieldTags}
                 onChange={(v) => patch("admin_email", "body", v)}
               />
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="caption">
+                  {__("Attach uploaded files (up to 20 MB total)", TD)}
+                </Typography>
+                <Switch
+                  size="small"
+                  checked={config.admin_email.attach_files !== false}
+                  onChange={(e) => patch("admin_email", "attach_files", e.target.checked)}
+                />
+              </Stack>
               <Button size="small" variant="text" disabled={busy === "email"} onClick={testEmail}>
                 {busy === "email" ? __("Sending…", TD) : __("Send Test Email", TD)}
               </Button>
@@ -848,8 +1055,8 @@ export function FormActionsControl({ label }) {
             {/* ---------------- Integrations (email marketing) ---------- */}
             {tab === "integrations" && (
             <SectionCard
-              icon={<BrevoIcon />}
-              title={providerInfo ? providerInfo.label : __("Email Marketing", TD)}
+              icon={<PlugIcon />}
+              title={__("Integration Enable", TD)}
               hint={__("Add each submitter as a contact in your list", TD)}
               enabled={!!providerCfg.enabled}
               onToggle={(v) => patchProvider("enabled", v)}
@@ -861,7 +1068,7 @@ export function FormActionsControl({ label }) {
                   labelId="aae-int-provider"
                   label={__("Service", TD)}
                   value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
+                  onChange={(e) => switchProvider(e.target.value)}
                 >
                   {integrations.map((item) => (
                     <MenuItem key={item.id} value={item.id}>
@@ -1009,6 +1216,108 @@ export function FormActionsControl({ label }) {
               </Typography>
             </SectionCard>
             )}
+
+            {/* ---------------- Create User (Pro) ---------------- */}
+            {tab === "create_user" && (() => {
+              const keys = fieldTags.map((f) => f.key);
+              const hasPassword = fieldTags.some((f) => f.type === "e-aae-a-form-password");
+              const emailAlias = matchedAlias(keys, USER_FIELD_ALIASES.email);
+              const usernameAlias = matchedAlias(keys, USER_FIELD_ALIASES.username);
+              const firstAlias = matchedAlias(keys, USER_FIELD_ALIASES.first_name);
+              const lastAlias = matchedAlias(keys, USER_FIELD_ALIASES.last_name);
+              const fullAlias = matchedAlias(keys, USER_FIELD_ALIASES.full_name);
+              const ready = !!emailAlias && hasPassword;
+
+              const Requirement = ({ ok, label, detail }) => (
+                <Stack direction="row" spacing={1} alignItems="flex-start">
+                  <Typography component="span" sx={{ color: ok ? "success.main" : "warning.main", lineHeight: 1.5 }}>
+                    {ok ? "✓" : "!"}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                    <strong style={{ color: "inherit" }}>{label}</strong>
+                    {detail ? ` — ${detail}` : ""}
+                  </Typography>
+                </Stack>
+              );
+
+              return (
+                <SectionCard
+                  icon={<UserIcon />}
+                  title={__("Create WordPress User", TD)}
+                  hint={__("Turn a signup submission into a real user account", TD)}
+                  enabled={config.create_user.enabled}
+                  onToggle={(v) => patch("create_user", "enabled", v)}
+                >
+                  <Stack spacing={0.75}>
+                    <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
+                      {ready
+                        ? __("This form can create users:", TD)
+                        : __("Add the missing fields to enable this:", TD)}
+                    </Typography>
+
+                    <Requirement
+                      ok={!!emailAlias}
+                      label={__("Email field", TD)}
+                      detail={emailAlias
+                        ? sprintf(__("using “%s”", TD), emailAlias)
+                        : __("name a field email, user_email or mail", TD)}
+                    />
+                    <Requirement
+                      ok={hasPassword}
+                      label={__("Password field", TD)}
+                      detail={hasPassword
+                        ? __("found", TD)
+                        : __("add the Password (AAE) widget", TD)}
+                    />
+                    <Requirement
+                      ok
+                      label={__("Username", TD)}
+                      detail={usernameAlias
+                        ? sprintf(__("from “%s”", TD), usernameAlias)
+                        : __("auto-generated from the email (add user_name to choose it)", TD)}
+                    />
+                    <Requirement
+                      ok
+                      label={__("Name", TD)}
+                      detail={
+                        firstAlias || lastAlias
+                          ? sprintf(__("from “%s”", TD), [firstAlias, lastAlias].filter(Boolean).join(" + "))
+                          : fullAlias
+                            ? sprintf(__("split from “%s”", TD), fullAlias)
+                            : __("optional — add fname / lname (or name)", TD)
+                      }
+                    />
+                  </Stack>
+
+                  <FormControl fullWidth size="small">
+                    <InputLabel>{__("Role", TD)}</InputLabel>
+                    <Select
+                      label={__("Role", TD)}
+                      value={config.create_user.role || "subscriber"}
+                      onChange={(e) => patch("create_user", "role", e.target.value)}
+                    >
+                      <MenuItem value="subscriber">{__("Subscriber", TD)}</MenuItem>
+                      <MenuItem value="customer">{__("Customer", TD)}</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                      {__("Email the admin and the new user", TD)}
+                    </Typography>
+                    <Switch
+                      size="small"
+                      checked={!!config.create_user.notify}
+                      onChange={(e) => patch("create_user", "notify", e.target.checked)}
+                    />
+                  </Stack>
+
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                    {__("The password is used to create the account and is never stored, emailed or sent to webhooks. An email that already has an account is skipped — an existing user is never modified.", TD)}
+                  </Typography>
+                </SectionCard>
+              );
+            })()}
 
             {(tab === "admin_email" || tab === "auto_reply") && (
               <Typography variant="caption" sx={{ color: "text.secondary", textAlign: "center" }}>
